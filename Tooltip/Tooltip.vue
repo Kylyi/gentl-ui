@@ -116,7 +116,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .tooltip {
-  --apply: bg-ca border-ca border-custom rounded-custom p-x-2 p-y-1;
+  --apply: bg-ca border-ca border-custom rounded-custom p-x-2 p-y-1 z-$zMenu;
 
   &.is-dense {
     --apply: p-0;

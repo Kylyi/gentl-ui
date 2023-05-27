@@ -4,14 +4,17 @@
 // TYPES
 import { IBannerProps } from '~/components/Banner/types/banner-props.type'
 
-const props = defineProps<IBannerProps>()
+const props = withDefaults(defineProps<IBannerProps>(), {
+  modelValue: true,
+})
 
 defineEmits<{
+  (e: 'update:modelValue', value: boolean): void
   (e: 'dismiss'): void
 }>()
 
 // LAYOUT
-const model = defineModel<boolean>({ default: true, local: true })
+const model = useVModel(props, 'modelValue')
 const counter = toRef(props, 'counter')
 const bannerEl = ref<HTMLDivElement>()
 
