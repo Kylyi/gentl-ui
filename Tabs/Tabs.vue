@@ -1,0 +1,166 @@
+<script setup lang="ts">
+// ENHANCEMENT: For now, the only way to use <KeepAlive /> is to use default slot
+// and `v-show` in parent for each tab. There must be a better way to do this.
+
+// TYPES
+import { isVNode } from 'vue'
+import type { ITabsProps } from '~~/components/Tabs/types/tabs-props.type'
+
+// COMPONENTS
+
+const props = defineProps<ITabsProps>()
+const emits = defineEmits<{
+  (e: 'update:model-value', id: string | number): void
+}>()
+
+// LAYOUT
+const keepAliveTabs = ref<string[]>([])
+const model = useVModel(props, 'modelValue', emits, {
+  eventName: 'update:model-value',
+})
+
+const instance = getCurrentInstance()
+
+const tabs = computed(() => {
+  return (instance?.slots.default?.() || [])
+    .filter(
+      t =>
+        isVNode(t) &&
+        typeof t.type === 'object' &&
+        (t.type as any).name?.startsWith('Tab_')
+    )
+    .map((t: VNode) => {
+      return {
+        id: t.props!.name,
+        label: t.props!.label || t.props!.name,
+        icon: t.props!.icon,
+        component: t,
+        componentName: (t.type as any).name,
+      }
+    })
+})
+
+const activeTab = computed(() => {
+  return tabs.value.find(tab => tab.id === props.modelValue)
+})
+
+watch(
+  tabs,
+  tabs => {
+    keepAliveTabs.value = tabs
+      .filter(tab => !isNil(tab.component.props?.['keep-alive']))
+      .map(tab => tab.componentName)
+  },
+  { immediate: true }
+)
+
+// HANDLING TAB CHANGES
+const preventTabChange = autoResetRef(false, 300)
+const transitionEnter = ref('')
+const transitionLeave = ref('')
+
+function handleTabChange(id: string | number) {
+  const currentIdx = tabs.value.findIndex(tab => tab.id === model.value)
+  const selectedTabIdx = tabs.value.findIndex(tab => tab.id === id)
+
+  if (currentIdx < selectedTabIdx) {
+    transitionEnter.value = 'animate-fade-in-right'
+    transitionLeave.value = 'animate-fade-out'
+  } else {
+    transitionEnter.value = 'animate-fade-in-left'
+    transitionLeave.value = 'animate-fade-out'
+  }
+
+  preventTabChange.value = true
+  model.value = id
+}
+
+watch(model, model => {
+  if (model && !preventTabChange.value) {
+    handleTabChange(model)
+  }
+})
+</script>
+
+<template>
+  <div
+    flex="~ col"
+    overflow="auto"
+  >
+    <!-- LABELS -->
+    <HorizontalScroller
+      v-if="!noLabels"
+      content-class="flex gap-x-1 p-x-2 items-center"
+      rounded-1
+      shrink-0
+      p="y-1"
+      :class="navClass"
+    >
+      <slot
+        v-for="tab in tabs"
+        :key="tab.id"
+        :name="`${tab.id}-label`"
+        :tab="tab"
+        :change-fn="() => handleTabChange(tab.id)"
+      >
+        <Btn
+          :label="tab.label"
+          :icon="tab.icon"
+          no-uppercase
+          class="tab-label"
+          size="lg"
+          :class="[
+            labelClass,
+            {
+              'is-active': tab.id === activeTab?.id,
+              [labelActiveClass]: tab.id === activeTab?.id,
+            },
+          ]"
+          @click="handleTabChange(tab.id)"
+        />
+      </slot>
+    </HorizontalScroller>
+
+    <!-- CONTENT -->
+    <div
+      v-if="activeTab"
+      relative
+      overflow="hidden"
+      :class="contentClass"
+    >
+      <Transition
+        :enter-active-class="`${transitionEnter} inset-0 ease-linear animate-duration-320`"
+        :leave-active-class="`${transitionLeave} absolute ease-linear animate-duration-320`"
+        :css="!noAnimation"
+      >
+        <KeepAlive :include="keepAliveTabs">
+          <Component
+            :is="activeTab.component"
+            :key="activeTab.id"
+          />
+        </KeepAlive>
+
+        <!-- <Component
+          :is="activeTab.component"
+          v-else
+          :key="activeTab.id"
+        /> -->
+      </Transition>
+    </div>
+  </div>
+</template>
+
+<style lang="scss" scoped>
+.tab {
+  &-label {
+    --apply: min-w-min;
+    --apply: '!lt-lg:p-x-4';
+  }
+
+  &-label.is-active {
+    &::after {
+      --apply: content-empty absolute inset-inline-0 bottom-0 h-1 bg-primary;
+    }
+  }
+}
+</style>
