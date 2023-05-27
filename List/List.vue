@@ -147,7 +147,7 @@ const {
   }
 
   &-search {
-    --apply: flex w-full shrink-0 overflow-auto bg-filled;
+    --apply: flex w-full shrink-0 overflow-auto bg-ca;
   }
 }
 

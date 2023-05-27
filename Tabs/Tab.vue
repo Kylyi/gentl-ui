@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { v4 as uuid } from 'uuid'
 import { ITabProps } from '~~/components/Tabs/types/tab-props.type'
 
 defineProps<ITabProps>()
 
-const TAB_NAME = /* hoist-static */ `Tab_${uuid}`
+const TAB_NAME = 'Tab_1'
 
 defineOptions({
   name: TAB_NAME,

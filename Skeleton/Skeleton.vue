@@ -18,7 +18,7 @@ withDefaults(defineProps<ISkeletonProps>(), {
 
 <style lang="scss" scoped>
 .skeleton {
-  --apply: cursor-wait bg-filled;
+  --apply: cursor-wait bg-ca;
 
   &::before {
     content: '\00a0';

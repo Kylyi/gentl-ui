@@ -88,7 +88,7 @@ const imageUrl = computed(() => {
   }
 
   &:hover {
-    --apply: bg-filled color-dark dark:color-light;
+    --apply: bg-ca color-dark dark:color-light;
   }
 }
 </style>

@@ -200,7 +200,7 @@ const { isExporting, handleExportData } = useTableExporting()
 
 <style lang="scss" scoped>
 .table-container {
-  --apply: relative flex flex-col overflow-auto max-h-full max-w-full bg-filled;
+  --apply: relative flex flex-col overflow-auto max-h-full max-w-full bg-ca;
 
   &__top {
     --apply: flex shrink-0 gap-x-1 border-b-1 border-ca p-2 p-l-1 overflow-auto;

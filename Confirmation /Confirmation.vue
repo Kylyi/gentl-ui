@@ -66,7 +66,7 @@ function handleClose() {
 
 <style lang="scss" scoped>
 .confirmation {
-  --apply: flex flex-col inset-0 absolute bg-filled dark:bg-dark
+  --apply: flex flex-col inset-0 absolute bg-ca dark:bg-dark
     rounded-inherit z-10;
 
   &-checkmark {

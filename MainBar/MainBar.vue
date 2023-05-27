@@ -111,7 +111,7 @@ defineExpose({
   }
 
   &-title {
-    --apply: flex flex-col grow overflow-auto relative bg-filled rounded-custom;
+    --apply: flex flex-col grow overflow-auto relative bg-ca rounded-custom;
   }
 
   &-subtitle {
