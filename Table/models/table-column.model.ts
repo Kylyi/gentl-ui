@@ -1,9 +1,15 @@
 import { Required } from 'utility-types'
 import { CSSProperties } from 'vue'
-import { DistinctData } from '~/components/Table/types/distinct-data.type'
+
+// TYPES
+import type { DistinctData } from '~/components/Table/types/distinct-data.type'
+import type { IItem, IItemBase } from '~/libs/App/types/item.type'
+
+// MODELS
 import { FilterItem } from '~/libs/App/data/models/filter-item'
+
+// CONSTANTS
 import { DATE_TYPES } from '~/libs/App/types/datetime.type'
-import { IItem, IItemBase } from '~/libs/App/types/item.type'
 
 export class TableColumn<T = IItem>
   extends FilterItem<T>

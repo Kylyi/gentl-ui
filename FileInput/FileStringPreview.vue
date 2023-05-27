@@ -77,7 +77,8 @@ const imageUrl = computed(() => {
 })
 
 function handleDownloadFile() {
-  downloadFile(props.filename, { folder: props.folder })
+  // FIXME: Missing downloadFile function
+  // downloadFile(props.filename, { folder: props.folder })
 }
 </script>
 

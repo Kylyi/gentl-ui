@@ -4,7 +4,7 @@ import type { IFileInputProps } from '~~/components/FileInput/types/file-input-p
 
 // COMPOSITION FUNCTIONS
 import { useFieldUtils } from '~~/components/Field/functions/useFieldUtils'
-import { useNumber } from '~~/components/Inputs/functions/useNumber'
+import { useNumber } from '~/components/Inputs/NumberInput/functions/useNumber'
 
 // COMPONENTS
 import ScrollArea from '~~/components/ScrollArea/ScrollArea.vue'

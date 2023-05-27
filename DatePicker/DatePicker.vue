@@ -61,6 +61,10 @@ const eventsByDay = computed(() => {
   }, {} as Record<string, DayEvent[]>)
 })
 
+function handleSelectToday() {
+  emits('update:model-value', $date().startOf('d'))
+}
+
 // DATA
 const model = toRef(props, 'modelValue')
 const internalValue = ref<Datetime>(props.modelValue) as Ref<Datetime>
