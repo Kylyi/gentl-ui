@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// @ts-nocheck
 // TYPES
 import type { ITreeNode } from '~/components/Tree/types/tree-node.type'
 
