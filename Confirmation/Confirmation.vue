@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // TYPES
-import type { IConfirmationProps } from '~~/components/Confirmation /types/confirmation-props.type'
+import type { IConfirmationProps } from '~/components/Confirmation/types/confirmation-props.type'
 
 const props = withDefaults(defineProps<IConfirmationProps>(), {
   delay: 500,
