@@ -249,7 +249,7 @@ watch(isAm, isAm => {
       emits('update:model-value', `${+hh + 12}:${mm}`)
     }
   } else {
-    handleManualModelChange(isAm ? '00:00' : '12:00')
+    handleManualModelChange(isAm ? '00:00' : '12:00', true)
   }
 })
 

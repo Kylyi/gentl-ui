@@ -7,13 +7,7 @@ import type { IMaskOptions } from '~~/components/Inputs/types/mask-options.type'
 const activeElement = useActiveElement()
 
 export function useMask(options: IMaskOptions) {
-  const {
-    modelValue = ref(''),
-    maskOptions,
-    updateValueFnc,
-    emptyValue,
-    eventHandlers,
-  } = options
+  const { maskOptions, updateValueFnc, emptyValue, eventHandlers } = options
 
   const instance = getCurrentInstance()
 
@@ -22,6 +16,8 @@ export function useMask(options: IMaskOptions) {
   const mask = createMask(unref(maskOptions))
   const elMask = ref<InputMask<any> | null>()
   const hasBeenCleared = ref(false)
+  const model = toRef(options, 'modelValue', ref(''))
+  const hasJustChanged = refAutoReset(false, 100)
 
   /**
    * Resolves the `modelValue` according to the mask
@@ -70,10 +66,10 @@ export function useMask(options: IMaskOptions) {
   }
 
   // STATE
-  const lastValidValue = ref<any>(unref(modelValue))
+  const lastValidValue = ref<any>(unref(model))
   const maskedValue = ref<string | undefined>()
-  const unmaskedValue = ref<string | undefined>(String(unref(modelValue)))
-  const typedValue = ref<string | number | Date | undefined>(unref(modelValue))
+  const unmaskedValue = ref<string | undefined>(String(unref(model)))
+  const typedValue = ref<string | number | Date | undefined>(unref(model))
 
   const isEmpty = computed(() => {
     return (
@@ -83,9 +79,13 @@ export function useMask(options: IMaskOptions) {
     )
   })
 
-  const handleManualModelChange = (val: any) => {
+  const handleManualModelChange = (val: any, emitValue?: boolean) => {
     if (elMask.value) {
       elMask.value.typedValue = val
+
+      if (emitValue) {
+        instance?.emit('update:model-value', val)
+      }
     }
   }
 
@@ -110,6 +110,7 @@ export function useMask(options: IMaskOptions) {
 
     eventHandlers?.onCompleted?.(lastValidValue.value)
 
+    hasJustChanged.value = true
     if (updateValueFnc) {
       updateValueFnc(lastValidValue.value)
     } else {
@@ -118,7 +119,7 @@ export function useMask(options: IMaskOptions) {
   }
 
   // INITIALIZE
-  maskedValue.value = resolve(unref(modelValue))
+  maskedValue.value = resolve(unref(model))
 
   // WATCH FOR MASK OPTIONS CHANGE
   watch(
@@ -136,7 +137,7 @@ export function useMask(options: IMaskOptions) {
     if (el) {
       destroyMask()
       elMask.value = IMask(el, unref(maskOptions))
-      elMask.value.typedValue = modelValue.value
+      elMask.value.typedValue = model.value
 
       elMask.value.on('accept', handleAccept)
       elMask.value.on('complete', handleComplete)
@@ -144,14 +145,18 @@ export function useMask(options: IMaskOptions) {
   })
 
   // WATCH FOR MODEL CHANGES
-  watch(modelValue, modelValue => {
-    if (activeElement.value !== el.value && elMask.value) {
-      lastValidValue.value = modelValue
+  watch(model, model => {
+    if (
+      activeElement.value !== el.value &&
+      elMask.value &&
+      !hasJustChanged.value
+    ) {
+      lastValidValue.value = model
 
       if (lastValidValue.value === unref(emptyValue)) {
         elMask.value.value = resolve(lastValidValue.value)
       } else {
-        elMask.value.typedValue = modelValue
+        elMask.value.typedValue = model
       }
     }
   })
@@ -161,9 +166,11 @@ export function useMask(options: IMaskOptions) {
   return {
     el,
     elMask,
+    hasJustChanged,
     maskedValue,
     unmaskedValue,
     typedValue,
+    lastValidValue,
     isEmpty,
     resolve,
     refresh,

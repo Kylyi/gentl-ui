@@ -10,5 +10,5 @@ export interface ITimeInputPickerProps extends FloatingUIBaseProps {
   shortcuts?: ITimeInputShortcut[]
   usedTouch: boolean
 
-  handleManualModelChange: (val: any) => void
+  handleManualModelChange: (val: any, emitValue?: boolean) => void
 }

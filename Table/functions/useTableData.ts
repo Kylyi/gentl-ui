@@ -19,7 +19,6 @@ export async function useTableData(
   props: ITableProps,
   internalColumns: MaybeRefOrGetter<TableColumn<any>[]>
 ) {
-  console.log(toValue(internalColumns))
   const instance = getCurrentInstance()
   provide('refreshData', () => dbQuery.trigger())
 

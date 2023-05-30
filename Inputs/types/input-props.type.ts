@@ -8,6 +8,7 @@ import type { IInputWrapperProps } from '~~/components/Inputs/types/input-wrappe
 export interface IInputProps extends IInputWrapperProps {
   autofocus?: boolean
   debounce?: number
+  emitOnBlur?: boolean
   emptyValue?: any
   hint?: string
   inputClass?: ClassType

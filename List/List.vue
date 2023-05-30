@@ -26,14 +26,6 @@ defineEmits<{
   (e: 'search', payload: { hasExactMatch: boolean; search: string }): void
 }>()
 
-defineExpose({
-  handleSelectItem: (option: any) => handleSelectItem(option),
-  clearSearch: () => {
-    searchEl.value?.clear()
-    search.value = ''
-  },
-})
-
 const containerEl = ref<InstanceType<typeof ListVirtualContainer>>()
 
 const ContainerComponent = computed(() => {
@@ -53,7 +45,15 @@ const {
   handleMouseOver,
   handleSelectFiltered,
   handleSelectItem,
-} = await useList(props, containerEl)
+} = useList(props, containerEl)
+
+defineExpose({
+  handleSelectItem: (option: any) => handleSelectItem(option),
+  clearSearch: () => {
+    searchEl.value?.clear()
+    search.value = ''
+  },
+})
 </script>
 
 <template>

@@ -22,6 +22,7 @@ function handleClick() {
   <div
     v-ripple="ripple"
     class="chip"
+    border-ca
     h="5"
     :class="[
       hasRemove ? 'p-r-1' : 'p-r-2',
@@ -62,8 +63,8 @@ function handleClick() {
 
 <style lang="scss" scoped>
 .chip {
-  --apply: flex flex-gap-1 p-y-3px p-l-2 border-1 border-ca rounded truncate
-    select-none relative leading-tight items-center self-center;
+  --apply: flex flex-gap-1 p-y-3px p-l-2 border-px rounded truncate select-none
+    relative leading-tight items-center self-center;
 
   &-label {
     --apply: flex flex-1 truncate font-rem-14;

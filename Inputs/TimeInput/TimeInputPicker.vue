@@ -107,14 +107,14 @@ function setValue(
     preventNextIsAmChange.value = true
     isAm.value = +val.split(':')[0] < 12
 
-    props.handleManualModelChange(val)
+    props.handleManualModelChange(val, true)
   } else {
     const [hh, mm] = (props.modelValueLocalized || '12:00').split(':')
 
     if (type === 'h') {
-      props.handleManualModelChange(`${val}:${mm}`)
+      props.handleManualModelChange(`${val}:${mm}`, true)
     } else {
-      props.handleManualModelChange(`${hh}:${val}`)
+      props.handleManualModelChange(`${hh}:${val}`, true)
     }
   }
 

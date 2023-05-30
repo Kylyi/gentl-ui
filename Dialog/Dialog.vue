@@ -259,11 +259,33 @@ function show() {
   }
 }
 
-function hide(force = false, skipAnimation = false) {
+function hide(force = false, skipAnimation = false, hideAncestors?: boolean) {
   if (preventInteractions.value) {
     return
   }
   preventInteractions.value = true
+
+  if (hideAncestors) {
+    const menuDom = unrefElement(dialogEl)!
+
+    // Get all siblings (including current element)
+    const allSiblings = Array.from(menuDom.parentNode?.children || [])
+
+    // Find the index of current element
+    const currentIndex = allSiblings.indexOf(menuDom)
+
+    // Get all siblings after current element
+    const nextSiblingsAll = allSiblings.slice(currentIndex + 1)
+
+    // Filter siblings to get only ones with 'floating' class
+    const floatingAncestors = nextSiblingsAll.filter(sibling =>
+      sibling.classList.contains('floating-element')
+    )
+
+    floatingAncestors.forEach(floatingUiEl => {
+      floatingUiEl.setAttribute('hide-trigger', 'true')
+    })
+  }
 
   if (force || !props.persistent) {
     backdropBg.value = 'bg-transparent'
@@ -319,7 +341,7 @@ function cleanComponent() {
   motionInstance.value = undefined
 }
 
-useEventListener(['mousedown', 'touchend'], handleClickOutside)
+onClickOutside(dialogEl, handleClickOutside)
 
 function handleClickOutside(ev: Event) {
   if (!internalValue.value) {
@@ -328,6 +350,7 @@ function handleClickOutside(ev: Event) {
 
   const targetEl = ev.target as HTMLElement
 
+  const isBody = targetEl === document.body
   const isPartOfFloatingUI = dialogEl.value?.contains(targetEl)
   const isPartOfReferenceEl = triggerEl.value!.contains(targetEl)
   const lastFloatingElement = document.querySelector(
@@ -335,6 +358,7 @@ function handleClickOutside(ev: Event) {
   )
 
   if (
+    !isBody &&
     !isPartOfFloatingUI &&
     !isPartOfReferenceEl &&
     lastFloatingElement === dialogWrapperEl.value
@@ -448,7 +472,7 @@ defineExpose({ show, hide, toggle })
             <Btn
               preset="CLOSE"
               size="sm"
-              @click="hide(true)"
+              @click="hide(true, undefined, true)"
             />
           </div>
         </slot>

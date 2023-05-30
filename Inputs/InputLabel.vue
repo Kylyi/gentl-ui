@@ -65,7 +65,7 @@ span.label {
     }
 
     &.is-inline {
-      --apply: self-start md:p-t-2;
+      --apply: self-start md:p-t-2 md:p-b-1;
     }
   }
 
@@ -81,7 +81,7 @@ span.label {
     }
 
     &.is-inline {
-      --apply: self-start md:p-t-3;
+      --apply: self-start md:p-t-3 md:p-b-1;
     }
   }
 
@@ -97,7 +97,7 @@ span.label {
     }
 
     &.is-inline {
-      --apply: self-start md:p-t-18px;
+      --apply: self-start md:p-t-18px md:p-b-1;
     }
   }
 

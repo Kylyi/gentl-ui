@@ -39,6 +39,12 @@ const emits = defineEmits<{
   (e: 'blur'): void
 }>()
 
+// LIFECYCLE
+onMounted(() => {
+  menuReferenceTarget.value =
+    currentInstance?.proxy?.$el.querySelector('.wrapper-body')
+})
+
 // UTILS
 const currentInstance = getCurrentInstance()
 
@@ -371,11 +377,6 @@ if (
 ) {
   handleSelect(options.value[0])
 }
-
-onMounted(() => {
-  menuReferenceTarget.value =
-    currentInstance?.proxy?.$el.querySelector('.wrapper-body')
-})
 
 defineExpose({
   addedItems: addedItems.value,

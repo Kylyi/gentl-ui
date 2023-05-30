@@ -94,7 +94,7 @@ function handleModelChange(val: any) {
 
 function handleDurationUnitChange(unit: DurationUnit) {
   durationUnit.value = unit
-  numberInputEl.value?.handleManualModelChange(model.value)
+  numberInputEl.value?.handleManualModelChange(model.value, true)
 
   menuEl.value?.hide()
 }

@@ -111,7 +111,7 @@ function handleStep() {
   }
 
   const nextValue = +currentValue + stepAdjusted.value * modifier.value
-  handleManualModelChange(nextValue)
+  handleManualModelChange(nextValue, true)
 }
 
 function startStep(_: PointerEvent, increment = true) {
@@ -187,7 +187,10 @@ defineExpose({
       v-if="$slots.append || (!readonly && !disabled)"
       #append
     >
-      <div class="number-input__step">
+      <div
+        v-if="step || $slots.append"
+        class="number-input__step"
+      >
         <slot
           name="append"
           :clear="clear"

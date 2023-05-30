@@ -103,8 +103,8 @@ defineExpose({
     />
 
     <div
-      flex="~ 1 col"
-      overflow="auto"
+      flex="~ 1 col grow"
+      overflow="hidden"
     >
       <DatePickerNavigation
         :model-value="internalValueObj"

@@ -2,6 +2,9 @@
 // TYPES
 import type { YearSelectorProps } from '~~/components/YearSelector/types/year-selector-props.type'
 
+// COMPONENTS
+import NumberInput from '~/components/Inputs/NumberInput/NumberInput.vue'
+
 const props = defineProps<YearSelectorProps>()
 const emits = defineEmits<{
   (e: 'year', year: number): void
@@ -9,7 +12,7 @@ const emits = defineEmits<{
   (e: 'next'): void
 }>()
 
-const yearBtn = ref<any>()
+const yearInputEl = ref<InstanceType<typeof NumberInput>>()
 const yearSelectorVisible = ref(false)
 const dateObj = computed(() => $date(props.date))
 
@@ -29,6 +32,12 @@ const { pause, resume } = useIntervalFn(() => handleChange(), 120, {
   immediate: false,
   immediateCallback: true,
 })
+
+function handleManualYearInputChange(year?: number | null) {
+  if (typeof year === 'number' && String(year).length === 4) {
+    handleYearSelect(year)
+  }
+}
 
 function handleChange() {
   internalValue.value += modifier.value
@@ -55,6 +64,24 @@ function handleYearSelect(year: number) {
   yearSelectorVisible.value = false
 }
 
+function handleMouseWheel(ev: WheelEvent) {
+  if (ev.deltaY > 0) {
+    internalValue.value++
+  } else {
+    internalValue.value--
+  }
+  ev.preventDefault()
+  ev.stopPropagation()
+}
+
+watch(
+  () => props.date,
+  date => {
+    internalValue.value = $date(date).year()
+    nextTick(() => yearInputEl.value?.sync())
+  }
+)
+
 defineExpose({ sync })
 </script>
 
@@ -70,13 +97,15 @@ defineExpose({ sync })
       icon="majesticons:chevron-left"
       @click="$emit('previous')"
     />
-    <Btn
-      ref="yearBtn"
+    <NumberInput
+      ref="yearInputEl"
+      :model-value="internalValue"
+      no-grouping
+      :step="null"
       size="sm"
-      h="8"
-      grow
-      tabindex="-1"
-      :label="$d(dateObj.valueOf(), 'year')"
+      w="14"
+      input-class="text-center"
+      @update:model-value="handleManualYearInputChange"
     />
     <Btn
       display="lt-xm:!none"
@@ -91,13 +120,14 @@ defineExpose({ sync })
 
     <Menu
       v-model="yearSelectorVisible"
-      :target="yearBtn"
+      :target="yearInputEl"
       hide-header
       :fit="false"
       w="60"
       content-class="flex-gap-y-1"
       :reference-target="$bp.xm ? referenceTarget : undefined"
       @hide="sync"
+      @mousewheel="handleMouseWheel"
     >
       <Btn
         tabindex="-1"

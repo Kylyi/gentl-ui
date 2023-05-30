@@ -97,8 +97,8 @@ header {
 }
 
 .navigation {
-  // Customizable
-  --apply: w-full flex flex-gap-2 p-x-1 min-h-52px max-w-$pageWidth m-x-auto;
+  // Project specific
+  --apply: w-full flex flex-gap-2 p-x-1 min-h-52px max-w-$pageWidth;
 
   &-wrapper {
     --apply: flex flex-col;

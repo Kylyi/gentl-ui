@@ -96,6 +96,7 @@ onMounted(() => {
     ref="tooltipEl"
     :style="floatingStyles"
     class="tooltip"
+    p="x-2 y-1"
     :class="tooltipClass"
     :placement="placement"
   >
@@ -116,7 +117,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .tooltip {
-  --apply: bg-ca border-ca border-custom rounded-custom p-x-2 p-y-1 z-$zMenu;
+  --apply: dark:bg-darker bg-white border-ca border-custom rounded-custom z-$zMenu;
 
   &.is-dense {
     --apply: p-0;
@@ -127,7 +128,7 @@ onMounted(() => {
   --apply: absolute w-2 h-2 rotate-45 dark:bg-darker bg-white;
 
   &.has-header {
-    --apply: bg-ca dark:bg-dark;
+    --apply: bg-white dark:bg-darker;
   }
 }
 

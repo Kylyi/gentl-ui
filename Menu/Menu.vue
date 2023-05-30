@@ -40,6 +40,26 @@ const emits = defineEmits<{
   (e: 'before-show'): void
 }>()
 
+// LIFECYCLE
+onMounted(() => {
+  nextTick(() => {
+    triggerEl.value = getTargetElement(props.target)
+    referenceEl.value = getTargetElement(props.referenceTarget)
+    referenceEl.value && referenceEl.value.classList.add('has-menu')
+
+    !props.manual && triggerEl.value?.addEventListener(props.trigger, toggle)
+
+    if (internalValue.value) {
+      show(true)
+    }
+  })
+})
+
+onBeforeUnmount(() => {
+  cleanComponent()
+  triggerEl.value?.removeEventListener(props.trigger, toggle)
+})
+
 // STORE
 const appStore = useAppStore()
 
@@ -367,11 +387,33 @@ function show(force?: boolean) {
   }
 }
 
-function hide(force = false, skipAnimation = false) {
+function hide(force = false, skipAnimation = false, hideAncestors?: boolean) {
   if (preventInteractions.value || !internalValue.value) {
     return
   }
   preventInteractions.value = true
+
+  if (hideAncestors) {
+    const menuDom = unrefElement(menuEl)!
+
+    // Get all siblings (including current element)
+    const allSiblings = Array.from(menuDom.parentNode?.children || [])
+
+    // Find the index of current element
+    const currentIndex = allSiblings.indexOf(menuDom)
+
+    // Get all siblings after current element
+    const nextSiblingsAll = allSiblings.slice(currentIndex + 1)
+
+    // Filter siblings to get only ones with 'floating' class
+    const floatingAncestors = nextSiblingsAll.filter(sibling =>
+      sibling.classList.contains('floating-element')
+    )
+
+    floatingAncestors.forEach(floatingUiEl => {
+      floatingUiEl.setAttribute('hide-trigger', 'true')
+    })
+  }
 
   if (force || !props.persistent) {
     backdropBg.value = 'bg-transparent'
@@ -446,7 +488,8 @@ function cleanComponent() {
 
 watch($dimensions, () => hide(true, true))
 
-useEventListener(['mousedown', 'touchend'], handleClickOutside)
+// useEventListener(['mousedown', 'touchend'], handleClickOutside)
+onClickOutside(menuEl, handleClickOutside)
 
 function handleClickOutside(ev: Event) {
   if (!internalValue.value) {
@@ -487,21 +530,6 @@ watch(model, val => {
   val ? show() : hide(true)
 })
 
-// LIFECYCLE
-onMounted(() => {
-  nextTick(() => {
-    triggerEl.value = getTargetElement(props.target)
-    referenceEl.value = getTargetElement(props.referenceTarget)
-    referenceEl.value && referenceEl.value.classList.add('has-menu')
-
-    !props.manual && triggerEl.value?.addEventListener(props.trigger, toggle)
-
-    if (internalValue.value) {
-      show(true)
-    }
-  })
-})
-
 // WATCHERS FOR ELEMENTS
 const referenceTarget = toRef(props, 'referenceTarget')
 const target = toRef(props, 'target')
@@ -516,11 +544,6 @@ watch(target, (el: any) => {
   if (el) {
     triggerEl.value = el
   }
-})
-
-onBeforeUnmount(() => {
-  cleanComponent()
-  triggerEl.value?.removeEventListener(props.trigger, toggle)
 })
 
 defineExpose({
@@ -598,7 +621,7 @@ defineOptions({
           <Btn
             preset="CLOSE"
             size="sm"
-            @click="hide(true)"
+            @click="hide(true, undefined, true)"
           />
         </div>
       </slot>

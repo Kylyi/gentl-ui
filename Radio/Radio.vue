@@ -8,7 +8,7 @@ const props = withDefaults(defineProps<RadioProps>(), {
 })
 
 const emits = defineEmits<{
-  (e: 'update:model-value', value: boolean): void
+  (e: 'update:model-value', value: any): void
 }>()
 
 // LAYOUT

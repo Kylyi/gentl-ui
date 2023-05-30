@@ -153,8 +153,11 @@ const {
         return
       }
       nextTick(() => {
-        if (isBlurred.value) {
-          !usedTouch.value && menuProxyEl.value?.hide()
+        const isFocusedInsideDatepicker =
+          !!appStore.activeElement?.closest('.date-picker')
+
+        if (isBlurred.value && !isFocusedInsideDatepicker) {
+          // !usedTouch.value && menuProxyEl.value?.hide()
         }
       })
     },
@@ -176,7 +179,7 @@ const usedTouch = ref(false)
 function handleDateSelect(val: Dayjs) {
   preventSync.value = true
   touch()
-  handleManualModelChange(val.valueOf())
+  handleManualModelChange(val.valueOf(), true)
 
   if (props.autoClose) {
     menuProxyEl.value?.hide()

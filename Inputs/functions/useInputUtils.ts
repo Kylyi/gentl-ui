@@ -16,8 +16,10 @@ export function useInputUtils(options: IInputUtilsOptions) {
   const hasBeenTouched = ref(false)
 
   const debouncedChange = useDebounceFn((val: any) => {
-    instance?.emit('update:model-value', val)
-    touch()
+    if (!props.emitOnBlur) {
+      instance?.emit('update:model-value', val)
+      touch()
+    }
   }, props.debounce)
 
   // MASK
@@ -25,9 +27,11 @@ export function useInputUtils(options: IInputUtilsOptions) {
   const {
     el,
     elMask,
+    hasJustChanged,
     refresh,
     maskedValue,
     typedValue,
+    lastValidValue,
     isEmpty,
     clear: clearMask,
     handleManualModelChange,
@@ -43,6 +47,7 @@ export function useInputUtils(options: IInputUtilsOptions) {
   const wrapperProps = reactivePick(
     props,
     'contentClass',
+    'contentStyle',
     'disabled',
     'emptyValue',
     'errors',
@@ -51,6 +56,7 @@ export function useInputUtils(options: IInputUtilsOptions) {
     'hint',
     'inline',
     'label',
+    'labelStyle',
     'labelClass',
     'labelInside',
     'loading',
@@ -140,6 +146,13 @@ export function useInputUtils(options: IInputUtilsOptions) {
       onBlur?.()
       blur()
       refresh()
+
+      if (props.emitOnBlur) {
+        hasJustChanged.value = true
+        instance?.emit('update:model-value', lastValidValue.value)
+        touch()
+      }
+
       instance?.emit('blur')
     }
   }

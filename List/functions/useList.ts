@@ -33,7 +33,7 @@ type IListPropsWithDefaults = Required<
   'items' | 'groupBy' | 'itemKey' | 'itemLabel'
 >
 
-export async function useList(
+export function useList(
   props: IListPropsWithDefaults,
   listContainer: MaybeElementRef<
     InstanceType<typeof ListVirtualContainer> | undefined
@@ -411,7 +411,7 @@ export async function useList(
   }
 
   // Initizalize the searched results
-  await handleSearchedResults(results.value)
+  handleSearchedResults(results.value)
 
   onKeyStroke(['ArrowUp', 'ArrowDown', 'Enter'], handleKey)
 

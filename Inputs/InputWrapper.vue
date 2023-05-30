@@ -2,11 +2,17 @@
 // TYPES
 import type { IInputWrapperProps } from '~~/components/Inputs/types/input-wrapper-props.type'
 
+// COMPOSITION FUNCTIONS
+import { useInputWrapperUtils } from '~/components/Inputs/functions/useInputWrapperUtils'
+
 const props = withDefaults(defineProps<IInputWrapperProps>(), {
   cursor: 'cursor-text',
   errorVisible: true,
   size: 'md',
 })
+
+// UTILS
+const { getInputWrapperStyleVariables } = useInputWrapperUtils()
 
 // LAYOUT
 const wrapperEl = ref<HTMLDivElement>()
@@ -51,6 +57,10 @@ const wrapperContentClass = computedEager(() => {
   }
 })
 
+const wrapperStyleVariables = computedEager(() =>
+  getInputWrapperStyleVariables(props)
+)
+
 function getErrorContainerPosition() {
   const instanceEl = currentInstance?.vnode.el
 
@@ -74,6 +84,7 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
     ref="wrapperEl"
     class="wrapper"
     :class="wrapperClass"
+    :style="wrapperStyleVariables"
   >
     <div
       class="wrapper-body"
@@ -134,10 +145,6 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
   --apply: flex flex-col;
 
   &--sm {
-    :slotted(.control) {
-      --apply: p-y-1 font-rem-14 leading-6;
-    }
-
     &.is-inline {
       .wrapper-body::after {
         --apply: lt-md:top-17.5px;
@@ -146,10 +153,6 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
   }
 
   &--md {
-    :slotted(.control) {
-      --apply: p-y-2;
-    }
-
     &.is-inline {
       .wrapper-body::after {
         --apply: lt-md:top-17.5px;
@@ -158,10 +161,6 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
   }
 
   &--lg {
-    :slotted(.control) {
-      --apply: p-y-3 font-rem-18 leading-7;
-    }
-
     &.is-inline {
       .wrapper-body::after {
         --apply: lt-md:top-20px;
@@ -172,6 +171,7 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
   .wrapper-body {
     --apply: dark:bg-darker bg-white;
     --apply: relative grid;
+    margin: var(--bodyMargin);
 
     grid-template-columns: auto 1fr auto;
     grid-template-rows: auto 1fr;
@@ -233,7 +233,7 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
   }
 
   &-body {
-    --apply: flex items-center;
+    --apply: flex items-center rounded-custom;
 
     &__input {
       --apply: flex lt-md:flex-col relative grow gap-x-2 gap-y-1px overflow-auto;
@@ -251,45 +251,13 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
     }
 
     :slotted(.control) {
-      --apply: bg-inherit p-x-3 outline-none;
-    }
-  }
+      --apply: bg-inherit outline-none rounded-custom;
+      // --apply: p-x-3;
 
-  &.has-label-inside {
-    &.wrapper--sm {
-      :slotted(.control) {
-        --apply: m-t-20px m-b-0 p-y-0;
-      }
-
-      .wrapper-body:not(.has-label) {
-        :slotted(.control) {
-          --apply: m-t-10px m-b-10px;
-        }
-      }
-    }
-
-    &.wrapper--md {
-      :slotted(.control) {
-        --apply: m-t-21px m-b-3px p-y-0;
-      }
-
-      .wrapper-body:not(.has-label) {
-        :slotted(.control) {
-          --apply: m-t-12px m-b-12px;
-        }
-      }
-    }
-
-    &.wrapper--lg {
-      :slotted(.control) {
-        --apply: m-t-24px m-b-4px p-y-0;
-      }
-
-      .wrapper-body:not(.has-label) {
-        :slotted(.control) {
-          --apply: m-t-14px m-b-14px;
-        }
-      }
+      font-size: var(--fontSize);
+      line-height: var(--lineHeight);
+      padding: var(--padding);
+      margin: var(--margin);
     }
   }
 
@@ -300,7 +268,7 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
 
     &:not(:focus-within) {
       :slotted(.control) {
-        --apply: color-transparent;
+        --apply: "!color-transparent";
       }
 
     }
