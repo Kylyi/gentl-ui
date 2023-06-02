@@ -14,7 +14,7 @@ const emits = defineEmits<{
   (e: 'update:search', search: string): void
 }>()
 
-const refreshData = inject('refreshData', () => {})
+const refreshData = inject(refreshTableDataKey, () => {})
 
 // LAYOUT
 const search = useVModel(props, 'search', emits)

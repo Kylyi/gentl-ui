@@ -7,13 +7,18 @@ type IProps = {
   multiSort?: boolean
 }
 
-const props = defineProps<IProps>()
+const props = withDefaults(defineProps<IProps>(), {
+  multiSort: true,
+})
+
+// UTILS
+const updateTableState = injectStrict(updateTableStateKey)
 
 // LAYOUT
 const column = toRef(props, 'column')
 
 function handleSort(sortValue: -1 | 0 | 1) {
-  column.value.sort = sortValue
+  column.value.sort = sortValue || undefined
 
   // Using multisort
   if (props.multiSort && props.columns) {
@@ -24,15 +29,43 @@ function handleSort(sortValue: -1 | 0 | 1) {
         col =>
           col.sortOrder !== undefined && col.sortOrder > column.value.sortOrder!
       )
+      console.log('Log ~ handleSort ~ sortedColumnsAfter:', sortedColumnsAfter)
 
       sortedColumnsAfter.forEach(col => {
         col.sortOrder! -= 1
       })
+      column.value.sortOrder = undefined
+    } else if (!column.value.sortOrder) {
+      column.value.sortOrder =
+        props.columns.filter(col => col.sortOrder !== undefined).length + 1
     }
   }
+
+  // Update the table state
+  updateTableState({}, tableState => {
+    const foundColumn = tableState.columns.find(
+      column => column.field === props.column.field
+    )
+
+    if (foundColumn) {
+      foundColumn.sort = props.column.sort
+      foundColumn.sortOrder = props.column.sortOrder
+    } else {
+      tableState.columns.push({
+        field: props.column.field,
+        comparator: props.column.comparator,
+        width: props.column.width,
+        sort: props.column.sort,
+        sortOrder: props.column.sortOrder,
+        compareValue: props.column.compareValue,
+      })
+    }
+
+    return tableState
+  })
 }
 
-const refreshData = inject('refreshData', () => {})
+const refreshData = inject(refreshTableDataKey, () => {})
 watch(() => column.value.sort, refreshData)
 </script>
 

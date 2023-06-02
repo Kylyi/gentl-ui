@@ -1,37 +1,29 @@
 // TODO: Client-side pagination, filtering, grouping and sorting
-import { UseOffsetPaginationOptions, toValue } from '@vueuse/core'
+// MODELS
 import { TableColumn } from '~/components/Table/models/table-column.model'
 
 // TYPES
 import type { ITableProps } from '~/components/Table/types/table-props.type'
+import type { ITableState } from '~/components/Table/types/table-state.type'
 
-// CONSTANTS / DEFAULTS
-const DEFAULT_PAGINATION: Partial<UseOffsetPaginationOptions> = {
-  pageSize: 100,
-  total: 0,
-  page: 1,
-}
-const DEFAULT_TABLE_STATE = {
-  includeDeleted: false,
-}
+// CONSTANTS
+import { TABLE_STATE_DEFAULT } from '~/components/Table/constants/table-state.default'
 
 export async function useTableData(
   props: ITableProps,
   internalColumns: MaybeRefOrGetter<TableColumn<any>[]>
 ) {
+  // UTILS
   const instance = getCurrentInstance()
-  provide('refreshData', () => dbQuery.trigger())
+  const { t } = useI18n()
 
   // STATE MANAGEMENT
   const tableState = props.storageKey
-    ? useLocalStorage(props.storageKey, DEFAULT_TABLE_STATE, {})
-    : ref(DEFAULT_TABLE_STATE)
-
-  // UTILS
-  // const { handleGqlErrors } = useGqlErrors()
+    ? useLocalStorage(props.storageKey, TABLE_STATE_DEFAULT)
+    : ref(TABLE_STATE_DEFAULT)
 
   // LAYOUT
-  const isLoading = ref(false)
+  const isLoading = ref(!props.rows)
   const search = ref('')
   const rows = ref(props.rows || [])
   const totalRows = ref(props.totalRows)
@@ -46,10 +38,18 @@ export async function useTableData(
     isLastPage,
     currentPageSize,
   } = useOffsetPagination({
-    ...DEFAULT_PAGINATION,
-    total: computed(() => totalRows.value || 0),
-    onPageChange: () => {
+    ...tableState.value,
+    // 9e6 is a hack to make make pagination work on initialization
+    // if we set 0, the `useOffsetPagination` thinks that there are no other pages
+    // than the first one
+    total: computed(() => totalRows.value || 9e6),
+    onPageChange: page => {
+      tableState.value.page = page.currentPage
+
       dbQuery.trigger()
+    },
+    onPageSizeChange: page => {
+      tableState.value.pageSize = page.currentPageSize
     },
   })
 
@@ -92,6 +92,22 @@ export async function useTableData(
     }
   })
 
+  provide(refreshTableDataKey, useDebounceFn(dbQuery.trigger, 100))
+  provide(tableStateKey, tableState)
+  provide(
+    updateTableStateKey,
+    (
+      state: Partial<ITableState>,
+      // We also provide a callback function that allows us to update the state
+      // from components that do not have direct access to the table data (for example columns)
+      callback?: (state: ITableState) => ITableState
+    ) => {
+      const newState = callback?.(tableState.value) || {}
+
+      tableState.value = Object.assign({}, tableState.value, state, newState)
+    }
+  )
+
   async function fetchData(options: any) {
     if (!props.getData) {
       return
@@ -118,8 +134,14 @@ export async function useTableData(
         data,
         totalRows: get(res, props.getData.countKey || 'totalRows'),
       }
-    } catch (error) {
-      // handleGqlErrors(error, true)
+    } catch (error: any) {
+      if (props.getData.errorHandler) {
+        props.getData.errorHandler(error)
+      } else if (error && typeof error === 'object') {
+        const message = error.message || error.code || t('unknownError')
+
+        notify(message, 'negative')
+      }
     }
 
     isLoading.value = false

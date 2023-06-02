@@ -103,7 +103,7 @@ defineExpose({ sync })
       no-grouping
       :step="null"
       size="sm"
-      w="14"
+      w="15"
       input-class="text-center"
       @update:model-value="handleManualYearInputChange"
     />

@@ -89,7 +89,7 @@ function handleClearFilter() {
   column.value.filteredKeys = {}
 }
 
-const refreshData = inject('refreshData', () => {})
+const refreshData = inject(refreshTableDataKey, () => {})
 watch(() => column.value.compareValue, refreshData)
 
 // DATA

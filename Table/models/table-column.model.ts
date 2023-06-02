@@ -28,6 +28,7 @@ export class TableColumn<T = IItem>
   filterable = true
   sortable = true
   searchable?: boolean
+  hidden?: boolean
 
   // FILTERING
   /**
@@ -46,6 +47,12 @@ export class TableColumn<T = IItem>
   // SORTING
   sort?: -1 | 0 | 1
   sortOrder?: number
+
+  /**
+   * When merging columns from the state and the original table columns,
+   * the state columns order should be preserved, this is used for that
+   */
+  _internalSort?: number
 
   /**
    * When sorting in the filter dropdown, we can use different formatting than in the table
@@ -110,6 +117,7 @@ export class TableColumn<T = IItem>
     this.hideFilters = col.hideFilters
     this.sortable = col.sortable ?? true
     this.searchable = col.searchable ?? false
+    this.hidden = col.hidden ?? false
 
     this.isHelperCol = col.isHelperCol ?? this.isHelperCol
 

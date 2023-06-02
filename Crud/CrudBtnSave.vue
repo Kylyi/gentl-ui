@@ -10,9 +10,11 @@ defineEmits<{
 <template>
   <Btn
     preset="SAVE"
-    :label="labels && $t('forms.save')"
+    :label="labels && $t('save')"
     :loader-type="loaderType"
     :loading="loading"
     no-dim
+    :disabled="disabled"
+    @click="$emit('save')"
   />
 </template>

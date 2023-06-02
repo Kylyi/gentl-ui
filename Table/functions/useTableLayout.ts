@@ -5,6 +5,9 @@ import { RecycleScroller } from 'vue-virtual-scroller'
 // TYPES
 import type { ITableProps } from '~/components/Table/types/table-props.type'
 
+// MODELS
+import { TableColumn } from '~/components/Table/models/table-column.model'
+
 // COMPOSITION FUNCTIONS
 import { useTableColumns } from '~/components/Table/functions/useTableColumns'
 
@@ -12,14 +15,13 @@ import { useTableColumns } from '~/components/Table/functions/useTableColumns'
 import TableRow from '@/components/Table/TableRow.vue'
 import TableRowMobile from '@/components/Table/TableRow.mobile.vue'
 import TableHeader from '~/components/Table/TableHeader.vue'
-import { TableColumn } from '~/components/Table/models/table-column.model'
 
 export function useTableLayout(props: ITableProps) {
   const instance = getCurrentInstance()
 
   // UTILS
   const { onOverflow } = useOverflow()
-  const { resizeColumns } = useTableColumns()
+  const { resizeColumns, extendColumns } = useTableColumns(props)
 
   // LAYOUT
   const scrollerEl = ref<InstanceType<typeof RecycleScroller>>()
@@ -59,10 +61,12 @@ export function useTableLayout(props: ITableProps) {
   })
 
   // COLUMNS
-  const internalColumns = ref<TableColumn[]>([])
+  const columns = ref<TableColumn[]>(props.columns)
+  const internalColumns = ref<TableColumn[]>(extendColumns(props.columns))
 
   // RESIZE & SCROLLING
   const isScrolled = ref(false)
+  const isOverflown = ref(false)
   let containerWidth = 0
 
   function handleResize(force?: boolean) {
@@ -76,7 +80,7 @@ export function useTableLayout(props: ITableProps) {
       internalColumns.value = resizeColumns(
         tableEl.value,
         scrollerEl.value.$el,
-        props.columns,
+        columns.value,
         {
           groupsRef: [],
           isSelectableRef: props.selectable,
@@ -89,9 +93,17 @@ export function useTableLayout(props: ITableProps) {
     }
   }
 
-  onOverflow(containerEl, () => handleResize(true), { direction: 'vertical' })
+  onOverflow(
+    containerEl,
+    _isOverflown => {
+      isOverflown.value = _isOverflown as boolean
 
-  useScroll(containerEl, {
+      throttledHandleResize(true)
+    },
+    { direction: 'vertical' }
+  )
+
+  const { x: scrollLeft } = useScroll(containerEl, {
     onScroll: ev => {
       const el = ev.target as HTMLDivElement
       headerEl.value?.syncScroll(el.scrollLeft)
@@ -123,6 +135,8 @@ export function useTableLayout(props: ITableProps) {
 
   // }
 
+  provide(recalculateTableColumnsKey, throttledHandleResize)
+
   onMounted(() => {
     containerEl.value = document.querySelector(
       '.vue-recycle-scroller'
@@ -130,9 +144,12 @@ export function useTableLayout(props: ITableProps) {
   })
 
   return {
+    columns,
     isScrolled,
+    isOverflown,
     TableRowComponent,
     rowKey,
+    handleScrollLeft: (left: number) => (scrollLeft.value = left),
 
     // ELEMENT REFS
     scrollerEl,

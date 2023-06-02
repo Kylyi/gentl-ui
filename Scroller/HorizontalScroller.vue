@@ -8,16 +8,16 @@ const props = withDefaults(defineProps<IScrollerProps>(), {
 
 const emits = defineEmits<{
   (e: 'resized'): void
+  (e: 'scrolled', x: number): void
 }>()
 
 // UTILS
 const { onOverflow } = useOverflow()
 
 const scrollEl = ref<HTMLDivElement>()
+const isLocalScroll = refAutoReset(false, 100)
 const hasArrows = ref(false)
-const { arrivedState } = useScroll(scrollEl, {
-  onScroll: () => emits('resized'),
-})
+const { arrivedState, x } = useScroll(scrollEl)
 
 useResizeObserver(scrollEl, () => emits('resized'))
 
@@ -59,6 +59,7 @@ const updateArrows = onOverflow(
 
 const { pause, resume } = useIntervalFn(
   () => {
+    isLocalScroll.value = true
     handleScroll(clampedScrollSpeed.value)
 
     btnScrollSpeed.value = btnScrollSpeed.value * 1.02
@@ -68,6 +69,7 @@ const { pause, resume } = useIntervalFn(
 )
 
 function handleWheel(ev: WheelEvent) {
+  isLocalScroll.value = true
   const scrollSpeed = 25
 
   // SCROLLING RIGHT
@@ -89,12 +91,19 @@ function handleScroll(distance: number) {
   scrollEl.value?.scrollBy({ left: distance, behavior: 'auto' })
 }
 
+watch(x, x => emits('scrolled', x))
+
 onMounted(() => {
   useEventListener(scrollEl, 'wheel', handleWheel)
 })
 
 defineExpose({
   updateArrows,
+  scroll: (left: number) => {
+    if (!isLocalScroll.value) {
+      x.value = left
+    }
+  },
   getScrollDimensions: () => ({
     width: scrollEl.value?.scrollWidth || 0,
     height: scrollEl.value?.scrollHeight || 0,

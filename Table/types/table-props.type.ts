@@ -25,6 +25,7 @@ export interface ITableProps {
   rows?: any[]
   selectable?: boolean
   separator?: 'horizontal' | 'vertical' | 'cell'
+  useIncludeDeleted?: boolean
   useWorker?: boolean
 
   /**
@@ -35,7 +36,13 @@ export interface ITableProps {
     mapKey?: string
     countKey?: string
     createIdentifier?: (row: any, idx: number) => string | number
+    errorHandler?: (error: any) => void
   }
+
+  /**
+   * Whether the table should handle the resize event - performance heavy(-ish)
+   */
+  autoResize?: boolean
 
   /**
    * Fuse keys

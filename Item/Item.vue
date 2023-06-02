@@ -9,6 +9,7 @@ withDefaults(defineProps<IItemProps>(), {
 <template>
   <Component
     :is="tag"
+    flex="gap-x-1"
     class="item"
     :class="{ 'is-readonly': readonly, 'is-disabled': disabled }"
   >
@@ -25,7 +26,7 @@ withDefaults(defineProps<IItemProps>(), {
 
 <style lang="scss" scoped>
 .item {
-  --apply: flex flex-gap-x-1 relative rounded-custom items-center cursor-pointer;
+  --apply: flex relative rounded-custom items-center cursor-pointer;
 
   &.is-disabled {
     --apply: cursor-not-allowed disabled;

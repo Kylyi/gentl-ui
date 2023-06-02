@@ -1,7 +1,9 @@
 <script setup lang="ts">
 // CONSTANTS
-
 import { ICON_BY_FILE_EXTENSION } from '~~/components/FileInput/constants/iconsByFileExtension'
+
+// COMPOSITON FUNCTIONS
+import { getFileExtension, getFileName } from '~/libs/App/utils/files'
 
 type IProps = {
   actions?: {

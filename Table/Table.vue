@@ -38,11 +38,13 @@ const {
   scrollerEl,
   headerEl,
   tableEl,
+  columns,
   TableRowComponent,
-  handleRowClick,
   internalColumns,
   isScrolled,
   rowKey,
+  handleScrollLeft,
+  handleRowClick,
   throttledHandleResize,
   searchableColumnLabels,
 } = useTableLayout(props)
@@ -85,16 +87,20 @@ const { isExporting, handleExportData } = useTableExporting()
           />
         </slot>
 
+        <TableColumnsBtn v-model:columns="columns" />
+
         <ExportBtn
           v-if="!noExport"
           self-center
           :loading="isExporting"
-          @export="handleExportData"
+          @export="handleExportData(rows, columns, $event)"
         />
 
         <TableActionsBtn
           v-if="!noActions"
           v-model:include-deleted="tableState.includeDeleted"
+          :use-include-deleted="useIncludeDeleted"
+          :storage-key="storageKey"
         />
 
         <slot name="top-right" />
@@ -118,7 +124,9 @@ const { isExporting, handleExportData } = useTableExporting()
       :header-height="headerHeight || rowHeight"
       :use-server="useServer"
       :use-chips="useChips"
+      :minimum-column-width="minimumColumnWidth"
       :class="{ 'shadow-lg shadow-ca': isScrolled }"
+      @scrolled="handleScrollLeft"
     >
       <template #default="{ col }">
         <slot :name="`header-${col.name}`" />
@@ -131,7 +139,7 @@ const { isExporting, handleExportData } = useTableExporting()
       :key-field="rowKey"
       class="scroller"
       :min-item-size="rowHeight"
-      @resize="throttledHandleResize"
+      @resize="autoResize && throttledHandleResize()"
     >
       <template #default="{ item, index, active }">
         <DynamicScrollerItem
@@ -221,7 +229,7 @@ const { isExporting, handleExportData } = useTableExporting()
 }
 :global(
     .vue-recycle-scroller__item-wrapper
-      .vue-recycle-scroller__item-view:nth-child(even)
+      .vue-recycle-scroller__item-view:nth-child(even)  .cell
   ) {
   --apply: md:bg-white;
 }
@@ -229,13 +237,13 @@ const { isExporting, handleExportData } = useTableExporting()
 :global(
     .dark
       .vue-recycle-scroller__item-wrapper
-      .vue-recycle-scroller__item-view:nth-child(even)
+      .vue-recycle-scroller__item-view:nth-child(even) .cell
   ) {
   --apply: md:bg-darker;
 }
 
 :global(
-    .vue-recycle-scroller__item-wrapper .vue-recycle-scroller__item-view.hover
+    .vue-recycle-scroller__item-wrapper .vue-recycle-scroller__item-view.hover .cell
   ) {
   --apply: md:bg-primary/30;
 }
@@ -243,7 +251,7 @@ const { isExporting, handleExportData } = useTableExporting()
 :global(
     .dark
       .vue-recycle-scroller__item-wrapper
-      .vue-recycle-scroller__item-view.hover
+      .vue-recycle-scroller__item-view.hover .cell
   ) {
   --apply: md:bg-primary/50;
 }

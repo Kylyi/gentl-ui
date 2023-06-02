@@ -1,8 +1,11 @@
-import { TableColumn } from '~/components/Table/models/table-column.model'
+// TYPES
 import { DistinctData } from '~/components/Table/types/distinct-data.type'
 
+// MODELS
+import { TableColumn } from '~/components/Table/models/table-column.model'
+
 export function useTableUtils() {
-  const getDistinctDataForField = async <T>(
+  async function getDistinctDataForField<T>(
     col: TableColumn<T>,
     query: Function,
     options: {
@@ -11,7 +14,7 @@ export function useTableUtils() {
       where?: any
       field?: string
     } = {}
-  ): Promise<DistinctData[]> => {
+  ): Promise<DistinctData[]> {
     const { includeDeleted = false, mapKey = 'distinctData', field } = options
     const distinctField = [field || col.field]
 
@@ -28,7 +31,22 @@ export function useTableUtils() {
     }))
   }
 
+  function stripColumnsStateData(column: TableColumn[]) {
+    return column.map(col => {
+      const { width, comparator, compareValue, sort, sortOrder } = col
+
+      return {
+        field: col.field,
+        width,
+        comparator,
+        compareValue,
+        sort,
+        sortOrder,
+      }
+    })
+  }
   return {
     getDistinctDataForField,
+    stripColumnsStateData,
   }
 }

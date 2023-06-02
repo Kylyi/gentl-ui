@@ -4,6 +4,7 @@ import { TableColumn } from '~/components/Table/models/table-column.model'
 type IProps = {
   rows: any[]
   column: TableColumn<any>
+  columns: TableColumn<any>[]
   useChips?: boolean
   useServer?: boolean
 }
@@ -12,8 +13,12 @@ const props = defineProps<IProps>()
 
 // LAYOUT
 const btnClass = computedEager(() => {
+  console.log(props.column)
+
   return {
-    'is-filtered': !!props.column.compareValue?.length,
+    'is-filtered': Array.isArray(props.column.compareValue)
+      ? props.column.compareValue.some(val => !isNil(val))
+      : !isNil(props.column.compareValue),
     'is-sorted': !!props.column.sort,
   }
 })
@@ -32,7 +37,10 @@ const btnClass = computedEager(() => {
       position="top"
       content-class="flex flex-col"
     >
-      <TableColumnSorting :column="column" />
+      <TableColumnSorting
+        :column="column"
+        :columns="columns"
+      />
       <TableColumnFiltering
         v-if="column.filterable"
         v-bind="props"

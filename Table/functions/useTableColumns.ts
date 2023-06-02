@@ -1,3 +1,7 @@
+// TYPES
+import { ITableProps } from '~/components/Table/types/table-props.type'
+import { ITableState } from '~/components/Table/types/table-state.type'
+
 // MODELS
 import { TableColumn } from '~/components/Table/models/table-column.model'
 import { GroupItem } from '~/libs/App/data/models/group-item.model'
@@ -13,18 +17,46 @@ type Options = {
   isSelectableRef?: MaybeRefOrGetter<boolean>
 }
 
-export function useTableColumns() {
+// FIXME: This won't work with SSR
+function getTableState(storageKey?: string): ITableState {
+  return JSON.parse((storageKey && localStorage.getItem(storageKey)) || '{}')
+}
+
+export function useTableColumns(props: Pick<ITableProps, 'storageKey'>) {
+  // UTILS
   const { scrollbarWidth, isOverflown } = useOverflow()
 
-  const extendColumns = (columns: TableColumn[], options: Options) => {
+  /**
+   * Will add `helper` columns to the table
+   *  - selection
+   *  - group expansion
+   *
+   * Also will merge the column with any state that is saved in the local storage
+   */
+  const extendColumns = (columns: TableColumn[], options?: Options) => {
     const {
       groupsRef = [],
       groupExpandWidthRef = 28,
       isSelectableRef,
-    } = options
+    } = options || {}
     const groups = toValue(groupsRef)
     const isSelectable = toValue(isSelectableRef)
     const groupExpandWidth = toValue(groupExpandWidthRef)
+
+    const tableState = getTableState(props.storageKey)
+    const cols = tableState.columns || []
+
+    columns.forEach(col => {
+      const savedColIdx = cols.findIndex(c => c.field === col.field)
+
+      if (savedColIdx > -1) {
+        const savedCol = cols[savedColIdx]
+
+        Object.assign(col, savedCol, { _internalSort: savedColIdx })
+      }
+    })
+
+    columns.sort((a, b) => (a._internalSort || 0) - (b._internalSort || 0))
 
     columns.unshift(
       ...groups.map(
@@ -47,6 +79,8 @@ export function useTableColumns() {
           isHelperCol: true,
         })
       )
+
+    return columns
   }
 
   const resizeColumns = (
@@ -66,7 +100,7 @@ export function useTableColumns() {
     const contentWidth =
       containerWidth - Number(isWrapperOverflown) * scrollbarWidth - 1
 
-    const cols = [...toValue(columnsRef)]
+    const cols = [...toValue(columnsRef)].filter(col => !col.hidden)
     extendColumns(cols, options)
 
     const colsTotalWidth = cols.reduce<{ relative: number; fixed: number }>(
@@ -114,7 +148,7 @@ export function useTableColumns() {
             contentWidth - colsTotalWidth.fixed
           ),
           minColWidth,
-          +(stringToFloat(col.minWidth || '0') || 0)
+          0
         )
         wExtra += widthN - Math.floor(widthN)
 
@@ -160,5 +194,5 @@ export function useTableColumns() {
     return cols
   }
 
-  return { resizeColumns }
+  return { resizeColumns, extendColumns }
 }
