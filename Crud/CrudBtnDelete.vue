@@ -15,9 +15,13 @@ defineEmits<{
     :loader-type="loaderType"
     :loading="loading"
     no-dim
+    :size="size"
+    :no-uppercase="noUppercase"
     :disabled="disabled"
+    @click="noConfirm && $emit('delete')"
   >
     <MenuConfirmation
+      v-if="!noConfirm"
       placement="bottom-end"
       :title="$t('delete')"
       @ok="$emit('delete')"

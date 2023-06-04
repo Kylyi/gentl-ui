@@ -1,5 +1,5 @@
 export type DistinctData = {
-  id: number | string
+  id?: number | string
   _value: any
   _label?: string | number
 

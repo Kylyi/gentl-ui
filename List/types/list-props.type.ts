@@ -10,6 +10,7 @@ export interface IListProps extends IListBaseProps {
   bordered?: boolean
   clearable?: boolean
   contentClass?: ClassType
+  disabledFnc?: (item: any) => boolean
   emitKey?: boolean
   emptyValue?: any
   groupsSelectable?: boolean

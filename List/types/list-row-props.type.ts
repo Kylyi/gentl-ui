@@ -3,6 +3,7 @@ import type { IListBaseProps } from '~~/components/List/types/list-base-props.ty
 
 export interface IListRowProps extends IListBaseProps {
   item: any
+  isDisabled?: boolean
   isSelected?: boolean
   isHovered?: boolean
   rowHeight?: number

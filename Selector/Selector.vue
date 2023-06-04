@@ -93,7 +93,7 @@ function getKey(option: any): string {
 }
 
 function getLabel(option: any) {
-  if (!option) {
+  if (isNil(option)) {
     return ''
   }
 
@@ -119,10 +119,13 @@ function getOption(option: any): any[] {
 function handleSelectedMultiple(options: any[]) {
   // FIXME: WORKS ONLY FOR `emitKey === true`
   if (Array.isArray(internalValue.value) || !internalValue.value) {
-    emits(
-      'update:model-value',
-      uniq([...(internalValue.value || []), ...options])
-    )
+    const newVal = uniq([...(internalValue.value || []), ...options])
+
+    if (newVal.length) {
+      emits('update:model-value', newVal)
+    } else {
+      emits('update:model-value', props.emptyValue)
+    }
   } else {
     options.forEach(opt => {
       internalValue.value[getKey(opt)] = opt
@@ -146,7 +149,12 @@ function handleRemove(item: any) {
       delete internalValue.value[optionKey]
     }
 
-    emits('update:model-value', internalValue.value)
+    if (!internalValue.value.length) {
+      emits('update:model-value', props.emptyValue)
+    } else {
+      emits('update:model-value', internalValue.value)
+    }
+
     emits('removed', item)
   } else if (props.clearable) {
     emits('update:model-value', props.emptyValue)
@@ -193,7 +201,11 @@ function handleSearch(payload: { search: string; hasExactMatch: boolean }) {
 }
 
 function handleSelect(val: any) {
-  emits('update:model-value', val)
+  if (props.multi && !val.length) {
+    emits('update:model-value', props.emptyValue)
+  } else {
+    emits('update:model-value', val)
+  }
 
   if (!props.multi) {
     menuProxyEl.value?.hide()
@@ -244,6 +256,7 @@ const listEl = ref<InstanceType<typeof List>>()
 const options = toRef(props, 'options')
 const optionsInternal = ref<any[]>([])
 const listProps = reactivePick(props, [
+  'disabledFnc',
   'emitKey',
   'multi',
   'itemHeight',
@@ -299,7 +312,8 @@ const listOptions = computed(() => {
 
 const optionsByKey = computed(() => {
   return optionsExtended.value.reduce((agg, option) => {
-    agg[get(option, props.optionKey)] = option
+    const key = get(option, props.optionKey)
+    agg[key] = option
 
     return agg
   }, {})
@@ -312,7 +326,12 @@ async function loadData() {
 
     try {
       const res = await props.loadData.fnc()
-      optionsInternal.value = get(res, props.loadData.mapKey)
+
+      if (props.loadData.local) {
+        optionsInternal.value = res
+      } else {
+        optionsInternal.value = get(res, props.loadData.mapKey)
+      }
 
       isLoadingInternal.value = false
       isOptionsInternalLoaded.value = true
@@ -452,7 +471,7 @@ if (props.loadData?.immediate) {
         />
       </HorizontalScroller>
 
-      <template v-else-if="multi">
+      <template v-else-if="multi && internalValue">
         <Chip
           v-for="(chip, idx) in modelValue"
           :key="idx"

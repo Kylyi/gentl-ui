@@ -9,6 +9,7 @@ withDefaults(defineProps<IProps>(), {
   position: 'left',
 })
 
+const internalValue = ref(false)
 const hidden = ref(false)
 let timeout: any
 
@@ -16,11 +17,14 @@ defineExpose({
   showTemporarily: (cleanup?: () => void) => {
     clearTimeout(timeout)
     timeout = null
+    internalValue.value = true
+    hidden.value = false
 
     timeout = setTimeout(() => {
       hidden.value = true
 
       setTimeout(() => {
+        internalValue.value = false
         cleanup?.()
       }, 250)
     }, 2000)
@@ -31,7 +35,7 @@ defineExpose({
 <template>
   <Transition appear>
     <span
-      v-if="modelValue && !hidden"
+      v-if="(modelValue || internalValue) && !hidden"
       class="tooltip"
       color="positive"
       :class="`tooltip--${position}`"

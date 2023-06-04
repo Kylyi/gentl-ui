@@ -5,4 +5,5 @@ export interface ICrudBtnProps extends IBtnProps {
   labels?: boolean
   loaderType?: 'inline' | 'block'
   loading?: boolean
+  noConfirm?: boolean
 }

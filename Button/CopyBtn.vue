@@ -5,8 +5,7 @@ import { IBtnProps } from '~/components/Button/types/btn-props.type'
 const props = defineProps<IBtnProps & { modelValue?: any }>()
 
 // COPY
-const { copy } = useClipboard()
-const isCopiedRef = autoResetRef(false, 2000)
+const { copy, copied } = useClipboard({ copiedDuring: 2000 })
 
 const copyBtnSize = computed(() => {
   switch (props.size) {
@@ -25,7 +24,6 @@ const copyBtnSize = computed(() => {
 
 function handleCopy() {
   copy(String(props.modelValue))
-  isCopiedRef.value = true
 }
 </script>
 
@@ -38,7 +36,7 @@ function handleCopy() {
     no-hover-effect
     outline="1px"
     :class="[
-      isCopiedRef
+      copied
         ? '!outline-positive !outline-solid'
         : '!outline-dashed !outline-ca',
     ]"
@@ -47,7 +45,7 @@ function handleCopy() {
   >
     <template #icon>
       <div
-        v-if="!isCopiedRef"
+        v-if="!copied"
         bx:copy
         class="icon"
       />
@@ -58,7 +56,7 @@ function handleCopy() {
     </template>
 
     <BtnConfirmation
-      :model-value="isCopiedRef"
+      :model-value="copied"
       :label="$t('copied')"
     />
   </Btn>

@@ -49,6 +49,7 @@ const rowInfo = computed(() => {
         'item--hovered': isHovered && !noHover,
         'item--new': rowInfo.isNew,
         'item--create': rowInfo.isCreate,
+        'is-disabled': isDisabled,
       },
     ]"
   >
@@ -109,9 +110,13 @@ const rowInfo = computed(() => {
   &--hovered {
     --apply: bg-true-gray/10;
   }
+
+  &--disabled {
+    --apply: disabled cursor-not-allowed;
+  }
 }
 
-.item--active.item--hovered {
+.item--active.item--hovered:not(.item--disabled) {
   --apply: bg-primary/30;
 }
 </style>

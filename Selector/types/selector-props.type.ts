@@ -25,9 +25,20 @@ export interface ISelectorProps extends IInputProps {
    */
   clearConfirmation?: string
 
+  disabledFnc?: (item: any) => boolean
   fuseOptions?: FuseOptions<any>
   groupBy?: GroupItem[]
-  loadData?: { fnc: Function; mapKey: string; immediate?: boolean }
+  loadData?: {
+    fnc: Function
+    mapKey: string
+    immediate?: boolean
+
+    /**
+     * Use when the data is already loaded and we want to use it
+     * When this is used, the `mapKey` is ignored and array of objects should be provided
+     */
+    local?: boolean
+  }
   noDropdownIcon?: boolean
   noTruncate?: boolean
   preselectFirst?: boolean

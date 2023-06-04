@@ -11,6 +11,7 @@ import ListContainer from '~~/components/List/ListContainer.vue'
 
 const props = withDefaults(defineProps<IListProps>(), {
   clearable: true,
+  disabledFnc: () => false,
   emptyValue: null,
   groupBy: () => [],
   items: () => [],
@@ -109,6 +110,7 @@ defineExpose({
           :item="item"
           :is-selected="!('isGroup' in item) && !!selectedByKey[item.id]"
           :is-hovered="hoveredIdx === index"
+          :is-disabled="disabledFnc(item)"
           v-bind="listRowProps"
           :row-height="'isGroup' in item ? rowGroupHeight : rowHeight"
           @mouseover="handleMouseOver(item, index)"

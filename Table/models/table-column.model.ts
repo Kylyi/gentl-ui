@@ -7,14 +7,12 @@ import type { IItem, IItemBase } from '~/libs/App/types/item.type'
 
 // MODELS
 import { FilterItem } from '~/libs/App/data/models/filter-item'
+import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
 
 // CONSTANTS
 import { DATE_TYPES } from '~/libs/App/types/datetime.type'
 
-export class TableColumn<T = IItem>
-  extends FilterItem<T>
-  implements IItemBase<T>
-{
+export class TableColumn<T = IItem> implements IItemBase<T> {
   name: string | Extract<keyof T, string | number>
   format?: (row: T, value?: any) => any
   dataType: DataType = 'string'
@@ -31,18 +29,52 @@ export class TableColumn<T = IItem>
   hidden?: boolean
 
   // FILTERING
+  filters: FilterItem<T>[] = []
+
+  /**
+   * The initial comparator
+   */
+  comparator = ComparatorEnum.STARTS_WITH
+
   /**
    * When filtering in the filter dropdown, we can use different formatting than in the table
    */
   filterFormat?: (row: T) => string | number
 
-  /**
-   * Custom filtering function
-   */
-  filterFnc?: (row: T) => boolean
-
   // Whether to sort options in the filter dropdown
   noFilterSort = false
+
+  get filterDbQuery() {
+    if (!this.filters.length) {
+      return undefined
+    }
+
+    const filterConditions = this.filters.reduce((agg, filter) => {
+      if (filter.compareValue !== undefined) {
+        if (Array.isArray(filter.compareValue)) {
+          // The `_vale` comes from the DistnctData type
+          agg[filter.comparator] = filter.compareValue.map(item => item._value)
+        } else {
+          agg[filter.comparator] = filter.compareValue
+        }
+      }
+
+      return agg
+    }, {} as IItem)
+
+    const query: IItem = {}
+    set(query, this.field, filterConditions)
+
+    return query
+  }
+
+  get filteredKeys() {
+    return this.filters.reduce((agg, filter) => {
+      Object.assign(agg, filter.filteredKeys)
+
+      return agg
+    }, {})
+  }
 
   // SORTING
   sort?: -1 | 0 | 1
@@ -102,8 +134,6 @@ export class TableColumn<T = IItem>
   }
 
   constructor(col: Required<Partial<TableColumn<T>>, 'field'>) {
-    super(col)
-
     this.name = col.name ?? col.field
     this.format = col.format
     this.filterable = col.filterable ?? true
@@ -122,9 +152,12 @@ export class TableColumn<T = IItem>
     this.isHelperCol = col.isHelperCol ?? this.isHelperCol
 
     // FILTERING
+    this.filters = col.filters
+      ? col.filters.map(filter => new FilterItem(filter))
+      : []
+    this.comparator = col.comparator ?? this.comparator
     this.noFilterSort = col.noFilterSort ?? false
     this.filterFormat = col.filterFormat
-    this.filterFnc = col.filterFnc
     this.getDistinctData = col.getDistinctData
 
     // SORTING

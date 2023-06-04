@@ -1,77 +1,90 @@
 <script setup lang="ts">
 // MODELS
 import { TableColumn } from '~/components/Table/models/table-column.model'
+import { FilterItem } from '~/libs/App/data/models/filter-item'
 
 type IProps = {
-  column: TableColumn
+  columns: TableColumn<any>[]
+  filter: FilterItem<any>
 }
 
 const props = defineProps<IProps>()
 
 // INJECTIONS
-const refreshData = inject(refreshTableDataKey, () => {})
-const updateTableState = inject(updateTableStateKey, () => {})
+const refreshData = injectStrict(refreshTableDataKey)
+const updateTableState = injectStrict(updateTableStateKey)
 
 // LAYOUT
-const column = toRef(props, 'column')
+const filter = toRef(props, 'filter')
 
-const compareValueLabel = computed(() => {
-  if (Array.isArray(props.column.compareValue)) {
-    return props.column.compareValue.join(', ')
-  }
-
-  return props.column.compareValue
+const column = computed(() => {
+  return props.columns.find(column => column.field === filter.value.field)!
 })
 
-function removeChip() {
-  column.value.compareValue = null
-  refreshData()
+function removeChip(skipRefreshData = false) {
+  if (!column.value) {
+    return
+  }
 
-  updateTableState({}, tableState => {
-    const foundColumn = tableState.columns.find(
-      column => column.field === props.column.field
+  column.value.filters = column.value.filters.filter(
+    filterItem => filterItem.comparator !== filter.value.comparator
+  )
+
+  if (!skipRefreshData) {
+    refreshData()
+  }
+
+  updateTableState({}, state => {
+    const foundStateColumn = state.columns.find(
+      _column => _column.field === column.value.field
+    )!
+
+    foundStateColumn.filters = foundStateColumn.filters.filter(
+      filterItem => filterItem.comparator !== filter.value.comparator
     )
-
-    if (foundColumn) {
-      foundColumn.compareValue = props.column.compareValue
-    } else {
-      tableState.columns.push({
-        field: props.column.field,
-        comparator: props.column.comparator,
-        width: props.column.width,
-        sort: props.column.sort,
-        sortOrder: props.column.sortOrder,
-        compareValue: props.column.compareValue,
-      })
-    }
-
-    return tableState
+    return state
   })
+}
+
+/**
+ * When we hide the menu and the filter `compareValue` is `undefined`, we remove the filter
+ */
+function handleFilteringItemHide() {
+  if (filter.value.compareValue === undefined) {
+    removeChip(true)
+  }
+}
+
+function getLabel(_: any, value: any) {
+  if (Array.isArray(value)) {
+    return value.map(val => val._label).join(', ')
+  }
 }
 </script>
 
 <template>
   <div class="table-filter-chip">
     <!-- COLUMN LABEL -->
-    <span
-      text="caption"
-      color="black dark:white"
-    >
+    <span class="filter-field">
       {{ column.label }}
     </span>
 
     <!-- COMPARATOR -->
-    <span text="caption">
-      {{ $t(`comparator.${column.comparator}`) }}
+    <span
+      text="caption"
+      whitespace="nowrap"
+    >
+      {{ $t(`comparator.${filter.comparator}`) }}
     </span>
 
     <!-- COMPARE VALUE -->
     <ValueFormatter
-      :data-type="column.dataType"
-      :value="compareValueLabel"
+      :data-type="filter.dataType"
+      :value="filter.compareValue"
+      :format="Array.isArray(filter.compareValue) ? getLabel : undefined"
     >
       <template #default="{ val }">
-        <span font="bold">
+        <span class="filter-value">
           {{ val }}
         </span>
       </template>
@@ -82,19 +95,36 @@ function removeChip() {
       size="xs"
       preset="CLOSE"
       m="l-1"
-      @click="removeChip"
+      @click.stop.prevent="removeChip(false)"
     />
+
+    <Menu
+      hide-header
+      @before-hide="handleFilteringItemHide"
+    >
+      <TableColumnFilteringItem
+        :filter="filter"
+        :column="column"
+        no-delete
+      />
+    </Menu>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .table-filter-chip {
-  --apply: flex relative flex-gap-x-1 p-l-3 p-r-1 p-y-1 items-center
-    rounded-custom border-custom border-ca dark:bg-darker bg-white;
+  --apply: flex relative flex-gap-x-1 p-l-3 p-r-1 p-y-1 items-center cursor-pointer
+    rounded-custom border-custom border-ca dark:bg-darker bg-white
+  shadow-ca hover:shadow-consistent-sm;
 
   &::before {
     --apply: content-empty absolute inset-block-0 left-0 w-1 bg-primary
-      rounded-custom;
+      rounded-l-custom;
   }
+}
+
+.filter-field,
+.filter-value {
+  --apply: whitespace-nowrap text-caption color-black dark:color-white;
 }
 </style>

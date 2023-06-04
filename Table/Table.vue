@@ -54,6 +54,7 @@ const {
   rows,
   search,
   tableState,
+  storageKey,
 
   // PAGINATION
   currentPage,

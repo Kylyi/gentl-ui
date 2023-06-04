@@ -1,4 +1,6 @@
 <script setup lang="ts">
+// MODELS
+import { TableColumnState } from '~/components/Table/models/table-column-state.model'
 import { TableColumn } from '~/components/Table/models/table-column.model'
 
 type IProps = {
@@ -10,6 +12,9 @@ type IProps = {
 const props = withDefaults(defineProps<IProps>(), {
   multiSort: true,
 })
+
+// INJECTIONS
+const refreshData = injectStrict(refreshTableDataKey)
 
 // UTILS
 const updateTableState = injectStrict(updateTableStateKey)
@@ -29,7 +34,6 @@ function handleSort(sortValue: -1 | 0 | 1) {
         col =>
           col.sortOrder !== undefined && col.sortOrder > column.value.sortOrder!
       )
-      console.log('Log ~ handleSort ~ sortedColumnsAfter:', sortedColumnsAfter)
 
       sortedColumnsAfter.forEach(col => {
         col.sortOrder! -= 1
@@ -51,22 +55,15 @@ function handleSort(sortValue: -1 | 0 | 1) {
       foundColumn.sort = props.column.sort
       foundColumn.sortOrder = props.column.sortOrder
     } else {
-      tableState.columns.push({
-        field: props.column.field,
-        comparator: props.column.comparator,
-        width: props.column.width,
-        sort: props.column.sort,
-        sortOrder: props.column.sortOrder,
-        compareValue: props.column.compareValue,
-      })
+      tableState.columns.push(new TableColumnState(props.column))
     }
 
     return tableState
   })
-}
 
-const refreshData = inject(refreshTableDataKey, () => {})
-watch(() => column.value.sort, refreshData)
+  // Refresh data
+  refreshData()
+}
 </script>
 
 <template>

@@ -1,10 +1,14 @@
 // TODO: Client-side pagination, filtering, grouping and sorting
-// MODELS
-import { TableColumn } from '~/components/Table/models/table-column.model'
-
 // TYPES
 import type { ITableProps } from '~/components/Table/types/table-props.type'
 import type { ITableState } from '~/components/Table/types/table-state.type'
+import type { ITableQuery } from '~/components/Table/types/table-query.type'
+
+// MODELS
+import { TableColumn } from '~/components/Table/models/table-column.model'
+
+// COMPOSITION FUNCTIONS
+import { useTableUtils } from '~/components/Table/functions/useTableUtils'
 
 // CONSTANTS
 import { TABLE_STATE_DEFAULT } from '~/components/Table/constants/table-state.default'
@@ -16,13 +20,17 @@ export async function useTableData(
   // UTILS
   const instance = getCurrentInstance()
   const { t } = useI18n()
+  const { storageKey, modifyWithSearchParams } = useTableUtils()
 
   // STATE MANAGEMENT
-  const tableState = props.storageKey
-    ? useLocalStorage(props.storageKey, TABLE_STATE_DEFAULT)
+  const tableState = storageKey
+    ? useLocalStorage(storageKey, TABLE_STATE_DEFAULT)
     : ref(TABLE_STATE_DEFAULT)
 
+  console.log('Log ~ tableState:', tableState)
+
   // LAYOUT
+  const isInitialized = ref(false)
   const isLoading = ref(!props.rows)
   const search = ref('')
   const rows = ref(props.rows || [])
@@ -44,17 +52,32 @@ export async function useTableData(
     // than the first one
     total: computed(() => totalRows.value || 9e6),
     onPageChange: page => {
-      tableState.value.page = page.currentPage
-
-      dbQuery.trigger()
+      if (isInitialized.value) {
+        tableState.value.page = page.currentPage
+        dbQuery.trigger()
+      }
     },
     onPageSizeChange: page => {
-      tableState.value.pageSize = page.currentPageSize
+      if (isInitialized.value) {
+        tableState.value.pageSize = page.currentPageSize
+        dbQuery.trigger()
+      }
     },
   })
 
   // DATA
   const dbQuery = computedWithControl(search, () => {
+    if (!isInitialized.value) {
+      // FIXME: Side-effect in computed
+      // Actually happens only once (on initialization), but still...
+      modifyWithSearchParams(
+        internalColumns,
+        tableState,
+        currentPage,
+        currentPageSize
+      )
+    }
+
     // PAGINATION
     const take = currentPageSize.value
     const skip = (currentPage.value - 1) * currentPageSize.value
@@ -89,9 +112,10 @@ export async function useTableData(
         skip,
       },
       includeDeleted: tableState.value.includeDeleted,
-    }
+    } as ITableQuery
   })
 
+  provide(tableQueryKey, dbQuery)
   provide(refreshTableDataKey, useDebounceFn(dbQuery.trigger, 100))
   provide(tableStateKey, tableState)
   provide(
@@ -168,10 +192,34 @@ export async function useTableData(
     fetchAndSetData(dbQuery)
   })
 
+  // Watch the `dbQuery` and change the url accordingly
+  watch(
+    dbQuery,
+    dbQuery => {
+      const queryParams = new URLSearchParams()
+
+      queryParams.set(
+        'page',
+        String(dbQuery.options.skip / dbQuery.options.take + 1)
+      )
+      queryParams.set('perPage', String(dbQuery.options.take))
+
+      // SEARCH
+      if (dbQuery.options.search) {
+        queryParams.set('search', dbQuery.options.search)
+      }
+
+      changeUrlWithoutHistory(queryParams.toString())
+    },
+    { immediate: true }
+  )
+
   watch(
     () => tableState.value.includeDeleted,
     () => dbQuery.trigger()
   )
+
+  isInitialized.value = true
 
   return {
     isLoading,
@@ -179,6 +227,7 @@ export async function useTableData(
     dbQuery,
     search,
     tableState,
+    storageKey,
 
     // PAGINATION
     currentPage,

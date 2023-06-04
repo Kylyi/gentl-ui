@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { TableColumn } from '~/components/Table/models/table-column.model'
+import { FilterItem } from '~/libs/App/data/models/filter-item'
 
 type IProps = {
   columns: TableColumn[]
@@ -14,30 +15,53 @@ const emits = defineEmits<{
   (e: 'update:search', search: string): void
 }>()
 
-const refreshData = inject(refreshTableDataKey, () => {})
+// INJECTIONS
+const refreshData = injectStrict(refreshTableDataKey)
+const updateTableState = injectStrict(updateTableStateKey)
 
 // LAYOUT
 const search = useVModel(props, 'search', emits)
 
-const filteredColumns = computed(() => {
-  return props.columns.filter(col => col.compareValue)
+const filterChips = computed(() => {
+  return props.columns.reduce((agg, col) => {
+    col.filters.forEach(filter => {
+      agg.push(filter)
+    })
+
+    return agg
+  }, [] as FilterItem[])
 })
+
+function handleRemoveAllFilters() {
+  props.columns.forEach(column => {
+    column.filters = []
+  })
+
+  refreshData()
+  updateTableState({}, state => {
+    state.columns.forEach(column => {
+      column.filters = []
+    })
+
+    return state
+  })
+}
 </script>
 
 <template>
   <!-- CHIPS -->
-  <div
+  <HorizontalScroller
     v-if="useChips"
-    flex="~ gap-x-1"
-    items-center
     grow
+    content-class="flex-gap-x-1"
   >
     <TableFilterChip
-      v-for="(col, idx) in filteredColumns"
+      v-for="(filter, idx) in filterChips"
       :key="idx"
-      :column="col"
+      :filter="filter"
+      :columns="columns"
     />
-  </div>
+  </HorizontalScroller>
 
   <!-- SEARCH -->
   <SearchInput
@@ -66,4 +90,22 @@ const filteredColumns = computed(() => {
     v-else
     grow
   />
+
+  <!-- CLEAR ALL FILTERS -->
+  <Btn
+    v-if="filterChips.length > 0"
+    :label="$t('table.removeAllFilters')"
+    labels
+    no-uppercase
+    size="sm"
+    no-truncate
+    color="ca"
+    shrink-0
+    label-class="whitespace-nowrap"
+  >
+    <MenuConfirmation
+      hide-header
+      @ok="handleRemoveAllFilters"
+    />
+  </Btn>
 </template>

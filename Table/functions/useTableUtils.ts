@@ -1,10 +1,34 @@
 // TYPES
-import { DistinctData } from '~/components/Table/types/distinct-data.type'
+import type { DistinctData } from '~/components/Table/types/distinct-data.type'
+import type { IItem } from '~/libs/App/types/item.type'
+import type { ITableQuery } from '~/components/Table/types/table-query.type'
+import type { ITableState } from '~/components/Table/types/table-state.type'
+import type { ITableProps } from '~/components/Table/types/table-props.type'
 
 // MODELS
 import { TableColumn } from '~/components/Table/models/table-column.model'
+import { TableColumnState } from '~/components/Table/models/table-column-state.model'
+import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
+import { FilterItem } from '~/libs/App/data/models/filter-item'
 
-export function useTableUtils() {
+// FUNCTIONS
+import { getComponentName } from '~/libs/App/functions/misc'
+
+// COMPONENTS
+import NumberInput from '~/components/Inputs/NumberInput/NumberInput.vue'
+import DateInput from '~/components/Inputs/DateInput/DateInput.vue'
+import Checkbox from '~/components/Checkbox/Checkbox.vue'
+import TextInput from '~/components/Inputs/TextInput/TextInput.vue'
+
+// CONSTANTS
+import { TABLE_STATE_DEFAULT } from '~/components/Table/constants/table-state.default'
+
+const SELECTOR_COMPARATORS = [ComparatorEnum.IN, ComparatorEnum.NOT_IN]
+
+export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
+  const instance = getCurrentInstance()
+  const storageKey = props?.storageKey || getComponentName(instance?.parent)
+
   async function getDistinctDataForField<T>(
     col: TableColumn<T>,
     query: Function,
@@ -31,22 +55,275 @@ export function useTableUtils() {
     }))
   }
 
-  function stripColumnsStateData(column: TableColumn[]) {
-    return column.map(col => {
-      const { width, comparator, compareValue, sort, sortOrder } = col
+  /**
+   * Will extract data from the table columns and return it in a format that can be used to
+   * save the state of the columns
+   */
+  function extractColumnsStateData(columns: TableColumn[]) {
+    return columns.map(col => new TableColumnState(col))
+  }
 
-      return {
-        field: col.field,
-        width,
-        comparator,
-        compareValue,
-        sort,
-        sortOrder,
+  /**
+   * Gets the available comparators for a given data type
+   */
+  function getAvailableComparators(
+    dataType: DataType,
+    options: { includeSelectorComparators?: boolean } = {}
+  ) {
+    const { includeSelectorComparators } = options
+
+    switch (dataType) {
+      case 'number':
+      case 'percent':
+        return [
+          ComparatorEnum.EQUAL,
+          ComparatorEnum.NOT_EQUAL,
+          ComparatorEnum.GREATER_THAN,
+          ComparatorEnum.GREATER_THAN_OR_EQUAL,
+          ComparatorEnum.LESS_THAN,
+          ComparatorEnum.LESS_THAN_OR_EQUAL,
+          ...(includeSelectorComparators ? SELECTOR_COMPARATORS : []),
+        ]
+
+      case 'date':
+      case 'yearMonth':
+        return [
+          ComparatorEnum.EQUAL,
+          ComparatorEnum.NOT_EQUAL,
+          ComparatorEnum.GREATER_THAN_OR_EQUAL,
+          ComparatorEnum.LESS_THAN_OR_EQUAL,
+          ...(includeSelectorComparators ? SELECTOR_COMPARATORS : []),
+        ]
+
+      case 'boolean':
+        return [ComparatorEnum.EQUAL]
+
+      case 'string':
+      default:
+        return [
+          ComparatorEnum.EQUAL,
+          ComparatorEnum.NOT_EQUAL,
+          ComparatorEnum.STARTS_WITH,
+          ComparatorEnum.ENDS_WITH,
+          ComparatorEnum.CONTAINS,
+          ...(includeSelectorComparators ? SELECTOR_COMPARATORS : []),
+        ]
+    }
+  }
+
+  /**
+   * Gets the input component for a given data type
+   */
+  function getInputByDataType(dataType: DataType) {
+    switch (dataType) {
+      case 'number':
+      case 'percent':
+        return NumberInput
+
+      case 'date':
+      case 'yearMonth':
+        return DateInput
+
+      case 'boolean':
+        return Checkbox
+
+      case 'string':
+      default:
+        return TextInput
+    }
+  }
+
+  /**
+   * Checks if a comparator uses a `Selector` (IN, NOT_IN) to choose the filter data
+   */
+  function isSelectorComparator(comparator: ComparatorEnum) {
+    return SELECTOR_COMPARATORS.includes(comparator)
+  }
+
+  /**
+   * Parses the value of a filter param based on the comparator and data type
+   */
+  function parseParamValue(
+    value: string,
+    comparator: ComparatorEnum,
+    dataType: DataType
+  ) {
+    switch (comparator) {
+      case ComparatorEnum.IN:
+      case ComparatorEnum.NOT_IN:
+        return JSON.parse(value).split(',')
+
+      case ComparatorEnum.CONTAINS:
+      case ComparatorEnum.STARTS_WITH:
+      case ComparatorEnum.ENDS_WITH:
+        return value
+
+      case ComparatorEnum.EQUAL:
+      case ComparatorEnum.NOT_EQUAL:
+        if (dataType === 'string') {
+          return value
+        } else {
+          return JSON.parse(value)
+        }
+
+      default:
+        return JSON.parse(value)
+    }
+  }
+
+  /**
+   * Transforms the URL search params into a `ITableQuery` object
+   */
+  function transformUrlSearchParams(columns: TableColumn[]) {
+    let isUrlUsedForFiltering = false
+    const params = new URLSearchParams(window.location.search)
+    const tableQueryWhere: ITableQuery['where'] = {}
+    const tableQueryOptions: Partial<ITableQuery['options']> = {}
+    const urlUsedFor: Array<'pagination' | 'filter' | 'sort'> = []
+
+    // Pagination
+    const page = params.get('page')
+    const perPage = params.get('perPage')
+
+    if (page !== null && perPage !== null) {
+      Object.assign(tableQueryOptions, {
+        skip: (+page - 1) * +perPage,
+        take: +perPage,
+      })
+
+      urlUsedFor.push('pagination')
+    }
+
+    // Sorting & filtering
+    if (params.getAll('sort').length) {
+      urlUsedFor.push('sort')
+    }
+
+    columns.forEach(col => {
+      // Sorting
+      const sort = params.getAll('sort')
+      const sortField = sort.find(s => s.startsWith(String(col.field)))
+
+      if (sortField) {
+        const parts = sortField.split('.')
+        const direction = parts.pop() as 'asc' | 'desc'
+        const path = parts.join('.')
+
+        set(tableQueryOptions, `orderBy.${path}`, direction)
+      }
+
+      // Filtering
+      const filterObj: IItem = {}
+      set(filterObj, col.field, {})
+      const filters = params.getAll(String(col.field))
+      isUrlUsedForFiltering = isUrlUsedForFiltering || filters.length > 0
+
+      filters.forEach(filter => {
+        const [comparator, value] = filter.split('.')
+        const currentFilterValue = get(filterObj, col.field)
+
+        merge(currentFilterValue, {
+          [comparator]: parseParamValue(
+            value,
+            comparator as ComparatorEnum,
+            col
+          ),
+        })
+      })
+
+      if (!isEmpty(get(filterObj, col.field))) {
+        merge(tableQueryWhere, filterObj)
       }
     })
+
+    if (isUrlUsedForFiltering) {
+      urlUsedFor.push('filter')
+    }
+
+    // Searching
+    const search = params.get('search')
+
+    if (search) {
+      Object.assign(tableQueryOptions, { search })
+    }
+
+    return {
+      options: tableQueryOptions,
+      where: tableQueryWhere,
+      usedFor: urlUsedFor,
+    }
   }
+
+  /**
+   * Modifies the columns based on the search params
+   *
+   * Note: Mutates the inputs!
+   */
+  function modifyWithSearchParams(
+    columnsRef: MaybeRefOrGetter<TableColumn[]>,
+    tableState: Ref<ITableState>,
+    currentPageRef: Ref<number>,
+    currentPageSizeRef: Ref<number>
+  ) {
+    const columns = toValue(columnsRef)
+    const tableQuery = transformUrlSearchParams(columns)
+
+    if (!tableQuery.usedFor.length) {
+      return
+    }
+
+    const { skip, take } = tableQuery.options
+
+    // Pagination
+    if (tableQuery.usedFor.includes('pagination')) {
+      const page =
+        (skip ?? TABLE_STATE_DEFAULT.page) /
+          (take ?? TABLE_STATE_DEFAULT.pageSize) +
+        1
+
+      currentPageRef.value = Math.floor(page)
+      currentPageSizeRef.value = take || TABLE_STATE_DEFAULT.pageSize
+    }
+
+    if (
+      tableQuery.usedFor.includes('sort') ||
+      tableQuery.usedFor.includes('filter')
+    ) {
+      columns.forEach(col => {
+        // Sorting
+        const sort = get(tableQuery.options.orderBy || {}, col.field)
+        col.sort =
+          typeof sort === 'string' ? (sort === 'asc' ? 1 : -1) : undefined
+
+        // Filtering
+        col.filters = []
+        const filter = get(tableQuery.where, col.field)
+
+        if (filter) {
+          Object.entries(filter).forEach(([comparator, value]) => {
+            col.filters!.push(
+              new FilterItem({
+                field: col.field,
+                comparator: comparator as ComparatorEnum,
+                compareValue: value,
+              })
+            )
+          })
+        }
+      })
+    }
+
+    tableState.value.columns = columns
+  }
+
   return {
+    storageKey, // Is not reactive!
     getDistinctDataForField,
-    stripColumnsStateData,
+    extractColumnsStateData,
+    getAvailableComparators,
+    getInputByDataType,
+    isSelectorComparator,
+    transformUrlSearchParams,
+    modifyWithSearchParams,
   }
 }

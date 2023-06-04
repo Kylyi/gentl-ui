@@ -8,6 +8,7 @@ import { GroupItem } from '~/libs/App/data/models/group-item.model'
 
 // REGEX
 import { stringToFloat } from '~/libs/App/data/regex/string-to-float.regex'
+import { useTableUtils } from '~/components/Table/functions/useTableUtils'
 
 type Options = {
   groupsRef?: MaybeRefOrGetter<GroupItem[]>
@@ -24,6 +25,7 @@ function getTableState(storageKey?: string): ITableState {
 
 export function useTableColumns(props: Pick<ITableProps, 'storageKey'>) {
   // UTILS
+  const { storageKey } = useTableUtils(props)
   const { scrollbarWidth, isOverflown } = useOverflow()
 
   /**
@@ -43,7 +45,7 @@ export function useTableColumns(props: Pick<ITableProps, 'storageKey'>) {
     const isSelectable = toValue(isSelectableRef)
     const groupExpandWidth = toValue(groupExpandWidthRef)
 
-    const tableState = getTableState(props.storageKey)
+    const tableState = getTableState(storageKey)
     const cols = tableState.columns || []
 
     columns.forEach(col => {
@@ -83,6 +85,9 @@ export function useTableColumns(props: Pick<ITableProps, 'storageKey'>) {
     return columns
   }
 
+  /**
+   * Recalculates the columns
+   */
   const resizeColumns = (
     containerElRef: MaybeRefOrGetter<Element>,
     wrapperElRef: MaybeRefOrGetter<Element>,

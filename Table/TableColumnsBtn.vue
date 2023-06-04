@@ -26,7 +26,7 @@ const updateTableState = injectStrict(updateTableStateKey)
 
 // UTILS
 const { getBtnProps } = useBtnUtils()
-const { stripColumnsStateData } = useTableUtils()
+const { extractColumnsStateData } = useTableUtils()
 
 // LAYOUT
 const columns = useVModel(props, 'columns', emits)
@@ -37,7 +37,7 @@ function handleRecalculateColumns() {
   recalculateColumns(true)
 
   nextTick(() =>
-    updateTableState({ columns: stripColumnsStateData(columns.value) })
+    updateTableState({ columns: extractColumnsStateData(columns.value) })
   )
 }
 </script>

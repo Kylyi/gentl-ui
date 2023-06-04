@@ -1,11 +1,4 @@
 <script setup lang="ts">
-import { ITableState } from '~/components/Table/types/table-state.type'
-
-type ISavedTableLayout = {
-  name: string
-  layout: ITableState
-}
-
 type IProps = {
   storageKey?: string
   includeDeleted: boolean
@@ -29,7 +22,7 @@ const includeDeleted = useVModel(props, 'includeDeleted', emits)
     <Menu
       hide-header
       dense
-      w="90"
+      w="100"
       placement="bottom-end"
     >
       <Toggle
@@ -39,6 +32,10 @@ const includeDeleted = useVModel(props, 'includeDeleted', emits)
       />
 
       <TableStateLayout :storage-key="storageKey" />
+
+      <Separator inset />
+
+      <TableUrl />
     </Menu>
   </Btn>
 </template>

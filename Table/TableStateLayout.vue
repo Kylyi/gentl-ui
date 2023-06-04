@@ -3,6 +3,9 @@
 import type { ITableState } from '~/components/Table/types/table-state.type'
 import type { IItem } from '~/libs/App/types/item.type'
 
+// COMPONENTS
+import BtnConfirmation from '~/components/Button/BtnConfirmation.vue'
+
 type ISavedTableLayout = {
   name: string
   layout: ITableState
@@ -18,8 +21,10 @@ const props = defineProps<IProps>()
 const tableState = injectStrict(tableStateKey)
 const recalculateTableColumns = injectStrict(recalculateTableColumnsKey)
 const updateTableState = injectStrict(updateTableStateKey)
+const refreshData = injectStrict(refreshTableDataKey)
 
 // LAYOUT
+const btnConfirmationEl = ref<InstanceType<typeof BtnConfirmation>>()
 const storageKey = `table-layouts-${props.storageKey || 'default'}`
 const tableLayouts = useLocalStorage<ISavedTableLayout[]>(storageKey, [])
 
@@ -57,7 +62,24 @@ function handleSelectTableLayout(tableLayout: IItem) {
         layout: name,
       })
       recalculateTableColumns(true)
+      refreshData()
     }
+  }
+}
+
+function handleApplyLayout() {
+  if (!tableState.value.layout) {
+    return
+  }
+
+  const foundLayout = tableLayouts.value.find(
+    layout => layout.name === tableState.value.layout
+  )
+
+  if (foundLayout) {
+    updateTableState(foundLayout.layout)
+    recalculateTableColumns(true)
+    refreshData()
   }
 }
 
@@ -70,6 +92,8 @@ function overrideSelectedTableLayout() {
     foundLayout.layout = tableState.value
     tableLayouts.value = [...tableLayouts.value]
   }
+
+  btnConfirmationEl.value?.showTemporarily()
 }
 </script>
 
@@ -88,13 +112,43 @@ function overrideSelectedTableLayout() {
       allow-add
       no-local-add
       clearable
+      label-inside
       @update:model-value="handleSelectTableLayout"
     />
 
-    <div
-      flex="~ gap-x-3"
-      justify="between"
-    >
+    <div flex="~ col gap-y-3">
+      <div
+        flex="~ gap-x-1"
+        justify="end"
+      >
+        <!-- OVERRIDE -->
+        <Btn
+          shrink-0
+          :label="$t('table.layoutStateOverride')"
+          :disabled="!tableState.layout"
+          no-uppercase
+          self-center
+          size="sm"
+          @click="overrideSelectedTableLayout"
+        >
+          <BtnConfirmation
+            ref="btnConfirmationEl"
+            :label="$t('saved')"
+          />
+        </Btn>
+
+        <!-- APPLY -->
+        <Btn
+          :label="$t('apply')"
+          size="sm"
+          no-uppercase
+          color="primary"
+          outlined
+          :disabled="!tableState.layout"
+          @click="handleApplyLayout"
+        />
+      </div>
+
       <span
         text="caption"
         grow
@@ -102,13 +156,6 @@ function overrideSelectedTableLayout() {
       >
         {{ tableState.layout ? $t('table.layoutStateSave') : '&nbsp;' }}
       </span>
-
-      <CrudBtnSave
-        shrink-0
-        labels
-        :disabled="!tableState.layout"
-        @save="overrideSelectedTableLayout"
-      />
     </div>
   </Section>
 </template>

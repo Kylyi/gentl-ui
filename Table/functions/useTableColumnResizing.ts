@@ -26,10 +26,11 @@ export function useTableColumnResizing(props: {
   columns: TableColumn<any>[]
   minimumColumnWidth?: number
 }) {
+  // INJECTIONS
   const updateTableState = injectStrict(updateTableStateKey)
 
   // UTILS
-  const { stripColumnsStateData } = useTableUtils()
+  const { extractColumnsStateData } = useTableUtils()
 
   const headerEl = ref<InstanceType<typeof HorizontalScroller>>()
 
@@ -136,7 +137,7 @@ export function useTableColumnResizing(props: {
       document.documentElement.style.userSelect = ''
 
       updateTableState({
-        columns: stripColumnsStateData(props.columns),
+        columns: extractColumnsStateData(props.columns),
       })
     })
   }

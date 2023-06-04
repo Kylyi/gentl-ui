@@ -12,16 +12,23 @@ type IProps = {
 const props = defineProps<IProps>()
 
 // LAYOUT
-const btnClass = computedEager(() => {
-  console.log(props.column)
+const column = toRef(props, 'column')
 
+const btnClass = computedEager(() => {
   return {
-    'is-filtered': Array.isArray(props.column.compareValue)
-      ? props.column.compareValue.some(val => !isNil(val))
-      : !isNil(props.column.compareValue),
+    'is-filtered': !!props.column.filters.length,
     'is-sorted': !!props.column.sort,
   }
 })
+
+/**
+ * On menu hide, we remove the filter if the `compareValue` is `undefined`
+ */
+function handleMenuHide() {
+  column.value.filters = column.value.filters.filter(
+    filterItem => filterItem.compareValue !== undefined
+  )
+}
 </script>
 
 <template>
@@ -36,6 +43,7 @@ const btnClass = computedEager(() => {
       hide-header
       position="top"
       content-class="flex flex-col"
+      @before-hide="handleMenuHide"
     >
       <TableColumnSorting
         :column="column"

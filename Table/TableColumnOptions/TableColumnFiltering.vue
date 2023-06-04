@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // TYPES
-import { DistinctData } from '~/components/Table/types/distinct-data.type'
+// import { DistinctData } from '~/components/Table/types/distinct-data.type'
 
 // MODELS
 import { TableColumn } from '~/components/Table/models/table-column.model'
@@ -14,120 +14,117 @@ type IProps = {
 
 const props = defineProps<IProps>()
 
-// UTILS
-// const { handleGqlErrors } = useGqlErrors()
+// INJECTIONS
+const refreshData = injectStrict(refreshTableDataKey)
 
 // LAYOUT
-const isLoading = ref(false)
 const column = toRef(props, 'column')
-const items = ref<DistinctData[]>(await getDistinctData())
+// const isLoading = ref(false)
+// const items = ref<DistinctData[]>(await getDistinctData())
 
-const keysByFieldValue = computed<Record<string, Array<string | number>>>(
-  () => {
-    const col = props.column
+// const keysByFieldValue = computed<Record<string, Array<string | number>>>(
+//   () => {
+//     const col = props.column
 
-    return props.rows.reduce((agg, row) => {
-      const val = get(row, col.field)
+//     return props.rows.reduce((agg, row) => {
+//       const val = get(row, col.field)
 
-      if (agg[val] === undefined) {
-        agg[val] = []
-      }
+//       if (agg[val] === undefined) {
+//         agg[val] = []
+//       }
 
-      agg[val].push(row.id)
+//       agg[val].push(row.id)
 
-      return agg
-    }, {} as Record<string, Array<string | number>>)
-  }
-)
+//       return agg
+//     }, {} as Record<string, Array<string | number>>)
+//   }
+// )
 
-function getFormattedValue(row: DistinctData) {
-  return (
-    row._label ??
-    column.value.filterFormat?.(row) ??
-    column.value.format?.(row) ??
-    get(row, column.value.field)
-  )
-}
+// function getFormattedValue(row: DistinctData) {
+//   return (
+//     row._label ??
+//     column.value.filterFormat?.(row) ??
+//     column.value.format?.(row) ??
+//     get(row, column.value.field)
+//   )
+// }
 
-function handleAddFilterItem(item: DistinctData) {
-  const { _value } = item
+// function handleAddFilterItem(item: DistinctData) {
+//   const { _value } = item
 
-  column.value.compareValue = [...(column.value.compareValue ?? []), _value]
+//   column.value.compareValue = [...(column.value.compareValue ?? []), _value]
 
-  // While not using server side filtering
-  if (!props.useServer) {
-    const keys = keysByFieldValue.value[_value]
-    const filteredKeys = (keys ?? []).reduce((agg, key) => {
-      agg[key] = true
+//   // While not using server side filtering
+//   if (!props.useServer) {
+//     const keys = keysByFieldValue.value[_value]
+//     const filteredKeys = (keys ?? []).reduce((agg, key) => {
+//       agg[key] = true
 
-      return agg
-    }, {} as Record<string, boolean>)
+//       return agg
+//     }, {} as Record<string, boolean>)
 
-    Object.assign(column.value.filteredKeys, filteredKeys)
-  }
-}
+//     Object.assign(column.value.filteredKeys, filteredKeys)
+//   }
+// }
 
-function handleRemoveFilterItem(item: DistinctData) {
-  const { _value } = item
+// function handleRemoveFilterItem(item: DistinctData) {
+//   const { _value } = item
 
-  column.value.compareValue = (column.value.compareValue ?? []).filter(
-    (value: any) => value !== _value
-  )
+//   column.value.compareValue = (column.value.compareValue ?? []).filter(
+//     (value: any) => value !== _value
+//   )
 
-  // While not using server side filtering
-  if (!props.useServer) {
-    const keys = keysByFieldValue.value[_value]
+//   // While not using server side filtering
+//   if (!props.useServer) {
+//     const keys = keysByFieldValue.value[_value]
 
-    keys.forEach(key => {
-      delete column.value.filteredKeys[key]
-    })
-  }
-}
+//     keys.forEach(key => {
+//       delete column.value.filteredKeys[key]
+//     })
+//   }
+// }
 
 function handleClearFilter() {
-  column.value.compareValue = []
-  column.value.filteredKeys = {}
+  column.value.filters = []
+  refreshData()
 }
-
-const refreshData = inject(refreshTableDataKey, () => {})
-watch(() => column.value.compareValue, refreshData)
 
 // DATA
-async function getDistinctData(): Promise<DistinctData[]> {
-  const col = props.column
+// async function getDistinctData(): Promise<DistinctData[]> {
+//   const col = props.column
 
-  // When we have a custom `getDistinctData` function, use it
-  if (col.getDistinctData) {
-    isLoading.value = true
+//   // When we have a custom `getDistinctData` function, use it
+//   if (col.getDistinctData) {
+//     isLoading.value = true
 
-    try {
-      const distinctData = await col.getDistinctData(props.column)
+//     try {
+//       const distinctData = await col.getDistinctData(props.column)
 
-      // When using custom `getDistinctData` function, map the column field to the values
-      distinctData.forEach(row => set(row, col.field, row._value))
+//       // When using custom `getDistinctData` function, map the column field to the values
+//       distinctData.forEach(row => set(row, col.field, row._value))
 
-      isLoading.value = false
+//       isLoading.value = false
 
-      return distinctData
-    } catch (error) {
-      // handleGqlErrors(error, true)
-    }
+//       return distinctData
+//     } catch (error) {
+//       // handleGqlErrors(error, true)
+//     }
 
-    isLoading.value = false
-  }
+//     isLoading.value = false
+//   }
 
-  // When using client-side filtering
-  const rowFormattedValues = props.rows.map<DistinctData>((row, id) => {
-    return {
-      id,
-      _value: get(row, col.field),
-      _label:
-        col.filterFormat?.(row) ?? col.format?.(row) ?? get(row, col.field),
-    }
-  })
+//   // When using client-side filtering
+//   const rowFormattedValues = props.rows.map<DistinctData>((row, id) => {
+//     return {
+//       id,
+//       _value: get(row, col.field),
+//       _label:
+//         col.filterFormat?.(row) ?? col.format?.(row) ?? get(row, col.field),
+//     }
+//   })
 
-  return uniqBy(rowFormattedValues, '_label')
-}
+//   return uniqBy(rowFormattedValues, '_label')
+// }
 </script>
 
 <template>
@@ -146,13 +143,13 @@ async function getDistinctData(): Promise<DistinctData[]> {
       />
     </div>
 
-    <TableColumnFilteringChips
+    <TableColumnFilteringSetup
       v-if="useChips"
       :column="column"
     />
 
     <!-- LIST -->
-    <List
+    <!-- <List
       v-else
       :items="items"
       :loading="isLoading"
@@ -162,7 +159,7 @@ async function getDistinctData(): Promise<DistinctData[]> {
       :fuse-options="{ threshold: 0.1 }"
       @added="handleAddFilterItem"
       @removed="handleRemoveFilterItem"
-    />
+    /> -->
   </div>
 </template>
 
