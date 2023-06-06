@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import {} from 'node:inspector'
+// INJECTION KEYS
+import { tableQueryKey } from '~/components/Table/provide/table.provide'
 
 // INJECTIONS
 const tableQuery = injectStrict(tableQueryKey)

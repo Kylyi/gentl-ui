@@ -6,6 +6,14 @@ import type { IItem } from '~/libs/App/types/item.type'
 // COMPONENTS
 import BtnConfirmation from '~/components/Button/BtnConfirmation.vue'
 
+// INJECTION KEYS
+import {
+  recalculateTableColumnsKey,
+  refreshTableDataKey,
+  tableStateKey,
+  updateTableStateKey,
+} from '~/components/Table/provide/table.provide'
+
 type ISavedTableLayout = {
   name: string
   layout: ITableState

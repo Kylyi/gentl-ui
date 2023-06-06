@@ -9,6 +9,9 @@ import { useTableUtils } from '~/components/Table/functions/useTableUtils'
 // COMPONENTS
 import HorizontalScroller from '@/components/Scroller/HorizontalScroller.vue'
 
+// INJECTION KEYS
+import { updateTableStateKey } from '~/components/Table/provide/table.provide'
+
 type ISplitter = {
   field: TableColumn['field']
   left: number

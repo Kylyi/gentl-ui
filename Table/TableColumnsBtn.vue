@@ -11,6 +11,12 @@ import { TableColumn } from '~/components/Table/models/table-column.model'
 import { useBtnUtils } from '~/components/Button/functions/useBtnUtils'
 import { useTableUtils } from '~/components/Table/functions/useTableUtils'
 
+// INJECTION KEYS
+import {
+  recalculateTableColumnsKey,
+  updateTableStateKey,
+} from '~/components/Table/provide/table.provide'
+
 type IProps = {
   columns: TableColumn[]
 } & IBtnProps

@@ -3,6 +3,12 @@
 import { TableColumnState } from '~/components/Table/models/table-column-state.model'
 import { TableColumn } from '~/components/Table/models/table-column.model'
 
+// INJECTION KEYS
+import {
+  refreshTableDataKey,
+  updateTableStateKey,
+} from '~/components/Table/provide/table.provide'
+
 type IProps = {
   columns?: TableColumn[]
   column: TableColumn
@@ -15,8 +21,6 @@ const props = withDefaults(defineProps<IProps>(), {
 
 // INJECTIONS
 const refreshData = injectStrict(refreshTableDataKey)
-
-// UTILS
 const updateTableState = injectStrict(updateTableStateKey)
 
 // LAYOUT

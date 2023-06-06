@@ -1,6 +1,15 @@
 <script setup lang="ts">
-import { TableColumn } from '~/components/Table/models/table-column.model'
+// TYPES
 import { FilterItem } from '~/libs/App/data/models/filter-item'
+
+// MODELS
+import { TableColumn } from '~/components/Table/models/table-column.model'
+
+// INJECTION KEYS
+import {
+  refreshTableDataKey,
+  updateTableStateKey,
+} from '~/components/Table/provide/table.provide'
 
 type IProps = {
   columns: TableColumn[]

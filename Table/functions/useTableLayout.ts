@@ -16,6 +16,9 @@ import TableRow from '@/components/Table/TableRow.vue'
 import TableRowMobile from '@/components/Table/TableRow.mobile.vue'
 import TableHeader from '~/components/Table/TableHeader.vue'
 
+// INJECTION KEYS
+import { recalculateTableColumnsKey } from '~/components/Table/provide/table.provide'
+
 export function useTableLayout(props: ITableProps) {
   const instance = getCurrentInstance()
 

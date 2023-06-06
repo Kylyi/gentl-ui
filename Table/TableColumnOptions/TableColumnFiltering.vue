@@ -5,6 +5,9 @@
 // MODELS
 import { TableColumn } from '~/components/Table/models/table-column.model'
 
+// INJECTION KEYS
+import { refreshTableDataKey } from '~/components/Table/provide/table.provide'
+
 type IProps = {
   rows: any[]
   column: TableColumn<any>

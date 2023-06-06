@@ -3,10 +3,18 @@
 import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
 import { FilterItem } from '~/libs/App/data/models/filter-item'
 
+// COMPOSITION FUNCTIONS
+import { useTableUtils } from '~/components/Table/functions/useTableUtils'
+
 // COMPONENTS
 import { TableColumn } from '~/components/Table/models/table-column.model'
 import { TableColumnState } from '~/components/Table/models/table-column-state.model'
-import { useTableUtils } from '~/components/Table/functions/useTableUtils'
+
+// INJECTION KEYS
+import {
+  refreshTableDataKey,
+  updateTableStateKey,
+} from '~/components/Table/provide/table.provide'
 
 type IProps = {
   column: TableColumn<any>

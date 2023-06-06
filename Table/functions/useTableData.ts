@@ -13,6 +13,14 @@ import { useTableUtils } from '~/components/Table/functions/useTableUtils'
 // CONSTANTS
 import { TABLE_STATE_DEFAULT } from '~/components/Table/constants/table-state.default'
 
+// INJECTION KEYS
+import {
+  refreshTableDataKey,
+  tableQueryKey,
+  tableStateKey,
+  updateTableStateKey,
+} from '~/components/Table/provide/table.provide'
+
 export async function useTableData(
   props: ITableProps,
   internalColumns: MaybeRefOrGetter<TableColumn<any>[]>

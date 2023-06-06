@@ -3,6 +3,12 @@
 import { TableColumn } from '~/components/Table/models/table-column.model'
 import { FilterItem } from '~/libs/App/data/models/filter-item'
 
+// INJECTION KEYS
+import {
+  refreshTableDataKey,
+  updateTableStateKey,
+} from '~/components/Table/provide/table.provide'
+
 type IProps = {
   columns: TableColumn<any>[]
   filter: FilterItem<any>

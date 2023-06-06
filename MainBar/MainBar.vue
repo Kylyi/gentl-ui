@@ -24,6 +24,7 @@ defineSlots<{
     loaderType: 'inline' | 'block'
     labels: boolean
   }) => void
+  'breadcrumbs-right'?: (payload: {}) => void
 }>()
 
 const crudBtnsEl = ref<InstanceType<typeof CrudBtns>>()
