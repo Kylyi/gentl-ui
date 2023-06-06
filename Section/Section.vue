@@ -44,6 +44,7 @@ defineOptions({
           <div
             flex="~ gap-x-2"
             w-full
+            items-center
           >
             <slot name="title-left" />
 

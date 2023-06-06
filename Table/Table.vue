@@ -2,6 +2,7 @@
 // VIRTUAL SCROLLER
 // @ts-expect-error - no types
 import { DynamicScroller, DynamicScrollerItem } from 'vue-virtual-scroller'
+import { config } from '~/config'
 
 // TYPES
 import type { ITableProps } from '~/components/Table/types/table-props.type'
@@ -25,6 +26,7 @@ const props = withDefaults(defineProps<ITableProps>(), {
   sizeField: 'size',
   totalRows: 0,
   useServer: true,
+  useChips: config.table.useChips,
 })
 
 defineEmits<{
@@ -152,9 +154,7 @@ const { isExporting, handleExportData } = useTableExporting()
             :is="TableRowComponent"
             :row="item"
             :columns="internalColumns"
-            :class="{
-              'is-clickable': rowClickable,
-            }"
+            :class="{ 'is-clickable': rowClickable }"
             :row-height="rowHeight"
             @click="handleRowClick(item, $event)"
           >

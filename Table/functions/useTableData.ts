@@ -19,6 +19,7 @@ export async function useTableData(
 ) {
   // UTILS
   const instance = getCurrentInstance()
+  const { replace } = useRouter()
   const { t } = useI18n()
   const { storageKey, modifyWithSearchParams } = useTableUtils()
 
@@ -26,8 +27,6 @@ export async function useTableData(
   const tableState = storageKey
     ? useLocalStorage(storageKey, TABLE_STATE_DEFAULT)
     : ref(TABLE_STATE_DEFAULT)
-
-  console.log('Log ~ tableState:', tableState)
 
   // LAYOUT
   const isInitialized = ref(false)
@@ -122,11 +121,28 @@ export async function useTableData(
     updateTableStateKey,
     (
       state: Partial<ITableState>,
+
       // We also provide a callback function that allows us to update the state
       // from components that do not have direct access to the table data (for example columns)
-      callback?: (state: ITableState) => ITableState
+      callback?: (state: ITableState) => ITableState,
+      updateInternalColumns?: boolean
     ) => {
-      const newState = callback?.(tableState.value) || {}
+      const newState: Partial<ITableState> = callback?.(tableState.value) || {}
+
+      // We sometimes need to update the internal columns as well
+      if (updateInternalColumns) {
+        ;[...(state.columns || []), ...(newState?.columns || [])].forEach(
+          column => {
+            const foundInternalColumn = toValue(internalColumns).find(
+              col => col.field === column.field
+            )
+
+            if (foundInternalColumn) {
+              Object.assign(foundInternalColumn, column)
+            }
+          }
+        )
+      }
 
       tableState.value = Object.assign({}, tableState.value, state, newState)
     }
@@ -196,20 +212,16 @@ export async function useTableData(
   watch(
     dbQuery,
     dbQuery => {
-      const queryParams = new URLSearchParams()
+      replace({
+        query: {
+          // Pagination
+          page: String(dbQuery.options.skip / dbQuery.options.take + 1),
+          perPage: String(dbQuery.options.take),
 
-      queryParams.set(
-        'page',
-        String(dbQuery.options.skip / dbQuery.options.take + 1)
-      )
-      queryParams.set('perPage', String(dbQuery.options.take))
-
-      // SEARCH
-      if (dbQuery.options.search) {
-        queryParams.set('search', dbQuery.options.search)
-      }
-
-      changeUrlWithoutHistory(queryParams.toString())
+          // Search
+          ...(dbQuery.options.search && { search: dbQuery.options.search }),
+        },
+      })
     },
     { immediate: true }
   )

@@ -486,7 +486,7 @@ function cleanComponent() {
   motionInstance.value = undefined
 }
 
-watch($dimensions, () => hide(true, true))
+// watch($dimensions, () => hide(true, true))
 
 // useEventListener(['mousedown', 'touchend'], handleClickOutside)
 onClickOutside(menuEl, handleClickOutside)

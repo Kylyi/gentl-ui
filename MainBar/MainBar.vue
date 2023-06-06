@@ -40,7 +40,11 @@ defineExpose({
     ref="headerEl"
     class="main-bar"
   >
-    <Breadcrumbs v-if="!noBreadcrumbs" />
+    <Breadcrumbs v-if="!noBreadcrumbs">
+      <template #right>
+        <slot name="breadcrumbs-right" />
+      </template>
+    </Breadcrumbs>
 
     <div class="main-bar-content">
       <!-- TITLE & SUBTITLE -->

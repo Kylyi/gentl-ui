@@ -38,6 +38,11 @@ export interface ISelectorProps extends IInputProps {
      * When this is used, the `mapKey` is ignored and array of objects should be provided
      */
     local?: boolean
+
+    /**
+     * When true, the loadData will be called on every search
+     */
+    onSearch?: boolean
   }
   noDropdownIcon?: boolean
   noTruncate?: boolean
@@ -73,6 +78,7 @@ export interface ISelectorProps extends IInputProps {
   itemHeight?: number
   multi?: boolean
   maxChipsRows?: number
+  noHighlight?: boolean
   noSort?: boolean
   noSearch?: boolean
 

@@ -218,7 +218,6 @@ export function useList(
     },
   }
   const { results } = useFuse(search, items, fuseOptions)
-
   const useWorker = computed(() => props.useWorker || items.value.length > 5e3)
 
   async function handleSearchedResults(res: typeof results.value) {
@@ -226,7 +225,7 @@ export function useList(
     let highlightedItems: { ref: any; id: string; _highlighted?: string }[] = []
 
     // FOUND > 100 ITEMS - do not create highlighted text (performance)
-    if (!search.value || res.length > 100) {
+    if (!search.value || res.length > 100 || props.noHighlight) {
       highlightedItems = res.map(({ item, score }) => {
         _hasExactMatch = _hasExactMatch || score! <= Number.EPSILON
 

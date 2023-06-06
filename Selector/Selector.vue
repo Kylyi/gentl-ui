@@ -173,11 +173,15 @@ const preAddedItem = ref<IItemToBeAdded | undefined>()
 const addedItems = ref<IItemToBeAdded[]>([])
 
 function handleSearch(payload: { search: string; hasExactMatch: boolean }) {
+  const { search, hasExactMatch } = payload
+
+  if (props.loadData?.onSearch) {
+    loadData(true, { search })
+  }
+
   if (!props.allowAdd) {
     return
   }
-
-  const { search, hasExactMatch } = payload
 
   // ALREADY ADDING ITEM ~ sync label with search value
   if (search && !hasExactMatch && preAddedItem.value) {
@@ -258,6 +262,7 @@ const optionsInternal = ref<any[]>([])
 const listProps = reactivePick(props, [
   'disabledFnc',
   'emitKey',
+  'fuseOptions',
   'multi',
   'itemHeight',
   'sortBy',
@@ -266,6 +271,7 @@ const listProps = reactivePick(props, [
   'noSort',
   'loading',
   'noSearch',
+  'noHighlight',
   'allowSelectAllFiltered',
 ])
 
@@ -320,12 +326,12 @@ const optionsByKey = computed(() => {
 })
 
 // DATA LOADING
-async function loadData() {
-  if (props.loadData && !isOptionsInternalLoaded.value) {
+async function loadData(force?: boolean, options?: { search?: string }) {
+  if (props.loadData && (!isOptionsInternalLoaded.value || force)) {
     isLoadingInternal.value = true
 
     try {
-      const res = await props.loadData.fnc()
+      const res = await props.loadData.fnc({ search: options?.search })
 
       if (props.loadData.local) {
         optionsInternal.value = res

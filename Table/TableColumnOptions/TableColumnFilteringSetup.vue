@@ -75,7 +75,7 @@ function handleAddFilter() {
 }
 
 function handleFocusInput(node: VNode) {
-  node.component?.exposed?.focus?.()
+  setTimeout(() => node.component?.exposed?.focus?.(), 300)
 }
 
 onMounted(() => {

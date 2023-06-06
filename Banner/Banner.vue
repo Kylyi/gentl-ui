@@ -15,6 +15,7 @@ defineEmits<{
 
 // LAYOUT
 const model = useVModel(props, 'modelValue')
+const internalValue = ref(props.modelValue)
 const counter = toRef(props, 'counter')
 const bannerEl = ref<HTMLDivElement>()
 
@@ -37,6 +38,7 @@ const icon = computed(() => {
 
 function dismiss() {
   if (props.dismissable) {
+    internalValue.value = false
     model.value = false
   }
 }
@@ -72,7 +74,7 @@ defineExpose({
     @after-leave="$emit('dismiss')"
   >
     <div
-      v-if="model"
+      v-if="model && internalValue"
       ref="bannerEl"
       class="banner"
       :class="[

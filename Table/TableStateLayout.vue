@@ -30,7 +30,8 @@ const tableLayouts = useLocalStorage<ISavedTableLayout[]>(storageKey, [])
 
 function handleSelectTableLayout(tableLayout: IItem) {
   if (!tableLayout) {
-    updateTableState({ layout: undefined })
+    // TODO: This should reset the table to its default state
+    updateTableState({ layout: undefined }, undefined)
 
     return
   }
@@ -57,10 +58,14 @@ function handleSelectTableLayout(tableLayout: IItem) {
     if (foundLayout) {
       const { name, ...layoutData } = foundLayout
 
-      updateTableState({
-        ...layoutData.layout,
-        layout: name,
-      })
+      updateTableState(
+        {
+          ...layoutData.layout,
+          layout: name,
+        },
+        undefined,
+        true
+      )
       recalculateTableColumns(true)
       refreshData()
     }
@@ -77,7 +82,7 @@ function handleApplyLayout() {
   )
 
   if (foundLayout) {
-    updateTableState(foundLayout.layout)
+    updateTableState(foundLayout.layout, undefined, true)
     recalculateTableColumns(true)
     refreshData()
   }

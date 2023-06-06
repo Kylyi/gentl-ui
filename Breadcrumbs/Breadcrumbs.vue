@@ -37,6 +37,8 @@ const breadcrumbs = computed(() => {
         no-uppercase
       />
     </template>
+
+    <slot name="right" />
   </div>
 </template>
 
