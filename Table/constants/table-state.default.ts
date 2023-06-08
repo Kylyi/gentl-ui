@@ -1,4 +1,7 @@
-import { ITableState } from '~/components/Table/types/table-state.type'
+import { klona } from 'klona'
+
+// TYPES
+import type { ITableState } from '~/components/Table/types/table-state.type'
 
 export const TABLE_STATE_DEFAULT: ITableState = {
   includeDeleted: false,
@@ -6,4 +9,8 @@ export const TABLE_STATE_DEFAULT: ITableState = {
   pageSize: 100,
   columns: [],
   layout: undefined,
+}
+
+export function getTableStateDefault() {
+  return klona(TABLE_STATE_DEFAULT)
 }

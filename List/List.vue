@@ -101,6 +101,7 @@ defineExpose({
 
     <Component
       :is="ContainerComponent"
+      v-if="arr.length"
       ref="containerEl"
       :items="arr"
       :class="contentClass"
@@ -135,6 +136,12 @@ defineExpose({
         </ListRow>
       </template>
     </Component>
+
+    <Banner
+      v-else
+      icon-center
+      :label="$t('general.noData')"
+    />
 
     <slot name="below" />
   </div>

@@ -21,7 +21,7 @@ import Checkbox from '~/components/Checkbox/Checkbox.vue'
 import TextInput from '~/components/Inputs/TextInput/TextInput.vue'
 
 // CONSTANTS
-import { TABLE_STATE_DEFAULT } from '~/components/Table/constants/table-state.default'
+import { getTableStateDefault } from '~/components/Table/constants/table-state.default'
 
 const SELECTOR_COMPARATORS = [ComparatorEnum.IN, ComparatorEnum.NOT_IN]
 
@@ -49,10 +49,13 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
     })
     const data = get(res, mapKey)
 
-    return data.map((item: any) => ({
-      ...item,
-      _value: get(item, field || col.field),
-    }))
+    return data.map((item: any) => {
+      return {
+        ...item,
+        _value: get(item, field || col.field),
+        _label: col.format?.(item) ?? get(item, distinctField),
+      }
+    })
   }
 
   /**
@@ -176,7 +179,8 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
    */
   function transformUrlSearchParams(columns: TableColumn[]) {
     let isUrlUsedForFiltering = false
-    const params = new URLSearchParams(window.location.search)
+    const url = useRequestURL()
+    const params = url.searchParams
     const tableQueryWhere: ITableQuery['where'] = {}
     const tableQueryOptions: Partial<ITableQuery['options']> = {}
     const urlUsedFor: Array<'pagination' | 'filter' | 'sort'> = []
@@ -267,6 +271,7 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
   ) {
     const columns = toValue(columnsRef)
     const tableQuery = transformUrlSearchParams(columns)
+    const tableStateDefault = getTableStateDefault()
 
     if (!tableQuery.usedFor.length) {
       return
@@ -277,12 +282,12 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
     // Pagination
     if (tableQuery.usedFor.includes('pagination')) {
       const page =
-        (skip ?? TABLE_STATE_DEFAULT.page) /
-          (take ?? TABLE_STATE_DEFAULT.pageSize) +
+        (skip ?? tableStateDefault.page) /
+          (take ?? tableStateDefault.pageSize) +
         1
 
       currentPageRef.value = Math.floor(page)
-      currentPageSizeRef.value = take || TABLE_STATE_DEFAULT.pageSize
+      currentPageSizeRef.value = take || tableStateDefault.pageSize
     }
 
     if (

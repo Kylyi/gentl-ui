@@ -17,26 +17,28 @@ const breadcrumbs = computed(() => {
 </script>
 
 <template>
-  <div class="breadcrumbs">
-    <template
-      v-for="breadcrumb in breadcrumbs"
-      :key="breadcrumb.to"
-    >
-      <!-- CHEVRON -->
-      <span
-        v-if="typeof breadcrumb === 'string'"
-        :class="BUTTON_PRESET.CHEVRON_RIGHT.icon"
-      />
+  <div class="breadcrumbs-wrapper">
+    <div class="breadcrumbs">
+      <template
+        v-for="breadcrumb in breadcrumbs"
+        :key="breadcrumb.to"
+      >
+        <!-- CHEVRON -->
+        <span
+          v-if="typeof breadcrumb === 'string'"
+          :class="BUTTON_PRESET.CHEVRON_RIGHT.icon"
+        />
 
-      <Btn
-        v-else
-        v-bind="breadcrumb"
-        no-active-link
-        color="!dark !dark:light"
-        size="sm"
-        no-uppercase
-      />
-    </template>
+        <Btn
+          v-else
+          v-bind="breadcrumb"
+          no-active-link
+          color="!dark !dark:light"
+          size="sm"
+          no-uppercase
+        />
+      </template>
+    </div>
 
     <slot name="right" />
   </div>
@@ -44,7 +46,11 @@ const breadcrumbs = computed(() => {
 
 <style lang="scss">
 .breadcrumbs {
-  --apply: flex flex-gap-x-1 items-center text-sm m-t-2;
+  --apply: flex grow flex-gap-x-1 items-center text-sm m-t-2;
+
+  &-wrapper {
+    --apply: flex flex-gap-x-1 items-center;
+  }
 }
 
 .main-bar .breadcrumbs {

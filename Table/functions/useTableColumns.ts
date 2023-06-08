@@ -10,6 +10,9 @@ import { GroupItem } from '~/libs/App/data/models/group-item.model'
 import { stringToFloat } from '~/libs/App/data/regex/string-to-float.regex'
 import { useTableUtils } from '~/components/Table/functions/useTableUtils'
 
+// CONSTANTS
+import { getTableStateDefault } from '~/components/Table/constants/table-state.default'
+
 type Options = {
   groupsRef?: MaybeRefOrGetter<GroupItem[]>
   minColWidthRef?: MaybeRefOrGetter<number>
@@ -20,7 +23,11 @@ type Options = {
 
 // FIXME: This won't work with SSR
 function getTableState(storageKey?: string): ITableState {
-  return JSON.parse((storageKey && localStorage.getItem(storageKey)) || '{}')
+  if (process.client) {
+    return JSON.parse((storageKey && localStorage.getItem(storageKey)) || '{}')
+  }
+
+  return getTableStateDefault()
 }
 
 export function useTableColumns(props: Pick<ITableProps, 'storageKey'>) {
@@ -34,6 +41,7 @@ export function useTableColumns(props: Pick<ITableProps, 'storageKey'>) {
    *  - group expansion
    *
    * Also will merge the column with any state that is saved in the local storage
+   * Note: Mutates the columns!
    */
   const extendColumns = (columns: TableColumn[], options?: Options) => {
     const {
@@ -106,7 +114,7 @@ export function useTableColumns(props: Pick<ITableProps, 'storageKey'>) {
       containerWidth - Number(isWrapperOverflown) * scrollbarWidth - 1
 
     const cols = [...toValue(columnsRef)].filter(col => !col.hidden)
-    extendColumns(cols, options)
+    // extendColumns(cols, options)
 
     const colsTotalWidth = cols.reduce<{ relative: number; fixed: number }>(
       (agg, col) => {

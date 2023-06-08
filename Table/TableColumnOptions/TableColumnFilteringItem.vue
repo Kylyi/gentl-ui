@@ -36,6 +36,7 @@ const { getAvailableComparators, getInputByDataType, isSelectorComparator } =
 const inputEl = ref<any>()
 const filter = toRef(props, 'filter')
 const column = toRef(props, 'column')
+const preventRefreshData = refAutoReset(false, 100)
 
 const comparatorOptions = computed(() => {
   return getAvailableComparators(props.column.dataType, {
@@ -99,10 +100,12 @@ watch(
 
     if (wasSelectComparator && !isSelectComparator) {
       filter.value.compareValue = null
+      preventRefreshData.value = true
     }
 
     if (!wasSelectComparator && isSelectComparator) {
       filter.value.compareValue = []
+      preventRefreshData.value = true
     }
   }
 )
@@ -110,6 +113,10 @@ watch(
 // Watch for changes to refresh data and save the state
 watch([() => filter.value.comparator, () => filter.value.compareValue], () => {
   nextTick(() => {
+    if (preventRefreshData.value) {
+      return
+    }
+
     updateTableState({}, state => {
       const foundColumn = state.columns.find(
         column => column.field === props.column.field
@@ -133,7 +140,6 @@ watch([() => filter.value.comparator, () => filter.value.compareValue], () => {
       return state
     })
 
-    console.log('Refresh data now')
     refreshData()
   })
 })
@@ -183,10 +189,9 @@ defineExpose({
       v-else-if="props.column.getDistinctData"
       v-model="filter.compareValue"
       :load-data="{
-        fnc: props.column.getDistinctData,
-        mapKey: 'count',
+        fnc: () => props.column.getDistinctData?.(props.column),
+        mapKey: 'doesnt-really-matter',
         local: true,
-        immediate: true,
       }"
       multi
       option-key="_value"

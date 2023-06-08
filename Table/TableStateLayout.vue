@@ -3,6 +3,10 @@
 import type { ITableState } from '~/components/Table/types/table-state.type'
 import type { IItem } from '~/libs/App/types/item.type'
 
+// COMPOSITION FUNCTIONS
+import { useTableUtils } from '~/components/Table/functions/useTableUtils'
+import { getTableStateDefault } from '~/components/Table/constants/table-state.default'
+
 // COMPONENTS
 import BtnConfirmation from '~/components/Button/BtnConfirmation.vue'
 
@@ -13,6 +17,8 @@ import {
   tableStateKey,
   updateTableStateKey,
 } from '~/components/Table/provide/table.provide'
+
+// UTILS
 
 type ISavedTableLayout = {
   name: string
@@ -31,6 +37,9 @@ const recalculateTableColumns = injectStrict(recalculateTableColumnsKey)
 const updateTableState = injectStrict(updateTableStateKey)
 const refreshData = injectStrict(refreshTableDataKey)
 
+// UTILS
+const { extractColumnsStateData } = useTableUtils()
+
 // LAYOUT
 const btnConfirmationEl = ref<InstanceType<typeof BtnConfirmation>>()
 const storageKey = `table-layouts-${props.storageKey || 'default'}`
@@ -38,8 +47,18 @@ const tableLayouts = useLocalStorage<ISavedTableLayout[]>(storageKey, [])
 
 function handleSelectTableLayout(tableLayout: IItem) {
   if (!tableLayout) {
-    // TODO: This should reset the table to its default state
-    updateTableState({ layout: undefined }, undefined)
+    updateTableState(
+      getTableStateDefault(),
+      (state, originalColumns) => {
+        state.layout = undefined
+        state.columns = extractColumnsStateData(originalColumns)
+
+        return state
+      },
+      true
+    )
+    recalculateTableColumns(true)
+    refreshData()
 
     return
   }

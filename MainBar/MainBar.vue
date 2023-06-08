@@ -112,7 +112,7 @@ defineExpose({
 
   &-content {
     --apply: flex flex-gap-x-4 grow items-center m-t-1 rounded-custom
-      dark:bg-darker bg-white color-black dark:color-white;
+      bg-ca;
   }
 
   &-title {
@@ -124,7 +124,7 @@ defineExpose({
   }
 
   &-actions {
-    --apply: flex flex-col self-start;
+    --apply: flex flex-col self-start m-t-1 m-x-2;
   }
 }
 

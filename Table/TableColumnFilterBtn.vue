@@ -25,9 +25,13 @@ const btnClass = computedEager(() => {
  * On menu hide, we remove the filter if the `compareValue` is `undefined`
  */
 function handleMenuHide() {
-  column.value.filters = column.value.filters.filter(
-    filterItem => filterItem.compareValue !== undefined
-  )
+  column.value.filters = column.value.filters.filter(filterItem => {
+    if (Array.isArray(filterItem.compareValue)) {
+      return filterItem.compareValue.length
+    }
+
+    return filterItem.compareValue !== undefined
+  })
 }
 </script>
 

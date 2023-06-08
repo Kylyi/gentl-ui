@@ -124,7 +124,6 @@ const { isExporting, handleExportData } = useTableExporting()
       class="lt-md:display-none"
       :columns="internalColumns"
       :rows="rows"
-      :header-height="headerHeight || rowHeight"
       :use-server="useServer"
       :use-chips="useChips"
       :minimum-column-width="minimumColumnWidth"

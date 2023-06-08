@@ -1,3 +1,4 @@
+import { TableColumn } from '~/components/Table/models/table-column.model'
 import { ITableQuery } from '~/components/Table/types/table-query.type'
 import { ITableState } from '~/components/Table/types/table-state.type'
 
@@ -6,7 +7,10 @@ export const tableStateKey: InjectionKey<Ref<ITableState>> =
 export const updateTableStateKey: InjectionKey<
   (
     tableState: Partial<ITableState>,
-    callback?: (tableState: ITableState) => ITableState,
+    callback?: (
+      tableState: ITableState,
+      originalColumns: TableColumn<any>[]
+    ) => ITableState,
     updateInternalColumns?: boolean
   ) => void
 > = Symbol('updateTableState')

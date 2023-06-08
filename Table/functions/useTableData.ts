@@ -11,7 +11,7 @@ import { TableColumn } from '~/components/Table/models/table-column.model'
 import { useTableUtils } from '~/components/Table/functions/useTableUtils'
 
 // CONSTANTS
-import { TABLE_STATE_DEFAULT } from '~/components/Table/constants/table-state.default'
+import { getTableStateDefault } from '~/components/Table/constants/table-state.default'
 
 // INJECTION KEYS
 import {
@@ -20,6 +20,7 @@ import {
   tableStateKey,
   updateTableStateKey,
 } from '~/components/Table/provide/table.provide'
+import { config } from '~/config'
 
 export async function useTableData(
   props: ITableProps,
@@ -33,8 +34,8 @@ export async function useTableData(
 
   // STATE MANAGEMENT
   const tableState = storageKey
-    ? useLocalStorage(storageKey, TABLE_STATE_DEFAULT)
-    : ref(TABLE_STATE_DEFAULT)
+    ? useLocalStorage(storageKey, getTableStateDefault())
+    : ref(getTableStateDefault())
 
   // LAYOUT
   const isInitialized = ref(false)
@@ -54,10 +55,7 @@ export async function useTableData(
     currentPageSize,
   } = useOffsetPagination({
     ...tableState.value,
-    // 9e6 is a hack to make make pagination work on initialization
-    // if we set 0, the `useOffsetPagination` thinks that there are no other pages
-    // than the first one
-    total: computed(() => totalRows.value || 9e6),
+    total: computed(() => totalRows.value || 0),
     onPageChange: page => {
       if (isInitialized.value) {
         tableState.value.page = page.currentPage
@@ -132,12 +130,17 @@ export async function useTableData(
 
       // We also provide a callback function that allows us to update the state
       // from components that do not have direct access to the table data (for example columns)
-      callback?: (state: ITableState) => ITableState,
+      callback?: (
+        state: ITableState,
+        originalColumns: TableColumn<any>[]
+      ) => ITableState,
       updateInternalColumns?: boolean
     ) => {
-      const newState: Partial<ITableState> = callback?.(tableState.value) || {}
+      const newState: Partial<ITableState> =
+        callback?.(tableState.value, toValue(props.columns)) || {}
 
       // We sometimes need to update the internal columns as well
+      // For example when we apply/select a layout that has some filters set up
       if (updateInternalColumns) {
         ;[...(state.columns || []), ...(newState?.columns || [])].forEach(
           column => {
@@ -180,7 +183,7 @@ export async function useTableData(
 
       return {
         data,
-        totalRows: get(res, props.getData.countKey || 'totalRows'),
+        totalRows: get(res, props.getData.countKey || config.table.countKey),
       }
     } catch (error: any) {
       if (props.getData.errorHandler) {

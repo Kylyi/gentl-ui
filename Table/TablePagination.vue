@@ -118,6 +118,16 @@ const pages = computedEager(() => {
         w="full"
         rounded="custom"
       />
+      <Skeleton
+        h="10"
+        w="full"
+        rounded="custom"
+      />
+      <Skeleton
+        h="10"
+        w="full"
+        rounded="custom"
+      />
     </template>
   </ClientOnly>
 </template>

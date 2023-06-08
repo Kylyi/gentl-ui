@@ -142,6 +142,7 @@ export function useTableColumnResizing(props: {
       updateTableState({
         columns: extractColumnsStateData(props.columns),
       })
+      headerEl.value?.updateArrows()
     })
   }
 

@@ -14,7 +14,7 @@ import { useTableColumns } from '~/components/Table/functions/useTableColumns'
 // COMPONENTS
 import TableRow from '@/components/Table/TableRow.vue'
 import TableRowMobile from '@/components/Table/TableRow.mobile.vue'
-import TableHeader from '~/components/Table/TableHeader.vue'
+import TableHeader from '~/components/Table/TableHeader.client.vue'
 
 // INJECTION KEYS
 import { recalculateTableColumnsKey } from '~/components/Table/provide/table.provide'
@@ -64,7 +64,9 @@ export function useTableLayout(props: ITableProps) {
   })
 
   // COLUMNS
-  const columns = ref<TableColumn[]>(props.columns)
+  const columns = ref<TableColumn[]>(
+    props.columns.map(col => new TableColumn(col))
+  )
   const internalColumns = ref<TableColumn[]>(extendColumns(props.columns))
 
   // RESIZE & SCROLLING
@@ -101,7 +103,7 @@ export function useTableLayout(props: ITableProps) {
     _isOverflown => {
       isOverflown.value = _isOverflown as boolean
 
-      throttledHandleResize(true)
+      handleResize(true)
     },
     { direction: 'vertical' }
   )

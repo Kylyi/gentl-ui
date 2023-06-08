@@ -56,7 +56,12 @@ function removeChip(skipRefreshData = false) {
  * When we hide the menu and the filter `compareValue` is `undefined`, we remove the filter
  */
 function handleFilteringItemHide() {
-  if (filter.value.compareValue === undefined) {
+  const isArray = Array.isArray(filter.value.compareValue)
+
+  if (
+    filter.value.compareValue === undefined ||
+    (isArray && !filter.value.compareValue.length)
+  ) {
     removeChip(true)
   }
 }

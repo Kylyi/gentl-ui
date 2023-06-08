@@ -44,7 +44,6 @@ function handleCopyUrl() {
   <Btn
     :label="$t('table.urlCopy')"
     no-uppercase
-    size="sm"
     icon="ph:link"
     m="3"
     @click="handleCopyUrl"
