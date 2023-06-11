@@ -61,6 +61,12 @@ defineExpose({
   setInternalValue: (val: boolean) => {
     internalValue.value = val
   },
+  recomputePosition: () => {
+    if (menuProxyEl.value && 'recomputePosition' in menuProxyEl.value) {
+      menuProxyEl.value?.recomputePosition()
+    }
+  },
+  getFloatingEl: () => menuProxyEl.value?.getFloatingEl(),
 })
 </script>
 

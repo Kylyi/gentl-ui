@@ -46,8 +46,9 @@ defineExpose({
     <template #append="{ clear }">
       <div
         v-if="modelValue || $slots.append"
-        flex="~ gap-1"
+        flex="~ center gap-1"
         m="r-1"
+        fit
       >
         <Btn
           v-if="modelValue"

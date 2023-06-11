@@ -11,6 +11,7 @@ import type { ITableProps } from '~/components/Table/types/table-props.type'
 import { useTableData } from '~/components/Table/functions/useTableData'
 import { useTableExporting } from '~/components/Table/functions/useTableExporting'
 import { useTableLayout } from '~/components/Table/functions/useTableLayout'
+import { useTableSelection } from '~/components/Table/functions/useTableSelection'
 
 const props = withDefaults(defineProps<ITableProps>(), {
   breakpoint: 'md',
@@ -67,6 +68,7 @@ const {
   next,
 } = await useTableData(props, internalColumns)
 const { isExporting, handleExportData } = useTableExporting()
+useTableSelection(props)
 </script>
 
 <template>
@@ -90,7 +92,14 @@ const { isExporting, handleExportData } = useTableExporting()
           />
         </slot>
 
-        <TableColumnsBtn v-model:columns="columns" />
+        <slot name="prepend-actions" />
+
+        <TableColumnsBtn
+          v-model:columns="columns"
+          :rows="rows"
+          :use-chips="useChips"
+          :use-server="useServer"
+        />
 
         <ExportBtn
           v-if="!noExport"

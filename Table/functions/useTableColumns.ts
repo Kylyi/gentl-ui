@@ -114,7 +114,7 @@ export function useTableColumns(props: Pick<ITableProps, 'storageKey'>) {
       containerWidth - Number(isWrapperOverflown) * scrollbarWidth - 1
 
     const cols = [...toValue(columnsRef)].filter(col => !col.hidden)
-    // extendColumns(cols, options)
+    extendColumns(cols, options)
 
     const colsTotalWidth = cols.reduce<{ relative: number; fixed: number }>(
       (agg, col) => {

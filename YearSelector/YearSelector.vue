@@ -104,6 +104,7 @@ defineExpose({ sync })
       :step="null"
       size="sm"
       w="15"
+      grow
       input-class="text-center"
       @update:model-value="handleManualYearInputChange"
     />

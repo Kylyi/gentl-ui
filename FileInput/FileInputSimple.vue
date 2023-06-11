@@ -71,6 +71,7 @@ function handleRemove(idx: number) {
   <Field
     v-bind="fieldProps"
     :no-content="!model?.length && !placeholder"
+    @click="open"
   >
     <template #append>
       <Btn

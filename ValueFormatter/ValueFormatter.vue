@@ -47,7 +47,7 @@ const formattedValue = computedEager(() => {
 <template>
   <slot :val="formattedValue">
     <span>
-      {{ formattedValue }}
+      {{ isNil(formattedValue) ? emptyValueString : formattedValue }}
     </span>
   </slot>
 </template>

@@ -1,72 +1,25 @@
 import { ISelectorUtilsOptions } from '~~/components/Selector/types/selector-utils-options.type'
-import { useAppStore } from '~~/libs/App/app.store'
 
 export function useSelectorUtils(options: ISelectorUtilsOptions) {
-  const { props, eventHandlers = {} } = options
-
-  const { lastPointerDownEvent } = storeToRefs(useAppStore())
+  const { props, menuElRef } = options
   const instance = getCurrentInstance()
-  const { preClick, onBlur, onFocus } = eventHandlers
 
   // DATA HANDLING
   const model = useVModel(props, 'modelValue')
   const internalValue = ref(model.value)
 
+  // Sync model with internal value
   watch(model, val => {
-    if (isBlurred.value) {
-      internalValue.value = val
-    }
+    internalValue.value = val
   })
 
   // LAYOUT
   const el = ref<any>()
-  const isBlurred = ref(true)
-  const isFocusPrevented = ref(false)
-  const preventNextBlur = autoResetRef(false, 50)
+  const menuEl = computed(() => toValue(menuElRef))
 
   // INPUT METHODS
-  const clear = (shouldFocusAfterClear?: boolean) => {
+  const clear = () => {
     instance?.emit('update:modelValue', props.emptyValue)
-
-    if (shouldFocusAfterClear || !isBlurred) {
-      // setTimeout(() => focus(), 0)
-    }
-  }
-
-  const blur = () => {
-    isBlurred.value = true
-    unrefElement(el)?.blur()
-  }
-
-  const handleFocus = (ev?: Event) => {
-    const shouldBlur =
-      onFocus?.(lastPointerDownEvent.value!.pointerType, ev) || false
-    isBlurred.value = shouldBlur
-
-    if (isBlurred) {
-      preventNextBlur.value = true
-      blur()
-    }
-  }
-
-  const handleBlur = () => {
-    if (!preventNextBlur.value) {
-      onBlur?.()
-      blur()
-      instance?.emit('blur')
-    }
-  }
-
-  const handleMouseDown = (ev: MouseEvent) => {
-    const shouldFocus =
-      preClick?.(lastPointerDownEvent.value!.pointerType, ev) ?? true
-
-    if (!shouldFocus) {
-      ev.preventDefault()
-      ev.stopPropagation()
-    } else if ((ev.target as HTMLElement).nodeName !== 'INPUT') {
-      ev.preventDefault()
-    }
   }
 
   // WRAPPER
@@ -91,16 +44,53 @@ export function useSelectorUtils(options: ISelectorUtilsOptions) {
     'stackLabel'
   )
 
+  // Click & focus handler
+  const focusedProgramatically = refAutoReset(false, 50)
+
+  // In some cases, we click into the `margin` of the `.wrapper-body__input`
+  // which doesn't trigger the focus event on the input. We need to handle
+  // this case manually.
+  function handleClickWrapper(ev: MouseEvent) {
+    if ((ev.target as HTMLElement).classList.contains('wrapper-body__input')) {
+      handleFocusOrClick(ev)
+    }
+  }
+
+  function handleFocusOrClick(ev: MouseEvent | FocusEvent) {
+    if (focusedProgramatically.value) {
+      return
+    }
+
+    focusedProgramatically.value = true
+
+    blurAnyFocusedInput()
+
+    const hasClickedInsideFloatingElement = !!(
+      ev.target as HTMLElement
+    ).closest('.floating-element')
+
+    if (!hasClickedInsideFloatingElement) {
+      document.querySelectorAll('.floating-element').forEach(el => {
+        const currentMenuDom = menuEl.value?.getFloatingEl()
+
+        if (el !== currentMenuDom) {
+          el.setAttribute('hide-trigger', '')
+        }
+      })
+    }
+
+    if (!props.disabled && !props.readonly) {
+      menuEl.value?.show()
+    }
+  }
+
   return {
     el,
     internalValue,
     wrapperProps,
-    isBlurred,
-    isFocusPrevented,
 
-    handleMouseDown,
-    handleBlur,
-    handleFocus,
+    handleFocusOrClick,
+    handleClickWrapper,
     clear,
   }
 }

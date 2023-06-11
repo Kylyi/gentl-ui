@@ -36,7 +36,6 @@ const { getAvailableComparators, getInputByDataType, isSelectorComparator } =
 const inputEl = ref<any>()
 const filter = toRef(props, 'filter')
 const column = toRef(props, 'column')
-const preventRefreshData = refAutoReset(false, 100)
 
 const comparatorOptions = computed(() => {
   return getAvailableComparators(props.column.dataType, {
@@ -87,7 +86,10 @@ function handleRemoveFilter() {
 
     return state
   })
-  refreshData()
+
+  if (props.filter.compareValue) {
+    refreshData()
+  }
 }
 
 // Watch for comparator change to reset the `compareValue` if needed
@@ -100,49 +102,46 @@ watch(
 
     if (wasSelectComparator && !isSelectComparator) {
       filter.value.compareValue = null
-      preventRefreshData.value = true
     }
 
     if (!wasSelectComparator && isSelectComparator) {
       filter.value.compareValue = []
-      preventRefreshData.value = true
     }
   }
 )
 
-// Watch for changes to refresh data and save the state
-watch([() => filter.value.comparator, () => filter.value.compareValue], () => {
-  nextTick(() => {
-    if (preventRefreshData.value) {
-      return
-    }
+function handleCompareValueChange() {
+  updateTableState({}, state => {
+    const foundColumn = state.columns.find(
+      column => column.field === props.column.field
+    )
 
-    updateTableState({}, state => {
-      const foundColumn = state.columns.find(
-        column => column.field === props.column.field
+    if (foundColumn) {
+      const foundFilter = foundColumn.filters.find(
+        filter => filter.comparator === props.filter.comparator
       )
 
-      if (foundColumn) {
-        const foundFilter = foundColumn.filters.find(
-          filter => filter.comparator === props.filter.comparator
-        )
-
-        if (foundFilter) {
-          foundFilter.comparator = filter.value.comparator
-          foundFilter.compareValue = filter.value.compareValue
-        } else {
-          foundColumn.filters.push(new FilterItem(filter.value))
-        }
+      if (foundFilter) {
+        foundFilter.comparator = filter.value.comparator
+        foundFilter.compareValue = filter.value.compareValue
       } else {
-        state.columns.push(new TableColumnState(props.column))
+        foundColumn.filters.push(new FilterItem(filter.value))
       }
+    } else {
+      state.columns.push(new TableColumnState(props.column))
+    }
 
-      return state
-    })
+    return state
+  })
 
+  refreshData()
+}
+
+function handleComparatorChange() {
+  nextTick(() => {
     refreshData()
   })
-})
+}
 
 defineExpose({
   focus: () => inputEl.value?.focus(),
@@ -162,6 +161,7 @@ defineExpose({
         no-sort
         :hidden-options="hiddenComparators"
         hide-self
+        @update:model-value="handleComparatorChange"
       />
 
       <CrudBtnDelete
@@ -182,6 +182,7 @@ defineExpose({
       v-model="filter.compareValue"
       :debounce="500"
       :placeholder="`${$t('table.filterValue')}...`"
+      @update:model-value="handleCompareValueChange"
     />
 
     <!-- SELECTOR -->
@@ -197,6 +198,7 @@ defineExpose({
       option-key="_value"
       option-label="_label"
       :placeholder="`${$t('table.filterValue')}...`"
+      @update:model-value="handleCompareValueChange"
     />
   </div>
 </template>

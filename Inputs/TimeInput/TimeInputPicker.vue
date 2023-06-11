@@ -9,6 +9,7 @@ import type { ITimeInputPickerProps } from '~/components/Inputs/TimeInput/types/
 import VerticalScrollPicker from '~/components/ScrollPicker/VerticalScrollPicker.vue'
 import MenuProxy from '~/components/MenuProxy/MenuProxy.vue'
 import TextInput from '~/components/Inputs/TextInput/TextInput.vue'
+import { useAppStore } from '~/libs/App/app.store'
 
 const props = defineProps<ITimeInputPickerProps>()
 const emits = defineEmits<{
@@ -16,6 +17,9 @@ const emits = defineEmits<{
   (e: 'update:is-am', val: boolean): void
   (e: 'update:update:prevent-next-is-am-change', val: boolean): void
 }>()
+
+// UTILS
+const { lastPointerDownEvent } = storeToRefs(useAppStore())
 
 // OPTIONS
 const minuteOptions = computed(() =>
@@ -72,11 +76,12 @@ const isPickerActive = ref(false)
 const preventNextChangeFromMobileInputs = autoResetRef(false, 50)
 const preventPickerSync = autoResetRef(false, 1000)
 const isAm = useVModel(props, 'isAm', emits, { eventName: 'update:is-am' })
-const usedTouch = useVModel(props, 'usedTouch', emits, {
-  eventName: 'update:used-touch',
-})
 const preventNextIsAmChange = useVModel(props, 'preventNextIsAmChange', emits, {
   eventName: 'update:prevent-next-is-am-change',
+})
+
+const usedTouch = computed(() => {
+  return lastPointerDownEvent.value?.type !== 'mouse'
 })
 
 const localizedTimeParts = computed(() => {
@@ -89,7 +94,6 @@ const localizedTimeParts = computed(() => {
 })
 
 function handlePickerHide() {
-  usedTouch.value = false
   isPickerActive.value = false
 }
 
@@ -149,6 +153,7 @@ defineExpose({
   show: () => menuProxyEl.value?.show(),
   hide: () => menuProxyEl.value?.hide(),
   sync: () => syncInternalValueWithPicker(),
+  getMenuEl: () => menuProxyEl.value,
 })
 </script>
 
@@ -158,7 +163,6 @@ defineExpose({
     v-model="isPickerActive"
     manual
     :hide-header="!usedTouch"
-    :cover="usedTouch"
     min-w="!60"
     max-w="!80"
     w-80

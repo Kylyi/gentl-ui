@@ -59,11 +59,15 @@ onMounted(() => {
 
       <!-- THEME & LOCALE & ACCOUNT -->
       <div class="toolbar">
+        <slot name="prepend-actions" />
+
         <slot name="actions">
           <ThemeToggle />
           <LocaleSwitch />
-          <!-- <AccountBtn v-if="!noAccountBtn" /> -->
+          <AccountBtn v-if="!noAccountBtn" />
         </slot>
+
+        <slot name="append-actions" />
       </div>
 
       <slot name="after-actions" />

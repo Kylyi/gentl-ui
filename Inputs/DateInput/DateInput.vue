@@ -10,7 +10,6 @@ import type { IDateInputProps } from '~/components/Inputs/DateInput/types/date-i
 import { useInputUtils } from '@/components/Inputs/functions/useInputUtils'
 
 // STORE
-import { useAppStore } from '~~/libs/App/app.store'
 
 // COMPONENTS
 import InputWrapper from '@/components/Inputs/InputWrapper.vue'
@@ -33,7 +32,6 @@ defineEmits<{
 }>()
 
 // UTILS
-const appStore = useAppStore()
 const { getCurrentLocaleDateFormat } = useLocale()
 const { formatDate, parseDate } = useDateUtils()
 
@@ -101,74 +99,9 @@ const mask = computed<AnyMaskedOptions>(() => {
         return val
       }
 
-      return parseDate(val, { isLocalString: true }).valueOf()
+      return parseDate(val, { isLocalString: true })
     },
   }
-})
-
-const {
-  el,
-  maskedValue,
-  wrapperProps,
-  hasNoValue,
-  isBlurred,
-  handleManualModelChange,
-  handleMouseDown,
-  handleFocus,
-  handleBlur,
-  focus,
-  select,
-  blur,
-  reset,
-  touch,
-  clear,
-  getInputElement,
-} = useInputUtils({
-  props,
-  maskRef: mask,
-  eventHandlers: {
-    onFocus: clickType => {
-      if (props.disabled || props.readonly) {
-        return
-      }
-      usedTouch.value = clickType !== 'mouse'
-      usedTouch.value && blurAnyFocusedInput()
-      menuProxyEl.value?.show()
-
-      return usedTouch.value
-    },
-    preClick: clickType => {
-      if (props.disabled || props.readonly) {
-        return
-      }
-
-      usedTouch.value = clickType !== 'mouse'
-      usedTouch.value && blurAnyFocusedInput()
-      menuProxyEl.value?.show()
-
-      return !usedTouch.value
-    },
-    onBlur: () => {
-      if (appStore.hasUserLeftPage) {
-        return
-      }
-      nextTick(() => {
-        const isFocusedInsideDatepicker =
-          !!appStore.activeElement?.closest('.date-picker')
-
-        if (isBlurred.value && !isFocusedInsideDatepicker) {
-          // !usedTouch.value && menuProxyEl.value?.hide()
-        }
-      })
-    },
-  },
-  maskEventHandlers: {
-    onCompleted: () => {
-      if (!preventSync.value) {
-        nextTick(() => datePickerEl.value?.sync())
-      }
-    },
-  },
 })
 
 // LAYOUT
@@ -179,7 +112,7 @@ const usedTouch = ref(false)
 function handleDateSelect(val: Dayjs) {
   preventSync.value = true
   touch()
-  handleManualModelChange(val.valueOf(), true)
+  handleManualModelChange(val, true)
 
   if (props.autoClose) {
     menuProxyEl.value?.hide()
@@ -195,6 +128,35 @@ function handlePickerHide() {
   usedTouch.value = false
   isPickerActive.value = false
 }
+
+const {
+  el,
+  maskedValue,
+  wrapperProps,
+  hasNoValue,
+  handleManualModelChange,
+  handleFocusOrClick,
+  handleClickWrapper,
+  focus,
+  select,
+  blur,
+  reset,
+  touch,
+  clear,
+  getInputElement,
+} = useInputUtils({
+  props,
+  maskRef: mask,
+  maskEventHandlers: {
+    onCompleted: () => {
+      if (!preventSync.value) {
+        nextTick(() => datePickerEl.value?.sync())
+      }
+    },
+  },
+  menuElRef: menuProxyEl,
+  preventFocusOnTouch: true,
+})
 
 defineExpose({
   focus,
@@ -212,7 +174,7 @@ defineExpose({
     ref="wrapperEl"
     v-bind="wrapperProps"
     :has-content="!hasNoValue"
-    @mousedown="handleMouseDown"
+    @click="handleClickWrapper"
   >
     <template
       v-if="$slots.prepend"
@@ -237,14 +199,15 @@ defineExpose({
       :name="name || label || placeholder"
       class="control"
       :class="[inputClass]"
-      @focus="handleFocus"
-      @blur="handleBlur"
+      @focus.stop.prevent="handleFocusOrClick"
     />
 
     <template #append>
       <div
         v-if="$slots.append || (!readonly && !disabled)"
         flex="~ gap-x-2 center"
+        fit
+        @click="handleFocusOrClick"
       >
         <slot
           name="append"

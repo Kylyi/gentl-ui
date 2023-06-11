@@ -28,7 +28,6 @@ export async function useTableData(
 ) {
   // UTILS
   const instance = getCurrentInstance()
-  const { replace } = useRouter()
   const { t } = useI18n()
   const { storageKey, modifyWithSearchParams } = useTableUtils()
 
@@ -223,16 +222,19 @@ export async function useTableData(
   watch(
     dbQuery,
     dbQuery => {
-      replace({
-        query: {
-          // Pagination
-          page: String(dbQuery.options.skip / dbQuery.options.take + 1),
-          perPage: String(dbQuery.options.take),
+      navigateTo(
+        {
+          query: {
+            // Pagination
+            page: String(dbQuery.options.skip / dbQuery.options.take + 1),
+            perPage: String(dbQuery.options.take),
 
-          // Search
-          ...(dbQuery.options.search && { search: dbQuery.options.search }),
+            // Search
+            ...(dbQuery.options.search && { search: dbQuery.options.search }),
+          },
         },
-      })
+        { replace: true }
+      )
     },
     { immediate: true }
   )

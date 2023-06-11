@@ -10,6 +10,7 @@ import { TableColumn } from '~/components/Table/models/table-column.model'
 
 // COMPOSITION FUNCTIONS
 import { useTableColumns } from '~/components/Table/functions/useTableColumns'
+import { useTableUtils } from '~/components/Table/functions/useTableUtils'
 
 // COMPONENTS
 import TableRow from '@/components/Table/TableRow.vue'
@@ -25,6 +26,7 @@ export function useTableLayout(props: ITableProps) {
   // UTILS
   const { onOverflow } = useOverflow()
   const { resizeColumns, extendColumns } = useTableColumns(props)
+  const { getRowKey } = useTableUtils()
 
   // LAYOUT
   const scrollerEl = ref<InstanceType<typeof RecycleScroller>>()
@@ -32,13 +34,7 @@ export function useTableLayout(props: ITableProps) {
   const headerEl = ref<InstanceType<typeof TableHeader>>()
   const containerEl = ref<HTMLDivElement>()
 
-  const rowKey = computedEager(() => {
-    if (props.getData?.createIdentifier) {
-      return '_uuid'
-    }
-
-    return props.rowKey || 'id'
-  })
+  const rowKey = computedEager(() => getRowKey(props))
 
   const searchableColumnLabels = computed(() => {
     return props.columns.filter(col => col.searchable).map(col => col._label)
@@ -143,7 +139,9 @@ export function useTableLayout(props: ITableProps) {
   provide(recalculateTableColumnsKey, throttledHandleResize)
 
   onMounted(() => {
-    containerEl.value = document.querySelector(
+    const selfDom = instance?.vnode.el as HTMLElement
+
+    containerEl.value = selfDom.querySelector(
       '.vue-recycle-scroller'
     ) as HTMLDivElement
   })

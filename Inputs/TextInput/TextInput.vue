@@ -13,7 +13,6 @@ const props = withDefaults(defineProps<ITextInputProps>(), {
   rounded: true,
   size: 'md',
 })
-
 defineEmits<{
   (e: 'update:model-value', val?: string | undefined | null): void
   (e: 'validation-reset', val?: string | undefined | null): void
@@ -25,6 +24,7 @@ const {
   maskedValue,
   wrapperProps,
   hasNoValue,
+  isBlurred,
   handleFocus,
   handleBlur,
   handleMouseDown,
@@ -98,17 +98,39 @@ defineExpose({
       v-if="$slots.append || hasCopyBtn"
       #append
     >
-      <slot
-        name="append"
-        :clear="clear"
-        :focus="focus"
-      />
+      <div
+        flex="~ gap-x-1"
+        fit
+        items-center
+      >
+        <slot
+          name="append"
+          :clear="clear"
+          :focus="focus"
+        />
 
-      <CopyBtn
-        v-if="hasCopyBtn"
-        :size="size"
-        :model-value="maskedValue"
-      />
+        <CopyBtn
+          v-if="hasCopyBtn"
+          :size="size"
+          :model-value="maskedValue"
+        />
+      </div>
     </template>
+
+    <!-- TOOLTIP -->
+    <Menu
+      v-if="tooltip || !!$slots.tooltip"
+      :model-value="!isBlurred"
+      manual
+      hide-header
+      placement="right"
+      :fallback-placements="['bottom']"
+      :reference-target="el"
+      :no-arrow="false"
+    >
+      <slot name="tooltip">
+        {{ tooltip }}
+      </slot>
+    </Menu>
   </InputWrapper>
 </template>

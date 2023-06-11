@@ -14,4 +14,5 @@ export interface IInputWrapperProps extends InputLabelProps {
   loading?: boolean
   noBorder?: boolean
   readonly?: boolean
+  tooltip?: string
 }

@@ -3,6 +3,12 @@
 import type { IFieldProps } from '~~/components/Field/types/field-props.type'
 
 const props = defineProps<IFieldProps>()
+defineEmits<{
+  (e: 'focus'): void
+}>()
+
+// LAYOUT
+const controlEl = ref<HTMLDivElement>()
 
 // WRAPPER
 const wrapperProps = reactivePick(
@@ -26,6 +32,11 @@ const wrapperProps = reactivePick(
   'size',
   'stackLabel'
 )
+
+defineExpose({
+  focus: () => controlEl.value?.focus(),
+  blur: () => controlEl.value?.blur(),
+})
 </script>
 
 <template>
@@ -41,7 +52,12 @@ const wrapperProps = reactivePick(
       <slot name="prepend" />
     </template>
 
-    <span class="control w-full">
+    <span
+      ref="controlEl"
+      class="control w-full"
+      tabindex="0"
+      @focus="$emit('focus')"
+    >
       <slot> &nbsp; </slot>
     </span>
 
@@ -49,7 +65,13 @@ const wrapperProps = reactivePick(
       v-if="$slots.append || (!readonly && !disabled)"
       #append
     >
-      <slot name="append" />
+      <div
+        flex="~ center"
+        fit
+        @click="$emit('focus')"
+      >
+        <slot name="append" />
+      </div>
     </template>
   </InputWrapper>
 </template>

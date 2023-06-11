@@ -28,15 +28,11 @@ const column = computed(() => {
 })
 
 function removeChip(skipRefreshData = false) {
-  if (!column.value) {
-    return
-  }
-
   column.value.filters = column.value.filters.filter(
     filterItem => filterItem.comparator !== filter.value.comparator
   )
 
-  if (!skipRefreshData) {
+  if (!skipRefreshData && filter.value.compareValue) {
     refreshData()
   }
 

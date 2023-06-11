@@ -50,9 +50,11 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     }
 
     const filterConditions = this.filters.reduce((agg, filter) => {
-      if (filter.compareValue !== undefined) {
+      const isEmptyArray = Array.isArray(filter) && !filter.length
+
+      if (filter.compareValue !== undefined && !isEmptyArray) {
         if (Array.isArray(filter.compareValue)) {
-          // The `_vale` comes from the DistnctData type
+          // The `_value` comes from the DistnctData type
           agg[filter.comparator] = filter.compareValue.map(item => item._value)
         } else {
           agg[filter.comparator] = filter.compareValue

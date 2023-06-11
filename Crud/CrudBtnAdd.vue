@@ -15,10 +15,11 @@ withDefaults(defineProps<IProps>(), {
 <template>
   <Btn
     preset="ADD"
-    :label="labels && $t('new2')"
+    :label="labels && (label || $t('new2'))"
     :loader-type="loaderType"
     :loading="loading"
     :to="to"
     no-dim
+    :size="size"
   />
 </template>

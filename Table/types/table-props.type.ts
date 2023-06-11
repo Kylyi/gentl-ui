@@ -30,6 +30,10 @@ export interface ITableProps {
 
   /**
    * Function to get data for the table
+   * `mapKey` ~ key in the response that contains the data
+   * `countKey` ~ key in the response that contains the total count of rows
+   * `createIdentifier` ~ function to create a unique identifier for each row when the `rowKey` is not unique
+   * `errorHandler` ~ function to handle errors that come from fetching the table data
    */
   getData?: {
     fnc: Function
@@ -52,6 +56,7 @@ export interface ITableProps {
   /**
    * Will split the table row into multiple columns
    * Usage: For mobile view
+   * // FIXME: Currently broken
    */
   splitRow?: number
 
@@ -76,10 +81,10 @@ export interface ITableProps {
   /**
    * Whether to use chip-like filters
    */
-  useChips?: boolean
+  useChips?: boolean // default ~ true
 
   /**
    * Whether to use server-side pagination, filtering and sorting
    */
-  useServer?: boolean
+  useServer?: boolean // default ~ true
 }

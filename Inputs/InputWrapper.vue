@@ -177,13 +177,14 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
     grid-template-rows: auto 1fr;
     grid-template-areas:
       "nothing label nothing2 nothing3"
-      "prepend input append   loading";
+      "prepend input loading  append";
 
     .prepend {
       grid-area: prepend;
     }
 
     .append {
+      --apply: fit;
       grid-area: append;
     }
 

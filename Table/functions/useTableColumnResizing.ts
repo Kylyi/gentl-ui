@@ -59,7 +59,10 @@ export function useTableColumnResizing(props: {
       })
     })
 
-    return splitters.slice(0, -1)
+    // We need to move the last splitter a bit to the left so it doesn't create overflow
+    splitters[splitters.length - 1].left -= 4
+
+    return splitters
   })
 
   function handleSplitterPointerDown(splitter: ISplitter, ev: PointerEvent) {

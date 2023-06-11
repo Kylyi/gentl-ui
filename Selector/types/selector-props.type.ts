@@ -1,4 +1,5 @@
 import { FuseOptions } from '@vueuse/integrations/useFuse'
+import { FloatingUIBaseProps } from '~/components/Dialog/types/dialog-props.type'
 
 // TYPES
 import type { IInputProps } from '~~/components/Inputs/types/input-props.type'
@@ -7,7 +8,7 @@ import type { IInputProps } from '~~/components/Inputs/types/input-props.type'
 import { GroupItem } from '~~/libs/App/data/models/group-item.model'
 import { SortItem } from '~~/libs/App/data/models/sort-item.model'
 
-export interface ISelectorProps extends IInputProps {
+export type ISelectorProps = IInputProps & {
   /**
    * Allows on-the-fly adding of new options
    */
@@ -40,7 +41,7 @@ export interface ISelectorProps extends IInputProps {
     local?: boolean
 
     /**
-     * When true, the loadData will be called on every search
+     * When true, the `loadData` fnc will be called on every search
      */
     onSearch?: boolean
   }
@@ -97,4 +98,4 @@ export interface ISelectorProps extends IInputProps {
    *     enough to show the whole text
    */
   noMenuMatchWidth?: boolean
-}
+} & Pick<FloatingUIBaseProps, 'expectedHeight'>

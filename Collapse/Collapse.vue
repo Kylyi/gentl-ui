@@ -75,7 +75,9 @@ useResizeObserver(headerEl, entries => {
 <template>
   <div
     class="collapse"
-    :class="{ 'is-padded': internalValue && padded }"
+    :class="{
+      'is-padded': internalValue && padded,
+    }"
   >
     <!-- HEADER -->
     <div
@@ -162,6 +164,10 @@ useResizeObserver(headerEl, entries => {
   &.is-padded {
     --apply: p-t-2 p-b-4 p-x-2;
   }
+
+  // &::before {
+  //   --apply: content-empty inset-block-0 absolute bg-primary w-1 transition-width rounded-l-full;
+  // }
 }
 
 

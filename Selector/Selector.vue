@@ -48,35 +48,6 @@ onMounted(() => {
 // UTILS
 const currentInstance = getCurrentInstance()
 
-const {
-  internalValue,
-  wrapperProps,
-  handleFocus,
-  handleBlur,
-  handleMouseDown,
-  clear,
-} = useSelectorUtils({
-  props,
-  eventHandlers: {
-    onFocus: clickType => {
-      if (props.disabled || props.readonly) {
-        return
-      }
-
-      menuProxyEl.value?.show()
-      clickType !== 'mouse' && blurAnyFocusedInput()
-    },
-    preClick: clickType => {
-      if (props.disabled || props.readonly) {
-        return
-      }
-
-      menuProxyEl.value?.show()
-      clickType !== 'mouse' && blurAnyFocusedInput()
-    },
-  },
-})
-
 const hasContent = computed(() => {
   return Array.isArray(internalValue.value)
     ? internalValue.value.length > 0
@@ -104,11 +75,11 @@ function getLabel(option: any) {
   }
 
   return typeof option !== 'object'
-    ? get(optionsByKey.value[option], props.optionLabel)
+    ? get(optionsByKey.value[option], props.optionLabel) ?? option
     : get(option, props.optionLabel)
 }
 
-function getOption(option: any): any[] {
+function getOption(option: any): any {
   if (Array.isArray(option)) {
     return option.map(opt => getOption(opt))
   }
@@ -152,7 +123,7 @@ function handleRemove(item: any) {
     if (!internalValue.value.length) {
       emits('update:model-value', props.emptyValue)
     } else {
-      emits('update:model-value', internalValue.value)
+      emits('update:model-value', [...internalValue.value])
     }
 
     emits('removed', item)
@@ -207,6 +178,8 @@ function handleSearch(payload: { search: string; hasExactMatch: boolean }) {
 function handleSelect(val: any) {
   if (props.multi && !val.length) {
     emits('update:model-value', props.emptyValue)
+  } else if (props.multi) {
+    emits('update:model-value', [...val])
   } else {
     emits('update:model-value', val)
   }
@@ -325,6 +298,11 @@ const optionsByKey = computed(() => {
   }, {})
 })
 
+// We recalculate the menu position on `listOptions` change
+watch(listOptions, () => {
+  menuProxyEl.value?.recomputePosition()
+})
+
 // DATA LOADING
 async function loadData(force?: boolean, options?: { search?: string }) {
   if (props.loadData && (!isOptionsInternalLoaded.value || force)) {
@@ -357,6 +335,10 @@ const pickerAnimationState = ref<'show' | 'hide'>('hide')
 function handleBeforeHide() {
   pickerAnimationState.value = 'hide'
   emits('picker-before-hide')
+
+  if (props.loadData?.onSearch) {
+    listEl.value?.clearSearch()
+  }
 }
 
 async function handleBeforeShow() {
@@ -379,12 +361,26 @@ function handleShow() {
 }
 
 // LAYOUT
+const {
+  internalValue,
+  wrapperProps,
+  handleClickWrapper,
+  handleFocusOrClick,
+  clear,
+} = useSelectorUtils({
+  props,
+  menuElRef: menuProxyEl,
+})
+
 const menuReferenceTarget = ref<HTMLElement>()
 const optionsContainerEl = ref<any>()
 const isLoadingInternal = ref(false)
 
 const isLoading = computed(() => {
-  return props.loading || isLoadingInternal.value
+  return (
+    (props.loading || isLoadingInternal.value) &&
+    pickerAnimationState.value !== 'hide'
+  )
 })
 
 function syncScrollArea() {
@@ -420,7 +416,6 @@ if (props.loadData?.immediate) {
     v-bind="wrapperProps"
     :loading="isLoading"
     :has-content="hasContent"
-    cursor="cursor-pointer"
     :content-class="contentClass"
     :class="[
       menuPlacement === 'bottom' ? 'has-menu-bottom' : 'has-menu-top',
@@ -429,7 +424,7 @@ if (props.loadData?.immediate) {
         'is-menu-width-matched': !noMenuMatchWidth,
       },
     ]"
-    @click="handleMouseDown"
+    @click="handleClickWrapper"
   >
     <template
       v-if="$slots.prepend"
@@ -458,9 +453,15 @@ if (props.loadData?.immediate) {
       tabindex="0"
       :class="[innerClass, { 'is-multi': !!multi }]"
       :style="{ maxHeight: `${maxHeight}px` }"
-      @focus="handleFocus"
-      @blur="handleBlur"
+      @focus="handleFocusOrClick"
     >
+      <span
+        v-if="placeholder && !hasContent"
+        class="placeholder"
+      >
+        {{ placeholder }}
+      </span>
+
       <HorizontalScroller
         v-if="multi && scroller"
         content-class="flex-gap-x-2"
@@ -496,13 +497,6 @@ if (props.loadData?.immediate) {
       >
         {{ getLabel(internalValue) }}
       </span>
-
-      <span
-        v-else-if="placeholder"
-        class="placeholder"
-      >
-        {{ placeholder }}
-      </span>
     </Component>
 
     <template #append>
@@ -511,6 +505,8 @@ if (props.loadData?.immediate) {
         flex="~ gap-x-1 center"
         p="x-2"
         shrink-0
+        fit
+        @click="handleFocusOrClick"
       >
         <Btn
           v-if="clearable && modelValue && !multi && !disabled && !readonly"
@@ -538,6 +534,7 @@ if (props.loadData?.immediate) {
           w="5"
           color="ca"
           self-center
+          cursor-pointer
         />
 
         <slot
@@ -563,9 +560,9 @@ if (props.loadData?.immediate) {
         }"
         :offset="noMenuMatchWidth ? 8 : 0"
         :no-arrow="noMenuMatchWidth ? false : true"
-        h="!auto"
         :match-width="!noMenuMatchWidth"
         :reference-target="menuReferenceTarget"
+        :expected-height="expectedHeight"
         :fit="false"
         no-uplift
         max-height="50%"
@@ -583,7 +580,6 @@ if (props.loadData?.immediate) {
             :item-key="optionKey"
             :item-label="optionLabel"
             v-bind="listProps"
-            :loading="isLoading"
             @selected="handleSelect($event)"
             @added="handleSelectAdd($event)"
             @selected-multiple="handleSelectedMultiple"

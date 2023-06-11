@@ -98,7 +98,7 @@ export function useList(
       return {}
     }
 
-    // MUTLI ~ SELECTED IS AN ARRAY
+    // MULTI ~ SELECTED IS AN ARRAY
     if (Array.isArray(selected.value)) {
       return selected.value.reduce<Record<string, any>>((agg, sel) => {
         const key = getKey(sel)
@@ -150,6 +150,10 @@ export function useList(
   }
 
   function handleSelectItem(option: any) {
+    if (props.noSelect) {
+      return
+    }
+
     const isGroup = 'isGroup' in option
 
     if (!isGroup) {

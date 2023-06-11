@@ -62,7 +62,9 @@ const dialogClasses = computedEager(() => {
 
   const innerClasses = {
     contentClass: contentClass.filter(Boolean).join(' '),
-    headerClass: props.dense ? '' : 'p-l-3 p-r-1',
+    headerClass: props.dense
+      ? 'bg-white dark:bg-darker'
+      : 'bg-white dark:bg-darker p-l-3 p-r-1',
   }
 
   switch (props.position) {
@@ -350,7 +352,7 @@ function handleClickOutside(ev: Event) {
 
   const targetEl = ev.target as HTMLElement
 
-  const isBody = targetEl === document.body
+  const isTargetBody = targetEl === document.body
   const isPartOfFloatingUI = dialogEl.value?.contains(targetEl)
   const isPartOfReferenceEl = triggerEl.value!.contains(targetEl)
   const lastFloatingElement = document.querySelector(
@@ -358,7 +360,7 @@ function handleClickOutside(ev: Event) {
   )
 
   if (
-    !isBody &&
+    !isTargetBody &&
     !isPartOfFloatingUI &&
     !isPartOfReferenceEl &&
     lastFloatingElement === dialogWrapperEl.value
@@ -406,7 +408,7 @@ defineOptions({
   inheritAttrs: false,
 })
 
-defineExpose({ show, hide, toggle })
+defineExpose({ show, hide, toggle, getFloatingEl: () => dialogWrapperEl.value })
 </script>
 
 <template>
@@ -479,10 +481,11 @@ defineExpose({ show, hide, toggle })
 
         <!-- CONTENT -->
         <div
-          :class="dialogClasses.contentClass"
           flex="~ col 1"
           overflow="auto"
           relative
+          :class="dialogClasses.contentClass"
+          :style="contentStyle"
         >
           <slot> Slot. </slot>
         </div>

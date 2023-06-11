@@ -52,10 +52,6 @@ function handleAddFilter() {
     const firstNonUsedComparator = availableComparators.find(
       comparator => !columnComparators.includes(comparator)
     )
-    console.log(
-      'Log ~ handleAddFilter ~ firstNonUsedComparator:',
-      firstNonUsedComparator
-    )
 
     if (firstNonUsedComparator) {
       column.value.filters = [

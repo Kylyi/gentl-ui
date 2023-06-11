@@ -41,6 +41,8 @@ const emits = defineEmits<{
 }>()
 
 // LIFECYCLE
+const hasBeenShown = ref(false)
+
 onMounted(() => {
   nextTick(() => {
     triggerEl.value = getTargetElement(props.target)
@@ -64,15 +66,25 @@ onBeforeUnmount(() => {
 const appStore = useAppStore()
 
 // HELPERS
-const { $dimensions } = useNuxtApp()
 const { color } = useTheme()
 
-async function createFloatInstance() {
+async function createFloatInstance(options?: { skipFlip?: boolean }) {
   if (!referenceEl.value) {
     return
   }
 
+  const { skipFlip } = options || {}
+
   await nextTick()
+
+  if (!menuEl.value) {
+    return
+  }
+
+  // We set the expected height of the Menu if provided to ensure correct Placement
+  if (props.expectedHeight && !hasBeenShown.value) {
+    menuEl.value!.style.height = `${props.expectedHeight}px`
+  }
 
   // VIRTUAL ELEMENT ~ will create the menu in the last pointer down event position
   let virtualEl: any
@@ -104,15 +116,14 @@ async function createFloatInstance() {
 
   const { x, y, middlewareData, placement } = await computePosition(
     referenceElement,
-    menuEl.value!,
+    menuEl.value,
     {
       middleware: [
         offset(props.offset),
         shift(),
-
-        flip({
-          fallbackPlacements: props.fallbackPlacements,
-        }),
+        ...(skipFlip
+          ? []
+          : [flip({ fallbackPlacements: props.fallbackPlacements })]),
         size({
           apply({ availableWidth, availableHeight, elements }) {
             Object.assign(elements.floating.style, {
@@ -135,15 +146,23 @@ async function createFloatInstance() {
           ? [arrow({ element: arrowEl.value!, padding: 4 })]
           : []),
       ],
-      placement: props.placement,
+      placement: previousPlacement.value || props.placement,
       strategy: 'fixed',
     }
   )
+
+  // Once we calculate the Placement, we can reset the height of the Menu which
+  // should be recalculated through the async function that gets the data or whatever
+  if (props.expectedHeight && !hasBeenShown.value) {
+    menuEl.value!.style.height = ''
+    hasBeenShown.value = true
+  }
 
   if (!preventMotion.value) {
     handleAnimation(placement)
   }
 
+  previousPlacement.value = placement
   Object.assign(menuEl.value!.style, {
     top: `${Math.round(y)}px`,
     left: `${Math.round(x)}px`,
@@ -198,6 +217,7 @@ const backdropBg = ref('bg-transparent')
 const isReferenceElTransparent = ref(false)
 const referenceElOldZIndex = ref<string>()
 const isFirstFloatingEl = ref<boolean>()
+const previousPlacement = ref<Placement>()
 
 const isOverlayVisible = computedEager(() => {
   return !props.noOverlay && isFirstFloatingEl.value
@@ -484,11 +504,9 @@ function cleanComponent() {
   menuEl.value?.classList.remove('is-hiding')
   internalValue.value = false
   motionInstance.value = undefined
+  previousPlacement.value = undefined
 }
 
-// watch($dimensions, () => hide(true, true))
-
-// useEventListener(['mousedown', 'touchend'], handleClickOutside)
 onClickOutside(menuEl, handleClickOutside)
 
 function handleClickOutside(ev: Event) {
@@ -498,6 +516,7 @@ function handleClickOutside(ev: Event) {
 
   const targetEl = ev.target as HTMLElement
 
+  const isTargetBody = targetEl === document.body
   const isPartOfFloatingUI = menuEl.value?.contains(targetEl)
   const isPartOfReferenceEl =
     !props.virtual && referenceEl.value!.contains(targetEl)
@@ -506,6 +525,7 @@ function handleClickOutside(ev: Event) {
   )
 
   if (
+    !isTargetBody &&
     !isPartOfFloatingUI &&
     !isPartOfReferenceEl &&
     lastFloatingElement === menuEl.value
@@ -550,10 +570,20 @@ defineExpose({
   show,
   hide,
   toggle,
+  getFloatingEl: () => menuEl.value,
   update: () => {
     preventMotion.value = true
     bounce()
     createFloatInstance()
+  },
+  recomputePosition: () => {
+    const menuDom = unrefElement(menuEl.value)
+
+    if (menuDom) {
+      menuDom.style.maxHeight = ''
+    }
+
+    createFloatInstance({ skipFlip: true })
   },
 })
 
@@ -630,6 +660,7 @@ defineOptions({
         flex="~ col"
         overflow="auto"
         :class="[contentClass, innerClasses.contentClass]"
+        :style="contentStyle"
       >
         <slot :hide="hide"> ...Slot... </slot>
       </div>

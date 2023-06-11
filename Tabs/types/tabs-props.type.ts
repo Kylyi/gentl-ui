@@ -4,6 +4,6 @@ export interface ITabsProps {
   labelClass?: ClassType
   modelValue?: string | number
   navClass?: ClassType
-  noLabels?: boolean
+  noNav?: boolean
   noAnimation?: boolean
 }

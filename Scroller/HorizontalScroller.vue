@@ -69,6 +69,10 @@ const { pause, resume } = useIntervalFn(
 )
 
 function handleWheel(ev: WheelEvent) {
+  if (ev.deltaX) {
+    return
+  }
+
   isLocalScroll.value = true
   const scrollSpeed = 25
 

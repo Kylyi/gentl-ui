@@ -104,7 +104,6 @@ function handleRemoveAllFilters() {
   <Btn
     v-if="filterChips.length > 0"
     :label="$t('table.removeAllFilters')"
-    labels
     no-uppercase
     size="sm"
     no-truncate

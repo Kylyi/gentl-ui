@@ -8,7 +8,14 @@ import type { IInputUtilsOptions } from '~~/components/Inputs/types/input-utils-
 import { useAppStore } from '~~/libs/App/app.store'
 
 export function useInputUtils(options: IInputUtilsOptions) {
-  const { props, maskRef, eventHandlers = {}, maskEventHandlers } = options
+  const {
+    props,
+    maskRef,
+    eventHandlers = {},
+    maskEventHandlers,
+    menuElRef,
+    preventFocusOnTouch,
+  } = options
 
   const { lastPointerDownEvent } = storeToRefs(useAppStore())
   const instance = getCurrentInstance()
@@ -70,6 +77,7 @@ export function useInputUtils(options: IInputUtilsOptions) {
   // LAYOUT
   const isBlurred = ref(true)
   const preventNextBlur = autoResetRef(false, 50)
+  const menuEl = computed(() => toValue(menuElRef))
 
   // INPUT METHODS
   const focus = (alignCursor?: boolean) => {
@@ -157,7 +165,54 @@ export function useInputUtils(options: IInputUtilsOptions) {
     }
   }
 
-  // TOUCH & AUTOFOCUS on init
+  // Click & focus handler
+  const focusedProgramatically = refAutoReset(false, 50)
+
+  // In some cases, we click into the `margin` of the `.wrapper-body__input`
+  // which doesn't trigger the focus event on the input. We need to handle
+  // this case manually.
+  function handleClickWrapper(ev: MouseEvent) {
+    if ((ev.target as HTMLElement).classList.contains('wrapper-body__input')) {
+      handleFocusOrClick(ev)
+    }
+  }
+
+  function handleFocusOrClick(ev: MouseEvent | FocusEvent) {
+    if (focusedProgramatically.value) {
+      return
+    }
+
+    focusedProgramatically.value = true
+
+    blurAnyFocusedInput()
+
+    if (
+      !preventFocusOnTouch ||
+      lastPointerDownEvent.value?.pointerType === 'mouse'
+    ) {
+      el.value?.focus()
+    }
+
+    const hasClickedInsideFloatingElement = !!(
+      ev.target as HTMLElement
+    ).closest('.floating-element')
+
+    if (!hasClickedInsideFloatingElement) {
+      document.querySelectorAll('.floating-element').forEach(el => {
+        const currentMenuDom = menuEl.value?.getFloatingEl()
+
+        if (el !== currentMenuDom) {
+          el.setAttribute('hide-trigger', '')
+        }
+      })
+    }
+
+    if (!props.disabled && !props.readonly) {
+      menuEl.value?.show()
+    }
+  }
+
+  // Autofocus on init
   setTimeout(() => {
     if (props.autofocus) {
       focus()
@@ -194,5 +249,7 @@ export function useInputUtils(options: IInputUtilsOptions) {
     touch,
     getInputElement,
     handleManualModelChange,
+    handleFocusOrClick,
+    handleClickWrapper,
   }
 }

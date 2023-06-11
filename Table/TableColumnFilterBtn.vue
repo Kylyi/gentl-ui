@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { Placement } from '@floating-ui/dom'
+
+// MODELS
 import { TableColumn } from '~/components/Table/models/table-column.model'
 
 type IProps = {
@@ -7,6 +10,9 @@ type IProps = {
   columns: TableColumn<any>[]
   useChips?: boolean
   useServer?: boolean
+  placement?: Placement
+  offset?: number
+  referenceTarget?: any
 }
 
 const props = defineProps<IProps>()
@@ -46,6 +52,9 @@ function handleMenuHide() {
       dense
       hide-header
       position="top"
+      :placement="placement"
+      :offset="offset"
+      :reference-target="referenceTarget"
       content-class="flex flex-col"
       @before-hide="handleMenuHide"
     >

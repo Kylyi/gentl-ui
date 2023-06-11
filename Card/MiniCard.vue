@@ -1,7 +1,22 @@
 <script setup lang="ts">
 import { IMiniCardProps } from '~/components/Card/types/mini-card-props.type'
+import { useValueFormatterUtils } from '~/components/ValueFormatter/functions/useValueForamtterUtils'
 
-defineProps<IMiniCardProps>()
+const props = defineProps<IMiniCardProps>()
+
+// UTILS
+const { getValueFormatterProps } = useValueFormatterUtils()
+
+const valueFormatterProps = getValueFormatterProps(props)
+
+// LAYOUT
+function getShownValue(val: any) {
+  if (isNil(val) || val === '' || (Array.isArray(val) && val.length === 0)) {
+    return props.emptyValueString
+  }
+
+  return val
+}
 </script>
 
 <template>
@@ -13,15 +28,24 @@ defineProps<IMiniCardProps>()
       {{ label }}
     </span>
 
-    <ValueFormatter :value="value">
+    <ValueFormatter v-bind="valueFormatterProps">
       <template #default="{ val }">
         <slot :val="val">
           <span
+            v-if="!to || !val"
             class="value-container-card-value"
             :class="valueClass"
           >
-            {{ val }}
+            {{ getShownValue(val) }}
           </span>
+
+          <NuxtLink
+            v-else
+            :to="to"
+            class="link"
+          >
+            {{ getShownValue(val) }}
+          </NuxtLink>
         </slot>
       </template>
     </ValueFormatter>

@@ -19,6 +19,9 @@ import {
 
 type IProps = {
   columns: TableColumn[]
+  useServer?: boolean
+  useChips?: boolean
+  rows: any[]
 } & IBtnProps
 
 const props = defineProps<IProps>()
@@ -35,9 +38,14 @@ const { getBtnProps } = useBtnUtils()
 const { extractColumnsStateData } = useTableUtils()
 
 // LAYOUT
+const columnsRefs = useTemplateRefsList<HTMLDivElement>()
 const columns = useVModel(props, 'columns', emits)
 
 const btnProps = computed(() => getBtnProps(props))
+
+function getEl(ref: any) {
+  return unrefElement(ref)
+}
 
 function handleRecalculateColumns() {
   recalculateColumns(true)
@@ -50,7 +58,7 @@ function handleRecalculateColumns() {
 
 <template>
   <Btn
-    icon="ph:columns"
+    icon="fluent:table-freeze-column-24-filled"
     color="ca"
     v-bind="btnProps"
   >
@@ -65,23 +73,34 @@ function handleRecalculateColumns() {
         @update:list="handleRecalculateColumns"
       >
         <SlickItem
-          v-for="(col, i) in columns"
+          v-for="(col, idx) in columns"
           :key="col.field"
-          :index="i"
+          :ref="columnsRefs.set"
+          :index="idx"
           z="$zMenu"
         >
           <Item
-            flex="gap-x-2"
             cursor="!default"
+            flex="gap-x-0"
           >
             <DragHandle class="handle icon-park-outline:drag" />
 
             <span
               grow
-              p="y-1.5"
+              p="y-1.5 x-2"
             >
               {{ col.label }}
             </span>
+
+            <TableColumnFilterBtn
+              v-if="!col.hideFilters"
+              :column="col"
+              :rows="rows"
+              :columns="columns"
+              :use-server="useServer"
+              :use-chips="useChips"
+              :reference-target="getEl(columnsRefs[idx])"
+            />
 
             <Checkbox
               v-model="col.hidden"

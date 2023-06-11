@@ -11,7 +11,6 @@ import type { ITimeInputProps } from '~/components/Inputs/TimeInput/types/time-i
 import { useInputUtils } from '@/components/Inputs/functions/useInputUtils'
 
 // STORE
-import { useAppStore } from '~~/libs/App/app.store'
 
 // COMPONENTS
 import InputWrapper from '@/components/Inputs/InputWrapper.vue'
@@ -32,7 +31,6 @@ const emits = defineEmits<{
 }>()
 
 // UTILS
-const appStore = useAppStore()
 const { localeUses24HourTime } = useDateUtils()
 
 const is12h = computed(() => !localeUses24HourTime())
@@ -146,7 +144,6 @@ const maskFullTime = computed<AnyMaskedOptions>(() => {
 
 // LAYOUT
 const wrapperEl = ref<InstanceType<typeof InputWrapper>>()
-const usedTouch = ref(false)
 const isAm = ref(+delocalizedTimeParts.value.hh < 12)
 
 const modelValueLocalized = computed(() => localizeTime(props.modelValue!))
@@ -155,63 +152,6 @@ const propsExtended = reactiveComputed(() => ({
   ...props,
   modelValue: modelValueLocalized.value,
 }))
-
-const {
-  el,
-  maskedValue,
-  wrapperProps,
-  hasNoValue,
-  isBlurred,
-  handleManualModelChange,
-  handleMouseDown,
-  handleFocus,
-  handleBlur,
-  focus,
-  select,
-  blur,
-  reset,
-  touch,
-  clear,
-  getInputElement,
-} = useInputUtils({
-  props: propsExtended,
-  maskRef: maskFullTime,
-  eventHandlers: {
-    onFocus: clickType => {
-      if (props.disabled || props.readonly) {
-        return
-      }
-
-      usedTouch.value = clickType !== 'mouse'
-      usedTouch.value && blurAnyFocusedInput()
-      timeInputPickerEl.value?.show()
-
-      return usedTouch.value
-    },
-    preClick: clickType => {
-      if (props.disabled || props.readonly) {
-        return
-      }
-
-      usedTouch.value = clickType !== 'mouse'
-      usedTouch.value && blurAnyFocusedInput()
-      timeInputPickerEl.value?.show()
-
-      return !usedTouch.value
-    },
-    onBlur: () => {
-      if (appStore.hasUserLeftPage) {
-        return
-      }
-
-      nextTick(() => {
-        if (isBlurred.value) {
-          !usedTouch.value && timeInputPickerEl.value?.hide()
-        }
-      })
-    },
-  },
-})
 
 function handleInput(ev: Event) {
   const { data } = ev as InputEvent
@@ -262,6 +202,28 @@ watch(
   }
 )
 
+const {
+  el,
+  maskedValue,
+  wrapperProps,
+  hasNoValue,
+  handleManualModelChange,
+  focus,
+  select,
+  blur,
+  reset,
+  touch,
+  clear,
+  getInputElement,
+  handleClickWrapper,
+  handleFocusOrClick,
+} = useInputUtils({
+  props: propsExtended,
+  maskRef: maskFullTime,
+  preventFocusOnTouch: true,
+  menuElRef: () => timeInputPickerEl.value?.getMenuEl(),
+})
+
 defineExpose({
   focus,
   select,
@@ -278,7 +240,7 @@ defineExpose({
     ref="wrapperEl"
     v-bind="wrapperProps"
     :has-content="!hasNoValue"
-    @mousedown="handleMouseDown"
+    @click="handleClickWrapper"
   >
     <template
       v-if="$slots.prepend"
@@ -305,8 +267,7 @@ defineExpose({
       class="control"
       :class="[inputClass]"
       :style="inputStyle"
-      @focus="handleFocus"
-      @blur="handleBlur"
+      @focus="handleFocusOrClick"
       @input="handleInput"
     />
 
@@ -314,6 +275,8 @@ defineExpose({
       <div
         v-if="$slots.append || (!readonly && !disabled)"
         flex="~ gap-x-2 center"
+        fit
+        @click="handleFocusOrClick"
       >
         <slot
           name="append"
@@ -330,6 +293,7 @@ defineExpose({
             size="xs"
             self-end
             color="ca"
+            tabindex="-1"
             @click.stop.prevent="isAm = !isAm"
             @mousedown.stop.prevent=""
           />
@@ -345,7 +309,6 @@ defineExpose({
     <template #menu>
       <TimeInputPicker
         ref="timeInputPickerEl"
-        v-model:used-touch="usedTouch"
         v-model:is-am="isAm"
         v-model:prevent-next-is-am-change="preventNextIsAmChange"
         :reference-target="el"

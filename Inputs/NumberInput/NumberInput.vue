@@ -55,9 +55,6 @@ const {
   typedValue,
   wrapperProps,
   hasNoValue,
-  handleFocus,
-  handleBlur,
-  handleMouseDown,
   focus,
   select,
   blur,
@@ -66,6 +63,8 @@ const {
   clear,
   getInputElement,
   handleManualModelChange,
+  handleClickWrapper,
+  handleFocusOrClick,
 } = useInputUtils({
   props,
   maskRef: mask,
@@ -152,7 +151,7 @@ defineExpose({
   <InputWrapper
     v-bind="wrapperProps"
     :has-content="!hasNoValue"
-    @mousedown="handleMouseDown"
+    @click.stop.prevent="handleClickWrapper"
   >
     <template
       v-if="$slots.prepend"
@@ -179,8 +178,7 @@ defineExpose({
       role="presentation"
       :class="[inputClass]"
       :style="inputStyle"
-      @focus="handleFocus"
-      @blur="handleBlur"
+      @focus="handleFocusOrClick"
     />
 
     <template
@@ -190,6 +188,7 @@ defineExpose({
       <div
         v-if="step || $slots.append"
         class="number-input__step"
+        @click="handleFocusOrClick"
       >
         <slot
           name="append"
@@ -233,6 +232,6 @@ defineExpose({
 
 <style lang="scss" scoped>
 .number-input__step {
-  --apply: flex gap-x-2 flex-center p-x-2;
+  --apply: flex gap-x-2 flex-center p-x-2 fit;
 }
 </style>

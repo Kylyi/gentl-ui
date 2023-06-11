@@ -13,7 +13,7 @@ defineEmits<{
 // UTILS
 function handleClick() {
   if (props.to) {
-    navigateTo(props.to)
+    $nav(props.to)
   }
 }
 </script>
@@ -22,7 +22,7 @@ function handleClick() {
   <div
     v-ripple="ripple"
     class="chip"
-    border-ca
+    border="darker dark:white"
     h="5"
     :class="[
       hasRemove ? 'p-r-1' : 'p-r-2',

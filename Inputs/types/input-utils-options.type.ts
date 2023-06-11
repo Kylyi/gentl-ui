@@ -8,6 +8,8 @@ import { IInputWrapperEventHandlers } from '~~/components/Inputs/types/input-wra
 export interface IInputUtilsOptions {
   props: Omit<IInputProps, 'mask' | 'name'>
   maskRef: Ref<AnyMaskedOptions>
+  menuElRef?: MaybeRefOrGetter
+  preventFocusOnTouch?: boolean
 
   eventHandlers?: IInputWrapperEventHandlers
 

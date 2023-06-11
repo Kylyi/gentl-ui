@@ -2,13 +2,23 @@
 // MODELS
 import { TableColumn } from '~/components/Table/models/table-column.model'
 
+// INJECTION KEYS
+import {
+  tableIsSelectedRowKey,
+  tableSelectRowKey,
+} from '~/components/Table/provide/table.provide'
+
 type IProps = {
+  columns: TableColumn<any>[]
   row: any
   rowHeight: number
-  columns: TableColumn<any>[]
 }
 
 defineProps<IProps>()
+
+// INJECTIONS
+const selectRow = injectStrict(tableSelectRowKey)
+const isSelectedRow = injectStrict(tableIsSelectedRowKey)
 </script>
 
 <template>
@@ -26,7 +36,20 @@ defineProps<IProps>()
         :class="[`col-${col.name}`, { 'has-data': !col.isHelperCol }]"
         :style="{ width: col.adjustedWidthPx }"
       >
+        <div
+          v-if="col.field === '_selectable'"
+          flex="~ center"
+          w="full"
+          @click.stop.prevent
+        >
+          <Checkbox
+            :model-value="isSelectedRow(row)"
+            @update:model-value="selectRow(row)"
+          />
+        </div>
+
         <ValueFormatter
+          v-else
           :value="get(row, col.field)"
           :data-type="col.dataType"
           :format="col.format"

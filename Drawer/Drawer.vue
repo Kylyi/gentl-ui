@@ -111,9 +111,9 @@ function handleAnimationEnd() {
     --apply: right-0 translate-x-100%;
 
     // Project specific
-    // @media screen and (min-width: 1536px) {
-    //   margin-right: calc(calc(100% - var(--screen2Xl)) / 2);
-    // }
+    @media screen and (min-width: 1536px) {
+      margin-right: calc(calc(100% - var(--screen2Xl)) / 2);
+    }
   }
 
   &.is-show {

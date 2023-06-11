@@ -28,7 +28,7 @@ const toPathString = computedEager(() => {
 })
 
 const currentPath = computedEager(() => {
-  return nuxtApp.$localePath(route.path, nuxtApp.$i18n.locale.value)
+  return $p(route.path, nuxtApp.$i18n.locale.value)
 })
 </script>
 

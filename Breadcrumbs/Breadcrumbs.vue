@@ -2,13 +2,11 @@
 // CONSTANTS
 import { BUTTON_PRESET } from '~/components/Button/constants/button-preset.constant'
 
-const localePath = useLocalePath()
-
 const breadcrumbsInjected = injectStrict(breadcrumbsKey, ref([]))
 
 const breadcrumbs = computed(() => {
   return [
-    { icon: 'material-symbols:home-rounded', to: localePath('/') },
+    { icon: 'material-symbols:home-rounded', to: $p('/') },
     ...breadcrumbsInjected.value,
   ]
     .flatMap(breadcrumb => [breadcrumb, 'splitter'])

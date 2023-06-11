@@ -10,14 +10,17 @@ import type { ITabsProps } from '~~/components/Tabs/types/tabs-props.type'
 
 const props = defineProps<ITabsProps>()
 const emits = defineEmits<{
-  (e: 'update:model-value', id: string | number): void
+  (e: 'update:modelValue', id: string | number): void
 }>()
 
 // LAYOUT
 const keepAliveTabs = ref<string[]>([])
-const model = useVModel(props, 'modelValue', emits, {
-  eventName: 'update:model-value',
-})
+const model = useVModel(props, 'modelValue', emits)
+
+// When we change the model externally, the animation breaks because the model
+// is changed before we can check what the previous state was.
+// This variable keeps track of the last model value to handle this
+const oldModel = ref(model.value)
 
 const instance = getCurrentInstance()
 
@@ -60,7 +63,7 @@ const transitionEnter = ref('')
 const transitionLeave = ref('')
 
 function handleTabChange(id: string | number) {
-  const currentIdx = tabs.value.findIndex(tab => tab.id === model.value)
+  const currentIdx = tabs.value.findIndex(tab => tab.id === oldModel.value)
   const selectedTabIdx = tabs.value.findIndex(tab => tab.id === id)
 
   if (currentIdx < selectedTabIdx) {
@@ -73,6 +76,7 @@ function handleTabChange(id: string | number) {
 
   preventTabChange.value = true
   model.value = id
+  oldModel.value = id
 }
 
 watch(model, model => {
@@ -89,7 +93,7 @@ watch(model, model => {
   >
     <!-- LABELS -->
     <HorizontalScroller
-      v-if="!noLabels"
+      v-if="!noNav"
       content-class="flex gap-x-1 p-x-2 items-center"
       rounded-1
       shrink-0

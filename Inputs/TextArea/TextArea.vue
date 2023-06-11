@@ -27,9 +27,6 @@ const {
   maskedValue,
   wrapperProps,
   hasNoValue,
-  handleFocus,
-  handleBlur,
-  handleMouseDown,
   focus,
   select,
   blur,
@@ -38,6 +35,8 @@ const {
   clear,
   getInputElement,
   handleManualModelChange,
+  handleClickWrapper,
+  handleFocusOrClick,
 } = useInputUtils({
   props,
   maskRef: toRef(props, 'mask'),
@@ -65,7 +64,7 @@ defineExpose({
   <InputWrapper
     v-bind="wrapperProps"
     :has-content="!hasNoValue"
-    @mousedown="handleMouseDown"
+    @click="handleClickWrapper"
   >
     <template
       v-if="$slots.prepend"
@@ -93,19 +92,24 @@ defineExpose({
       :rows="rows"
       :class="[inputClass, resize]"
       :style="inputStyle"
-      @focus="handleFocus"
-      @blur="handleBlur"
+      @focus="handleFocusOrClick"
     />
 
     <template
       v-if="$slots.append"
       #append
     >
-      <slot
-        name="append"
-        :clear="clear"
-        :focus="focus"
-      />
+      <div
+        flex="~ center"
+        fit
+        @click="handleFocusOrClick"
+      >
+        <slot
+          name="append"
+          :clear="clear"
+          :focus="focus"
+        />
+      </div>
     </template>
   </InputWrapper>
 </template>

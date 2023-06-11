@@ -14,19 +14,16 @@ const props = withDefaults(defineProps<IYearMonthSelectorProps>(), {
   contentClass: 'cursor-pointer',
 })
 const emits = defineEmits<{
-  (e: 'update:model-value', payload: Datetime): void
+  (e: 'update:modelValue', payload: Datetime): void
   (e: 'previous'): void
 }>()
 
 // UTILS
 const { d } = useI18n()
-const { getFieldProps } = useFieldUtils()
 
 // LAYOUT
 const fieldEl = ref<InstanceType<typeof Field>>()
-const model = useVModel(props, 'modelValue', emits, {
-  eventName: 'update:model-value',
-})
+const model = useVModel(props, 'modelValue', emits)
 
 const modelFormatted = computed(() => {
   if (!model.value) {
@@ -36,9 +33,8 @@ const modelFormatted = computed(() => {
   return capitalize(d($date(model.value).valueOf(), 'yearMonth'))
 })
 
-const fieldProps = getFieldProps(props)
-
 // PICKER
+const referenceEl = ref<HTMLDivElement>()
 const menuProxyEl = ref<InstanceType<typeof MenuProxy>>()
 const isPickerActive = ref(false)
 const pickerState = ref('hide')
@@ -46,55 +42,52 @@ const pickerState = ref('hide')
 function handleMonthSelect(month: number) {
   model.value = $date(props.modelValue).month(month).startOf('month').valueOf()
   isPickerActive.value = false
+
+  fieldEl.value?.focus()
 }
 
 function handleYearSelect(year: number) {
-  model.value = $date(props.modelValue).year(year)
+  model.value = $date(props.modelValue).year(year).valueOf()
 }
 
 function handleYearNext() {
-  model.value = $date(props.modelValue).add(1, 'year')
+  model.value = $date(props.modelValue).add(1, 'year').valueOf()
 }
 
 function handleYearPrevious() {
-  model.value = $date(props.modelValue).subtract(1, 'year')
+  model.value = $date(props.modelValue).subtract(1, 'year').valueOf()
 }
 
-function handlePickerToggle() {
-  if (props.readonly || props.disabled) {
-    return
+// FIELD
+const { getFieldProps, handleClickWrapper, handleFocusOrClick } = useFieldUtils(
+  {
+    props,
+    menuElRef: menuProxyEl,
   }
+)
 
-  isPickerActive.value = !isPickerActive.value
-}
+const fieldProps = getFieldProps(props)
+
+onMounted(() => {
+  nextTick(() => {
+    referenceEl.value = unrefElement(fieldEl as any)?.querySelector(
+      '.control'
+    ) as HTMLDivElement
+  })
+})
 </script>
 
 <template>
   <Field
     ref="fieldEl"
     v-bind="fieldProps"
-    :is-blurred="pickerState === 'hide'"
     :no-content="!modelFormatted"
-    @click="handlePickerToggle"
+    @click="handleClickWrapper"
+    @focus="handleFocusOrClick"
   >
-    {{ modelFormatted || '&nbsp;' }}
-
-    <template #append>
-      <Btn
-        v-if="clearable && modelValue && !readonly && !disabled"
-        icon="eva:close-fill h-6 w-6"
-        color="ca"
-        size="auto"
-        h="7"
-        w="7"
-        @click.stop.prevent="model = emptyValue"
-      />
-
-      <div
-        system-uicons:calendar-date
-        class="picker-icon"
-      />
-    </template>
+    <span>
+      {{ modelFormatted || '&nbsp;' }}
+    </span>
 
     <MenuProxy
       ref="menuProxyEl"
@@ -102,7 +95,7 @@ function handlePickerToggle() {
       manual
       hide-header
       dense
-      :reference-target="fieldEl"
+      :reference-target="referenceEl"
       position="top"
       h="!auto"
       w="!auto"
@@ -110,6 +103,7 @@ function handlePickerToggle() {
       max-w="!400px"
       overflow="hidden"
       content-class="p-2 flex-gap-y-2"
+      tabindex="-1"
       @before-show="pickerState = 'show'"
       @before-hide="pickerState = 'hide'"
     >
@@ -127,11 +121,28 @@ function handlePickerToggle() {
         @month="handleMonthSelect"
       />
     </MenuProxy>
+
+    <template #append>
+      <Btn
+        v-if="clearable && modelValue && !readonly && !disabled"
+        icon="eva:close-fill h-6 w-6"
+        color="ca"
+        size="auto"
+        h="7"
+        w="7"
+        @click.stop.prevent="model = emptyValue"
+      />
+
+      <div
+        formkit:month
+        class="picker-icon"
+      />
+    </template>
   </Field>
 </template>
 
 <style lang="scss" scoped>
 .picker-icon {
-  --apply: cursor-pointer color-ca m-x-2 h-6 w-6;
+  --apply: cursor-pointer color-ca m-x-2 h-5.5 w-5.5;
 }
 </style>

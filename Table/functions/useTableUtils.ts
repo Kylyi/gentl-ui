@@ -58,6 +58,14 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
     })
   }
 
+  function getRowKey(tableProps: ITableProps) {
+    if (tableProps.getData?.createIdentifier) {
+      return '_uuid'
+    }
+
+    return tableProps.rowKey || 'id'
+  }
+
   /**
    * Will extract data from the table columns and return it in a format that can be used to
    * save the state of the columns
@@ -323,6 +331,7 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
 
   return {
     storageKey, // Is not reactive!
+    getRowKey,
     getDistinctDataForField,
     extractColumnsStateData,
     getAvailableComparators,

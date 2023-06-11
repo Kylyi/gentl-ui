@@ -15,7 +15,7 @@ withDefaults(defineProps<IProps>(), {
 <template>
   <Btn
     preset="EDIT"
-    :label="labels && $t('edit')"
+    :label="labels && (label || $t('edit'))"
     :loader-type="loaderType"
     :loading="loading"
     :to="to"

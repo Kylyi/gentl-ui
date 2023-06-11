@@ -156,19 +156,19 @@ defineExpose({
   }
 
   &--warning {
-    --apply: color-warning border-warning;
+    --apply: color-warning border-warning bg-warning/15;
   }
 
   &--error {
-    --apply: color-negative border-negative;
+    --apply: color-negative border-negative bg-negative/15;
   }
 
   &--success {
-    --apply: color-positive border-positive;
+    --apply: color-positive border-positive bg-positive/15;
   }
 
   &--info {
-    --apply: color-info border-info;
+    --apply: color-info border-info bg-info/15;
   }
 }
 

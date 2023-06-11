@@ -14,13 +14,23 @@ export const updateTableStateKey: InjectionKey<
     updateInternalColumns?: boolean
   ) => void
 > = Symbol('updateTableState')
+
 export const tableIncludeDeletedKey: InjectionKey<Ref<boolean>> = Symbol(
   'tableIncludeDeleted'
 )
+
 export const refreshTableDataKey: InjectionKey<() => void> =
   Symbol('refreshTableData')
+
 export const recalculateTableColumnsKey: InjectionKey<
   (force?: boolean) => void
 > = Symbol('recalulateTableColumns')
+
 export const tableQueryKey: InjectionKey<Ref<ITableQuery>> =
   Symbol('tableQuery')
+
+export const tableSelectRowKey: InjectionKey<(row: any) => void> =
+  Symbol('tableSelectRow')
+
+export const tableIsSelectedRowKey: InjectionKey<(row: any) => boolean> =
+  Symbol('tableIsSelectedRow')
