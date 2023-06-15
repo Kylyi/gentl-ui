@@ -25,7 +25,7 @@ defineProps<IProps>()
           v-for="(col, idx) in columns"
           :key="idx"
         >
-          <template v-if="!col.isHelperCol">
+          <template v-if="!col.isHelperCol && !col.hidden">
             <div
               v-if="!col.hideLabel"
               class="cell cell-label"

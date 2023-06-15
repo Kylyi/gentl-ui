@@ -46,21 +46,28 @@ export function useTableColumnResizing(props: {
     const splitters: ISplitter[] = []
     let lastLeftPosition = 0
 
-    props.columns.forEach(col => {
-      lastLeftPosition += col.adjustedWidth
+    props.columns
+      .filter(col => !col.hidden)
+      .forEach(col => {
+        lastLeftPosition += col.adjustedWidth
 
-      if (col.isHelperCol) {
-        return
-      }
+        if (col.isHelperCol || !col.resizable) {
+          return
+        }
 
-      splitters.push({
-        field: col.field as string,
-        left: lastLeftPosition,
+        splitters.push({
+          field: col.field as string,
+          left: lastLeftPosition,
+        })
       })
-    })
 
     // We need to move the last splitter a bit to the left so it doesn't create overflow
-    splitters[splitters.length - 1].left -= 4
+    // But only in case the last column is actually resizable
+    const lastCol = props.columns[props.columns.length - 1]
+
+    if (lastCol.resizable) {
+      splitters[splitters.length - 1].left -= 4
+    }
 
     return splitters
   })

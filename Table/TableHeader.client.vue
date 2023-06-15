@@ -48,39 +48,43 @@ defineExpose({
     @scrolled="$emit('scrolled', $event)"
   >
     <!-- COLUMNS -->
-    <div
+    <template
       v-for="(col, idx) in columns"
       :key="idx"
-      class="th"
-      :title="col._label"
-      :class="[
-        col.headerClasses,
-        `col-${col.name}`,
-        { 'has-data': !col.isHelperCol },
-      ]"
-      :style="{ ...col.headerStyle, [`--colWidth`]: col.adjustedWidthPx }"
     >
-      <slot :col="col">
-        <span
-          p="l-2 r-1 y-1"
-          grow
-          style="overflow-wrap: anywhere"
-        >
-          {{ col._label }}
-        </span>
+      <div
+        v-if="!col.hidden"
+        class="th"
+        :title="col._label"
+        :class="[
+          col.headerClasses,
+          `col-${col.name}`,
+          { 'has-data': !col.isHelperCol },
+        ]"
+        :style="{ ...col.headerStyle, [`--colWidth`]: col.adjustedWidthPx }"
+      >
+        <slot :col="col">
+          <span
+            p="l-2 r-1 y-1"
+            grow
+            style="overflow-wrap: anywhere"
+          >
+            {{ col._label }}
+          </span>
 
-        <TableColumnFilterBtn
-          v-if="!(col.hideFilters || col.isHelperCol)"
-          :column="col"
-          :columns="columns"
-          :rows="rows"
-          m="x-1"
-          shrink-0
-          :use-server="useServer"
-          :use-chips="useChips"
-        />
-      </slot>
-    </div>
+          <TableColumnFilterBtn
+            v-if="!(col.hideFilters || col.isHelperCol)"
+            :column="col"
+            :columns="columns"
+            :rows="rows"
+            m="x-1"
+            shrink-0
+            :use-server="useServer"
+            :use-chips="useChips"
+          />
+        </slot>
+      </div>
+    </template>
 
     <!-- ACTIVE SPLITTER -->
     <div

@@ -119,8 +119,10 @@ export async function useTableData(
     } as ITableQuery
   })
 
+  const refreshData = useDebounceFn(dbQuery.trigger, 100)
+
   provide(tableQueryKey, dbQuery)
-  provide(refreshTableDataKey, useDebounceFn(dbQuery.trigger, 100))
+  provide(refreshTableDataKey, refreshData)
   provide(tableStateKey, tableState)
   provide(
     updateTableStateKey,
@@ -253,6 +255,7 @@ export async function useTableData(
     search,
     tableState,
     storageKey,
+    refreshData,
 
     // PAGINATION
     currentPage,

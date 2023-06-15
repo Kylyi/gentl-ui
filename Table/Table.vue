@@ -36,6 +36,10 @@ defineEmits<{
   (e: 'row-click', payload: { row: any; el: Element }): void
 }>()
 
+defineExpose({
+  refreshData: () => refreshData(),
+})
+
 // UTILS
 const {
   scrollerEl,
@@ -58,6 +62,7 @@ const {
   search,
   tableState,
   storageKey,
+  refreshData,
 
   // PAGINATION
   currentPage,
@@ -190,6 +195,7 @@ useTableSelection(props)
               <slot
                 :name="col.name"
                 :row="item"
+                :refresh-data-fnc="refreshData"
               />
             </template>
           </Component>

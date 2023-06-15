@@ -29,44 +29,48 @@ const isSelectedRow = injectStrict(tableIsSelectedRowKey)
     :style="{ minHeight: `${rowHeight}px` }"
   >
     <slot>
-      <div
+      <template
         v-for="(col, idx) in columns"
         :key="idx"
-        class="cell"
-        :class="[`col-${col.name}`, { 'has-data': !col.isHelperCol }]"
-        :style="{ width: col.adjustedWidthPx }"
       >
         <div
-          v-if="col.field === '_selectable'"
-          flex="~ center"
-          w="full"
-          @click.stop.prevent
+          v-if="!col.hidden"
+          class="cell"
+          :class="[`col-${col.name}`, { 'has-data': !col.isHelperCol }]"
+          :style="{ width: col.adjustedWidthPx }"
         >
-          <Checkbox
-            :model-value="isSelectedRow(row)"
-            @update:model-value="selectRow(row)"
-          />
-        </div>
+          <div
+            v-if="col.field === '_selectable'"
+            flex="~ center"
+            w="full"
+            @click.stop.prevent
+          >
+            <Checkbox
+              :model-value="isSelectedRow(row)"
+              @update:model-value="selectRow(row)"
+            />
+          </div>
 
-        <ValueFormatter
-          v-else
-          :value="get(row, col.field)"
-          :data-type="col.dataType"
-          :format="col.format"
-          :row="row"
-        >
-          <template #default="{ val }">
-            <slot
-              :name="col.name"
-              :value="val"
-            >
-              <span class="p-x-2 truncate">
-                {{ val }}
-              </span>
-            </slot>
-          </template>
-        </ValueFormatter>
-      </div>
+          <ValueFormatter
+            v-else
+            :value="get(row, col.field)"
+            :data-type="col.dataType"
+            :format="col.format"
+            :row="row"
+          >
+            <template #default="{ val }">
+              <slot
+                :name="col.name"
+                :value="val"
+              >
+                <span class="p-x-2 truncate">
+                  {{ val }}
+                </span>
+              </slot>
+            </template>
+          </ValueFormatter>
+        </div>
+      </template>
     </slot>
   </div>
 </template>

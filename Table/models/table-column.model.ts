@@ -24,6 +24,8 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   hideLabel?: boolean
   hideFilters?: boolean
   filterable = true
+  reorderable = true
+  resizable = true
   sortable = true
   searchable?: boolean
   hidden?: boolean
@@ -161,6 +163,9 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     this.noFilterSort = col.noFilterSort ?? false
     this.filterFormat = col.filterFormat
     this.getDistinctData = col.getDistinctData
+
+    this.reorderable = col.reorderable ?? this.reorderable
+    this.resizable = col.resizable ?? this.resizable
 
     // SORTING
     this.sort = col.sort

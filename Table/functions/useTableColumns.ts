@@ -113,15 +113,17 @@ export function useTableColumns(props: Pick<ITableProps, 'storageKey'>) {
     const contentWidth =
       containerWidth - Number(isWrapperOverflown) * scrollbarWidth - 1
 
-    const cols = [...toValue(columnsRef)].filter(col => !col.hidden)
+    const cols = [...toValue(columnsRef)]
     extendColumns(cols, options)
 
     const colsTotalWidth = cols.reduce<{ relative: number; fixed: number }>(
       (agg, col) => {
-        if (typeof col.width === 'string') {
-          agg.fixed += +(stringToFloat(col.width) || 0)
-        } else {
-          agg.relative += col.width || 1
+        if (!col.hidden) {
+          if (typeof col.width === 'string') {
+            agg.fixed += +(stringToFloat(col.width) || 0)
+          } else {
+            agg.relative += col.width || 1
+          }
         }
 
         return agg
@@ -133,10 +135,12 @@ export function useTableColumns(props: Pick<ITableProps, 'storageKey'>) {
       !!colsTotalWidth.relative &&
       colsTotalWidth.relative + colsTotalWidth.fixed < contentWidth
 
-    const colsSortedByWidth = sortBy(cols, col =>
-      typeof col.width === 'string'
-        ? 9999 * +(stringToFloat(col.width) || 0)
-        : col.width
+    const colsSortedByWidth = sortBy(
+      cols.filter(col => !col.hidden),
+      col =>
+        typeof col.width === 'string'
+          ? 9999 * +(stringToFloat(col.width) || 0)
+          : col.width
     )
 
     const calculateColWidth = (

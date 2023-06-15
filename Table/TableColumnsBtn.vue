@@ -77,11 +77,13 @@ function handleRecalculateColumns() {
           :key="col.field"
           :ref="columnsRefs.set"
           :index="idx"
+          :disabled="!col.reorderable"
           z="$zMenu"
         >
           <Item
             cursor="!default"
             flex="gap-x-0"
+            :class="{ 'color-ca': !col.reorderable }"
           >
             <DragHandle class="handle icon-park-outline:drag" />
 
