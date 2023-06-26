@@ -53,7 +53,7 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
       return {
         ...item,
         _value: get(item, field || col.field),
-        _label: col.format?.(item) ?? get(item, distinctField),
+        _label: col.format?.(item) ?? get(item, distinctField[0]),
       }
     })
   }
@@ -79,14 +79,18 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
    */
   function getAvailableComparators(
     dataType: DataType,
-    options: { includeSelectorComparators?: boolean } = {}
+    options: {
+      includeSelectorComparators?: boolean
+      allowedComparators?: ComparatorEnum[]
+    } = {}
   ) {
-    const { includeSelectorComparators } = options
+    const { includeSelectorComparators, allowedComparators } = options
+    let comparators: ComparatorEnum[] = []
 
     switch (dataType) {
       case 'number':
       case 'percent':
-        return [
+        comparators = [
           ComparatorEnum.EQUAL,
           ComparatorEnum.NOT_EQUAL,
           ComparatorEnum.GREATER_THAN,
@@ -96,9 +100,11 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
           ...(includeSelectorComparators ? SELECTOR_COMPARATORS : []),
         ]
 
+        break
+
       case 'date':
       case 'yearMonth':
-        return [
+        comparators = [
           ComparatorEnum.EQUAL,
           ComparatorEnum.NOT_EQUAL,
           ComparatorEnum.GREATER_THAN_OR_EQUAL,
@@ -106,12 +112,16 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
           ...(includeSelectorComparators ? SELECTOR_COMPARATORS : []),
         ]
 
+        break
+
       case 'boolean':
-        return [ComparatorEnum.EQUAL]
+        comparators = [ComparatorEnum.EQUAL]
+
+        break
 
       case 'string':
       default:
-        return [
+        comparators = [
           ComparatorEnum.EQUAL,
           ComparatorEnum.NOT_EQUAL,
           ComparatorEnum.STARTS_WITH,
@@ -119,7 +129,17 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
           ComparatorEnum.CONTAINS,
           ...(includeSelectorComparators ? SELECTOR_COMPARATORS : []),
         ]
+
+        break
     }
+
+    if (allowedComparators) {
+      return comparators.filter(comparator =>
+        allowedComparators.includes(comparator)
+      )
+    }
+
+    return comparators
   }
 
   /**

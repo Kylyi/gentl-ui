@@ -67,11 +67,11 @@ function handleTabChange(id: string | number) {
   const selectedTabIdx = tabs.value.findIndex(tab => tab.id === id)
 
   if (currentIdx < selectedTabIdx) {
-    transitionEnter.value = 'animate-fade-in-right'
-    transitionLeave.value = 'animate-fade-out'
+    transitionEnter.value = props.transitionNext || 'animate-fade-in-right'
+    transitionLeave.value = props.transitionPrevious || 'animate-fade-out'
   } else {
-    transitionEnter.value = 'animate-fade-in-left'
-    transitionLeave.value = 'animate-fade-out'
+    transitionEnter.value = props.transitionNext || 'animate-fade-in-left'
+    transitionLeave.value = props.transitionNext || 'animate-fade-out'
   }
 
   preventTabChange.value = true

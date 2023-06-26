@@ -8,6 +8,6 @@ export type ITreeNode<T extends {} = {}> = IItem<T> & {
   parent?: ITreeNode | null
   parents?: ITreeNode[]
   children?: ITreeNode[]
-  hasChildren?: boolean
+  hasChildren?: boolean | null
   childrenLoaded?: boolean
 }

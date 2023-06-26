@@ -9,7 +9,9 @@ const props = withDefaults(defineProps<ICollapseProps>(), {
 const emits = defineEmits<{
   (e: 'update:model-value', val: boolean): void
   (e: 'before-show'): void
+  (e: 'show'): void
   (e: 'before-hide'): void
+  (e: 'hide'): void
 }>()
 
 const headerEl = ref<HTMLDivElement>()
@@ -28,6 +30,16 @@ function handleToggle() {
   internalValue.value = !internalValue.value
   internalValue.value ? emits('before-show') : emits('before-hide')
   emits('update:model-value', internalValue.value)
+}
+
+function handleEnter() {
+  emits('show')
+  resetStyle()
+}
+
+function handleLeave() {
+  emits('hide')
+  resetStyle()
 }
 
 function resetStyle() {
@@ -141,8 +153,8 @@ useResizeObserver(headerEl, entries => {
 
     <!-- CONTENT -->
     <Transition
-      @after-enter="resetStyle"
-      @after-leave="resetStyle"
+      @after-enter="handleEnter"
+      @after-leave="handleLeave"
     >
       <div
         v-show="internalValue"
@@ -159,7 +171,7 @@ useResizeObserver(headerEl, entries => {
 
 <style lang="scss" scoped>
 .collapse {
-  --apply: relative flex flex-col transition-padding;
+  --apply: relative flex flex-col transition-padding rounded-b-custom;
 
   &.is-padded {
     --apply: p-t-2 p-b-4 p-x-2;

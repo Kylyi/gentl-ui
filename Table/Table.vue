@@ -28,6 +28,7 @@ const props = withDefaults(defineProps<ITableProps>(), {
   totalRows: 0,
   useServer: true,
   useChips: config.table.useChips,
+  userUrl: true,
 })
 
 defineEmits<{

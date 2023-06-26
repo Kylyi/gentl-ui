@@ -40,6 +40,7 @@ const column = toRef(props, 'column')
 const comparatorOptions = computed(() => {
   return getAvailableComparators(props.column.dataType, {
     includeSelectorComparators: !!column.value.getDistinctData,
+    allowedComparators: column.value.comparators,
   })
 })
 
@@ -92,43 +93,16 @@ function handleRemoveFilter() {
   }
 }
 
-// Watch for comparator change to reset the `compareValue` if needed
-watch(
-  () => filter.value.comparator,
-  (comparator, oldComparator) => {
-    const wasSelectComparator =
-      oldComparator && isSelectorComparator(oldComparator)
-    const isSelectComparator = isSelectorComparator(comparator)
-
-    if (wasSelectComparator && !isSelectComparator) {
-      filter.value.compareValue = null
-    }
-
-    if (!wasSelectComparator && isSelectComparator) {
-      filter.value.compareValue = []
-    }
-  }
-)
-
 function handleCompareValueChange() {
   updateTableState({}, state => {
+    const columnState = new TableColumnState(column.value)
+
     const foundColumn = state.columns.find(
       column => column.field === props.column.field
     )
 
     if (foundColumn) {
-      const foundFilter = foundColumn.filters.find(
-        filter => filter.comparator === props.filter.comparator
-      )
-
-      if (foundFilter) {
-        foundFilter.comparator = filter.value.comparator
-        foundFilter.compareValue = filter.value.compareValue
-      } else {
-        foundColumn.filters.push(new FilterItem(filter.value))
-      }
-    } else {
-      state.columns.push(new TableColumnState(props.column))
+      Object.assign(foundColumn, columnState)
     }
 
     return state
@@ -136,11 +110,48 @@ function handleCompareValueChange() {
 
   refreshData()
 }
+function handleComparatorChange(comparator: ComparatorEnum) {
+  const wasSelectComparator = isSelectorComparator(filter.value.comparator)
+  filter.value.comparator = comparator
+  const isSelectComparator = isSelectorComparator(comparator)
+  const oldCompareValue = filter.value.compareValue
 
-function handleComparatorChange() {
-  nextTick(() => {
-    refreshData()
+  if (wasSelectComparator && !isSelectComparator) {
+    filter.value.compareValue = null
+  }
+
+  if (!wasSelectComparator && isSelectComparator) {
+    filter.value.compareValue = []
+  }
+
+  const wasCompareValueEmptyArrayOrNil =
+    (Array.isArray(oldCompareValue) && !oldCompareValue.length) ||
+    isNil(oldCompareValue)
+
+  const isCompareValueEmptyArrayOrNil =
+    (Array.isArray(filter.value.compareValue) &&
+      !filter.value.compareValue.length) ||
+    isNil(filter.value.compareValue)
+
+  if (wasCompareValueEmptyArrayOrNil || isCompareValueEmptyArrayOrNil) {
+    return
+  }
+
+  updateTableState({}, state => {
+    const columnState = new TableColumnState(column.value)
+
+    const foundColumn = state.columns.find(
+      column => column.field === props.column.field
+    )
+
+    if (foundColumn) {
+      Object.assign(foundColumn, columnState)
+    }
+
+    return state
   })
+
+  nextTick(() => refreshData())
 }
 
 defineExpose({
@@ -153,7 +164,7 @@ defineExpose({
     <div flex="~ gap-x-2">
       <!-- COMPARATOR -->
       <Selector
-        v-model="filter.comparator"
+        :model-value="filter.comparator"
         :options="comparatorOptions"
         emit-key
         grow

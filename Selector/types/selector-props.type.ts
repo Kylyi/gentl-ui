@@ -30,7 +30,12 @@ export type ISelectorProps = IInputProps & {
   fuseOptions?: FuseOptions<any>
   groupBy?: GroupItem[]
   loadData?: {
-    fnc: Function
+    /**
+     * The payload can actually be typed as follows:
+     * payload: { search?: string }
+     * But some queries dont have the search so to prevent TS from complaining, just use any
+     */
+    fnc: (payload: any) => Promise<any> | any
     mapKey: string
     immediate?: boolean
 

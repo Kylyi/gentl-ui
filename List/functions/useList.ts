@@ -141,6 +141,10 @@ export function useList(
   const selected = toRef(props, 'selected')
 
   function handleSelectFiltered() {
+    if (props.noSelect) {
+      return
+    }
+
     const itemsToSelect = arr.value
       .filter(item => !('isGroup' in item))
       // @ts-expect-error type
@@ -171,31 +175,34 @@ export function useList(
               const _selected = [...selected.value]
               _selected.splice(idx, 1)
 
-              self.emit('selected', _selected)
+              self.emit('update:selected', _selected)
             }
           } else {
             const _selected = klona(selected.value)
             delete _selected[itemKey]
 
-            self.emit('selected', _selected)
+            self.emit('update:selected', _selected)
           }
         } else {
           self.emit('added', item)
 
           if (Array.isArray(selected.value)) {
-            self.emit('selected', [...selected.value, getEmitValue(item)])
+            self.emit('update:selected', [
+              ...selected.value,
+              getEmitValue(item),
+            ])
           } else if (selected.value) {
             const _selected = klona(selected.value)
             _selected[itemKey] = true
 
-            self.emit('selected', _selected)
+            self.emit('update:selected', _selected)
           } else {
-            self.emit('selected', { [itemKey]: true })
+            self.emit('update:selected', { [itemKey]: true })
           }
         }
       } else if (!selectedByKey.value[itemKey]) {
         self.emit('added', item)
-        self.emit('selected', getEmitValue(item))
+        self.emit('update:selected', getEmitValue(item))
       }
     } else if (props.multi && props.groupsSelectable) {
       // ENHANCEMENT: SELECT ALL ITEMS IN GROUP
@@ -217,6 +224,7 @@ export function useList(
       includeMatches: true,
       includeScore: true,
       keys: [props.itemLabel],
+      findAllMatches: true,
 
       ...props.fuseOptions,
     },
@@ -244,7 +252,10 @@ export function useList(
 
     // CREATE HIGHLIGHTED text
     else {
-      const { highlightedResult, hasExactMatch: HEM } = highlight(res)
+      const { highlightedResult, hasExactMatch: HEM } = highlight(
+        res,
+        fuseOptions?.fuseOptions?.keys || []
+      )
       _hasExactMatch = HEM
 
       highlightedItems = highlightedResult.map(({ item, highlighted }) => ({

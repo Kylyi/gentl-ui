@@ -4,9 +4,7 @@ import { ITreeNodeProps } from '~~/components/Tree/types/tree-node-props.type'
 // TYPES
 import type { ITreeNode } from '~~/components/Tree/types/tree-node.type'
 
-type ITreeNodePropsWithoutLevel = Omit<ITreeNodeProps, 'level'>
-
-export interface ITreeProps extends ITreeNodePropsWithoutLevel {
+export type ITreeProps = Omit<ITreeNodeProps, 'level'> & {
   collapsedOnInit?: boolean | 'first'
   connectors?: boolean
   contentClass?: ClassType

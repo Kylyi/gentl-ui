@@ -1,5 +1,6 @@
 import { FuseOptions } from '@vueuse/integrations'
 import { TableColumn } from '~/components/Table/models/table-column.model'
+import { ITableQuery } from '~/components/Table/types/table-query.type'
 
 export interface ITableProps {
   breakpoint?: 'sm' | 'md' | 'lg' | 'xl' | 'inf'
@@ -36,7 +37,7 @@ export interface ITableProps {
    * `errorHandler` ~ function to handle errors that come from fetching the table data
    */
   getData?: {
-    fnc: Function
+    fnc: (options: ITableQuery) => Promise<any> | any
     mapKey?: string
     countKey?: string
     createIdentifier?: (row: any, idx: number) => string | number
@@ -87,4 +88,9 @@ export interface ITableProps {
    * Whether to use server-side pagination, filtering and sorting
    */
   useServer?: boolean // default ~ true
+
+  /**
+   * Whether to use the url to store the table state
+   */
+  useUrl?: boolean
 }

@@ -50,12 +50,18 @@ function handleColorChange(color?: string | null) {
     <Btn
       size="sm"
       icon="material-symbols:format-color-text-rounded"
+      @click.stop.prevent
+      @mousedown.stop.prevent
     >
       <MenuProxy
         ref="colorMenuEl"
         hide-header
       >
-        <ColorBrandingPicker @update:model-value="handleColorChange" />
+        <ColorBrandingPicker
+          @update:model-value="handleColorChange"
+          @click.stop.prevent
+          @mousedown.stop.prevent
+        />
       </MenuProxy>
     </Btn>
 

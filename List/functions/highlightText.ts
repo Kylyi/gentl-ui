@@ -13,11 +13,13 @@ import type { IItem } from '~~/libs/App/types/item.type'
  */
 export function highlight<T = IItem>(
   fuseSearchResult: Array<Fuse.FuseResult<T>>,
+  keys: Fuse.FuseOptionKey<any>[],
   highlightClassName = 'fuse-highlighted'
 ) {
   let hasExactMatch = false
 
   const generateHighlightedText = (
+    highlighted: string,
     inputText = '',
     regions: readonly Fuse.RangeTuple[]
   ) => {
@@ -39,7 +41,7 @@ export function highlight<T = IItem>(
 
     content += inputText.substring(nextUnhighlightedRegionStartingIndex)
 
-    return content
+    return `${highlighted.trim()} ${content}`
   }
 
   const highlightedResult = fuseSearchResult
@@ -47,8 +49,12 @@ export function highlight<T = IItem>(
     .map(({ item, matches, score }) => {
       let highlighted = ''
 
-      matches?.forEach(match => {
-        highlighted = generateHighlightedText(match.value, match.indices)
+      keys.forEach(key => {
+        const match = matches?.find(match => match.key === key)
+
+        highlighted = match
+          ? generateHighlightedText(highlighted, match.value, match.indices)
+          : `${highlighted} ${get(item, key as string)}`
       })
 
       hasExactMatch = hasExactMatch || score! <= Number.EPSILON

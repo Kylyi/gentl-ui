@@ -8,9 +8,17 @@ import { TextAlign } from '@tiptap/extension-text-align'
 import { Placeholder } from '@tiptap/extension-placeholder'
 import { TextStyle } from '@tiptap/extension-text-style'
 import { Color } from '@tiptap/extension-color'
+import { Mention } from '@tiptap/extension-mention'
+
+// TYPES
+import { ClientRectObject } from '@floating-ui/vue'
 
 // TYPES
 import type { IWysiwygProps } from '~~/components/Wysiwyg/types/wysiwyg-props.type'
+import type { IWysiwygMentionItem } from '~/components/Wysiwyg/types/wysiwyg-mention-item.type'
+
+// COMPONENTS
+import WysiwygMention from '~/components/Wysiwyg/WysiwygMention.vue'
 
 const props = withDefaults(defineProps<IWysiwygProps>(), {
   errorVisible: true,
@@ -65,6 +73,64 @@ const ColorExt = Color.configure({
   types: ['textStyle'],
 })
 
+// Mention https://tiptap.dev/api/nodes/mention
+const mentionEl = ref<InstanceType<typeof WysiwygMention>>()
+const selectFnc = ref<Function>(() => {})
+const mentionItemsFiltered = ref<IWysiwygMentionItem[]>([])
+const getRectFnc = ref<() => ClientRectObject>(function () {
+  return {
+    bottom: 0,
+    height: 0,
+    left: 0,
+    right: 0,
+    top: 0,
+    width: 0,
+    x: 0,
+    y: 0,
+  }
+})
+
+const MentionExt = Mention.configure({
+  renderLabel: ({ node, options }) => {
+    return `${options.suggestion.char}${node.attrs.label ?? node.attrs.id}}`
+  },
+  suggestion: {
+    char: '${',
+    items: ({ query }) => {
+      if (!query) {
+        mentionItemsFiltered.value = props.mentionItems || []
+      }
+
+      mentionItemsFiltered.value = (props.mentionItems || []).filter(item => {
+        return item.label.toLowerCase().startsWith(query.toLowerCase())
+      })
+
+      return []
+    },
+    render: () => {
+      return {
+        onStart: ({ clientRect, command }) => {
+          if (!clientRect) {
+            return
+          }
+
+          getRectFnc.value = clientRect as () => ClientRectObject
+          mentionEl.value?.show()
+          selectFnc.value = command
+        },
+        onKeyDown: ({ event }) => {
+          mentionEl.value?.onKeyDown(event)
+
+          return true
+        },
+        onExit: () => {
+          mentionEl.value?.hide()
+        },
+      }
+    },
+  },
+})
+
 // EDITOR
 const editor = useEditor({
   content: props.modelValue,
@@ -77,6 +143,7 @@ const editor = useEditor({
     Underline,
     TextStyle,
     ColorExt,
+    MentionExt,
   ],
   editable: !props.readonly && !props.disabled,
   editorProps: {
@@ -169,6 +236,13 @@ watch(model, model => {
       :editor="editor"
     />
 
+    <WysiwygMention
+      ref="mentionEl"
+      :get-rect="getRectFnc"
+      :select-fnc="selectFnc"
+      :items="mentionItemsFiltered"
+    />
+
     <template #menu>
       <Transition
         appear
@@ -213,6 +287,10 @@ watch(model, model => {
     content: attr(data-placeholder);
 
     --apply: color-gray-500 dark:color-gray-400 float-left h-0 pointer-events-none;
+  }
+
+  [data-type="mention"] {
+    --apply: italic;
   }
 }
 </style>

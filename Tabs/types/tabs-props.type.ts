@@ -6,4 +6,6 @@ export interface ITabsProps {
   navClass?: ClassType
   noNav?: boolean
   noAnimation?: boolean
+  transitionPrevious?: string
+  transitionNext?: string
 }

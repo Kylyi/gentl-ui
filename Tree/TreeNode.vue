@@ -1,17 +1,9 @@
 <script setup lang="ts">
 // @ts-nocheck
 // TYPES
-import type { ITreeNode } from '~/components/Tree/types/tree-node.type'
+import type { ITreeNodeProps } from '~/components/Tree/types/tree-node-props.type'
 
-type IProps = {
-  fetchChildren?: { fnc: Function; mapKey: string }
-  level: number
-  maxLevel?: number
-  nodes?: ITreeNode[]
-  preferCollapseBtnHidden?: boolean
-}
-
-defineProps<IProps>()
+defineProps<ITreeNodeProps>()
 </script>
 
 <template>
@@ -27,6 +19,7 @@ defineProps<IProps>()
       :level="level"
       :max-level="maxLevel"
       :fetch-children="fetchChildren"
+      :has-children="hasChildren"
       :prefer-collapse-btn-hidden="preferCollapseBtnHidden"
     >
       <template #node="deepNode">
@@ -54,13 +47,6 @@ defineProps<IProps>()
     .tree-node-item {
       --apply: relative;
 
-      &::before {
-        --apply: content-empty absolute left-0 w-5 h-1px
-          bg-true-gray-200 dark:bg-true-gray-700 top-1/2;
-
-        // top: calc(var(--treeRowHeight) / 2);
-      }
-
       &::after {
         --apply: content-empty absolute top-0 left-0 h-full w-1px
           bg-true-gray-200 dark:bg-true-gray-700;
@@ -68,11 +54,17 @@ defineProps<IProps>()
 
       &:last-child::after {
         --apply: h-1/2;
-        // height: calc(var(--treeRowHeight) / 2);
       }
 
       &.has-children::before {
         --apply: w-8px;
+      }
+
+      :deep(.tree-node-item--wrapper) {
+        &::before {
+          --apply: content-empty absolute left-0 w-4 h-1px
+          bg-true-gray-200 dark:bg-true-gray-700;
+        }
       }
     }
   }

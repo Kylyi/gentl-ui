@@ -18,7 +18,7 @@ export function useFieldUtils(options?: {
   // which doesn't trigger the focus event on the input. We need to handle
   // this case manually.
   function handleClickWrapper(ev: MouseEvent) {
-    if ((ev.target as HTMLElement).classList.contains('wraper-body__input')) {
+    if ((ev.target as HTMLElement).classList.contains('wrapper-body__input')) {
       handleFocusOrClick(ev)
     }
   }

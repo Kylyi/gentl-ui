@@ -4,7 +4,7 @@ import type { IFieldProps } from '~~/components/Field/types/field-props.type'
 
 const props = defineProps<IFieldProps>()
 defineEmits<{
-  (e: 'focus'): void
+  (e: 'focus', ev: FocusEvent | MouseEvent): void
 }>()
 
 // LAYOUT
@@ -56,7 +56,7 @@ defineExpose({
       ref="controlEl"
       class="control w-full"
       tabindex="0"
-      @focus="$emit('focus')"
+      @focus="$emit('focus', $event)"
     >
       <slot> &nbsp; </slot>
     </span>
@@ -68,7 +68,7 @@ defineExpose({
       <div
         flex="~ center"
         fit
-        @click="$emit('focus')"
+        @click="$emit('focus', $event)"
       >
         <slot name="append" />
       </div>

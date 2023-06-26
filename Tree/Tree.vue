@@ -33,6 +33,7 @@ const isInitialized = ref(false)
 const search = ref('')
 const level = ref(0)
 const collapsedById = ref<Record<string | number, boolean>>({})
+const nodesAddedViaFetch = ref<ITreeNode[]>([])
 
 function handleExpandNode(id: string | number) {
   if (collapsedById.value[id]) {
@@ -48,11 +49,13 @@ function handleCollapseNode(id: string | number) {
 
 async function handleCollapse(node: ITreeNode, val?: boolean) {
   const { id, hasChildren, childrenLoaded } = node
+  const _hasChildren = props.hasChildren?.(node) ?? hasChildren
 
   // Fetch children if needed
-  if (!!hasChildren && props.fetchChildren && !childrenLoaded) {
+  if (!!_hasChildren && props.fetchChildren && !childrenLoaded) {
     const res = await props.fetchChildren.fnc(node.id)
     const children = res[props.fetchChildren.mapKey] as ITreeNode[]
+    nodesAddedViaFetch.value = [...nodesAddedViaFetch.value, ...children]
 
     node.children = children
     node.childrenLoaded = true
@@ -211,9 +214,10 @@ async function handleKey(ev: KeyboardEvent) {
   }
 
   const currentNodeId = elFocused.value?.getAttribute('data-node-id')
-  const currentNode = nodesFiltered.value?.find(
-    node => String(node.id) === currentNodeId
-  )
+  const currentNode = [
+    ...(nodesFiltered.value || []),
+    ...nodesAddedViaFetch.value,
+  ].find(node => String(node.id) === currentNodeId)
 
   switch (ev.key) {
     case 'Tab':
@@ -282,6 +286,11 @@ defineExpose({
   focusSearch: () => searchInputEl.value?.focus(),
   addNode,
   removeNode,
+  getNode(id: number | string) {
+    return [...props.nodes, ...nodesAddedViaFetch.value].find(
+      node => String(node.id) === String(id)
+    )
+  },
 })
 </script>
 
@@ -329,6 +338,7 @@ defineExpose({
         :max-level="maxLevel"
         :prefer-collapse-btn-hidden="preferCollapseBtnHidden"
         :fetch-children="fetchChildren"
+        :has-children="hasChildren"
         overflow="x-auto"
       >
         <template #node="{ node, level: lvl }">

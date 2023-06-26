@@ -9,8 +9,10 @@ const props = defineProps<ITreeNodeRowProps>()
 const isLoading = ref(false)
 
 const isCollapseVisible = computedEager(() => {
+  const hasChildren = props.hasChildren?.(props.node) ?? props.node.hasChildren
+
   return (
-    (!!props.node.children?.length || props.node.hasChildren) &&
+    (!!props.node.children?.length || hasChildren) &&
     props.level < (props.maxLevel ?? Infinity)
   )
 })
@@ -52,11 +54,14 @@ const handleCollapse = inject<(node: ITreeNode) => Promise<void>>(
       <Btn
         v-if="!preferCollapseBtnHidden"
         class="btn-collapser"
-        :class="[isCollapseVisible ? 'visible' : 'invisible']"
+        :class="[
+          isCollapseVisible ? 'visible' : 'invisible',
+          { 'm-l-4 m-r-1': level && isCollapseVisible },
+        ]"
         size="auto"
         w="6"
         h="6"
-        m="r-1"
+        z="1"
         focus-visible="outline-none"
         :loading="isLoading"
         :icon="
@@ -82,6 +87,8 @@ const handleCollapse = inject<(node: ITreeNode) => Promise<void>>(
       :level="level + 1"
       :max-level="maxLevel"
       :fetch-children="fetchChildren"
+      :has-children="hasChildren"
+      :class="[{ 'm-l-4': level && isCollapseVisible }]"
       :prefer-collapse-btn-hidden="preferCollapseBtnHidden"
     >
       <template #node="deepNode">

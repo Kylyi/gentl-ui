@@ -12,7 +12,7 @@ const props = withDefaults(defineProps<IListRowProps>(), {
   paddingByLevel: 8,
 })
 
-const DEFAULT_ROW_HEIGHT = 32
+const DEFAULT_ROW_HEIGHT = 40
 
 const rowInfo = computed(() => {
   const data = props.item
@@ -59,6 +59,7 @@ const rowInfo = computed(() => {
         flex="shrink"
         w="8"
         h="8"
+        p="y-2 r-3"
         :class="[
           rowInfo.isNew ? BUTTON_PRESET.ADD.icon : BUTTON_PRESET.ADD.icon,
         ]"
@@ -67,6 +68,7 @@ const rowInfo = computed(() => {
       <div
         flex="~ 1 col"
         w="full"
+        p="y-2 r-3"
       >
         <span
           :class="{ truncate }"
@@ -92,7 +94,7 @@ const rowInfo = computed(() => {
 
 <style lang="scss" scoped>
 .item {
-  --apply: flex flex-gap-x-2 p-r-3 cursor-default select-none items-center p-y-2
+  --apply: flex flex-gap-x-2 cursor-default select-none items-center
     rounded-custom;
 
   &--group {

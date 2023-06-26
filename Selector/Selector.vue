@@ -148,6 +148,8 @@ function handleSearch(payload: { search: string; hasExactMatch: boolean }) {
 
   if (props.loadData?.onSearch) {
     loadData(true, { search })
+  } else {
+    menuProxyEl.value?.recomputePosition()
   }
 
   if (!props.allowAdd) {
@@ -404,10 +406,14 @@ defineExpose({
   focus: () => menuProxyEl.value?.show(),
   blur: () => menuProxyEl.value?.hide(),
   loadData,
+  resetInternalOptions: () => {
+    optionsInternal.value = []
+    isOptionsInternalLoaded.value = false
+  },
 })
 
 if (props.loadData?.immediate) {
-  await loadData()
+  loadData()
 }
 </script>
 
@@ -493,6 +499,7 @@ if (props.loadData?.immediate) {
       <span
         v-else-if="internalValue"
         self-center
+        style="width: calc(100% - 4px)"
         :class="{ truncate: !noTruncate }"
       >
         {{ getLabel(internalValue) }}
@@ -580,7 +587,7 @@ if (props.loadData?.immediate) {
             :item-key="optionKey"
             :item-label="optionLabel"
             v-bind="listProps"
-            @selected="handleSelect($event)"
+            @update:selected="handleSelect($event)"
             @added="handleSelectAdd($event)"
             @selected-multiple="handleSelectedMultiple"
             @removed="handleSelectRemove($event)"

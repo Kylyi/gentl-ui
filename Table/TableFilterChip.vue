@@ -80,6 +80,7 @@ function getLabel(_: any, value: any) {
     <span
       text="caption"
       whitespace="nowrap"
+      lowercase
     >
       {{ $t(`comparator.${filter.comparator}`) }}
     </span>
@@ -132,6 +133,6 @@ function getLabel(_: any, value: any) {
 
 .filter-field,
 .filter-value {
-  --apply: whitespace-nowrap text-caption color-black dark:color-white;
+  --apply: whitespace-nowrap text-caption font-bold color-black dark:color-white;
 }
 </style>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 type IProps = {
   archived?: boolean
+  disabled?: boolean
   isEditing?: boolean
 }
 
@@ -40,6 +41,7 @@ watchEffect(() => {
         :preset="archived ? 'RESTORE' : 'EDIT'"
         :label="archived ? $t('restore') : $t('edit')"
         no-dim
+        :disabled="disabled"
         class="crud-edit-btn"
         :class="{ 'is-archived': archived }"
         @click="handleClick"
@@ -52,7 +54,7 @@ watchEffect(() => {
 .crud-edit-btn {
   --apply: w-full m-x-1;
 
-  &:not(.is-archived) {
+  &:not(.is-archived):not(.is-disabled) {
     --apply: bg-primary color-white;
   }
 

@@ -36,7 +36,11 @@ const isSelectedRow = injectStrict(tableIsSelectedRowKey)
         <div
           v-if="!col.hidden"
           class="cell"
-          :class="[`col-${col.name}`, { 'has-data': !col.isHelperCol }]"
+          :class="[
+            `col-${col.name}`,
+            col.classes,
+            { 'has-data': !col.isHelperCol },
+          ]"
           :style="{ width: col.adjustedWidthPx }"
         >
           <div

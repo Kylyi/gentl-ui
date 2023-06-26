@@ -11,6 +11,7 @@ import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
 
 // CONSTANTS
 import { DATE_TYPES } from '~/libs/App/types/datetime.type'
+import { config } from '~/config'
 
 export class TableColumn<T = IItem> implements IItemBase<T> {
   name: string | Extract<keyof T, string | number>
@@ -37,6 +38,11 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
    * The initial comparator
    */
   comparator = ComparatorEnum.STARTS_WITH
+
+  /**
+   * If used, these will be the only available comparators
+   */
+  comparators?: ComparatorEnum[]
 
   /**
    * When filtering in the filter dropdown, we can use different formatting than in the table
@@ -67,7 +73,10 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     }, {} as IItem)
 
     const query: IItem = {}
-    set(query, this.field, filterConditions)
+    set(query, this.field, {
+      ...filterConditions,
+      ...(config.table.useInsensitiveFilter && { mode: 'insensitive' }),
+    })
 
     return query
   }
@@ -160,6 +169,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
       ? col.filters.map(filter => new FilterItem(filter))
       : []
     this.comparator = col.comparator ?? this.comparator
+    this.comparators = col.comparators
     this.noFilterSort = col.noFilterSort ?? false
     this.filterFormat = col.filterFormat
     this.getDistinctData = col.getDistinctData

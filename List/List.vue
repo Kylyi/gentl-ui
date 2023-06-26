@@ -20,7 +20,7 @@ const props = withDefaults(defineProps<IListProps>(), {
 })
 
 defineEmits<{
-  (e: 'selected', item: any): void
+  (e: 'update:selected', item: any): void
   (e: 'added', item: any): void
   (e: 'added-multiple', items: any[]): void
   (e: 'removed', item: any): void

@@ -29,6 +29,7 @@ export async function useTableData(
   // UTILS
   const instance = getCurrentInstance()
   const { t } = useI18n()
+  const { query } = useRoute()
   const { storageKey, modifyWithSearchParams } = useTableUtils()
 
   // STATE MANAGEMENT
@@ -160,7 +161,7 @@ export async function useTableData(
     }
   )
 
-  async function fetchData(options: any) {
+  async function fetchData(options: ITableQuery) {
     if (!props.getData) {
       return
     }
@@ -199,7 +200,7 @@ export async function useTableData(
     isLoading.value = false
   }
 
-  async function fetchAndSetData(options: any) {
+  async function fetchAndSetData(options: ITableQuery) {
     const res = await fetchData(options)
 
     if (res) {
@@ -224,9 +225,16 @@ export async function useTableData(
   watch(
     dbQuery,
     dbQuery => {
+      if (process.server || !props.useUrl) {
+        return
+      }
+
       navigateTo(
         {
           query: {
+            // We keep the original query params
+            ...query,
+
             // Pagination
             page: String(dbQuery.options.skip / dbQuery.options.take + 1),
             perPage: String(dbQuery.options.take),
