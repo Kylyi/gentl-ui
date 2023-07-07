@@ -1,4 +1,5 @@
 import { FuseOptions } from '@vueuse/integrations/useFuse'
+import { IItemToBeAdded } from '~/components/List/types/list-item-to-add.type'
 
 // TYPES
 import type { IListBaseProps } from '~~/components/List/types/list-base-props.type'
@@ -42,4 +43,45 @@ export interface IListProps extends IListBaseProps {
    * itemKey (~ only if not using `multi`)
    */
   selected?: any
+
+  loadData?: {
+    /**
+     * The payload can actually be typed as follows:
+     * payload: { search?: string }
+     * But some queries dont have the search so to prevent TS from complaining, just use any
+     */
+    fnc: (payload: any) => Promise<any> | any
+    mapKey: string
+    immediate?: boolean
+
+    /**
+     * Use when the data is already loaded and we want to use it
+     * When this is used, the `mapKey` is ignored and array of objects should be provided
+     */
+    local?: boolean
+
+    /**
+     * When true, the `loadData` fnc will be called on every search
+     */
+    onSearch?: boolean
+  }
+
+  /**
+   * Allows on-the-fly adding of new items
+   */
+  allowAdd?: boolean
+
+  /**
+   * When `allowAdd` is used, we can also supply items that are about to be added
+   * This is useful when using the `List` inside a `Menu`
+   * -> When the `Menu` is closed, the `List` instance is destroyed and we lose the items
+   * so we save it in the parent component
+   */
+  addedItems?: IItemToBeAdded[]
+
+  /**
+   * When true (with combination of `alowAdd`), the component will not add the
+   * new item locally, will only emit the option to the parent component.
+   */
+  noLocalAdd?: boolean
 }

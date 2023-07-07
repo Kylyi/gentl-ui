@@ -7,6 +7,7 @@ export class TableColumnState {
   width?: TableColumn['width']
   sort?: TableColumn['sort']
   sortOrder?: number
+  hidden?: boolean
 
   constructor(column: TableColumn) {
     this.field = column.field
@@ -14,5 +15,6 @@ export class TableColumnState {
     this.filters = column.filters
     this.sort = column.sort
     this.sortOrder = column.sortOrder
+    this.hidden = column.hidden
   }
 }

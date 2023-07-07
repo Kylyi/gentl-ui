@@ -87,7 +87,9 @@ function handleMonthSelect(month: Month, callback?: () => void) {
       hide-header
       :fit="false"
       :target="monthBtn"
-      :reference-target="$bp.xm ? referenceTarget : undefined"
+      :reference-target="
+        $bp.isGreaterOrEqual('xm') ? referenceTarget : undefined
+      "
     >
       <template #default="{ hide }">
         <div grid="~ cols-2 xm:cols-3 gap-1">

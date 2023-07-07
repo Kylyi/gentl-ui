@@ -9,7 +9,7 @@ type IProps = {
   textSize?: string
 }
 
-defineProps<IProps>()
+const props = defineProps<IProps>()
 const emits = defineEmits<{
   (e: 'set-heading', payload: { isHeading: boolean; level?: 4 | 5 | 6 }): void
   (e: 'toggle-bold'): void
@@ -25,6 +25,10 @@ const emits = defineEmits<{
 
 // LAYOUT
 const colorMenuEl = ref<InstanceType<typeof MenuProxy>>()
+
+const canUseImage = computedEager(() => {
+  return props.editor.options.extensions.find(ext => ext.name === 'mage')
+})
 
 function handleColorChange(color?: string | null) {
   colorMenuEl.value?.hide()
@@ -99,6 +103,16 @@ function handleColorChange(color?: string | null) {
       @toggle-bulleted-list="$emit('toggle-bulleted-list')"
       @toggle-numbered-list="$emit('toggle-numbered-list')"
     />
+
+    <template v-if="canUseImage">
+      <Separator
+        vertical
+        spaced
+        inset
+      />
+
+      <WysiwygImg />
+    </template>
   </HorizontalScroller>
 </template>
 

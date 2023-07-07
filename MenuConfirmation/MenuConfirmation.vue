@@ -53,6 +53,7 @@ defineExpose({
     const confirmBtnDom = unrefElement(confirmBtnEl)
     confirmBtnDom?.focus()
   },
+  recomputeMenuPosition: () => menuEl.value?.recomputePosition(),
 })
 </script>
 

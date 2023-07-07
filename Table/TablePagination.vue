@@ -1,9 +1,11 @@
 <script setup lang="ts">
 type IProps = {
   currentPage: number
+  currentPageSize: number
   isFirstPage: boolean
   isLastPage: boolean
   pageCount: number
+  totalRows: number
 
   prev: () => void
   next: () => void
@@ -12,10 +14,12 @@ type IProps = {
 const props = defineProps<IProps>()
 const emits = defineEmits<{
   (e: 'update:currentPage', page: number): void
+  (e: 'update:currentPageSize', page: number): void
 }>()
 
 // LAYOUT
 const currentPage = useVModel(props, 'currentPage', emits)
+const currentPageSize = useVModel(props, 'currentPageSize', emits)
 
 const pages = computedEager(() => {
   // Less than 5 pages
@@ -57,86 +61,102 @@ const pages = computedEager(() => {
 
 <template>
   <ClientOnly>
-    <div
-      v-if="pages.length > 1"
-      class="table-navigation"
-    >
-      <!-- FIRST BTN -->
-      <Btn
-        :disabled="isFirstPage"
-        size="sm"
-        disable-style="flat"
-        icon="line-md:chevron-small-double-right rotate-180"
-        @click="currentPage = 1"
-      />
-
-      <!-- PREVIOUS BTN -->
-      <Btn
-        :disabled="isFirstPage"
-        size="sm"
-        disable-style="flat"
-        icon="material-symbols:chevron-right-rounded rotate-180"
-        @click="prev"
-      />
-
-      <!-- PAGES -->
-      <template
-        v-for="(page, idx) in pages"
-        :key="idx"
+    <div class="table-navigation">
+      <!-- Total rows -->
+      <div
+        absolute
+        left-2
+        display="!lt-md:none"
+        flex="~ gap-x-2 center"
       >
+        <span text="caption">
+          {{ $t('table.totalRows') }}:
+          {{ totalRows }}
+        </span>
+      </div>
+
+      <template v-if="pages.length > 1">
+        <!-- FIRST BTN -->
         <Btn
-          v-if="page !== Infinity"
+          :disabled="isFirstPage"
           size="sm"
-          :label="page"
-          :class="{ 'is-active': page === currentPage }"
-          @click="currentPage = page"
+          disable-style="flat"
+          icon="line-md:chevron-small-double-right rotate-180"
+          @click="currentPage = 1"
         />
-        <div v-else>...</div>
+
+        <!-- PREVIOUS BTN -->
+        <Btn
+          :disabled="isFirstPage"
+          size="sm"
+          disable-style="flat"
+          icon="material-symbols:chevron-right-rounded rotate-180"
+          @click="prev"
+        />
+
+        <!-- PAGES -->
+        <template
+          v-for="(page, idx) in pages"
+          :key="idx"
+        >
+          <Btn
+            v-if="page !== Infinity"
+            size="sm"
+            :label="page"
+            :class="{ 'is-active': page === currentPage }"
+            @click="currentPage = page"
+          />
+          <div v-else>...</div>
+        </template>
+
+        <!-- NEXT BTN -->
+        <Btn
+          :disabled="isLastPage"
+          size="sm"
+          icon="material-symbols:chevron-right-rounded"
+          @click="next"
+        />
+
+        <!-- LAST BTN -->
+        <Btn
+          :disabled="isLastPage"
+          size="sm"
+          disable-style="flat"
+          icon="line-md:chevron-small-double-right"
+          @click="currentPage = pageCount"
+        />
       </template>
 
-      <!-- NEXT BTN -->
-      <Btn
-        :disabled="isLastPage"
-        size="sm"
-        icon="material-symbols:chevron-right-rounded"
-        @click="next"
-      />
+      <!-- Page size -->
+      <div
+        absolute
+        right-2
+        display="!lt-md:none"
+        flex="~ gap-x-2 center"
+      >
+        <span text="caption">
+          {{ $t('table.rowsPerPage') }}
+        </span>
 
-      <!-- LAST BTN -->
-      <Btn
-        :disabled="isLastPage"
-        size="sm"
-        disable-style="flat"
-        icon="line-md:chevron-small-double-right"
-        @click="currentPage = pageCount"
-      />
+        <Selector
+          v-model="currentPageSize"
+          :options="[5, 10, 25, 50, 100]"
+          emit-key
+          size="sm"
+          no-dropdown-icon
+          no-search
+          w="15"
+        />
+      </div>
     </div>
-
-    <template #fallback>
-      <Skeleton
-        h="10"
-        w="full"
-        rounded="custom"
-      />
-      <Skeleton
-        h="10"
-        w="full"
-        rounded="custom"
-      />
-      <Skeleton
-        h="10"
-        w="full"
-        rounded="custom"
-      />
-    </template>
   </ClientOnly>
 </template>
 
 <style scoped lang="scss">
 .table-navigation {
-  --apply: flex flex-center flex-gap-x-1 p-y-1;
+  --apply: relative flex flex-center flex-gap-x-1 p-y-1 min-h-10;
 
-  .is-active {
+  .btn.is-active {
     --apply: bg-primary color-white;
   }
 }

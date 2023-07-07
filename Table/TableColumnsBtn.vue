@@ -38,14 +38,9 @@ const { getBtnProps } = useBtnUtils()
 const { extractColumnsStateData } = useTableUtils()
 
 // LAYOUT
-const columnsRefs = useTemplateRefsList<HTMLDivElement>()
 const columns = useVModel(props, 'columns', emits)
 
 const btnProps = computed(() => getBtnProps(props))
-
-function getEl(ref: any) {
-  return unrefElement(ref)
-}
 
 function handleRecalculateColumns() {
   recalculateColumns(true)
@@ -75,7 +70,6 @@ function handleRecalculateColumns() {
         <SlickItem
           v-for="(col, idx) in columns"
           :key="col.field"
-          :ref="columnsRefs.set"
           :index="idx"
           :disabled="!col.reorderable"
           z="$zMenu"
@@ -101,7 +95,6 @@ function handleRecalculateColumns() {
               :columns="columns"
               :use-server="useServer"
               :use-chips="useChips"
-              :reference-target="getEl(columnsRefs[idx])"
             />
 
             <Checkbox

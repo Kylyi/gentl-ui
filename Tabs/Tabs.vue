@@ -108,6 +108,7 @@ watch(model, model => {
         :change-fn="() => handleTabChange(tab.id)"
       >
         <Btn
+          v-if="!invisibleTabs?.includes(tab.id)"
           :label="tab.label"
           :icon="tab.icon"
           no-uppercase
@@ -129,12 +130,16 @@ watch(model, model => {
     <div
       v-if="activeTab"
       relative
-      overflow="hidden"
+      overflow="x-hidden"
       :class="contentClass"
     >
       <Transition
-        :enter-active-class="`${transitionEnter} inset-0 ease-linear animate-duration-320`"
-        :leave-active-class="`${transitionLeave} absolute ease-linear animate-duration-320`"
+        :enter-active-class="`${transitionEnter} h-min overflow-visible ease-linear animate-duration-320`"
+        :leave-active-class="
+          !noLeaveTransition
+            ? `${transitionLeave} inset-0 absolute ease-linear animate-duration-320`
+            : undefined
+        "
         :css="!noAnimation"
       >
         <KeepAlive :include="keepAliveTabs">
@@ -163,7 +168,8 @@ watch(model, model => {
 
   &-label.is-active {
     &::after {
-      --apply: content-empty absolute inset-inline-0 bottom-0 h-1 bg-primary;
+      --apply: content-empty absolute inset-inline-0 bottom-0 h-1 bg-secondary
+        rounded-custom;
     }
   }
 }

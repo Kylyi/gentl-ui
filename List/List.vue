@@ -8,29 +8,35 @@ import { useList } from '@/components/List/functions/useList'
 // COMPONENTS
 import ListVirtualContainer from '~~/components/List/ListVirtualContainer.vue'
 import ListContainer from '~~/components/List/ListContainer.vue'
+import { IItemToBeAdded } from '~/components/List/types/list-item-to-add.type'
 
 const props = withDefaults(defineProps<IListProps>(), {
   clearable: true,
   disabledFnc: () => false,
   emptyValue: null,
   groupBy: () => [],
-  items: () => [],
   itemKey: 'id',
   itemLabel: 'label',
 })
 
 defineEmits<{
+  (e: 'update:items', items: any[]): void
   (e: 'update:selected', item: any): void
+  (e: 'update:addedItems', items: IItemToBeAdded[]): void
   (e: 'added', item: any): void
   (e: 'added-multiple', items: any[]): void
   (e: 'removed', item: any): void
   (e: 'search', payload: { hasExactMatch: boolean; search: string }): void
 }>()
 
+// Layout
 const containerEl = ref<InstanceType<typeof ListVirtualContainer>>()
+const items = props.items
+  ? (useVModel(props, 'items') as Ref<any>)
+  : ref<any[]>([])
 
 const ContainerComponent = computed(() => {
-  return props.virtual || props.items.length >= 1e3
+  return props.virtual || items.value.length >= 1e3
     ? ListVirtualContainer
     : ListContainer
 })
@@ -46,7 +52,9 @@ const {
   handleMouseOver,
   handleSelectFiltered,
   handleSelectItem,
-} = useList(props, containerEl)
+  loadData,
+  refresh,
+} = useList(items, props, containerEl)
 
 defineExpose({
   handleSelectItem: (option: any) => handleSelectItem(option),
@@ -54,6 +62,8 @@ defineExpose({
     searchEl.value?.clear()
     search.value = ''
   },
+  loadData,
+  refresh,
 })
 </script>
 

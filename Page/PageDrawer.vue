@@ -41,7 +41,7 @@ const pageDrawerClasses = computedEager(() => {
     {
       'is-mini': isMini.value,
       'is-open': props.modelValue,
-      'is-absolute': !$bp.lg.value,
+      'is-absolute': $bp.isSmaller('lg'),
     },
   ]
 })

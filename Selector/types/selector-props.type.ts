@@ -53,6 +53,7 @@ export type ISelectorProps = IInputProps & {
   noDropdownIcon?: boolean
   noTruncate?: boolean
   preselectFirst?: boolean
+  initialMap?: Record<string, any> | null
 
   /**
    * Usage: Let's say we already selected some of the options in different

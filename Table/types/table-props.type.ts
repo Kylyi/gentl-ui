@@ -19,7 +19,9 @@ export interface ITableProps {
   mobileRowHeight?: number
   noActions?: boolean
   noExport?: boolean
+  noPagination?: boolean
   noSearch?: boolean
+  noTop?: boolean
   rowClickable?: boolean
   rowHeight?: number
   rowKey?: string
@@ -75,9 +77,11 @@ export interface ITableProps {
   selected?: any
 
   /**
-   * Key for the local storage
+   * Key for the local storage, if not provided, the key will be generated
+   * based on the parent component of the table
+   * use `false` to disable this functionality
    */
-  storageKey?: string
+  storageKey?: string | false
 
   /**
    * Whether to use chip-like filters

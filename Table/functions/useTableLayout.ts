@@ -24,9 +24,10 @@ export function useTableLayout(props: ITableProps) {
   const instance = getCurrentInstance()
 
   // UTILS
+  const { locale } = useI18n()
   const { onOverflow } = useOverflow()
   const { resizeColumns, extendColumns } = useTableColumns(props)
-  const { getRowKey } = useTableUtils()
+  const { getRowKey, hasVisibleCol } = useTableUtils()
 
   // LAYOUT
   const scrollerEl = ref<InstanceType<typeof RecycleScroller>>()
@@ -35,6 +36,8 @@ export function useTableLayout(props: ITableProps) {
   const containerEl = ref<HTMLDivElement>()
 
   const rowKey = computedEager(() => getRowKey(props))
+
+  const hasVisibleColumn = computed(() => hasVisibleCol(internalColumns.value))
 
   const searchableColumnLabels = computed(() => {
     return props.columns.filter(col => col.searchable).map(col => col._label)
@@ -63,7 +66,21 @@ export function useTableLayout(props: ITableProps) {
   const columns = ref<TableColumn[]>(
     props.columns.map(col => new TableColumn(col))
   )
-  const internalColumns = ref<TableColumn[]>(extendColumns(props.columns))
+  const internalColumns = ref<TableColumn[]>(
+    extendColumns(props.columns.map(col => new TableColumn(col)))
+  )
+
+  // When locale is changed, we need to sync the labels of the columns
+  function syncColumnLabels() {
+    props.columns.forEach(col => {
+      const internalCol = internalColumns.value.find(c => c.field === col.field)
+
+      if (internalCol) {
+        internalCol.label = col.label
+        internalCol.format = col.format
+      }
+    })
+  }
 
   // RESIZE & SCROLLING
   const isScrolled = ref(false)
@@ -146,6 +163,10 @@ export function useTableLayout(props: ITableProps) {
     ) as HTMLDivElement
   })
 
+  watch(locale, () => {
+    nextTick(() => syncColumnLabels())
+  })
+
   return {
     columns,
     isScrolled,
@@ -163,6 +184,7 @@ export function useTableLayout(props: ITableProps) {
     // COLUMNS
     internalColumns,
     searchableColumnLabels,
+    hasVisibleColumn,
 
     // FUNCTIONS
     handleRowClick,

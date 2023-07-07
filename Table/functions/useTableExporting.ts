@@ -1,6 +1,9 @@
 import { utils, writeFile, writeFileXLSX } from 'xlsx'
 
 export function useTableExporting() {
+  // UTILS
+  const { formatDate } = useDateUtils()
+
   const isExporting = ref(false)
 
   function handleExportData(
@@ -14,11 +17,9 @@ export function useTableExporting() {
       const rowData: Record<string, any> = {}
 
       columns.forEach(col => {
-        const val = col.format
-          ? col.format(row)
-          : col.field
-          ? get(row, col.field)
-          : get(row, col.name)
+        let val = get(row, col.field)
+
+        val = col.format?.(row, val) ?? val
 
         const label = col.label || col.name
 
@@ -28,18 +29,20 @@ export function useTableExporting() {
       return rowData
     })
 
+    const fileName = `data-${formatDate(Date.now(), 'long')}`
+
     if (exportFormat === 'xlsx') {
       const wb = utils.book_new()
       const ws = utils.json_to_sheet(data)
       utils.book_append_sheet(wb, ws, 'Generated')
 
-      writeFileXLSX(wb, 'data.xlsx')
+      writeFileXLSX(wb, `${fileName}.xlsx`)
     } else {
       const wb = utils.book_new()
       const ws = utils.json_to_sheet(data)
       utils.book_append_sheet(wb, ws, 'Generated')
 
-      writeFile(wb, 'data.csv')
+      writeFile(wb, `${fileName}.csv`)
     }
 
     isExporting.value = false

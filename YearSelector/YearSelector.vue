@@ -126,7 +126,9 @@ defineExpose({ sync })
       :fit="false"
       w="60"
       content-class="flex-gap-y-1"
-      :reference-target="$bp.xm ? referenceTarget : undefined"
+      :reference-target="
+        $bp.isGreaterOrEqual('xm') ? referenceTarget : undefined
+      "
       @hide="sync"
       @mousewheel="handleMouseWheel"
     >

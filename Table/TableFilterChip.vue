@@ -87,7 +87,7 @@ function getLabel(_: any, value: any) {
 
     <!-- COMPARE VALUE -->
     <ValueFormatter
-      :data-type="filter.dataType"
+      :data-type="filter.dataType === 'datetime' ? 'date' : filter.dataType"
       :value="filter.compareValue"
       :format="Array.isArray(filter.compareValue) ? getLabel : undefined"
     >

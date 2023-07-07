@@ -71,6 +71,7 @@ defineExpose({
     ref="mentionEl"
     :style="floatingStyles"
     :placement="placement"
+    class="mention-items"
   >
     <Item
       v-for="(item, idx) in items"
@@ -83,3 +84,9 @@ defineExpose({
     </Item>
   </div>
 </template>
+
+<style scoped lang="scss">
+.mention-items {
+  --apply: flex flex-gap-2 flex-col bg-ca p-2 rounded-custom;
+}
+</style>

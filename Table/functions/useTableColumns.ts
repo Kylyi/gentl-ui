@@ -113,7 +113,7 @@ export function useTableColumns(props: Pick<ITableProps, 'storageKey'>) {
     const contentWidth =
       containerWidth - Number(isWrapperOverflown) * scrollbarWidth - 1
 
-    const cols = [...toValue(columnsRef)]
+    const cols = toValue(columnsRef).map(col => new TableColumn(col))
     extendColumns(cols, options)
 
     const colsTotalWidth = cols.reduce<{ relative: number; fixed: number }>(
@@ -197,14 +197,18 @@ export function useTableColumns(props: Pick<ITableProps, 'storageKey'>) {
         )
       })
 
-      nonHelperColsSortedDesc[0].adjustedWidth--
+      if (nonHelperColsSortedDesc[0]) {
+        nonHelperColsSortedDesc[0].adjustedWidth--
+      }
 
       const lastCol = cols[cols.length - 1]
 
-      lastCol.adjustedWidth += scrollbarWidth
-      cols[cols.length - 1].headerStyle = {
-        ...cols[cols.length - 1].headerStyle,
-        marginRight: `${scrollbarWidth}px`,
+      if (lastCol) {
+        lastCol.adjustedWidth += scrollbarWidth
+        cols[cols.length - 1].headerStyle = {
+          ...cols[cols.length - 1].headerStyle,
+          marginRight: `${scrollbarWidth}px`,
+        }
       }
     }
 

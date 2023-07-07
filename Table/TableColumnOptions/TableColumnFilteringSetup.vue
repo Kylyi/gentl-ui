@@ -19,9 +19,11 @@ const isFocusPrevented = refAutoReset(true, 50)
 const column = toRef(props, 'column')
 
 const hasUnusedComparator = computed(() => {
-  const availableComparators = getAvailableComparators(column.value.dataType, {
-    includeSelectorComparators: !!column.value.getDistinctData,
-  })
+  const availableComparators =
+    column.value.comparators ||
+    getAvailableComparators(column.value.dataType, {
+      includeSelectorComparators: !!column.value.getDistinctData,
+    })
   const columnComparators = column.value.filters.map(
     filter => filter.comparator
   )

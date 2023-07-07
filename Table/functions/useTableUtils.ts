@@ -1,6 +1,6 @@
 // TYPES
-import type { DistinctData } from '~/components/Table/types/distinct-data.type'
 import type { IItem } from '~/libs/App/types/item.type'
+import type { DistinctData } from '~/components/Table/types/distinct-data.type'
 import type { ITableQuery } from '~/components/Table/types/table-query.type'
 import type { ITableState } from '~/components/Table/types/table-state.type'
 import type { ITableProps } from '~/components/Table/types/table-props.type'
@@ -13,21 +13,23 @@ import { FilterItem } from '~/libs/App/data/models/filter-item'
 
 // FUNCTIONS
 import { getComponentName } from '~/libs/App/functions/misc'
+import { getTableStateDefault } from '~/components/Table/constants/table-state.default'
 
 // COMPONENTS
 import NumberInput from '~/components/Inputs/NumberInput/NumberInput.vue'
 import DateInput from '~/components/Inputs/DateInput/DateInput.vue'
 import Checkbox from '~/components/Checkbox/Checkbox.vue'
 import TextInput from '~/components/Inputs/TextInput/TextInput.vue'
-
-// CONSTANTS
-import { getTableStateDefault } from '~/components/Table/constants/table-state.default'
+import YearMonthSelector from '~/components/YearMonthSelector/YearMonthSelector.vue'
 
 const SELECTOR_COMPARATORS = [ComparatorEnum.IN, ComparatorEnum.NOT_IN]
 
 export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
   const instance = getCurrentInstance()
-  const storageKey = props?.storageKey || getComponentName(instance?.parent)
+  const storageKey =
+    props?.storageKey !== false
+      ? props?.storageKey || getComponentName(instance?.parent)
+      : undefined
 
   async function getDistinctDataForField<T>(
     col: TableColumn<T>,
@@ -152,8 +154,11 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
         return NumberInput
 
       case 'date':
-      case 'yearMonth':
+      case 'datetime':
         return DateInput
+
+      case 'yearMonth':
+        return YearMonthSelector
 
       case 'boolean':
         return Checkbox
@@ -252,6 +257,11 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
 
       filters.forEach(filter => {
         const [comparator, value] = filter.split('.')
+
+        if (comparator === 'mode' && value === 'insensitive') {
+          return
+        }
+
         const currentFilterValue = get(filterObj, col.field)
 
         merge(currentFilterValue, {
@@ -346,11 +356,16 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
       })
     }
 
-    tableState.value.columns = columns
+    tableState.value.columns = extractColumnsStateData(columns)
+  }
+
+  function hasVisibleCol(columns: TableColumn[]) {
+    return columns.some(col => !col.hidden)
   }
 
   return {
     storageKey, // Is not reactive!
+    hasVisibleCol,
     getRowKey,
     getDistinctDataForField,
     extractColumnsStateData,

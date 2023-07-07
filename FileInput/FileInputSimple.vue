@@ -1,10 +1,12 @@
 <script setup lang="ts">
 // TYPES
-import type { IFileInputProps } from '~~/components/FileInput/types/file-input-props.type'
+import type { IFileInputProps } from '~/components/FileInput/types/file-input-props.type'
+import type { IFile } from '~/components/FileInput/types/file.type'
 
 // COMPOSITION FUNCTIONS
-import { useFieldUtils } from '~~/components/Field/functions/useFieldUtils'
+import { useFieldUtils } from '~/components/Field/functions/useFieldUtils'
 import { useNumber } from '~/components/Inputs/NumberInput/functions/useNumber'
+import { useFileUtils } from '~/libs/File/functions/useFileUtils'
 
 // COMPONENTS
 import ScrollArea from '~~/components/ScrollArea/ScrollArea.vue'
@@ -13,14 +15,15 @@ const props = withDefaults(defineProps<IFileInputProps>(), {
   maxChipsRows: 3,
 })
 const emits = defineEmits<{
-  (e: 'update:modelValue', value: File[]): void
-  (e: 'filesAdded', value: File[]): void
-  (e: 'filesRemoved', value: File[]): void
+  (e: 'update:modelValue', value: Array<File | IFile>): void
+  (e: 'filesAdded', value: Array<File | IFile>): void
+  (e: 'filesRemoved', value: Array<File | IFile>): void
 }>()
 
 // UTILS
 const { formatBytes } = useNumber()
 const { getFieldProps } = useFieldUtils()
+const { handleDownloadFile } = useFileUtils()
 
 // LAYOUT
 const optionsContainerEl = ref<any>()
@@ -52,8 +55,14 @@ onChange(files => {
   reset()
 })
 
-function getFileLabel(file: File) {
+function getFileLabel(file: File | IFile) {
   return `${file.name} (${formatBytes(file.size)})`
+}
+
+function handleOpen() {
+  if (!props.readonly && !props.disabled) {
+    open()
+  }
 }
 
 function handleRemove(idx: number) {
@@ -71,14 +80,14 @@ function handleRemove(idx: number) {
   <Field
     v-bind="fieldProps"
     :no-content="!model?.length && !placeholder"
-    @click="open"
+    @click="handleOpen"
   >
     <template #append>
       <Btn
         icon="material-symbols:attachment"
         size="sm"
         m="x-2"
-        @click.stop.prevent="open"
+        @click.stop.prevent="handleOpen"
       />
     </template>
 
@@ -106,7 +115,25 @@ function handleRemove(idx: number) {
           p="!y-1px"
           :has-remove="!(readonly || disabled)"
           @remove="handleRemove(idx)"
-        />
+        >
+          <!-- Download btn -->
+          <Btn
+            v-if="'path' in chip"
+            size="auto"
+            w="4"
+            h="4"
+            bg="primary"
+            color="white"
+            self-center
+            icon="material-symbols:download"
+            @click.stop.prevent="handleDownloadFile(chip)"
+            @mousedown.stop.prevent
+          />
+
+          <span truncate>
+            {{ getFileLabel(chip) }}
+          </span>
+        </Chip>
       </HorizontalScroller>
 
       <template v-else>
@@ -118,7 +145,27 @@ function handleRemove(idx: number) {
           min-w="20"
           p="!y-1px"
           @remove="handleRemove(idx)"
-        />
+        >
+          <!-- Download btn -->
+          <Btn
+            v-if="'path' in chip"
+            size="auto"
+            bg="primary"
+            color="white"
+            w="4"
+            h="4"
+            self-center
+            icon="material-symbols:download"
+            @click.stop.prevent="handleDownloadFile(chip)"
+            @mousedown.stop.prevent
+          >
+            <Tooltip :offset="10"> {{ $t('general.downloadFile') }} </Tooltip>
+          </Btn>
+
+          <span truncate>
+            {{ getFileLabel(chip) }}
+          </span>
+        </Chip>
       </template>
     </Component>
 

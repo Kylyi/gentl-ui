@@ -54,14 +54,14 @@ span.label {
   }
 
   &--sm {
-    --apply: font-rem-14 leading-4;
+    --apply: font-rem-14 leading-3.5;
 
     &:not(.is-inline) {
       --apply: top-2;
     }
 
     &.is-inside {
-      --apply: top-3.5;
+      --apply: top-2.5;
     }
 
     &.is-inline {
@@ -77,7 +77,7 @@ span.label {
     }
 
     &.is-inside {
-      --apply: top-4;
+      --apply: top-3.5;
     }
 
     &.is-inline {
@@ -93,7 +93,7 @@ span.label {
     }
 
     &.is-inside {
-      --apply: top-4.5;
+      --apply: top-4;
     }
 
     &.is-inline {
@@ -105,7 +105,7 @@ span.label {
     --apply: translate-y--180% w-125% max-w-125% scale-80;
 
     &.is-inside {
-      --apply: translate-y--70%;
+      --apply: translate-y--65%;
     }
   }
 
@@ -123,7 +123,7 @@ span.label {
       --apply: translate-y--180% w-125% max-w-125% scale-80;
 
       &.is-inside {
-        --apply: translate-y--70% rounded-tl;
+        --apply: translate-y--65% rounded-tl;
       }
     }
   }

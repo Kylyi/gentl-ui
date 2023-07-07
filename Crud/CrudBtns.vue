@@ -28,7 +28,7 @@ const isDeleted = autoResetRef(false, 2000)
 
 // LAYOUT
 const loaderType = computedEager(() => {
-  return $bp.lg.value && props.labels ? 'inline' : 'block'
+  return $bp.isGreaterOrEqual('lg') && props.labels ? 'inline' : 'block'
 })
 
 const crudBtnProps = computedEager<ICrudBtnProps>(() => ({

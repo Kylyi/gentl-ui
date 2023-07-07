@@ -88,16 +88,18 @@ export async function useTableData(
     const skip = (currentPage.value - 1) * currentPageSize.value
 
     // SORTING
-    const orderBy = toValue(internalColumns).reduce((agg, col) => {
-      if (col.sortDbQuery) {
-        agg = {
-          ...agg,
-          ...col.sortDbQuery,
+    // Project specific?
+    const orderBy = toValue(internalColumns)
+      .sort((a, b) => {
+        return (a.sortOrder || 0) - (b.sortOrder || 0)
+      })
+      .reduce((agg, col) => {
+        if (col.sortDbQuery) {
+          agg.push(col.sortDbQuery)
         }
-      }
 
-      return agg
-    }, {} as Record<string, 'asc' | 'desc'>)
+        return agg
+      }, [] as Record<string, any>[])
 
     // FILTERING
     const where = toValue(internalColumns).reduce((agg, col) => {
@@ -254,6 +256,16 @@ export async function useTableData(
     () => dbQuery.trigger()
   )
 
+  watch(
+    () => props.rows,
+    _rows => {
+      if (_rows) {
+        rows.value = _rows
+        isLoading.value = false
+      }
+    }
+  )
+
   isInitialized.value = true
 
   return {
@@ -262,6 +274,7 @@ export async function useTableData(
     dbQuery,
     search,
     tableState,
+    totalRows,
     storageKey,
     refreshData,
 
@@ -272,5 +285,6 @@ export async function useTableData(
     isFirstPage,
     isLastPage,
     pageCount,
+    currentPageSize,
   }
 }

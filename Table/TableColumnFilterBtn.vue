@@ -59,6 +59,7 @@ function handleMenuHide() {
       @before-hide="handleMenuHide"
     >
       <TableColumnSorting
+        v-if="column.sortable"
         :column="column"
         :columns="columns"
       />

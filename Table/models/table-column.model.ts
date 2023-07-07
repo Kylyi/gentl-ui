@@ -13,6 +13,13 @@ import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
 import { DATE_TYPES } from '~/libs/App/types/datetime.type'
 import { config } from '~/config'
 
+const STRING_LIKE_COMPARATORS = [
+  ComparatorEnum.STARTS_WITH,
+  ComparatorEnum.ENDS_WITH,
+  ComparatorEnum.CONTAINS,
+  ComparatorEnum.EQUAL,
+]
+
 export class TableColumn<T = IItem> implements IItemBase<T> {
   name: string | Extract<keyof T, string | number>
   format?: (row: T, value?: any) => any
@@ -61,10 +68,23 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
       const isEmptyArray = Array.isArray(filter) && !filter.length
 
       if (filter.compareValue !== undefined && !isEmptyArray) {
+        // When using the `in` or `notIn` comparator, we have an array of values
         if (Array.isArray(filter.compareValue)) {
           // The `_value` comes from the DistnctData type
           agg[filter.comparator] = filter.compareValue.map(item => item._value)
-        } else {
+        }
+
+        // When using `datetime` datatype, we need to create a range
+        else if (
+          this.dataType === 'datetime' &&
+          filter.comparator === ComparatorEnum.EQUAL
+        ) {
+          agg.gte = filter.compareValue
+          agg.lt = $date(filter.compareValue).add(1, 'day')
+        }
+
+        // Otherwise, we just use the value
+        else {
           agg[filter.comparator] = filter.compareValue
         }
       }
@@ -73,9 +93,15 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     }, {} as IItem)
 
     const query: IItem = {}
+
+    const isStringLikeFilter =
+      this.dataType === 'string' &&
+      STRING_LIKE_COMPARATORS.includes(this.comparator)
+
     set(query, this.field, {
       ...filterConditions,
-      ...(config.table.useInsensitiveFilter && { mode: 'insensitive' }),
+      ...(config.table.useInsensitiveFilter &&
+        isStringLikeFilter && { mode: 'insensitive' }),
     })
 
     return query
@@ -168,7 +194,6 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     this.filters = col.filters
       ? col.filters.map(filter => new FilterItem(filter))
       : []
-    this.comparator = col.comparator ?? this.comparator
     this.comparators = col.comparators
     this.noFilterSort = col.noFilterSort ?? false
     this.filterFormat = col.filterFormat
@@ -176,6 +201,21 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
 
     this.reorderable = col.reorderable ?? this.reorderable
     this.resizable = col.resizable ?? this.resizable
+
+    switch (this.dataType) {
+      case 'number':
+      case 'boolean':
+      case 'datetime':
+      case 'date':
+        this.comparator = col.comparator ?? ComparatorEnum.EQUAL
+
+        break
+
+      default:
+        this.comparator = col.comparator ?? ComparatorEnum.STARTS_WITH
+
+        break
+    }
 
     // SORTING
     this.sort = col.sort

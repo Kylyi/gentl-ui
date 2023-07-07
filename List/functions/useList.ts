@@ -19,6 +19,7 @@ import { useListUtils } from '~/components/List/functions/useListUtils'
 // COMPONENTS
 import ListVirtualContainer from '~~/components/List/ListVirtualContainer.vue'
 import SearchInput from '~~/components/Inputs/SearchInput.vue'
+import { useItemAdding } from '~/components/List/functions/useItemAdding'
 
 // COMPONENTS
 
@@ -30,21 +31,29 @@ type IItem = {
 
 type IListPropsWithDefaults = Required<
   IListProps,
-  'items' | 'groupBy' | 'itemKey' | 'itemLabel'
+  'groupBy' | 'itemKey' | 'itemLabel'
 >
 
 export function useList(
+  items: Ref<any[]>,
   props: IListPropsWithDefaults,
   listContainer: MaybeElementRef<
     InstanceType<typeof ListVirtualContainer> | undefined
   >
 ) {
   const self = getCurrentInstance()!
+  const isInitialized = ref(false)
 
   // UTILS
   const { sortData } = useSorting()
   const { groupData } = useGrouping()
   const { getListProps } = useListUtils()
+  const {
+    handleSearch: handleAddOnSearch,
+    addedItems,
+    preAddedItem,
+    addItem,
+  } = useItemAdding(props)
 
   const { getKey, getLabel, getOption, getEmitValue } = {
     getKey: (option: any) =>
@@ -63,12 +72,21 @@ export function useList(
   }
 
   // LIST
-  const items = toRef(props, 'items')
-
+  const isLoading = ref(false)
   const listRowProps = computed(() => getListProps(props))
+
+  const itemsExtended = computed(() => {
+    return [...items.value, ...addedItems.value]
+  })
 
   const scrollTo = (index: number) => {
     unref(listContainer)?.scrollToIdx(index)
+  }
+
+  function resetAddingItem() {
+    preAddedItem.value = undefined
+    searchEl.value?.clear()
+    search.value = ''
   }
 
   // HELPERS
@@ -84,7 +102,10 @@ export function useList(
   ]
 
   const itemsByKey = computedEager(() => {
-    return items.value.reduce((agg, item) => {
+    return [
+      ...itemsExtended.value,
+      ...(preAddedItem.value ? [preAddedItem.value] : []),
+    ].reduce((agg, item) => {
       const key = getKey(item)
 
       agg[key] = item
@@ -137,7 +158,6 @@ export function useList(
   })
 
   // DATA HANDLING
-  const propsSearch = toRef(props, 'search')
   const selected = toRef(props, 'selected')
 
   function handleSelectFiltered() {
@@ -158,6 +178,25 @@ export function useList(
       return
     }
 
+    // We reset the added items in single mode
+    if (!props.multi && !option.ref._isCreate) {
+      addedItems.value = []
+      self.emit('update:addedItems', addedItems.value)
+    }
+
+    // We selected a `preAdded` item
+    if ('_isNew' in option.ref && option.ref._isNew) {
+      !props.noLocalAdd && addItem(option.ref)
+
+      resetAddingItem()
+      handleSelectItem({
+        ...option,
+        ref: { ...option.ref, _isNew: false, _isCreate: true },
+      })
+
+      return
+    }
+
     const isGroup = 'isGroup' in option
 
     if (!isGroup) {
@@ -165,9 +204,11 @@ export function useList(
       const itemKey = getKey(item)
 
       if (props.multi) {
+        // Is already selected
         if (selectedByKey.value[itemKey]) {
           self.emit('removed', item)
 
+          // We are using array for selection
           if (Array.isArray(selected.value)) {
             const idx = selected.value.findIndex(sel => getKey(sel) === itemKey)
 
@@ -177,32 +218,57 @@ export function useList(
 
               self.emit('update:selected', _selected)
             }
-          } else {
+          }
+
+          // Wr are using object for selection
+          else {
             const _selected = klona(selected.value)
             delete _selected[itemKey]
 
             self.emit('update:selected', _selected)
           }
-        } else {
+        }
+
+        // Is not selected
+        else {
           self.emit('added', item)
 
+          // We are using array for selection
           if (Array.isArray(selected.value)) {
             self.emit('update:selected', [
               ...selected.value,
               getEmitValue(item),
             ])
-          } else if (selected.value) {
+          }
+
+          // Wr are using object for selection and some item is already selected
+          else if (selected.value) {
             const _selected = klona(selected.value)
             _selected[itemKey] = true
 
             self.emit('update:selected', _selected)
-          } else {
+          }
+
+          // Wr are using object for selection and no item is selected
+          else {
             self.emit('update:selected', { [itemKey]: true })
           }
         }
       } else if (!selectedByKey.value[itemKey]) {
         self.emit('added', item)
         self.emit('update:selected', getEmitValue(item))
+      }
+
+      const isToBeCreated = '_isCreate' in item && item._isCreate
+      // Remove the item from the added items if it was about to be created
+      if (isToBeCreated && selectedByKey.value[itemKey] && props.multi) {
+        addedItems.value = addedItems.value.filter(
+          item => getKey(item) !== itemKey
+        )
+        self?.emit('update:addedItems', addedItems.value)
+
+        resetAddingItem()
+        handleSearchedResults(results.value)
       }
     } else if (props.multi && props.groupsSelectable) {
       // ENHANCEMENT: SELECT ALL ITEMS IN GROUP
@@ -214,6 +280,7 @@ export function useList(
   const search = ref(props.search || '')
   const hasExactMatch = ref(false)
   const arr = ref<Array<IGroupRow | IItem>>([])
+  const isPreventFetchData = refAutoReset(false, 150)
 
   const fuseOptions: UseFuseOptions<any> = {
     matchAllWhenSearchEmpty: true,
@@ -229,7 +296,7 @@ export function useList(
       ...props.fuseOptions,
     },
   }
-  const { results } = useFuse(search, items, fuseOptions)
+  const { results } = useFuse(search, itemsExtended, fuseOptions)
   const useWorker = computed(() => props.useWorker || items.value.length > 5e3)
 
   async function handleSearchedResults(res: typeof results.value) {
@@ -292,6 +359,19 @@ export function useList(
       useWorker.value
     )
 
+    const preAddedItem = handleAddOnSearch({
+      search: search.value,
+      hasExactMatch: _hasExactMatch,
+    })
+
+    if (preAddedItem) {
+      groupedArray.unshift({
+        id: getKey(preAddedItem),
+        ref: preAddedItem,
+        _highlighted: getLabel(preAddedItem),
+      })
+    }
+
     hasExactMatch.value = _hasExactMatch
     arr.value = groupedArray.map(item => {
       return 'isGroup' in item
@@ -300,24 +380,61 @@ export function useList(
     })
   }
 
-  watch(results, async res => {
-    await handleSearchedResults(res)
-  })
+  // Data fetching
+  async function fetchAndSetData(search?: string) {
+    if (props.loadData) {
+      try {
+        isLoading.value = true
 
-  watch(search, search => {
-    setTimeout(() => {
-      hoveredIdx.value = firstNonGroupItemIndex.value
+        const res = await props.loadData.fnc({ search })
+
+        if (props.loadData.local) {
+          items.value = res
+        } else {
+          items.value = get(res, props.loadData.mapKey)
+        }
+
+        isPreventFetchData.value = true
+        isLoading.value = false
+      } catch (error) {
+        isLoading.value = false
+        console.error(error)
+      }
+    }
+  }
+
+  // Watchers
+  watch(
+    search,
+    async search => {
+      if (props.loadData?.onSearch || !isInitialized.value) {
+        await fetchAndSetData(search)
+        await nextTick()
+      }
+
+      await handleSearchedResults(results.value)
+      await nextTick()
+
       self.emit('search', { hasExactMatch: hasExactMatch.value, search })
-    }, 0)
-  })
+    },
+    { immediate: true }
+  )
 
-  watch(propsSearch, val => {
-    search.value = val || ''
+  watch(items, () => {
+    if (!isPreventFetchData.value) {
+      handleSearchedResults(results.value)
+    }
   })
 
   const firstNonGroupItemIndex = computed(() =>
     arr.value.findIndex(item => !('isGroup' in item))
   )
+
+  watchEffect(() => {
+    if (firstNonGroupItemIndex.value > -1) {
+      hoveredIdx.value = firstNonGroupItemIndex.value
+    }
+  })
 
   // KEYBOARD NAVIGATION
   const listEl = ref<HTMLDivElement>()
@@ -425,7 +542,7 @@ export function useList(
   }
 
   // Initizalize the searched results
-  handleSearchedResults(results.value)
+  isInitialized.value = true
 
   onKeyStroke(['ArrowUp', 'ArrowDown', 'Enter'], handleKey)
 
@@ -441,5 +558,10 @@ export function useList(
     handleMouseOver,
     handleSelectFiltered,
     handleSelectItem,
+    loadData: fetchAndSetData,
+    refresh: () => {
+      addedItems.value = props.addedItems || addedItems.value
+      handleSearchedResults(results.value)
+    },
   }
 }

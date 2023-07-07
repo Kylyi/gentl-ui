@@ -38,7 +38,7 @@ function handleCopy() {
     :class="[
       copied
         ? '!outline-positive !outline-solid'
-        : '!outline-dashed !outline-ca',
+        : '!outline-dotted !outline-ca',
     ]"
     @click.stop.prevent="handleCopy"
     @mousedown.stop.prevent

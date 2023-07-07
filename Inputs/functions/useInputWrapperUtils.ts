@@ -41,12 +41,12 @@ export function useInputWrapperUtils() {
     if (props.size === 'sm') {
       styleVariables['--fontSize'] = '14px'
       styleVariables['--lineHeight'] = '16px'
-      styleVariables['--padding'] = '4px 12px'
+      styleVariables['--padding'] = '8px 12px'
       styleVariables['--margin'] = '0'
 
       if (isLabelInside) {
-        styleVariables['--padding'] = '0 12px'
-        styleVariables['--margin'] = '20px 0 0 0'
+        styleVariables['--padding'] = '0 12px 4px'
+        styleVariables['--margin'] = '16px 0 0 0'
 
         if (!hasLabel) {
           styleVariables['--margin'] = '10px 0'
@@ -67,7 +67,7 @@ export function useInputWrapperUtils() {
 
       if (isLabelInside) {
         styleVariables['--padding'] = '0 12px'
-        styleVariables['--margin'] = '21px 0 3px 0'
+        styleVariables['--margin'] = '17px 0 3px 0'
 
         if (!hasLabel) {
           styleVariables['--margin'] = '12px 0'
@@ -88,7 +88,7 @@ export function useInputWrapperUtils() {
 
       if (isLabelInside) {
         styleVariables['--padding'] = '0 12px'
-        styleVariables['--margin'] = '24px 0 4px 0'
+        styleVariables['--margin'] = '20px 0 4px 0'
 
         if (!hasLabel) {
           styleVariables['--margin'] = '14px 0'

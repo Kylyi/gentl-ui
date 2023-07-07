@@ -144,30 +144,6 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
 .wrapper {
   --apply: flex flex-col;
 
-  &--sm {
-    &.is-inline {
-      .wrapper-body::after {
-        --apply: lt-md:top-17.5px;
-      }
-    }
-  }
-
-  &--md {
-    &.is-inline {
-      .wrapper-body::after {
-        --apply: lt-md:top-17.5px;
-      }
-    }
-  }
-
-  &--lg {
-    &.is-inline {
-      .wrapper-body::after {
-        --apply: lt-md:top-20px;
-      }
-    }
-  }
-
   .wrapper-body {
     --apply: dark:bg-darker bg-white;
     --apply: relative grid;
@@ -201,7 +177,7 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
     }
 
     &.has-border::after {
-      --apply: content-empty absolute inset-0 transition-all
+      --apply: content-empty absolute inset-inline-0 bottom-0 top-0 transition-all
       border-custom rounded-custom pointer-events-none;
     }
 
@@ -230,6 +206,10 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
       &::after {
         --apply: md:top-0 md:left-200px;
       }
+
+      .label {
+        --apply: lt-md:(p-t-2 self-end);
+      }
     }
   }
 
@@ -237,7 +217,7 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
     --apply: flex items-center rounded-custom;
 
     &__input {
-      --apply: flex lt-md:flex-col relative grow gap-x-2 gap-y-1px overflow-auto;
+      --apply: flex lt-md:flex-col relative grow gap-x-2 gap-y-1px overflow-auto h-full;
     }
 
     &.is-readonly,
@@ -259,6 +239,28 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
       line-height: var(--lineHeight);
       padding: var(--padding);
       margin: var(--margin);
+    }
+  }
+
+  &.is-inline {
+      .wrapper-body::after {
+        --apply: lt-md:top-22px;
+      }
+    }
+
+  &--md {
+    &.is-inline {
+      .wrapper-body::after {
+        --apply: lt-md:top-6;
+      }
+    }
+  }
+
+  &--lg {
+    &.is-inline {
+      .wrapper-body::after {
+        --apply: lt-md:top-7;
+      }
     }
   }
 

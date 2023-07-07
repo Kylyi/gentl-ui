@@ -25,16 +25,23 @@ const includeDeleted = useVModel(props, 'includeDeleted', emits)
       w="100"
       placement="bottom-end"
     >
-      <Toggle
-        v-if="useIncludeDeleted"
-        v-model="includeDeleted"
-        :label="$t('includeArchived')"
-      />
+      <!-- Archived items show/hide -->
+      <template v-if="useIncludeDeleted">
+        <Toggle
+          v-model="includeDeleted"
+          :label="$t('includeArchived')"
+        />
+        <Separator inset />
+      </template>
 
-      <TableStateLayout :storage-key="storageKey" />
+      <!-- Table state -->
+      <template v-if="storageKey">
+        <TableStateLayout :storage-key="storageKey" />
 
-      <Separator inset />
+        <Separator inset />
+      </template>
 
+      <!-- Table url -->
       <TableUrl />
     </Menu>
   </Btn>

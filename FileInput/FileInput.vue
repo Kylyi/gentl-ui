@@ -1,5 +1,6 @@
 <script setup lang="ts">
 // TYPES
+import { IFile } from '~/components/FileInput/types/file.type'
 import type { IFileInputProps } from '~~/components/FileInput/types/file-input-props.type'
 
 const props = withDefaults(defineProps<IFileInputProps>(), {
@@ -8,15 +9,15 @@ const props = withDefaults(defineProps<IFileInputProps>(), {
 })
 
 const emits = defineEmits<{
-  (e: 'update:model-value', value: File[]): void
-  (e: 'files-added', value: File[]): void
-  (e: 'files-removed', value: File[]): void
+  (e: 'update:modelValue', value: Array<File | IFile>): void
+  (e: 'filesAdded', value: Array<File | IFile>): void
+  (e: 'filesRemoved', value: Array<File | IFile>): void
 }>()
 
 // LAYOUT
 const fileInputEl = ref<HTMLInputElement>()
 const dragCounter = ref(0)
-const filesInternal = ref<File[] | null>(props.modelValue)
+const model = useVModel(props, 'modelValue', emits)
 
 function triggerFileInput() {
   if (props.disabled || props.readonly) {
@@ -28,10 +29,9 @@ function triggerFileInput() {
 
 function handleFiles(files: FileList) {
   const filesArr = Array.from(files)
-  filesInternal.value = [...(filesInternal.value || []), ...filesArr]
+  model.value = [...(model.value || []), ...filesArr]
 
-  emits('files-added', filesArr)
-  emits('update:model-value', [...filesInternal.value])
+  emits('filesAdded', filesArr)
 }
 
 function handleFileManual(ev: Event) {
@@ -61,13 +61,14 @@ function handleDrop(ev: DragEvent) {
 }
 
 function removeFile(idx: number) {
-  if (!filesInternal.value) {
+  if (!model.value || props.readonly || props.disabled) {
     return
   }
 
-  const files = filesInternal.value.splice(idx, 1)
-  emits('files-removed', files)
-  emits('update:model-value', [...filesInternal.value])
+  const files = model.value.splice(idx, 1)
+  model.value = [...model.value]
+
+  emits('filesRemoved', files)
 }
 </script>
 
@@ -96,14 +97,16 @@ function removeFile(idx: number) {
         color="white"
         :label="$t('uploadingFiles')"
       >
-        <LoaderInline
-          color="white"
-          size="xs"
-        />
+        <template #label>
+          <LoaderInline
+            color="white"
+            size="xs"
+          />
+        </template>
       </Chip>
 
       <div
-        v-if="!filesInternal?.length"
+        v-if="!model?.length"
         flex="~ col center"
         p="y-8"
         class="dropzone-info"
@@ -126,9 +129,10 @@ function removeFile(idx: number) {
         class="file-input-preview"
       >
         <FilePreview
-          v-for="(file, idx) in filesInternal"
+          v-for="(file, idx) in model"
           :key="idx"
           :file="file"
+          :editable="!readonly && !disabled"
           @remove="removeFile(idx)"
         />
       </div>

@@ -1,7 +1,14 @@
 <script setup lang="ts">
 // @ts-nocheck
+// Types
 import type { ITreeNodeRowProps } from '~~/components/Tree/types/tree-node-row-props.type'
 import type { ITreeNode } from '~~/components/Tree/types/tree-node.type'
+
+// Injections
+import {
+  treeCollapsedKey,
+  treeHandleCollapseKey,
+} from '~/components/Tree/provide/tree.provide'
 
 const props = defineProps<ITreeNodeRowProps>()
 
@@ -34,12 +41,10 @@ async function handleCollapseInternal(node: ITreeNode) {
 }
 
 // INJECT
-const collapsedRef = inject<Ref<Record<string | number, boolean>>>(
-  'collapsed',
-  ref({})
-)
-const handleCollapse = inject<(node: ITreeNode) => Promise<void>>(
-  'handleCollapse',
+const collapsedRef = injectStrict(treeCollapsedKey, ref({}))
+
+const handleCollapse = injectStrict(
+  treeHandleCollapseKey,
   async (_node: ITreeNode) => {}
 )
 </script>

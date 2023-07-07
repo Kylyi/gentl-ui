@@ -13,6 +13,7 @@ import List from '@/components/List/List.vue'
 import MenuProxy from '@/components/MenuProxy/MenuProxy.vue'
 import InputWrapper from '@/components/Inputs/InputWrapper.vue'
 import ScrollArea from '@/components/ScrollArea/ScrollArea.vue'
+import { IItemToBeAdded } from '~/components/List/types/list-item-to-add.type'
 
 const props = withDefaults(defineProps<ISelectorProps>(), {
   debounce: 500,
@@ -27,7 +28,7 @@ const props = withDefaults(defineProps<ISelectorProps>(), {
 })
 
 const emits = defineEmits<{
-  (e: 'update:model-value', val: any): void
+  (e: 'update:modelValue', val: any): void
   (e: 'update:options', val: any[]): void
   (e: 'added', item: any): void
   (e: 'removed', item: any): void
@@ -49,9 +50,9 @@ onMounted(() => {
 const currentInstance = getCurrentInstance()
 
 const hasContent = computed(() => {
-  return Array.isArray(internalValue.value)
-    ? internalValue.value.length > 0
-    : !isNil(internalValue.value) && internalValue.value !== ''
+  return Array.isArray(model.value)
+    ? model.value.length > 0
+    : !isNil(model.value) && model.value !== ''
 })
 
 // SELECTION
@@ -89,17 +90,17 @@ function getOption(option: any): any {
 
 function handleSelectedMultiple(options: any[]) {
   // FIXME: WORKS ONLY FOR `emitKey === true`
-  if (Array.isArray(internalValue.value) || !internalValue.value) {
-    const newVal = uniq([...(internalValue.value || []), ...options])
+  if (Array.isArray(model.value) || !model.value) {
+    const newVal = uniq([...(model.value || []), ...options])
 
     if (newVal.length) {
-      emits('update:model-value', newVal)
+      model.value = newVal
     } else {
-      emits('update:model-value', props.emptyValue)
+      model.value = props.emptyValue
     }
   } else {
     options.forEach(opt => {
-      internalValue.value[getKey(opt)] = opt
+      model.value[getKey(opt)] = opt
     })
   }
 }
@@ -108,82 +109,47 @@ function handleRemove(item: any) {
   const optionKey = getKey(item)
 
   if (props.multi) {
-    if (Array.isArray(internalValue.value)) {
-      const idx = internalValue.value.findIndex(
-        (sel: any) => getKey(sel) === optionKey
-      )
-
-      if (idx > -1) {
-        internalValue.value.splice(idx, 1)
-      }
+    if (Array.isArray(model.value)) {
+      model.value = model.value.filter((sel: any) => getKey(sel) !== optionKey)
     } else {
-      delete internalValue.value[optionKey]
+      model.value = omit(model.value, optionKey)
     }
 
-    if (!internalValue.value.length) {
-      emits('update:model-value', props.emptyValue)
-    } else {
-      emits('update:model-value', [...internalValue.value])
+    if (!model.value.length) {
+      model.value = props.emptyValue
     }
 
     emits('removed', item)
   } else if (props.clearable) {
-    emits('update:model-value', props.emptyValue)
+    model.value = props.emptyValue
+  }
+
+  // Remove the item from the added items if it was about to be created
+  if ('_isCreate' in item && item._isCreate) {
+    addedItems.value = props.multi
+      ? addedItems.value.filter(_item => getKey(_item) !== getKey(item))
+      : []
+
+    nextTick(() => {
+      listEl.value?.clearSearch()
+      listEl.value?.refresh()
+    })
   }
 
   syncScrollArea()
 }
 
-// ITEMS ADDING
-type IItemToBeAdded = Record<string, any> & {
-  _isNew: boolean
-  _isCreate: boolean
-}
-
-const preAddedItem = ref<IItemToBeAdded | undefined>()
+// Item adding
 const addedItems = ref<IItemToBeAdded[]>([])
 
-function handleSearch(payload: { search: string; hasExactMatch: boolean }) {
-  const { search, hasExactMatch } = payload
-
-  if (props.loadData?.onSearch) {
-    loadData(true, { search })
-  } else {
-    menuProxyEl.value?.recomputePosition()
-  }
-
-  if (!props.allowAdd) {
-    return
-  }
-
-  // ALREADY ADDING ITEM ~ sync label with search value
-  if (search && !hasExactMatch && preAddedItem.value) {
-    preAddedItem.value[props.optionLabel as string] = search
-  }
-
-  // ADD NEW ITEM TO BE ADDED
-  else if (search && !hasExactMatch) {
-    preAddedItem.value = {
-      [props.optionKey]: String(new Date().getTime()),
-      [props.optionLabel as string]: search,
-      _isNew: true,
-      _isCreate: false,
-    }
-  }
-
-  // ITEM WITH SUCH LABEL ALREADY EXISTS OR NO SEARCH
-  else {
-    preAddedItem.value = undefined
-  }
-}
-
+// Selection
 function handleSelect(val: any) {
   if (props.multi && !val.length) {
-    emits('update:model-value', props.emptyValue)
+    model.value = props.emptyValue
   } else if (props.multi) {
-    emits('update:model-value', [...val])
+    model.value = [...val]
   } else {
-    emits('update:model-value', val)
+    model.value = val
   }
 
   if (!props.multi) {
@@ -194,39 +160,11 @@ function handleSelect(val: any) {
 function handleSelectAdd(data: any) {
   emits('added', data)
   syncScrollArea()
-
-  if (props.noLocalAdd) {
-    preAddedItem.value = undefined
-    listEl.value?.clearSearch()
-
-    return
-  }
-
-  if (data._isNew) {
-    if (!props.multi) {
-      addedItems.value = []
-    }
-
-    addedItems.value = [
-      ...addedItems.value,
-      { ...preAddedItem.value, _isCreate: true, _isNew: false },
-    ]
-    preAddedItem.value = undefined
-    listEl.value?.clearSearch()
-  }
 }
 
 function handleSelectRemove(data: any) {
   emits('removed', data)
   syncScrollArea()
-
-  if (data._isCreate) {
-    const idx = addedItems.value.findIndex(
-      (item: IItemToBeAdded) => item[props.optionKey] === data[props.optionKey]
-    )
-
-    idx > -1 && addedItems.value.splice(idx, 1)
-  }
 }
 
 // LIST
@@ -235,6 +173,7 @@ const listEl = ref<InstanceType<typeof List>>()
 const options = toRef(props, 'options')
 const optionsInternal = ref<any[]>([])
 const listProps = reactivePick(props, [
+  'allowAdd',
   'disabledFnc',
   'emitKey',
   'fuseOptions',
@@ -247,6 +186,8 @@ const listProps = reactivePick(props, [
   'loading',
   'noSearch',
   'noHighlight',
+  'noLocalAdd',
+  'loadData',
   'allowSelectAllFiltered',
 ])
 
@@ -258,14 +199,6 @@ const optionsExtended = computed(() => {
         : { [props.optionKey]: opt, [props.optionLabel as string]: opt }
   )
 
-  if (props.allowAdd) {
-    return [
-      ...optionsAdjusted,
-      ...addedItems.value,
-      ...(preAddedItem.value ? [preAddedItem.value] : []),
-    ]
-  }
-
   return optionsAdjusted
 })
 
@@ -273,26 +206,38 @@ const optionsExtended = computed(() => {
  * The options we actually want to show in the list ~ the extended options
  * minus the hidden ones
  */
-const listOptions = computed(() => {
-  let hiddenOptions = props.hiddenOptions
+const listOptions = computed({
+  get() {
+    let hiddenOptions = props.hiddenOptions
 
-  if (hiddenOptions) {
-    if (!props.hideSelf) {
-      const selectedOptionsKeys = Array.isArray(internalValue.value)
-        ? internalValue.value.map((opt: any) => getKey(opt))
-        : [getKey(internalValue.value)]
+    if (hiddenOptions) {
+      if (!props.hideSelf) {
+        const selectedOptionsKeys = Array.isArray(model.value)
+          ? model.value.map((opt: any) => getKey(opt))
+          : [getKey(model.value)]
 
-      hiddenOptions = omit(hiddenOptions, selectedOptionsKeys)
+        hiddenOptions = omit(hiddenOptions, selectedOptionsKeys)
+      }
+
+      return optionsExtended.value.filter(opt => !hiddenOptions![getKey(opt)])
     }
 
-    return optionsExtended.value.filter(opt => !hiddenOptions![getKey(opt)])
-  }
-
-  return optionsExtended.value
+    return optionsExtended.value
+  },
+  set(val: any[]) {
+    optionsInternal.value = val
+  },
 })
 
 const optionsByKey = computed(() => {
-  return optionsExtended.value.reduce((agg, option) => {
+  return [
+    ...optionsExtended.value,
+    ...(props.initialMap
+      ? Array.isArray(props.initialMap)
+        ? props.initialMap
+        : [props.initialMap]
+      : []),
+  ].reduce((agg, option) => {
     const key = get(option, props.optionKey)
     agg[key] = option
 
@@ -304,29 +249,6 @@ const optionsByKey = computed(() => {
 watch(listOptions, () => {
   menuProxyEl.value?.recomputePosition()
 })
-
-// DATA LOADING
-async function loadData(force?: boolean, options?: { search?: string }) {
-  if (props.loadData && (!isOptionsInternalLoaded.value || force)) {
-    isLoadingInternal.value = true
-
-    try {
-      const res = await props.loadData.fnc({ search: options?.search })
-
-      if (props.loadData.local) {
-        optionsInternal.value = res
-      } else {
-        optionsInternal.value = get(res, props.loadData.mapKey)
-      }
-
-      isLoadingInternal.value = false
-      isOptionsInternalLoaded.value = true
-    } catch (error) {
-      isLoadingInternal.value = false
-      isOptionsInternalLoaded.value = true
-    }
-  }
-}
 
 // PICKER
 const menuProxyEl = ref<InstanceType<typeof MenuProxy>>()
@@ -343,9 +265,7 @@ function handleBeforeHide() {
   }
 }
 
-async function handleBeforeShow() {
-  await loadData()
-
+function handleBeforeShow() {
   pickerAnimationState.value = 'show'
   emits('picker-before-show')
 }
@@ -353,7 +273,6 @@ async function handleBeforeShow() {
 function handleHide() {
   isPickerActive.value = false
   pickerAnimationState.value = 'hide'
-  preAddedItem.value = undefined
   emits('picker-hide')
 }
 
@@ -363,16 +282,11 @@ function handleShow() {
 }
 
 // LAYOUT
-const {
-  internalValue,
-  wrapperProps,
-  handleClickWrapper,
-  handleFocusOrClick,
-  clear,
-} = useSelectorUtils({
-  props,
-  menuElRef: menuProxyEl,
-})
+const { model, wrapperProps, handleClickWrapper, handleFocusOrClick, clear } =
+  useSelectorUtils({
+    props,
+    menuElRef: menuProxyEl,
+  })
 
 const menuReferenceTarget = ref<HTMLElement>()
 const optionsContainerEl = ref<any>()
@@ -402,19 +316,14 @@ if (
 }
 
 defineExpose({
-  addedItems: addedItems.value,
   focus: () => menuProxyEl.value?.show(),
   blur: () => menuProxyEl.value?.hide(),
-  loadData,
+  loadData: () => listEl.value?.loadData(),
   resetInternalOptions: () => {
     optionsInternal.value = []
     isOptionsInternalLoaded.value = false
   },
 })
-
-if (props.loadData?.immediate) {
-  loadData()
-}
 </script>
 
 <template>
@@ -445,7 +354,7 @@ if (props.loadData?.immediate) {
     >
       <slot
         name="selection"
-        :selected-option="getOption(internalValue)"
+        :selected-option="getOption(model)"
       />
     </span>
 
@@ -484,7 +393,7 @@ if (props.loadData?.immediate) {
         />
       </HorizontalScroller>
 
-      <template v-else-if="multi && internalValue">
+      <template v-else-if="multi && model">
         <Chip
           v-for="(chip, idx) in modelValue"
           :key="idx"
@@ -497,12 +406,12 @@ if (props.loadData?.immediate) {
       </template>
 
       <span
-        v-else-if="internalValue"
+        v-else-if="model"
         self-center
         style="width: calc(100% - 4px)"
         :class="{ truncate: !noTruncate }"
       >
-        {{ getLabel(internalValue) }}
+        {{ getLabel(model) }}
       </span>
     </Component>
 
@@ -582,19 +491,19 @@ if (props.loadData?.immediate) {
         <slot name="picker">
           <List
             ref="listEl"
+            v-model:added-items="addedItems"
+            v-model:items="listOptions"
             :selected="modelValue || []"
-            :items="listOptions"
             :item-key="optionKey"
             :item-label="optionLabel"
             v-bind="listProps"
-            @update:selected="handleSelect($event)"
-            @added="handleSelectAdd($event)"
+            @update:selected="handleSelect"
+            @added="handleSelectAdd"
             @selected-multiple="handleSelectedMultiple"
-            @removed="handleSelectRemove($event)"
-            @search="handleSearch"
+            @removed="handleSelectRemove"
           >
             <template
-              v-if="!$bp.sm"
+              v-if="$bp.isSmaller('sm')"
               #after-search
             >
               <Btn

@@ -67,9 +67,20 @@ const isSelectedRow = injectStrict(tableIsSelectedRowKey)
                 :name="col.name"
                 :value="val"
               >
-                <span class="p-x-2 truncate">
+                <span
+                  v-if="col.dataType !== 'boolean'"
+                  class="p-x-2 truncate"
+                >
                   {{ val }}
                 </span>
+
+                <Checkbox
+                  v-else
+                  :model-value="get(row, col.field)"
+                  :editable="false"
+                  :label="val"
+                  m="x-2"
+                />
               </slot>
             </template>
           </ValueFormatter>

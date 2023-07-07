@@ -30,26 +30,24 @@ const formClass = computed(() => ({
   'form--dense': props.dense,
   'is-bordered': props.bordered,
   'is-submitted': isSubmitted.value,
-  'is-compact': props.compact,
   'has-controls-on-top': props.controlsOnTop,
   'is-grown': !props.noGrow,
+  'is-label-forced-visible': props.labelForcedVisibility,
 }))
 
 const controlsClass = computed(() => {
-  const sectionClass = [
+  const classes = [
     'w-full border-ca !rounded-0 bg-white dark:bg-darker',
     'lt-lg:p-x-2 sticky bottom-0 inset-inline-0',
   ]
 
   if (props.controlsOnTop) {
-    sectionClass.push('order--1 border-b-1')
+    classes.push('order--1 border-b-1')
   } else {
-    sectionClass.push('border-t-1')
+    classes.push('border-t-1')
   }
 
-  return {
-    sectionClass,
-  }
+  return [...classes, props.controlsClass]
 })
 
 const throttledSubmit = useThrottleFn(
@@ -75,6 +73,13 @@ defineExpose({
   submit: throttledSubmit,
   fakeSubmit: () => (isSubmitted.value = true),
   reset: () => formEl.value?.reset(),
+  recomputeConfirmationMenuPosition: () => {
+    menuConfirmationEl.value?.recomputeMenuPosition()
+  },
+})
+
+defineOptions({
+  inheritAttrs: false,
 })
 </script>
 
@@ -83,20 +88,20 @@ defineExpose({
     ref="formEl"
     class="form"
     :class="formClass"
-    flex="~ col"
-    rounded="custom"
-    overflow="auto"
-    bg="ca"
     autocomplete="off"
     novalidate
     @submit.stop.prevent="throttledSubmit()"
   >
-    <slot />
-
     <div
-      v-if="!noSubmit"
-      grow
-    />
+      class="form-content"
+      flex="~ col"
+      rounded="custom"
+      overflow="auto"
+      bg="ca"
+      v-bind="$attrs"
+    >
+      <slot />
+    </div>
 
     <slot name="errors">
       <Section
@@ -124,10 +129,11 @@ defineExpose({
       name="submit"
     >
       <Section
+        id="form-controls"
         flex="~ wrap gap-2"
         shrink-0
         justify="between"
-        :section-class="controlsClass.sectionClass"
+        :section-class="controlsClass"
       >
         <slot name="submit-start">
           <span>&nbsp;</span>
@@ -171,22 +177,31 @@ defineExpose({
 
 <style lang="scss" scoped>
 .form {
-  --apply: flex-gap-2;
+  &-content {
+    --apply: flex-gap-2;
+  }
 
   &.is-grown {
-    --apply: flex-grow;
+    --apply: contents;
+
+    > .form-content {
+      --apply: flex-grow;
+    }
   }
 
   &.is-bordered {
     --apply: border-2 border-ca;
   }
 
-  :deep(.btn-label) {
-    --apply: lt-lg:hidden;
+  &:not(.is-label-forced-visible) {
+    :deep(#form-controls .btn-label) {
+      --apply: lt-lg:hidden;
+    }
+
+    :deep(#form-controls .btn) {
+      --apply: lt-lg:p-x-0;
+    }
   }
 
-  :deep(.btn) {
-    --apply: lt-lg:p-x-0;
-  }
 }
 </style>

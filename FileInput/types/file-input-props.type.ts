@@ -1,3 +1,6 @@
+// Types
+import { IFile } from '~/components/FileInput/types/file.type'
+
 export interface IFileInputProps {
   accept?: string
   disabled?: boolean
@@ -6,7 +9,7 @@ export interface IFileInputProps {
   hint?: string
   loading?: boolean
   maxChipsRows?: number
-  modelValue?: File[] | null
+  modelValue?: Array<File | IFile> | null
   multi?: boolean
   placeholder?: string
   readonly?: boolean

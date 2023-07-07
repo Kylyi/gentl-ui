@@ -1,19 +1,21 @@
 <script setup lang="ts">
-// CONSTANTS
-import { ICON_BY_FILE_EXTENSION } from '~~/components/FileInput/constants/iconsByFileExtension'
+// Types
+import type { IFile } from '~/components/FileInput/types/file.type'
 
-// COMPOSITON FUNCTIONS
-import { getFileExtension, getFileName } from '~/libs/App/utils/files'
+// Constants
+import { ICON_BY_FILE_EXTENSION } from '~/components/FileInput/constants/iconsByFileExtension'
+
+// Functions
+import { getFileExtension } from '~/libs/App/utils/files'
+import { useFileUtils } from '~/libs/File/functions/useFileUtils'
 
 type IProps = {
   actions?: {
     download?: boolean
-    launch?: boolean
     remove?: boolean
   }
   editable?: boolean
-  filename: string
-  folder?: string
+  file: IFile
 }
 
 const props = defineProps<IProps>()
@@ -24,28 +26,11 @@ defineEmits<{
 // UTILS
 const rC = useRuntimeConfig()
 const { getLocalImageUrl } = useImages()
-const imageExtensions = [
-  'jpg',
-  'jpeg',
-  'png',
-  'gif',
-  'svg',
-  'webp',
-  'bmp',
-  'ico',
-  'tiff',
-  'tif',
-  'jfif',
-  'pjpeg',
-  'pjp',
-  'avif',
-  'apng',
-]
+const { handleDownloadFile } = useFileUtils()
 
 // ACTIONS
 const actionsDefault = ref({
   download: true,
-  launch: false,
   remove: true,
 })
 
@@ -55,11 +40,10 @@ const actions = computed(() => ({
 }))
 
 // LAYOUT
-const folderPath = props.folder ? `${props.folder}/` : ''
-const fileUrl = `${rC.public.FILES_HOST}/${folderPath}${props.filename}`
+const fileUrl = `${rC.public.FILES_HOST}/${props.file.path}`
 
 const icon = computed(() => {
-  const ext = getFileExtension(props.filename)
+  const ext = getFileExtension(props.file.name)
 
   const icon =
     ICON_BY_FILE_EXTENSION[ext as keyof typeof ICON_BY_FILE_EXTENSION] ||
@@ -69,19 +53,14 @@ const icon = computed(() => {
 })
 
 const imageUrl = computed(() => {
-  const isImage = imageExtensions.some(ext => props.filename.endsWith(ext))
+  const isImage = props.file.type.startsWith('image/')
 
   if (isImage) {
-    return getLocalImageUrl(props.filename, { folder: props.folder })
+    return getLocalImageUrl(props.file.path)
   }
 
   return null
 })
-
-function handleDownloadFile() {
-  // FIXME: Missing downloadFile function
-  // downloadFile(props.filename, { folder: props.folder })
-}
 </script>
 
 <template>
@@ -93,7 +72,7 @@ function handleDownloadFile() {
         text="caption"
         line-clamp="2"
       >
-        {{ getFileName(filename) }}
+        {{ file.name }}
       </span>
 
       <div flex="~">
@@ -121,7 +100,7 @@ function handleDownloadFile() {
       <img
         v-if="imageUrl"
         :src="imageUrl"
-        :alt="filename"
+        :alt="file.name"
         height="100"
       />
 
@@ -142,7 +121,7 @@ function handleDownloadFile() {
       icon="material-symbols:download"
       self-start
       :label="$t('file.download')"
-      @click="handleDownloadFile"
+      @click="handleDownloadFile(file)"
     />
   </div>
 </template>

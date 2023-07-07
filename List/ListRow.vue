@@ -94,7 +94,7 @@ const rowInfo = computed(() => {
 
 <style lang="scss" scoped>
 .item {
-  --apply: flex flex-gap-x-2 cursor-default select-none items-center
+  --apply: relative flex flex-gap-x-2 cursor-default select-none items-center
     rounded-custom;
 
   &--group {
@@ -106,7 +106,10 @@ const rowInfo = computed(() => {
   }
 
   &--active {
-    --apply: bg-primary/15 color-primary;
+    &::before {
+      --apply: absolute content-empty left-.5 inset-block-.5 w-1 bg-primary
+        rounded-custom;
+    }
   }
 
   &--hovered {
@@ -119,6 +122,6 @@ const rowInfo = computed(() => {
 }
 
 .item--active.item--hovered:not(.item--disabled) {
-  --apply: bg-primary/30;
+  --apply: bg-primary/15;
 }
 </style>

@@ -39,10 +39,11 @@ function handleClick() {
       class="chip-label"
       :class="{ 'justify-center': center }"
     >
-      <span truncate>
-        {{ label }}
-      </span>
-      <slot />
+      <slot>
+        <span truncate>
+          {{ label }}
+        </span>
+      </slot>
     </div>
 
     <Btn
@@ -63,11 +64,11 @@ function handleClick() {
 
 <style lang="scss" scoped>
 .chip {
-  --apply: flex flex-gap-1 p-y-3px p-l-2 border-px rounded truncate select-none
-    relative leading-tight items-center self-center;
+  --apply: flex flex-gap-1 p-y-3px p-l-2 border-px border-ca rounded truncate
+    select-none relative leading-tight items-center self-center;
 
   &-label {
-    --apply: flex flex-1 truncate font-rem-14;
+    --apply: flex flex-gap-x-2 flex-1 truncate font-rem-14;
   }
 }
 </style>

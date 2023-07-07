@@ -37,7 +37,7 @@ const currentPath = computedEager(() => {
     v-if="to && !disabled"
     :to="to"
     :external="external"
-    :target="external ? '_blank' : undefined"
+    :target="external || download ? '_blank' : undefined"
     :download="download || undefined"
     :class="{
       'router-link-active': !exact && toPathString.startsWith(currentPath),

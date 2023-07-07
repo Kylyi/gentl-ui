@@ -1,12 +1,14 @@
 <script setup lang="ts">
-// TYPES
-import type { IFilePreview } from '@/components/FileInput/types/file-preview.type'
+// Types
+import type { IFile } from '~/components/FileInput/types/file.type'
+import { useFileUtils } from '~/libs/File/functions/useFileUtils'
 
-// CONSTANTS
+// Constants
 import { ICON_BY_FILE_TYPE } from '~~/components/FileInput/constants/iconByFileType'
 
 type IProps = {
-  file: IFilePreview
+  file: File | IFile
+  editable?: boolean
 }
 
 const props = defineProps<IProps>()
@@ -14,7 +16,9 @@ defineEmits<{
   (e: 'remove'): void
 }>()
 
-// UTILS
+// Utils
+const { getLocalImageUrl } = useImages()
+const { handleDownloadFile } = useFileUtils()
 
 const icon = computed(() => {
   const icon =
@@ -25,7 +29,9 @@ const icon = computed(() => {
 })
 
 const imageUrl = computed(() => {
-  if (props.file.type.startsWith('image/')) {
+  if ('path' in props.file && props.file.type.startsWith('image/')) {
+    return getLocalImageUrl(props.file.path)
+  } else if (!('path' in props.file) && props.file.type.startsWith('image/')) {
     return URL.createObjectURL(props.file)
   }
 
@@ -45,6 +51,7 @@ const imageUrl = computed(() => {
       </span>
 
       <Btn
+        v-if="editable"
         size="xs"
         preset="CLOSE"
         self-start
@@ -67,13 +74,31 @@ const imageUrl = computed(() => {
         w="10"
       />
     </div>
+
+    <div class="file-preview--download">
+      <Btn
+        v-if="'path' in file"
+        w-full
+        size="sm"
+        :label="$t('file.download')"
+        @click="handleDownloadFile(file)"
+      />
+      <Btn
+        v-else
+        :label="$t('file.added')"
+        size="sm"
+        w-full
+      />
+    </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .file-preview {
-  --apply: flex flex-col gap-4 fit items-center w-full
+  --apply: grid gap-4 fit items-center
       border-1 border-dotted rounded-3 border-ca color-ca;
+
+  grid-template-rows: auto 1fr auto;
 
   &--header {
     --apply: flex flex-row gap-x-2 p-x-2 w-full justify-between p-t-1 p-b-2;

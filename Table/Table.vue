@@ -28,7 +28,7 @@ const props = withDefaults(defineProps<ITableProps>(), {
   totalRows: 0,
   useServer: true,
   useChips: config.table.useChips,
-  userUrl: true,
+  useUrl: true,
 })
 
 defineEmits<{
@@ -49,6 +49,7 @@ const {
   columns,
   TableRowComponent,
   internalColumns,
+  hasVisibleColumn,
   isScrolled,
   rowKey,
   handleScrollLeft,
@@ -67,9 +68,11 @@ const {
 
   // PAGINATION
   currentPage,
+  currentPageSize,
   isFirstPage,
   isLastPage,
   pageCount,
+  totalRows,
   prev,
   next,
 } = await useTableData(props, internalColumns)
@@ -83,7 +86,10 @@ useTableSelection(props)
     class="table-container"
   >
     <!-- TOP -->
-    <slot name="top">
+    <slot
+      v-if="!noTop"
+      name="top"
+    >
       <div class="table-container__top">
         <slot
           name="search"
@@ -151,6 +157,7 @@ useTableSelection(props)
     </TableHeader>
 
     <DynamicScroller
+      v-show="hasVisibleColumn"
       ref="scrollerEl"
       :items="rows"
       :key-field="rowKey"
@@ -207,15 +214,18 @@ useTableSelection(props)
     <TableCalculatingData v-if="isLoading" />
 
     <TableNoData
-      :has-no-data="!rows.length"
+      :has-no-data="!rows.length && !isLoading"
       :is-visible="!isLoading"
     />
 
     <TablePagination
+      v-if="!noPagination"
       v-model:current-page="currentPage"
+      v-model:current-page-size="currentPageSize"
       :is-first-page="isFirstPage"
       :is-last-page="isLastPage"
       :page-count="pageCount"
+      :total-rows="totalRows"
       :prev="prev"
       :next="next"
     />

@@ -112,7 +112,7 @@ const usedTouch = ref(false)
 function handleDateSelect(val: Dayjs) {
   preventSync.value = true
   touch()
-  handleManualModelChange(val, true)
+  handleManualModelChange(val)
 
   if (props.autoClose) {
     menuProxyEl.value?.hide()

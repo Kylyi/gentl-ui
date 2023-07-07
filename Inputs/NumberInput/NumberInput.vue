@@ -65,6 +65,7 @@ const {
   handleManualModelChange,
   handleClickWrapper,
   handleFocusOrClick,
+  handleBlur,
 } = useInputUtils({
   props,
   maskRef: mask,
@@ -179,6 +180,7 @@ defineExpose({
       :class="[inputClass]"
       :style="inputStyle"
       @focus="handleFocusOrClick"
+      @blur="handleBlur"
     />
 
     <template

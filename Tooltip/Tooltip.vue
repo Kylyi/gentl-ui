@@ -4,7 +4,16 @@ import { arrow, flip, offset, shift, useFloating } from '@floating-ui/vue'
 // TYPES
 import { IMenuProps } from '~/components/Menu/types/menu-props.type'
 
-const props = defineProps<IMenuProps>()
+const props = withDefaults(
+  defineProps<
+    IMenuProps & {
+      noInheritFontStyle?: boolean
+    }
+  >(),
+  {
+    noInheritFontStyle: true,
+  }
+)
 
 function getTargetElement(target: any): any {
   if (!process.client) {
@@ -60,6 +69,7 @@ const { floatingStyles, placement, middlewareData } = useFloating(
 const tooltipClass = computed(() => {
   return {
     'is-dense': props.dense,
+    'font-normal normal-case text-base': props.noInheritFontStyle,
   }
 })
 

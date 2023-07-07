@@ -37,7 +37,7 @@ defineOptions({
         <!-- TITLE -->
         <Heading
           v-if="title"
-          :class="titleClass"
+          :class="headerClass"
           :filled="titleFilled"
           flex="col center"
         >
@@ -45,6 +45,7 @@ defineOptions({
             flex="~ gap-x-2"
             w-full
             items-center
+            :class="titleClass"
           >
             <slot name="title-left" />
 

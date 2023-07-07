@@ -38,6 +38,7 @@ const updateTableState = injectStrict(updateTableStateKey)
 const refreshData = injectStrict(refreshTableDataKey)
 
 // UTILS
+const { t } = useI18n()
 const { extractColumnsStateData } = useTableUtils()
 
 // LAYOUT
@@ -45,7 +46,8 @@ const btnConfirmationEl = ref<InstanceType<typeof BtnConfirmation>>()
 const storageKey = `table-layouts-${props.storageKey || 'default'}`
 const tableLayouts = useLocalStorage<ISavedTableLayout[]>(storageKey, [])
 
-function handleSelectTableLayout(tableLayout: IItem) {
+function handleSelectTableLayout(tableLayout?: IItem) {
+  console.log('Log ~ handleSelectTableLayout ~ tableLayout:', tableLayout)
   if (!tableLayout) {
     updateTableState(
       getTableStateDefault(),
@@ -63,10 +65,10 @@ function handleSelectTableLayout(tableLayout: IItem) {
     return
   }
 
-  const { name, _isNew } = tableLayout
+  const { name, _isCreate } = tableLayout
 
   // ADDED A NEW LAYOUT
-  if (_isNew) {
+  if (_isCreate) {
     tableLayouts.value = [
       ...tableLayouts.value,
       {
@@ -97,6 +99,7 @@ function handleSelectTableLayout(tableLayout: IItem) {
       refreshData()
     }
   }
+  notify(t('saved'), 'positive')
 }
 
 function handleApplyLayout() {
@@ -133,6 +136,7 @@ function overrideSelectedTableLayout() {
   <Section
     :title="$t('table.layoutState')"
     title-filled
+    flex="~ col"
   >
     <Selector
       :model-value="tableState.layout"
@@ -190,4 +194,15 @@ function overrideSelectedTableLayout() {
       </span>
     </div>
   </Section>
+
+  <Separator inset />
+
+  <Btn
+    :label="$t('table.reset')"
+    no-uppercase
+    icon="fluent:arrow-reset-48-regular"
+    m="3"
+  >
+    <MenuConfirmation @ok="handleSelectTableLayout()" />
+  </Btn>
 </template>

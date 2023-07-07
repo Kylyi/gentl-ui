@@ -9,6 +9,7 @@ import { Placeholder } from '@tiptap/extension-placeholder'
 import { TextStyle } from '@tiptap/extension-text-style'
 import { Color } from '@tiptap/extension-color'
 import { Mention } from '@tiptap/extension-mention'
+import { Image } from '@tiptap/extension-image'
 
 // TYPES
 import { ClientRectObject } from '@floating-ui/vue'
@@ -20,6 +21,9 @@ import type { IWysiwygMentionItem } from '~/components/Wysiwyg/types/wysiwyg-men
 // COMPONENTS
 import WysiwygMention from '~/components/Wysiwyg/WysiwygMention.vue'
 
+// Injections
+import { mentionItemsKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
+
 const props = withDefaults(defineProps<IWysiwygProps>(), {
   errorVisible: true,
 })
@@ -30,6 +34,8 @@ const emits = defineEmits<{
 // LAYOUT
 const model = useVModel(props, 'modelValue', emits)
 const isFocused = ref(false)
+
+const mentionItems = injectStrict(mentionItemsKey, toRef(props, 'mentionItems'))
 
 // WRAPPER
 const wrapperProps = reactivePick(
@@ -73,6 +79,9 @@ const ColorExt = Color.configure({
   types: ['textStyle'],
 })
 
+// Image https://tiptap.dev/api/extensions/image
+const ImageExt = Image.configure(props.image)
+
 // Mention https://tiptap.dev/api/nodes/mention
 const mentionEl = ref<InstanceType<typeof WysiwygMention>>()
 const selectFnc = ref<Function>(() => {})
@@ -98,10 +107,10 @@ const MentionExt = Mention.configure({
     char: '${',
     items: ({ query }) => {
       if (!query) {
-        mentionItemsFiltered.value = props.mentionItems || []
+        mentionItemsFiltered.value = mentionItems.value || []
       }
 
-      mentionItemsFiltered.value = (props.mentionItems || []).filter(item => {
+      mentionItemsFiltered.value = (mentionItems.value || []).filter(item => {
         return item.label.toLowerCase().startsWith(query.toLowerCase())
       })
 
@@ -143,7 +152,8 @@ const editor = useEditor({
     Underline,
     TextStyle,
     ColorExt,
-    MentionExt,
+    ...(mentionItems.value ? [MentionExt] : []),
+    ...(props.image ? [ImageExt] : []),
   ],
   editable: !props.readonly && !props.disabled,
   editorProps: {
@@ -213,6 +223,12 @@ function handleSetColor(color?: string) {
     : editor.value?.chain().focus().unsetColor().run()
 }
 
+function focusEditor() {
+  if (!editor.value?.isFocused) {
+    editor.value?.chain().focus().run()
+  }
+}
+
 watch(model, model => {
   if (!isFocused.value) {
     editor.value
@@ -221,6 +237,13 @@ watch(model, model => {
       .run()
   }
 })
+
+watch(
+  () => props.readonly,
+  isReadonly => {
+    editor.value?.setEditable(!isReadonly)
+  }
+)
 </script>
 
 <template>
@@ -229,7 +252,7 @@ watch(model, model => {
     :has-content="!!modelValue"
     class="relative h-full"
     :content-class="[contentClass, '!items-start', 'h-full']"
-    @mousedown="editor?.commands.focus()"
+    @mousedown="focusEditor"
   >
     <EditorContent
       class="control"
@@ -281,7 +304,7 @@ watch(model, model => {
 }
 
 :deep(.wysiwyg) {
-  --apply: outline-none w-full min-h-inherit;
+  --apply: outline-none fit;
 
   p.is-empty:first-child::before {
     content: attr(data-placeholder);

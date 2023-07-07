@@ -43,6 +43,8 @@ const { notifications } = storeToRefs(notificationStore)
 /* ensure leaving items are taken out of layout flow so that moving
    animations can be calculated correctly. */
 .list-leave-active {
+  --apply: w-full;
+
   position: absolute !important;
 }
 </style>

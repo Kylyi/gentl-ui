@@ -12,6 +12,7 @@ export function useListUtils() {
       'noSelect',
       'truncate',
       'rowClass',
+      'loadData',
     ])
   }
 

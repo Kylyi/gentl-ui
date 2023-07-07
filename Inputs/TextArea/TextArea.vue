@@ -45,8 +45,13 @@ const {
 if (props.autogrow) {
   useTextareaAutosize({
     element: el as MaybeElementRef<HTMLTextAreaElement>,
+    input: maskedValue,
   })
 }
+
+const resizeClass = computedEager(() => {
+  return props.autogrow ? 'resize-none' : props.resize
+})
 
 defineExpose({
   focus,
@@ -90,7 +95,7 @@ defineExpose({
       class="control"
       role="presentation"
       :rows="rows"
-      :class="[inputClass, resize]"
+      :class="[inputClass, resizeClass]"
       :style="inputStyle"
       @focus="handleFocusOrClick"
     />

@@ -6,6 +6,14 @@ export interface ITabsProps {
   navClass?: ClassType
   noNav?: boolean
   noAnimation?: boolean
+
+  /**
+   * For tabs that should be part of the DOM but not visible
+   */
+  invisibleTabs?: string[]
+
+  // Transitions
+  noLeaveTransition?: boolean
   transitionPrevious?: string
   transitionNext?: string
 }

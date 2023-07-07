@@ -27,9 +27,10 @@ function handleCopyUrl() {
   })
 
   // Sorting
-  Object.entries(options.orderBy).forEach(([field, direction]) => {
-    url.searchParams.append('sort', `${field}.${direction}`)
-  })
+  // FIXME: Broken sorting
+  // Object.entries(options.orderBy).forEach(([field, direction]) => {
+  //   url.searchParams.append('sort', `${field}.${direction}`)
+  // })
 
   // Searching
   if (options.search) {

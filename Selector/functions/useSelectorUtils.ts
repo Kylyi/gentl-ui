@@ -4,17 +4,9 @@ export function useSelectorUtils(options: ISelectorUtilsOptions) {
   const { props, menuElRef } = options
   const instance = getCurrentInstance()
 
-  // DATA HANDLING
-  const model = useVModel(props, 'modelValue')
-  const internalValue = ref(model.value)
-
-  // Sync model with internal value
-  watch(model, val => {
-    internalValue.value = val
-  })
-
   // LAYOUT
   const el = ref<any>()
+  const model = useVModel(props, 'modelValue')
   const menuEl = computed(() => toValue(menuElRef))
 
   // INPUT METHODS
@@ -86,7 +78,7 @@ export function useSelectorUtils(options: ISelectorUtilsOptions) {
 
   return {
     el,
-    internalValue,
+    model,
     wrapperProps,
 
     handleFocusOrClick,

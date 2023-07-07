@@ -37,6 +37,17 @@ const inputEl = ref<any>()
 const filter = toRef(props, 'filter')
 const column = toRef(props, 'column')
 
+const inputDebounce = computed(() => {
+  switch (props.column.dataType) {
+    case 'string':
+    case 'number':
+      return 500
+
+    default:
+      return undefined
+  }
+})
+
 const comparatorOptions = computed(() => {
   return getAvailableComparators(props.column.dataType, {
     includeSelectorComparators: !!column.value.getDistinctData,
@@ -155,7 +166,7 @@ function handleComparatorChange(comparator: ComparatorEnum) {
 }
 
 defineExpose({
-  focus: () => inputEl.value?.focus(),
+  focus: () => inputEl.value?.focus?.(),
 })
 </script>
 
@@ -191,7 +202,10 @@ defineExpose({
       v-if="!isSelectorComparator(filter.comparator)"
       ref="inputEl"
       v-model="filter.compareValue"
-      :debounce="500"
+      :label="
+        column.dataType === 'boolean' ? `${$t('yes')} | ${$t('no')}` : undefined
+      "
+      :debounce="inputDebounce"
       :placeholder="`${$t('table.filterValue')}...`"
       @update:model-value="handleCompareValueChange"
     />

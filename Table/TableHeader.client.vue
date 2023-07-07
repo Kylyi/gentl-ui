@@ -73,7 +73,7 @@ defineExpose({
           </span>
 
           <TableColumnFilterBtn
-            v-if="!(col.hideFilters || col.isHelperCol)"
+            v-if="!(col.noFilterSort || col.isHelperCol)"
             :column="col"
             :columns="columns"
             :rows="rows"

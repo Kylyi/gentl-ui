@@ -1,17 +1,23 @@
 <script setup lang="ts">
 import { klona } from 'klona'
 
-// TYPES
+// Types
 import type { ITreeNode } from '@/components/Tree/types/tree-node.type'
 import type { ITreeProps } from '~~/components/Tree/types/tree-props.type'
 
-// COMPOSITION FUNCTIONS
+// Functions
 import { useSearching } from '~~/libs/App/data/functions/useSearching'
 import { useTraversing } from '~/libs/App/functions/useTraversing'
 import { useTreeUtils } from '~~/components/Tree/functions/useTreeUtils'
 
-// COMPONENTS
+// Components
 import SearchInput from '~~/components/Inputs/SearchInput.vue'
+
+// Injections
+import {
+  treeCollapsedKey,
+  treeHandleCollapseKey,
+} from '~/components/Tree/provide/tree.provide'
 
 const props = withDefaults(defineProps<ITreeProps>(), {
   connectors: true,
@@ -273,8 +279,8 @@ onKeyStroke(
 )
 
 // PROVIDE
-provide('collapsed', collapsedById)
-provide('handleCollapse', handleCollapse)
+provide(treeCollapsedKey, collapsedById)
+provide(treeHandleCollapseKey, handleCollapse)
 
 onMounted(() => {
   setTimeout(() => {
