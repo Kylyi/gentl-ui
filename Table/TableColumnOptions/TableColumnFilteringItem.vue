@@ -107,7 +107,6 @@ function handleRemoveFilter() {
 function handleCompareValueChange() {
   updateTableState({}, state => {
     const columnState = new TableColumnState(column.value)
-
     const foundColumn = state.columns.find(
       column => column.field === props.column.field
     )

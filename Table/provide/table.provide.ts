@@ -2,8 +2,8 @@ import { TableColumn } from '~/components/Table/models/table-column.model'
 import { ITableQuery } from '~/components/Table/types/table-query.type'
 import { ITableState } from '~/components/Table/types/table-state.type'
 
-export const tableStateKey: InjectionKey<Ref<ITableState>> =
-  Symbol('tableState')
+export const getTableStateKey: InjectionKey<() => ITableState> =
+  Symbol('getTableStateKey')
 export const updateTableStateKey: InjectionKey<
   (
     tableState: Partial<ITableState>,
@@ -11,7 +11,8 @@ export const updateTableStateKey: InjectionKey<
       tableState: ITableState,
       originalColumns: TableColumn<any>[]
     ) => ITableState,
-    updateInternalColumns?: boolean
+    updateInternalColumns?: boolean,
+    updateServerState?: boolean
   ) => void
 > = Symbol('updateTableState')
 
@@ -26,8 +27,9 @@ export const recalculateTableColumnsKey: InjectionKey<
   (force?: boolean) => void
 > = Symbol('recalulateTableColumns')
 
-export const tableQueryKey: InjectionKey<Ref<ITableQuery>> =
-  Symbol('tableQuery')
+export const tableGetTableQueryKey: InjectionKey<() => ITableQuery> = Symbol(
+  'tableGetTableQueryKey'
+)
 
 export const tableSelectRowKey: InjectionKey<(row: any) => void> =
   Symbol('tableSelectRow')

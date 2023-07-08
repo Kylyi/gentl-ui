@@ -472,8 +472,8 @@ export function useList(
     }
   }
 
-  function handleKey(ev: KeyboardEvent) {
-    if (!isFocused.value) {
+  function handleKey(ev: KeyboardEvent, force?: boolean) {
+    if (!isFocused.value && !force) {
       return
     }
 

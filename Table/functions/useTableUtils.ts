@@ -21,15 +21,52 @@ import DateInput from '~/components/Inputs/DateInput/DateInput.vue'
 import Checkbox from '~/components/Checkbox/Checkbox.vue'
 import TextInput from '~/components/Inputs/TextInput/TextInput.vue'
 import YearMonthSelector from '~/components/YearMonthSelector/YearMonthSelector.vue'
+import { config } from '~/config'
 
 const SELECTOR_COMPARATORS = [ComparatorEnum.IN, ComparatorEnum.NOT_IN]
 
 export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
+  // Utils
+  const { t } = useI18n()
+  const currentUser = useCurrentUserState()
+
   const instance = getCurrentInstance()
-  const storageKey =
-    props?.storageKey !== false
-      ? props?.storageKey || getComponentName(instance?.parent)
-      : undefined
+
+  function getStorageKey() {
+    if (props?.storageKey === null) {
+      return undefined
+    }
+
+    return props?.storageKey || getComponentName(instance?.parent)
+  }
+
+  async function getTableState(): Promise<Ref<ITableState> | null> {
+    const storageKey = getStorageKey()
+
+    if (!storageKey) {
+      return ref(getTableStateDefault())
+    }
+
+    if (config.table.useServerState) {
+      try {
+        const { getTableStateViaQuery } = await GqlGetTableStateViaQuery({
+          where: {
+            userOptionsId: currentUser.value!.userOptions.id,
+            tableName: storageKey,
+            stateName: 'default',
+          },
+        })
+
+        if (getTableStateViaQuery[0]) {
+          return ref(getTableStateViaQuery[0].state)
+        } else {
+          return ref(getTableStateDefault())
+        }
+      } catch (error) {}
+    }
+
+    return null
+  }
 
   async function getDistinctDataForField<T>(
     col: TableColumn<T>,
@@ -39,12 +76,21 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
       mapKey?: string
       where?: any
       field?: string
+      distinct?: string[]
+      include?: string[]
     } = {}
   ): Promise<DistinctData[]> {
-    const { includeDeleted = false, mapKey = 'distinctData', field } = options
-    const distinctField = [field || col.field]
+    const {
+      includeDeleted = false,
+      mapKey = 'distinctData',
+      field,
+      distinct,
+      include,
+    } = options
+    const distinctField = distinct ?? [field || col.field]
 
     const res = await query({
+      include,
       includeDeleted,
       distinct: distinctField,
       where: options.where,
@@ -52,10 +98,13 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
     const data = get(res, mapKey)
 
     return data.map((item: any) => {
+      const label = col.format?.(item) ?? get(item, distinctField[0])
+      const _label = label !== '' ? label : `(${t('empty')})`
+
       return {
         ...item,
         _value: get(item, field || col.field),
-        _label: col.format?.(item) ?? get(item, distinctField[0]),
+        _label,
       }
     })
   }
@@ -187,7 +236,7 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
     switch (comparator) {
       case ComparatorEnum.IN:
       case ComparatorEnum.NOT_IN:
-        return JSON.parse(value).split(',')
+        return value.split(',').map(val => JSON.parse(val))
 
       case ComparatorEnum.CONTAINS:
       case ComparatorEnum.STARTS_WITH:
@@ -263,6 +312,14 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
         }
 
         const currentFilterValue = get(filterObj, col.field)
+
+        console.log({
+          [comparator]: parseParamValue(
+            value,
+            comparator as ComparatorEnum,
+            col
+          ),
+        })
 
         merge(currentFilterValue, {
           [comparator]: parseParamValue(
@@ -364,7 +421,8 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
   }
 
   return {
-    storageKey, // Is not reactive!
+    getStorageKey,
+    getTableState,
     hasVisibleCol,
     getRowKey,
     getDistinctDataForField,

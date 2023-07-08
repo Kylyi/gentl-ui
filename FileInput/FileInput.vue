@@ -1,115 +1,104 @@
 <script setup lang="ts">
-// TYPES
-import { IFile } from '~/components/FileInput/types/file.type'
-import type { IFileInputProps } from '~~/components/FileInput/types/file-input-props.type'
+// Types
+import type { IFile } from '~/components/FileInput/types/file.type'
+import type { IFileInputProps } from '~/components/FileInput/types/file-input-props.type'
+
+// Functions
+import { useFieldUtils } from '~/components/Field/functions/useFieldUtils'
 
 const props = withDefaults(defineProps<IFileInputProps>(), {
-  modelValue: () => [],
-  multi: true,
+  maxChipsRows: 3,
 })
-
 const emits = defineEmits<{
   (e: 'update:modelValue', value: Array<File | IFile>): void
   (e: 'filesAdded', value: Array<File | IFile>): void
   (e: 'filesRemoved', value: Array<File | IFile>): void
 }>()
 
-// LAYOUT
-const fileInputEl = ref<HTMLInputElement>()
-const dragCounter = ref(0)
+// Utils
+const { getFieldProps } = useFieldUtils()
+
+// Layout
+const fileInputWrapperEl = ref<HTMLDivElement>()
 const model = useVModel(props, 'modelValue', emits)
+const fieldProps = getFieldProps(props)
 
-function triggerFileInput() {
-  if (props.disabled || props.readonly) {
-    return
+const wrapperClass = computed(() => {
+  return {
+    'is-dragger-over': isOverDropZone.value,
+    'is-disabled': props.disabled,
+    'is-readonly': props.readonly,
   }
+})
 
-  fileInputEl.value?.click()
+// File handling
+const { isOverDropZone } = useDropZone(fileInputWrapperEl, handleAdd)
+const { open, onChange, reset } = useFileDialog({
+  accept: props.accept,
+  multiple: props.multi,
+})
+
+function handleOpen() {
+  if (!props.readonly && !props.disabled) {
+    open()
+  }
 }
 
-function handleFiles(files: FileList) {
-  const filesArr = Array.from(files)
-  model.value = [...(model.value || []), ...filesArr]
-
-  emits('filesAdded', filesArr)
-}
-
-function handleFileManual(ev: Event) {
-  const files = (ev.target as HTMLInputElement)?.files
-
+function handleAdd(files: FileList | File[] | null) {
   if (!files) {
     return
   }
 
-  handleFiles(files)
+  const filesArray = Array.from(files)
+  emits('filesAdded', filesArray)
+
+  if (props.multi) {
+    model.value = [...(model.value || []), ...filesArray]
+  } else {
+    model.value = filesArray
+  }
+
+  reset()
 }
 
-function handleDrop(ev: DragEvent) {
-  dragCounter.value = 0
-
-  if (props.disabled || props.readonly) {
+function handleRemove(idx: number) {
+  if (!model.value) {
     return
   }
 
-  const files = ev.dataTransfer?.files
-
-  if (!files) {
-    return
-  }
-
-  handleFiles(files)
+  const removed = model.value.splice(idx, 1)
+  emits('filesRemoved', removed)
+  emits('update:modelValue', [...model.value])
 }
 
-function removeFile(idx: number) {
-  if (!model.value || props.readonly || props.disabled) {
-    return
-  }
-
-  const files = model.value.splice(idx, 1)
-  model.value = [...model.value]
-
-  emits('filesRemoved', files)
-}
+onChange(handleAdd)
 </script>
 
 <template>
-  <div flex="~ col">
+  <Field
+    v-bind="fieldProps"
+    :no-content="!model?.length"
+    no-border
+    control-class="!p-0"
+    stack-label
+  >
     <div
-      class="file-input"
-      :class="{
-        'is-dragging': dragCounter > 0,
-        'is-readonly': readonly,
-        'is-disabled': disabled,
-        'is-multi': multi,
-      }"
-      @click="triggerFileInput"
-      @drop.prevent.stop="handleDrop"
-      @dragenter.prevent="dragCounter++"
-      @dragover.prevent
-      @dragleave.prevent="dragCounter--"
+      ref="fileInputWrapperEl"
+      class="file-input-wrapper"
+      :class="wrapperClass"
+      @click.stop.prevent="handleOpen"
     >
-      <Chip
-        v-if="loading"
-        position="!absolute"
-        top="-14px"
-        right-2
-        bg="primary"
-        color="white"
-        :label="$t('uploadingFiles')"
-      >
-        <template #label>
-          <LoaderInline
-            color="white"
-            size="xs"
-          />
-        </template>
-      </Chip>
+      <FilePreview
+        v-for="(file, idx) in model"
+        :key="idx"
+        :file="file"
+        :editable="!props.readonly && !props.disabled"
+        @remove="handleRemove(idx)"
+      />
 
       <div
         v-if="!model?.length"
-        flex="~ col center"
-        p="y-8"
-        class="dropzone-info"
+        class="file-input-wrapper-hint"
       >
         <div
           ic:sharp-cloud-upload
@@ -123,80 +112,34 @@ function removeFile(idx: number) {
           {{ $t('filesUpload') }}
         </div>
       </div>
-
-      <div
-        v-else
-        class="file-input-preview"
-      >
-        <FilePreview
-          v-for="(file, idx) in model"
-          :key="idx"
-          :file="file"
-          :editable="!readonly && !disabled"
-          @remove="removeFile(idx)"
-        />
-      </div>
-
-      <input
-        ref="fileInputEl"
-        type="file"
-        invisible
-        absolute
-        inset-0
-        z="-1"
-        :multiple="multi"
-        :accept="accept"
-        @change="handleFileManual"
-      />
     </div>
-
-    <ErrorContainer
-      :error-takes-space="errorTakesSpace"
-      :errors="errors"
-      class="wrapper-error"
-    />
-
-    <HintContainer
-      v-if="!errors?.length && hint"
-      :hint="hint"
-    />
-  </div>
+  </Field>
 </template>
 
-<style lang="scss" scoped>
-.file-input {
-  --apply: relative flex border-2 border-dashed w-full dark:bg-darker bg-white
-    rounded-3 flex-center cursor-pointer dark:border-true-gray-600/50 border-true-gray-300/50;
+<style scoped lang="scss">
+.file-input-wrapper {
+  --apply: grid gap-2 border-2 border-dashed p-2 rounded-3 relative min-h-35 overflow-auto
+  --apply: dark:border-true-gray-600/50 border-true-gray-300/80;
+  --apply: dark:bg-darker bg-white;
 
-  &.is-readonly {
-    --apply: cursor-default;
-  }
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
 
-  &.is-disabled {
-    --apply: cursor-not-allowed;
-  }
-
-  &-preview {
-    --apply: grid p-3 grid-cols-1 xm:grid-cols-2 md:grid-cols-3 gap-3 h-full w-full;
-  }
-
-  &:not(.is-multi) {
-    .file-input-preview {
-      --apply: grid-cols-1;
-    }
-  }
-
-  &.is-dragging,
-  &:not(.is-disabled):not(.is-readonly):hover {
+  &.is-dragger-over,
+  &:hover {
     --apply: dark:border-true-gray-600 border-true-gray-300;
 
-    .dropzone-info {
-      --apply: color-dark dark:color-light;
+    .file-input-wrapper-hint {
+      --apply: color-darker dark:color-light-800;
     }
   }
 
-  .dropzone-info {
-    --apply: flex flex-col flex-center p-y-8 color-ca;
+  &-hint {
+    --apply: absolute grid place-items-center inset-0;
+    --apply: color-true-gray-500;
+  }
+
+  &:not(.is-readonly) {
+    --apply: cursor-pointer;
   }
 }
 </style>

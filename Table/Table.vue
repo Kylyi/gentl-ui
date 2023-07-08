@@ -12,6 +12,8 @@ import { useTableData } from '~/components/Table/functions/useTableData'
 import { useTableExporting } from '~/components/Table/functions/useTableExporting'
 import { useTableLayout } from '~/components/Table/functions/useTableLayout'
 import { useTableSelection } from '~/components/Table/functions/useTableSelection'
+import { useTableUtils } from '~/components/Table/functions/useTableUtils'
+import { getTableStateDefault } from '~/components/Table/constants/table-state.default'
 
 const props = withDefaults(defineProps<ITableProps>(), {
   breakpoint: 'md',
@@ -41,7 +43,13 @@ defineExpose({
   refreshData: () => refreshData(),
 })
 
-// UTILS
+// Utils
+const { getTableState, getStorageKey } = useTableUtils()
+
+const tableState =
+  (await getTableState()) ??
+  useLocalStorage(getStorageKey()!, getTableStateDefault())
+
 const {
   scrollerEl,
   headerEl,
@@ -56,13 +64,12 @@ const {
   handleRowClick,
   throttledHandleResize,
   searchableColumnLabels,
-} = useTableLayout(props)
+} = useTableLayout(props, tableState)
 
 const {
   isLoading,
   rows,
   search,
-  tableState,
   storageKey,
   refreshData,
 
@@ -75,8 +82,10 @@ const {
   totalRows,
   prev,
   next,
-} = await useTableData(props, internalColumns)
+} = await useTableData(props, internalColumns, tableState)
+
 const { isExporting, handleExportData } = useTableExporting()
+
 useTableSelection(props)
 </script>
 
@@ -216,6 +225,12 @@ useTableSelection(props)
     <TableNoData
       :has-no-data="!rows.length && !isLoading"
       :is-visible="!isLoading"
+    />
+
+    <TableTotals
+      v-if="!noTotals && !!getTotalsData"
+      :columns="internalColumns"
+      :get-totals-data="getTotalsData"
     />
 
     <TablePagination

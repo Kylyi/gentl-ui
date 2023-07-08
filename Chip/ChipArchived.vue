@@ -3,7 +3,7 @@
 import { BUTTON_PRESET } from '~/components/Button/constants/button-preset.constant'
 
 type IProps = {
-  placement?: 'top-right' | 'middle-right'
+  absolute?: boolean
 }
 
 defineProps<IProps>()
@@ -14,14 +14,8 @@ defineProps<IProps>()
     :icon="BUTTON_PRESET.ARCHIVE.icon"
     bg="dark-50"
     color="true-gray-400"
-    :class="`is-${placement}`"
     :label="$t('archived')"
     h-8
+    :class="{ 'absolute!': absolute }"
   />
 </template>
-
-<style scoped lang="scss">
-.is-top-right {
-  --apply: absolute top-0 right-0;
-}
-</style>

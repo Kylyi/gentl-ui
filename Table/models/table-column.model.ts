@@ -64,14 +64,32 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
       return undefined
     }
 
+    // We can also filter by `null` values
+    // but Prisma doesn't support `null` in `in` or `notIn` comparators
+    // so we need to extract those values and add them to the query manually
+    const comparatorsWithNull: ComparatorEnum[] = []
+
     const filterConditions = this.filters.reduce((agg, filter) => {
       const isEmptyArray = Array.isArray(filter) && !filter.length
 
       if (filter.compareValue !== undefined && !isEmptyArray) {
         // When using the `in` or `notIn` comparator, we have an array of values
         if (Array.isArray(filter.compareValue)) {
+          if (filter.compareValue.some(item => item._value === null)) {
+            comparatorsWithNull.push(filter.comparator)
+          }
+
           // The `_value` comes from the DistnctData type
-          agg[filter.comparator] = filter.compareValue.map(item => item._value)
+          agg[filter.comparator] = filter.compareValue
+            .map(item => {
+              return item._value
+            })
+            .filter(Boolean)
+
+          // We don't want to send empty arrays
+          if (agg[filter.comparator].length === 0) {
+            delete agg[filter.comparator]
+          }
         }
 
         // When using `datetime` datatype, we need to create a range
@@ -92,7 +110,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
       return agg
     }, {} as IItem)
 
-    const query: IItem = {}
+    let query: IItem = {}
 
     const isStringLikeFilter =
       this.dataType === 'string' &&
@@ -103,6 +121,20 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
       ...(config.table.useInsensitiveFilter &&
         isStringLikeFilter && { mode: 'insensitive' }),
     })
+
+    if (comparatorsWithNull.length) {
+      query = {
+        OR: [query],
+      }
+
+      comparatorsWithNull.forEach(comparator => {
+        query.OR.unshift({
+          [this.field]: {
+            [comparator === ComparatorEnum.IN ? 'equals' : 'not']: null,
+          },
+        })
+      })
+    }
 
     return query
   }
@@ -221,6 +253,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     this.sort = col.sort
     this.sortOrder = col.sortOrder
     this.sortFormat = col.sortFormat
+    this._internalSort = col._internalSort
 
     if (DATE_TYPES.includes(this.dataType) && !this.sortFormat) {
       this.sortFormat = (row: T) => {

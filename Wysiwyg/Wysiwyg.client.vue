@@ -101,10 +101,10 @@ const getRectFnc = ref<() => ClientRectObject>(function () {
 
 const MentionExt = Mention.configure({
   renderLabel: ({ node, options }) => {
-    return `${options.suggestion.char}${node.attrs.label ?? node.attrs.id}}`
+    return `${options.suggestion.char}${node.attrs.label ?? node.attrs.id}}}`
   },
   suggestion: {
-    char: '${',
+    char: '{{',
     items: ({ query }) => {
       if (!query) {
         mentionItemsFiltered.value = mentionItems.value || []
@@ -130,7 +130,7 @@ const MentionExt = Mention.configure({
         onKeyDown: ({ event }) => {
           mentionEl.value?.onKeyDown(event)
 
-          return true
+          return event.key !== 'Escape' && event.key !== 'Backspace'
         },
         onExit: () => {
           mentionEl.value?.hide()

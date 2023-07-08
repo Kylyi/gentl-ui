@@ -8,8 +8,11 @@ import {
 } from '@floating-ui/dom'
 import { MaybeElement, useFloating } from '@floating-ui/vue'
 
-// TYPES
+// Types
 import type { IWysiwygMentionItem } from '~/components/Wysiwyg/types/wysiwyg-mention-item.type'
+
+// Components
+import List from '~/components/List/List.vue'
 
 type IProps = {
   items: IWysiwygMentionItem[]
@@ -20,10 +23,10 @@ type IProps = {
 const props = defineProps<IProps>()
 
 // Layout
+const listEl = ref<InstanceType<typeof List>>()
 const mentionEl = ref<HTMLElement>()
 const items = toRef(props, 'items')
 const isMentionOpen = ref(false)
-const selectedIdx = ref(-1)
 
 const middleware = ref([offset(4), flip(), shift()])
 
@@ -41,27 +44,7 @@ const { floatingStyles, placement } = useFloating(virtualEl, mentionEl, {
 defineExpose({
   show: () => (isMentionOpen.value = true),
   hide: () => (isMentionOpen.value = false),
-  onKeyDown: (event: KeyboardEvent) => {
-    switch (event.key) {
-      case 'ArrowUp':
-        selectedIdx.value =
-          (selectedIdx.value + items.value.length - 1) % items.value.length
-        break
-
-      case 'ArrowDown':
-        selectedIdx.value = (selectedIdx.value + 1) % items.value.length
-        break
-
-      case 'Enter':
-        props.selectFnc(items.value[selectedIdx.value])
-        break
-
-      case 'Escape':
-        event.preventDefault()
-        event.stopPropagation()
-        break
-    }
-  },
+  onKeyDown: (event: KeyboardEvent) => listEl.value?.handleKey(event, true),
 })
 </script>
 
@@ -73,20 +56,18 @@ defineExpose({
     :placement="placement"
     class="mention-items"
   >
-    <Item
-      v-for="(item, idx) in items"
-      :key="item.id"
-      :class="{ 'color-secondary': selectedIdx === idx }"
-      @mousenter="selectedIdx = idx"
-      @mouseleave="selectedIdx = -1"
-    >
-      {{ item.label }}
-    </Item>
+    <List
+      ref="listEl"
+      no-search
+      :items="items"
+      @update:selected="selectFnc($event)"
+    />
   </div>
 </template>
 
 <style scoped lang="scss">
 .mention-items {
-  --apply: flex flex-gap-2 flex-col bg-ca p-2 rounded-custom;
+  --apply: flex flex-gap-2 flex-col bg-ca p-2 rounded-custom z-$zMax max-h-100
+    overflow-auto;
 }
 </style>

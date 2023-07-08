@@ -26,6 +26,7 @@ const wrapperProps = reactivePick(
   'labelStyle',
   'labelInside',
   'loading',
+  'noBorder',
   'placeholder',
   'readonly',
   'required',
@@ -55,6 +56,7 @@ defineExpose({
     <span
       ref="controlEl"
       class="control w-full"
+      :class="controlClass"
       tabindex="0"
       @focus="$emit('focus', $event)"
     >

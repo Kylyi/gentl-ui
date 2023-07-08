@@ -20,6 +20,7 @@ withDefaults(defineProps<IProps>(), {
     :loading="loading"
     :to="to"
     no-dim
+    :no-uppercase="noUppercase"
     :size="size"
   />
 </template>

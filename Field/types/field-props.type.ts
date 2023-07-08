@@ -6,4 +6,5 @@ import type { IInputWrapperProps } from '~~/components/Inputs/types/input-wrappe
 
 export interface IFieldProps extends IInputWrapperProps {
   noContent?: boolean
+  controlClass?: ClassType
 }

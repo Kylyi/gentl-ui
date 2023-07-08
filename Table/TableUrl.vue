@@ -1,26 +1,33 @@
 <script setup lang="ts">
-// INJECTION KEYS
-import { tableQueryKey } from '~/components/Table/provide/table.provide'
+// Functions
+import { getTableStateDefault } from '~/components/Table/constants/table-state.default'
 
-// INJECTIONS
-const tableQuery = injectStrict(tableQueryKey)
+// Injections
+import { tableGetTableQueryKey } from '~/components/Table/provide/table.provide'
 
 // UTILS
 const { copy, copied } = useClipboard()
+const { pageSize } = getTableStateDefault()
+
+// Layout
+const getTableQuery = injectStrict(tableGetTableQueryKey)
 
 function handleCopyUrl() {
-  const { options, where } = tableQuery.value
+  const { options, where } = getTableQuery()
   const url = new URL(window.location.href)
 
   // Clear all the search params
   url.search = ''
 
   // Pagination
-  url.searchParams.set('page', String(options.skip / options.take + 1))
-  url.searchParams.set('perPage', String(options.take))
+  url.searchParams.set(
+    'page',
+    String((options.skip || 0) / (options.take ?? pageSize) + 1)
+  )
+  url.searchParams.set('perPage', String(options.take ?? pageSize))
 
   // Filters
-  Object.entries(where).forEach(([field, val]) => {
+  Object.entries(where || {}).forEach(([field, val]) => {
     Object.entries(val).forEach(([comparator, value]) => {
       url.searchParams.append(field, `${comparator}.${value}`)
     })

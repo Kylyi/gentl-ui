@@ -1,10 +1,10 @@
 export type ITableQuery = {
-  where: Record<string, any>
+  where?: Record<string, any>
   options: {
-    search: string
-    orderBy: Record<string, 'asc' | 'desc'> | Record<string, 'asc' | 'desc'>[]
-    take: number
-    skip: number
+    search?: string
+    orderBy?: Record<string, 'asc' | 'desc'> | Record<string, 'asc' | 'desc'>[]
+    take?: number
+    skip?: number
   }
-  includeDeleted: boolean
+  includeDeleted?: boolean
 }

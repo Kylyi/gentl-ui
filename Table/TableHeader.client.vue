@@ -26,8 +26,7 @@ const { scrollbarWidth } = useOverflow()
 const { headerEl, activeSplitter, columnSplitters, handleSplitterPointerDown } =
   useTableColumnResizing(props)
 
-// LAYOUT
-
+// Layout
 const columns = toRef(props, 'columns')
 
 defineExpose({

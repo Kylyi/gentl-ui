@@ -20,13 +20,6 @@ const props = defineProps<IProps>()
 // LAYOUT
 const column = toRef(props, 'column')
 
-const btnClass = computedEager(() => {
-  return {
-    'is-filtered': !!props.column.filters.length,
-    'is-sorted': !!props.column.sort,
-  }
-})
-
 /**
  * On menu hide, we remove the filter if the `compareValue` is `undefined`
  */
@@ -42,11 +35,27 @@ function handleMenuHide() {
 </script>
 
 <template>
-  <Btn
-    preset="FILTER"
-    :class="btnClass"
-    size="sm"
-  >
+  <Btn size="sm">
+    <template #icon>
+      <div class="w-7 h-7 relative">
+        <div
+          class="icon top-.5 left-.5 ic:round-filter-alt"
+          :class="{ 'color-primary': column.filters.length }"
+        />
+        <div
+          class="icon bottom-.5 right-.5 basil:sort-outline"
+          :class="{ 'color-primary': column.sort }"
+        />
+
+        <div
+          v-if="column.sortOrder"
+          class="icon-badge"
+        >
+          {{ column.sortOrder }}
+        </div>
+      </div>
+    </template>
+
     <MenuProxy
       w="90"
       dense
@@ -72,8 +81,12 @@ function handleMenuHide() {
 </template>
 
 <style lang="scss" scoped>
-.is-filtered,
-.is-sorted {
-  --apply: color-primary;
+.icon {
+  --apply: w-4 h-4 absolute;
+
+  &-badge {
+    --apply: flex flex-center absolute -bottom-.5 -right-.5 w-3 h-3 bg-primary
+      color-white text-10px rounded-full leading-none;
+  }
 }
 </style>

@@ -105,7 +105,7 @@ watch(model, model => {
         :key="tab.id"
         :name="`${tab.id}-label`"
         :tab="tab"
-        :change-fn="() => handleTabChange(tab.id)"
+        :change-fn="(id?: number | string) => handleTabChange(id ?? tab.id)"
       >
         <Btn
           v-if="!invisibleTabs?.includes(tab.id)"

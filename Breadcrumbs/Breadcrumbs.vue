@@ -44,7 +44,7 @@ const breadcrumbs = computed(() => {
 
 <style lang="scss">
 .breadcrumbs {
-  --apply: flex grow flex-gap-x-1 items-center text-sm m-t-2;
+  --apply: flex grow flex-gap-x-1 items-center text-sm m-t-2 m-b-1;
 
   &-wrapper {
     --apply: flex flex-gap-x-1 items-center;

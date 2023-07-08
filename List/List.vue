@@ -49,6 +49,7 @@ const {
   search,
   searchEl,
   selectedByKey,
+  handleKey,
   handleMouseOver,
   handleSelectFiltered,
   handleSelectItem,
@@ -64,6 +65,7 @@ defineExpose({
   },
   loadData,
   refresh,
+  handleKey,
 })
 </script>
 

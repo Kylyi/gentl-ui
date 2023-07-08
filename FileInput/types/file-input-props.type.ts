@@ -8,10 +8,14 @@ export interface IFileInputProps {
   errorTakesSpace?: boolean
   hint?: string
   loading?: boolean
-  maxChipsRows?: number
   modelValue?: Array<File | IFile> | null
   multi?: boolean
   placeholder?: string
   readonly?: boolean
   scroller?: boolean
+
+  /**
+   * Is relevant only for `multi` and input-like mode
+   */
+  maxChipsRows?: number
 }

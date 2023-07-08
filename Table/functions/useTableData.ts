@@ -1,4 +1,6 @@
 // TODO: Client-side pagination, filtering, grouping and sorting
+import { config } from '~/config'
+
 // TYPES
 import type { ITableProps } from '~/components/Table/types/table-props.type'
 import type { ITableState } from '~/components/Table/types/table-state.type'
@@ -6,6 +8,7 @@ import type { ITableQuery } from '~/components/Table/types/table-query.type'
 
 // MODELS
 import { TableColumn } from '~/components/Table/models/table-column.model'
+import { TableColumnState } from '~/components/Table/models/table-column-state.model'
 
 // COMPOSITION FUNCTIONS
 import { useTableUtils } from '~/components/Table/functions/useTableUtils'
@@ -15,27 +18,90 @@ import { getTableStateDefault } from '~/components/Table/constants/table-state.d
 
 // INJECTION KEYS
 import {
+  getTableStateKey,
   refreshTableDataKey,
-  tableQueryKey,
-  tableStateKey,
+  tableGetTableQueryKey,
   updateTableStateKey,
 } from '~/components/Table/provide/table.provide'
-import { config } from '~/config'
 
 export async function useTableData(
   props: ITableProps,
-  internalColumns: MaybeRefOrGetter<TableColumn<any>[]>
+  internalColumns: MaybeRefOrGetter<TableColumn<any>[]>,
+  tableStateRef: Ref<ITableState>
 ) {
   // UTILS
   const instance = getCurrentInstance()
   const { t } = useI18n()
   const { query } = useRoute()
-  const { storageKey, modifyWithSearchParams } = useTableUtils()
+  const { getStorageKey, modifyWithSearchParams } = useTableUtils()
 
-  // STATE MANAGEMENT
-  const tableState = storageKey
-    ? useLocalStorage(storageKey, getTableStateDefault())
-    : ref(getTableStateDefault())
+  // Provides
+  provide(tableGetTableQueryKey, () => dbQuery.value)
+  provide(refreshTableDataKey, () => refreshData())
+  provide(getTableStateKey, () => tableStateRef.value)
+  provide(
+    updateTableStateKey,
+    (
+      state: Partial<ITableState>,
+
+      // We also provide a callback function that allows us to update the state
+      // from components that do not have direct access to the table data (for example columns)
+      callback?: (
+        state: ITableState,
+        originalColumns: TableColumn<any>[]
+      ) => ITableState,
+      updateInternalColumns?: boolean,
+      updateServerState = true
+    ) => {
+      // When there are not columns defined in the state yet,
+      // we initialize them
+      if (!state.columns?.length) {
+        tableStateRef.value.columns = toValue(internalColumns).map(col => {
+          return new TableColumnState(col)
+        })
+      }
+
+      const newState: Partial<ITableState> =
+        callback?.(tableStateRef.value, toValue(props.columns)) || {}
+
+      // We sometimes need to update the internal columns as well
+      // For example when we apply/select a layout that has some filters set up
+      if (updateInternalColumns) {
+        ;[...(state.columns || []), ...(newState?.columns || [])].forEach(
+          column => {
+            const foundInternalColumn = toValue(internalColumns).find(
+              col => col.field === column.field
+            )
+
+            if (foundInternalColumn) {
+              Object.assign(foundInternalColumn, column)
+            }
+          }
+        )
+      }
+
+      tableStateRef.value = Object.assign(
+        {},
+        tableStateRef.value,
+        state,
+        newState
+      )
+      console.log('Log ~ tableStateRef.value:', tableStateRef.value)
+
+      // Update the server state
+      if (config.table.useServerState && getStorageKey() && updateServerState) {
+        GqlUpsertTableStateByName({
+          stateName: 'default',
+          tableName: getStorageKey()!,
+          tableStateUpdateDto: {
+            state: tableStateRef.value,
+            stateName: 'default',
+            tableName: getStorageKey()!,
+          },
+        })
+      }
+    }
+  )
 
   // LAYOUT
   const isInitialized = ref(false)
@@ -43,6 +109,8 @@ export async function useTableData(
   const search = ref('')
   const rows = ref(props.rows || [])
   const totalRows = ref(props.totalRows)
+
+  const storageKey = computed(() => getStorageKey())
 
   // PAGINATION
   const {
@@ -54,17 +122,17 @@ export async function useTableData(
     isLastPage,
     currentPageSize,
   } = useOffsetPagination({
-    ...tableState.value,
+    ...tableStateRef.value,
     total: computed(() => totalRows.value || 0),
     onPageChange: page => {
       if (isInitialized.value) {
-        tableState.value.page = page.currentPage
+        tableStateRef.value.page = page.currentPage
         dbQuery.trigger()
       }
     },
     onPageSizeChange: page => {
       if (isInitialized.value) {
-        tableState.value.pageSize = page.currentPageSize
+        tableStateRef.value.pageSize = page.currentPageSize
         dbQuery.trigger()
       }
     },
@@ -77,7 +145,7 @@ export async function useTableData(
       // Actually happens only once (on initialization), but still...
       modifyWithSearchParams(
         internalColumns,
-        tableState,
+        tableStateRef,
         currentPage,
         currentPageSize
       )
@@ -89,7 +157,7 @@ export async function useTableData(
 
     // SORTING
     // Project specific?
-    const orderBy = toValue(internalColumns)
+    const orderBy = [...toValue(internalColumns)]
       .sort((a, b) => {
         return (a.sortOrder || 0) - (b.sortOrder || 0)
       })
@@ -118,50 +186,11 @@ export async function useTableData(
         take,
         skip,
       },
-      includeDeleted: tableState.value.includeDeleted,
+      includeDeleted: tableStateRef.value.includeDeleted,
     } as ITableQuery
   })
 
   const refreshData = useDebounceFn(dbQuery.trigger, 100)
-
-  provide(tableQueryKey, dbQuery)
-  provide(refreshTableDataKey, refreshData)
-  provide(tableStateKey, tableState)
-  provide(
-    updateTableStateKey,
-    (
-      state: Partial<ITableState>,
-
-      // We also provide a callback function that allows us to update the state
-      // from components that do not have direct access to the table data (for example columns)
-      callback?: (
-        state: ITableState,
-        originalColumns: TableColumn<any>[]
-      ) => ITableState,
-      updateInternalColumns?: boolean
-    ) => {
-      const newState: Partial<ITableState> =
-        callback?.(tableState.value, toValue(props.columns)) || {}
-
-      // We sometimes need to update the internal columns as well
-      // For example when we apply/select a layout that has some filters set up
-      if (updateInternalColumns) {
-        ;[...(state.columns || []), ...(newState?.columns || [])].forEach(
-          column => {
-            const foundInternalColumn = toValue(internalColumns).find(
-              col => col.field === column.field
-            )
-
-            if (foundInternalColumn) {
-              Object.assign(foundInternalColumn, column)
-            }
-          }
-        )
-      }
-
-      tableState.value = Object.assign({}, tableState.value, state, newState)
-    }
-  )
 
   async function fetchData(options: ITableQuery) {
     if (!props.getData) {
@@ -231,6 +260,8 @@ export async function useTableData(
         return
       }
 
+      const { pageSize } = getTableStateDefault()
+
       navigateTo(
         {
           query: {
@@ -238,8 +269,11 @@ export async function useTableData(
             ...query,
 
             // Pagination
-            page: String(dbQuery.options.skip / dbQuery.options.take + 1),
-            perPage: String(dbQuery.options.take),
+            page: String(
+              (dbQuery.options.skip ?? 0) / (dbQuery.options.take ?? pageSize) +
+                1
+            ),
+            perPage: String(dbQuery.options.take ?? pageSize),
 
             // Search
             ...(dbQuery.options.search && { search: dbQuery.options.search }),
@@ -252,7 +286,7 @@ export async function useTableData(
   )
 
   watch(
-    () => tableState.value.includeDeleted,
+    () => tableStateRef.value.includeDeleted,
     () => dbQuery.trigger()
   )
 
@@ -273,7 +307,6 @@ export async function useTableData(
     rows,
     dbQuery,
     search,
-    tableState,
     totalRows,
     storageKey,
     refreshData,

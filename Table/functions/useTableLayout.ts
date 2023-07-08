@@ -4,6 +4,7 @@ import { RecycleScroller } from 'vue-virtual-scroller'
 
 // TYPES
 import type { ITableProps } from '~/components/Table/types/table-props.type'
+import type { ITableState } from '~/components/Table/types/table-state.type'
 
 // MODELS
 import { TableColumn } from '~/components/Table/models/table-column.model'
@@ -20,13 +21,16 @@ import TableHeader from '~/components/Table/TableHeader.client.vue'
 // INJECTION KEYS
 import { recalculateTableColumnsKey } from '~/components/Table/provide/table.provide'
 
-export function useTableLayout(props: ITableProps) {
+export function useTableLayout(
+  props: ITableProps,
+  tableStateRef: Ref<ITableState>
+) {
   const instance = getCurrentInstance()
 
   // UTILS
   const { locale } = useI18n()
   const { onOverflow } = useOverflow()
-  const { resizeColumns, extendColumns } = useTableColumns(props)
+  const { resizeColumns, extendColumns } = useTableColumns(tableStateRef)
   const { getRowKey, hasVisibleCol } = useTableUtils()
 
   // LAYOUT
@@ -63,18 +67,16 @@ export function useTableLayout(props: ITableProps) {
   })
 
   // COLUMNS
-  const columns = ref<TableColumn[]>(
-    props.columns.map(col => new TableColumn(col))
-  )
-  const internalColumns = ref<TableColumn[]>(
-    extendColumns(props.columns.map(col => new TableColumn(col)))
-  )
+  const columns = toRef(props, 'columns')
+  const internalColumns = ref<TableColumn[]>(extendColumns(props.columns))
+  // const internalColumns = ref<TableColumn[]>(
+  //   extendColumns(props.columns.map(col => new TableColumn(col)))
+  // )
 
   // When locale is changed, we need to sync the labels of the columns
   function syncColumnLabels() {
     props.columns.forEach(col => {
       const internalCol = internalColumns.value.find(c => c.field === col.field)
-
       if (internalCol) {
         internalCol.label = col.label
         internalCol.format = col.format
@@ -98,7 +100,7 @@ export function useTableLayout(props: ITableProps) {
       internalColumns.value = resizeColumns(
         tableEl.value,
         scrollerEl.value.$el,
-        columns.value,
+        internalColumns.value,
         {
           groupsRef: [],
           isSelectableRef: props.selectable,
@@ -106,7 +108,6 @@ export function useTableLayout(props: ITableProps) {
           minColWidthRef: props.minimumColumnWidth,
         }
       )
-
       containerWidth = width
     }
   }

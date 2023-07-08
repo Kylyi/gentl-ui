@@ -1,5 +1,4 @@
 // TYPES
-import { ITableProps } from '~/components/Table/types/table-props.type'
 import { ITableState } from '~/components/Table/types/table-state.type'
 
 // MODELS
@@ -8,10 +7,8 @@ import { GroupItem } from '~/libs/App/data/models/group-item.model'
 
 // REGEX
 import { stringToFloat } from '~/libs/App/data/regex/string-to-float.regex'
-import { useTableUtils } from '~/components/Table/functions/useTableUtils'
 
 // CONSTANTS
-import { getTableStateDefault } from '~/components/Table/constants/table-state.default'
 
 type Options = {
   groupsRef?: MaybeRefOrGetter<GroupItem[]>
@@ -22,17 +19,16 @@ type Options = {
 }
 
 // FIXME: This won't work with SSR
-function getTableState(storageKey?: string): ITableState {
-  if (process.client) {
-    return JSON.parse((storageKey && localStorage.getItem(storageKey)) || '{}')
-  }
+// function getTableState(storageKey?: string): ITableState {
+//   if (process.client) {
+//     return JSON.parse((storageKey && localStorage.getItem(storageKey)) || '{}')
+//   }
 
-  return getTableStateDefault()
-}
+//   return getTableStateDefault()
+// }
 
-export function useTableColumns(props: Pick<ITableProps, 'storageKey'>) {
+export function useTableColumns(tableStateRef: Ref<ITableState>) {
   // UTILS
-  const { storageKey } = useTableUtils(props)
   const { scrollbarWidth, isOverflown } = useOverflow()
 
   /**
@@ -53,22 +49,25 @@ export function useTableColumns(props: Pick<ITableProps, 'storageKey'>) {
     const isSelectable = toValue(isSelectableRef)
     const groupExpandWidth = toValue(groupExpandWidthRef)
 
-    const tableState = getTableState(storageKey)
-    const cols = tableState.columns || []
+    const tableState = toValue(tableStateRef)
+    const colsState = tableState.columns || []
 
-    columns.forEach(col => {
-      const savedColIdx = cols.findIndex(c => c.field === col.field)
+    const extendedColumns: TableColumn[] = columns.map(col => {
+      const colStateIdx = colsState.findIndex(c => c.field === col.field)
+      const colState = colsState[colStateIdx]
 
-      if (savedColIdx > -1) {
-        const savedCol = cols[savedColIdx]
-
-        Object.assign(col, savedCol, { _internalSort: savedColIdx })
-      }
+      return new TableColumn({
+        ...col,
+        ...(colState || {}),
+        ...(colStateIdx > -1 ? { _internalSort: colStateIdx } : {}),
+      })
     })
 
-    columns.sort((a, b) => (a._internalSort || 0) - (b._internalSort || 0))
+    extendedColumns.sort(
+      (a, b) => (a._internalSort || 0) - (b._internalSort || 0)
+    )
 
-    columns.unshift(
+    extendedColumns.unshift(
       ...groups.map(
         (group, idx) =>
           new TableColumn({
@@ -81,7 +80,7 @@ export function useTableColumns(props: Pick<ITableProps, 'storageKey'>) {
     )
 
     isSelectable &&
-      columns.unshift(
+      extendedColumns.unshift(
         new TableColumn({
           field: '_selectable',
           width: '40px',
@@ -90,7 +89,7 @@ export function useTableColumns(props: Pick<ITableProps, 'storageKey'>) {
         })
       )
 
-    return columns
+    return extendedColumns
   }
 
   /**
@@ -99,7 +98,7 @@ export function useTableColumns(props: Pick<ITableProps, 'storageKey'>) {
   const resizeColumns = (
     containerElRef: MaybeRefOrGetter<Element>,
     wrapperElRef: MaybeRefOrGetter<Element>,
-    columnsRef: MaybeRefOrGetter<TableColumn[]>,
+    internalColumnsRef: MaybeRefOrGetter<TableColumn[]>,
     options: Options = {}
   ) => {
     const container = toValue(containerElRef)
@@ -113,8 +112,8 @@ export function useTableColumns(props: Pick<ITableProps, 'storageKey'>) {
     const contentWidth =
       containerWidth - Number(isWrapperOverflown) * scrollbarWidth - 1
 
-    const cols = toValue(columnsRef).map(col => new TableColumn(col))
-    extendColumns(cols, options)
+    const cols = toValue(internalColumnsRef)
+    // extendColumns(cols, options)
 
     const colsTotalWidth = cols.reduce<{ relative: number; fixed: number }>(
       (agg, col) => {

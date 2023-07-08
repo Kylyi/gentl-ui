@@ -100,6 +100,8 @@ defineExpose({
         </div>
       </slot>
     </div>
+
+    <slot name="inner" />
   </header>
 </template>
 
@@ -111,7 +113,7 @@ defineExpose({
   transition: padding 250ms cubic-bezier(0, 0, 0.2, 1);
 
   &-content {
-    --apply: flex flex-gap-x-4 grow items-center m-t-1 rounded-custom
+    --apply: flex flex-gap-x-4 grow items-center rounded-custom
       bg-ca;
   }
 

@@ -22,6 +22,7 @@ export interface ITableProps {
   noPagination?: boolean
   noSearch?: boolean
   noTop?: boolean
+  noTotals?: boolean
   rowClickable?: boolean
   rowHeight?: number
   rowKey?: string
@@ -43,6 +44,11 @@ export interface ITableProps {
     mapKey?: string
     countKey?: string
     createIdentifier?: (row: any, idx: number) => string | number
+    errorHandler?: (error: any) => void
+  }
+
+  getTotalsData?: {
+    fnc: (options: ITableQuery) => Promise<any> | any
     errorHandler?: (error: any) => void
   }
 
@@ -79,9 +85,9 @@ export interface ITableProps {
   /**
    * Key for the local storage, if not provided, the key will be generated
    * based on the parent component of the table
-   * use `false` to disable this functionality
+   * use `null` to disable this functionality
    */
-  storageKey?: string | false
+  storageKey?: string | null
 
   /**
    * Whether to use chip-like filters

@@ -1,7 +1,5 @@
 <script setup lang="ts">
-// TYPES
-import type { ITableState } from '~/components/Table/types/table-state.type'
-import type { IItem } from '~/libs/App/types/item.type'
+import { config } from '~/config'
 
 // COMPOSITION FUNCTIONS
 import { useTableUtils } from '~/components/Table/functions/useTableUtils'
@@ -12,27 +10,20 @@ import BtnConfirmation from '~/components/Button/BtnConfirmation.vue'
 
 // INJECTION KEYS
 import {
+  getTableStateKey,
   recalculateTableColumnsKey,
   refreshTableDataKey,
-  tableStateKey,
   updateTableStateKey,
 } from '~/components/Table/provide/table.provide'
 
-// UTILS
-
-type ISavedTableLayout = {
-  name: string
-  layout: ITableState
-}
-
 type IProps = {
-  storageKey?: string
+  storageKey: string
 }
 
 const props = defineProps<IProps>()
 
 // INJECTIONS
-const tableState = injectStrict(tableStateKey)
+const getTableState = injectStrict(getTableStateKey)
 const recalculateTableColumns = injectStrict(recalculateTableColumnsKey)
 const updateTableState = injectStrict(updateTableStateKey)
 const refreshData = injectStrict(refreshTableDataKey)
@@ -40,14 +31,21 @@ const refreshData = injectStrict(refreshTableDataKey)
 // UTILS
 const { t } = useI18n()
 const { extractColumnsStateData } = useTableUtils()
+const currentUser = useCurrentUserState()
 
 // LAYOUT
 const btnConfirmationEl = ref<InstanceType<typeof BtnConfirmation>>()
 const storageKey = `table-layouts-${props.storageKey || 'default'}`
-const tableLayouts = useLocalStorage<ISavedTableLayout[]>(storageKey, [])
+const selectedTableLayout = useLocalStorage(
+  `table-layout-${props.storageKey}`,
+  ''
+)
+const tableLayouts = useLocalStorage<any[]>(storageKey, [])
 
-function handleSelectTableLayout(tableLayout?: IItem) {
-  console.log('Log ~ handleSelectTableLayout ~ tableLayout:', tableLayout)
+const tableState = computed(() => getTableState())
+
+function handleSelectTableLayout(tableLayout?: any) {
+  // Resetting table state
   if (!tableLayout) {
     updateTableState(
       getTableStateDefault(),
@@ -65,70 +63,72 @@ function handleSelectTableLayout(tableLayout?: IItem) {
     return
   }
 
-  const { name, _isCreate } = tableLayout
+  const { stateName, _isCreate } = tableLayout
 
-  // ADDED A NEW LAYOUT
+  // Added a new layout
   if (_isCreate) {
-    tableLayouts.value = [
-      ...tableLayouts.value,
-      {
-        name,
-        layout: tableState.value,
-      },
-    ]
-
-    updateTableState({ layout: name })
-  }
-
-  // SELECTED EXISTING LAYOUT
-  else {
-    const foundLayout = tableLayouts.value.find(layout => layout.name === name)
-
-    if (foundLayout) {
-      const { name, ...layoutData } = foundLayout
-
-      updateTableState(
-        {
-          ...layoutData.layout,
-          layout: name,
-        },
-        undefined,
-        true
-      )
-      recalculateTableColumns(true)
-      refreshData()
+    const dto = {
+      state: tableState.value,
+      tableName: props.storageKey,
+      stateName,
     }
+
+    if (config.table.useServerState) {
+      GqlCreateTableState({ tableStateCreateDto: dto })
+    } else {
+      tableLayouts.value = [...tableLayouts.value, dto]
+    }
+
+    updateTableState({ layout: stateName })
   }
-  notify(t('saved'), 'positive')
-}
 
-function handleApplyLayout() {
-  if (!tableState.value.layout) {
-    return
-  }
-
-  const foundLayout = tableLayouts.value.find(
-    layout => layout.name === tableState.value.layout
-  )
-
-  if (foundLayout) {
-    updateTableState(foundLayout.layout, undefined, true)
+  // Selected an existing layout
+  else {
+    updateTableState(tableLayout.state, undefined, true, false)
     recalculateTableColumns(true)
     refreshData()
   }
+
+  selectedTableLayout.value = stateName
+
+  notify(t('saved'), 'positive')
 }
 
 function overrideSelectedTableLayout() {
-  const foundLayout = tableLayouts.value.find(
-    layout => layout.name === tableState.value.layout
-  )
-
-  if (foundLayout) {
-    foundLayout.layout = tableState.value
-    tableLayouts.value = [...tableLayouts.value]
+  if (config.table.useServerState) {
+    GqlUpsertTableStateByName({
+      stateName: selectedTableLayout.value,
+      tableName: props.storageKey,
+      tableStateUpdateDto: {
+        state: tableState.value,
+        stateName: selectedTableLayout.value,
+        tableName: props.storageKey,
+      },
+    })
+  } else {
+    // TODO: Table state when not using server state
+    // const foundLayout = tableLayouts.value.find(
+    //   layout => layout.name === tableState.value.layout
+    // )
+    // if (foundLayout) {
+    //   foundLayout.layout = tableState.value
+    //   tableLayouts.value = [...tableLayouts.value]
+    // }
   }
 
   btnConfirmationEl.value?.showTemporarily()
+}
+
+// Data fetching
+function getLayouts(payload: { search?: string }) {
+  return GqlGetTableStateViaQuery({
+    search: payload.search,
+    where: {
+      tableName: props.storageKey,
+      userOptionsId: currentUser.value!.userOptions.id,
+      stateName: { not: 'default' },
+    },
+  })
 }
 </script>
 
@@ -139,10 +139,13 @@ function overrideSelectedTableLayout() {
     flex="~ col"
   >
     <Selector
-      :model-value="tableState.layout"
-      :options="tableLayouts"
-      option-key="name"
-      option-label="name"
+      :model-value="selectedTableLayout"
+      option-label="stateName"
+      :load-data="{
+        fnc: getLayouts,
+        onSearch: true,
+        mapKey: 'getTableStateViaQuery',
+      }"
       :label="$t('table.layoutStateChoose')"
       p="y-2"
       allow-add
@@ -161,10 +164,12 @@ function overrideSelectedTableLayout() {
         <Btn
           shrink-0
           :label="$t('table.layoutStateOverride')"
-          :disabled="!tableState.layout"
           no-uppercase
           self-center
           size="sm"
+          color="primary"
+          outlined
+          :disabled="!selectedTableLayout"
           @click="overrideSelectedTableLayout"
         >
           <BtnConfirmation
@@ -174,7 +179,7 @@ function overrideSelectedTableLayout() {
         </Btn>
 
         <!-- APPLY -->
-        <Btn
+        <!-- <Btn
           :label="$t('apply')"
           size="sm"
           no-uppercase
@@ -182,7 +187,7 @@ function overrideSelectedTableLayout() {
           outlined
           :disabled="!tableState.layout"
           @click="handleApplyLayout"
-        />
+        /> -->
       </div>
 
       <span
