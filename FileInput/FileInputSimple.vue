@@ -80,7 +80,6 @@ function handleRemove(idx: number) {
   <Field
     v-bind="fieldProps"
     :no-content="!model?.length && !placeholder"
-    no-border
     @click="handleOpen"
   >
     <template #append>

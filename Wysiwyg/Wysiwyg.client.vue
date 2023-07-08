@@ -10,15 +10,16 @@ import { TextStyle } from '@tiptap/extension-text-style'
 import { Color } from '@tiptap/extension-color'
 import { Mention } from '@tiptap/extension-mention'
 import { Image } from '@tiptap/extension-image'
-
-// TYPES
 import { ClientRectObject } from '@floating-ui/vue'
 
-// TYPES
+// Types
 import type { IWysiwygProps } from '~~/components/Wysiwyg/types/wysiwyg-props.type'
 import type { IWysiwygMentionItem } from '~/components/Wysiwyg/types/wysiwyg-mention-item.type'
 
-// COMPONENTS
+// Functions
+import { useWysiwygUtils } from '~/components/Wysiwyg/functions/useWysiwygUtils'
+
+// Components
 import WysiwygMention from '~/components/Wysiwyg/WysiwygMention.vue'
 
 // Injections
@@ -30,6 +31,9 @@ const props = withDefaults(defineProps<IWysiwygProps>(), {
 const emits = defineEmits<{
   (e: 'update:modelValue', value: string): void
 }>()
+
+// Utils
+const { resolveValues } = useWysiwygUtils()
 
 // LAYOUT
 const model = useVModel(props, 'modelValue', emits)
@@ -107,12 +111,14 @@ const MentionExt = Mention.configure({
     char: '{{',
     items: ({ query }) => {
       if (!query) {
-        mentionItemsFiltered.value = mentionItems.value || []
+        mentionItemsFiltered.value = toValue(mentionItems) || []
       }
 
-      mentionItemsFiltered.value = (mentionItems.value || []).filter(item => {
-        return item.label.toLowerCase().startsWith(query.toLowerCase())
-      })
+      mentionItemsFiltered.value = (toValue(mentionItems) || []).filter(
+        item => {
+          return item.label.toLowerCase().startsWith(query.toLowerCase())
+        }
+      )
 
       return []
     },
@@ -127,8 +133,12 @@ const MentionExt = Mention.configure({
           mentionEl.value?.show()
           selectFnc.value = command
         },
-        onKeyDown: ({ event }) => {
+        onKeyDown: ({ event, view }) => {
           mentionEl.value?.onKeyDown(event)
+
+          if (event.key === 'Enter' && props.autoResolveMentions) {
+            nextTick(() => resolveValues(view))
+          }
 
           return event.key !== 'Escape' && event.key !== 'Backspace'
         },
@@ -152,7 +162,7 @@ const editor = useEditor({
     Underline,
     TextStyle,
     ColorExt,
-    ...(mentionItems.value ? [MentionExt] : []),
+    ...(toValue(mentionItems) ? [MentionExt] : []),
     ...(props.image ? [ImageExt] : []),
   ],
   editable: !props.readonly && !props.disabled,
@@ -244,13 +254,21 @@ watch(
     editor.value?.setEditable(!isReadonly)
   }
 )
+
+defineExpose({
+  resolveValues: () => {
+    if (editor.value) {
+      resolveValues(editor.value.view)
+    }
+  },
+})
 </script>
 
 <template>
   <InputWrapper
     v-bind="wrapperProps"
     :has-content="!!modelValue"
-    class="relative h-full"
+    class="relative"
     :content-class="[contentClass, '!items-start', 'h-full']"
     @mousedown="focusEditor"
   >
@@ -274,7 +292,11 @@ watch(
       >
         <WysiwygSink
           v-if="
-            (isFocused || sinkAlwaysVisible) && editor && !readonly && !disabled
+            (isFocused || sinkAlwaysVisible) &&
+            editor &&
+            !readonly &&
+            !disabled &&
+            !noSink
           "
           :editor="editor"
           class="wysiwyg-sink"

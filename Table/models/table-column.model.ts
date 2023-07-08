@@ -92,9 +92,9 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
           }
         }
 
-        // When using `datetime` datatype, we need to create a range
+        // When using `datetime` or `date` datatype, we need to create a range
         else if (
-          this.dataType === 'datetime' &&
+          (this.dataType === 'datetime' || this.dataType === 'date') &&
           filter.comparator === ComparatorEnum.EQUAL
         ) {
           agg.gte = filter.compareValue

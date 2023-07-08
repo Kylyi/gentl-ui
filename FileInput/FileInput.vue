@@ -122,7 +122,7 @@ onChange(handleAdd)
   --apply: dark:border-true-gray-600/50 border-true-gray-300/80;
   --apply: dark:bg-darker bg-white;
 
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
 
   &.is-dragger-over,
   &:hover {

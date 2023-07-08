@@ -50,9 +50,13 @@ const wrapperProps = reactivePick(
   'stackLabel'
 )
 
+// This only happens when we explicity use the `Wysiwyg.server.vue` component
+// because normally, on server side, we don't have the `onMounted` hook
 onMounted(() => {
   nextTick(() => {
-    if (!mentionItems.value) {
+    const items = toValue(mentionItems)
+
+    if (!items) {
       return
     }
 
@@ -61,15 +65,13 @@ onMounted(() => {
         const attrValue = el.getAttribute('data-id')
 
         if (attrValue) {
-          const mentionItem = mentionItems.value?.find(
-            item => item.id === attrValue
-          )
+          const mentionItem = items.find(item => item.id === attrValue)
 
           if (mentionItem) {
             const value =
-              mentionItem.format?.(mentionEntity.value || {}) ||
+              mentionItem.format?.(toValue(mentionEntity) || {}) ||
               formatValue(
-                get(mentionEntity.value || {}, mentionItem.id),
+                get(toValue(mentionEntity) || {}, mentionItem.id),
                 undefined,
                 {
                   dataType: mentionItem.dataType,

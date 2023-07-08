@@ -45,6 +45,9 @@ export function useValueFormatterUtils() {
       case 'datetime':
         return formatDate(value, 'long')
 
+      case 'timestamp':
+        return formatDate(value, 'timestamp')
+
       case 'yearMonth':
         return formatDate(value, 'yearMonth')
 

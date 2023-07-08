@@ -86,7 +86,6 @@ export async function useTableData(
         state,
         newState
       )
-      console.log('Log ~ tableStateRef.value:', tableStateRef.value)
 
       // Update the server state
       if (config.table.useServerState && getStorageKey() && updateServerState) {

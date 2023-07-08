@@ -110,7 +110,7 @@ async function handleGetTotals() {
 <style lang="scss" scoped>
 .thead {
   --apply: flex shrink-0 overflow-hidden relative
-    bg-white dark:bg-darker min-h-$headerHeight;
+    min-h-$headerHeight;
 }
 
 .th {

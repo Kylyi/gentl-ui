@@ -130,6 +130,7 @@ const imageUrl = computed(() => {
 .file-preview {
   --apply: flex flex-col gap-4 fit items-center w-full
       border-1 border-dotted rounded-3 border-ca color-ca;
+  --apply: dark:bg-darker bg-white;
 
   &--header {
     --apply: flex flex-row gap-x-2 p-x-2 w-full justify-between p-t-1 p-b-2;
@@ -141,10 +142,6 @@ const imageUrl = computed(() => {
     img {
       --apply: rounded-3 object-cover object-center h-20;
     }
-  }
-
-  &:hover {
-    --apply: bg-ca color-dark dark:color-light;
   }
 }
 </style>
