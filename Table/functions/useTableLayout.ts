@@ -30,7 +30,7 @@ export function useTableLayout(
   // UTILS
   const { locale } = useI18n()
   const { onOverflow } = useOverflow()
-  const { resizeColumns, extendColumns } = useTableColumns(tableStateRef)
+  const { resizeColumns, extendColumns } = useTableColumns(props, tableStateRef)
   const { getRowKey, hasVisibleCol } = useTableUtils()
 
   // LAYOUT

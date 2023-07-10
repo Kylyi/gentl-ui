@@ -12,10 +12,7 @@ import { useBtnUtils } from '~/components/Button/functions/useBtnUtils'
 import { useTableUtils } from '~/components/Table/functions/useTableUtils'
 
 // INJECTION KEYS
-import {
-  recalculateTableColumnsKey,
-  updateTableStateKey,
-} from '~/components/Table/provide/table.provide'
+import { updateTableStateKey } from '~/components/Table/provide/table.provide'
 
 type IProps = {
   columns: TableColumn[]
@@ -30,7 +27,6 @@ const emits = defineEmits<{
 }>()
 
 // INJECTIONS
-const recalculateColumns = injectStrict(recalculateTableColumnsKey)
 const updateTableState = injectStrict(updateTableStateKey)
 
 // UTILS
@@ -43,8 +39,6 @@ const columns = useVModel(props, 'columns', emits)
 const btnProps = computed(() => getBtnProps(props))
 
 function handleRecalculateColumns() {
-  recalculateColumns(true)
-
   nextTick(() =>
     updateTableState({ columns: extractColumnsStateData(columns.value) })
   )
@@ -71,7 +65,7 @@ function handleRecalculateColumns() {
           v-for="(col, idx) in columns"
           :key="col.field"
           :index="idx"
-          :disabled="!col.reorderable"
+          :disabled="!col.reorderable || col.isHelperCol"
           z="$zMenu"
         >
           <Item
@@ -79,17 +73,20 @@ function handleRecalculateColumns() {
             flex="gap-x-0"
             :class="{ 'color-ca': !col.reorderable }"
           >
-            <DragHandle class="handle icon-park-outline:drag" />
+            <DragHandle
+              v-if="col.reorderable && !col.isHelperCol"
+              class="handle icon-park-outline:drag"
+            />
 
             <span
               grow
               p="y-1.5 x-2"
             >
-              {{ col.label }}
+              {{ col._label }}
             </span>
 
             <TableColumnFilterBtn
-              v-if="!col.hideFilters"
+              v-if="!col.hideFilters && !col.isHelperCol"
               :column="col"
               :rows="rows"
               :columns="columns"

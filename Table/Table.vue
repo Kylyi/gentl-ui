@@ -116,7 +116,7 @@ useTableSelection(props)
         <slot name="prepend-actions" />
 
         <TableColumnsBtn
-          v-model:columns="columns"
+          v-model:columns="internalColumns"
           :rows="rows"
           :use-chips="useChips"
           :use-server="useServer"

@@ -190,7 +190,8 @@ export function useInputUtils(options: IInputUtilsOptions) {
       !preventFocusOnTouch ||
       lastPointerDownEvent.value?.pointerType === 'mouse'
     ) {
-      el.value?.focus()
+      // This is needed because of Firefox... Idk why
+      setTimeout(() => el.value?.focus(), 0)
     }
 
     const hasClickedInsideFloatingElement = !!(

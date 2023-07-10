@@ -27,12 +27,12 @@ export function useValueFormatterUtils() {
   ) {
     const { dataType, format } = options
 
-    if (isNil(value)) {
-      return ''
-    }
-
     if (format) {
       return format(row ?? {}, value)
+    }
+
+    if (isNil(value)) {
+      return ''
     }
 
     switch (dataType) {

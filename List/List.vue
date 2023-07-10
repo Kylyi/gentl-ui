@@ -128,7 +128,6 @@ defineExpose({
           :row-height="'isGroup' in item ? rowGroupHeight : rowHeight"
           @mouseover="handleMouseOver(item, index)"
           @click="handleSelectItem(item)"
-          @pointerdown.prevent=""
         >
           <template #default="{ option }">
             <slot

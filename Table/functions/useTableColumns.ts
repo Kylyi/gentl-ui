@@ -1,14 +1,13 @@
-// TYPES
-import { ITableState } from '~/components/Table/types/table-state.type'
+// Types
+import type { ITableState } from '~/components/Table/types/table-state.type'
+import type { ITableProps } from '~/components/Table/types/table-props.type'
 
-// MODELS
+// Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
 import { GroupItem } from '~/libs/App/data/models/group-item.model'
 
-// REGEX
+// Regex
 import { stringToFloat } from '~/libs/App/data/regex/string-to-float.regex'
-
-// CONSTANTS
 
 type Options = {
   groupsRef?: MaybeRefOrGetter<GroupItem[]>
@@ -27,8 +26,12 @@ type Options = {
 //   return getTableStateDefault()
 // }
 
-export function useTableColumns(tableStateRef: Ref<ITableState>) {
+export function useTableColumns(
+  props: ITableProps,
+  tableStateRef: Ref<ITableState>
+) {
   // UTILS
+  const { t } = useI18n()
   const { scrollbarWidth, isOverflown } = useOverflow()
 
   /**
@@ -40,14 +43,10 @@ export function useTableColumns(tableStateRef: Ref<ITableState>) {
    * Note: Mutates the columns!
    */
   const extendColumns = (columns: TableColumn[], options?: Options) => {
-    const {
-      groupsRef = [],
-      groupExpandWidthRef = 28,
-      isSelectableRef,
-    } = options || {}
+    const { groupsRef = [] } = options || {}
     const groups = toValue(groupsRef)
-    const isSelectable = toValue(isSelectableRef)
-    const groupExpandWidth = toValue(groupExpandWidthRef)
+    const isSelectable = !!props.selectable
+    const groupExpandWidth = props.groupExpandWidth || 28
 
     const tableState = toValue(tableStateRef)
     const colsState = tableState.columns || []
@@ -86,6 +85,7 @@ export function useTableColumns(tableStateRef: Ref<ITableState>) {
           width: '40px',
           hideLabel: true,
           isHelperCol: true,
+          label: t('table.selectable'),
         })
       )
 
