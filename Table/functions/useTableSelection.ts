@@ -9,25 +9,54 @@ import {
   tableIsSelectedRowKey,
   tableSelectRowKey,
 } from '~/components/Table/provide/table.provide'
+import { ITableSelection } from '~/components/Table/types/table-selection.type'
 
 export function useTableSelection(props: ITableProps) {
   // UTILS
   const { getRowKey } = useTableUtils()
 
-  const selection = ref<Record<string | number, boolean>>({})
+  const selection = props.selected
+    ? useVModel(props, 'selected')
+    : ref<ITableSelection>()
 
-  const rowKey = computedEager(() => getRowKey(props))
+  const rowKey = computedEager(() => props.selectionKey ?? getRowKey(props))
+
+  const selectionByKey = computed(() => {
+    if (!selection.value) {
+      return {}
+    }
+
+    if (Array.isArray(selection.value)) {
+      return selection.value.reduce((agg, key) => {
+        agg[key] = true
+
+        return agg
+      }, {} as Record<string | number, boolean>)
+    } else {
+      return selection.value
+    }
+  })
 
   function isSelected(row: any) {
-    return selection.value[row[rowKey.value]]
+    const key = get(row, rowKey.value)
+
+    return !!selectionByKey.value?.[key]
   }
 
   function handleSelectRow(row: any) {
-    const key = row[rowKey.value]
+    const key = get(row, rowKey.value)
+    const _isSelected = isSelected(row)
 
-    selection.value = {
-      ...selection.value,
-      [key]: !selection.value[key],
+    if (_isSelected) {
+      if (Array.isArray(selection.value)) {
+        selection.value = selection.value.filter(k => k !== key)
+      } else {
+        delete selection.value?.[key]
+      }
+    } else if (Array.isArray(selection.value)) {
+      selection.value = [...(selection.value || []), key]
+    } else {
+      Object.assign(selection.value || {}, { [key]: row })
     }
   }
 

@@ -10,6 +10,7 @@ import { TextStyle } from '@tiptap/extension-text-style'
 import { Color } from '@tiptap/extension-color'
 import { Mention } from '@tiptap/extension-mention'
 import { Image } from '@tiptap/extension-image'
+import { Link } from '@tiptap/extension-link'
 import { ClientRectObject } from '@floating-ui/vue'
 
 // Types
@@ -86,6 +87,46 @@ const ColorExt = Color.configure({
 // Image https://tiptap.dev/api/extensions/image
 const ImageExt = Image.configure(props.image)
 
+// Link https://tiptap.dev/api/marks/link
+const LinkExt = Link.extend({
+  // @ts-expect-error Idk
+  addKeyboardShortcuts() {
+    return {
+      ArrowRight: ({ editor }) => {
+        if (!editor.isActive('link')) {
+          return
+        }
+
+        const { from, to, $anchor } = editor.state.selection
+        const transaction = editor.state.tr
+
+        // Check if the cursor is at the end of the link
+        if ($anchor && $anchor.nodeAfter && $anchor.nodeAfter.isText) {
+          return
+        }
+
+        transaction.removeMark(from, to, editor.schema.marks.link)
+
+        if ($anchor) {
+          transaction.removeStoredMark(editor.schema.marks.link)
+        }
+
+        editor.view.dispatch(transaction)
+
+        editor.chain().focus().insertContent(' ').run()
+
+        return true
+      },
+    }
+  },
+}).configure({
+  openOnClick: true,
+  protocols: ['ftp', 'mailto'],
+  HTMLAttributes: {
+    class: 'link',
+  },
+})
+
 // Mention https://tiptap.dev/api/nodes/mention
 const mentionEl = ref<InstanceType<typeof WysiwygMention>>()
 const selectFnc = ref<Function>(() => {})
@@ -154,6 +195,7 @@ const MentionExt = Mention.configure({
 const editor = useEditor({
   content: props.modelValue,
   extensions: [
+    // Extensions
     StarterKit.configure({
       heading: { levels: [4, 5, 6] },
     }),
@@ -164,12 +206,28 @@ const editor = useEditor({
     ColorExt,
     ...(toValue(mentionItems) ? [MentionExt] : []),
     ...(props.image ? [ImageExt] : []),
+    ...(props.allowLink ? [LinkExt] : []),
   ],
   editable: !props.readonly && !props.disabled,
   editorProps: {
     attributes: {
       class: 'wysiwyg',
     },
+    // handleKeyDown: (view, ev) => {
+    //   const isLink = editor.value?.isActive('link')
+    //   const isSpace = ev.key === ' '
+
+    //   if (isLink && isSpace) {
+    //     ev.preventDefault()
+    //     editor.value
+    //       ?.chain()
+    //       .focus()
+    //       .insertContent(' &nbsp;', {
+    //         parseOptions: { preserveWhitespace: true },
+    //       })
+    //       .run()
+    //   }
+    // },
   },
   onUpdate: ({ editor }) => {
     const text = editor.getText()
@@ -300,6 +358,7 @@ defineExpose({
           "
           :editor="editor"
           class="wysiwyg-sink"
+          :allow-link="allowLink"
           @toggle-bold="handleToggleBold"
           @toggle-italic="handleToggleItalic"
           @toggle-underline="handleToggleUnderline"

@@ -1,6 +1,7 @@
 import { FuseOptions } from '@vueuse/integrations'
 import { TableColumn } from '~/components/Table/models/table-column.model'
 import { ITableQuery } from '~/components/Table/types/table-query.type'
+import { ITableSelection } from '~/components/Table/types/table-selection.type'
 
 export interface ITableProps {
   breakpoint?: 'sm' | 'md' | 'lg' | 'xl' | 'inf'
@@ -76,11 +77,16 @@ export interface ITableProps {
 
   /**
    * Can be either
-   * Array<string | number | item>
-   * Record<itemKey, boolean | item>
-   * itemKey
+   * Array<string | number> ~ use for `rowKey` selection
+   * Record<itemKey, item> ~ use for `item` selection
    */
-  selected?: any
+  selected?: ITableSelection
+
+  /**
+   * Selection key
+   * The key to use for the selection
+   */
+  selectionKey?: string
 
   /**
    * Key for the local storage, if not provided, the key will be generated

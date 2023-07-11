@@ -36,6 +36,17 @@ const { extractColumnsStateData } = useTableUtils()
 // LAYOUT
 const columns = useVModel(props, 'columns', emits)
 
+const nonHelperCols = computed({
+  get() {
+    return columns.value.filter(col => !col.isHelperCol)
+  },
+  set(val: TableColumn[]) {
+    const helpersCols = columns.value.filter(col => col.isHelperCol)
+
+    columns.value = [...helpersCols, ...val]
+  },
+})
+
 const btnProps = computed(() => getBtnProps(props))
 
 function handleRecalculateColumns() {
@@ -56,13 +67,13 @@ function handleRecalculateColumns() {
       :title="$t('columns')"
     >
       <SlickList
-        v-model:list="columns"
+        v-model:list="nonHelperCols"
         axis="y"
         use-drag-handle
         @update:list="handleRecalculateColumns"
       >
         <SlickItem
-          v-for="(col, idx) in columns"
+          v-for="(col, idx) in nonHelperCols"
           :key="col.field"
           :index="idx"
           :disabled="!col.reorderable || col.isHelperCol"

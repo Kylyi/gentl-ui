@@ -5,6 +5,7 @@ import { Editor } from '@tiptap/vue-3'
 import MenuProxy from '~/components/MenuProxy/MenuProxy.vue'
 
 type IProps = {
+  allowLink?: boolean
   editor: Editor
   textSize?: string
 }
@@ -104,6 +105,16 @@ function handleColorChange(color?: string | null) {
       @toggle-numbered-list="$emit('toggle-numbered-list')"
     />
 
+    <template v-if="allowLink">
+      <Separator
+        vertical
+        spaced
+        inset
+      />
+
+      <WysiwygLink :editor="editor" />
+    </template>
+
     <template v-if="canUseImage">
       <Separator
         vertical
@@ -118,7 +129,7 @@ function handleColorChange(color?: string | null) {
 
 <style lang="scss" scoped>
 .wysiwyg-sink {
-  --apply: z-$zMenu dark:bg-darker bg-white;
+  --apply: z-$zLogo dark:bg-darker bg-white;
 
   :deep(.btn) {
     --apply: border-1 border-transparent;

@@ -5,6 +5,7 @@ import type { IWysiwygMentionItem } from '~/components/Wysiwyg/types/wysiwyg-men
 import type { IInputWrapperProps } from '~~/components/Inputs/types/input-wrapper-props.type'
 
 export interface IWysiwygProps extends IInputWrapperProps {
+  allowLink?: boolean
   image?: Partial<ImageOptions>
   debounce?: number
   emptyValue?: any
