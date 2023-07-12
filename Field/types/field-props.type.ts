@@ -5,6 +5,7 @@ import type { IInputWrapperProps } from '~~/components/Inputs/types/input-wrappe
 // type IInputWrapperPropsWithouHasContent = Omit<IInputWrapperProps, 'hasContent'>
 
 export interface IFieldProps extends IInputWrapperProps {
-  noContent?: boolean
   controlClass?: ClassType
+  modelValue?: any
+  noContent?: boolean
 }

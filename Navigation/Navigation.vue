@@ -82,6 +82,9 @@ header {
   --apply: relative top-0 inset-inline-0 transition-transform ease-linear
     bg-dark;
 
+  // Project specific
+  // --apply: w-full max-w-screen-2xl m-x-auto;
+
   &.is-hidden {
     --apply: -translate-y-52px;
   }

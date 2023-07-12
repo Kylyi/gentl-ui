@@ -1,6 +1,5 @@
 <script setup lang="ts">
 // MODELS
-import { VNode } from 'nuxt/dist/app/compat/capi'
 import { useTableUtils } from '~/components/Table/functions/useTableUtils'
 import { TableColumn } from '~/components/Table/models/table-column.model'
 import { FilterItem } from '~/libs/App/data/models/filter-item'
@@ -41,12 +40,11 @@ function handleAddFilter() {
   )
 
   if (isDefaultComparatorUsed) {
-    const availableComparators = getAvailableComparators(
-      column.value.dataType,
-      {
+    const availableComparators =
+      column.value.comparators ||
+      getAvailableComparators(column.value.dataType, {
         includeSelectorComparators: !!column.value.getDistinctData,
-      }
-    )
+      })
     const columnComparators = column.value.filters.map(
       filter => filter.comparator
     )
@@ -72,10 +70,6 @@ function handleAddFilter() {
   }
 }
 
-function handleFocusInput(node: VNode) {
-  // setTimeout(() => node.component?.exposed?.focus?.(), 300)
-}
-
 onMounted(() => {
   if (column.value.filters.length === 0) {
     handleAddFilter()
@@ -93,7 +87,6 @@ onMounted(() => {
       :key="idx"
       :filter="filter"
       :column="column"
-      @vue:mounted="handleFocusInput"
     />
 
     <Btn

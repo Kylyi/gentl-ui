@@ -60,7 +60,7 @@ defineExpose({
       tabindex="0"
       @focus="$emit('focus', $event)"
     >
-      <slot> &nbsp; </slot>
+      <slot> {{ modelValue || '&nbsp;' }} </slot>
     </span>
 
     <template

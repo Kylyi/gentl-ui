@@ -313,14 +313,6 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
 
         const currentFilterValue = get(filterObj, col.field)
 
-        console.log({
-          [comparator]: parseParamValue(
-            value,
-            comparator as ComparatorEnum,
-            col
-          ),
-        })
-
         merge(currentFilterValue, {
           [comparator]: parseParamValue(
             value,

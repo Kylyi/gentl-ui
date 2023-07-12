@@ -119,6 +119,7 @@ useTableSelection(props)
           v-model:columns="internalColumns"
           :rows="rows"
           :use-chips="useChips"
+          :minimum-column-width="minimumColumnWidth"
           :use-server="useServer"
         />
 

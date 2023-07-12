@@ -21,7 +21,6 @@ const { formatValue } = useValueFormatterUtils()
 
 // Layout
 const model = toRef(props, 'modelValue')
-const isServer = !!process.server
 const mentionItems = injectStrict(mentionItemsKey, toRef(props, 'mentionItems'))
 const mentionEntity = injectStrict(
   mentionEntityKey,
@@ -91,14 +90,7 @@ onMounted(() => {
 <template>
   <Field v-bind="wrapperProps">
     <div class="control">
-      <ClientOnly>
-        <p v-html="model" />
-      </ClientOnly>
-
-      <p
-        v-if="isServer"
-        v-html="model"
-      />
+      <p v-html="model" />
     </div>
   </Field>
 </template>
