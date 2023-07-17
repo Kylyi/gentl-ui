@@ -42,6 +42,11 @@ const isFocused = ref(false)
 
 const mentionItems = injectStrict(mentionItemsKey, toRef(props, 'mentionItems'))
 
+const transitionProps = computed(() => ({
+  enterActiveClass: 'animate-fade-in animate-duration-150',
+  leaveActiveClass: 'animate-fade-out animate-duration-150',
+}))
+
 // WRAPPER
 const wrapperProps = reactivePick(
   props,
@@ -166,7 +171,7 @@ const MentionExt = Mention.configure({
     render: () => {
       return {
         onStart: ({ clientRect, command }) => {
-          if (!clientRect) {
+          if (!clientRect || !isFocused.value) {
             return
           }
 
@@ -213,21 +218,6 @@ const editor = useEditor({
     attributes: {
       class: 'wysiwyg',
     },
-    // handleKeyDown: (view, ev) => {
-    //   const isLink = editor.value?.isActive('link')
-    //   const isSpace = ev.key === ' '
-
-    //   if (isLink && isSpace) {
-    //     ev.preventDefault()
-    //     editor.value
-    //       ?.chain()
-    //       .focus()
-    //       .insertContent(' &nbsp;', {
-    //         parseOptions: { preserveWhitespace: true },
-    //       })
-    //       .run()
-    //   }
-    // },
   },
   onUpdate: ({ editor }) => {
     const text = editor.getText()
@@ -345,8 +335,7 @@ defineExpose({
     <template #menu>
       <Transition
         appear
-        enter-active-class="animate-fade-in animate-duration-150"
-        leave-active-class="animate-fade-out animate-duration-150"
+        v-bind="transitionProps"
       >
         <WysiwygSink
           v-if="

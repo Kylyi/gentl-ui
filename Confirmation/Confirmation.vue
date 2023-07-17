@@ -13,6 +13,11 @@ const emits = defineEmits<{
 
 const model = useVModel(props, 'visible', emits)
 
+const transitionProps = computed(() => ({
+  enterActiveClass: 'animate-fade-in-up animate-duration-350',
+  leaveActiveClass: 'animate-fade-out animate-duration-350',
+}))
+
 function handleClose() {
   model.value = false
   emits('close')
@@ -20,10 +25,7 @@ function handleClose() {
 </script>
 
 <template>
-  <Transition
-    enter-active-class="animate-fade-in-up animate-duration-350"
-    leave-active-class="animate-fade-out animate-duration-350"
-  >
+  <Transition v-bind="transitionProps">
     <div
       v-if="visible"
       class="confirmation"

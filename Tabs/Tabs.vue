@@ -17,6 +17,13 @@ const emits = defineEmits<{
 const keepAliveTabs = ref<string[]>([])
 const model = useVModel(props, 'modelValue', emits)
 
+const transitionProps = computed(() => ({
+  enterActiveClass: `${transitionEnter.value} h-min overflow-visible ease-linear animate-duration-320 absolute inset-0`,
+  leaveActiveClass: !props.noLeaveTransition
+    ? `${transitionLeave.value} h-min overflow-visible ease-linear animate-duration-320`
+    : undefined,
+}))
+
 // When we change the model externally, the animation breaks because the model
 // is changed before we can check what the previous state was.
 // This variable keeps track of the last model value to handle this
@@ -134,12 +141,7 @@ watch(model, model => {
       :class="contentClass"
     >
       <Transition
-        :enter-active-class="`${transitionEnter} h-min overflow-visible ease-linear animate-duration-320`"
-        :leave-active-class="
-          !noLeaveTransition
-            ? `${transitionLeave} inset-0 absolute ease-linear animate-duration-320`
-            : undefined
-        "
+        v-bind="transitionProps"
         :css="!noAnimation"
       >
         <KeepAlive :include="keepAliveTabs">

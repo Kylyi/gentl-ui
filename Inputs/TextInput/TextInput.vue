@@ -60,7 +60,7 @@ defineExpose({
 <template>
   <InputWrapper
     v-bind="wrapperProps"
-    :has-content="!hasNoValue"
+    :has-content="hasContent || !hasNoValue"
     @mousedown="handleMouseDown"
   >
     <template

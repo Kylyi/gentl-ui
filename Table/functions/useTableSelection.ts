@@ -27,7 +27,7 @@ export function useTableSelection(props: ITableProps) {
     }
 
     if (Array.isArray(selection.value)) {
-      return selection.value.reduce((agg, key) => {
+      return (selection.value as Array<string | number>).reduce((agg, key) => {
         agg[key] = true
 
         return agg

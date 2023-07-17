@@ -13,6 +13,11 @@ const emits = defineEmits<{
 
 const isEditing = useVModel(props, 'isEditing', emits)
 
+const transitionProps = computed(() => ({
+  enterActiveClass: 'animate-zoom-in animate-duration-250',
+  leaveActiveClass: 'animate-fade-out-up animate-duration-350',
+}))
+
 function handleClick() {
   if (props.archived) {
     emits('restore')
@@ -29,10 +34,7 @@ watchEffect(() => {
 </script>
 
 <template>
-  <Transition
-    enter-active-class="animate-zoom-in animate-duration-250"
-    leave-active-class="animate-fade-out-up animate-duration-350"
-  >
+  <Transition v-bind="transitionProps">
     <div
       v-if="!isEditing"
       class="crud-edit-btn-wrapper"
