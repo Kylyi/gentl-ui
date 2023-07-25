@@ -152,6 +152,8 @@ export default {
         {{ label }}
       </div>
     </slot>
+
+    <slot name="append" />
   </Item>
 </template>
 

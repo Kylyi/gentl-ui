@@ -10,6 +10,11 @@ import { SortItem } from '~~/libs/App/data/models/sort-item.model'
 
 export type ISelectorProps = IInputProps & {
   /**
+   * Class applied to the `append` slot
+   */
+  appendClass?: ClassType
+
+  /**
    * Allows on-the-fly adding of new options
    */
   allowAdd?: boolean

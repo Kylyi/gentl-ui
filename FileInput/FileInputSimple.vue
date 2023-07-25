@@ -10,6 +10,7 @@ import { useFileUtils } from '~/libs/File/functions/useFileUtils'
 
 // COMPONENTS
 import ScrollArea from '~~/components/ScrollArea/ScrollArea.vue'
+import Field from '~/components/Field/Field.vue'
 
 const props = withDefaults(defineProps<IFileInputProps>(), {
   maxChipsRows: 3,
@@ -26,19 +27,38 @@ const { getFieldProps } = useFieldUtils()
 const { handleDownloadFile } = useFileUtils()
 
 // LAYOUT
+const fileInputEl = ref<InstanceType<typeof Field>>()
 const optionsContainerEl = ref<any>()
 const model = useVModel(props, 'modelValue', emits)
 const fieldProps = getFieldProps(props)
+
+// File handling
 const { open, onChange, reset } = useFileDialog({
   accept: props.accept,
   multiple: props.multi,
 })
 
+const { isOverDropZone } = useDropZone(
+  // @ts-expect-error wrong html tag type
+  () => unrefElement(fileInputEl),
+  handleAdd
+)
+
 const maxHeight = computedEager(() => {
   return props.maxChipsRows * 26
 })
 
-onChange(files => {
+function getFileLabel(file: File | IFile) {
+  return `${file.name} (${formatBytes(file.size)})`
+}
+
+function handleOpen() {
+  if (!props.readonly && !props.disabled) {
+    open()
+  }
+}
+
+function handleAdd(files: FileList | File[] | null) {
   if (!files) {
     return
   }
@@ -53,16 +73,6 @@ onChange(files => {
   }
 
   reset()
-})
-
-function getFileLabel(file: File | IFile) {
-  return `${file.name} (${formatBytes(file.size)})`
-}
-
-function handleOpen() {
-  if (!props.readonly && !props.disabled) {
-    open()
-  }
 }
 
 function handleRemove(idx: number) {
@@ -74,12 +84,16 @@ function handleRemove(idx: number) {
   emits('filesRemoved', removed)
   emits('update:modelValue', [...model.value])
 }
+
+onChange(handleAdd)
 </script>
 
 <template>
   <Field
+    ref="fileInputEl"
     v-bind="fieldProps"
     :no-content="!model?.length && !placeholder"
+    :class="{ 'dragged-over': isOverDropZone }"
     @click="handleOpen"
   >
     <template #append>

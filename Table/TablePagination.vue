@@ -143,9 +143,10 @@ const pages = computedEager(() => {
           :options="[5, 10, 25, 50, 100]"
           emit-key
           size="sm"
-          no-dropdown-icon
           no-search
-          w="15"
+          w="16"
+          append-class="!p-x-1"
+          inner-class="!p-l-2 !p-r-2px"
         />
       </div>
     </div>
