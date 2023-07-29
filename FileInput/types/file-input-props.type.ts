@@ -18,4 +18,9 @@ export interface IFileInputProps {
    * Is relevant only for `multi` and input-like mode
    */
   maxChipsRows?: number
+
+  /**
+   * Whether to hide the download button
+   */
+  noDownloadButton?: boolean
 }

@@ -56,7 +56,8 @@ defineExpose({
     <span
       ref="controlEl"
       class="control w-full"
-      :class="controlClass"
+      :class="[controlClass, inputClass]"
+      :style="inputStyle"
       tabindex="0"
       @focus="$emit('focus', $event)"
     >

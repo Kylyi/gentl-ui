@@ -10,6 +10,11 @@ import { SortItem } from '~~/libs/App/data/models/sort-item.model'
 
 export type ISelectorProps = IInputProps & {
   /**
+   * Class applied to the `append` slot
+   */
+  appendClass?: ClassType
+
+  /**
    * Allows on-the-fly adding of new options
    */
   allowAdd?: boolean
@@ -18,6 +23,11 @@ export type ISelectorProps = IInputProps & {
    * Whether the Selector can be cleared -> will emit `emptyValue`
    */
   clearable?: boolean
+
+  /**
+   * Whether to hide clear buttons for selected items
+   */
+  noItemsClear?: boolean
 
   /**
    * For cases when we want to warn user that he is about to clear the value

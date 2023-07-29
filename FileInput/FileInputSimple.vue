@@ -6,7 +6,6 @@ import type { IFile } from '~/components/FileInput/types/file.type'
 // COMPOSITION FUNCTIONS
 import { useFieldUtils } from '~/components/Field/functions/useFieldUtils'
 import { useNumber } from '~/components/Inputs/NumberInput/functions/useNumber'
-import { useFileUtils } from '~/libs/File/functions/useFileUtils'
 
 // COMPONENTS
 import ScrollArea from '~~/components/ScrollArea/ScrollArea.vue'
@@ -24,7 +23,6 @@ const emits = defineEmits<{
 // UTILS
 const { formatBytes } = useNumber()
 const { getFieldProps } = useFieldUtils()
-const { handleDownloadFile } = useFileUtils()
 
 // LAYOUT
 const fileInputEl = ref<InstanceType<typeof Field>>()
@@ -162,7 +160,7 @@ onChange(handleAdd)
         >
           <!-- Download btn -->
           <Btn
-            v-if="'path' in chip"
+            v-if="'path' in chip && !noDownloadButton"
             size="auto"
             bg="primary"
             color="white"

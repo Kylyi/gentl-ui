@@ -7,7 +7,6 @@ import { ICON_BY_FILE_EXTENSION } from '~/components/FileInput/constants/iconsBy
 
 // Functions
 import { getFileExtension } from '~/libs/App/utils/files'
-import { useFileUtils } from '~/libs/File/functions/useFileUtils'
 
 type IProps = {
   actions?: {
@@ -26,7 +25,6 @@ defineEmits<{
 // UTILS
 const rC = useRuntimeConfig()
 const { getLocalImageUrl } = useImages()
-const { handleDownloadFile } = useFileUtils()
 
 // ACTIONS
 const actionsDefault = ref({

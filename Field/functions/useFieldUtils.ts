@@ -53,7 +53,11 @@ export function useFieldUtils(options?: {
 
   function getFieldProps(props: IFieldProps) {
     return reactivePick(props, [
+      'contentStyle',
       'contentClass',
+      'controlClass',
+      'inputClass',
+      'inputStyle',
       'cursor',
       'disabled',
       'errorTakesSpace',
@@ -66,6 +70,7 @@ export function useFieldUtils(options?: {
       'labelStyle',
       'labelInside',
       'loading',
+      'noContent',
       'placeholder',
       'readonly',
       'required',

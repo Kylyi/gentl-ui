@@ -1,7 +1,6 @@
 <script setup lang="ts">
 // Types
 import type { IFile } from '~/components/FileInput/types/file.type'
-import { useFileUtils } from '~/libs/File/functions/useFileUtils'
 
 // Constants
 import { ICON_BY_FILE_TYPE } from '~~/components/FileInput/constants/iconByFileType'
@@ -9,16 +8,15 @@ import { ICON_BY_FILE_TYPE } from '~~/components/FileInput/constants/iconByFileT
 type IProps = {
   file: File | IFile
   editable?: boolean
+  noDownloadButton?: boolean
 }
 
 const props = defineProps<IProps>()
 defineEmits<{
   (e: 'remove'): void
 }>()
-
 // Utils
 const { getLocalImageUrl } = useImages()
-const { handleDownloadFile } = useFileUtils()
 
 const icon = computed(() => {
   const icon =
@@ -75,7 +73,10 @@ const imageUrl = computed(() => {
       />
     </div>
 
-    <div class="file-preview--download">
+    <div
+      v-if="!noDownloadButton"
+      class="file-preview--download"
+    >
       <Btn
         v-if="'path' in file"
         w-full

@@ -93,6 +93,7 @@ onChange(handleAdd)
         :key="idx"
         :file="file"
         :editable="!props.readonly && !props.disabled"
+        :no-download-button="noDownloadButton"
         @remove="handleRemove(idx)"
       />
 
