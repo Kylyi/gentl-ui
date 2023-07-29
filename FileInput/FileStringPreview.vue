@@ -6,7 +6,6 @@ import type { IFile } from '~/components/FileInput/types/file.type'
 import { ICON_BY_FILE_EXTENSION } from '~/components/FileInput/constants/iconsByFileExtension'
 
 // Functions
-import { getFileExtension } from '~/libs/App/utils/files'
 
 type IProps = {
   actions?: {
