@@ -4,6 +4,10 @@ import { MotionInstance } from '@vueuse/motion'
 // TYPES
 import type { IDialogProps } from '~/components/Dialog/types/dialog-props.type'
 
+defineOptions({
+  inheritAttrs: false,
+})
+
 const props = withDefaults(defineProps<IDialogProps>(), {
   maxHeight: 99999,
   transitionDuration: 250,
@@ -402,10 +406,6 @@ onMounted(() => {
 onBeforeUnmount(() => {
   cleanComponent()
   triggerEl.value?.removeEventListener('click', toggle)
-})
-
-defineOptions({
-  inheritAttrs: false,
 })
 
 defineExpose({ show, hide, toggle, getFloatingEl: () => dialogWrapperEl.value })

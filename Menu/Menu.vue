@@ -21,6 +21,10 @@ import { cover } from '~/utils/floatingMiddleware/cover'
 // STORE
 import { useAppStore } from '~/libs/App/app.store'
 
+defineOptions({
+  inheritAttrs: false,
+})
+
 const props = withDefaults(defineProps<IMenuProps>(), {
   offset: 8,
   maxHeight: 99999,
@@ -585,10 +589,6 @@ defineExpose({
 
     createFloatInstance({ skipFlip: true })
   },
-})
-
-defineOptions({
-  inheritAttrs: false,
 })
 </script>
 

@@ -30,7 +30,7 @@ const pages = computedEager(() => {
   // We are currently on the first or second page
   // -> [1, 2, 3, ..., pageCount]
   else if (props.isFirstPage || props.currentPage === 1) {
-    return [1, 2, 3, Infinity, props.pageCount]
+    return [1, 2, 3, Number.POSITIVE_INFINITY, props.pageCount]
   }
 
   // We are currently on the last or second to last page
@@ -38,7 +38,7 @@ const pages = computedEager(() => {
   else if (props.isLastPage || props.currentPage === props.pageCount - 1) {
     return [
       1,
-      Infinity,
+      Number.POSITIVE_INFINITY,
       props.pageCount - 2,
       props.pageCount - 1,
       props.pageCount,
@@ -52,7 +52,7 @@ const pages = computedEager(() => {
       props.currentPage - 1,
       props.currentPage,
       props.currentPage + 1,
-      Infinity,
+      Number.POSITIVE_INFINITY,
       props.pageCount,
     ]
   }
@@ -144,7 +144,7 @@ const pages = computedEager(() => {
           emit-key
           size="sm"
           no-search
-          w="16"
+          w="17"
           append-class="!p-x-1"
           inner-class="!p-l-2 !p-r-2px"
         />

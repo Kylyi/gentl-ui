@@ -2,6 +2,10 @@
 import { useMiniCardUtils } from '~/components/Card/functions/useMiniCardUtils'
 import { IMiniCardProps } from '~/components/Card/types/mini-card-props.type'
 
+defineOptions({
+  inheritAttrs: false,
+})
+
 const props = withDefaults(
   defineProps<IMiniCardProps & { editable?: boolean }>(),
   {
@@ -13,10 +17,6 @@ const props = withDefaults(
 const { getMiniCardProps } = useMiniCardUtils()
 
 const miniCardProps = getMiniCardProps(props)
-
-defineOptions({
-  inheritAttrs: false,
-})
 </script>
 
 <template>

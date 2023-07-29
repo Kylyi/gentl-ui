@@ -2,15 +2,15 @@
 // TYPES
 import type { ISectionProps } from '~~/components/Section/types/section-props.type'
 
+defineOptions({
+  inheritAttrs: false,
+})
+
 const props = defineProps<ISectionProps>()
 
 const slots = useSlots()
 const isTitleVisible = computedEager(() => {
   return !!(props.title || props.subtitle || slots.subtitle || slots.title)
-})
-
-defineOptions({
-  inheritAttrs: false,
 })
 </script>
 

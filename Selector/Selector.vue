@@ -409,7 +409,7 @@ defineExpose({
       <span
         v-else-if="model"
         self-center
-        style="width: calc(100% - 4px)"
+        style="width: calc(100% - 12px)"
         :class="{ truncate: !noTruncate }"
       >
         {{ getLabel(model) }}
