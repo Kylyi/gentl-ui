@@ -82,7 +82,7 @@ const imageUrl = computed(() => {
         w-full
         size="sm"
         :label="$t('file.download')"
-        @click="handleDownloadFile(file)"
+        @click="handleDownloadFile"
       />
       <Btn
         v-else
@@ -96,8 +96,8 @@ const imageUrl = computed(() => {
 
 <style lang="scss" scoped>
 .file-preview {
-  --apply: grid gap-4 fit items-center
-      border-1 border-dotted rounded-3 border-ca color-ca;
+  --apply: grid gap-4 fit items-center border-1 border-dotted rounded-3
+    border-ca color-ca;
 
   grid-template-rows: auto 1fr auto;
 
@@ -114,7 +114,7 @@ const imageUrl = computed(() => {
   }
 
   &:hover {
-    --apply: bg-ca color-dark dark:color-light;
+    --apply: bg-ca color-dark dark: color-light;
   }
 }
 </style>

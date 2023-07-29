@@ -138,7 +138,7 @@ onChange(handleAdd)
             color="white"
             self-center
             icon="material-symbols:download"
-            @click.stop.prevent="handleDownloadFile(chip)"
+            @click.stop.prevent="handleDownloadFile"
             @mousedown.stop.prevent
           />
 
@@ -168,7 +168,7 @@ onChange(handleAdd)
             h="4"
             self-center
             icon="material-symbols:download"
-            @click.stop.prevent="handleDownloadFile(chip)"
+            @click.stop.prevent="handleDownloadFile"
             @mousedown.stop.prevent
           >
             <Tooltip :offset="10"> {{ $t('general.downloadFile') }} </Tooltip>

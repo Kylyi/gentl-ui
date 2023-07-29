@@ -118,15 +118,15 @@ const imageUrl = computed(() => {
       icon="material-symbols:download"
       self-start
       :label="$t('file.download')"
-      @click="handleDownloadFile(file)"
+      @click="handleDownloadFile"
     />
   </div>
 </template>
 
 <style lang="scss" scoped>
 .file-preview {
-  --apply: flex flex-col gap-4 fit items-center w-full
-      border-1 border-dotted rounded-3 border-ca color-ca;
+  --apply: flex flex-col gap-4 fit items-center w-full border-1 border-dotted
+    rounded-3 border-ca color-ca;
   --apply: dark:bg-darker bg-white;
 
   &--header {
