@@ -83,9 +83,12 @@ header.is-hidden ~ .page-drawer {
 }
 
 .page-drawer {
-  --apply: h-100% fixed flex flex-col z-$zLayoutDrawer pointer-events-none ease-out;
+  --apply: h-100% fixed flex flex-col z-$zLayoutDrawer pointer-events-none
+    ease-out;
 
-  transition: width 250ms, transform 250ms;
+  transition:
+    width 250ms,
+    transform 250ms;
 
   &-filler {
     --apply: relative shrink-0 border-b-1 border-true-gray/10;
@@ -100,16 +103,15 @@ header.is-hidden ~ .page-drawer {
   }
 
   &-content {
-    --apply: flex flex-col flex-grow overflow-auto pointer-events-auto
-      bg-ca;
+    --apply: flex flex-col flex-grow overflow-auto pointer-events-auto bg-ca;
   }
 
   &-bottom {
-    --apply: flex flex-shrink-0 pointer-events-auto flex-center p-2 w-full
-    bg-ca border-t-1 border-ca lt-page:display-none;
+    --apply: flex flex-shrink-0 pointer-events-auto flex-center p-2 w-full bg-ca
+      border-t-1 border-ca lt-page:display-none;
 
     // Project specific
-    --apply: "!display-none";
+    --apply: '!display-none';
   }
 
   &--left {
