@@ -61,11 +61,11 @@ watchEffect(() => {
   }
 
   &.is-archived {
-    --apply: dark-50 color-true-gray-400;
+    --apply: bg-dark-50 color-true-gray-400;
   }
 
   &-wrapper {
-    --apply : absolute inset-0 flex flex-center rounded-inherit bg-white dark:bg-darker;
+    --apply : absolute inset-block-0 right-0 flex flex-center rounded-inherit bg-white dark:bg-darker;
   }
 }
 </style>

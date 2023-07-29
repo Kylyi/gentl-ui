@@ -28,6 +28,11 @@ export interface IFormProps {
   labelForcedVisibility?: boolean
 
   /**
+   * Whether the form should include the bottom controls
+   */
+  noControls?: boolean
+
+  /**
    * By default, the form uses `flex-grow` to fill the available space.
    * If this is true, the form will not use the `flex-grow`.
    */

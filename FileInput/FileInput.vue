@@ -118,7 +118,7 @@ onChange(handleAdd)
 
 <style scoped lang="scss">
 .file-input-wrapper {
-  --apply: grid gap-2 border-2 border-dashed p-2 rounded-3 relative min-h-35 overflow-auto
+  --apply: grid gap-2 border-2 border-dashed p-2 rounded-3 relative min-h-35 overflow-auto;
   --apply: dark:border-true-gray-600/50 border-true-gray-300/80;
   --apply: dark:bg-darker bg-white;
 

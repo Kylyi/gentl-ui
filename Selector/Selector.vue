@@ -125,7 +125,7 @@ function handleRemove(item: any) {
   }
 
   // Remove the item from the added items if it was about to be created
-  if (typeof item === 'object' && '_isCreate' in item && item._isCreate) {
+  if ('_isCreate' in item && item._isCreate) {
     addedItems.value = props.multi
       ? addedItems.value.filter(_item => getKey(_item) !== getKey(item))
       : []
@@ -323,7 +323,6 @@ defineExpose({
     optionsInternal.value = []
     isOptionsInternalLoaded.value = false
   },
-  handleSelect,
 })
 </script>
 
@@ -423,7 +422,6 @@ defineExpose({
         p="x-2"
         shrink-0
         fit
-        :class="appendClass"
         @click="handleFocusOrClick"
       >
         <Btn
@@ -447,7 +445,12 @@ defineExpose({
         <div
           v-if="!disabled && !readonly && !noDropdownIcon"
           fluent:chevron-up-down-24-regular
-          class="dropdown-icon"
+          flex="shrink-0"
+          h="5"
+          w="5"
+          color="ca"
+          self-center
+          cursor-pointer
         />
 
         <slot
@@ -544,22 +547,6 @@ defineExpose({
 <style lang="scss" scoped>
 .placeholder {
   color: #9ca3af;
-}
-
-.dropdown-icon {
-  --apply: shrink-0 color-ca slef-center inline cursor-pointer;
-}
-
-.wrapper--sm {
-  .dropdown-icon {
-    --apply: h-3.5 w-3.5;
-  }
-}
-
-.wrapper--md {
-  .dropdown-icon {
-    --apply: h-4 w-4;
-  }
 }
 
 .is-active {

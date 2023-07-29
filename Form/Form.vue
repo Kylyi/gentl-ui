@@ -8,6 +8,10 @@ import { useFormErrors } from '~~/components/Form/functions/useFormErrors'
 // COMPONENTS
 import MenuConfirmation from '~/components/MenuConfirmation/MenuConfirmation.vue'
 
+defineOptions({
+  inheritAttrs: false,
+})
+
 const props = withDefaults(defineProps<IFormProps>(), {
   errorsOnTop: true,
 })
@@ -77,10 +81,6 @@ defineExpose({
     menuConfirmationEl.value?.recomputeMenuPosition()
   },
 })
-
-defineOptions({
-  inheritAttrs: false,
-})
 </script>
 
 <template>
@@ -125,7 +125,7 @@ defineOptions({
     </slot>
 
     <slot
-      v-if="!noSubmit"
+      v-if="!noControls"
       name="submit"
     >
       <Section
@@ -146,6 +146,7 @@ defineOptions({
           <slot name="submit-before" />
 
           <Btn
+            v-if="!noSubmit"
             bg="primary"
             color="white"
             :class="submitClass"
