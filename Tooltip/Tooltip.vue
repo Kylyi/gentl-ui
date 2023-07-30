@@ -101,28 +101,30 @@ onMounted(() => {
 </script>
 
 <template>
-  <div
-    v-if="model"
-    ref="tooltipEl"
-    :style="floatingStyles"
-    class="tooltip"
-    p="x-2 y-1"
-    :class="tooltipClass"
-    :placement="placement"
-  >
-    <!-- ARROW -->
+  <Teleport to="body">
     <div
-      v-if="!noArrow"
-      ref="arrowEl"
-      class="arrow"
-      :class="{
-        'bg-ca': !hideHeader,
-        'has-header': !hideHeader,
-      }"
-    />
+      v-if="model"
+      ref="tooltipEl"
+      :style="floatingStyles"
+      class="tooltip"
+      p="x-2 y-1"
+      :class="tooltipClass"
+      :placement="placement"
+    >
+      <!-- ARROW -->
+      <div
+        v-if="!noArrow"
+        ref="arrowEl"
+        class="arrow"
+        :class="{
+          'bg-ca': !hideHeader,
+          'has-header': !hideHeader,
+        }"
+      />
 
-    <slot />
-  </div>
+      <slot />
+    </div>
+  </Teleport>
 </template>
 
 <style lang="scss" scoped>
