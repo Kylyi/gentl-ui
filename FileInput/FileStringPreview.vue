@@ -37,7 +37,7 @@ const actions = computed(() => ({
 }))
 
 // LAYOUT
-const fileUrl = `${rC.public.FILES_HOST}/${props.file.path}`
+const fileUrl = `${rC.public.FILES_HOST}/files${props.file.path}`
 
 const icon = computed(() => {
   const ext = getFileExtension(props.file.name)

@@ -5,14 +5,8 @@ import { arrow, flip, offset, shift, useFloating } from '@floating-ui/vue'
 import { IMenuProps } from '~/components/Menu/types/menu-props.type'
 
 const props = withDefaults(
-  defineProps<
-    IMenuProps & {
-      noInheritFontStyle?: boolean
-    }
-  >(),
-  {
-    noInheritFontStyle: true,
-  }
+  defineProps<IMenuProps & { noInheritFontStyle?: boolean }>(),
+  { noInheritFontStyle: true }
 )
 
 function getTargetElement(target: any): any {
