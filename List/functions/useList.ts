@@ -15,11 +15,11 @@ import { SortItem } from '~/libs/App/data/models/sort-item.model'
 import { highlight } from '~/components/List/functions/highlightText'
 import { useSorting } from '~/libs/App/data/functions/useSorting'
 import { useListUtils } from '~/components/List/functions/useListUtils'
+import { useItemAdding } from '~/components/List/functions/useItemAdding'
 
 // COMPONENTS
 import ListVirtualContainer from '~~/components/List/ListVirtualContainer.vue'
 import SearchInput from '~~/components/Inputs/SearchInput.vue'
-import { useItemAdding } from '~/components/List/functions/useItemAdding'
 
 // COMPONENTS
 
@@ -175,6 +175,10 @@ export function useList(
 
   function handleSelectItem(option: any) {
     if (props.noSelect) {
+      return
+    }
+
+    if ('isGroup' in option && !props.groupsSelectable) {
       return
     }
 
@@ -511,7 +515,7 @@ export function useList(
         nextTick(() => (hoveredIdx.value = arr.value.length - 1))
       } else {
         scrollTo(0)
-        nextTick(() => (hoveredIdx.value = 0))
+        nextTick(() => (hoveredIdx.value = -1))
       }
 
       handleKey(ev)

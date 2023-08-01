@@ -60,6 +60,7 @@ defineExpose({
       ref="listEl"
       no-search
       :items="items"
+      :group-by="[{ field: 'group', name: 'group' }]"
       @update:selected="selectFnc($event)"
     />
   </div>
