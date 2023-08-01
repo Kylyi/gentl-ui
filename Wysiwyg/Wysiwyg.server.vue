@@ -6,10 +6,10 @@ import type { IItem } from '~/libs/App/types/item.type'
 // Functions
 import { useValueFormatterUtils } from '~/components/ValueFormatter/functions/useValueForamtterUtils'
 
-import {
-  mentionEntityKey,
-  mentionItemsKey,
-} from '~/components/Wysiwyg/provide/wysiwyg.provide'
+import { mentionEntityKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
+
+// Constants
+import { mentionItemsMap } from '~/components/Wysiwyg/constants/resolve-values.map'
 
 const props = defineProps<
   IWysiwygProps & { resolveMentionItems?: boolean; mentionEntity?: IItem }
@@ -22,7 +22,6 @@ const { formatValue } = useValueFormatterUtils()
 // Layout
 const model = toRef(props, 'modelValue')
 const isServer = !!process.server
-const mentionItems = injectStrict(mentionItemsKey, toRef(props, 'mentionItems'))
 const mentionEntity = injectStrict(
   mentionEntityKey,
   toRef(props, 'mentionEntity')
@@ -56,31 +55,27 @@ const wrapperProps = reactivePick(
 // because normally, on server side, we don't have the `onMounted` hook
 onMounted(() => {
   nextTick(() => {
-    const items = toValue(mentionItems)
-
-    if (!items) {
-      return
-    }
+    const entity = toValue(mentionEntity)
 
     ;(self?.proxy?.$el?.querySelectorAll('[data-id]') as Element[]).forEach(
       el => {
         const attrValue = el.getAttribute('data-id')
 
         if (attrValue) {
-          const mentionItem = items.find(item => item.id === attrValue)
+          const definition = mentionItemsMap.get(attrValue)
 
-          if (mentionItem) {
-            const value =
-              mentionItem.format?.(toValue(mentionEntity) || {}) ||
-              formatValue(
-                get(toValue(mentionEntity) || {}, mentionItem.id),
-                undefined,
-                {
-                  dataType: mentionItem.dataType,
-                }
-              )
-            el.innerHTML = value ?? `\${${mentionItem.label}}`
+          if (!definition) {
+            return ''
           }
+
+          const value =
+            definition.format?.(entity) ??
+            formatValue(get(entity || {}, definition.id), undefined, {
+              dataType: definition.dataType,
+            }) ??
+            `\${${attrValue}}`
+
+          el.innerHTML = value
         }
       }
     )

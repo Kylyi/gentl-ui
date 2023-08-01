@@ -303,6 +303,14 @@ watch(
   }
 )
 
+onMounted(() => {
+  nextTick(() => {
+    if (props.mentionReplace && editor.value) {
+      resolveValues(editor.value.view)
+    }
+  })
+})
+
 defineExpose({
   resolveValues: () => {
     if (editor.value) {

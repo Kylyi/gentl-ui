@@ -449,8 +449,10 @@ export function useList(
     hoveredEl,
     ([{ intersectionRect, boundingClientRect }]) => {
       const containerEl = unref(listContainer)?.getElement()
+      const isHoveredFirst = hoveredIdx.value === 0
+      const isHoveredLast = hoveredIdx.value === arr.value.length - 1
 
-      if (!containerEl) {
+      if (!containerEl || isHoveredFirst || isHoveredLast) {
         return
       }
 
@@ -460,7 +462,6 @@ export function useList(
       } else {
         containerEl.scrollTop +=
           modifier.value * boundingClientRect.height * groupsJumped.value
-
         groupsJumped.value = 1
       }
     }
@@ -503,14 +504,14 @@ export function useList(
 
     const itemSelected = arr.value[hoveredIdx.value]
 
-    // GOT AT THE START OR AT THE END OF THE LIST
+    // Got to the start or at the end of the list
     if (!itemSelected) {
       if (hoveredIdx.value < 0) {
-        hoveredIdx.value = arr.value.length
         scrollTo(arr.value.length)
+        nextTick(() => (hoveredIdx.value = arr.value.length - 1))
       } else {
-        hoveredIdx.value = -1
         scrollTo(0)
+        nextTick(() => (hoveredIdx.value = 0))
       }
 
       handleKey(ev)

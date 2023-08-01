@@ -54,7 +54,7 @@ watchEffect(() => {
 
 <style lang="scss" scoped>
 .crud-edit-btn {
-  --apply: w-full m-x-1;
+  --apply: md:min-w-60 w-full m-x-1;
 
   &:not(.is-archived):not(.is-disabled) {
     --apply: bg-primary color-white;
@@ -65,7 +65,8 @@ watchEffect(() => {
   }
 
   &-wrapper {
-    --apply : absolute inset-block-0 right-0 flex flex-center rounded-inherit bg-white dark:bg-darker;
+    --apply : absolute inset-block-0 right-0 flex flex-center rounded-inherit
+    bg-white dark:bg-darker min-w-full;
   }
 }
 </style>
