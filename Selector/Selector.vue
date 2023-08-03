@@ -511,21 +511,22 @@ defineExpose({
               />
             </template>
 
-            <template
-              v-if="multi"
-              #below
-            >
-              <!-- CONFIRM BUTTON (for lt-sm displays) -->
-              <Separator display="sm:none" />
+            <template #below>
+              <slot name="below-options" />
 
-              <Btn
-                display="!sm:none"
-                :label="$t('general.confirm')"
-                :rounded="false"
-                bg="primary"
-                color="white"
-                @click="isPickerActive = false"
-              />
+              <template v-if="multi">
+                <!-- CONFIRM BUTTON (for lt-sm displays) -->
+                <Separator display="sm:none" />
+
+                <Btn
+                  display="!sm:none"
+                  :label="$t('general.confirm')"
+                  :rounded="false"
+                  bg="primary"
+                  color="white"
+                  @click="isPickerActive = false"
+                />
+              </template>
             </template>
 
             <template #option="{ item }">
