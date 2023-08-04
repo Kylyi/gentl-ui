@@ -51,7 +51,8 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
       try {
         const { getTableStateViaQuery } = await GqlGetTableStateViaQuery({
           where: {
-            userOptionsId: currentUser.value!.userOptions.id,
+            [config.table.tableStateKeyField]:
+              currentUser.value!.userOptions.id,
             tableName: storageKey,
             stateName: 'default',
           },

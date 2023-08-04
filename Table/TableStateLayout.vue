@@ -125,7 +125,7 @@ function getLayouts(payload: { search?: string }) {
     search: payload.search,
     where: {
       tableName: props.storageKey,
-      userOptionsId: currentUser.value!.userOptions.id,
+      [config.table.tableStateKeyField]: currentUser.value!.userOptions.id,
       stateName: { not: 'default' },
     },
   })
