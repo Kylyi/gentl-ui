@@ -85,16 +85,14 @@ onMounted(() => {
 
 <template>
   <Field v-bind="wrapperProps">
-    <div class="control">
-      <ClientOnly>
-        <p v-html="model" />
-      </ClientOnly>
+    <ClientOnly>
+      <p v-html="model" />
+    </ClientOnly>
 
-      <p
-        v-if="isServer"
-        v-html="model"
-      />
-    </div>
+    <p
+      v-if="isServer"
+      v-html="model"
+    />
   </Field>
 </template>
 
