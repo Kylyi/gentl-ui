@@ -217,7 +217,7 @@ export const grantRequesterMentionItems: IWysiwygMentionItem[] = [
 
       return (
         row.grantRequestRequester?.name ||
-        `${row.grantRequestRequester?.firstName} ${row.grantRequestRequester?.lastName}}`
+        `${row.grantRequestRequester?.firstName} ${row.grantRequestRequester?.lastName}`
       )
     },
   },
