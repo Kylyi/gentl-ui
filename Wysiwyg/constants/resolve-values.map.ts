@@ -222,6 +222,20 @@ export const grantRequesterMentionItems: IWysiwygMentionItem[] = [
     },
   },
 
+  // CIN
+  {
+    id: 'grantRequestRequester.cin',
+    label: t('grantRequest.requester.cin'),
+    group: t('grantRequest.requester.self', 1),
+  },
+
+  // TIN
+  {
+    id: 'grantRequestRequester.tin',
+    label: t('grantRequest.requester.tin'),
+    group: t('grantRequest.requester.self', 1),
+  },
+
   // Permanent address
   {
     id: 'grantRequestRequester.permanentAddress',
