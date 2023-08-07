@@ -211,6 +211,10 @@ export const grantRequesterMentionItems: IWysiwygMentionItem[] = [
     label: t('grantRequest.requester.self', 1),
     group: t('grantRequest.requester.self', 1),
     format: row => {
+      if (!row.grantRequestRequester) {
+        return undefined
+      }
+
       return (
         row.grantRequestRequester?.name ||
         `${row.grantRequestRequester?.firstName} ${row.grantRequestRequester?.lastName}}`
