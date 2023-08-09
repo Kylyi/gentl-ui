@@ -111,7 +111,7 @@ header.is-hidden ~ .page-drawer {
       border-t-1 border-ca lt-page:display-none;
 
     // Project specific
-    --apply: '!display-none';
+    // --apply: '!display-none';
   }
 
   &--left {
