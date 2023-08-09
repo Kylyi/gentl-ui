@@ -310,9 +310,13 @@ function syncScrollArea() {
 if (
   props.preselectFirst &&
   (props.modelValue === props.emptyValue || isNil(props.modelValue)) &&
-  options.value.length
+  props.options.length > 0
 ) {
-  handleSelect(options.value[0])
+  if (props.emitKey) {
+    handleSelect(getKey(options.value[0]))
+  } else {
+    handleSelect([options.value[0]])
+  }
 }
 
 defineExpose({

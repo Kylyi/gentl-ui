@@ -131,6 +131,7 @@ function handlePickerHide() {
 
 const {
   el,
+  typedValue,
   maskedValue,
   wrapperProps,
   hasNoValue,
@@ -189,7 +190,7 @@ defineExpose({
 
     <input
       ref="el"
-      :value="maskedValue"
+      :value="typedValue ? maskedValue : undefined"
       flex="1"
       type="text"
       :placeholder="placeholder"

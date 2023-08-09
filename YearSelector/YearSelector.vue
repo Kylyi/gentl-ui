@@ -1,8 +1,8 @@
 <script setup lang="ts">
-// TYPES
+// Types
 import type { YearSelectorProps } from '~~/components/YearSelector/types/year-selector-props.type'
 
-// COMPONENTS
+// Components
 import NumberInput from '~/components/Inputs/NumberInput/NumberInput.vue'
 
 const props = defineProps<YearSelectorProps>()
@@ -12,11 +12,12 @@ const emits = defineEmits<{
   (e: 'next'): void
 }>()
 
+// Layout
 const yearInputEl = ref<InstanceType<typeof NumberInput>>()
 const yearSelectorVisible = ref(false)
 const dateObj = computed(() => $date(props.date))
-
 const internalValue = ref($date(props.date).year())
+const isRangeChanged = refAutoReset(false, 300)
 
 const yearOptions = computed(() => {
   const countOfYearsShown = 5
@@ -28,18 +29,23 @@ const yearOptions = computed(() => {
 
 // INCREMENT / DECREMENT
 const modifier = ref<-1 | 1>(1)
-const { pause, resume } = useIntervalFn(() => handleChange(), 120, {
+const { pause, resume } = useIntervalFn(() => handleRangeChange(), 120, {
   immediate: false,
   immediateCallback: true,
 })
 
 function handleManualYearInputChange(year?: number | null) {
+  if (isRangeChanged.value) {
+    return
+  }
+
   if (typeof year === 'number' && String(year).length === 4) {
     handleYearSelect(year)
   }
 }
 
-function handleChange() {
+function handleRangeChange() {
+  isRangeChanged.value = true
   internalValue.value += modifier.value
 }
 
@@ -139,7 +145,7 @@ defineExpose({ sync })
         color="ca"
         name="increment"
         @pointerdown="startChange($event, false)"
-        @mousedown.stop.prevent=""
+        @mousedown.stop.prevent
       />
 
       <Btn

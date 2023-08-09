@@ -5,6 +5,10 @@ import type { IValueFormatter } from '~/components/ValueFormatter/types/value-fo
 // Functions
 import { useValueFormatterUtils } from '~/components/ValueFormatter/functions/useValueForamtterUtils'
 
+defineOptions({
+  inheritAttrs: false,
+})
+
 const props = defineProps<IValueFormatter>()
 
 // UTILS
@@ -20,7 +24,7 @@ const formattedValue = computedEager(() => {
 
 <template>
   <slot :val="formattedValue">
-    <span>
+    <span v-bind="$attrs">
       {{ isNil(formattedValue) ? emptyValueString : formattedValue }}
     </span>
   </slot>
