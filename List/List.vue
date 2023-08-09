@@ -67,6 +67,16 @@ defineExpose({
   refresh,
   handleKey,
 })
+
+// When `noSearch` is used, we fake the focus on the container to allow
+// keyboard navigation
+onMounted(() => {
+  if (props.noSearch) {
+    setTimeout(() => {
+      unrefElement(containerEl)?.focus()
+    }, 150)
+  }
+})
 </script>
 
 <template>
@@ -75,7 +85,7 @@ defineExpose({
     class="list"
     :class="{ 'is-bordered': bordered }"
   >
-    <!-- SEARCH -->
+    <!-- Search -->
     <template v-if="!noSearch">
       <div class="list-search">
         <SearchInput
@@ -90,7 +100,7 @@ defineExpose({
         <slot name="after-search" />
       </div>
 
-      <!-- SEPARATOR -->
+      <!-- Separator -->
       <div class="separator" />
     </template>
 
@@ -117,6 +127,7 @@ defineExpose({
       ref="containerEl"
       :items="arr"
       :class="contentClass"
+      tabindex="0"
     >
       <template #default="{ item, index }">
         <ListRow

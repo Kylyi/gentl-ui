@@ -488,11 +488,13 @@ export function useList(
         modifier.value = -1
         ev.preventDefault()
         break
+
       case 'ArrowDown':
         hoveredIdx.value++
         modifier.value = 1
         ev.preventDefault()
         break
+
       case 'Enter':
         if (hoveredIdx.value !== -1 && arr.value[hoveredIdx.value]) {
           ev.preventDefault()
@@ -502,6 +504,7 @@ export function useList(
         }
 
         return
+
       default:
         return
     }
@@ -510,12 +513,16 @@ export function useList(
 
     // Got to the start or at the end of the list
     if (!itemSelected) {
+      // Got above start
       if (hoveredIdx.value < 0) {
         scrollTo(arr.value.length)
-        nextTick(() => (hoveredIdx.value = arr.value.length - 1))
-      } else {
+        hoveredIdx.value = arr.value.length - 1
+      }
+
+      // Got under end
+      else {
         scrollTo(0)
-        nextTick(() => (hoveredIdx.value = -1))
+        hoveredIdx.value = 0
       }
 
       handleKey(ev)
