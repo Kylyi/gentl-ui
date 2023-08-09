@@ -516,13 +516,13 @@ export function useList(
       // Got above start
       if (hoveredIdx.value < 0) {
         scrollTo(arr.value.length)
-        hoveredIdx.value = arr.value.length - 1
+        hoveredIdx.value = arr.value.length
       }
 
       // Got under end
       else {
         scrollTo(0)
-        hoveredIdx.value = 0
+        hoveredIdx.value = -1
       }
 
       handleKey(ev)
