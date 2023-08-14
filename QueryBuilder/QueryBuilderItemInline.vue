@@ -10,6 +10,10 @@ import {
   qbColumnsKey,
   qbItemsKey,
 } from '~/components/QueryBuilder/provide/query-builder.provide'
+import { tableRefreshKey } from '~/components/Table/provide/table.provide'
+
+// Components
+import Menu from '~/components/Menu/Menu.vue'
 
 defineOptions({
   inheritAttrs: false,
@@ -22,8 +26,10 @@ const emits = defineEmits<{
 
 // Injections
 const columns = injectStrict(qbColumnsKey)
+const tableRefresh = injectStrict(tableRefreshKey)
 
 // Layout
+const itemEditMenuEl = ref<InstanceType<typeof Menu>>()
 const item = toRef(props, 'item')
 const items = injectStrict(qbItemsKey)
 
@@ -48,7 +54,25 @@ function handleRemoveCondition() {
   parent.children = [...parent.children]
 
   emits('delete:row', item.value)
+  tableRefresh()
 }
+
+async function applyChanges() {
+  const isValid = await $v.value.$validate()
+
+  if (isValid) {
+    itemEditMenuEl.value?.hide(true)
+    tableRefresh()
+  }
+}
+
+function handleItemEditMenuBeforeHide() {
+  if (!item.value.comparator || item.value.value === undefined) {
+    handleRemoveCondition()
+  }
+}
+
+const $v = useVuelidate({ $scope: 'qb' })
 </script>
 
 <template>
@@ -71,13 +95,14 @@ function handleRemoveCondition() {
 
     <!-- Value -->
     <ValueFormatter
-      v-if="item.value"
       :value="item.value"
       :data-type="colSelected?.dataType"
-      bg="dark:darker rounded-custom"
+      bg="white dark:darker rounded-custom"
       leading="none"
       p="x-1 y-.5"
       rounded="custom"
+      min-w="5"
+      min-h="5"
     />
 
     <Btn
@@ -87,17 +112,43 @@ function handleRemoveCondition() {
       @mousedown.stop.prevent
     />
 
+    <!-- Item edit menu -->
     <Menu
+      ref="itemEditMenuEl"
       hide-header
       :no-arrow="false"
+      :no-overlay="false"
+      persistent
+      dense
+      :before-hide-fnc="$v.$validate"
+      @before-hide="handleItemEditMenuBeforeHide"
     >
-      <QueryBuilderItem
-        :item="item"
-        :level="level"
-        :parent="parent"
-        no-draggable
-        m="!l-0"
-      />
+      <Form
+        no-controls
+        p="b-1"
+        @submit="applyChanges"
+      >
+        <QueryBuilderItem
+          :item="item"
+          :level="level"
+          :parent="parent"
+          no-draggable
+          m="!l-0"
+          @delete:row="tableRefresh"
+        >
+          <template #append>
+            <Btn
+              size="xs"
+              icon="akar-icons:circle-check"
+              bg="primary"
+              color="white"
+              m="t-2 l--2 r-2"
+              self="start"
+              @click="applyChanges"
+            />
+          </template>
+        </QueryBuilderItem>
+      </Form>
     </Menu>
   </li>
 

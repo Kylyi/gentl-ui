@@ -118,10 +118,14 @@ function handleRemoveGroup() {
         @click="handleSetCondition('OR')"
       />
 
-      <Separator spaced />
+      <Separator
+        v-if="level"
+        spaced
+      />
 
       <!-- Delete btn -->
       <Btn
+        v-if="level"
         size="xs"
         :label="$t('queryBuilder.removeGroup')"
         preset="TRASH"
@@ -158,7 +162,7 @@ function handleRemoveGroup() {
       'color': levelColor,
     }"
     class="last-child-bracket"
-    @click="handleAddCondition"
+    @click="handleAddCondition(true)"
   />
 </template>
 

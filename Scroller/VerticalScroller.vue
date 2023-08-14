@@ -183,12 +183,12 @@ defineExpose({
 
       &.arrow--top {
         background:
-          linear-gradient(to bottom, theme('colors.truegray.200') 0%, theme('colors.truegray.200') 16px, transparent);
+          linear-gradient(to bottom, theme('colors.truegray.200') 0%, transparent);
       }
 
       &.arrow--bottom {
         background:
-          linear-gradient(to top, theme('colors.truegray.200') 0%, theme('colors.truegray.200') 16px, transparent);
+          linear-gradient(to top, theme('colors.truegray.200') 0%, transparent);
       }
 
       > .btn {
@@ -210,11 +210,11 @@ defineExpose({
   .arrows-inside {
     .is-active.arrow {
       &--top {
-        background: linear-gradient(to bottom, theme('colors.truegray.800') 0%, theme('colors.truegray.800') 16px, transparent);
+        background: linear-gradient(to bottom, theme('colors.truegray.800') 0%, transparent);
       }
 
       &--bottom {
-        background: linear-gradient(to top, theme('colors.truegray.800') 0%, theme('colors.truegray.800') 16px, transparent);
+        background: linear-gradient(to top, theme('colors.truegray.800') 0%, transparent);
       }
     }
   }

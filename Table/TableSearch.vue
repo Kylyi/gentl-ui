@@ -1,19 +1,14 @@
 <script setup lang="ts">
-// TYPES
-import { FilterItem } from '~/libs/App/data/models/filter-item'
+// Types
+import type { IQueryBuilderRow } from 'components/QueryBuilder/types/query-builder-row-props.type'
 
-// MODELS
+// Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
-
-// INJECTION KEYS
-import {
-  refreshTableDataKey,
-  updateTableStateKey,
-} from '~/components/Table/provide/table.provide'
 
 type IProps = {
   columns: TableColumn[]
   noSearch?: boolean
+  queryBuilder?: IQueryBuilderRow[]
   search: string
   searchableColumnLabels?: string[]
   useChips?: boolean
@@ -24,41 +19,49 @@ const emits = defineEmits<{
   (e: 'update:search', search: string): void
 }>()
 
-// INJECTIONS
-const refreshData = injectStrict(refreshTableDataKey)
-const updateTableState = injectStrict(updateTableStateKey)
-
 // LAYOUT
 const search = useVModel(props, 'search', emits)
 
 const filterChips = computed(() => {
-  return props.columns.reduce((agg, col) => {
-    col.filters.forEach(filter => {
-      agg.push(filter)
+  return props.columns
+    .flatMap(col => col.filters)
+    .filter(filter => {
+      return filter.value !== undefined
     })
-
-    return agg
-  }, [] as FilterItem[])
+    .sort((a, b) => a.id - b.id)
 })
 
 function handleRemoveAllFilters() {
   props.columns.forEach(column => {
     column.filters = []
   })
-
-  refreshData()
-  updateTableState({}, state => {
-    state.columns.forEach(column => {
-      column.filters = []
-    })
-
-    return state
-  })
 }
 </script>
 
 <template>
-  <!-- CHIPS -->
+  <div
+    v-if="queryBuilder"
+    flex="~ gap-2"
+  >
+    <!-- Search icon -->
+    <div
+      mi:search
+      shrink-0
+      w-6
+      h-6
+      m="t-1.5"
+      color="ca"
+    />
+
+    <VerticalScroller max-h="96px">
+      <QueryBuilderInline
+        :items="queryBuilder"
+        :columns="columns"
+      />
+    </VerticalScroller>
+  </div>
+
+  <!-- Chips - filter columns -->
   <HorizontalScroller
     v-if="useChips"
     grow
@@ -72,7 +75,7 @@ function handleRemoveAllFilters() {
     />
   </HorizontalScroller>
 
-  <!-- SEARCH -->
+  <!-- Search -->
   <SearchInput
     v-else-if="!noSearch"
     v-model="search"
@@ -94,13 +97,13 @@ function handleRemoveAllFilters() {
     </template>
   </SearchInput>
 
-  <!-- FILLER -->
+  <!-- Filler -->
   <div
     v-else
     grow
   />
 
-  <!-- CLEAR ALL FILTERS -->
+  <!-- Clear all filters -->
   <Btn
     v-if="filterChips.length > 0"
     :label="$t('table.removeAllFilters')"
@@ -109,6 +112,7 @@ function handleRemoveAllFilters() {
     no-truncate
     color="ca"
     shrink-0
+    self-center
     label-class="whitespace-nowrap"
   >
     <MenuConfirmation

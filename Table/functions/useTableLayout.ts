@@ -1,51 +1,51 @@
-// VIRTUAL SCROLLER
+// Virtual scroller
 // @ts-expect-error - no types
 import { RecycleScroller } from 'vue-virtual-scroller'
 
-// TYPES
+// Types
 import type { ITableProps } from '~/components/Table/types/table-props.type'
-import type { ITableState } from '~/components/Table/types/table-state.type'
 
-// MODELS
-import { TableColumn } from '~/components/Table/models/table-column.model'
+// Models
+import { TableColumn } from 'components/Table/models/table-column.model'
 
-// COMPOSITION FUNCTIONS
+// Injections
+import { tableResizeKey } from '~/components/Table/provide/table.provide'
+
+// Functions
 import { useTableColumns } from '~/components/Table/functions/useTableColumns'
 import { useTableUtils } from '~/components/Table/functions/useTableUtils'
 
-// COMPONENTS
-import TableRow from '@/components/Table/TableRow.vue'
-import TableRowMobile from '@/components/Table/TableRow.mobile.vue'
+// Components
+import TableRow from '~/components/Table/TableRow.vue'
+import TableRowMobile from '~/components/Table/TableRow.mobile.vue'
 import TableHeader from '~/components/Table/TableHeader.client.vue'
-
-// INJECTION KEYS
-import { recalculateTableColumnsKey } from '~/components/Table/provide/table.provide'
 
 export function useTableLayout(
   props: ITableProps,
-  tableStateRef: Ref<ITableState>
+  columnsRef: Ref<TableColumn[]>
 ) {
   const instance = getCurrentInstance()
 
-  // UTILS
-  const { locale } = useI18n()
+  // Utils
   const { onOverflow } = useOverflow()
-  const { resizeColumns, extendColumns } = useTableColumns(props, tableStateRef)
-  const { getRowKey, hasVisibleCol } = useTableUtils()
+  const { getRowKey } = useTableUtils()
+  const {
+    hasVisibleColumn,
+    internalColumns,
+    searchableColumnLabels,
+    resizeColumns,
+  } = useTableColumns(props, columnsRef)
 
-  // LAYOUT
+  // Provides
+  provide(tableResizeKey, () => handleResize(true))
+
+  // Layout
   const scrollerEl = ref<InstanceType<typeof RecycleScroller>>()
   const tableEl = ref<HTMLDivElement>()
   const headerEl = ref<InstanceType<typeof TableHeader>>()
   const containerEl = ref<HTMLDivElement>()
 
   const rowKey = computedEager(() => getRowKey(props))
-
-  const hasVisibleColumn = computed(() => hasVisibleCol(internalColumns.value))
-
-  const searchableColumnLabels = computed(() => {
-    return props.columns.filter(col => col.searchable).map(col => col._label)
-  })
 
   function handleRowClick(row: any, event: Event) {
     const rowEl = event.target as HTMLElement
@@ -55,7 +55,7 @@ export function useTableLayout(
     }
   }
 
-  // CSS VARS
+  // CSS variables
   const rowHeight = useCssVar('--rowHeight', tableEl)
   const mobileRowHeight = useCssVar('--mobileRowHeight', tableEl)
   const rowHeaderHeight = useCssVar('--headerHeight', tableEl)
@@ -66,25 +66,7 @@ export function useTableLayout(
     rowHeaderHeight.value = `${props.headerHeight || props.rowHeight}px`
   })
 
-  // COLUMNS
-  const columns = toRef(props, 'columns')
-  const internalColumns = ref<TableColumn[]>(extendColumns(props.columns))
-  // const internalColumns = ref<TableColumn[]>(
-  //   extendColumns(props.columns.map(col => new TableColumn(col)))
-  // )
-
-  // When locale is changed, we need to sync the labels of the columns
-  function syncColumnLabels() {
-    props.columns.forEach(col => {
-      const internalCol = internalColumns.value.find(c => c.field === col.field)
-      if (internalCol) {
-        internalCol.label = col.label
-        internalCol.format = col.format
-      }
-    })
-  }
-
-  // RESIZE & SCROLLING
+  // Resize & scrolling
   const isScrolled = ref(false)
   const isOverflown = ref(false)
   let containerWidth = 0
@@ -112,6 +94,8 @@ export function useTableLayout(
     }
   }
 
+  // Detect overflow
+  // On overflow, we recaulculate the columns
   onOverflow(
     containerEl,
     _isOverflown => {
@@ -122,6 +106,7 @@ export function useTableLayout(
     { direction: 'vertical' }
   )
 
+  // Sync scrolling between header and body
   const { x: scrollLeft } = useScroll(containerEl, {
     onScroll: ev => {
       const el = ev.target as HTMLDivElement
@@ -139,22 +124,12 @@ export function useTableLayout(
     false
   )
 
-  // RESPONSIVITY
+  // Responsivity
   const isBreakpoint = toRef($bp, props.breakpoint || 'md')
 
   const TableRowComponent = computed(() => {
     return isBreakpoint.value ? TableRow : TableRowMobile
   })
-
-  // TODO: Row splitting
-  // ROW SPLITTING ~ Multiple column rows
-  // const splitRows = ref<Array<IGroupRow | IItem<any>[]>>([])
-
-  // function splitRows() {
-
-  // }
-
-  provide(recalculateTableColumnsKey, throttledHandleResize)
 
   onMounted(() => {
     const selfDom = instance?.vnode.el as HTMLElement
@@ -164,30 +139,25 @@ export function useTableLayout(
     ) as HTMLDivElement
   })
 
-  watch(locale, () => {
-    nextTick(() => syncColumnLabels())
-  })
-
   return {
-    columns,
     isScrolled,
     isOverflown,
     TableRowComponent,
     rowKey,
     handleScrollLeft: (left: number) => (scrollLeft.value = left),
 
-    // ELEMENT REFS
+    // Element refs
     scrollerEl,
     tableEl,
     headerEl,
     containerEl,
 
-    // COLUMNS
+    // Columns
     internalColumns,
     searchableColumnLabels,
     hasVisibleColumn,
 
-    // FUNCTIONS
+    // Functions
     handleRowClick,
     throttledHandleResize,
   }

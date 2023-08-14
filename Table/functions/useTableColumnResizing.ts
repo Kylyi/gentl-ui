@@ -1,16 +1,16 @@
 import { klona } from 'klona'
 
-// MODELS
+// Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
 
-// COMPOSITION FUNCTIONS
-import { useTableUtils } from '~/components/Table/functions/useTableUtils'
+// Models
+import { useTableStore } from '~/components/Table/table.store'
 
-// COMPONENTS
-import HorizontalScroller from '@/components/Scroller/HorizontalScroller.vue'
+// Injections
+import { tableStorageKey } from '~/components/Table/provide/table.provide'
 
-// INJECTION KEYS
-import { updateTableStateKey } from '~/components/Table/provide/table.provide'
+// Components
+import HorizontalScroller from '~/components/Scroller/HorizontalScroller.vue'
 
 type ISplitter = {
   field: TableColumn['field']
@@ -26,18 +26,18 @@ type IActiveSplitter = ISplitter & {
 }
 
 export function useTableColumnResizing(props: {
-  columns: TableColumn<any>[]
+  columns: TableColumn[]
   minimumColumnWidth?: number
 }) {
-  // INJECTIONS
-  const updateTableState = injectStrict(updateTableStateKey)
+  // Injections
+  const storageKey = injectStrict(tableStorageKey)
 
-  // UTILS
-  const { extractColumnsStateData } = useTableUtils()
+  // Store
+  const { setTableState } = useTableStore()
 
   const headerEl = ref<InstanceType<typeof HorizontalScroller>>()
 
-  // SPLITTERS (for resizing columns)
+  // Splitters (for resizing columns)
   let pageX = 0
 
   const activeSplitter = ref<IActiveSplitter>()
@@ -149,9 +149,8 @@ export function useTableColumnResizing(props: {
       document.documentElement.style.cursor = ''
       document.documentElement.style.userSelect = ''
 
-      updateTableState({
-        columns: extractColumnsStateData(props.columns),
-      })
+      setTableState(storageKey.value, { columns: props.columns })
+
       headerEl.value?.updateArrows()
     })
   }

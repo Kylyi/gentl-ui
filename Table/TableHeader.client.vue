@@ -1,11 +1,11 @@
 <script setup lang="ts">
-// MODELS
+// Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
 
-// COMPOSITION FUNCTIONS
+// Functions
 import { useTableColumnResizing } from '~/components/Table/functions/useTableColumnResizing'
 
-// COMPONENTS
+// Components
 import HorizontalScroller from '~/components/Scroller/HorizontalScroller.vue'
 
 type IProps = {
@@ -21,7 +21,7 @@ defineEmits<{
   (e: 'scrolled', left: number): void
 }>()
 
-// UTILS
+// Utils
 const { scrollbarWidth } = useOverflow()
 const { headerEl, activeSplitter, columnSplitters, handleSplitterPointerDown } =
   useTableColumnResizing(props)
@@ -46,7 +46,7 @@ defineExpose({
     :style="{ '--scrollbarWidth': `${scrollbarWidth}px` }"
     @scrolled="$emit('scrolled', $event)"
   >
-    <!-- COLUMNS -->
+    <!-- Columns -->
     <template
       v-for="(col, idx) in columns"
       :key="idx"
@@ -64,12 +64,17 @@ defineExpose({
       >
         <slot :col="col">
           <span
+            v-if="col._label"
             p="l-2 r-1 y-1"
             grow
             style="overflow-wrap: anywhere"
           >
             {{ col._label }}
           </span>
+
+          <div v-if="col.name === '_selectable'">
+            <Checkbox />
+          </div>
 
           <TableColumnFilterBtn
             v-if="!(col.noFilterSort || col.isHelperCol)"
@@ -85,7 +90,7 @@ defineExpose({
       </div>
     </template>
 
-    <!-- ACTIVE SPLITTER -->
+    <!-- Active splitter -->
     <div
       v-if="activeSplitter"
       class="splitter splitter-active"
@@ -96,7 +101,7 @@ defineExpose({
       }"
     />
 
-    <!-- COLUMNS SPLITTERS -->
+    <!-- Columns splitters -->
     <template v-else>
       <div
         v-for="splitter in columnSplitters"
@@ -116,7 +121,7 @@ defineExpose({
 }
 
 .th {
-  --apply: flex shrink-0 items-center font-semibold text-xs uppercase
+  --apply: flex shrink-0 items-center font-semibold text-xs tracking-wide
     border-ca border-b-1 sm:w-$colWidth overflow-hidden;
 
   &.has-data {

@@ -11,9 +11,25 @@ defineEmits<{
 
 <template>
   <Btn
-    icon="tabler:database-export"
+    icon="material-symbols:download"
     color="ca"
+    no-uppercase
+    size="sm"
+    p="!l-1"
+    outlined
   >
+    <div
+      flex="~ gap-2"
+      p="r-2"
+      font="normal"
+      text="sm"
+      items-center
+    >
+      {{ $t('table.export') }}
+
+      <div class="line-md:chevron-small-right rotate-90" />
+    </div>
+
     <Menu
       hide-header
       dense

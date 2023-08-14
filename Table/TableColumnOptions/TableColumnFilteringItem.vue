@@ -1,20 +1,18 @@
 <script setup lang="ts">
-// MODELS
-import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
+// Types
 import { FilterItem } from '~/libs/App/data/models/filter-item'
 
-// COMPOSITION FUNCTIONS
+// Models
+import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
+
+// Functions
 import { useTableUtils } from '~/components/Table/functions/useTableUtils'
 
-// COMPONENTS
-import { TableColumn } from '~/components/Table/models/table-column.model'
-import { TableColumnState } from '~/components/Table/models/table-column-state.model'
+// Injections
+import { tableRefreshKey } from '~/components/Table/provide/table.provide'
 
-// INJECTION KEYS
-import {
-  refreshTableDataKey,
-  updateTableStateKey,
-} from '~/components/Table/provide/table.provide'
+// Components
+import { TableColumn } from '~/components/Table/models/table-column.model'
 
 type IProps = {
   column: TableColumn<any>
@@ -24,18 +22,20 @@ type IProps = {
 
 const props = defineProps<IProps>()
 
-// INJECTIONS
-const updateTableState = injectStrict(updateTableStateKey)
-const refreshData = injectStrict(refreshTableDataKey)
+// Utils
+const { getAvailableComparators, isSelectorComparator } = useTableUtils()
 
-// UTILS
-const { getAvailableComparators, getInputByDataType, isSelectorComparator } =
-  useTableUtils()
+// Injections
+const tableRefresh = injectStrict(tableRefreshKey)
 
-// LAYOUT
+// Layout
 const inputEl = ref<any>()
 const filter = toRef(props, 'filter')
 const column = toRef(props, 'column')
+
+const component = computed(() => {
+  return COMPONENTS_BY_DATATYPE_MAP[column.value.dataType]
+})
 
 const inputDebounce = computed(() => {
   switch (props.column.dataType) {
@@ -70,98 +70,35 @@ const hiddenComparators = computed(() => {
   }, {} as Record<ComparatorEnum, boolean>)
 })
 
-const CompareInput = computed(() => {
-  return getInputByDataType(props.column.dataType)
-})
-
 function handleRemoveFilter() {
   column.value.filters = column.value.filters.filter(
     filter => filter.comparator !== props.filter.comparator
   )
 
-  updateTableState({}, state => {
-    const foundColumn = state.columns.find(
-      column => column.field === props.column.field
-    )
-
-    if (foundColumn) {
-      const foundFilterIdx = foundColumn.filters.findIndex(
-        filter => filter.comparator === props.filter.comparator
-      )
-
-      if (foundFilterIdx > -1) {
-        foundColumn.filters.splice(foundFilterIdx, 1)
-      }
-    } else {
-      state.columns.push(new TableColumnState(props.column))
-    }
-
-    return state
-  })
-
-  if (props.filter.compareValue) {
-    refreshData()
+  // Refresh the table if the filter actually had a value
+  if (props.filter.value) {
+    tableRefresh()
   }
 }
 
-function handleCompareValueChange() {
-  updateTableState({}, state => {
-    const columnState = new TableColumnState(column.value)
-    const foundColumn = state.columns.find(
-      column => column.field === props.column.field
-    )
-
-    if (foundColumn) {
-      Object.assign(foundColumn, columnState)
-    }
-
-    return state
-  })
-
-  refreshData()
-}
 function handleComparatorChange(comparator: ComparatorEnum) {
   const wasSelectComparator = isSelectorComparator(filter.value.comparator)
   filter.value.comparator = comparator
   const isSelectComparator = isSelectorComparator(comparator)
-  const oldCompareValue = filter.value.compareValue
 
   if (wasSelectComparator && !isSelectComparator) {
-    filter.value.compareValue = null
+    filter.value.value = null
   }
 
   if (!wasSelectComparator && isSelectComparator) {
-    filter.value.compareValue = []
+    filter.value.value = []
   }
 
-  const wasCompareValueEmptyArrayOrNil =
-    (Array.isArray(oldCompareValue) && !oldCompareValue.length) ||
-    isNil(oldCompareValue)
+  tableRefresh()
+}
 
-  const isCompareValueEmptyArrayOrNil =
-    (Array.isArray(filter.value.compareValue) &&
-      !filter.value.compareValue.length) ||
-    isNil(filter.value.compareValue)
-
-  if (wasCompareValueEmptyArrayOrNil || isCompareValueEmptyArrayOrNil) {
-    return
-  }
-
-  updateTableState({}, state => {
-    const columnState = new TableColumnState(column.value)
-
-    const foundColumn = state.columns.find(
-      column => column.field === props.column.field
-    )
-
-    if (foundColumn) {
-      Object.assign(foundColumn, columnState)
-    }
-
-    return state
-  })
-
-  nextTick(() => refreshData())
+function handleCompareValueChange() {
+  tableRefresh()
 }
 
 defineExpose({
@@ -172,7 +109,7 @@ defineExpose({
 <template>
   <div class="table-column-filtering-item">
     <div flex="~ gap-x-2">
-      <!-- COMPARATOR -->
+      <!-- Comparator -->
       <Selector
         :model-value="filter.comparator"
         :options="comparatorOptions"
@@ -195,24 +132,23 @@ defineExpose({
       />
     </div>
 
-    <!-- COMPARE VALUE -->
+    <!-- Compare value -->
     <Component
-      :is="CompareInput"
+      :is="component.component"
+      v-bind="component.props"
       v-if="!isSelectorComparator(filter.comparator)"
       ref="inputEl"
-      v-model="filter.compareValue"
-      :label="
-        column.dataType === 'boolean' ? `${$t('yes')} | ${$t('no')}` : undefined
-      "
+      v-model="filter.value"
       :debounce="inputDebounce"
       :placeholder="`${$t('table.filterValue')}...`"
       @update:model-value="handleCompareValueChange"
     />
 
-    <!-- SELECTOR -->
+    <!-- Selector of distinct values -->
     <Selector
       v-else-if="props.column.getDistinctData"
-      v-model="filter.compareValue"
+      ref="inputEl"
+      v-model="filter.value"
       :load-data="{
         fnc: () => props.column.getDistinctData?.(props.column),
         mapKey: 'doesnt-really-matter',

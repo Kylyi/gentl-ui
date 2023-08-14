@@ -9,6 +9,7 @@ import {
   qbColumnsKey,
   qbContainerKey,
   qbHoveredItemKey,
+  qbIsSmallerScreenKey,
   qbItemsKey,
 } from '~/components/QueryBuilder/provide/query-builder.provide'
 
@@ -25,7 +26,37 @@ const { draggedItem, queryBuilderEl } = useQueryBuilderDragAndDrop()
 
 // Layout
 const items = useVModel(props, 'items', emits)
+const isSmallerScreen = ref(false)
 const level = 0
+
+function initializeItems() {
+  // We don't want to trigger the reactivity here
+  items.value.push({
+    id: generateUUID(),
+    isGroup: true,
+    children: [],
+    condition: 'AND',
+    path: '0',
+  })
+}
+
+function clearFilter() {
+  items.value = [
+    {
+      id: generateUUID(),
+      isGroup: true,
+      children: [],
+      condition: 'AND',
+      path: '0',
+    },
+  ]
+}
+
+useResizeObserver(queryBuilderEl, entries => {
+  const { contentRect } = entries[0]
+
+  isSmallerScreen.value = contentRect.width < 1024
+})
 
 // Provide
 const columns = toRef(props, 'columns')
@@ -37,25 +68,24 @@ provide(qbItemsKey, items)
 provide(qbHoveredItemKey, hoveredRow)
 provide(qbContainerKey, queryBuilderEl)
 provide(qbCollapsedKey, collapsed)
+provide(qbIsSmallerScreenKey, isSmallerScreen)
 
+// Lifecycle
 // When no items are provided, initialize the items with a group
 if (!props.items.length) {
-  items.value = [
-    {
-      id: new Date().getTime().toString(),
-      isGroup: true,
-      children: [],
-      condition: 'AND',
-      path: '0',
-    },
-  ]
+  initializeItems()
 }
+
+defineExpose({
+  clearFilter,
+})
 </script>
 
 <template>
   <div
     ref="queryBuilderEl"
     class="query-builder"
+    :class="{ 'is-collapsed': isSmallerScreen }"
   >
     <QueryBuilderRow
       v-for="item in items"

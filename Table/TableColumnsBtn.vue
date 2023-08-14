@@ -1,24 +1,26 @@
 <script setup lang="ts">
 import { DragHandle, SlickItem, SlickList } from 'vue-slicksort'
 
-// TYPES
-import { IBtnProps } from '~/components/Button/types/btn-props.type'
+// Types
+import type { IBtnProps } from '~/components/Button/types/btn-props.type'
 
-// MODELS
+// Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
 
-// COMPOSITION FUNCTIONS
-import { useBtnUtils } from '~/components/Button/functions/useBtnUtils'
-import { useTableUtils } from '~/components/Table/functions/useTableUtils'
+// Injections
+import {
+  tableResizeKey,
+  tableStorageKey,
+} from '~/components/Table/provide/table.provide'
 
-// INJECTION KEYS
-import { updateTableStateKey } from '~/components/Table/provide/table.provide'
+// Functions
+import { useBtnUtils } from '~/components/Button/functions/useBtnUtils'
+
+// Store
+import { useTableStore } from '~/components/Table/table.store'
 
 type IProps = {
   columns: TableColumn[]
-  useServer?: boolean
-  useChips?: boolean
-  rows: any[]
 } & IBtnProps
 
 const props = defineProps<IProps>()
@@ -26,14 +28,17 @@ const emits = defineEmits<{
   (e: 'update:columns', columns: TableColumn[]): void
 }>()
 
-// INJECTIONS
-const updateTableState = injectStrict(updateTableStateKey)
+// Injections
+const storageKey = injectStrict(tableStorageKey)
+const tableResize = injectStrict(tableResizeKey)
 
-// UTILS
+// Store
+const { setTableState } = useTableStore()
+
+// Utils
 const { getBtnProps } = useBtnUtils()
-const { extractColumnsStateData } = useTableUtils()
 
-// LAYOUT
+// Layout
 const columns = useVModel(props, 'columns', emits)
 
 const nonHelperCols = computed({
@@ -44,33 +49,39 @@ const nonHelperCols = computed({
     const helpersCols = columns.value.filter(col => col.isHelperCol)
 
     columns.value = [...helpersCols, ...val]
+    setTableState(storageKey.value, { columns: columns.value })
   },
 })
 
 const btnProps = computed(() => getBtnProps(props))
 
-function handleRecalculateColumns() {
-  nextTick(() =>
-    updateTableState({ columns: extractColumnsStateData(columns.value) })
-  )
+function handleColumnVisibilityChange(val?: boolean) {
+  if (!val) {
+    nextTick(() => tableResize())
+  }
 }
 </script>
 
 <template>
   <Btn
-    icon="fluent:table-freeze-column-24-filled"
+    icon="tabler:columns-2"
+    :label="$t('columns')"
     color="ca"
+    self-center
+    no-uppercase
+    size="sm"
     v-bind="btnProps"
   >
     <Menu
       placement="bottom-end"
-      :title="$t('columns')"
+      :no-arrow="false"
+      hide-header
+      w="80"
     >
       <SlickList
         v-model:list="nonHelperCols"
         axis="y"
         use-drag-handle
-        @update:list="handleRecalculateColumns"
       >
         <SlickItem
           v-for="(col, idx) in nonHelperCols"
@@ -96,20 +107,11 @@ function handleRecalculateColumns() {
               {{ col._label }}
             </span>
 
-            <TableColumnFilterBtn
-              v-if="!col.hideFilters && !col.isHelperCol"
-              :column="col"
-              :rows="rows"
-              :columns="columns"
-              :use-server="useServer"
-              :use-chips="useChips"
-            />
-
             <Checkbox
               v-model="col.hidden"
               :check-value="false"
               :uncheck-value="true"
-              @update:model-value="handleRecalculateColumns"
+              @update:model-value="handleColumnVisibilityChange"
             />
           </Item>
         </SlickItem>

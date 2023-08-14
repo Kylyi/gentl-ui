@@ -1,7 +1,7 @@
 import { utils, writeFile, writeFileXLSX } from 'xlsx'
 
 export function useTableExporting() {
-  // UTILS
+  // Utils
   const { formatDate } = useDateUtils()
 
   const isExporting = ref(false)

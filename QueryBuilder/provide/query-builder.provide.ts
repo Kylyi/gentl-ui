@@ -22,3 +22,6 @@ export const qbDraggedItemKey: InjectionKey<
 
 export const qbCollapsedKey: InjectionKey<Ref<Record<string, boolean>>> =
   Symbol('qbCollapsed')
+
+export const qbIsSmallerScreenKey: InjectionKey<Ref<boolean>> =
+  Symbol('qbIsSmallerScreen')

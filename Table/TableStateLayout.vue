@@ -1,20 +1,11 @@
 <script setup lang="ts">
 import { config } from '~/config'
 
-// COMPOSITION FUNCTIONS
-import { useTableUtils } from '~/components/Table/functions/useTableUtils'
-import { getTableStateDefault } from '~/components/Table/constants/table-state.default'
-
-// COMPONENTS
+// Components
 import BtnConfirmation from '~/components/Button/BtnConfirmation.vue'
 
-// INJECTION KEYS
-import {
-  getTableStateKey,
-  recalculateTableColumnsKey,
-  refreshTableDataKey,
-  updateTableStateKey,
-} from '~/components/Table/provide/table.provide'
+// Injections
+import { getTableStateKey } from '~/components/Table/provide/table.provide'
 
 type IProps = {
   storageKey: string
@@ -24,14 +15,9 @@ const props = defineProps<IProps>()
 
 // INJECTIONS
 const getTableState = injectStrict(getTableStateKey)
-const recalculateTableColumns = injectStrict(recalculateTableColumnsKey)
-const updateTableState = injectStrict(updateTableStateKey)
-const refreshData = injectStrict(refreshTableDataKey)
 
 // UTILS
 const { t } = useI18n()
-const { extractColumnsStateData } = useTableUtils()
-const currentUser = useCurrentUserState()
 
 // LAYOUT
 const btnConfirmationEl = ref<InstanceType<typeof BtnConfirmation>>()
@@ -41,24 +27,12 @@ const selectedTableLayout = useLocalStorage(
   ''
 )
 const tableLayouts = useLocalStorage<any[]>(storageKey, [])
-
 const tableState = computed(() => getTableState())
 
 function handleSelectTableLayout(tableLayout?: any) {
   // Resetting table state
   if (!tableLayout) {
-    updateTableState(
-      getTableStateDefault(),
-      (state, originalColumns) => {
-        state.layout = undefined
-        state.columns = extractColumnsStateData(originalColumns)
-
-        return state
-      },
-      true
-    )
-    recalculateTableColumns(true)
-    refreshData()
+    // TODO: Implement reset table
 
     return
   }
@@ -74,19 +48,16 @@ function handleSelectTableLayout(tableLayout?: any) {
     }
 
     if (config.table.useServerState) {
-      GqlCreateTableState({ tableStateCreateDto: dto })
+      // TODO: Implement
     } else {
       tableLayouts.value = [...tableLayouts.value, dto]
     }
-
-    updateTableState({ layout: stateName })
   }
 
   // Selected an existing layout
   else {
-    updateTableState(tableLayout.state, undefined, true, false)
-    recalculateTableColumns(true)
-    refreshData()
+    // recalculateTableColumns(true)
+    // refreshData()
   }
 
   selectedTableLayout.value = stateName
@@ -96,15 +67,7 @@ function handleSelectTableLayout(tableLayout?: any) {
 
 function overrideSelectedTableLayout() {
   if (config.table.useServerState) {
-    GqlUpsertTableStateByName({
-      stateName: selectedTableLayout.value,
-      tableName: props.storageKey,
-      tableStateUpdateDto: {
-        state: tableState.value,
-        stateName: selectedTableLayout.value,
-        tableName: props.storageKey,
-      },
-    })
+    // TODO: Implement
   } else {
     // TODO: Table state when not using server state
     // const foundLayout = tableLayouts.value.find(
@@ -121,14 +84,9 @@ function overrideSelectedTableLayout() {
 
 // Data fetching
 function getLayouts(payload: { search?: string }) {
-  return GqlGetTableStateViaQuery({
-    search: payload.search,
-    where: {
-      tableName: props.storageKey,
-      [config.table.tableStateKeyField]: currentUser.value!.userOptions.id,
-      stateName: { not: 'default' },
-    },
-  })
+  // TODO: Implement
+
+  return []
 }
 </script>
 
@@ -190,13 +148,13 @@ function getLayouts(payload: { search?: string }) {
         /> -->
       </div>
 
-      <span
+      <!-- <span
         text="caption"
         grow
         font="rem-11"
       >
         {{ tableState.layout ? $t('table.layoutStateSave') : '&nbsp;' }}
-      </span>
+      </span> -->
     </div>
   </Section>
 

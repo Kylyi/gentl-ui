@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { Placement } from '@floating-ui/dom'
 
-// MODELS
+// Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
 
 type IProps = {
-  rows: any[]
   column: TableColumn<any>
   columns: TableColumn<any>[]
   useChips?: boolean
@@ -17,19 +16,13 @@ type IProps = {
 
 const props = defineProps<IProps>()
 
-// LAYOUT
+// Layout
 const column = toRef(props, 'column')
 
-/**
- * On menu hide, we remove the filter if the `compareValue` is `undefined`
- */
-function handleMenuHide() {
-  column.value.filters = column.value.filters.filter(filterItem => {
-    if (Array.isArray(filterItem.compareValue)) {
-      return filterItem.compareValue.length
-    }
-
-    return filterItem.compareValue !== undefined
+// We remove any undefined filters on menu hide
+function handleMenuBeforeHide() {
+  column.value.filters = column.value.filters.filter(filter => {
+    return filter.value !== undefined
   })
 }
 </script>
@@ -65,7 +58,7 @@ function handleMenuHide() {
       :offset="offset"
       :reference-target="referenceTarget"
       content-class="flex flex-col"
-      @before-hide="handleMenuHide"
+      @before-hide="handleMenuBeforeHide"
     >
       <TableColumnSorting
         v-if="column.sortable"

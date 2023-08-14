@@ -1,117 +1,70 @@
 // TODO: Client-side pagination, filtering, grouping and sorting
 import { config } from '~/config'
 
-// TYPES
+// Types
 import type { ITableProps } from '~/components/Table/types/table-props.type'
-import type { ITableState } from '~/components/Table/types/table-state.type'
-import type { ITableQuery } from '~/components/Table/types/table-query.type'
+import type {
+  ITableDataFetchFncInput,
+  ITableFilterRow,
+  ITableOrderBy,
+  ITableQuery,
+} from '~/components/Table/types/table-query.type'
 
-// MODELS
+// Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
-import { TableColumnState } from '~/components/Table/models/table-column-state.model'
 
-// COMPOSITION FUNCTIONS
+// Functions
 import { useTableUtils } from '~/components/Table/functions/useTableUtils'
-
-// CONSTANTS
-import { getTableStateDefault } from '~/components/Table/constants/table-state.default'
-
-// INJECTION KEYS
 import {
-  getTableStateKey,
-  refreshTableDataKey,
-  tableGetTableQueryKey,
-  updateTableStateKey,
+  serializeFilterString,
+  serializeOrderByString,
+  serializeSelectString,
+} from '~/components/Table/utils/transformTableQueryToQueryParams'
+
+// Injections
+import {
+  tableQueryKey,
+  tableRecreateQueryBuilderKey,
+  tableRefreshKey,
+  tableStorageKey,
 } from '~/components/Table/provide/table.provide'
+
+// Store
+import { useTableStore } from '~/components/Table/table.store'
 
 export async function useTableData(
   props: ITableProps,
-  internalColumns: MaybeRefOrGetter<TableColumn<any>[]>,
-  tableStateRef: Ref<ITableState>
+  internalColumnsRef: Ref<TableColumn[]>
 ) {
-  // UTILS
+  // Utils
+  const route = useRoute()
   const instance = getCurrentInstance()
-  const { t } = useI18n()
-  const { query } = useRoute()
-  const { getStorageKey, modifyWithSearchParams } = useTableUtils()
+  const { getStorageKey, parseUrlParams } = useTableUtils()
+  const { isLoading, handleRequest } = useRequest({
+    loadingInitialState: !props.rows,
+  })
 
-  // Provides
-  provide(tableGetTableQueryKey, () => dbQuery.value)
-  provide(refreshTableDataKey, () => refreshData())
-  provide(getTableStateKey, () => tableStateRef.value)
-  provide(
-    updateTableStateKey,
-    (
-      state: Partial<ITableState>,
-
-      // We also provide a callback function that allows us to update the state
-      // from components that do not have direct access to the table data (for example columns)
-      callback?: (
-        state: ITableState,
-        originalColumns: TableColumn<any>[]
-      ) => ITableState,
-      updateInternalColumns?: boolean,
-      updateServerState = true
-    ) => {
-      // When there are not columns defined in the state yet,
-      // we initialize them
-      if (!state.columns?.length) {
-        tableStateRef.value.columns = toValue(internalColumns).map(col => {
-          return new TableColumnState(col)
-        })
-      }
-
-      const newState: Partial<ITableState> =
-        callback?.(tableStateRef.value, toValue(props.columns)) || {}
-
-      // We sometimes need to update the internal columns as well
-      // For example when we apply/select a layout that has some filters set up
-      if (updateInternalColumns) {
-        ;[...(state.columns || []), ...(newState?.columns || [])].forEach(
-          column => {
-            const foundInternalColumn = toValue(internalColumns).find(
-              col => col.field === column.field
-            )
-
-            if (foundInternalColumn) {
-              Object.assign(foundInternalColumn, column)
-            }
-          }
-        )
-      }
-
-      tableStateRef.value = Object.assign(
-        {},
-        tableStateRef.value,
-        state,
-        newState
-      )
-
-      // Update the server state
-      if (config.table.useServerState && getStorageKey() && updateServerState) {
-        GqlUpsertTableStateByName({
-          stateName: 'default',
-          tableName: getStorageKey()!,
-          tableStateUpdateDto: {
-            state: tableStateRef.value,
-            stateName: 'default',
-            tableName: getStorageKey()!,
-          },
-        })
-      }
-    }
-  )
-
-  // LAYOUT
+  // Layout
   const isInitialized = ref(false)
-  const isLoading = ref(!props.rows)
   const search = ref('')
   const rows = ref(props.rows || [])
   const totalRows = ref(props.totalRows)
+  const queryBuilder = useVModel(props, 'queryBuilder')
 
   const storageKey = computed(() => getStorageKey())
 
-  // PAGINATION
+  // Store
+  const { getTableState, setTableState } = useTableStore()
+  const tableState = getTableState(storageKey.value)
+
+  initializeQueryBuilder()
+
+  // Provides
+  provide(tableRefreshKey, () => refreshData())
+  provide(tableRecreateQueryBuilderKey, () => initializeQueryBuilder())
+  provide(tableStorageKey, storageKey)
+
+  // Pagination
   const {
     currentPage,
     next,
@@ -121,87 +74,108 @@ export async function useTableData(
     isLastPage,
     currentPageSize,
   } = useOffsetPagination({
-    ...tableStateRef.value,
+    ...tableState.value,
     total: computed(() => totalRows.value || 0),
     onPageChange: page => {
       if (isInitialized.value) {
-        tableStateRef.value.page = page.currentPage
+        tableState.value.page = page.currentPage
         dbQuery.trigger()
       }
     },
     onPageSizeChange: page => {
       if (isInitialized.value) {
-        tableStateRef.value.pageSize = page.currentPageSize
+        tableState.value.pageSize = page.currentPageSize
         dbQuery.trigger()
       }
     },
   })
 
-  // DATA
-  const dbQuery = computedWithControl(search, () => {
-    if (!isInitialized.value) {
-      // FIXME: Side-effect in computed
-      // Actually happens only once (on initialization), but still...
-      modifyWithSearchParams(
-        internalColumns,
-        tableStateRef,
-        currentPage,
-        currentPageSize
-      )
-    }
+  // Data fetching
+  const pagination = computed(() => {
+    const { page, pageSize } = config.table.defaultPagination
 
-    // PAGINATION
-    const take = currentPageSize.value
-    const skip = (currentPage.value - 1) * currentPageSize.value
+    const take = tableState.value.pageSize || pageSize
+    const skip = ((tableState.value.page || page) - 1) * take
 
-    // SORTING
-    // Project specific?
-    const orderBy = [...toValue(internalColumns)]
-      .sort((a, b) => {
-        return (a.sortOrder || 0) - (b.sortOrder || 0)
-      })
-      .reduce((agg, col) => {
-        if (col.sortDbQuery) {
-          agg.push(col.sortDbQuery)
-        }
+    return { take, skip }
+  })
 
-        return agg
-      }, [] as Record<string, any>[])
+  const orderBy = computed(() => {
+    const columns = toValue(internalColumnsRef)
 
-    // FILTERING
-    const where = toValue(internalColumns).reduce((agg, col) => {
-      if (col.filterDbQuery) {
-        Object.assign(agg, col.filterDbQuery)
+    return columns.reduce((agg, col) => {
+      if (col.sortDbQuery) {
+        agg.push(col.sortDbQuery)
       }
 
       return agg
-    }, {} as Record<string, any>)
-
-    return {
-      where,
-      options: {
-        search: search.value,
-        orderBy,
-        take,
-        skip,
-      },
-      includeDeleted: tableStateRef.value.includeDeleted,
-    } as ITableQuery
+    }, [] as ITableOrderBy[])
   })
+
+  const select = computed(() => {
+    const columns = toValue(internalColumnsRef)
+
+    return columns
+      .filter(col => !col.isHelperCol && !col.hidden)
+      .map(col => col.field)
+  })
+
+  const columnFilters = computed(() => {
+    const columns = toValue(internalColumnsRef)
+
+    return columns
+      .filter(col => !!col.filterDbQuery)
+      .flatMap(col => col.filterDbQuery) as any[]
+  })
+
+  const dbQuery = computedWithControl(
+    () => [orderBy.value, search.value, select.value, queryBuilder.value],
+    () => {
+      const filter: ITableFilterRow[] = [
+        {
+          isGroup: true,
+          condition: 'AND',
+          children: [...(props.queryBuilder || []), ...columnFilters.value],
+        },
+      ]
+
+      const tableQuery: ITableQuery = {
+        ...pagination.value,
+        queryBuilder: props.queryBuilder,
+        columnFilters: columnFilters.value,
+        filter,
+        orderBy: orderBy.value,
+        search: search.value,
+        select: select.value,
+        includeDeleted: tableState.value.includeDeleted,
+      }
+
+      return {
+        queryParams: config.table.getQuery(tableQuery),
+        tableQuery,
+      }
+    }
+  )
+
+  provide(tableQueryKey, dbQuery)
 
   const refreshData = useDebounceFn(dbQuery.trigger, 100)
 
-  async function fetchData(options: ITableQuery) {
-    if (!props.getData) {
-      return
-    }
+  /**
+   * The function that actually fetches the data from the server
+   */
+  function fetchData(optionsRef: MaybeRefOrGetter<ITableDataFetchFncInput>) {
+    return handleRequest(async () => {
+      if (!props.getData) {
+        return
+      }
 
-    isLoading.value = true
-    try {
-      const res = await props.getData.fnc(options)
-      isLoading.value = false
-
-      let data = get(res, props.getData.mapKey || 'payload') as any[]
+      const options = toValue(optionsRef)
+      const result = await props.getData.fnc(options)
+      let data = get(
+        result,
+        props.getData.payloadKey || config.table.payloadKey
+      ) as any[]
 
       if (props.getData.createIdentifier) {
         data = data.map((row, idx) => {
@@ -215,23 +189,18 @@ export async function useTableData(
 
       return {
         data,
-        totalRows: get(res, props.getData.countKey || config.table.countKey),
+        totalRows: get(result, props.getData.countKey || config.table.countKey),
       }
-    } catch (error: any) {
-      if (props.getData.errorHandler) {
-        props.getData.errorHandler(error)
-      } else if (error && typeof error === 'object') {
-        const message = error.message || error.code || t('unknownError')
-
-        notify(message, 'negative')
-      }
-    }
-
-    isLoading.value = false
+    })
   }
 
-  async function fetchAndSetData(options: ITableQuery) {
-    const res = await fetchData(options)
+  /**
+   * Fetches the data and sets it to the appropriate variables
+   */
+  async function fetchAndSetData(
+    optionsRef: MaybeRefOrGetter<ITableDataFetchFncInput>
+  ) {
+    const res = await fetchData(optionsRef)
 
     if (res) {
       rows.value = res.data
@@ -244,60 +213,100 @@ export async function useTableData(
 
   // Initialize data if no data are provided
   if (isNil(props.rows)) {
-    await fetchAndSetData(dbQuery.value)
+    await fetchAndSetData(dbQuery)
   }
 
+  // Fetch and set data when the `dbQuery` changes
+  // Also change the URL accordingly
+  // Also save the `TableState`
   watch(dbQuery, dbQuery => {
     fetchAndSetData(dbQuery)
-  })
 
-  // Watch the `dbQuery` and change the url accordingly
-  watch(
-    dbQuery,
-    dbQuery => {
-      if (process.server || !props.useUrl) {
-        return
-      }
-
-      const { pageSize } = getTableStateDefault()
+    // Set URL
+    if (props.useUrl) {
+      const routeQueryWithoutTableParams = omit(route.query, [
+        'qb',
+        'filter',
+        'order',
+        'select',
+        'search',
+      ])
+      const qb = serializeFilterString(dbQuery.tableQuery.queryBuilder)
+      const filter = serializeFilterString(dbQuery.tableQuery.columnFilters)
+      const order = serializeOrderByString(dbQuery.tableQuery.orderBy)
+      const select = serializeSelectString(dbQuery.tableQuery.select)
 
       navigateTo(
         {
           query: {
-            // We keep the original query params
-            ...query,
-
-            // Pagination
-            page: String(
-              (dbQuery.options.skip ?? 0) / (dbQuery.options.take ?? pageSize) +
-                1
-            ),
-            perPage: String(dbQuery.options.take ?? pageSize),
-
-            // Search
-            ...(dbQuery.options.search && { search: dbQuery.options.search }),
+            ...routeQueryWithoutTableParams,
+            ...(qb && qb !== 'and()' && { qb }),
+            ...(filter && { filter }),
+            ...(order && { order: `(${order})` }),
+            ...(select && { select }),
+            ...(dbQuery.tableQuery.search && {
+              search: dbQuery.tableQuery.search,
+            }),
+            // ...(dbQuery.tableQuery.includeDeleted && {
+            //   includeDeleted: dbQuery.tableQuery.includeDeleted,
+            // }),
           },
         },
         { replace: true }
       )
-    },
-    { immediate: true }
-  )
-
-  watch(
-    () => tableStateRef.value.includeDeleted,
-    () => dbQuery.trigger()
-  )
-
-  watch(
-    () => props.rows,
-    _rows => {
-      if (_rows) {
-        rows.value = _rows
-        isLoading.value = false
-      }
     }
-  )
+
+    // Save `TableState`
+    setTableState(storageKey.value, {
+      page: dbQuery.tableQuery.skip! / dbQuery.tableQuery.take! + 1,
+      pageSize: dbQuery.tableQuery.take!,
+      includeDeleted: dbQuery.tableQuery.includeDeleted,
+      schema: dbQuery.queryParams.toString(),
+      columns: internalColumnsRef.value,
+      queryBuilder: dbQuery.tableQuery.queryBuilder,
+    })
+  })
+
+  // Initialize query builder
+  function initializeQueryBuilder() {
+    const {
+      queryBuilder: queryBuilderFromUrl,
+      columns: columnsFromUrl,
+      filters: filtersFromUrl,
+      sort: sortFromUrl,
+    } = parseUrlParams(internalColumnsRef)
+
+    const isUrlUsed =
+      !!queryBuilderFromUrl?.length ||
+      !!columnsFromUrl?.length ||
+      !!filtersFromUrl?.length ||
+      !!sortFromUrl?.length
+
+    // When the query builder is present in the URL, use it
+    if (queryBuilderFromUrl && queryBuilder.value !== undefined) {
+      queryBuilder.value = queryBuilderFromUrl.length
+        ? queryBuilderFromUrl
+        : [
+            {
+              id: generateUUID(),
+              isGroup: true,
+              children: [],
+              condition: 'AND',
+              path: '0',
+            },
+          ]
+    }
+
+    // Otherwise, when the query builder is present in the table state, use it
+    else if (
+      !config.table.useServerState &&
+      !isUrlUsed &&
+      tableState.value.queryBuilder?.length &&
+      queryBuilder.value !== undefined
+    ) {
+      queryBuilder.value = tableState.value.queryBuilder
+    }
+  }
 
   isInitialized.value = true
 
@@ -310,7 +319,7 @@ export async function useTableData(
     storageKey,
     refreshData,
 
-    // PAGINATION
+    // Pagination
     currentPage,
     next,
     prev,

@@ -1,9 +1,21 @@
-import { TableColumnState } from '@/components/Table/models/table-column-state.model'
+// Types
+import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
+
+// Models
+import { TableColumn } from 'components/Table/models/table-column.model'
+
+export type ITableColumnState = Pick<
+  TableColumn,
+  'field' | 'width' | 'sort' | 'sortOrder' | 'hidden'
+> & {
+  filters: Pick<TableColumn['filters'][0], 'field' | 'comparator' | 'value'>[]
+}
 
 export type ITableState = {
   includeDeleted: boolean
-  page: number
-  pageSize: number
-  layout?: string // should be prefixed with `table-layout-`
-  columns: TableColumnState[]
+  schema?: string
+  page?: number
+  pageSize?: number
+  columns?: ITableColumnState[]
+  queryBuilder?: IQueryBuilderRow[]
 }

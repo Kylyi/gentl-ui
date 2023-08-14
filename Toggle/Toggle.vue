@@ -6,6 +6,7 @@ import type {
 } from '~~/components/Toggle/types/toggle-props.type'
 
 const props = withDefaults(defineProps<IToggleProps>(), {
+  allowString: true,
   size: 'xs',
   modelValue: null,
   checkValue: true,
@@ -22,6 +23,16 @@ const emits = defineEmits<{
 const model = useVModel(props, 'modelValue', emits)
 
 const internalValue = computed<ToggleState>(() => {
+  if (props.allowString) {
+    const val = model.value === null ? 'null' : model.value.toString()
+
+    return val === props.checkValue?.toString()
+      ? 'checked'
+      : val === props.uncheckValue?.toString()
+      ? 'unchecked'
+      : 'indeterminate'
+  }
+
   return model.value === props.checkValue
     ? 'checked'
     : model.value === props.uncheckValue
@@ -38,12 +49,29 @@ function handleStateChange() {
     props.uncheckValue,
     props.indeterminateValue,
     props.checkValue,
+    ...(props.allowString
+      ? [
+          props.uncheckValue?.toString(),
+          props.indeterminateValue?.toString(),
+          props.checkValue?.toString(),
+        ]
+      : []),
   ].filter(state => state !== undefined)
 
   const currentStateIdx = states.indexOf(model.value)
 
   if (currentStateIdx > -1) {
-    model.value = states[(currentStateIdx + 1) % states.length]
+    let val = states[(currentStateIdx + 1) % states.length]
+
+    if (val === 'true') {
+      val = true
+    } else if (val === 'false') {
+      val = false
+    } else if (val === 'null') {
+      val = null
+    }
+
+    model.value = val
   } else {
     model.value = props.checkValue
   }

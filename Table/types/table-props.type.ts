@@ -1,48 +1,168 @@
-import { FuseOptions } from '@vueuse/integrations'
+// Types
+import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
+import type {
+  ITableDataFetchFncInput,
+  ITableQuery,
+} from '~/components/Table/types/table-query.type'
+import type { ITableSelection } from '~/components/Table/types/table-selection.type'
+
+// Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
-import { ITableQuery } from '~/components/Table/types/table-query.type'
-import { ITableSelection } from '~/components/Table/types/table-selection.type'
 
 export interface ITableProps {
+  /**
+   * Whether the table should handle the resize event - performance heavy(-ish)
+   */
+  autoResize?: boolean
+
+  /**
+   * The breakpoint at which the table should switch to mobile view
+   */
   breakpoint?: 'sm' | 'md' | 'lg' | 'xl' | 'inf'
-  columns: TableColumn<any>[]
-  fuseOptions?: FuseOptions<any>
+
+  /**
+   * Definition of the table columns
+   */
+  columns?: TableColumn<any>[]
+
+  /**
+   * The default width for expand columns
+   */
   groupExpandWidth?: number
+
+  /**
+   * The default height for grouped table row
+   */
   groupRowHeight?: number
+
+  /**
+   * The total amount of rows
+   */
   totalRows?: number
+
+  /**
+   * The default height for the table header
+   */
   headerHeight?: number
+
+  /**
+   * Whether the column filters should be hidden
+   */
   hideFilters?: boolean
+
+  /**
+   * Whether the table header should be hidden
+   */
   hideHeader?: boolean
-  infiniteScroll?: boolean
+
+  /**
+   * Whether the table is in `loading` state
+   */
   loading?: boolean
+
+  /**
+   * Whether the loading should be on top of the table
+   */
   loadingOnTop?: boolean
+
+  /**
+   * The minimum column width
+   */
   minimumColumnWidth?: number
+
+  /**
+   * The default row height in mobile view
+   */
   mobileRowHeight?: number
+
+  /**
+   * Whether the tabe actions should be hidden
+   */
   noActions?: boolean
+
+  /**
+   * Whether the export btn should be hidden
+   */
   noExport?: boolean
+
+  /**
+   * Whether the pagination should be used
+   */
   noPagination?: boolean
+
+  /**
+   * Whether the search should be hidden
+   */
   noSearch?: boolean
+
+  /**
+   * Whether the top of the table should be hidden
+   */
   noTop?: boolean
+
+  /**
+   * Whether the totals should be hidden
+   */
   noTotals?: boolean
+
+  /**
+   * Query builder rows
+   */
+  queryBuilder?: IQueryBuilderRow[]
+
+  /**
+   * Whether the row should be clickable
+   */
   rowClickable?: boolean
+
+  /**
+   * The default height for the table rows
+   */
   rowHeight?: number
+
+  /**
+   * The default key for the table rows
+   * @default 'id'
+   */
   rowKey?: string
+
+  /**
+   * The actual data rows
+   */
   rows?: any[]
+
+  /**
+   * Whether the table rows should be selectable
+   */
   selectable?: boolean
+
+  /**
+   * Defines visuals for the separators in the table
+   */
   separator?: 'horizontal' | 'vertical' | 'cell'
+
+  /**
+   * Whether the table should include archived rows
+   * Note: Project specific
+   */
   useIncludeDeleted?: boolean
+
+  /**
+   * Whether to use worker to handle intesive tasks
+   * @default 'depends on amount of rows'
+   */
   useWorker?: boolean
 
   /**
-   * Function to get data for the table
-   * `mapKey` ~ key in the response that contains the data
+   * Method to get data for the table
+   * `payloadKey` ~ key in the response that contains the data
    * `countKey` ~ key in the response that contains the total count of rows
    * `createIdentifier` ~ function to create a unique identifier for each row when the `rowKey` is not unique
    * `errorHandler` ~ function to handle errors that come from fetching the table data
    */
   getData?: {
-    fnc: (options: ITableQuery) => Promise<any> | any
-    mapKey?: string
+    fnc: (options: ITableDataFetchFncInput) => Promise<any> | any
+    payloadKey?: string
     countKey?: string
     createIdentifier?: (row: any, idx: number) => string | number
     errorHandler?: (error: any) => void
@@ -53,20 +173,18 @@ export interface ITableProps {
     errorHandler?: (error: any) => void
   }
 
-  /**
-   * Whether the table should handle the resize event - performance heavy(-ish)
-   */
-  autoResize?: boolean
-
-  /**
-   * Fuse keys
-   */
-  searchKeys?: string[]
+  getMetaData?: {
+    fnc: () => Promise<TableColumn<any>[]> | TableColumn<any>[]
+    columnsKey?: string
+    layoutsKey?: string
+    layoutKey?: string
+    errorHandler?: (error: any) => void
+  }
 
   /**
    * Will split the table row into multiple columns
    * Usage: For mobile view
-   * // FIXME: Currently broken
+   * FIXME: Currently broken
    */
   splitRow?: number
 
@@ -76,9 +194,9 @@ export interface ITableProps {
   sizeField?: string
 
   /**
-   * Can be either
-   * Array<string | number> ~ use for `rowKey` selection
-   * Record<itemKey, item> ~ use for `item` selection
+   * The selected rows, can be either:
+   * * Array<string | number> ~ use for `rowKey` selection
+   * * Record<itemKey, item> ~ use for `item` selection
    */
   selected?: ITableSelection
 

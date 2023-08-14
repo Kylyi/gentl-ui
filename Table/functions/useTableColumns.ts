@@ -1,13 +1,28 @@
+import { config } from '~/config'
+
 // Types
-import type { ITableState } from '~/components/Table/types/table-state.type'
 import type { ITableProps } from '~/components/Table/types/table-props.type'
 
 // Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
 import { GroupItem } from '~/libs/App/data/models/group-item.model'
+import { FilterItem } from '~/libs/App/data/models/filter-item'
+
+// Functions
+import { useTableUtils } from '~/components/Table/functions/useTableUtils'
+
+// Injections
+import {
+  tableColumnsKey,
+  tableColumnsRecreateKey,
+  tableNonHelpersColumnsKey,
+} from '~/components/Table/provide/table.provide'
 
 // Regex
 import { stringToFloat } from '~/libs/App/data/regex/string-to-float.regex'
+
+// Store
+import { useTableStore } from '~/components/Table/table.store'
 
 type Options = {
   groupsRef?: MaybeRefOrGetter<GroupItem[]>
@@ -17,56 +32,185 @@ type Options = {
   isSelectableRef?: MaybeRefOrGetter<boolean>
 }
 
-// FIXME: This won't work with SSR
-// function getTableState(storageKey?: string): ITableState {
-//   if (process.client) {
-//     return JSON.parse((storageKey && localStorage.getItem(storageKey)) || '{}')
-//   }
-
-//   return getTableStateDefault()
-// }
-
 export function useTableColumns(
   props: ITableProps,
-  tableStateRef: Ref<ITableState>
+  columnsRef: Ref<TableColumn[]>
 ) {
-  // UTILS
+  // Utils
   const { t } = useI18n()
   const { scrollbarWidth, isOverflown } = useOverflow()
+  const { parseUrlParams, hasVisibleCol, getStorageKey } = useTableUtils()
+
+  // Store
+  const { getTableState } = useTableStore()
+  const tableState = getTableState(getStorageKey())
+
+  // Layout
+  const originalColumns = columnsRef.value.map(
+    (col: any) => new TableColumn(col)
+  )
+  const internalColumns = ref<TableColumn[]>([])
+  createInternalColumns()
+
+  const nonHelpersColumns = computed(() =>
+    internalColumns.value.filter(col => !col.isHelperCol)
+  )
+
+  // Provide
+  provide(tableColumnsKey, internalColumns)
+  provide(tableNonHelpersColumnsKey, nonHelpersColumns)
+  provide(tableColumnsRecreateKey, () => createInternalColumns(true))
+
+  const searchableColumnLabels = computed(() => {
+    return columnsRef.value.filter(col => col.searchable).map(col => col._label)
+  })
+
+  const hasVisibleColumn = computed(() => hasVisibleCol(internalColumns.value))
+
+  /**
+   * Reorders and handles the column visibility based on the URL
+   * Note: Mutates the columns
+   */
+  function handleColumnsVisibility(_columns: TableColumn[]) {
+    const { columns: visibleColumns } = parseUrlParams()
+
+    // When columns are provided in the URL, we set the visibility for the columns
+    // that are in the URL and reset it for the others
+    if (visibleColumns?.length) {
+      _columns.forEach(col => {
+        const colInUrl = visibleColumns.indexOf(col.field)
+
+        if (colInUrl > -1 || col.isHelperCol) {
+          col.hidden = false
+          col._internalSort = col.isHelperCol ? -1 : colInUrl
+        } else {
+          col.hidden = true
+        }
+      })
+
+      // We reorder the columns based on the `_internalSort` property
+      _columns.sort((a, b) => {
+        if (a._internalSort === undefined || b._internalSort === undefined) {
+          return 0
+        }
+
+        return a._internalSort - b._internalSort
+      })
+    }
+
+    return _columns
+  }
+
+  /**
+   * Will put the filters and sorting from URL or from TableState into the columns
+   * Note: Mutates the columns
+   */
+  function handleColumnsData(_columns: TableColumn[]) {
+    const {
+      sort,
+      filters,
+      columns: visibleColumns,
+      queryBuilder: queryBuilderFromUrl,
+    } = parseUrlParams()
+    const { columns: stateColumns } = tableState.value
+
+    const isUrlUsed =
+      !!sort.length ||
+      !!filters.length ||
+      !!visibleColumns?.length ||
+      !!queryBuilderFromUrl?.length
+
+    // When sorting is provided in the URL, we set the sorting for the columns
+    // that are in the URL and reset it for the others
+    if (sort) {
+      _columns.forEach(col => {
+        const sortInUrlIdx = sort.findIndex(
+          sortItem => sortItem.field === col.field
+        )
+        const sortInUrl = sort[sortInUrlIdx]
+
+        if (sortInUrl) {
+          col.sort = sortInUrl.sort
+          col.sortOrder = sortInUrlIdx + 1
+        } else {
+          col.sort = undefined
+          col.sortOrder = undefined
+        }
+      })
+    }
+
+    // When filters are provided in the URL, we set the filters for the columns
+    filters?.forEach(filter => {
+      if ('isGroup' in filter) {
+        return
+      }
+
+      const col = _columns.find(col => col.field === filter.field)
+
+      if (col) {
+        col.filters.push(
+          new FilterItem<any>({
+            field: filter.field,
+            comparator: filter.comparator,
+            value: parseValue(filter.value, col.dataType),
+          })
+        )
+      }
+    })
+
+    // When columns are present in the table state, we set the appropriate data
+    stateColumns?.forEach((stateColumn, idx) => {
+      const col = _columns.find(col => col.field === stateColumn.field)
+
+      if (col) {
+        // We set the `filters`, `sorting`, `visibility` only in case we don't use
+        // server state management and we didn't provide anything in the URL
+        if (!config.table.useServerState && !isUrlUsed) {
+          col.filters = stateColumn.filters.map(
+            filter => new FilterItem(filter)
+          )
+          col.sort = stateColumn.sort
+          col.sortOrder = stateColumn.sortOrder
+          col.hidden = stateColumn.hidden
+          col._internalSort = idx
+        }
+
+        // We set the column width
+        col.width = stateColumn.width
+      }
+    })
+
+    // We reorder the columns based on the `_internalSort` property
+    // The _internalSort property is set only when no table URL was provided
+    _columns.sort((a, b) => {
+      if (a._internalSort === undefined || b._internalSort === undefined) {
+        return 0
+      }
+
+      return a._internalSort - b._internalSort
+    })
+
+    return _columns
+  }
 
   /**
    * Will add `helper` columns to the table
    *  - selection
    *  - group expansion
-   *
-   * Also will merge the column with any state that is saved in the local storage
-   * Note: Mutates the columns!
    */
-  const extendColumns = (columns: TableColumn[], options?: Options) => {
+  function extendColumns(columns: TableColumn[], options?: Options) {
     const { groupsRef = [] } = options || {}
     const groups = toValue(groupsRef)
     const isSelectable = !!props.selectable
     const groupExpandWidth = props.groupExpandWidth || 28
 
-    const tableState = toValue(tableStateRef)
-    const colsState = tableState.columns || []
+    // We create a copy of the columns but we keep the reference to the original
+    // column objects so we can mutate them
+    const _columns = [...columns]
 
-    const extendedColumns: TableColumn[] = columns.map(col => {
-      const colStateIdx = colsState.findIndex(c => c.field === col.field)
-      const colState = colsState[colStateIdx]
-
-      return new TableColumn({
-        ...col,
-        ...(colState || {}),
-        ...(colStateIdx > -1 ? { _internalSort: colStateIdx } : {}),
-      })
-    })
-
-    extendedColumns.sort(
-      (a, b) => (a._internalSort || 0) - (b._internalSort || 0)
-    )
-
-    extendedColumns.unshift(
+    // Groups
+    // TODO: Implement groups
+    _columns.unshift(
       ...groups.map(
         (group, idx) =>
           new TableColumn({
@@ -78,29 +222,32 @@ export function useTableColumns(
       )
     )
 
-    isSelectable &&
-      extendedColumns.unshift(
+    // Selection
+    if (isSelectable) {
+      _columns.unshift(
         new TableColumn({
           field: '_selectable',
           width: '40px',
           hideLabel: true,
           isHelperCol: true,
           label: t('table.selectable'),
+          headerClasses: 'flex-center',
         })
       )
+    }
 
-    return extendedColumns
+    return _columns
   }
 
   /**
    * Recalculates the columns
    */
-  const resizeColumns = (
+  function resizeColumns(
     containerElRef: MaybeRefOrGetter<Element>,
     wrapperElRef: MaybeRefOrGetter<Element>,
     internalColumnsRef: MaybeRefOrGetter<TableColumn[]>,
     options: Options = {}
-  ) => {
+  ) {
     const container = toValue(containerElRef)
     const wrapper = toValue(wrapperElRef)
     const containerWidth = container.clientWidth
@@ -113,7 +260,6 @@ export function useTableColumns(
       containerWidth - Number(isWrapperOverflown) * scrollbarWidth - 1
 
     const cols = toValue(internalColumnsRef)
-    // extendColumns(cols, options)
 
     const colsTotalWidth = cols.reduce<{ relative: number; fixed: number }>(
       (agg, col) => {
@@ -142,11 +288,11 @@ export function useTableColumns(
           : col.width
     )
 
-    const calculateColWidth = (
+    function calculateColWidth(
       colWidth: number,
       colsTotalWidth: number,
       componentWidth: number
-    ) => {
+    ) {
       return (componentWidth / colsTotalWidth) * colWidth
     }
 
@@ -214,5 +360,24 @@ export function useTableColumns(
     return cols
   }
 
-  return { resizeColumns, extendColumns }
+  /**
+   * Creates the internal columns
+   */
+  function createInternalColumns(shouldRecreate?: boolean) {
+    if (shouldRecreate) {
+      columnsRef.value = originalColumns.map(col => new TableColumn(col))
+    }
+
+    internalColumns.value = handleColumnsData(
+      handleColumnsVisibility(extendColumns(columnsRef.value))
+    )
+  }
+
+  return {
+    internalColumns,
+    hasVisibleColumn,
+    searchableColumnLabels,
+    resizeColumns,
+    extendColumns,
+  }
 }

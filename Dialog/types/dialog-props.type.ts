@@ -44,6 +44,12 @@ export interface FloatingUIBaseProps {
    * CANNOT BE USED WITH OVERLAY!
    */
   noUplift?: boolean
+
+  /**
+   * Function we can inject before the hide event
+   * Should return whether the hide event should go through or not (Boolean)
+   */
+  beforeHideFnc?: () => boolean | Promise<boolean>
 }
 
 export interface IDialogProps extends FloatingUIBaseProps {

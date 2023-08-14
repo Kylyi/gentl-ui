@@ -99,7 +99,9 @@ const mask = computed<AnyMaskedOptions>(() => {
         return val
       }
 
-      return parseDate(val, { isLocalString: true })
+      return props.format
+        ? parseDate(val, { isLocalString: true }).format(props.format)
+        : parseDate(val, { isLocalString: true })
     },
   }
 })
@@ -112,7 +114,12 @@ const usedTouch = ref(false)
 function handleDateSelect(val: Dayjs) {
   preventSync.value = true
   touch()
-  handleManualModelChange(val)
+
+  if (props.format) {
+    handleManualModelChange(val.format(props.format))
+  } else {
+    handleManualModelChange(val)
+  }
 
   if (props.autoClose) {
     menuProxyEl.value?.hide()

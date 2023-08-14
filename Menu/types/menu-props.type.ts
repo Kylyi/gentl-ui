@@ -13,4 +13,10 @@ export interface IMenuProps extends FloatingUIBaseProps {
   offset?: number
   placement?: Placement
   virtual?: boolean
+
+  /**
+   * Function we can inject before the hide event
+   * Should return whether the hide event should go through or not (Boolean)
+   */
+  beforeHideFnc?: () => boolean | Promise<boolean>
 }

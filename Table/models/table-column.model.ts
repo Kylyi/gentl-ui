@@ -1,24 +1,17 @@
-import { Required } from 'utility-types'
 import { CSSProperties } from 'vue'
+import { Required } from 'utility-types'
 
-// TYPES
+// Types
 import type { DistinctData } from '~/components/Table/types/distinct-data.type'
 import type { IItem, IItemBase } from '~/libs/App/types/item.type'
+import type { ITableOrderBy } from 'components/Table/types/table-query.type'
 
-// MODELS
+// Models
 import { FilterItem } from '~/libs/App/data/models/filter-item'
 import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
 
-// CONSTANTS
+// Constants
 import { DATE_TYPES } from '~/libs/App/types/datetime.type'
-import { config } from '~/config'
-
-const STRING_LIKE_COMPARATORS = [
-  ComparatorEnum.STARTS_WITH,
-  ComparatorEnum.ENDS_WITH,
-  ComparatorEnum.CONTAINS,
-  ComparatorEnum.EQUAL,
-]
 
 export class TableColumn<T = IItem> implements IItemBase<T> {
   name: string | Extract<keyof T, string | number>
@@ -64,79 +57,82 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
       return undefined
     }
 
-    // We can also filter by `null` values
-    // but Prisma doesn't support `null` in `in` or `notIn` comparators
-    // so we need to extract those values and add them to the query manually
-    const comparatorsWithNull: ComparatorEnum[] = []
+    // Filter must have a comparator and value to be considered valid
+    const validFilters = this.filters.filter(
+      filter => filter.comparator && filter.value !== undefined
+    )
 
-    const filterConditions = this.filters.reduce((agg, filter) => {
-      const isEmptyArray = Array.isArray(filter) && !filter.length
+    return validFilters
 
-      if (filter.compareValue !== undefined && !isEmptyArray) {
-        // When using the `in` or `notIn` comparator, we have an array of values
-        if (Array.isArray(filter.compareValue)) {
-          if (filter.compareValue.some(item => item._value === null)) {
-            comparatorsWithNull.push(filter.comparator)
-          }
+    // // We can also filter by `null` values
+    // // but Prisma doesn't support `null` in `in` or `not.in` comparators
+    // // so we need to extract those values and add them to the query manually
+    // const comparatorsWithNull: ComparatorEnum[] = []
 
-          // The `_value` comes from the DistnctData type
-          agg[filter.comparator] = filter.compareValue
-            .map(item => {
-              return item._value
-            })
-            .filter(Boolean)
+    // const filterConditions = this.filters.reduce((agg, filter) => {
+    //   const isEmptyArray = Array.isArray(filter) && !filter.length
 
-          // We don't want to send empty arrays
-          if (agg[filter.comparator].length === 0) {
-            delete agg[filter.comparator]
-          }
-        }
+    //   if (filter.value !== undefined && !isEmptyArray) {
+    //     // When using the `in` or `not.in` comparator, we have an array of values
+    //     if (Array.isArray(filter.value)) {
+    //       if (filter.value.some(item => item._value === null)) {
+    //         comparatorsWithNull.push(filter.comparator)
+    //       }
 
-        // When using `datetime` or `date` datatype, we need to create a range
-        else if (
-          (this.dataType === 'datetime' || this.dataType === 'date') &&
-          filter.comparator === ComparatorEnum.EQUAL
-        ) {
-          agg.gte = filter.compareValue
-          agg.lt = $date(filter.compareValue).add(1, 'day')
-        }
+    //       // The `_value` comes from the DistinctData type
+    //       agg[filter.comparator] = filter.value
+    //         .map(item => item._value)
+    //         .filter(Boolean)
 
-        // Otherwise, we just use the value
-        else {
-          agg[filter.comparator] = filter.compareValue
-        }
-      }
+    //       // We don't want to send empty arrays
+    //       if (agg[filter.comparator].length === 0) {
+    //         delete agg[filter.comparator]
+    //       }
+    //     }
 
-      return agg
-    }, {} as IItem)
+    //     // When using `datetime` or `date` datatype, we need to create a range
+    //     else if (
+    //       (this.dataType === 'datetime' || this.dataType === 'date') &&
+    //       filter.comparator === ComparatorEnum.EQUAL
+    //     ) {
+    //       agg.gte = filter.value
+    //       agg.lt = $date(filter.value).add(1, 'day')
+    //     }
 
-    let query: IItem = {}
+    //     // Otherwise, we just use the value
+    //     else {
+    //       agg[filter.comparator] = filter.value
+    //     }
+    //   }
 
-    const isStringLikeFilter =
-      this.dataType === 'string' &&
-      STRING_LIKE_COMPARATORS.includes(this.comparator)
+    //   return agg
+    // }, {} as IItem)
 
-    set(query, this.field, {
-      ...filterConditions,
-      ...(config.table.useInsensitiveFilter &&
-        isStringLikeFilter && { mode: 'insensitive' }),
-    })
+    // let query: IItem = {}
 
-    if (comparatorsWithNull.length) {
-      query = {
-        OR: [query],
-      }
+    // const isStringLikeFilter = this.dataType === 'string'
 
-      comparatorsWithNull.forEach(comparator => {
-        query.OR.unshift({
-          [this.field]: {
-            [comparator === ComparatorEnum.IN ? 'equals' : 'not']: null,
-          },
-        })
-      })
-    }
+    // set(query, this.field, {
+    //   ...filterConditions,
+    //   ...(config.table.useInsensitiveFilter &&
+    //     isStringLikeFilter && { mode: 'insensitive' }),
+    // })
 
-    return query
+    // if (comparatorsWithNull.length) {
+    //   query = {
+    //     OR: [query],
+    //   }
+
+    //   comparatorsWithNull.forEach(comparator => {
+    //     query.OR.unshift({
+    //       [this.field]: {
+    //         [comparator === ComparatorEnum.IN ? 'equals' : 'not']: null,
+    //       },
+    //     })
+    //   })
+    // }
+
+    // return query
   }
 
   get filteredKeys() {
@@ -148,7 +144,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   }
 
   // SORTING
-  sort?: -1 | 0 | 1
+  sort?: 'asc' | 'desc'
   sortOrder?: number
 
   /**
@@ -162,15 +158,12 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
    */
   sortFormat?: (row: T) => string | number | boolean
 
-  get sortDbQuery(): Record<string, 'asc' | 'desc'> | undefined {
+  get sortDbQuery(): ITableOrderBy | undefined {
     if (!this.sort) {
       return undefined
     }
 
-    const query: Record<string, any> = {}
-    set(query, this.field, this.sort === 1 ? 'asc' : 'desc')
-
-    return query
+    return { field: this.field.toString(), direction: this.sort }
   }
 
   /**
@@ -236,10 +229,14 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
 
     switch (this.dataType) {
       case 'number':
-      case 'boolean':
       case 'datetime':
       case 'date':
         this.comparator = col.comparator ?? ComparatorEnum.EQUAL
+
+        break
+
+      case 'boolean':
+        this.comparator = col.comparator ?? ComparatorEnum.IS
 
         break
 

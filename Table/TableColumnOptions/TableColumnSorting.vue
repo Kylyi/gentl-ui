@@ -1,13 +1,6 @@
 <script setup lang="ts">
-// MODELS
-import { TableColumnState } from '~/components/Table/models/table-column-state.model'
+// Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
-
-// INJECTION KEYS
-import {
-  refreshTableDataKey,
-  updateTableStateKey,
-} from '~/components/Table/provide/table.provide'
 
 type IProps = {
   columns?: TableColumn[]
@@ -18,20 +11,15 @@ type IProps = {
 const props = withDefaults(defineProps<IProps>(), {
   multiSort: true,
 })
-
-// INJECTIONS
-const refreshData = injectStrict(refreshTableDataKey)
-const updateTableState = injectStrict(updateTableStateKey)
-
 // LAYOUT
 const column = toRef(props, 'column')
 
-function handleSort(sortValue: -1 | 0 | 1) {
+function handleSort(sortValue?: 'asc' | 'desc') {
   column.value.sort = sortValue || undefined
 
   // Using multisort
   if (props.multiSort && props.columns) {
-    if (sortValue === 0) {
+    if (!sortValue) {
       // These are the columns that have higher sortOrder than the current column
       // We need to adjust their number accordingly, so that the order is not broken
       const sortedColumnsAfter = props.columns.filter(
@@ -48,25 +36,6 @@ function handleSort(sortValue: -1 | 0 | 1) {
         props.columns.filter(col => col.sortOrder !== undefined).length + 1
     }
   }
-
-  // Update the table state
-  updateTableState({}, tableState => {
-    const foundColumn = tableState.columns.find(
-      column => column.field === props.column.field
-    )
-
-    if (foundColumn) {
-      foundColumn.sort = props.column.sort
-      foundColumn.sortOrder = props.column.sortOrder
-    } else {
-      tableState.columns.push(new TableColumnState(props.column))
-    }
-
-    return tableState
-  })
-
-  // Refresh data
-  refreshData()
 }
 </script>
 
@@ -87,26 +56,29 @@ function handleSort(sortValue: -1 | 0 | 1) {
         :label="$t('sortAscending')"
         size="sm"
         justify="!start"
+        no-uppercase
         icon="ph:sort-ascending-bold"
-        :class="{ 'is-active': column.sort === 1 }"
-        @click="handleSort(1)"
+        :class="{ 'is-active': column.sort === 'asc' }"
+        @click="handleSort('asc')"
       />
 
       <Btn
         :label="$t('sortDescending')"
         size="sm"
         justify="!start"
+        no-uppercase
         icon="ph:sort-descending-bold"
-        :class="{ 'is-active': column.sort === -1 }"
-        @click="handleSort(-1)"
+        :class="{ 'is-active': column.sort === 'desc' }"
+        @click="handleSort('desc')"
       />
 
       <Btn
         :label="$t('clearSort')"
         size="sm"
         justify="!start"
+        no-uppercase
         icon="ic:round-clear"
-        @click="handleSort(0)"
+        @click="handleSort()"
       />
     </div>
   </div>

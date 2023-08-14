@@ -111,7 +111,7 @@ function handleStep() {
   }
 
   const nextValue = +currentValue + stepAdjusted.value * modifier.value
-  handleManualModelChange(nextValue, true)
+  handleManualModelChange(nextValue, false)
 }
 
 function startStep(_: PointerEvent, increment = true) {

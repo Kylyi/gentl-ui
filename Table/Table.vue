@@ -1,19 +1,18 @@
 <script setup lang="ts">
-// VIRTUAL SCROLLER
+// Virtual scroller
 // @ts-expect-error - no types
 import { DynamicScroller, DynamicScrollerItem } from 'vue-virtual-scroller'
+
 import { config } from '~/config'
 
-// TYPES
+// Types
 import type { ITableProps } from '~/components/Table/types/table-props.type'
 
-// COMPOSITION FUNCTIONS
+// Functions
 import { useTableData } from '~/components/Table/functions/useTableData'
-import { useTableExporting } from '~/components/Table/functions/useTableExporting'
 import { useTableLayout } from '~/components/Table/functions/useTableLayout'
 import { useTableSelection } from '~/components/Table/functions/useTableSelection'
-import { useTableUtils } from '~/components/Table/functions/useTableUtils'
-import { getTableStateDefault } from '~/components/Table/constants/table-state.default'
+import { useTableMetaData } from '~/components/Table/functions/useTableMetaData'
 
 const props = withDefaults(defineProps<ITableProps>(), {
   breakpoint: 'md',
@@ -43,37 +42,36 @@ defineExpose({
   refreshData: () => refreshData(),
 })
 
-// Utils
-const { getTableState, getStorageKey } = useTableUtils()
+// Layout
+const queryBuilder = useVModel(props, 'queryBuilder')
 
-const tableState =
-  (await getTableState()) ??
-  useLocalStorage(getStorageKey()!, getTableStateDefault())
+const { columns } = await useTableMetaData(props)
 
 const {
+  // Element refs
   scrollerEl,
   headerEl,
   tableEl,
-  columns,
-  TableRowComponent,
+
+  // Columns
   internalColumns,
   hasVisibleColumn,
+
+  // General
   isScrolled,
   rowKey,
+  TableRowComponent,
   handleScrollLeft,
   handleRowClick,
   throttledHandleResize,
-  searchableColumnLabels,
-} = useTableLayout(props, tableState)
+} = useTableLayout(props, columns)
 
 const {
   isLoading,
   rows,
-  search,
-  storageKey,
   refreshData,
 
-  // PAGINATION
+  // Pagination
   currentPage,
   currentPageSize,
   isFirstPage,
@@ -82,9 +80,9 @@ const {
   totalRows,
   prev,
   next,
-} = await useTableData(props, internalColumns, tableState)
+} = await useTableData(props, internalColumns)
 
-const { isExporting, handleExportData } = useTableExporting()
+// const { isExporting, handleExportData } = useTableExporting()
 
 useTableSelection(props)
 </script>
@@ -99,7 +97,11 @@ useTableSelection(props)
       v-if="!noTop"
       name="top"
     >
-      <div class="table-container__top">
+      <TableTop
+        v-model:query-builder="queryBuilder"
+        :selectable="selectable"
+      />
+      <!-- <div class="table-container__top">
         <slot
           name="search"
           :rows="rows"
@@ -109,6 +111,7 @@ useTableSelection(props)
             :columns="internalColumns"
             :no-search="noSearch"
             :use-chips="useChips"
+            :query-builder="queryBuilder"
             :searchable-column-labels="searchableColumnLabels"
           />
         </slot>
@@ -138,7 +141,7 @@ useTableSelection(props)
         />
 
         <slot name="top-right" />
-      </div>
+      </div> -->
     </slot>
 
     <!-- BELOW TOP -->
@@ -253,7 +256,7 @@ useTableSelection(props)
   --apply: relative flex flex-col overflow-auto max-h-full max-w-full bg-ca;
 
   &__top {
-    --apply: flex shrink-0 gap-x-1 border-b-1 border-ca p-2 p-l-1 overflow-auto;
+    --apply: flex flex-col shrink-0 gap-1 border-b-1 border-ca p-2 p-l-1 overflow-auto;
   }
 
   .is-clickable {

@@ -12,6 +12,10 @@ export function useQueryBuilderDragAndDrop() {
   const queryBuilderEl = ref<HTMLDivElement>()
   const draggedItem = ref<IQueryBuilderDraggedItem>()
 
+  const queryBuilderElRect = computed(() =>
+    queryBuilderEl.value?.getBoundingClientRect()
+  )
+
   provide(qbDraggedItemKey, draggedItem)
 
   const { y: scrollY } = useScroll(queryBuilderEl, {
@@ -69,8 +73,8 @@ export function useQueryBuilderDragAndDrop() {
       }
 
       draggedItem.value!.dropIndicatorPos = {
-        x: rowX + offset.x - queryBuilderEl.value!.offsetLeft,
-        y: rowY + offset.y + scrollY.value - queryBuilderEl.value!.offsetTop,
+        x: rowX + offset.x - (queryBuilderElRect.value?.x ?? 0),
+        y: rowY + offset.y + scrollY.value - (queryBuilderElRect.value?.y ?? 0),
         width: rowWidth,
       }
 
@@ -86,13 +90,13 @@ export function useQueryBuilderDragAndDrop() {
       }
 
       draggedItem.value!.dropIndicatorPos = {
-        x: rowX + offset.x - queryBuilderEl.value!.offsetLeft,
+        x: rowX + offset.x - (queryBuilderElRect.value?.x ?? 0),
         y:
           rowY +
           offset.y +
           scrollY.value +
           rowHeight -
-          queryBuilderEl.value!.offsetTop,
+          (queryBuilderElRect.value?.y ?? 0),
         width: rowWidth,
       }
 

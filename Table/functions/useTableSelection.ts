@@ -1,18 +1,19 @@
-// TYPES
+// Types
 import type { ITableProps } from '~/components/Table/types/table-props.type'
+import type { ITableSelection } from '~/components/Table/types/table-selection.type'
 
-// COMPOSITION FUNCTIONS
+// Functions
 import { useTableUtils } from '~/components/Table/functions/useTableUtils'
 
-// INJECTION KEYS
+// Injections
 import {
   tableIsSelectedRowKey,
   tableSelectRowKey,
+  tableSelectionKey,
 } from '~/components/Table/provide/table.provide'
-import { ITableSelection } from '~/components/Table/types/table-selection.type'
 
 export function useTableSelection(props: ITableProps) {
-  // UTILS
+  // Utils
   const { getRowKey } = useTableUtils()
 
   const selection = props.selected
@@ -62,6 +63,7 @@ export function useTableSelection(props: ITableProps) {
 
   provide(tableSelectRowKey, handleSelectRow)
   provide(tableIsSelectedRowKey, isSelected)
+  provide(tableSelectionKey, selection)
 
   return {
     selection,

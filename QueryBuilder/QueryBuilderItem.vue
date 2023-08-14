@@ -9,6 +9,7 @@ import {
 import {
   qbColumnsKey,
   qbHoveredItemKey,
+  qbIsSmallerScreenKey,
   qbItemsKey,
 } from '~/components/QueryBuilder/provide/query-builder.provide'
 
@@ -21,6 +22,7 @@ const emits = defineEmits<{
 const columns = injectStrict(qbColumnsKey)
 const items = injectStrict(qbItemsKey)
 const hoveredRow = injectStrict(qbHoveredItemKey)
+const isSmallerScreen = injectStrict(qbIsSmallerScreenKey)
 
 // Layout
 const item = toRef(props, 'item')
@@ -60,6 +62,19 @@ function handleFieldChange(field: string) {
   item.value.comparator = col.comparator
   item.value.value = col.dataType === 'boolean' ? true : undefined
 }
+
+// Validation
+const $v = useVuelidate(
+  {
+    item: {
+      field: { required },
+      comparator: { required },
+      value: { required },
+    },
+  },
+  { item },
+  { $scope: 'qb' }
+)
 </script>
 
 <template>
@@ -69,6 +84,7 @@ function handleFieldChange(field: string) {
       'is-hovered': hoveredRow === item,
       'is-last-child': isLastChild,
       'no-draggable': noDraggable,
+      'is-smaller-screen': isSmallerScreen,
     }"
     @mouseover.stop="hoveredRow = item"
     @mouseleave="hoveredRow = undefined"
@@ -80,11 +96,7 @@ function handleFieldChange(field: string) {
       m="t-2.5"
     />
 
-    <div
-      flex="~ col lg:row gap-1"
-      grow
-      p="y-1"
-    >
+    <div class="qb-item__content">
       <!-- Field selector -->
       <Selector
         v-model="item.field"
@@ -93,7 +105,8 @@ function handleFieldChange(field: string) {
         size="sm"
         option-key="field"
         preselect-first
-        w="lg:60"
+        class="qb-item__content-field"
+        :errors="$v.item.field.$errors"
         @update:model-value="handleFieldChange"
       />
 
@@ -105,9 +118,10 @@ function handleFieldChange(field: string) {
           :options="colSelected.comparators || comparators"
           emit-key
           size="sm"
-          w="lg:40"
-          :option-label="condition => $t(`comparator.${condition.id}`)"
+          class="qb-item__content-comparator"
+          :option-label="comparator => $t(`comparator.${comparator.id}`)"
           no-search
+          :errors="$v.item.comparator.$errors"
         />
 
         <!-- Value -->
@@ -115,9 +129,12 @@ function handleFieldChange(field: string) {
           :is="component.component"
           v-model="item.value"
           size="sm"
-          w="lg:70"
+          :class="{
+            'qb-item__content-value': colSelected.dataType !== 'boolean',
+          }"
           v-bind="component.props"
           :placeholder="$t('queryBuilder.value')"
+          :errors="$v.item.value.$errors"
         />
       </template>
     </div>
@@ -125,20 +142,50 @@ function handleFieldChange(field: string) {
     <Btn
       size="xs"
       preset="TRASH"
-      m="r-2"
-      self="start lg:center"
+      m="t-2 r-2"
+      self="start"
       @click="handleRemoveCondition"
     />
+
+    <slot name="append" />
   </li>
 </template>
 
 <style scoped lang="scss">
 .qb-item {
-  --apply: relative flex gap-2 flex-wrap rounded-custom p-l-2 min-h-10 m-r-2 m-l-5
+  --apply: relative flex gap-2 rounded-custom p-l-2 min-h-10 m-r-2 m-l-5
     items-center bg-ca border-1 border-transparent;
 
   &.is-hovered {
     --apply: bg-white dark:bg-darker;
+  }
+
+  &.is-smaller-screen .qb-item__content {
+    --apply: flex-col;
+  }
+
+  &:not(.is-smaller-screen) .qb-item__content {
+    &-field {
+      --apply: w-60;
+    }
+
+    &-comparator {
+      --apply: w-40;
+    }
+
+    &-value {
+      --apply: w-70;
+    }
+  }
+
+  &__content {
+    --apply: flex gap-1 grow p-y-1;
+
+    &-field,
+    &-comparator,
+    &-value {
+      --apply: max-w-80;
+    }
   }
 }
 

@@ -123,6 +123,9 @@ async function createFloatInstance(options?: { skipFlip?: boolean }) {
     menuEl.value,
     {
       middleware: [
+        ...(props.fit ? [fitWidth] : []),
+        ...(props.matchWidth ? [matchWidth] : []),
+        ...(props.cover ? [cover] : []),
         offset(props.offset),
         shift(),
         ...(skipFlip
@@ -141,10 +144,6 @@ async function createFloatInstance(options?: { skipFlip?: boolean }) {
           padding: 8,
           boundary: props.boundary,
         }),
-
-        ...(props.fit ? [fitWidth] : []),
-        ...(props.matchWidth ? [matchWidth] : []),
-        ...(props.cover ? [cover] : []),
 
         ...(!props.noArrow && !props.cover
           ? [arrow({ element: arrowEl.value!, padding: 4 })]
@@ -376,9 +375,16 @@ function show(force?: boolean) {
 
   isReferenceElTransparent.value =
     referenceElStyle.backgroundColor === 'rgba(0, 0, 0, 0)'
+
   if (isReferenceElTransparent.value && color.value === 'light') {
-    ;(referenceEl.value as any).classList.add('bg-white')
+    ;(referenceEl.value as any).style.backgroundColor = 'white'
+  } else if (isReferenceElTransparent.value) {
+    ;(referenceEl.value as any).style.backgroundColor = 'black'
   }
+
+  ;(referenceEl.value as any).classList.add('shadow-consistent-sm')
+  ;(referenceEl.value as any).classList.add('shadow-ca')
+  ;(referenceEl.value as any).classList.add('transition-all')
 
   preventInteractions.value = true
 
@@ -411,7 +417,11 @@ function show(force?: boolean) {
   }
 }
 
-function hide(force = false, skipAnimation = false, hideAncestors?: boolean) {
+async function hide(
+  force = false,
+  skipAnimation = false,
+  hideAncestors?: boolean
+) {
   if (preventInteractions.value || !internalValue.value) {
     return
   }
@@ -439,7 +449,9 @@ function hide(force = false, skipAnimation = false, hideAncestors?: boolean) {
     })
   }
 
-  if (force || !props.persistent) {
+  const shouldHide = (await props.beforeHideFnc?.()) || true
+
+  if (force || (!props.persistent && shouldHide)) {
     backdropBg.value = 'bg-transparent'
     emits('before-hide')
 
@@ -499,10 +511,16 @@ function cleanComponent() {
   if (referenceEl.value) {
     ;(referenceEl.value as any).style.zIndex = referenceElOldZIndex.value
     referenceElOldZIndex.value = undefined
+    ;(referenceEl.value as any).classList.remove('shadow-consistent-sm')
+    ;(referenceEl.value as any).classList.remove('shadow-ca')
 
     if (isReferenceElTransparent.value) {
-      ;(referenceEl.value as any).classList.remove('bg-white')
+      ;(referenceEl.value as any).style.backgroundColor = 'transparent'
     }
+
+    setTimeout(() => {
+      ;(referenceEl.value as any).classList.remove('transition-all')
+    }, 150)
   }
 
   menuEl.value?.classList.remove('is-hiding')
@@ -680,7 +698,7 @@ defineExpose({
 }
 
 .arrow {
-  --apply: absolute w-2 h-2 rotate-45 dark:bg-darker bg-white;
+  --apply: absolute w-2 h-2 rotate-45 bg-white dark:bg-darker;
 
   &.has-header {
     --apply: bg-ca dark:bg-dark;

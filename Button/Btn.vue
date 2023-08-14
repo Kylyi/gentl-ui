@@ -153,7 +153,7 @@ defineExpose({
   }
 
   &.is-stacked {
-    --apply: flex-col flex-center p-t-2;
+    --apply: flex-col flex-center p-t-2 p-b-1;
   }
 
   .icon {
@@ -201,7 +201,7 @@ defineExpose({
   }
 
   &--xs {
-    --apply: min-h-6 min-w-6 flex-gap-1 p-x-2;
+    --apply: min-h-6 min-w-6 flex-gap-x-0.5 flex-gap-x-1 p-x-2;
 
     .icon {
       --apply: h-3.5 w-3.5;
