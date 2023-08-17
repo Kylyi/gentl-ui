@@ -25,16 +25,29 @@ export type ITableFilterRow = ITableFilterItem | ITableFilterGroup
 export type ITableQuery = {
   queryBuilder?: IQueryBuilderRow[]
   columnFilters?: ITableFilterItem[]
-  filter?: ITableFilterRow[]
+  filters?: ITableFilterRow[]
   orderBy?: ITableOrderBy[]
   search?: string
   take?: number
   skip?: number
   select?: string[]
   includeDeleted?: boolean
+  count?: boolean // Whether to also fetch the total count of items
+  fetchMore?: {
+    rowKey: string
+    $key: number | string
+  }
 }
 
 export type ITableDataFetchFncInput = {
+  /**
+   * The query parameters for the actual fetch query
+   */
   queryParams: ReturnType<typeof config.table.getQuery>
+
+  /**
+   * The table query object with all the filters, sorting and everything else
+   * in the object-like structure
+   */
   tableQuery: ITableQuery
 }

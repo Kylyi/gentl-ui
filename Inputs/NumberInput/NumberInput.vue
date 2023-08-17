@@ -24,7 +24,7 @@ const props = withDefaults(defineProps<INumberInputProps>(), {
 })
 
 defineEmits<{
-  (e: 'update:model-value', val?: string | undefined | null): void
+  (e: 'update:model-value', val?: number | undefined | null): void
   (e: 'blur'): void
 }>()
 

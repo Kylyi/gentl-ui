@@ -3,42 +3,30 @@ import { config } from '~/config'
 
 // Types
 import type { ITableProps } from '~/components/Table/types/table-props.type'
-import type { ITableLayout } from '~/components/Table/types/table-layout.type'
 
 // Injections
 import {
   tableColumnsKey,
-  tableColumnsRecreateKey,
-  tableLayoutKey,
-  tableLayoutsKey,
   tableNonHelpersColumnsKey,
-  tableRecreateQueryBuilderKey,
-  tableResizeKey,
   tableSelectionKey,
 } from '~/components/Table/provide/table.provide'
 
 // Components
 import QueryBuilderInline from '~/components/QueryBuilder/QueryBuilderInline.vue'
 
-const props = defineProps<Pick<ITableProps, 'queryBuilder' | 'selectable'>>()
+const props = defineProps<
+  Pick<ITableProps, 'queryBuilder' | 'selectable'> & { search?: string }
+>()
 
 // Constants
 const MIN_VISIBLE_QUERY_BUILDER_ROWS = 2
 const MAX_VISIBLE_QUERY_BUILDER_ROWS = 3
 const QUERY_BUILDER_INLINE_PADDING = 16
 
-// Utils
-const route = useRoute()
-
 // Injections
 const selection = injectStrict(tableSelectionKey)
 const columns = injectStrict(tableColumnsKey)
 const nonHelperColumns = injectStrict(tableNonHelpersColumnsKey)
-const layouts = injectStrict(tableLayoutsKey)
-const layout = injectStrict(tableLayoutKey)
-const columnsRecreate = injectStrict(tableColumnsRecreateKey)
-const queryBuilderRecreate = injectStrict(tableRecreateQueryBuilderKey)
-const tableResize = injectStrict(tableResizeKey)
 
 // Layout
 const queryBuilder = useVModel(props, 'queryBuilder')
@@ -90,47 +78,6 @@ const tableSorting = computed(() => {
     )
     .join(', ')
 })
-
-function handleLayoutSelect(layout: ITableLayout) {
-  const routeQueryWithoutTableParams = omit(route.query, [
-    'qb',
-    'filter',
-    'order',
-    'select',
-    'search',
-  ])
-
-  const queryParams = new URLSearchParams(layout.schema)
-  const qb = queryParams.get('qb')
-  const filter = queryParams.get('filter')
-  const order = queryParams.get('order')
-  const select = queryParams.get('select')
-  const search = queryParams.get('search')
-
-  navigateTo(
-    {
-      query: {
-        ...routeQueryWithoutTableParams,
-        ...(qb && { qb }),
-        ...(filter && { filter }),
-        ...(order && { order: `(${order})` }),
-        ...(select && { select }),
-        ...(search && { search }),
-        // ...(dbQuery.tableQuery.includeDeleted && {
-        //   includeDeleted: dbQuery.tableQuery.includeDeleted,
-        // }),
-      },
-    },
-    { replace: true }
-  )
-
-  // Refresh
-  setTimeout(() => {
-    queryBuilderRecreate()
-    columnsRecreate()
-    tableResize()
-  }, 0)
-}
 </script>
 
 <template>
@@ -181,7 +128,6 @@ function handleLayoutSelect(layout: ITableLayout) {
 
       <!-- Remove filters -->
       <Btn
-        preset="CLOSE"
         no-upeprcase
         shrink-0
         size="xs"
@@ -190,7 +136,10 @@ function handleLayoutSelect(layout: ITableLayout) {
         w="20"
         no-truncate
         stacked
-        self="center"
+        h="full"
+        bg="dark:darker"
+        color="ca hover:negative"
+        border="2 transparent hover:negative"
         @click="queryBuilderInlineEl?.clearFilter()"
       />
     </div>
@@ -213,7 +162,7 @@ function handleLayoutSelect(layout: ITableLayout) {
           v-if="selectable"
           flex="~ gap-1"
           items-center
-          text="caption"
+          text="caption xs"
         >
           <div fluent:select-all-on-20-regular />
           <span m="l-1">{{ $t('general.selected') }}</span>
@@ -228,16 +177,38 @@ function handleLayoutSelect(layout: ITableLayout) {
           no-uppercase
           :label="$t('table.groupEdit')"
           icon="line-md:chevron-small-right rotate-90 order-2"
-        />
+        >
+          <MenuProxy
+            hide-header
+            :no-arrow="false"
+          >
+            <Item
+              h="8"
+              p="x-2"
+              flex="center"
+            >
+              Something
+            </Item>
+            <Item
+              h="8"
+              p="x-2"
+              flex="center"
+            >
+              here
+            </Item>
+          </MenuProxy>
+        </Btn>
 
         <!-- Sorting -->
         <div
           v-if="tableSorting"
           flex="~ gap-1"
           items-center
+          border="l-1 ca"
+          p="l-2"
         >
           <span
-            text="caption"
+            text="caption xs"
             font="bold"
           >
             {{ $t('table.sortBy') }}:
@@ -253,10 +224,9 @@ function handleLayoutSelect(layout: ITableLayout) {
       <div
         flex="~ gap-2"
         items-center
-        p="b-1"
       >
         <span
-          text="caption"
+          text="caption xs"
           font="bold"
         >
           {{ $t('table.layoutState') }}:
@@ -267,19 +237,7 @@ function handleLayoutSelect(layout: ITableLayout) {
 
         <template v-if="config.table.useServerState">
           <!-- Layout selector -->
-          <Selector
-            :model-value="layout"
-            :options="layouts"
-            option-label="name"
-            size="sm"
-            w="50"
-            :placeholder="$t('table.layoutState')"
-            @update:model-value="handleLayoutSelect"
-          >
-            <template #prepend>
-              <div class="solar:eye-linear m-l-2 color-ca" />
-            </template>
-          </Selector>
+          <TableLayoutSelector v-model:query-builder="queryBuilder" />
 
           <!-- Layout settings -->
           <TableLayoutSettingsBtn />

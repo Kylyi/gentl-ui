@@ -53,6 +53,8 @@ export const useTableStore = defineStore('table', () => {
           sort: col.sort,
           sortOrder: col.sortOrder,
           filters,
+          frozen: col.frozen,
+          semiFrozen: col.semiFrozen,
         }
       })
     }

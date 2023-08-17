@@ -56,6 +56,11 @@ export interface ITableProps {
   hideHeader?: boolean
 
   /**
+   * Basically the opposite of pagination
+   */
+  infiniteScroll?: boolean
+
+  /**
    * Whether the table is in `loading` state
    */
   loading?: boolean
@@ -157,6 +162,7 @@ export interface ITableProps {
    * Method to get data for the table
    * `payloadKey` ~ key in the response that contains the data
    * `countKey` ~ key in the response that contains the total count of rows
+   * `urlKey` ~ key in the response that contains the query params for the request
    * `createIdentifier` ~ function to create a unique identifier for each row when the `rowKey` is not unique
    * `errorHandler` ~ function to handle errors that come from fetching the table data
    */
@@ -164,6 +170,7 @@ export interface ITableProps {
     fnc: (options: ITableDataFetchFncInput) => Promise<any> | any
     payloadKey?: string
     countKey?: string
+    queryParamsKey?: string
     createIdentifier?: (row: any, idx: number) => string | number
     errorHandler?: (error: any) => void
   }
@@ -174,7 +181,7 @@ export interface ITableProps {
   }
 
   getMetaData?: {
-    fnc: () => Promise<TableColumn<any>[]> | TableColumn<any>[]
+    fnc: () => any | Promise<any>
     columnsKey?: string
     layoutsKey?: string
     layoutKey?: string

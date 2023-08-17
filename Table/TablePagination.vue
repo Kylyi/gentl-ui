@@ -4,8 +4,10 @@ type IProps = {
   currentPageSize: number
   isFirstPage: boolean
   isLastPage: boolean
+  noPagination?: boolean
   pageCount: number
   totalRows: number
+  currentRows?: number
 
   prev: () => void
   next: () => void
@@ -69,13 +71,26 @@ const pages = computedEager(() => {
         display="!lt-md:none"
         flex="~ gap-x-2 center"
       >
-        <span text="caption">
+        <span
+          v-if="currentRows"
+          text="caption"
+        >
+          <span font="bold">{{ currentRows }}</span>
+          {{ $t('general.outOf') }}
+          <span font="bold">{{ totalRows }}</span>
+          {{ $t('general.row', totalRows) }}
+        </span>
+
+        <span
+          v-else
+          text="caption"
+        >
           {{ $t('table.totalRows') }}:
           {{ totalRows }}
         </span>
       </div>
 
-      <template v-if="pages.length > 1">
+      <template v-if="pages.length > 1 && !noPagination">
         <!-- FIRST BTN -->
         <Btn
           :disabled="isFirstPage"
@@ -129,6 +144,7 @@ const pages = computedEager(() => {
 
       <!-- Page size -->
       <div
+        v-if="!noPagination"
         absolute
         right-2
         display="!lt-md:none"

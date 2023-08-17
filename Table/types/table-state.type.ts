@@ -6,7 +6,7 @@ import { TableColumn } from 'components/Table/models/table-column.model'
 
 export type ITableColumnState = Pick<
   TableColumn,
-  'field' | 'width' | 'sort' | 'sortOrder' | 'hidden'
+  'field' | 'width' | 'sort' | 'sortOrder' | 'hidden' | 'frozen' | 'semiFrozen'
 > & {
   filters: Pick<TableColumn['filters'][0], 'field' | 'comparator' | 'value'>[]
 }

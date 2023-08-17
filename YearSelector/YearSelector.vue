@@ -27,14 +27,14 @@ const yearOptions = computed(() => {
   })
 })
 
-// INCREMENT / DECREMENT
+// Increment / Decrement
 const modifier = ref<-1 | 1>(1)
 const { pause, resume } = useIntervalFn(() => handleRangeChange(), 120, {
   immediate: false,
   immediateCallback: true,
 })
 
-function handleManualYearInputChange(year?: number | null) {
+function handleManualYearInputChange(year?: number | null | undefined) {
   if (isRangeChanged.value) {
     return
   }

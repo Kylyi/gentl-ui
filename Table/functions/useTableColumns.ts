@@ -2,6 +2,7 @@ import { config } from '~/config'
 
 // Types
 import type { ITableProps } from '~/components/Table/types/table-props.type'
+import type { ITableLayout } from '~/components/Table/types/table-layout.type'
 
 // Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
@@ -34,7 +35,8 @@ type Options = {
 
 export function useTableColumns(
   props: ITableProps,
-  columnsRef: Ref<TableColumn[]>
+  columnsRef: Ref<TableColumn[]>,
+  layoutRef: Ref<ITableLayout | undefined>
 ) {
   // Utils
   const { t } = useI18n()
@@ -72,11 +74,21 @@ export function useTableColumns(
    * Note: Mutates the columns
    */
   function handleColumnsVisibility(_columns: TableColumn[]) {
-    const { columns: visibleColumns } = parseUrlParams()
+    const { columns: urlVisibleColumns } = parseUrlParams({
+      columnsRef: _columns,
+    })
+    const { columns: schemaVisibleColumns } = parseUrlParams({
+      columnsRef: _columns,
+      searchParams: layoutRef.value?.schema,
+    })
 
-    // When columns are provided in the URL, we set the visibility for the columns
-    // that are in the URL and reset it for the others
-    if (visibleColumns?.length) {
+    const visibleColumns = urlVisibleColumns.length
+      ? urlVisibleColumns
+      : schemaVisibleColumns
+
+    // When columns are provided in the URL or in the layout schema, we set
+    //  visibility for the columns that are present and reset it for the others
+    if (visibleColumns?.length || schemaVisibleColumns?.length) {
       _columns.forEach(col => {
         const colInUrl = visibleColumns.indexOf(col.field)
 
@@ -107,18 +119,29 @@ export function useTableColumns(
    */
   function handleColumnsData(_columns: TableColumn[]) {
     const {
-      sort,
-      filters,
-      columns: visibleColumns,
-      queryBuilder: queryBuilderFromUrl,
-    } = parseUrlParams()
+      sort: urlSort,
+      filters: urlFilters,
+      columns: urlVisibleColumns,
+      queryBuilder: urlQueryBuilder,
+    } = parseUrlParams({ columnsRef: _columns })
+
+    const { schemaSort, filters: schemaFilters } = parseUrlParams({
+      columnsRef: _columns,
+      searchParams: layoutRef.value?.schema,
+    })
+
     const { columns: stateColumns } = tableState.value
 
     const isUrlUsed =
-      !!sort.length ||
-      !!filters.length ||
-      !!visibleColumns?.length ||
-      !!queryBuilderFromUrl?.length
+      !!urlSort.length ||
+      !!urlFilters.length ||
+      !!urlVisibleColumns?.length ||
+      !!urlQueryBuilder?.length
+
+    // When something is present in the URL, we just use that,
+    // otherwise we use the schema
+    const sort = isUrlUsed ? urlSort : schemaSort
+    const filters = isUrlUsed ? urlFilters : schemaFilters
 
     // When sorting is provided in the URL, we set the sorting for the columns
     // that are in the URL and reset it for the others
@@ -159,6 +182,7 @@ export function useTableColumns(
     })
 
     // When columns are present in the table state, we set the appropriate data
+    // based on used mode (server or local)
     stateColumns?.forEach((stateColumn, idx) => {
       const col = _columns.find(col => col.field === stateColumn.field)
 
@@ -175,8 +199,12 @@ export function useTableColumns(
           col._internalSort = idx
         }
 
-        // We set the column width
+        // We set the column data that we save in `localStorage`
         col.width = stateColumn.width
+
+        // TODO: Broken frozen columns on init
+        // col.frozen = stateColumn.frozen
+        // col.semiFrozen = stateColumn.semiFrozen
       }
     })
 
@@ -261,6 +289,8 @@ export function useTableColumns(
 
     const cols = toValue(internalColumnsRef)
 
+    // We split the columns into strictly defined (~ with fixed width)
+    // and relative (~ with relative width)
     const colsTotalWidth = cols.reduce<{ relative: number; fixed: number }>(
       (agg, col) => {
         if (!col.hidden) {
@@ -276,10 +306,16 @@ export function useTableColumns(
       { relative: 0, fixed: 0 }
     )
 
+    // We check if we need to adjust the columns
+    // Adjusting the columbs mean that we stretch the columns that have relative width
     const shouldAdjustCols =
       !!colsTotalWidth.relative &&
       colsTotalWidth.relative + colsTotalWidth.fixed < contentWidth
 
+    // When stretching the columns, we use some rounding. This rounding may add
+    // up to some extra pixels that we need to distribute to the columns relative columns
+    // so we sort the `relative` columns by its width and later stretch them
+    // from the smallest to the biggest
     const colsSortedByWidth = sortBy(
       cols.filter(col => !col.hidden),
       col =>
@@ -298,6 +334,9 @@ export function useTableColumns(
 
     let wExtra = 0
     colsSortedByWidth.forEach(col => {
+      const labelChars = col.hideLabel ? 0 : col.label.length
+      const colMinWidth = col.minWidth || labelChars * 6 + 80 // These numbers are arbitrary
+
       if (typeof col.width === 'string') {
         col.adjustedWidth = col.name.startsWith('_')
           ? +(stringToFloat(col.width) || 0)
@@ -310,13 +349,13 @@ export function useTableColumns(
             contentWidth - colsTotalWidth.fixed
           ),
           minColWidth,
-          0
+          colMinWidth || 0
         )
         wExtra += widthN - Math.floor(widthN)
 
         col.adjustedWidth = Math.floor(widthN)
       } else {
-        col.adjustedWidth = Math.max(col.width, minColWidth)
+        col.adjustedWidth = Math.max(col.width, minColWidth, colMinWidth || 0)
       }
     })
 

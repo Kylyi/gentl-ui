@@ -3,7 +3,13 @@
 import { TableColumn } from '~/components/Table/models/table-column.model'
 
 // Functions
-import { useTableColumnResizing } from '~/components/Table/functions/useTableColumnResizing'
+import {
+  ISplitter,
+  useTableColumnResizing,
+} from '~/components/Table/functions/useTableColumnResizing'
+
+// Injections
+import { tableSelectionKey } from '~/components/Table/provide/table.provide'
 
 // Components
 import HorizontalScroller from '~/components/Scroller/HorizontalScroller.vue'
@@ -17,7 +23,7 @@ type IProps = {
 }
 
 const props = defineProps<IProps>()
-defineEmits<{
+const emits = defineEmits<{
   (e: 'scrolled', left: number): void
 }>()
 
@@ -26,8 +32,52 @@ const { scrollbarWidth } = useOverflow()
 const { headerEl, activeSplitter, columnSplitters, handleSplitterPointerDown } =
   useTableColumnResizing(props)
 
+// Injections
+const selection = injectStrict(tableSelectionKey)
+
 // Layout
 const columns = toRef(props, 'columns')
+const scrollX = ref(0)
+
+const selectionState = computed({
+  get() {
+    const selectedCount = Object.values(selection.value || {}).filter(
+      Boolean
+    ).length
+    const totalCount = props.rows.length
+
+    return selectedCount === totalCount && selectedCount > 0
+      ? true // Everything is selected
+      : selectedCount > 0
+      ? null // Something is selected
+      : false // Nothing is selected
+  },
+  set(val: boolean | null) {
+    if (val === false) {
+      selection.value = {}
+    } else {
+      selection.value = props.rows.reduce((agg, row) => {
+        agg[row.id] = val
+
+        return agg
+      }, {} as Record<string, boolean>)
+    }
+  },
+})
+
+function handleScroll(x: number) {
+  scrollX.value = x
+  emits('scrolled', x)
+}
+
+function getSplitterLeft(splitter: ISplitter) {
+  const { column } = splitter
+
+  // We move the splitter by the scrollX value when the column is frozen
+  const offsetX = column.semiFrozen ? scrollX.value : 0
+
+  return `${splitter.left + offsetX - 2}px`
+}
 
 defineExpose({
   syncScroll: (left: number) => {
@@ -44,7 +94,7 @@ defineExpose({
     class="thead"
     content-class="relative"
     :style="{ '--scrollbarWidth': `${scrollbarWidth}px` }"
-    @scrolled="$emit('scrolled', $event)"
+    @scrolled="handleScroll"
   >
     <!-- Columns -->
     <template
@@ -58,7 +108,11 @@ defineExpose({
         :class="[
           col.headerClasses,
           `col-${col.name}`,
-          { 'has-data': !col.isHelperCol },
+          {
+            'has-data': !col.isHelperCol,
+            'is-frozen': col.frozen,
+            'is-semi-frozen': col.semiFrozen,
+          },
         ]"
         :style="{ ...col.headerStyle, [`--colWidth`]: col.adjustedWidthPx }"
       >
@@ -73,19 +127,33 @@ defineExpose({
           </span>
 
           <div v-if="col.name === '_selectable'">
-            <Checkbox />
+            <Checkbox v-model="selectionState" />
           </div>
 
-          <TableColumnFilterBtn
-            v-if="!(col.noFilterSort || col.isHelperCol)"
-            :column="col"
-            :columns="columns"
-            :rows="rows"
-            m="x-1"
-            shrink-0
-            :use-server="useServer"
-            :use-chips="useChips"
-          />
+          <div
+            flex="~ items-center"
+            relative
+          >
+            <TableColumnFreezeBtn
+              v-if="!col.isHelperCol"
+              :column="col"
+              :columns="columns"
+              position="!absolute"
+              left="-7"
+              backdrop-blur="sm"
+            />
+
+            <TableColumnFilterBtn
+              v-if="!(col.noFilterSort || col.isHelperCol)"
+              :column="col"
+              :columns="columns"
+              :rows="rows"
+              m="x-1"
+              shrink-0
+              :use-server="useServer"
+              :use-chips="useChips"
+            />
+          </div>
         </slot>
       </div>
     </template>
@@ -107,7 +175,7 @@ defineExpose({
         v-for="splitter in columnSplitters"
         :key="splitter.field"
         class="splitter"
-        :style="{ left: `${splitter.left - 2}px` }"
+        :style="{ left: getSplitterLeft(splitter) }"
         @pointerdown.stop.prevent="handleSplitterPointerDown(splitter, $event)"
       />
     </template>
@@ -116,13 +184,13 @@ defineExpose({
 
 <style lang="scss" scoped>
 .thead {
-  --apply: flex shrink-0 overflow-hidden relative
+  --apply: flex shrink-0 relative
     bg-white dark:bg-darker min-h-$headerHeight;
 }
 
 .th {
   --apply: flex shrink-0 items-center font-semibold text-xs tracking-wide
-    border-ca border-b-1 sm:w-$colWidth overflow-hidden;
+    border-ca border-b-1 sm:w-$colWidth;
 
   &.has-data {
     --apply: border-l-1;
@@ -135,7 +203,7 @@ defineExpose({
 }
 
 .splitter {
-  --apply: absolute top-0 bottom-0 w-7px;
+  --apply: absolute top-0 bottom-0 w-7px z-5;
 
   &-active {
     --apply: fixed z-$zMax border-x-3px border-ca bg-black dark:bg-white
@@ -145,5 +213,22 @@ defineExpose({
   &:hover {
     --apply: border-x-3px border-ca bg-black dark:bg-white cursor-col-resize;
   }
+}
+
+.th.is-semi-frozen {
+  --apply: z-6;
+
+  &::after {
+    --apply: content-empty absolute -right-px top-0 h-full w-px bg-primary;
+  }
+}
+
+.column-lock {
+  --apply: display-none;
+}
+
+.th:hover .column-lock,
+.th.is-frozen .column-lock {
+  --apply: display-flex;
 }
 </style>

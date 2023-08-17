@@ -13,6 +13,7 @@ import {
   qbContainerKey,
   qbItemsKey,
 } from '~/components/QueryBuilder/provide/query-builder.provide'
+import { tableRefreshKey } from '~/components/Table/provide/table.provide'
 
 // Components
 import Menu from '~/components/Menu/Menu.vue'
@@ -25,6 +26,7 @@ const emits = defineEmits<{
 // Injections
 const container = injectStrict(qbContainerKey)
 const items = injectStrict(qbItemsKey)
+const tableRefresh = injectStrict(tableRefreshKey, () => {})
 
 // Layout
 const item = toRef(props, 'item')
@@ -40,6 +42,8 @@ const levelColor = computed(() => {
 function handleSetCondition(val: 'AND' | 'OR') {
   item.value.condition = val
   conditionMenuEl.value?.hide()
+
+  tableRefresh()
 }
 
 function handleAddCondition(useParent?: boolean) {

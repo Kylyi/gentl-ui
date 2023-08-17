@@ -4,6 +4,7 @@ import { RecycleScroller } from 'vue-virtual-scroller'
 
 // Types
 import type { ITableProps } from '~/components/Table/types/table-props.type'
+import type { ITableLayout } from '~/components/Table/types/table-layout.type'
 
 // Models
 import { TableColumn } from 'components/Table/models/table-column.model'
@@ -22,7 +23,8 @@ import TableHeader from '~/components/Table/TableHeader.client.vue'
 
 export function useTableLayout(
   props: ITableProps,
-  columnsRef: Ref<TableColumn[]>
+  columnsRef: Ref<TableColumn[]>,
+  layoutRef: Ref<ITableLayout | undefined>
 ) {
   const instance = getCurrentInstance()
 
@@ -34,7 +36,7 @@ export function useTableLayout(
     internalColumns,
     searchableColumnLabels,
     resizeColumns,
-  } = useTableColumns(props, columnsRef)
+  } = useTableColumns(props, columnsRef, layoutRef)
 
   // Provides
   provide(tableResizeKey, () => handleResize(true))

@@ -515,6 +515,10 @@ defineExpose({
               />
             </template>
 
+            <template #above>
+              <slot name="above-options" />
+            </template>
+
             <template #below>
               <slot name="below-options" />
 

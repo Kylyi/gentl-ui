@@ -117,39 +117,72 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
   /**
    * Extracts the relevant data from URL
    */
-  function parseUrlParams(columnsRef?: MaybeRefOrGetter<TableColumn[]>) {
+  function parseUrlParams(options: {
+    columnsRef?: MaybeRefOrGetter<TableColumn[]>
+    searchParams?: URLSearchParams | string
+  }) {
+    const { columnsRef, searchParams } = options
+    const customSearchParams = searchParams
+      ? new URLSearchParams(searchParams)
+      : undefined
+
     const url = useRequestURL()
-    const params = url.searchParams
+    const params = customSearchParams || url.searchParams
     const columns = toValue(columnsRef)
 
     // Pagination
+    // TODO: Pagination for non-infinite scrolling cases
     // Not relevant for Infinite scrolling
 
     // Sorting
     const sort = parseSortingFromUrl(params)
+    const schemaSort = parseSortingFromUrl(params, { fromSchema: true })
 
     // Column filters
-    const filters = parseFiltersFromUrl({
+    let filters = parseFiltersFromUrl({
       searchParams: params,
-      key: 'filter',
+      key: 'filters',
       columns,
     })
 
     // Query builder
-    const queryBuilder = parseFiltersFromUrl({
+    let queryBuilder = parseFiltersFromUrl({
       searchParams: params,
       key: 'qb',
       columns,
     })
+
+    // Filters and query builder
+    const filtersAndQueryBuilder = parseFiltersFromUrl({
+      searchParams: params,
+      key: 'and',
+      columns,
+      fromSchema: true,
+    })
+
+    if (filtersAndQueryBuilder.length) {
+      // Column filters do not use grouping, therefore, if the first index is a
+      // group, it is actually the query builder
+      const hasQueryBuilder = 'isGroup' in filtersAndQueryBuilder[0]
+
+      if (hasQueryBuilder) {
+        queryBuilder = [filtersAndQueryBuilder[0]]
+        filters = filtersAndQueryBuilder.slice(1)
+      } else {
+        filters = filtersAndQueryBuilder
+      }
+    }
 
     // Column selection
     const visibleColumns = parseVisibleColumnsFromUrl(params)
 
     return {
       sort,
+      schemaSort,
       filters,
       queryBuilder,
       columns: visibleColumns,
+      filtersAndQueryBuilder,
     }
   }
 

@@ -24,12 +24,27 @@ function generatePath(parentPath: string, idx: number): string {
 
 /**
  * Extract the filter query parameter from URLSearchParams.
+ * the `fromSchema` parameter should be used when we provide URLSearchParams
+ * from the table layout schema, not from the actual URL
  */
 function extractFilterFromSearchParams(
   searchParams: URLSearchParams,
-  key = 'filters'
+  key = 'filters',
+  fromSchema?: boolean
 ): string | null {
-  return searchParams.get(key)
+  const paramsString = searchParams.get(key)
+
+  if (!paramsString) {
+    return null
+  }
+
+  if (fromSchema) {
+    if (paramsString.startsWith('(') && paramsString.endsWith(')')) {
+      return paramsString.slice(1, -1)
+    }
+  }
+
+  return paramsString
 }
 
 /**
@@ -150,7 +165,7 @@ function parseItemSegment(
 /**
  * Recursively parse the filter string into structured data.
  */
-function parseFilterString(
+export function parseFilterString(
   filterStr: string,
   results: IQueryBuilderRow[] = [],
   parentPath: string = ''
@@ -185,13 +200,16 @@ function parseFilterString(
 
 /**
  * Parses the filter query parameter from URLSearchParams into structured data.
+ * the `fromSchema` parameter should be used when we provide URLSearchParams
+ * from the table layout schema, not from the actual URL
  */
 export function parseFiltersFromUrl(options: {
   searchParams: URLSearchParams
   key?: string
   columns?: TableColumn<any>[]
+  fromSchema?: boolean
 }): IQueryBuilderRow[] {
-  const { searchParams, key = 'filter', columns = [] } = options
+  const { searchParams, key = 'filters', columns = [], fromSchema } = options
 
   // We save the columns in a temporary variable
   columnsByField = columns.reduce((agg, col) => {
@@ -200,7 +218,11 @@ export function parseFiltersFromUrl(options: {
     return agg
   }, {} as Record<string, TableColumn<any>>)
 
-  const filterQuery = extractFilterFromSearchParams(searchParams, key)
+  const filterQuery = extractFilterFromSearchParams(
+    searchParams,
+    key,
+    fromSchema
+  )
 
   return filterQuery ? parseFilterString(filterQuery) : []
 }

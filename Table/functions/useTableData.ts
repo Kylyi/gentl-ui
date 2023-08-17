@@ -2,7 +2,9 @@
 import { config } from '~/config'
 
 // Types
+import type { ITableLayout } from '~/components/Table/types/table-layout.type'
 import type { ITableProps } from '~/components/Table/types/table-props.type'
+import { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
 import type {
   ITableDataFetchFncInput,
   ITableFilterRow,
@@ -32,14 +34,16 @@ import {
 // Store
 import { useTableStore } from '~/components/Table/table.store'
 
-export async function useTableData(
+export function useTableData(
   props: ITableProps,
-  internalColumnsRef: Ref<TableColumn[]>
+  internalColumnsRef: Ref<TableColumn[]>,
+  layoutRef: Ref<ITableLayout | undefined>,
+  queryBuilder: Ref<IQueryBuilderRow[] | undefined>
 ) {
   // Utils
   const route = useRoute()
   const instance = getCurrentInstance()
-  const { getStorageKey, parseUrlParams } = useTableUtils()
+  const { getStorageKey, parseUrlParams, getRowKey } = useTableUtils()
   const { isLoading, handleRequest } = useRequest({
     loadingInitialState: !props.rows,
   })
@@ -48,8 +52,9 @@ export async function useTableData(
   const isInitialized = ref(false)
   const search = ref('')
   const rows = ref(props.rows || [])
-  const totalRows = ref(props.totalRows)
-  const queryBuilder = useVModel(props, 'queryBuilder')
+  const totalRows = props.totalRows
+    ? useVModel(props, 'totalRows')
+    : ref<number>()
 
   const storageKey = computed(() => getStorageKey())
 
@@ -89,6 +94,35 @@ export async function useTableData(
       }
     },
   })
+
+  // Infinite scroll
+  const fetchMore = ref(false)
+
+  // The id of the fetched row (~ is used for fetching more data)
+  const lastKeyId = computed(() => {
+    const lastRow = rows.value[rows.value.length - 1]
+
+    return get(lastRow, getRowKey(props))
+  })
+
+  function handleInfiniteScroll(
+    _startIndex: number,
+    _endIndex: number,
+    _visibleStartIndex: number,
+    visibleEndIndex: number
+  ) {
+    if (!totalRows.value || !rows.value) {
+      return
+    }
+
+    const hasMore = totalRows.value > rows.value.length
+    const isAtBottom = visibleEndIndex >= rows.value.length - 20
+
+    if (hasMore && isAtBottom && !fetchMore.value) {
+      // fetchMore.value = true
+      // fetchAndSetData(dbQuery, true)
+    }
+  }
 
   // Data fetching
   const pagination = computed(() => {
@@ -131,23 +165,46 @@ export async function useTableData(
   const dbQuery = computedWithControl(
     () => [orderBy.value, search.value, select.value, queryBuilder.value],
     () => {
-      const filter: ITableFilterRow[] = [
-        {
-          isGroup: true,
-          condition: 'AND',
-          children: [...(props.queryBuilder || []), ...columnFilters.value],
-        },
+      const hasQueryBuilder =
+        queryBuilder.value?.length &&
+        'isGroup' in queryBuilder.value[0] &&
+        queryBuilder.value[0].children.length > 0
+
+      const filters: ITableFilterRow[] = [
+        ...(queryBuilder.value && hasQueryBuilder ? queryBuilder.value : []),
+        ...columnFilters.value,
+        // {
+        //   isGroup: true,
+        //   condition: 'AND',
+        //   children: [
+        //     ...(queryBuilder.value && hasQueryBuilder
+        //       ? queryBuilder.value
+        //       : []),
+        //     ...columnFilters.value,
+        //   ],
+        // },
       ]
+
+      // We check if we use some filters
+      // const hasFilters = (filters[0] as ITableFilterGroup).children.length > 0
+      const hasFilters = filters.length > 0
+
+      // We check if we use some specific columns, if we use all of them, we don't need to specify them
+      // const hasSelect =
+      //   select.value.length !==
+      //   internalColumnsRef.value.filter(col => !col.isHelperCol).length
 
       const tableQuery: ITableQuery = {
         ...pagination.value,
         queryBuilder: props.queryBuilder,
         columnFilters: columnFilters.value,
-        filter,
+        filters: hasFilters ? filters : undefined, // Query builder and column filters combined
         orderBy: orderBy.value,
         search: search.value,
+        // select: hasSelect ? select.value : undefined,
         select: select.value,
         includeDeleted: tableState.value.includeDeleted,
+        count: isNil(totalRows.value),
       }
 
       return {
@@ -198,94 +255,120 @@ export async function useTableData(
    * Fetches the data and sets it to the appropriate variables
    */
   async function fetchAndSetData(
-    optionsRef: MaybeRefOrGetter<ITableDataFetchFncInput>
+    optionsRef: MaybeRefOrGetter<ITableDataFetchFncInput>,
+    isFetchMore?: boolean
   ) {
-    const res = await fetchData(optionsRef)
+    const options = toValue(optionsRef)
+
+    // When fetching more data, we need to manually get the queryParams again as
+    // it is not triggered in the `dbQUery` computed
+    if (isFetchMore) {
+      options.queryParams = config.table.getQuery({
+        ...options.tableQuery,
+        count: false,
+        fetchMore: { $key: lastKeyId.value, rowKey: getRowKey(props) },
+      })
+    }
+
+    const res = await fetchData(options)
 
     if (res) {
-      rows.value = res.data
-      totalRows.value = res.totalRows
+      rows.value = isFetchMore ? [...rows.value, ...res.data] : res.data
+      totalRows.value = totalRows.value || res.totalRows
 
-      instance?.emit('update:rows', res.data)
-      instance?.emit('update:totalRows', res.totalRows)
+      instance?.emit('update:rows', rows.value)
+      instance?.emit('update:totalRows', totalRows.value)
     }
+
+    // We reset the `fetchMore`
+    fetchMore.value = false
   }
 
-  // Initialize data if no data are provided
-  if (isNil(props.rows)) {
-    await fetchAndSetData(dbQuery)
-  }
-
-  // Fetch and set data when the `dbQuery` changes
+  // Fetch and set data on init and when the `dbQuery` changes
   // Also change the URL accordingly
   // Also save the `TableState`
-  watch(dbQuery, dbQuery => {
-    fetchAndSetData(dbQuery)
+  watch(
+    dbQuery,
+    dbQuery => {
+      // When we provide the rows, we don't want to fetch them right away
+      if (!isInitialized.value && rows.value.length) {
+        return
+      }
 
-    // Set URL
-    if (props.useUrl) {
-      const routeQueryWithoutTableParams = omit(route.query, [
-        'qb',
-        'filter',
-        'order',
-        'select',
-        'search',
-      ])
-      const qb = serializeFilterString(dbQuery.tableQuery.queryBuilder)
-      const filter = serializeFilterString(dbQuery.tableQuery.columnFilters)
-      const order = serializeOrderByString(dbQuery.tableQuery.orderBy)
-      const select = serializeSelectString(dbQuery.tableQuery.select)
+      fetchAndSetData(dbQuery)
 
-      navigateTo(
-        {
-          query: {
-            ...routeQueryWithoutTableParams,
-            ...(qb && qb !== 'and()' && { qb }),
-            ...(filter && { filter }),
-            ...(order && { order: `(${order})` }),
-            ...(select && { select }),
-            ...(dbQuery.tableQuery.search && {
-              search: dbQuery.tableQuery.search,
-            }),
-            // ...(dbQuery.tableQuery.includeDeleted && {
-            //   includeDeleted: dbQuery.tableQuery.includeDeleted,
-            // }),
+      // Set URL
+      if (props.useUrl && isInitialized.value) {
+        const routeQueryWithoutTableParams = omit(route.query, [
+          'qb',
+          'filters',
+          'order',
+          'select',
+          'search',
+        ])
+        const qb = serializeFilterString(dbQuery.tableQuery.queryBuilder)
+        const filters = serializeFilterString(dbQuery.tableQuery.columnFilters)
+        const order = serializeOrderByString(dbQuery.tableQuery.orderBy)
+        const select = serializeSelectString(dbQuery.tableQuery.select)
+
+        navigateTo(
+          {
+            query: {
+              ...routeQueryWithoutTableParams,
+              ...(qb && qb !== 'and()' && { qb }),
+              ...(filters && { filters }),
+              ...(order && { order: `(${order})` }),
+              ...(select && { select }),
+              ...(dbQuery.tableQuery.search && {
+                search: dbQuery.tableQuery.search,
+              }),
+              // ...(dbQuery.tableQuery.includeDeleted && {
+              //   includeDeleted: dbQuery.tableQuery.includeDeleted,
+              // }),
+            },
           },
-        },
-        { replace: true }
-      )
-    }
+          { replace: true }
+        )
+      }
 
-    // Save `TableState`
-    setTableState(storageKey.value, {
-      page: dbQuery.tableQuery.skip! / dbQuery.tableQuery.take! + 1,
-      pageSize: dbQuery.tableQuery.take!,
-      includeDeleted: dbQuery.tableQuery.includeDeleted,
-      schema: dbQuery.queryParams.toString(),
-      columns: internalColumnsRef.value,
-      queryBuilder: dbQuery.tableQuery.queryBuilder,
-    })
-  })
+      // Save `TableState`
+      setTableState(storageKey.value, {
+        page: dbQuery.tableQuery.skip! / dbQuery.tableQuery.take! + 1,
+        pageSize: dbQuery.tableQuery.take!,
+        includeDeleted: dbQuery.tableQuery.includeDeleted,
+        schema: dbQuery.queryParams.toString(),
+        columns: internalColumnsRef.value,
+        queryBuilder: dbQuery.tableQuery.queryBuilder,
+      })
+    },
+    { immediate: true }
+  )
 
   // Initialize query builder
   function initializeQueryBuilder() {
     const {
-      queryBuilder: queryBuilderFromUrl,
-      columns: columnsFromUrl,
-      filters: filtersFromUrl,
-      sort: sortFromUrl,
-    } = parseUrlParams(internalColumnsRef)
+      queryBuilder: urlQueryBuilder,
+      columns: urlColumns,
+      filters: urlFilters,
+      sort: urlSort,
+    } = parseUrlParams({ columnsRef: internalColumnsRef })
+    const { queryBuilder: schemaQueryBuilder } = parseUrlParams({
+      columnsRef: internalColumnsRef,
+      searchParams: layoutRef.value?.schema,
+    })
 
     const isUrlUsed =
-      !!queryBuilderFromUrl?.length ||
-      !!columnsFromUrl?.length ||
-      !!filtersFromUrl?.length ||
-      !!sortFromUrl?.length
+      !!urlQueryBuilder?.length ||
+      !!urlColumns?.length ||
+      !!urlFilters?.length ||
+      !!urlSort?.length
+
+    const usedQueryBuilder = isUrlUsed ? urlQueryBuilder : schemaQueryBuilder
 
     // When the query builder is present in the URL, use it
-    if (queryBuilderFromUrl && queryBuilder.value !== undefined) {
-      queryBuilder.value = queryBuilderFromUrl.length
-        ? queryBuilderFromUrl
+    if (usedQueryBuilder && queryBuilder.value !== undefined) {
+      queryBuilder.value = usedQueryBuilder.length
+        ? usedQueryBuilder
         : [
             {
               id: generateUUID(),
@@ -327,5 +410,8 @@ export async function useTableData(
     isLastPage,
     pageCount,
     currentPageSize,
+
+    // Infinite scroll
+    handleInfiniteScroll,
   }
 }

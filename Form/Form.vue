@@ -14,6 +14,7 @@ defineOptions({
 
 const props = withDefaults(defineProps<IFormProps>(), {
   errorsOnTop: true,
+  labelForcedVisibility: true,
 })
 
 const emits = defineEmits<{
@@ -132,10 +133,13 @@ defineExpose({
         id="form-controls"
         flex="~ wrap gap-2"
         shrink-0
-        justify="between"
-        :section-class="controlsClass"
+        justify="end"
+        :section-class="[controlsClass, '!p-x-2 !p-b-2']"
       >
-        <slot name="submit-start">
+        <slot
+          v-if="$slots['submit-start']"
+          name="submit-start"
+        >
           <span>&nbsp;</span>
         </slot>
 

@@ -37,12 +37,14 @@ export function useValueFormatterUtils() {
 
     switch (dataType) {
       case 'number':
+      case 'int':
         return formatNumber(value)
 
       case 'date':
         return formatDate(value, 'short')
 
       case 'datetime':
+      case 'DateTime':
         return formatDate(value, 'long')
 
       case 'timestamp':

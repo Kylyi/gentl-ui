@@ -26,7 +26,7 @@ const emits = defineEmits<{
 
 // Injections
 const columns = injectStrict(qbColumnsKey)
-const tableRefresh = injectStrict(tableRefreshKey)
+const tableRefresh = injectStrict(tableRefreshKey, () => {})
 
 // Layout
 const itemEditMenuEl = ref<InstanceType<typeof Menu>>()
@@ -83,12 +83,17 @@ const $v = useVuelidate({ $scope: 'qb' })
     v-bind="$attrs"
   >
     <!-- Field -->
-    <span font="bold"> {{ colSelected?.label }} </span>
+    <span
+      font="bold"
+      text="caption xs"
+    >
+      {{ colSelected?.label }}
+    </span>
 
     <!-- Comparator -->
     <span
-      border="y-1 ca dashed"
       p="x-1"
+      text="caption xs"
     >
       {{ $t(`comparator.${item.comparator}`).toLocaleLowerCase() }}
     </span>
@@ -99,10 +104,13 @@ const $v = useVuelidate({ $scope: 'qb' })
       :data-type="colSelected?.dataType"
       bg="white dark:darker rounded-custom"
       leading="none"
-      p="x-1 y-.5"
+      p="x-1 y-1"
+      color="black dark:white"
       rounded="custom"
       min-w="5"
       min-h="5"
+      text="xs"
+      font="bold"
     />
 
     <Btn

@@ -2,11 +2,13 @@
 // Virtual scroller
 // @ts-expect-error - no types
 import { DynamicScroller, DynamicScrollerItem } from 'vue-virtual-scroller'
+import { klona } from 'klona'
 
 import { config } from '~/config'
 
 // Types
 import type { ITableProps } from '~/components/Table/types/table-props.type'
+import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
 
 // Functions
 import { useTableData } from '~/components/Table/functions/useTableData'
@@ -30,11 +32,13 @@ const props = withDefaults(defineProps<ITableProps>(), {
   useServer: true,
   useChips: config.table.useChips,
   useUrl: true,
+  infiniteScroll: config.table.infiniteScroll,
 })
 
 defineEmits<{
   (e: 'update:rows', rows: any[]): void
   (e: 'update:totalRows', count: number): void
+  (e: 'update:queryBuilder', rows: IQueryBuilderRow[]): void
   (e: 'row-click', payload: { row: any; el: Element }): void
 }>()
 
@@ -43,9 +47,12 @@ defineExpose({
 })
 
 // Layout
-const queryBuilder = useVModel(props, 'queryBuilder')
+const queryBuilderOriginal = useVModel(props, 'queryBuilder')
+const { cloned: queryBuilder } = useCloned(queryBuilderOriginal, {
+  clone: klona,
+})
 
-const { columns } = await useTableMetaData(props)
+const { columns, layout } = await useTableMetaData(props)
 
 const {
   // Element refs
@@ -64,12 +71,13 @@ const {
   handleScrollLeft,
   handleRowClick,
   throttledHandleResize,
-} = useTableLayout(props, columns)
+} = useTableLayout(props, columns, layout)
 
 const {
   isLoading,
   rows,
   refreshData,
+  search,
 
   // Pagination
   currentPage,
@@ -80,7 +88,10 @@ const {
   totalRows,
   prev,
   next,
-} = await useTableData(props, internalColumns)
+
+  // Infinite scroll
+  handleInfiniteScroll,
+} = useTableData(props, internalColumns, layout, queryBuilder)
 
 // const { isExporting, handleExportData } = useTableExporting()
 
@@ -99,52 +110,12 @@ useTableSelection(props)
     >
       <TableTop
         v-model:query-builder="queryBuilder"
+        v-model:search="search"
         :selectable="selectable"
       />
-      <!-- <div class="table-container__top">
-        <slot
-          name="search"
-          :rows="rows"
-        >
-          <TableSearch
-            v-model:search="search"
-            :columns="internalColumns"
-            :no-search="noSearch"
-            :use-chips="useChips"
-            :query-builder="queryBuilder"
-            :searchable-column-labels="searchableColumnLabels"
-          />
-        </slot>
-
-        <slot name="prepend-actions" />
-
-        <TableColumnsBtn
-          v-model:columns="internalColumns"
-          :rows="rows"
-          :use-chips="useChips"
-          :minimum-column-width="minimumColumnWidth"
-          :use-server="useServer"
-        />
-
-        <ExportBtn
-          v-if="!noExport"
-          self-center
-          :loading="isExporting"
-          @export="handleExportData(rows, columns, $event)"
-        />
-
-        <TableActionsBtn
-          v-if="!noActions"
-          v-model:include-deleted="tableState.includeDeleted"
-          :use-include-deleted="useIncludeDeleted"
-          :storage-key="storageKey"
-        />
-
-        <slot name="top-right" />
-      </div> -->
     </slot>
 
-    <!-- BELOW TOP -->
+    <!-- Below top -->
     <slot
       name="below-top"
       :rows="rows"
@@ -176,7 +147,9 @@ useTableSelection(props)
       :key-field="rowKey"
       class="scroller"
       :min-item-size="rowHeight"
+      :emit-update="infiniteScroll"
       @resize="autoResize && throttledHandleResize()"
+      @update="handleInfiniteScroll"
     >
       <template #default="{ item, index, active }">
         <DynamicScrollerItem
@@ -224,12 +197,12 @@ useTableSelection(props)
       </template>
     </DynamicScroller>
 
-    <TableCalculatingData v-if="isLoading" />
-
     <TableNoData
       :has-no-data="!rows.length && !isLoading"
       :is-visible="!isLoading"
     />
+
+    <TableLoadingData v-if="isLoading" />
 
     <TableTotals
       v-if="!noTotals && !!getTotalsData"
@@ -238,13 +211,14 @@ useTableSelection(props)
     />
 
     <TablePagination
-      v-if="!noPagination"
       v-model:current-page="currentPage"
       v-model:current-page-size="currentPageSize"
       :is-first-page="isFirstPage"
       :is-last-page="isLastPage"
       :page-count="pageCount"
       :total-rows="totalRows"
+      :no-pagination="noPagination || infiniteScroll"
+      :current-rows="rows.length"
       :prev="prev"
       :next="next"
     />
@@ -290,7 +264,7 @@ useTableSelection(props)
 :global(
     .vue-recycle-scroller__item-wrapper .vue-recycle-scroller__item-view.hover .cell
   ) {
-  --apply: md:bg-primary/30;
+  --apply: md:bg-primary/10;
 }
 
 :global(
@@ -298,6 +272,6 @@ useTableSelection(props)
       .vue-recycle-scroller__item-wrapper
       .vue-recycle-scroller__item-view.hover .cell
   ) {
-  --apply: md:bg-primary/50;
+  --apply: md:bg-primary/10;
 }
 </style>

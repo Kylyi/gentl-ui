@@ -119,11 +119,12 @@ const collapseProps = computed(() => {
 
       <!-- Actions -->
       <div class="qb-group-actions">
+        <!-- Collapse -->
         <Btn
           size="xs"
           no-uppercase
           v-bind="collapseProps"
-          w="20"
+          w="22"
           align="right"
           border="1 ca"
           @click="collapsed[item.id] = !collapsed[item.id]"

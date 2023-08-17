@@ -8,10 +8,7 @@ import type { IBtnProps } from '~/components/Button/types/btn-props.type'
 import { TableColumn } from '~/components/Table/models/table-column.model'
 
 // Injections
-import {
-  tableResizeKey,
-  tableStorageKey,
-} from '~/components/Table/provide/table.provide'
+import { tableStorageKey } from '~/components/Table/provide/table.provide'
 
 // Functions
 import { useBtnUtils } from '~/components/Button/functions/useBtnUtils'
@@ -30,7 +27,6 @@ const emits = defineEmits<{
 
 // Injections
 const storageKey = injectStrict(tableStorageKey)
-const tableResize = injectStrict(tableResizeKey)
 
 // Store
 const { setTableState } = useTableStore()
@@ -55,10 +51,20 @@ const nonHelperCols = computed({
 
 const btnProps = computed(() => getBtnProps(props))
 
-function handleColumnVisibilityChange(val?: boolean) {
-  if (!val) {
-    nextTick(() => tableResize())
+async function handleColumnVisibilityChange(
+  val: boolean | undefined,
+  col: TableColumn
+) {
+  const hasRelativeCol = columns.value.some(
+    col => typeof col.width === 'number'
+  )
+
+  if (hasRelativeCol) {
+    columns.value.forEach(col => col.setWidth(col.adjustedWidth))
+    await nextTick()
   }
+
+  col.hidden = val
 }
 </script>
 
@@ -103,15 +109,16 @@ function handleColumnVisibilityChange(val?: boolean) {
             <span
               grow
               p="y-1.5 x-2"
+              truncate
             >
               {{ col._label }}
             </span>
 
             <Checkbox
-              v-model="col.hidden"
+              :model-value="col.hidden"
               :check-value="false"
               :uncheck-value="true"
-              @update:model-value="handleColumnVisibilityChange"
+              @update:model-value="handleColumnVisibilityChange($event, col)"
             />
           </Item>
         </SlickItem>

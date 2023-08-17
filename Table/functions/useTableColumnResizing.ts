@@ -6,15 +6,19 @@ import { TableColumn } from '~/components/Table/models/table-column.model'
 // Models
 import { useTableStore } from '~/components/Table/table.store'
 
+// Functions
+import { stringToFloat } from '~/libs/App/data/regex/string-to-float.regex'
+
 // Injections
 import { tableStorageKey } from '~/components/Table/provide/table.provide'
 
 // Components
 import HorizontalScroller from '~/components/Scroller/HorizontalScroller.vue'
 
-type ISplitter = {
+export type ISplitter = {
   field: TableColumn['field']
   left: number
+  column: TableColumn
 }
 
 type IActiveSplitter = ISplitter & {
@@ -44,6 +48,11 @@ export function useTableColumnResizing(props: {
 
   const columnSplitters = computed(() => {
     const splitters: ISplitter[] = []
+
+    if (!props.columns.length) {
+      return splitters
+    }
+
     let lastLeftPosition = 0
 
     props.columns
@@ -58,6 +67,7 @@ export function useTableColumnResizing(props: {
         splitters.push({
           field: col.field as string,
           left: lastLeftPosition,
+          column: col,
         })
       })
 
@@ -65,7 +75,7 @@ export function useTableColumnResizing(props: {
     // But only in case the last column is actually resizable
     const lastCol = props.columns[props.columns.length - 1]
 
-    if (lastCol.resizable) {
+    if (lastCol.resizable && splitters.length) {
       splitters[splitters.length - 1].left -= 4
     }
 
@@ -74,7 +84,7 @@ export function useTableColumnResizing(props: {
 
   function handleSplitterPointerDown(splitter: ISplitter, ev: PointerEvent) {
     const col = props.columns.find(c => c.field === splitter.field)
-    const splitterCopy = klona(splitter)
+    const splitterCopy = klona(omit(splitter, ['column']))
     // @ts-expect-error some weird type
     const headerDom = unrefElement(headerEl)!
     const { y: headerY, height: headerHeight } =
@@ -126,6 +136,38 @@ export function useTableColumnResizing(props: {
   }
 
   function handleSplitterPointerUp() {
+    const diff =
+      activeSplitter.value!.adjustedWidth -
+      activeSplitter.value!.column.adjustedWidth
+
+    // If the currently resized column is `semiFrozen` but not `frozen`,
+    // we need to adjust the widths of all the `semiFrozen` columns that come
+    // after it
+    if (
+      activeSplitter.value!.column.semiFrozen &&
+      !activeSplitter.value!.column.frozen
+    ) {
+      const colIdx = props.columns.findIndex(
+        col => col.field === activeSplitter.value!.column.field
+      )
+      const lastSemiFrozenColIdx = props.columns
+        .slice(colIdx)
+        .findIndex(col => !col.semiFrozen)
+
+      const semiFrozenColumns = props.columns.slice(
+        colIdx + 1,
+        colIdx + lastSemiFrozenColIdx
+      )
+
+      semiFrozenColumns.forEach(col => {
+        if (typeof col.headerStyle.left === 'string') {
+          const left = Number(stringToFloat(col.headerStyle.left) || 0)
+
+          col.headerStyle.left = `${left + diff}px`
+        }
+      })
+    }
+
     // Once we start changing the width of a column, we need to set width of the
     // other columns to a fixed value so it doesn't jump around
     props.columns.forEach(col => col.setWidth(col.adjustedWidth))

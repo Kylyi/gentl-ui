@@ -18,7 +18,7 @@ export function useTableSelection(props: ITableProps) {
 
   const selection = props.selected
     ? useVModel(props, 'selected')
-    : ref<ITableSelection>()
+    : ref<ITableSelection>({})
 
   const rowKey = computedEager(() => props.selectionKey ?? getRowKey(props))
 
@@ -56,8 +56,8 @@ export function useTableSelection(props: ITableProps) {
       }
     } else if (Array.isArray(selection.value)) {
       selection.value = [...(selection.value || []), key]
-    } else {
-      Object.assign(selection.value || {}, { [key]: row })
+    } else if (selection.value) {
+      selection.value[key] = row
     }
   }
 

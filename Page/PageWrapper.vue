@@ -42,7 +42,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .page-wrapper {
-  --apply: ease-out overflow-auto grow;
+  --apply: ease-out overflow-auto grow p-r-2;
 
   &.is-mounted {
     --apply: transition-padding-250;
@@ -58,12 +58,12 @@ onMounted(() => {
 }
 
 .page-drawer.is-open.page-drawer--left:not(.is-absolute) ~ .page-wrapper {
-  padding-left: var(--drawerLeftMiniWidth);
+  padding-left: calc(var(--drawerLeftMiniWidth) + 8px);
 }
 
 .page-drawer.is-open.page-drawer--left:not(.is-absolute):not(.is-mini)
   ~ .page-wrapper {
-  padding-left: var(--drawerLeftWidth);
+  padding-left: calc(var(--drawerLeftWidth) + 8px);
 }
 
 .page-drawer.is-open.page-drawer--right:not(.is-absolute) ~ .page-wrapper {

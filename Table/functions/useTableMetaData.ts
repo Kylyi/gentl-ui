@@ -26,17 +26,6 @@ export async function useTableMetaData(props: ITableProps) {
   // Data fetching
   async function fetchAndSetMetaData() {
     if (!props.getMetaData) {
-      layouts.value = [
-        {
-          id: 1,
-          name: 'Test',
-          schema:
-            'filter=name.eq.5&select=name,age,birthdate&qb=and(name.eq.5)&order=(name.asc,age.desc)',
-        },
-        { id: 2, name: 'Test 2', schema: 'filter=age.eq.10&select=age,name' },
-      ]
-      // layout.value = layouts.value[0]
-
       return
     }
 
@@ -46,7 +35,13 @@ export async function useTableMetaData(props: ITableProps) {
       const result = (await fnc?.()) as any[]
 
       layout.value = get(result, layoutKey || config.table.layoutKey)
-      layouts.value = get(result, layoutsKey || config.table.layoutsKey)
+
+      // If using the default value, fake the name
+      if (layout.value?.id === 0) {
+        layout.value.name = $t('table.layoutStateNoLayout')
+      }
+
+      layouts.value = get(result, layoutsKey || config.table.layoutsKey) || []
 
       const _columns = get(result, columnsKey || config.table.columnsKey)
 

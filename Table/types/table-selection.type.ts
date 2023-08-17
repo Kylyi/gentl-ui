@@ -1,3 +1,1 @@
-export type ITableSelection =
-  | Record<string | number, any>
-  | Array<string | number>
+export type ITableSelection = Record<string | number, any>

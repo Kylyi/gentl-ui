@@ -121,6 +121,8 @@ onMounted(() => {
       @click="handleSelectFiltered"
     />
 
+    <slot name="above" />
+
     <Component
       :is="ContainerComponent"
       v-if="arr.length"

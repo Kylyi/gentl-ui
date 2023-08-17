@@ -39,9 +39,13 @@ const isSelectedRow = injectStrict(tableIsSelectedRowKey)
           :class="[
             `col-${col.name}`,
             col.classes,
-            { 'has-data': !col.isHelperCol },
+            {
+              'has-data': !col.isHelperCol,
+              'is-frozen': col.frozen,
+              'is-semi-frozen': col.semiFrozen,
+            },
           ]"
-          :style="{ width: col.adjustedWidthPx }"
+          :style="{ ...col.style, width: col.adjustedWidthPx }"
         >
           <div
             v-if="col.field === '_selectable'"
@@ -92,6 +96,8 @@ const isSelectedRow = injectStrict(tableIsSelectedRowKey)
 
 <style lang="scss" scoped>
 .tr {
+  --apply: relative;
+
   &.is-deleted {
     --apply: line-through color-ca;
   }

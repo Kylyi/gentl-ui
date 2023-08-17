@@ -165,7 +165,7 @@ watch(notificationCounter, async () => {
 <style lang="scss" scoped>
 .notification-row {
   --apply: relative flex flex-col rounded-3 border-2
-    p-l-2 p-r-1 p-y-1 flex-gap-x-2 min-w-70;
+    p-l-2 p-r-1 p-y-1 flex-gap-x-2 w-100;
 
   &.is-positive {
     --apply: bg-positive/85 hover:bg-positive color-white border-positive;

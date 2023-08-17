@@ -34,13 +34,6 @@ const includeDeleted = useVModel(props, 'includeDeleted', emits)
         <Separator inset />
       </template>
 
-      <!-- Table state -->
-      <template v-if="storageKey">
-        <TableStateLayout :storage-key="storageKey" />
-
-        <Separator inset />
-      </template>
-
       <!-- Table url -->
       <TableUrl />
     </Menu>

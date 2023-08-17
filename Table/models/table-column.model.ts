@@ -19,7 +19,6 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   dataType: DataType = 'string'
   label: string
   width: number | string = 1
-  minWidth?: string
   align: 'left' | 'center' | 'right' = 'left'
   field: Extract<keyof T, string | number>
   hideLabel?: boolean
@@ -30,6 +29,22 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   sortable = true
   searchable?: boolean
   hidden?: boolean
+
+  /**
+   * The column's minimum width in px
+   */
+  minWidth?: number
+
+  /**
+   * Frozen columns are columns that are always visible
+   */
+  frozen?: boolean
+
+  /**
+   * If column is `semiFrozen` it means that it is not directly frozen but
+   * it is part of a group of columns that are "before" the frozen column
+   */
+  semiFrozen?: boolean
 
   // FILTERING
   filters: FilterItem<T>[] = []
@@ -49,8 +64,15 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
    */
   filterFormat?: (row: T) => string | number
 
-  // Whether to sort options in the filter dropdown
+  /**
+   * Whether to sort options in the filter dropdown
+   */
   noFilterSort = false
+
+  /**
+   * Miscellanous data that can be used for anything
+   */
+  misc?: any
 
   get filterDbQuery() {
     if (!this.filters.length) {
@@ -229,7 +251,9 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
 
     switch (this.dataType) {
       case 'number':
+      case 'int':
       case 'datetime':
+      case 'DateTime':
       case 'date':
         this.comparator = col.comparator ?? ComparatorEnum.EQUAL
 
