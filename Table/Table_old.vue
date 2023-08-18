@@ -91,7 +91,7 @@ const {
 
   // Infinite scroll
   handleInfiniteScroll,
-} = useTableData(props, internalColumns, layout, queryBuilder, scrollerEl)
+} = useTableData(props, internalColumns, layout, queryBuilder)
 
 // const { isExporting, handleExportData } = useTableExporting()
 
@@ -161,9 +161,8 @@ useTableSelection(props)
             :is="TableRowComponent"
             :row="item"
             :columns="internalColumns"
-            :class="{ 'is-clickable': rowClickable, 'odd': index % 2 !== 0 }"
+            :class="{ 'is-clickable': rowClickable }"
             :row-height="rowHeight"
-            :index="index"
             @click="handleRowClick(item, $event)"
           >
             <template #default>
@@ -231,8 +230,7 @@ useTableSelection(props)
   --apply: relative flex flex-col overflow-auto max-h-full max-w-full bg-ca;
 
   &__top {
-    --apply: flex flex-col shrink-0 gap-1 border-b-1 border-ca p-2 p-l-1
-      overflow-auto;
+    --apply: flex flex-col shrink-0 gap-1 border-b-1 border-ca p-2 p-l-1 overflow-auto;
   }
 
   .is-clickable {
@@ -248,21 +246,32 @@ useTableSelection(props)
   --apply: m-t-2 p-x-2 p-y-3 text-caption text-center border-ca border-2
     rounded-custom;
 }
-
 :global(
     .vue-recycle-scroller__item-wrapper
-      .vue-recycle-scroller__item-view.hover
-      .cell
+      .vue-recycle-scroller__item-view:nth-child(even)  .cell
   ) {
-  --apply: '!md:bg-blue/10';
+  --apply: md:bg-white;
 }
 
 :global(
-    .vue-recycle-scroller__item-wrapper
-      .vue-recycle-scroller__item-view.hover
-      .cell.is-semi-frozen
+    .dark
+      .vue-recycle-scroller__item-wrapper
+      .vue-recycle-scroller__item-view:nth-child(even) .cell
   ) {
-  --apply: '!bg-blue-100 color-blue-800';
-  --apply: 'dark:(!bg-blue-900 color-blue-200)';
+  --apply: md:bg-darker;
+}
+
+:global(
+    .vue-recycle-scroller__item-wrapper .vue-recycle-scroller__item-view.hover .cell
+  ) {
+  --apply: md:bg-primary/10;
+}
+
+:global(
+    .dark
+      .vue-recycle-scroller__item-wrapper
+      .vue-recycle-scroller__item-view.hover .cell
+  ) {
+  --apply: md:bg-primary/10;
 }
 </style>

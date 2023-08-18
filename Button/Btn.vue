@@ -153,7 +153,7 @@ defineExpose({
   }
 
   &.is-stacked {
-    --apply: flex-col flex-center p-t-2 p-b-1;
+    --apply: flex-col flex-center p-y-1;
   }
 
   .icon {

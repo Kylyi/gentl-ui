@@ -26,20 +26,18 @@ function handleFreezeColumn() {
   columns.value.forEach(col => {
     col.frozen = false
     col.semiFrozen = false
-    col.headerStyle = {
-      ...column.value.headerStyle,
-      left: 'unset',
-      position: 'unset',
-      backgroundColor: 'unset',
-      zIndex: 'unset',
-    }
-    col.style = {
-      ...column.value.style,
-      left: 'unset',
-      position: 'unset',
-      backgroundColor: 'unset',
-      zIndex: 'unset',
-    }
+    col.headerStyle = omit(column.value.headerStyle, [
+      'left',
+      'position',
+      'backgroundColor',
+      'zIndex',
+    ])
+    col.style = omit(column.value.style, [
+      'left',
+      'position',
+      'backgroundColor',
+      'zIndex',
+    ])
   })
 
   if (!isFrozen) {

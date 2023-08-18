@@ -5,10 +5,13 @@ import { TableColumn } from '~/components/Table/models/table-column.model'
 type IProps = {
   row: any
   columns: TableColumn<any>[]
+  index: number
   rowHeight: number
 }
 
-defineProps<IProps>()
+withDefaults(defineProps<IProps>(), {
+  index: 0,
+})
 </script>
 
 <template>
@@ -60,15 +63,15 @@ defineProps<IProps>()
       </div>
     </slot>
 
-    <!-- Used for absolutelty position info/element -->
+    <!-- Used for absolutely position info/element -->
     <slot name="inner" />
   </div>
 </template>
 
 <style lang="scss" scoped>
 .tr__mobile {
-  --apply: grid p-3 rounded-custom overflow-auto hover:bg-primary/30 hover:dark:bg-primary/50
-  border-1 border-ca gap-x-3 hover:shadow-ca shadow-sm w-full;
+  --apply: grid p-3 rounded-custom overflow-auto hover:bg-primary/10 hover:dark:bg-primary/10
+  border-1 border-ca gap-x-3 hover:shadow-ca shadow-sm w-full dark:bg-darker bg-white;
 
   &-container {
     --apply: relative p-x-2 p-y-1;

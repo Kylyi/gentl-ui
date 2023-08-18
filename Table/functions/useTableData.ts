@@ -38,7 +38,8 @@ export function useTableData(
   props: ITableProps,
   internalColumnsRef: Ref<TableColumn[]>,
   layoutRef: Ref<ITableLayout | undefined>,
-  queryBuilder: Ref<IQueryBuilderRow[] | undefined>
+  queryBuilder: Ref<IQueryBuilderRow[] | undefined>,
+  scrollerEl: Ref<HTMLElement | undefined>
 ) {
   // Utils
   const route = useRoute()
@@ -119,8 +120,8 @@ export function useTableData(
     const isAtBottom = visibleEndIndex >= rows.value.length - 20
 
     if (hasMore && isAtBottom && !fetchMore.value) {
-      // fetchMore.value = true
-      // fetchAndSetData(dbQuery, true)
+      fetchMore.value = true
+      fetchAndSetData(dbQuery, true)
     }
   }
 
@@ -204,7 +205,7 @@ export function useTableData(
         // select: hasSelect ? select.value : undefined,
         select: select.value,
         includeDeleted: tableState.value.includeDeleted,
-        count: isNil(totalRows.value),
+        count: true,
       }
 
       return {
@@ -274,7 +275,7 @@ export function useTableData(
 
     if (res) {
       rows.value = isFetchMore ? [...rows.value, ...res.data] : res.data
-      totalRows.value = totalRows.value || res.totalRows
+      totalRows.value = isFetchMore ? totalRows.value : res.totalRows
 
       instance?.emit('update:rows', rows.value)
       instance?.emit('update:totalRows', totalRows.value)
@@ -340,6 +341,12 @@ export function useTableData(
         columns: internalColumnsRef.value,
         queryBuilder: dbQuery.tableQuery.queryBuilder,
       })
+
+      // Scroll to top if we are not fetching more data
+      if (!fetchMore.value) {
+        // @ts-expect-error
+        scrollerEl.value?.scrollToItem?.(0)
+      }
     },
     { immediate: true }
   )

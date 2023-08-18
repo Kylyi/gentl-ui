@@ -101,6 +101,7 @@ function handleRemoveGroup() {
     :class="{ 'is-first-child': isFirstChild }"
     :style="{ '--bracketColor': levelColor }"
     no-dim
+    :data-path="item.path"
     @mouseenter="isHovered = true"
     @mouseleave="isHovered = false"
   >

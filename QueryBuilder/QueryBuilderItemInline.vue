@@ -81,6 +81,7 @@ const $v = useVuelidate({ $scope: 'qb' })
     :class="{ 'is-first-child': isFirstChild }"
     :style="{ '--bracketColor': levelColor }"
     v-bind="$attrs"
+    :data-path="item.path"
   >
     <!-- Field -->
     <span
@@ -109,7 +110,7 @@ const $v = useVuelidate({ $scope: 'qb' })
       rounded="custom"
       min-w="5"
       min-h="5"
-      text="xs"
+      text="xs center"
       font="bold"
     />
 

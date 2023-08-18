@@ -20,6 +20,17 @@ defineEmits<{
   (e: 'restore'): void
 }>()
 
+defineSlots<{
+  'prepend'?: (payload: {
+    loaderType: 'inline' | 'block'
+    labels: boolean | undefined
+  }) => void
+  'append'?: (payload: {
+    loaderType: 'inline' | 'block'
+    labels: boolean | undefined
+  }) => void
+  'delete-confirmation'?: (payload: {}) => void
+}>()
 // STATE
 const isSaved = autoResetRef(false, 2000)
 const isDeleted = autoResetRef(false, 2000)
@@ -56,18 +67,6 @@ const availableActions = computed(() => ({
 const hasAnyAction = computedEager(() => {
   return Object.values(availableActions.value).some(Boolean)
 })
-
-defineSlots<{
-  'prepend'?: (payload: {
-    loaderType: 'inline' | 'block'
-    labels: boolean | undefined
-  }) => void
-  'append'?: (payload: {
-    loaderType: 'inline' | 'block'
-    labels: boolean | undefined
-  }) => void
-  'delete-confirmation'?: (payload: {}) => void
-}>()
 
 defineExpose({
   save: () => (isSaved.value = true),

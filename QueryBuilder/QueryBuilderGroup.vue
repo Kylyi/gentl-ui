@@ -91,6 +91,7 @@ const collapseProps = computed(() => {
       'is-base': !level,
       'is-last-child': isLastChild,
     }"
+    :data-path="item.path"
     @mouseover.stop="hoveredRow = item"
     @mouseleave="hoveredRow = undefined"
   >
@@ -186,7 +187,12 @@ const collapseProps = computed(() => {
 
 <style scoped lang="scss">
 .qb-group {
-  --apply: relative flex flex-col rounded-custom p-r-0 p-l-2 m-l-5 border-1 border-transparent;
+  --apply: relative flex flex-col rounded-custom p-r-0 p-l-2 m-l-5
+    border-1 border-transparent;
+
+  transition:
+    background-color 0.3s ease-in-out,
+  shadow 0.3s ease-in-out;
 
   &.is-hovered {
     --apply: bg-white dark:bg-darker shadow-consistent shadow-ca;

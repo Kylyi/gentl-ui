@@ -19,7 +19,7 @@ const props = defineProps<
 >()
 
 // Constants
-const MIN_VISIBLE_QUERY_BUILDER_ROWS = 2
+const MIN_VISIBLE_QUERY_BUILDER_ROWS = 1
 const MAX_VISIBLE_QUERY_BUILDER_ROWS = 3
 const QUERY_BUILDER_INLINE_PADDING = 16
 
@@ -111,7 +111,7 @@ const tableSorting = computed(() => {
           p="1"
           bg="white dark:darker"
           rounded="custom"
-          min-h="20"
+          min-h="12"
         >
           <QueryBuilderInline
             ref="queryBuilderInlineEl"

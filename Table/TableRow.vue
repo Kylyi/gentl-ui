@@ -1,8 +1,8 @@
 <script setup lang="ts">
-// MODELS
+// Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
 
-// INJECTION KEYS
+// Injections
 import {
   tableIsSelectedRowKey,
   tableSelectRowKey,
@@ -10,13 +10,16 @@ import {
 
 type IProps = {
   columns: TableColumn<any>[]
+  index?: number
   row: any
   rowHeight: number
 }
 
-defineProps<IProps>()
+withDefaults(defineProps<IProps>(), {
+  index: 0,
+})
 
-// INJECTIONS
+// Injections
 const selectRow = injectStrict(tableSelectRowKey)
 const isSelectedRow = injectStrict(tableIsSelectedRowKey)
 </script>
@@ -25,8 +28,8 @@ const isSelectedRow = injectStrict(tableIsSelectedRowKey)
   <div
     flex="~"
     class="tr"
-    :class="{ 'is-deleted': row.deleted }"
     :style="{ minHeight: `${rowHeight}px` }"
+    :class="{ 'is-odd': index % 2, 'is-deleted': row.deleted }"
   >
     <slot>
       <template
@@ -101,11 +104,16 @@ const isSelectedRow = injectStrict(tableIsSelectedRowKey)
   &.is-deleted {
     --apply: line-through color-ca;
   }
+
+  &.is-odd {
+    .cell {
+      --apply: bg-white dark:bg-darker;
+    }
+  }
 }
 
 .cell {
-  --apply: min-h-inherit flex shrink-0 items-center border-b-1 border-ca
-    overflow-auto;
+  --apply: min-h-inherit flex shrink-0 items-center border-b-1 border-ca;
 
   &.has-data {
     --apply: border-l-1;
@@ -113,6 +121,11 @@ const isSelectedRow = injectStrict(tableIsSelectedRowKey)
 
   &:last-of-type {
     --apply: border-r-1;
+  }
+
+  &.is-frozen {
+    --apply: dark:shadow-black/30 shadow-black/10;
+    box-shadow: 8px 0 24px -2px var(--un-shadow-color);
   }
 }
 </style>

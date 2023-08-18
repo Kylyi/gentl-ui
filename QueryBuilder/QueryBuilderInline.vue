@@ -114,12 +114,10 @@ defineExpose({
     class="query-builder-inline"
   >
     <QueryBuilderRowInline
-      v-for="(item, idx) in items"
+      v-for="item in items"
       :key="item.id"
       :item="item"
       :level="level"
-      :index="idx"
-      inline
     />
 
     <!-- Add first condition -->

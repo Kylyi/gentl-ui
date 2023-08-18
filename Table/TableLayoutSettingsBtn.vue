@@ -113,7 +113,14 @@ async function handleSaveLayout() {
 
   // Sort
   if (layout.value.sort && queryParams.has('paging')) {
-    paramsToSave.set('paging', `${queryParams.get('paging')}`)
+    // We need to extract only the `sort` part of the `paging` query param
+    const paging =
+      queryParams
+        .get('paging')
+        ?.toString()
+        .replace(/.*\(sort\((.*?)\),.*$/, '$1') || ''
+
+    paramsToSave.set('paging', `(sort(${paging}))`)
   }
 
   // Query builder and filters

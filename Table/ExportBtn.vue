@@ -36,14 +36,21 @@ defineEmits<{
       p="1"
       content-class="overflow-hidden"
     >
+      <!-- XLSX -->
       <Btn
+        :label="$t('export.excel')"
         icon="bi:filetype-xlsx"
         :loading="loading"
+        align="left"
         @click="$emit('export', 'xlsx')"
       />
+
+      <!-- CSV -->
       <Btn
+        :label="$t('export.csv')"
         icon="bi:filetype-csv"
         :loading="loading"
+        align="left"
         @click="$emit('export', 'csv')"
       />
     </Menu>

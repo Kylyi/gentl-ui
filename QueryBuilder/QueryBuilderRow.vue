@@ -334,7 +334,6 @@ function updatePaths(parent?: IQueryBuilderGroup) {
   <QueryBuilderGroup
     v-if="'isGroup' in item"
     ref="draggableEl"
-    :data-path="item.path"
     :item="item"
     :level="level"
     :parent="parent"
@@ -348,7 +347,6 @@ function updatePaths(parent?: IQueryBuilderGroup) {
   <QueryBuilderItem
     v-else
     ref="draggableEl"
-    :data-path="item.path"
     :item="item"
     :level="level"
     :parent="parent"

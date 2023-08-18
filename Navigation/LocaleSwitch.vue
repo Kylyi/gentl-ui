@@ -10,14 +10,13 @@ const localeCookie = useCookie('lang', { path: '/', sameSite: 'lax' })
 
 const _locales = computed(() => locales.value as LocaleObject[])
 
-function handleSetLocale(locale: LocaleObject, callback?: () => void) {
-  const localePath = switchLocalePath(locale.code)
-  console.log('Log ~ handleSetLocale ~ localePath:', localePath)
+function handleSetLocale(_locale: LocaleObject, callback?: () => void) {
+  const localePath = switchLocalePath(_locale.code)
   history.replaceState(null, '', localePath)
-  locale.value = locale.code
-  localeCookie.value = locale.code
+  locale.value = _locale.code
+  localeCookie.value = _locale.code
 
-  useHead({ htmlAttrs: { lang: locale.code } })
+  // useHead({ htmlAttrs: { lang: locale.code } })
   callback?.()
 }
 </script>

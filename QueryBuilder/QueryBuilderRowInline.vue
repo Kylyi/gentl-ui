@@ -27,7 +27,6 @@ function updatePaths(parent?: IQueryBuilderGroup) {
 <template>
   <QueryBuilderGroupInline
     v-if="'isGroup' in item"
-    :data-path="item.path"
     :item="item"
     :level="level"
     :parent="parent"
@@ -38,7 +37,6 @@ function updatePaths(parent?: IQueryBuilderGroup) {
 
   <QueryBuilderItemInline
     v-else
-    :data-path="item.path"
     :item="item"
     :level="level"
     :parent="parent"

@@ -6,7 +6,7 @@ type IProps = {
   isLastPage: boolean
   noPagination?: boolean
   pageCount: number
-  totalRows: number
+  totalRows?: number
   currentRows?: number
 
   prev: () => void
@@ -78,7 +78,7 @@ const pages = computedEager(() => {
           <span font="bold">{{ currentRows }}</span>
           {{ $t('general.outOf') }}
           <span font="bold">{{ totalRows }}</span>
-          {{ $t('general.row', totalRows) }}
+          {{ $t('general.row', totalRows || 0) }}
         </span>
 
         <span

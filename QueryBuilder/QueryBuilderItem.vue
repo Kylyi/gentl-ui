@@ -86,6 +86,7 @@ const $v = useVuelidate(
       'no-draggable': noDraggable,
       'is-smaller-screen': isSmallerScreen,
     }"
+    :data-path="item.path"
     @mouseover.stop="hoveredRow = item"
     @mouseleave="hoveredRow = undefined"
   >
@@ -156,8 +157,12 @@ const $v = useVuelidate(
   --apply: relative flex gap-2 rounded-custom p-l-2 min-h-10 m-r-2 m-l-5
     items-center bg-ca border-1 border-transparent;
 
+  transition:
+    background-color 0.3s ease-in-out,
+  shadow 0.3s ease-in-out;
+
   &.is-hovered {
-    --apply: bg-white dark:bg-darker;
+    --apply: bg-white dark:bg-darker z-1 shadow-consistent shadow-ca;
   }
 
   &.is-smaller-screen .qb-item__content {
