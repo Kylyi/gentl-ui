@@ -35,7 +35,7 @@ function handleAddCondition() {
   group.value.children = [
     ...group.value.children,
     {
-      id: new Date().getTime().toString(),
+      id: generateUUID(),
       field: undefined as unknown as string,
       comparator: undefined as unknown as ComparatorEnum,
       value: undefined as unknown as string,
@@ -48,7 +48,7 @@ function handleAddGroup() {
   group.value.children = [
     ...group.value.children,
     {
-      id: new Date().getTime().toString(),
+      id: generateUUID(),
       isGroup: true,
       children: [],
       condition: 'AND',

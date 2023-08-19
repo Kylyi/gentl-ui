@@ -135,6 +135,7 @@ export function useTableData(
     return { take, skip }
   })
 
+  // Sorting
   const orderBy = computed(() => {
     const columns = toValue(internalColumnsRef)
 
@@ -147,6 +148,7 @@ export function useTableData(
     }, [] as ITableOrderBy[])
   })
 
+  // Columns selection
   const select = computed(() => {
     const columns = toValue(internalColumnsRef)
 
@@ -155,6 +157,7 @@ export function useTableData(
       .map(col => col.field)
   })
 
+  // Column filters
   const columnFilters = computed(() => {
     const columns = toValue(internalColumnsRef)
 
@@ -197,7 +200,7 @@ export function useTableData(
 
       const tableQuery: ITableQuery = {
         ...pagination.value,
-        queryBuilder: props.queryBuilder,
+        queryBuilder: queryBuilder.value,
         columnFilters: columnFilters.value,
         filters: hasFilters ? filters : undefined, // Query builder and column filters combined
         orderBy: orderBy.value,

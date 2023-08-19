@@ -58,7 +58,7 @@ function handleAddCondition(useParent?: boolean) {
   parent.children = [
     ...parent.children,
     {
-      id: new Date().getTime().toString(),
+      id: generateUUID(),
       field: undefined as unknown as string,
       comparator: undefined as unknown as ComparatorEnum,
       value: undefined as unknown as string,
@@ -132,7 +132,7 @@ function handleRemoveGroup() {
       <Btn
         v-if="level"
         size="xs"
-        :label="$t('queryBuilder.removeGroup')"
+        :label="$t('remove')"
         preset="TRASH"
         @click="handleRemoveGroup"
       />
@@ -150,8 +150,8 @@ function handleRemoveGroup() {
     :is-first-child="idx === 0"
     :style="{
       ...(isHovered && {
-        backgroundColor: 'var(--bracketColor)',
-        color: 'white',
+        borderColor: 'var(--bracketColor)',
+        borderStyle: 'solid',
       }),
     }"
     @add:row="handleAddCondition()"

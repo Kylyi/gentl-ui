@@ -112,7 +112,23 @@ useTableSelection(props)
         v-model:query-builder="queryBuilder"
         v-model:search="search"
         :selectable="selectable"
-      />
+      >
+        <template #left-prepend>
+          <slot name="top-left-prepend" />
+        </template>
+
+        <template #left-append>
+          <slot name="top-left-append" />
+        </template>
+
+        <template #right-prepend>
+          <slot name="top-right-prepend" />
+        </template>
+
+        <template #right-append>
+          <slot name="top-right-append" />
+        </template>
+      </TableTop>
     </slot>
 
     <!-- Below top -->

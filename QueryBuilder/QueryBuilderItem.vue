@@ -13,10 +13,31 @@ import {
   qbItemsKey,
 } from '~/components/QueryBuilder/provide/query-builder.provide'
 
+// Components
+import Selector from '~/components/Selector/Selector.vue'
+
 const props = defineProps<IQueryBuilderItemProps>()
 const emits = defineEmits<{
   (e: 'delete:row', item: IQueryBuilderItem): void
 }>()
+
+defineExpose({
+  focusInput: (input: 'field' | 'comparator' | 'value' = 'value') => {
+    switch (input) {
+      case 'field':
+        fieldInputEl.value?.focus()
+        break
+
+      case 'comparator':
+        comparatorInputEl.value?.focus()
+        break
+
+      case 'value':
+        valueInputEl.value?.focus()
+        break
+    }
+  },
+})
 
 // Injections
 const columns = injectStrict(qbColumnsKey)
@@ -25,6 +46,9 @@ const hoveredRow = injectStrict(qbHoveredItemKey)
 const isSmallerScreen = injectStrict(qbIsSmallerScreenKey)
 
 // Layout
+const fieldInputEl = ref<InstanceType<typeof Selector>>()
+const comparatorInputEl = ref<InstanceType<typeof Selector>>()
+const valueInputEl = ref<InstanceType<typeof Selector>>()
 const item = toRef(props, 'item')
 
 const cols = computed(() => toValue(columns))
@@ -100,6 +124,7 @@ const $v = useVuelidate(
     <div class="qb-item__content">
       <!-- Field selector -->
       <Selector
+        ref="fieldInputEl"
         v-model="item.field"
         :options="cols"
         emit-key
@@ -115,6 +140,7 @@ const $v = useVuelidate(
         <!-- Comparator selector -->
         <Selector
           v-if="colSelected.dataType !== 'boolean'"
+          ref="comparatorInputEl"
           v-model="item.comparator"
           :options="colSelected.comparators || comparators"
           emit-key
@@ -128,6 +154,7 @@ const $v = useVuelidate(
         <!-- Value -->
         <Component
           :is="component.component"
+          ref="valueInputEl"
           v-model="item.value"
           size="sm"
           :class="{
@@ -145,6 +172,7 @@ const $v = useVuelidate(
       preset="TRASH"
       m="t-2 r-2"
       self="start"
+      tabindex="-1"
       @click="handleRemoveCondition"
     />
 

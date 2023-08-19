@@ -28,14 +28,14 @@ function handleClearFilter() {
 <template>
   <div class="filter-container">
     <!-- TITLE -->
-    <div class="flex flex-gap-x-2 p-x-3 h-11 items-center">
+    <div class="flex flex-gap-x-2 p-x-3 items-center">
       <span class="filter-container-title">
         {{ $t('filtering') }}
       </span>
 
       <Btn
         :label="$t('clearFilter')"
-        color="red"
+        color="negative"
         size="xs"
         @click="handleClearFilter"
       />
@@ -53,7 +53,7 @@ function handleClearFilter() {
   --apply: flex flex-col grow overflow-auto;
 
   &-title {
-    --apply: font-bold text-caption grow;
+    --apply: grow font-bold text-sm;
   }
 }
 </style>

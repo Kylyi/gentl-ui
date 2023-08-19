@@ -28,16 +28,21 @@ function handleMenuBeforeHide() {
 </script>
 
 <template>
-  <Btn size="sm">
+  <Btn
+    class="filter-btn"
+    size="sm"
+    :class="{ 'is-filtered': column.filterDbQuery, 'is-sorted': column.sort }"
+  >
     <template #icon>
       <div class="w-7 h-7 relative">
         <div
-          class="icon top-.5 left-.5 ic:round-filter-alt"
-          :class="{ 'color-primary': column.filters.length }"
+          class="icon top-.25 left-.25 ic:round-filter-alt"
+          :class="{ 'color-white': column.filterDbQuery }"
         />
         <div
-          class="icon bottom-.5 right-.5 basil:sort-outline"
-          :class="{ 'color-primary': column.sort }"
+          class="icon bottom-.25 right-.25 basil:sort-outline"
+          :class="{ 'color-white': column.sort }"
+          z-1
         />
 
         <div
@@ -49,6 +54,73 @@ function handleMenuBeforeHide() {
       </div>
     </template>
 
+    <Tooltip
+      v-if="column.filterDbQuery || column.sort"
+      :offset="8"
+    >
+      <div
+        flex="~ gap-2 col"
+        w="70"
+        p="y-2"
+      >
+        <!-- Column label -->
+        <div flex="~ col">
+          <span
+            text="caption"
+            font="bold"
+          >
+            {{ column.label }}
+          </span>
+
+          <Separator />
+        </div>
+
+        <!-- Sorting -->
+        <div
+          v-if="column.sort"
+          flex="~ gap-1 items-center"
+          p="x-2 y-1"
+          border="ca dashed 1"
+          rounded="custom"
+        >
+          <div
+            :class="[
+              column.sort === 'asc'
+                ? 'ph:sort-descending-bold'
+                : 'ph:sort-ascending-bold',
+            ]"
+          />
+          <span text="xs">
+            {{ $t(`sorting.${column.sort}`) }}
+          </span>
+        </div>
+
+        <!-- Filters -->
+        <template v-if="column.filterDbQuery">
+          <div
+            v-for="filter in column.filters"
+            :key="filter.id"
+            flex="~ col gap-1"
+            p="x-2 y-1"
+            border="ca dashed 1"
+            rounded="custom"
+          >
+            <!-- Comparator -->
+            <span text="caption xs">
+              {{ $t(`comparator.${filter.comparator}`) }}
+            </span>
+
+            <!-- Filter value -->
+            <ValueFormatter
+              :value="filter.value"
+              :data-type="column.dataType"
+              text="sm"
+            />
+          </div>
+        </template>
+      </div>
+    </Tooltip>
+
     <MenuProxy
       w="90"
       dense
@@ -56,6 +128,7 @@ function handleMenuBeforeHide() {
       position="top"
       :placement="placement"
       :offset="offset"
+      :no-arrow="false"
       :reference-target="referenceTarget"
       content-class="flex flex-col"
       @before-hide="handleMenuBeforeHide"
@@ -78,8 +151,22 @@ function handleMenuBeforeHide() {
   --apply: w-4 h-4 absolute;
 
   &-badge {
-    --apply: flex flex-center absolute -bottom-.5 -right-.5 w-3 h-3 bg-primary
-      color-white text-10px rounded-full leading-none;
+    --apply: flex flex-center absolute -bottom-.5 -right-.5 w-3 h-3 bg-white
+      color-primary text-10px rounded-full leading-none z-1;
+  }
+}
+
+.filter-btn {
+  --apply: overflow-hidden;
+
+  &.is-filtered::before {
+    --apply: absolute content-empty rotate-45 bg-primary -top-24.5px -left-24.5px
+      w-1 h-3/2 w-3/2;
+  }
+
+  &.is-sorted::after {
+    --apply: absolute content-empty rotate-45 bg-primary -bottom-24.5px -right-24.5px
+      w-1 h-3/2 w-3/2;
   }
 }
 </style>

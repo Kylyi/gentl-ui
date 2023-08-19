@@ -84,6 +84,10 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
       filter => filter.comparator && filter.value !== undefined
     )
 
+    if (!validFilters.length) {
+      return undefined
+    }
+
     return validFilters
 
     // // We can also filter by `null` values

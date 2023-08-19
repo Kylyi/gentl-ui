@@ -21,7 +21,7 @@ const props = defineProps<
 // Constants
 const MIN_VISIBLE_QUERY_BUILDER_ROWS = 1
 const MAX_VISIBLE_QUERY_BUILDER_ROWS = 3
-const QUERY_BUILDER_INLINE_PADDING = 16
+const QUERY_BUILDER_INLINE_PADDING = 8
 
 // Injections
 const selection = injectStrict(tableSelectionKey)
@@ -78,6 +78,21 @@ const tableSorting = computed(() => {
     )
     .join(', ')
 })
+
+function handleFilterClear(filters?: 'queryBuilder' | 'columns') {
+  if (filters === 'columns') {
+    columns.value.forEach(col => {
+      col.filters = []
+    })
+  } else if (filters === 'queryBuilder') {
+    queryBuilderInlineEl.value?.clearFilter()
+  } else {
+    columns.value.forEach(col => {
+      col.filters = []
+    })
+    queryBuilderInlineEl.value?.clearFilter()
+  }
+}
 </script>
 
 <template>
@@ -86,17 +101,25 @@ const tableSorting = computed(() => {
     <div class="table-top__toolbar">
       <!-- Query builder button -->
       <div grow>
+        <slot name="left-prepend" />
+
         <TableQueryBuilderBtn
           v-if="queryBuilder"
           v-model:query-builder="queryBuilder"
         />
+
+        <slot name="left-append" />
       </div>
+
+      <slot name="right-prepend" />
 
       <!-- Exports -->
       <ExportBtn />
+
+      <slot name="right-append" />
     </div>
 
-    <Separator m="t-1" />
+    <Separator />
 
     <!-- Query builder -->
     <div
@@ -111,7 +134,7 @@ const tableSorting = computed(() => {
           p="1"
           bg="white dark:darker"
           rounded="custom"
-          min-h="12"
+          min-h="10"
         >
           <QueryBuilderInline
             ref="queryBuilderInlineEl"
@@ -137,11 +160,41 @@ const tableSorting = computed(() => {
         no-truncate
         stacked
         h="full"
+        p="!y-0"
         bg="dark:darker"
         color="ca hover:negative"
         border="2 transparent hover:negative"
-        @click="queryBuilderInlineEl?.clearFilter()"
-      />
+      >
+        <Menu
+          placement="left"
+          hide-header
+          :no-arrow="false"
+          content-class="gap-1"
+        >
+          <Btn
+            :label="$t('table.removeQueryBuilderFilter')"
+            size="sm"
+            no-uppercase
+            @click="handleFilterClear('queryBuilder')"
+          />
+          <Btn
+            :label="$t('table.removeColumnsFilter')"
+            size="sm"
+            no-uppercase
+            @click="handleFilterClear('columns')"
+          />
+
+          <Separator />
+
+          <Btn
+            :label="$t('table.removeAllFilters')"
+            size="sm"
+            no-uppercase
+            color="negative"
+            @click="handleFilterClear"
+          />
+        </Menu>
+      </Btn>
     </div>
 
     <Separator
@@ -204,8 +257,6 @@ const tableSorting = computed(() => {
           v-if="tableSorting"
           flex="~ gap-1"
           items-center
-          border="l-1 ca"
-          p="l-2"
         >
           <span
             text="caption xs"

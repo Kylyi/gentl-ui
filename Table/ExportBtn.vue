@@ -42,6 +42,7 @@ defineEmits<{
         icon="bi:filetype-xlsx"
         :loading="loading"
         align="left"
+        no-uppercase
         @click="$emit('export', 'xlsx')"
       />
 
@@ -51,6 +52,7 @@ defineEmits<{
         icon="bi:filetype-csv"
         :loading="loading"
         align="left"
+        no-uppercase
         @click="$emit('export', 'csv')"
       />
     </Menu>

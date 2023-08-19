@@ -104,7 +104,6 @@ defineExpose({
       <div
         v-if="!col.hidden"
         class="th"
-        :title="col._label"
         :class="[
           col.headerClasses,
           `col-${col.name}`,
@@ -121,6 +120,7 @@ defineExpose({
             v-if="col._label"
             p="l-2 r-1 y-1"
             grow
+            :title="col._label"
             style="overflow-wrap: anywhere"
           >
             {{ col._label }}

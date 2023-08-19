@@ -41,11 +41,18 @@ function handleSort(sortValue?: 'asc' | 'desc') {
 
 <template>
   <div class="sorting-container">
-    <!-- TITLE -->
-    <div class="flex flex-gap-x-2 p-x-3 h-11 items-center">
+    <!-- Title -->
+    <div class="flex flex-gap-x-2 p-x-3 p-t-2 p-b-1 items-center">
       <span class="sorting-container-title">
-        {{ $t('sorting') }}
+        {{ $t('sorting.self') }}
       </span>
+
+      <Btn
+        :label="$t('sorting.clear')"
+        size="xs"
+        color="negative"
+        @click="handleSort()"
+      />
     </div>
 
     <div
@@ -53,32 +60,25 @@ function handleSort(sortValue?: 'asc' | 'desc') {
       p="x-2"
     >
       <Btn
-        :label="$t('sortAscending')"
+        :label="$t('sorting.asc')"
         size="sm"
         justify="!start"
         no-uppercase
+        color="ca"
         icon="ph:sort-ascending-bold"
         :class="{ 'is-active': column.sort === 'asc' }"
         @click="handleSort('asc')"
       />
 
       <Btn
-        :label="$t('sortDescending')"
+        :label="$t('sorting.desc')"
         size="sm"
         justify="!start"
         no-uppercase
+        color="ca"
         icon="ph:sort-descending-bold"
         :class="{ 'is-active': column.sort === 'desc' }"
         @click="handleSort('desc')"
-      />
-
-      <Btn
-        :label="$t('clearSort')"
-        size="sm"
-        justify="!start"
-        no-uppercase
-        icon="ic:round-clear"
-        @click="handleSort()"
       />
     </div>
   </div>
@@ -89,7 +89,7 @@ function handleSort(sortValue?: 'asc' | 'desc') {
   --apply: flex flex-col grow overflow-auto shrink-0 p-b-4;
 
   &-title {
-    --apply: font-bold text-caption grow;
+    --apply: grow font-bold text-sm;
   }
 
   .is-active {

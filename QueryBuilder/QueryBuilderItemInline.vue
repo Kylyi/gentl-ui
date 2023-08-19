@@ -14,6 +14,7 @@ import { tableRefreshKey } from '~/components/Table/provide/table.provide'
 
 // Components
 import Menu from '~/components/Menu/Menu.vue'
+import QueryBuilderItem from '~/components/QueryBuilder/QueryBuilderItem.vue'
 
 defineOptions({
   inheritAttrs: false,
@@ -30,6 +31,7 @@ const tableRefresh = injectStrict(tableRefreshKey, () => {})
 
 // Layout
 const itemEditMenuEl = ref<InstanceType<typeof Menu>>()
+const itemEditEl = ref<InstanceType<typeof QueryBuilderItem>>()
 const item = toRef(props, 'item')
 const items = injectStrict(qbItemsKey)
 
@@ -131,6 +133,7 @@ const $v = useVuelidate({ $scope: 'qb' })
       dense
       :before-hide-fnc="$v.$validate"
       @before-hide="handleItemEditMenuBeforeHide"
+      @show="itemEditEl?.focusInput()"
     >
       <Form
         no-controls
@@ -138,6 +141,7 @@ const $v = useVuelidate({ $scope: 'qb' })
         @submit="applyChanges"
       >
         <QueryBuilderItem
+          ref="itemEditEl"
           :item="item"
           :level="level"
           :parent="parent"
