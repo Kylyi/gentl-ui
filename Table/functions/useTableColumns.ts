@@ -335,7 +335,7 @@ export function useTableColumns(
     let wExtra = 0
     colsSortedByWidth.forEach(col => {
       const labelChars = col.hideLabel ? 0 : col.label.length
-      const colMinWidth = col.minWidth || labelChars * 6 + 80 // These numbers are arbitrary
+      const colMinWidth = col.minWidth || labelChars * 8 + 80 // These numbers are arbitrary
 
       if (typeof col.width === 'string') {
         col.adjustedWidth = col.name.startsWith('_')

@@ -13,8 +13,14 @@ import {
   qbItemsKey,
 } from '~/components/QueryBuilder/provide/query-builder.provide'
 
+// Functions
+import { useTableUtils } from '~/components/Table/functions/useTableUtils'
+
 // Components
 import Selector from '~/components/Selector/Selector.vue'
+
+// Constants
+import { COMPARATORS_BY_DATATYPE_MAP } from '~/libs/App/constants/input-map.constant'
 
 const props = defineProps<IQueryBuilderItemProps>()
 const emits = defineEmits<{
@@ -45,6 +51,9 @@ const items = injectStrict(qbItemsKey)
 const hoveredRow = injectStrict(qbHoveredItemKey)
 const isSmallerScreen = injectStrict(qbIsSmallerScreenKey)
 
+// Utils
+const { isSelectorComparator } = useTableUtils()
+
 // Layout
 const fieldInputEl = ref<InstanceType<typeof Selector>>()
 const comparatorInputEl = ref<InstanceType<typeof Selector>>()
@@ -61,7 +70,7 @@ const component = computed(() => {
 })
 
 const comparators = computed(() => {
-  return CONDITIONS_BY_DATATYPE_MAP[colSelected.value?.dataType]
+  return COMPARATORS_BY_DATATYPE_MAP[colSelected.value?.dataType]
 })
 
 function handleRemoveCondition() {
@@ -151,9 +160,30 @@ const $v = useVuelidate(
           :errors="$v.item.comparator.$errors"
         />
 
-        <!-- Value -->
+        <!-- Selector values -->
+        <Selector
+          v-if="colSelected.getDistinctData"
+          ref="valueInputEl"
+          v-model="item.value"
+          :load-data="{
+            fnc: () => colSelected?.getDistinctData?.(colSelected),
+            mapKey: 'doesnt-really-matter',
+            local: true,
+            immediate: true,
+          }"
+          :multi="isSelectorComparator(item.comparator)"
+          emit-key
+          option-key="_value"
+          option-label="_label"
+          class="qb-item__content-value"
+          size="sm"
+          :placeholder="`${$t('table.filterValue')}...`"
+        />
+
+        <!-- Primitive value -->
         <Component
           :is="component.component"
+          v-else
           ref="valueInputEl"
           v-model="item.value"
           size="sm"

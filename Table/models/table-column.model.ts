@@ -80,9 +80,13 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     }
 
     // Filter must have a comparator and value to be considered valid
-    const validFilters = this.filters.filter(
-      filter => filter.comparator && filter.value !== undefined
-    )
+    const validFilters = this.filters.filter(filter => {
+      if (Array.isArray(filter.value)) {
+        return filter.comparator && filter.value.length
+      }
+
+      return filter.comparator && filter.value !== undefined
+    })
 
     if (!validFilters.length) {
       return undefined
@@ -223,6 +227,29 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     this.adjustedWidth = width
   }
 
+  setDataType(dataType: DataType, defaultComparator?: ComparatorEnum) {
+    switch (dataType) {
+      case 'number':
+      case 'int':
+      case 'datetime':
+      case 'DateTime':
+      case 'date':
+        this.comparator = defaultComparator ?? ComparatorEnum.EQUAL
+
+        break
+
+      case 'boolean':
+        this.comparator = defaultComparator ?? ComparatorEnum.IS
+
+        break
+
+      default:
+        this.comparator = defaultComparator ?? ComparatorEnum.STARTS_WITH
+
+        break
+    }
+  }
+
   constructor(col: Required<Partial<TableColumn<T>>, 'field'>) {
     this.name = col.name ?? col.field
     this.format = col.format
@@ -253,26 +280,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     this.reorderable = col.reorderable ?? this.reorderable
     this.resizable = col.resizable ?? this.resizable
 
-    switch (this.dataType) {
-      case 'number':
-      case 'int':
-      case 'datetime':
-      case 'DateTime':
-      case 'date':
-        this.comparator = col.comparator ?? ComparatorEnum.EQUAL
-
-        break
-
-      case 'boolean':
-        this.comparator = col.comparator ?? ComparatorEnum.IS
-
-        break
-
-      default:
-        this.comparator = col.comparator ?? ComparatorEnum.STARTS_WITH
-
-        break
-    }
+    this.setDataType(col.dataType, col.comparator)
 
     // SORTING
     this.sort = col.sort

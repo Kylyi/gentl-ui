@@ -8,7 +8,10 @@ import type { IBtnProps } from '~/components/Button/types/btn-props.type'
 import { TableColumn } from '~/components/Table/models/table-column.model'
 
 // Injections
-import { tableStorageKey } from '~/components/Table/provide/table.provide'
+import {
+  tableResizeKey,
+  tableStorageKey,
+} from '~/components/Table/provide/table.provide'
 
 // Functions
 import { useBtnUtils } from '~/components/Button/functions/useBtnUtils'
@@ -27,6 +30,7 @@ const emits = defineEmits<{
 
 // Injections
 const storageKey = injectStrict(tableStorageKey)
+const handleTableResize = injectStrict(tableResizeKey)
 
 // Store
 const { setTableState } = useTableStore()
@@ -55,16 +59,12 @@ async function handleColumnVisibilityChange(
   val: boolean | undefined,
   col: TableColumn
 ) {
-  const hasRelativeCol = columns.value.some(
-    col => typeof col.width === 'number'
-  )
-
-  if (hasRelativeCol) {
-    columns.value.forEach(col => col.setWidth(col.adjustedWidth))
-    await nextTick()
-  }
-
   col.hidden = val
+
+  await nextTick()
+
+  handleTableResize()
+  setTableState(storageKey.value, { columns: columns.value })
 }
 </script>
 

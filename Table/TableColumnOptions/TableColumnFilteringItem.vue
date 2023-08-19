@@ -132,31 +132,33 @@ defineExpose({
       />
     </div>
 
-    <!-- Compare value -->
-    <Component
-      :is="component.component"
-      v-bind="component.props"
-      v-if="!isSelectorComparator(filter.comparator)"
+    <!-- Selector of distinct values -->
+    <Selector
+      v-if="column.getDistinctData"
       ref="inputEl"
       v-model="filter.value"
-      :debounce="inputDebounce"
+      :load-data="{
+        fnc: () => column.getDistinctData?.(column),
+        mapKey: 'doesnt-really-matter',
+        local: true,
+        immediate: true,
+      }"
+      :multi="isSelectorComparator(filter.comparator)"
+      emit-key
+      option-key="_value"
+      option-label="_label"
       :placeholder="`${$t('table.filterValue')}...`"
       @update:model-value="handleCompareValueChange"
     />
 
-    <!-- Selector of distinct values -->
-    <Selector
-      v-else-if="props.column.getDistinctData"
+    <!-- Compare value -->
+    <Component
+      :is="component.component"
+      v-else
+      v-bind="component.props"
       ref="inputEl"
       v-model="filter.value"
-      :load-data="{
-        fnc: () => props.column.getDistinctData?.(props.column),
-        mapKey: 'doesnt-really-matter',
-        local: true,
-      }"
-      multi
-      option-key="_value"
-      option-label="_label"
+      :debounce="inputDebounce"
       :placeholder="`${$t('table.filterValue')}...`"
       @update:model-value="handleCompareValueChange"
     />

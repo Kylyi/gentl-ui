@@ -13,6 +13,8 @@ import { parseSortingFromUrl } from '~/components/Table/utils/extractSortingFrom
 import { parseVisibleColumnsFromUrl } from '~/components/Table/utils/extractVisibleColumnsFromUrl'
 
 // Constants
+import { COMPARATORS_BY_DATATYPE_MAP } from '~/libs/App/constants/input-map.constant'
+
 const SELECTOR_COMPARATORS = [ComparatorEnum.IN, ComparatorEnum.NOT_IN]
 
 export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
@@ -88,7 +90,7 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
   ) {
     const { includeSelectorComparators, allowedComparators } = options
     const comparators: ComparatorEnum[] =
-      CONDITIONS_BY_DATATYPE_MAP[dataType] ?? []
+      [...COMPARATORS_BY_DATATYPE_MAP[dataType], ...SELECTOR_COMPARATORS] ?? []
 
     if (allowedComparators) {
       return comparators.filter(comparator =>
@@ -101,6 +103,25 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
     }
 
     return comparators
+  }
+
+  /**
+   * Checks if a comparator CAN be used with a `Selector` (IN, NOT_IN, EQUAL, NOT_EQUAL)
+   * to choose the filter data
+   */
+  function canUseSelectorComparator(
+    comparator: ComparatorEnum,
+    col: TableColumn
+  ) {
+    const comparators = col.getDistinctData
+      ? [
+          ...SELECTOR_COMPARATORS,
+          ComparatorEnum.EQUAL,
+          ComparatorEnum.NOT_EQUAL,
+        ]
+      : SELECTOR_COMPARATORS
+
+    return comparators.includes(comparator)
   }
 
   /**
@@ -192,6 +213,7 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
     getRowKey,
     getDistinctDataForField,
     getAvailableComparators,
+    canUseSelectorComparator,
     isSelectorComparator,
     parseUrlParams,
   }

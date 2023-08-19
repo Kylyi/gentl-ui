@@ -50,7 +50,9 @@ function getLabel(_: any, value: any) {
     <ValueFormatter
       :data-type="filter.dataType === 'datetime' ? 'date' : filter.dataType"
       :value="filter.value"
-      :format="Array.isArray(filter.value) ? getLabel : undefined"
+      :format="
+        column.format ?? Array.isArray(filter.value) ? getLabel : undefined
+      "
     >
       <template #default="{ val }">
         <span class="filter-value">

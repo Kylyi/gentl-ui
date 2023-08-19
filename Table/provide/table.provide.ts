@@ -46,6 +46,9 @@ export const tableLayoutsKey: InjectionKey<Ref<ITableLayout[]>> =
 export const tableLayoutKey: InjectionKey<Ref<ITableLayout | undefined>> =
   Symbol('tableLayout')
 
+export const tableViewCodeKey: InjectionKey<Ref<string>> =
+  Symbol('tableViewCode')
+
 // Selection
 export const tableSelectRowKey: InjectionKey<(row: any) => void> =
   Symbol('tableSelectRow')

@@ -7,6 +7,7 @@ import {
   tableLayoutKey,
   tableLayoutsKey,
   tableQueryKey,
+  tableViewCodeKey,
 } from '~/components/Table/provide/table.provide'
 
 // Functions
@@ -18,6 +19,7 @@ import Dialog from '~/components/Dialog/Dialog.vue'
 const tableQuery = injectStrict(tableQueryKey)
 const layouts = injectStrict(tableLayoutsKey)
 const currentLayout = injectStrict(tableLayoutKey)
+const viewCode = injectStrict(tableViewCodeKey)
 
 // Utils
 const { handleRequest } = useRequest()
@@ -52,7 +54,7 @@ const isSaveable = computed(() => {
 
 function handleDialogBeforeShow() {
   layout.value.name =
-    currentLayout.value?.name !== $t('table.layoutStateDefault')
+    currentLayout.value?.name !== $t('table.layoutStateNoLayout')
       ? currentLayout.value?.name
       : ''
   currentLayoutId.value = currentLayout.value?.id
@@ -143,7 +145,7 @@ async function handleSaveLayout() {
           id: layoutFound?.id,
           name: layout.value.name,
           schema: decodeURIComponent(paramsToSave.toString()),
-          viewCode: 'L', // Wtf is this?
+          viewCode: viewCode.value, // Wtf is this?
         },
       })
     },

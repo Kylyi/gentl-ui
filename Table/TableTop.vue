@@ -8,6 +8,7 @@ import type { ITableProps } from '~/components/Table/types/table-props.type'
 import {
   tableColumnsKey,
   tableNonHelpersColumnsKey,
+  tableRefreshKey,
   tableSelectionKey,
 } from '~/components/Table/provide/table.provide'
 
@@ -27,6 +28,7 @@ const QUERY_BUILDER_INLINE_PADDING = 8
 const selection = injectStrict(tableSelectionKey)
 const columns = injectStrict(tableColumnsKey)
 const nonHelperColumns = injectStrict(tableNonHelpersColumnsKey)
+const tableRefresh = injectStrict(tableRefreshKey)
 
 // Layout
 const queryBuilder = useVModel(props, 'queryBuilder')
@@ -84,6 +86,8 @@ function handleFilterClear(filters?: 'queryBuilder' | 'columns') {
     columns.value.forEach(col => {
       col.filters = []
     })
+
+    tableRefresh()
   } else if (filters === 'queryBuilder') {
     queryBuilderInlineEl.value?.clearFilter()
   } else {

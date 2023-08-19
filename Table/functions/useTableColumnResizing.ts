@@ -168,10 +168,6 @@ export function useTableColumnResizing(props: {
       })
     }
 
-    // Once we start changing the width of a column, we need to set width of the
-    // other columns to a fixed value so it doesn't jump around
-    props.columns.forEach(col => col.setWidth(col.adjustedWidth))
-
     // Set the width of the column we're resizing to the new width
     activeSplitter.value!.column.setWidth(activeSplitter.value!.adjustedWidth)
 

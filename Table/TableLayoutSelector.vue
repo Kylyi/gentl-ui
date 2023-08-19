@@ -66,21 +66,23 @@ function handleLayoutSelect(_layout?: ITableLayout) {
 
   // We reset the visibility, sorting, order and filters of all columns
   columns.value.forEach(col => {
-    col.hidden = !!schemaColumns?.length
-    col._internalSort = undefined
-    col.filters = []
-    col.sort = undefined
-    col.sortOrder = undefined
+    if (!col.isHelperCol) {
+      col.hidden = !!schemaColumns?.length
+      col._internalSort = undefined
+      col.filters = []
+      col.sort = undefined
+      col.sortOrder = undefined
+    }
   })
 
   // We only show the columns that are in the URL and set their _internalSort for
   // sorting it later
   schemaColumns?.forEach((col, idx) => {
-    const column = columns.value.find(c => c.field === col)
+    const foundColumn = columns.value.find(c => c.field === col)
 
-    if (column) {
-      column.hidden = false
-      column._internalSort = idx
+    if (foundColumn) {
+      foundColumn.hidden = false
+      foundColumn._internalSort = idx
     }
   })
 

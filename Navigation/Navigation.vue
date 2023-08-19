@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { config } from '~/config'
+
 defineProps<{
   noAccountBtn?: boolean
 }>()
@@ -7,14 +9,24 @@ defineEmits<{
   (e: 'toggle-drawer'): void
 }>()
 
-// INJECTIONS
+// Injections
 const rightDrawer = inject('rightDrawer', ref(false))
 const leftDrawer = inject('leftDrawer', ref(false))
 
-// LAYOUT
+// Layout
 const isInitialized = ref(false)
 
-// SCROLL UTILS
+const navigationProps = computed(() => {
+  return {
+    navigationClass: {
+      'bg-green-700': config.environment === 'development',
+      'bg-purple-600': config.environment === 'staging',
+      'bg-dark': config.environment === 'production',
+    },
+  }
+})
+
+// Scroll utils
 const lastScrollDirection = ref<'up' | 'down'>('down')
 const { arrivedState, y, directions } = useScroll(
   () => (process.client ? window : null),
@@ -44,11 +56,14 @@ onMounted(() => {
   <header
     z="$zNavigation"
     class="navigation-wrapper"
-    :class="{
-      'is-scrolled': isScrolled,
-      'is-hidden': isNavigationHidden && !rightDrawer && !leftDrawer,
-      'is-initialized': isInitialized,
-    }"
+    :class="[
+      navigationProps.navigationClass,
+      {
+        'is-scrolled': isScrolled,
+        'is-hidden': isNavigationHidden && !rightDrawer && !leftDrawer,
+        'is-initialized': isInitialized,
+      },
+    ]"
   >
     <div class="navigation">
       <nav flex="~ 1 gap-x-2 gap-y-1 wrap">
@@ -60,6 +75,13 @@ onMounted(() => {
       <!-- THEME & LOCALE & ACCOUNT -->
       <div class="toolbar">
         <slot name="prepend-actions" />
+
+        <div
+          v-if="config.environment !== 'production'"
+          class="environment"
+        >
+          {{ config.environment }}
+        </div>
 
         <slot name="actions">
           <ThemeToggle />
@@ -79,8 +101,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 header {
-  --apply: relative top-0 inset-inline-0 transition-transform ease-linear
-    bg-dark;
+  --apply: relative top-0 inset-inline-0 transition-transform ease-linear;
 
   // Project specific
   // --apply: w-full max-w-screen-2xl m-x-auto;
@@ -100,6 +121,11 @@ header {
   .toolbar {
     --apply: flex flex-gap-1.5 self-start h-$navigation items-center min-h-40px
       dark:bg-darker bg-light self-center p-x-2 rounded-full;
+
+    .environment {
+      --apply: absolute left-50% -translate-x-1/2 p-y-1 p-x-2 color-white
+        rounded-custom border-2 border-white;
+    }
   }
 }
 

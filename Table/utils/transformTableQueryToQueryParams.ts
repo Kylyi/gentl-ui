@@ -41,7 +41,7 @@ export function serializeFilterString(
 
         // Array
         if (Array.isArray(item.value)) {
-          val = item.value.join(',')
+          val = `(${item.value.join(',')})`
         }
 
         return `${item.field}.${item.comparator}.${val}`

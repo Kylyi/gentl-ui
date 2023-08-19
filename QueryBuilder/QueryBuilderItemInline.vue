@@ -105,6 +105,7 @@ const $v = useVuelidate({ $scope: 'qb' })
     <ValueFormatter
       :value="item.value"
       :data-type="colSelected?.dataType"
+      :format="colSelected?.format"
       bg="white dark:darker rounded-custom"
       leading="none"
       p="x-1 y-1"

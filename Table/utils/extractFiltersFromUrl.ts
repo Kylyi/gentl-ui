@@ -124,9 +124,25 @@ function parseItemSegment(
   results: IQueryBuilderRow[],
   parentPath: string = ''
 ): number {
-  const endIdx = filterStr.indexOf(',', idx)
+  // Arrays are inserted into parentheses, therefore, we need to be aware
+  // of the parentheses depth to know when the segment ends
+  let parenthesesDepth = 0
+  let endIdx = -1
+
+  for (let i = idx; i < filterStr.length; i++) {
+    if (filterStr[i] === '(') {
+      parenthesesDepth++
+    } else if (filterStr[i] === ')') {
+      parenthesesDepth--
+    } else if (filterStr[i] === ',' && parenthesesDepth === 0) {
+      endIdx = i
+      break
+    }
+  }
+
   const segment =
     endIdx === -1 ? filterStr.slice(idx) : filterStr.slice(idx, endIdx)
+
   const comparatorKeys = Object.values(ComparatorEnum).sort(
     (a, b) => b.length - a.length
   )
@@ -146,7 +162,15 @@ function parseItemSegment(
 
   const [field] = segment.split(`.${foundComparator}.`)
   const value = segment.slice(segment.lastIndexOf('.') + 1)
-  const parsedValue = parseValue(value, columnsByField[field]?.dataType)
+
+  // We check for arrays to parse each value in the array
+  const isArray = value.startsWith('(') && value.endsWith(')')
+  const parsedValue = isArray
+    ? value
+        .slice(1, -1)
+        .split(',')
+        .map(val => parseValue(val, columnsByField[field]?.dataType))
+    : parseValue(value, columnsByField[field]?.dataType)
 
   const path = generatePath(parentPath, results.length)
   const item: IQueryBuilderItem = {

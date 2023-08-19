@@ -2,18 +2,18 @@
 // TODO: I'm using `props.optionLabel` for adding new items on the fly
 // but it will not work when optionLabel is a function
 
-// TYPES
+// Types
 import type { ISelectorProps } from '~~/components/Selector/types/selector-props.type'
+import type { IItemToBeAdded } from '~/components/List/types/list-item-to-add.type'
 
-// COMPOSITION FUNCTIONS
+// Functions
 import { useSelectorUtils } from '~~/components/Selector/functions/useSelectorUtils'
 
-// COMPONENTS
+// Components
 import List from '@/components/List/List.vue'
 import MenuProxy from '@/components/MenuProxy/MenuProxy.vue'
 import InputWrapper from '@/components/Inputs/InputWrapper.vue'
 import ScrollArea from '@/components/ScrollArea/ScrollArea.vue'
-import { IItemToBeAdded } from '~/components/List/types/list-item-to-add.type'
 
 const props = withDefaults(defineProps<ISelectorProps>(), {
   debounce: 500,
@@ -40,13 +40,14 @@ const emits = defineEmits<{
   (e: 'blur'): void
 }>()
 
-// LIFECYCLE
+// Lifecycle
 onMounted(() => {
   menuReferenceTarget.value =
     currentInstance?.proxy?.$el.querySelector('.wrapper-body')
 })
 
-// UTILS
+// Utils
+const { handleRequest } = useRequest()
 const currentInstance = getCurrentInstance()
 
 const hasContent = computed(() => {
@@ -55,7 +56,7 @@ const hasContent = computed(() => {
     : !isNil(model.value) && model.value !== ''
 })
 
-// SELECTION
+// Selection
 const maxHeight = computedEager(() => {
   return props.maxChipsRows * 26
 })
@@ -167,7 +168,7 @@ function handleSelectRemove(data: any) {
   syncScrollArea()
 }
 
-// LIST
+// List
 const isOptionsInternalLoaded = ref(false)
 const listEl = ref<InstanceType<typeof List>>()
 const options = toRef(props, 'options')
@@ -250,7 +251,7 @@ watch(listOptions, () => {
   menuProxyEl.value?.recomputePosition()
 })
 
-// PICKER
+// Picker
 const menuProxyEl = ref<InstanceType<typeof MenuProxy>>()
 const menuPlacement = ref('bottom')
 const isPickerActive = ref(false)
@@ -281,7 +282,7 @@ function handleShow() {
   emits('picker-show')
 }
 
-// LAYOUT
+// Layout
 const { model, wrapperProps, handleClickWrapper, handleFocusOrClick, clear } =
   useSelectorUtils({
     props,
@@ -306,7 +307,12 @@ function syncScrollArea() {
   }, 0)
 }
 
-// PRESELECT ON INIT
+// Fetch data immediately
+if (props.loadData?.immediate) {
+  getData()
+}
+
+// Preselect on init
 if (
   props.preselectFirst &&
   (props.modelValue === props.emptyValue || isNil(props.modelValue)) &&
@@ -317,6 +323,21 @@ if (
   } else {
     handleSelect([options.value[0]])
   }
+}
+
+// Data fetching
+function getData() {
+  handleRequest(async () => {
+    if (props.loadData) {
+      const res = await props.loadData.fnc({ search: undefined })
+
+      if (props.loadData.local) {
+        optionsInternal.value = res
+      } else {
+        optionsInternal.value = get(res, props.loadData.mapKey)
+      }
+    }
+  })
 }
 
 defineExpose({
