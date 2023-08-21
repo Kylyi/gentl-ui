@@ -50,8 +50,10 @@ const $v = useVuelidate({ $scope: 'qb' })
     <Dialog
       ref="dialogEl"
       :title="$t('queryBuilder.self')"
-      w="300"
-      h="90%"
+      w="264"
+      max-h="90%"
+      min-h="100"
+      h="auto"
       dense
       header-class="p-l-3 p-r-1"
       @hide="sync"
