@@ -370,7 +370,7 @@ function show(force?: boolean) {
   // TODO: Overlay zIndex -> this doesnt work properly when dealing with zIndexes,
   // probably create a copy of the button and temporarily show that instead?
   if (!props.cover && !props.noUplift) {
-    ;(referenceEl.value as any).style.zIndex = '3001'
+    ;(referenceEl.value as any).style.zIndex = '3000'
   }
 
   isReferenceElTransparent.value =

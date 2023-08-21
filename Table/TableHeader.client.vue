@@ -147,7 +147,6 @@ defineExpose({
               v-if="!(col.noFilterSort || col.isHelperCol)"
               :column="col"
               :columns="columns"
-              :rows="rows"
               m="x-1"
               shrink-0
               :use-server="useServer"
