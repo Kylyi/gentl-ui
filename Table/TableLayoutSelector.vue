@@ -126,8 +126,12 @@ function handleLayoutSelect(_layout?: ITableLayout) {
 
   // Sort the columns based on the `_internalSort`
   columns.value.sort((a, b) => {
-    if (a._internalSort === undefined || b._internalSort === undefined) {
-      return 0
+    if (a._internalSort === undefined) {
+      return 1
+    }
+
+    if (b._internalSort === undefined) {
+      return -1
     }
 
     return a._internalSort - b._internalSort

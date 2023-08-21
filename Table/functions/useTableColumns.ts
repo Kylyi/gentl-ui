@@ -101,9 +101,14 @@ export function useTableColumns(
       })
 
       // We reorder the columns based on the `_internalSort` property
+      // Sort the columns based on the `_internalSort`
       _columns.sort((a, b) => {
-        if (a._internalSort === undefined || b._internalSort === undefined) {
-          return 0
+        if (a._internalSort === undefined) {
+          return 1
+        }
+
+        if (b._internalSort === undefined) {
+          return -1
         }
 
         return a._internalSort - b._internalSort
