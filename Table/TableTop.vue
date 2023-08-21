@@ -213,6 +213,7 @@ function handleFilterClear(filters?: 'queryBuilder' | 'columns') {
         grow
         flex="~ gap-2"
         items-center
+        display="lt-md:none"
       >
         <!-- Selection info -->
         <div
@@ -279,10 +280,13 @@ function handleFilterClear(filters?: 'queryBuilder' | 'columns') {
       <div
         flex="~ gap-2"
         items-center
+        grow
+        justify="end"
       >
         <span
           text="caption xs"
           font="bold"
+          display="lt-md:none"
         >
           {{ $t('table.layoutState') }}:
         </span>

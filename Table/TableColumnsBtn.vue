@@ -76,6 +76,7 @@ async function handleColumnVisibilityChange(
     self-center
     no-uppercase
     size="sm"
+    label-class="hidden sm:block"
     v-bind="btnProps"
   >
     <Menu

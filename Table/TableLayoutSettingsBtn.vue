@@ -213,6 +213,7 @@ const $v = useVuelidate(
     color="ca"
     no-uppercase
     :label="$t('settings')"
+    label-class="hidden sm:block"
   >
     <Dialog
       ref="dialogEl"
