@@ -5,4 +5,5 @@ import type { INumberInputProps } from '~/components/Inputs/NumberInput/types/nu
 export interface IDurationInputProps extends INumberInputProps {
   noStep?: boolean
   initialDurationUnit?: DurationUnit
+  allowedUnits?: DurationUnit[]
 }

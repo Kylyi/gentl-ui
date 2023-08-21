@@ -1,21 +1,22 @@
 <script setup lang="ts">
-// TYPES
+// Types
 import type { IDurationInputProps } from '~/components/Inputs/DurationInput/types/input-duration-props.type'
 
-// COMPOSITION FUNCTIONS
+// Functions
 import {
   type DurationUnit,
   MODIFIER_BY_UNIT,
   useDuration,
 } from '~/components/Inputs/DurationInput/functions/useDuration'
 
-// COMPONENTS
+// Components
 import Btn from '@/components/Button/Btn.vue'
 import Menu from '@/components/Menu/Menu.vue'
 import NumberInput from '~/components/Inputs/NumberInput/NumberInput.vue'
 
 const props = withDefaults(defineProps<IDurationInputProps>(), {
   initialDurationUnit: 'hour',
+  allowedUnits: () => ['minute', 'hour', 'day'],
 })
 
 const emits = defineEmits<{
@@ -25,7 +26,7 @@ const emits = defineEmits<{
 
 const { getDuration } = useDuration()
 
-// LAYOUT
+// Layout
 const numberInputEl = ref<InstanceType<typeof NumberInput>>()
 const menuEl = ref<InstanceType<typeof Menu>>()
 const durationUnit = ref<DurationUnit>(props.initialDurationUnit)
@@ -67,6 +68,9 @@ const modelByUnit = computed<Record<DurationUnit, number>>(() => {
   const model = typeof props.modelValue === 'number' ? props.modelValue : 0
 
   return {
+    year: getDuration(model, 'year').val,
+    month: getDuration(model, 'month').val,
+    week: getDuration(model, 'week').val,
     day: getDuration(model, 'day').val,
     hour: getDuration(model, 'hour').val,
     minute: getDuration(model, 'minute').val,
@@ -91,6 +95,16 @@ function handleModelChange(val: any) {
 
   emits('update:model-value', duration)
 }
+
+// Units
+const units = computed(() => {
+  return props.allowedUnits.map(unit => ({
+    id: unit,
+    label: $t(`general.${unit}`, model.value),
+    class: durationUnit.value === unit ? 'bg-primary color-white' : '',
+    handler: () => handleDurationUnitChange(unit),
+  }))
+})
 
 function handleDurationUnitChange(unit: DurationUnit) {
   durationUnit.value = unit
@@ -145,30 +159,14 @@ defineExpose({
         >
           <template #default>
             <Btn
-              :label="$t('general.minute', model)"
-              :class="{ 'bg-primary color-white': durationUnit === 'minute' }"
+              v-for="unit in units"
+              :key="unit.id"
+              :label="unit.label"
+              :class="unit.class"
               size="sm"
               no-bold
               no-uppercase
-              @click="handleDurationUnitChange('minute')"
-              @mousedown.stop.prevent=""
-            />
-            <Btn
-              :label="$t('general.hour', model)"
-              :class="{ 'bg-primary color-white': durationUnit === 'hour' }"
-              size="sm"
-              no-bold
-              no-uppercase
-              @click="handleDurationUnitChange('hour')"
-              @mousedown.stop.prevent=""
-            />
-            <Btn
-              :label="$t('general.day', model)"
-              :class="{ 'bg-primary color-white': durationUnit === 'day' }"
-              size="sm"
-              no-bold
-              no-uppercase
-              @click="handleDurationUnitChange('day')"
+              @click="unit.handler"
               @mousedown.stop.prevent=""
             />
           </template>

@@ -5,7 +5,14 @@ import {
   useNumber,
 } from '~/components/Inputs/NumberInput/functions/useNumber'
 
-export type DurationUnit = 'second' | 'minute' | 'hour' | 'day'
+export type DurationUnit =
+  | 'second'
+  | 'minute'
+  | 'hour'
+  | 'day'
+  | 'week'
+  | 'month'
+  | 'year'
 export type IDurationOptions = INumberOptions & { unit?: DurationUnit }
 
 export const MODIFIER_BY_UNIT: Record<DurationUnit, number> = {
@@ -13,6 +20,9 @@ export const MODIFIER_BY_UNIT: Record<DurationUnit, number> = {
   minute: $duration(1, 'minute').as('ms'),
   hour: $duration(1, 'hour').as('ms'),
   day: $duration(1, 'day').as('ms'),
+  week: $duration(1, 'week').as('ms'),
+  month: $duration(1, 'month').as('ms'),
+  year: $duration(1, 'year').as('ms'),
 }
 
 export function useDuration() {
