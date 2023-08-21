@@ -131,6 +131,18 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
     return SELECTOR_COMPARATORS.includes(comparator)
   }
 
+  /**
+   * Checks if a comparator is of type `ago` (AGO, NOT_AGO, UNTIL, NOT_UNTIL)
+   */
+  function isDateAgoComparator(comparator: ComparatorEnum) {
+    return (
+      comparator === ComparatorEnum.AGO ||
+      comparator === ComparatorEnum.NOT_AGO ||
+      comparator === ComparatorEnum.UNTIL ||
+      comparator === ComparatorEnum.NOT_UNTIL
+    )
+  }
+
   function hasVisibleCol(columns: TableColumn[]) {
     return columns.some(col => !col.hidden)
   }
@@ -215,6 +227,7 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
     getAvailableComparators,
     canUseSelectorComparator,
     isSelectorComparator,
+    isDateAgoComparator,
     parseUrlParams,
   }
 }

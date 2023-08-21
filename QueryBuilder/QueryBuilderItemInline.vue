@@ -5,6 +5,9 @@ import type {
   IQueryBuilderItemProps,
 } from '~/components/QueryBuilder/types/query-builder-item-props.type'
 
+// Models
+import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
+
 // Injections
 import {
   qbColumnsKey,
@@ -45,6 +48,25 @@ const levelColor = computed(() => {
 
   return getColor(color)
 })
+
+function getDataType(): DataType {
+  const col = colSelected.value
+
+  if (!col) {
+    return 'string'
+  }
+
+  switch (item.value.comparator) {
+    case ComparatorEnum.AGO:
+    case ComparatorEnum.NOT_AGO:
+    case ComparatorEnum.UNTIL:
+    case ComparatorEnum.NOT_UNTIL:
+      return 'string'
+
+    default:
+      return col.dataType
+  }
+}
 
 function handleRemoveCondition() {
   const idx = item.value.path.split('.').pop()
@@ -104,7 +126,7 @@ const $v = useVuelidate({ $scope: 'qb' })
     <!-- Value -->
     <ValueFormatter
       :value="item.value"
-      :data-type="colSelected?.dataType"
+      :data-type="getDataType()"
       :format="colSelected?.format"
       bg="white dark:darker rounded-custom"
       leading="none"

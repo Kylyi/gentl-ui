@@ -10,7 +10,7 @@ export type IQueryBuilderItem = {
   path: string
   field: string
   comparator: ComparatorEnum
-  value: any
+  value?: any
 }
 
 export type IQueryBuilderItemProps = IQueryBuilderRowProps & {

@@ -136,7 +136,7 @@ defineExpose({
     <template #append>
       <slot name="append" />
 
-      <!-- UNIT SELECTION -->
+      <!-- Unit selection -->
       <Btn
         v-if="!readonly && !disabled"
         flex="shrink"

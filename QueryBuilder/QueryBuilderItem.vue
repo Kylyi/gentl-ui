@@ -21,6 +21,7 @@ import Selector from '~/components/Selector/Selector.vue'
 
 // Constants
 import { COMPARATORS_BY_DATATYPE_MAP } from '~/libs/App/constants/input-map.constant'
+import { ComparatorEnum } from 'libs/App/data/enums/comparator.enum'
 
 const props = defineProps<IQueryBuilderItemProps>()
 const emits = defineEmits<{
@@ -52,7 +53,7 @@ const hoveredRow = injectStrict(qbHoveredItemKey)
 const isSmallerScreen = injectStrict(qbIsSmallerScreenKey)
 
 // Utils
-const { isSelectorComparator } = useTableUtils()
+const { isSelectorComparator, isDateAgoComparator } = useTableUtils()
 
 // Layout
 const fieldInputEl = ref<InstanceType<typeof Selector>>()
@@ -94,6 +95,36 @@ function handleFieldChange(field: string) {
 
   item.value.comparator = col.comparator
   item.value.value = col.dataType === 'boolean' ? true : undefined
+}
+
+function handleComparatorChange(comparator: ComparatorEnum) {
+  // If the comparator was a selector comparator and now it's not, reset the value
+  // If the comparator was not a selector comparator and now it is, reset the value
+  const wasSelectComparator = isSelectorComparator(item.value.comparator)
+  const isSelectComparator = isSelectorComparator(comparator)
+
+  if (wasSelectComparator && !isSelectComparator) {
+    item.value.value = undefined
+  }
+
+  if (!wasSelectComparator && isSelectComparator) {
+    item.value.value = []
+  }
+
+  // If the comparator was a date ago comparator and now it's not, reset the value
+  // If the comparator was not a date ago comparator and now it is, reset the value
+  const _wasDateAgoComparator = isDateAgoComparator(item.value.comparator)
+  const _isDateAgoComparator = isDateAgoComparator(comparator)
+
+  if (_wasDateAgoComparator && !_isDateAgoComparator) {
+    item.value.value = undefined
+  }
+
+  if (!_wasDateAgoComparator && _isDateAgoComparator) {
+    item.value.value = '1m'
+  }
+
+  item.value.comparator = comparator
 }
 
 // Validation
@@ -150,7 +181,7 @@ const $v = useVuelidate(
         <Selector
           v-if="colSelected.dataType !== 'boolean'"
           ref="comparatorInputEl"
-          v-model="item.comparator"
+          :model-value="item.comparator"
           :options="colSelected.comparators || comparators"
           emit-key
           size="sm"
@@ -158,6 +189,7 @@ const $v = useVuelidate(
           :option-label="comparator => $t(`comparator.${comparator.id}`)"
           no-search
           :errors="$v.item.comparator.$errors"
+          @update:model-value="handleComparatorChange"
         />
 
         <!-- Selector values -->
@@ -178,6 +210,12 @@ const $v = useVuelidate(
           class="qb-item__content-value"
           size="sm"
           :placeholder="`${$t('table.filterValue')}...`"
+        />
+
+        <!-- Ago value -->
+        <QueryBuilderTimeAgoInput
+          v-else-if="isDateAgoComparator(item.comparator)"
+          :item="item"
         />
 
         <!-- Primitive value -->

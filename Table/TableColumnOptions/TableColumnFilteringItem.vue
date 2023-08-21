@@ -23,7 +23,8 @@ type IProps = {
 const props = defineProps<IProps>()
 
 // Utils
-const { getAvailableComparators, isSelectorComparator } = useTableUtils()
+const { getAvailableComparators, isSelectorComparator, isDateAgoComparator } =
+  useTableUtils()
 
 // Injections
 const tableRefresh = injectStrict(tableRefreshKey)
@@ -82,18 +83,33 @@ function handleRemoveFilter() {
 }
 
 function handleComparatorChange(comparator: ComparatorEnum) {
+  // If the comparator was a selector comparator and now it's not, reset the value
+  // If the comparator was not a selector comparator and now it is, reset the value
   const wasSelectComparator = isSelectorComparator(filter.value.comparator)
-  filter.value.comparator = comparator
   const isSelectComparator = isSelectorComparator(comparator)
 
   if (wasSelectComparator && !isSelectComparator) {
-    filter.value.value = null
+    filter.value.value = undefined
   }
 
   if (!wasSelectComparator && isSelectComparator) {
     filter.value.value = []
   }
 
+  // If the comparator was a date ago comparator and now it's not, reset the value
+  // If the comparator was not a date ago comparator and now it is, reset the value
+  const _wasDateAgoComparator = isDateAgoComparator(filter.value.comparator)
+  const _isDateAgoComparator = isDateAgoComparator(comparator)
+
+  if (_wasDateAgoComparator && !_isDateAgoComparator) {
+    filter.value.value = undefined
+  }
+
+  if (!_wasDateAgoComparator && _isDateAgoComparator) {
+    filter.value.value = '1m'
+  }
+
+  filter.value.comparator = comparator
   tableRefresh()
 }
 
@@ -119,6 +135,7 @@ defineExpose({
         no-sort
         :hidden-options="hiddenComparators"
         hide-self
+        size="sm"
         @update:model-value="handleComparatorChange"
       />
 
@@ -147,11 +164,19 @@ defineExpose({
       emit-key
       option-key="_value"
       option-label="_label"
+      size="sm"
       :placeholder="`${$t('table.filterValue')}...`"
       @update:model-value="handleCompareValueChange"
     />
 
-    <!-- Compare value -->
+    <!-- Ago value -->
+    <QueryBuilderTimeAgoInput
+      v-else-if="isDateAgoComparator(filter.comparator)"
+      :item="filter"
+      @update:model-value="handleCompareValueChange"
+    />
+
+    <!-- Primitive value -->
     <Component
       :is="component.component"
       v-else
@@ -159,6 +184,7 @@ defineExpose({
       ref="inputEl"
       v-model="filter.value"
       :debounce="inputDebounce"
+      size="sm"
       :placeholder="`${$t('table.filterValue')}...`"
       @update:model-value="handleCompareValueChange"
     />
