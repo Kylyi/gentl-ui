@@ -55,6 +55,16 @@ const nonHelperCols = computed({
 
 const btnProps = computed(() => getBtnProps(props))
 
+// Sorting events
+function handleSortStart() {
+  document.documentElement.classList.add('select-none')
+}
+
+function handleSortEnd() {
+  document.documentElement.classList.remove('select-none')
+}
+
+// Column visibility
 async function handleColumnVisibilityChange(
   val: boolean | undefined,
   col: TableColumn
@@ -89,6 +99,8 @@ async function handleColumnVisibilityChange(
         v-model:list="nonHelperCols"
         axis="y"
         use-drag-handle
+        @sort-start="handleSortStart"
+        @sort-end="handleSortEnd"
       >
         <SlickItem
           v-for="(col, idx) in nonHelperCols"
