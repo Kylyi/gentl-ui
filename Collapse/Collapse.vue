@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// TYPES
+// Types
 import type { ICollapseProps } from '~~/components/Collapse/types/collapse-props.type'
 
 const props = withDefaults(defineProps<ICollapseProps>(), {
