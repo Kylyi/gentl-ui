@@ -41,6 +41,7 @@ export async function useTableMetaData(props: ITableProps) {
 
         layout.value = get(result, layoutKey || config.table.layoutKey)
 
+        // Project specific
         if (layout.value?.viewCode) {
           viewCode.value = layout.value.viewCode
         }

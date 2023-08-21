@@ -19,9 +19,10 @@ import Dialog from '~/components/Dialog/Dialog.vue'
 const tableQuery = injectStrict(tableQueryKey)
 const layouts = injectStrict(tableLayoutsKey)
 const currentLayout = injectStrict(tableLayoutKey)
-const viewCode = injectStrict(tableViewCodeKey)
+const viewCode = injectStrict(tableViewCodeKey, ref(''))
 
 // Utils
+const { saveLayout, deleteLayout } = useTableSpecifics()
 const { handleRequest } = useRequest()
 
 // Layout
@@ -134,20 +135,18 @@ async function handleSaveLayout() {
 
   const res = await handleRequest<any>(
     () => {
-      const method = layoutFound ? 'PUT' : 'POST'
+      const mode = layoutFound ? 'update' : 'create'
 
-      // TODO: Move to some project-specific config
-      return axios({
-        url: 'user-filters',
-        method,
-        data: {
-          accessLevel: accessLevel.value,
+      return saveLayout(
+        {
           id: layoutFound?.id,
           name: layout.value.name,
           schema: decodeURIComponent(paramsToSave.toString()),
-          viewCode: viewCode.value, // Wtf is this?
+          viewCode: viewCode.value,
+          accessLevel: accessLevel.value,
         },
-      })
+        { mode }
+      )
     },
     { notifySuccess: true }
   )
@@ -169,12 +168,7 @@ async function handleSaveLayout() {
 async function handleDeleteLayoutState() {
   const res = await handleRequest(
     () => {
-      // TODO: Move to some project-specific config
-      return axios({
-        url: `user-filters`,
-        method: 'DELETE',
-        data: { id: currentLayoutId.value },
-      })
+      return deleteLayout(currentLayoutId.value)
     },
     { notifySuccess: true }
   )
