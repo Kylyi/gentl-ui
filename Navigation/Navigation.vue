@@ -21,6 +21,7 @@ const navigationProps = computed(() => {
     navigationClass: {
       'bg-green-700': config.environment === 'development',
       'bg-purple-600': config.environment === 'staging',
+      'bg-teal-600': config.environment === 'local',
       'bg-dark': config.environment === 'production',
     },
   }
