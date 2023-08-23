@@ -97,6 +97,15 @@ function handleFilterClear(filters?: 'queryBuilder' | 'columns') {
     queryBuilderInlineEl.value?.clearFilter()
   }
 }
+
+function handleClearSorting() {
+  columns.value.forEach(col => {
+    col.sort = undefined
+    col.sortOrder = undefined
+  })
+
+  tableRefresh()
+}
 </script>
 
 <template>
@@ -272,6 +281,13 @@ function handleFilterClear(filters?: 'queryBuilder' | 'columns') {
           <span
             text="caption"
             v-html="tableSorting"
+          />
+
+          <Btn
+            preset="TRASH"
+            size="xs"
+            :label="$t('sorting.clear')"
+            @click="handleClearSorting"
           />
         </div>
       </div>

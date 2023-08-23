@@ -19,6 +19,9 @@ import { useBtnUtils } from '~/components/Button/functions/useBtnUtils'
 // Store
 import { useTableStore } from '~/components/Table/table.store'
 
+// Components
+import Dialog from '~/components/Dialog/Dialog.vue'
+
 type IProps = {
   columns: TableColumn[]
 } & IBtnProps
@@ -39,17 +42,33 @@ const { setTableState } = useTableStore()
 const { getBtnProps } = useBtnUtils()
 
 // Layout
+const dialogEl = ref<InstanceType<typeof Dialog>>()
 const columns = useVModel(props, 'columns', emits)
+const { cloned: clonedColumns } = useCloned(columns, {
+  clone: cols => cols.map((col: TableColumn) => new TableColumn(col)),
+})
 
 const nonHelperCols = computed({
   get() {
-    return columns.value.filter(col => !col.isHelperCol)
+    return clonedColumns.value.filter(col => !col.isHelperCol)
   },
   set(val: TableColumn[]) {
-    const helpersCols = columns.value.filter(col => col.isHelperCol)
+    const helpersCols = clonedColumns.value.filter(col => col.isHelperCol)
 
-    columns.value = [...helpersCols, ...val]
-    setTableState(storageKey.value, { columns: columns.value })
+    clonedColumns.value = [...helpersCols, ...val]
+    setTableState(storageKey.value, { columns: clonedColumns.value })
+  },
+})
+
+const filteredCols = computed({
+  get() {
+    return nonHelperCols.value.filter(col => !col.hidden)
+  },
+  set(val: TableColumn[]) {
+    nonHelperCols.value = [
+      ...val,
+      ...clonedColumns.value.filter(col => col.hidden),
+    ]
   },
 })
 
@@ -65,16 +84,26 @@ function handleSortEnd() {
 }
 
 // Column visibility
-async function handleColumnVisibilityChange(
+function handleColumnVisibilityChange(
   val: boolean | undefined,
   col: TableColumn
 ) {
   col.hidden = val
 
+  // await nextTick()
+
+  // handleTableResize()
+  // setTableState(storageKey.value, { columns: clonedColumns.value })
+}
+
+// Apply changes
+async function handleApplyChanges() {
+  columns.value = clonedColumns.value.map(col => new TableColumn(col))
   await nextTick()
 
   handleTableResize()
-  setTableState(storageKey.value, { columns: columns.value })
+  setTableState(storageKey.value, { columns: clonedColumns.value })
+  dialogEl.value?.hide()
 }
 </script>
 
@@ -89,54 +118,112 @@ async function handleColumnVisibilityChange(
     label-class="hidden sm:block"
     v-bind="btnProps"
   >
-    <Menu
-      placement="bottom-end"
-      :no-arrow="false"
-      hide-header
-      w="80"
+    <Dialog
+      ref="dialogEl"
+      w="screen-md"
+      :title="$t('table.customizeColumns')"
+      dense
+      max-h="6/10"
+      h="auto"
+      header-class="p-l-3 p-r-1"
     >
-      <SlickList
-        v-model:list="nonHelperCols"
-        axis="y"
-        use-drag-handle
-        @sort-start="handleSortStart"
-        @sort-end="handleSortEnd"
+      <Form
+        grid="~ cols-2"
+        bg="dark:darker white"
+        p="2"
+        :label="$t('table.applyColumns')"
+        @submit="handleApplyChanges"
       >
-        <SlickItem
-          v-for="(col, idx) in nonHelperCols"
-          :key="col.field"
-          :index="idx"
-          :disabled="!col.reorderable || col.isHelperCol"
-          z="$zMenu"
+        <!-- Left side -->
+        <div
+          flex="~ col gap-2"
+          overflow="auto"
+          p="r-2"
+          border="r-1 ca"
         >
-          <Item
-            cursor="!default"
-            flex="gap-x-0"
-            :class="{ 'color-ca': !col.reorderable }"
+          <div
+            flex="~ col"
+            p="t-2"
           >
-            <DragHandle
-              v-if="col.reorderable && !col.isHelperCol"
-              class="handle icon-park-outline:drag"
-            />
+            <h6 font="bold">{{ $t('table.availableMetrics') }}</h6>
+            <span text="caption">{{ $t('table.selectVisibleColumns') }}</span>
+          </div>
 
-            <span
-              grow
-              p="y-1.5 x-2"
-              truncate
+          <List :items="nonHelperCols">
+            <template #option="{ item, highlighted }">
+              <Checkbox
+                :model-value="item.hidden"
+                :check-value="false"
+                :uncheck-value="true"
+                @update:model-value="handleColumnVisibilityChange($event, item)"
+              />
+
+              <div
+                text="sm"
+                v-html="highlighted"
+              />
+            </template>
+          </List>
+        </div>
+
+        <!-- Right side -->
+        <div
+          flex="~ col gap-2"
+          overflow="auto"
+          p="l-2"
+        >
+          <div
+            flex="~ col"
+            p="t-2"
+          >
+            <h6 font="bold">{{ $t('table.selectedColumns') }}</h6>
+            <span text="caption">{{ $t('general.dragToReorder') }}</span>
+          </div>
+
+          <SlickList
+            v-model:list="filteredCols"
+            axis="y"
+            use-drag-handle
+            @sort-start="handleSortStart"
+            @sort-end="handleSortEnd"
+          >
+            <SlickItem
+              v-for="(col, idx) in filteredCols"
+              :key="col.field"
+              :index="idx"
+              :disabled="!col.reorderable || col.isHelperCol"
+              z="$zMenu"
             >
-              {{ col._label }}
-            </span>
+              <Item
+                cursor="!default"
+                flex="gap-x-0"
+                :class="{ 'color-ca': !col.reorderable }"
+              >
+                <DragHandle
+                  v-if="col.reorderable && !col.isHelperCol"
+                  class="handle icon-park-outline:drag"
+                />
 
-            <Checkbox
-              :model-value="col.hidden"
-              :check-value="false"
-              :uncheck-value="true"
-              @update:model-value="handleColumnVisibilityChange($event, col)"
-            />
-          </Item>
-        </SlickItem>
-      </SlickList>
-    </Menu>
+                <span
+                  grow
+                  p="y-1.5 x-2"
+                  truncate
+                >
+                  {{ col._label }}
+                </span>
+
+                <Btn
+                  size="xs"
+                  preset="TRASH"
+                  m="r-1"
+                  @click="handleColumnVisibilityChange(true, col)"
+                />
+              </Item>
+            </SlickItem>
+          </SlickList>
+        </div>
+      </Form>
+    </Dialog>
   </Btn>
 </template>
 

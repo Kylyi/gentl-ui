@@ -50,7 +50,7 @@ const $v = useVuelidate({ $scope: 'qb' })
     <Dialog
       ref="dialogEl"
       :title="$t('queryBuilder.self')"
-      w="263"
+      w="220"
       max-h="90%"
       min-h="100"
       h="auto"
@@ -60,7 +60,6 @@ const $v = useVuelidate({ $scope: 'qb' })
     >
       <Form
         :label="$t('apply')"
-        p="2"
         @submit="syncToParent"
       >
         <QueryBuilder
