@@ -1,6 +1,9 @@
 <script setup lang="ts">
 // Types
-import { IQueryBuilderItem } from '~/components/QueryBuilder/types/query-builder-item-props.type'
+import type { IQueryBuilderItem } from '~/components/QueryBuilder/types/query-builder-item-props.type'
+
+// Components
+import Menu from '~/components/Menu/Menu.vue'
 
 type IProps = {
   item: Pick<IQueryBuilderItem, 'value' | 'comparator'>
@@ -12,6 +15,7 @@ const emits = defineEmits<{
 }>()
 
 // Layout
+const menuEl = ref<InstanceType<typeof Menu>>()
 const item = toRef(props, 'item')
 
 const units = computed(() => [
@@ -56,6 +60,12 @@ const agoValue = computed({
     emits('update:modelValue', item.value.value)
   },
 })
+
+function setUnit(unit: string) {
+  agoValue.value = { unit }
+
+  menuEl.value?.hide()
+}
 </script>
 
 <template>
@@ -79,6 +89,7 @@ const agoValue = computed({
         @mousedown.stop.prevent=""
       >
         <Menu
+          ref="menuEl"
           hide-header
           content-class="gap-y-1 w-40"
           cover
@@ -92,7 +103,7 @@ const agoValue = computed({
               size="sm"
               no-bold
               no-uppercase
-              @click="agoValue = { unit: unit.id }"
+              @click="setUnit(unit.id)"
               @mousedown.stop.prevent=""
             />
           </template>

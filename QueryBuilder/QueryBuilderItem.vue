@@ -275,7 +275,7 @@ const $v = useVuelidate(
     }
 
     &-value {
-      --apply: w-70;
+      --apply: grow;
     }
   }
 
@@ -283,8 +283,7 @@ const $v = useVuelidate(
     --apply: flex gap-1 grow p-y-1;
 
     &-field,
-    &-comparator,
-    &-value {
+    &-comparator {
       --apply: max-w-80;
     }
   }

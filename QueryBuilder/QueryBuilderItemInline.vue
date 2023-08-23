@@ -93,6 +93,8 @@ async function applyChanges() {
 function handleItemEditMenuBeforeHide() {
   if (!item.value.comparator || item.value.value === undefined) {
     handleRemoveCondition()
+  } else {
+    applyChanges()
   }
 }
 
@@ -152,9 +154,7 @@ const $v = useVuelidate({ $scope: 'qb' })
       hide-header
       :no-arrow="false"
       :no-overlay="false"
-      persistent
       dense
-      :before-hide-fnc="$v.$validate"
       @before-hide="handleItemEditMenuBeforeHide"
       @show="itemEditEl?.focusInput()"
     >
@@ -171,19 +171,7 @@ const $v = useVuelidate({ $scope: 'qb' })
           no-draggable
           m="!l-0"
           @delete:row="tableRefresh"
-        >
-          <template #append>
-            <Btn
-              size="xs"
-              icon="akar-icons:circle-check"
-              bg="primary"
-              color="white"
-              m="t-2 l--2 r-2"
-              self="start"
-              @click="applyChanges"
-            />
-          </template>
-        </QueryBuilderItem>
+        />
       </Form>
     </Menu>
   </li>
