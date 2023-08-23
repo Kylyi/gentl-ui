@@ -198,7 +198,7 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
     }
 
     .wrapper-body__input-modified {
-      --apply: flex gap-1 items-center absolute top-1 right-1 text-xs;
+      --apply: flex gap-1 items-center absolute top-1 right-1 text-xs z-1;
     }
 
     .label {
