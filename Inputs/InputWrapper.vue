@@ -1,8 +1,8 @@
 <script setup lang="ts">
-// TYPES
+// Types
 import type { IInputWrapperProps } from '~~/components/Inputs/types/input-wrapper-props.type'
 
-// COMPOSITION FUNCTIONS
+// Functions
 import { useInputWrapperUtils } from '~/components/Inputs/functions/useInputWrapperUtils'
 
 const props = withDefaults(defineProps<IInputWrapperProps>(), {
@@ -11,13 +11,21 @@ const props = withDefaults(defineProps<IInputWrapperProps>(), {
   size: 'md',
 })
 
-// UTILS
+// Utils
 const { getInputWrapperStyleVariables } = useInputWrapperUtils()
 
-// LAYOUT
+// Layout
 const wrapperEl = ref<HTMLDivElement>()
 const errorContainerPaddingLeft = ref('8px')
 const currentInstance = getCurrentInstance()
+
+const isModified = computed(() => {
+  if (!props.originalValue) {
+    return false
+  }
+
+  return !isEqual(props.originalValue, props.modelValue)
+})
 
 const labelProps = computedEager(() => {
   return {
@@ -54,6 +62,7 @@ const wrapperContentClass = computedEager(() => {
     'has-error': props.errors?.length,
     'has-label': !!props.label,
     'has-border': !props.noBorder,
+    'is-modified': isModified.value,
   }
 })
 
@@ -99,6 +108,26 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
       </span>
 
       <span class="wrapper-body__input">
+        <div
+          v-if="isModified"
+          class="wrapper-body__input-modified"
+        >
+          <div class="eos-icons:diff-modified-outlined w-3 h-3 color-warning" />
+
+          <Tooltip
+            :offset="4"
+            placement="left"
+            dense
+          >
+            <span
+              color="warning"
+              text="xs"
+              p="x-1 y-0.5"
+              >{{ $t('general.modified') }}</span
+            >
+          </Tooltip>
+        </div>
+
         <slot />
       </span>
 
@@ -166,6 +195,10 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
 
     .wrapper-body__input {
       grid-area: input;
+    }
+
+    .wrapper-body__input-modified {
+      --apply: flex gap-1 items-center absolute top-1 right-1 text-xs;
     }
 
     .label {
@@ -241,6 +274,7 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
       margin: var(--margin);
     }
   }
+
 
   &.is-inline {
       .wrapper-body::after {

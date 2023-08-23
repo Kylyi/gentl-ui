@@ -67,6 +67,8 @@ export function useInputUtils(options: IInputUtilsOptions) {
     'labelClass',
     'labelInside',
     'loading',
+    'modelValue',
+    'originalValue',
     'placeholder',
     'readonly',
     'required',

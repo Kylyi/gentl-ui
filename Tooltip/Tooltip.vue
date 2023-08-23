@@ -126,7 +126,7 @@ onMounted(() => {
   --apply: dark:bg-darker bg-white border-ca border-custom rounded-custom z-$zMenu;
 
   &.is-dense {
-    --apply: p-0;
+    --apply: p-0 leading-none;
   }
 }
 
