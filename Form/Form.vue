@@ -95,10 +95,10 @@ defineExpose({
   >
     <div
       class="form-content"
-      flex="~ col"
       rounded="custom"
       overflow="auto"
       bg="ca"
+      :class="{ 'flex flex-col': !$attrs.grid }"
       v-bind="$attrs"
     >
       <slot />
