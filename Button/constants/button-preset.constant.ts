@@ -22,7 +22,7 @@ export const BUTTON_PRESET = {
     color: 'bg-primary color-white',
   },
   TRASH: {
-    icon: 'bxs:trash-alt',
+    icon: 'iconamoon:trash',
     color: 'color-negative',
   },
   EDIT: {
