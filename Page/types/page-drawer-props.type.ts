@@ -12,6 +12,22 @@ export interface IPageDrawerProps {
   absoluteFullWidthBreakpoint?: keyof typeof BREAKPOINTS
 
   /**
+   * The class to apply to the bottom part of the drawer
+   */
+  bottomClass?: ClassType
+
+  /**
+   * The class to apply to the drawer content
+   */
+  contentClass?: ClassType
+
+  /**
+   * When true, the drawer will take up the full height of the page, including
+   * the navigation bar
+   */
+  fullHeight?: boolean
+
+  /**
    * Whether the is currently in the `mini` mode
    */
   mini?: boolean

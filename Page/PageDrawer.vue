@@ -27,7 +27,7 @@ function toggleMini() {
 
 watch(miniOriginal, mini => (miniLocal.value = mini))
 
-// LAYOUT
+// Layout
 const pageDrawerClasses = computedEager(() => {
   return [
     `page-drawer--${props.side}`,
@@ -52,21 +52,37 @@ const pageDrawerClasses = computedEager(() => {
       [`--drawerMiniWidth`]: `${miniWidth}px`,
     }"
   >
-    <div class="page-drawer-filler" />
+    <div
+      v-if="!fullHeight"
+      class="page-drawer-filler"
+    />
 
-    <div class="page-drawer-content">
+    <div
+      class="page-drawer-content"
+      :class="contentClass"
+      bg="ca"
+    >
       <slot :mini="isMini" />
     </div>
 
-    <div class="page-drawer-bottom">
-      <Btn
-        preset="CHEVRON_RIGHT"
-        :ripple="false"
-        w="!full"
-        class="!color-black !dark:color-white"
-        :class="{ 'rotate-180': !isMini }"
-        @click="toggleMini"
-      />
+    <div
+      class="page-drawer-bottom"
+      :class="bottomClass"
+    >
+      <slot
+        name="bottom"
+        :is-mini="isMini"
+        :toggle-mini="toggleMini"
+      >
+        <Btn
+          preset="CHEVRON_RIGHT"
+          :ripple="false"
+          w="!full"
+          class="!color-black !dark:color-white"
+          :class="{ 'rotate-180': !isMini }"
+          @click="toggleMini"
+        />
+      </slot>
     </div>
   </aside>
 </template>
@@ -103,7 +119,7 @@ header.is-hidden ~ .page-drawer {
   }
 
   &-content {
-    --apply: flex flex-col flex-grow overflow-auto pointer-events-auto bg-ca;
+    --apply: flex flex-col flex-grow overflow-auto pointer-events-auto;
   }
 
   &-bottom {
