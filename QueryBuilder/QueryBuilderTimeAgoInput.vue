@@ -5,6 +5,12 @@ import type { IQueryBuilderItem } from '~/components/QueryBuilder/types/query-bu
 // Components
 import Menu from '~/components/Menu/Menu.vue'
 
+type IAgoValue = {
+  value?: number | null | undefined
+  unit: string
+  unitShortName: string
+}
+
 type IProps = {
   item: Pick<IQueryBuilderItem, 'value' | 'comparator'>
 }
@@ -36,11 +42,11 @@ const agoValue = computed({
     if (matches) {
       value = Number.parseFloat(matches[1])
 
-      if (unitShortName === 'd') {
+      if (unitShortName === 'd' || unitShortName === 'de') {
         unit = 'day'
-      } else if (unitShortName === 'w') {
+      } else if (unitShortName === 'w' || unitShortName === 'we') {
         unit = 'week'
-      } else if (unitShortName === 'm') {
+      } else if (unitShortName === 'm' || unitShortName === 'me') {
         unit = 'month'
       } else {
         unit = 'year'
@@ -51,18 +57,36 @@ const agoValue = computed({
 
     return { value, unit, unitShortName }
   },
-  set({ value, unit }: { value?: number | null | undefined; unit?: string }) {
+  set({ value, unitShortName }: Partial<IAgoValue>) {
     item.value.value = `${value ?? agoValue.value.value}${
-      // @ts-expect-error
-      unit || agoValue.value.unitShortName
+      unitShortName || agoValue.value.unitShortName
     }`
 
     emits('update:modelValue', item.value.value)
   },
 })
 
-function setUnit(unit: string) {
-  agoValue.value = { unit }
+const isExact = computed({
+  get() {
+    return !!agoValue.value?.unitShortName?.endsWith('e')
+  },
+  set(val: boolean) {
+    if (val) {
+      agoValue.value = {
+        unitShortName: `${agoValue.value.unitShortName}e`,
+      }
+    } else {
+      agoValue.value = {
+        unitShortName: agoValue.value.unitShortName?.replace(/e$/, ''),
+      }
+    }
+  },
+})
+
+function setUnit(unitShortName: string) {
+  agoValue.value = {
+    unitShortName: isExact ? `${unitShortName}e` : unitShortName,
+  }
 
   menuEl.value?.hide()
 }
@@ -76,39 +100,53 @@ function setUnit(unit: string) {
     @update:model-value="agoValue = { value: $event }"
   >
     <template #append>
-      <Btn
-        flex="shrink"
-        :label="
-          $t(`general.${agoValue.unit}`, agoValue.value || 0).toLowerCase()
-        "
-        size="xs"
-        no-uppercase
-        no-bold
-        color="ca"
-        tabindex="-1"
-        @mousedown.stop.prevent=""
-      >
-        <Menu
-          ref="menuEl"
-          hide-header
-          content-class="gap-y-1 w-40"
-          cover
-          :fit="false"
+      <div flex="~ gap-1">
+        <Btn
+          flex="shrink"
+          :label="
+            $t(`general.${agoValue.unit}`, agoValue.value || 0).toLowerCase()
+          "
+          size="xs"
+          no-uppercase
+          no-bold
+          color="ca"
+          tabindex="-1"
+          @mousedown.stop.prevent=""
         >
-          <template #default>
-            <Btn
-              v-for="unit in units"
-              :key="unit.id"
-              :label="unit.label"
-              size="sm"
-              no-bold
-              no-uppercase
-              @click="setUnit(unit.id)"
-              @mousedown.stop.prevent=""
-            />
-          </template>
-        </Menu>
-      </Btn>
+          <Menu
+            ref="menuEl"
+            hide-header
+            content-class="gap-y-1 w-40"
+            cover
+            :fit="false"
+          >
+            <template #default>
+              <Btn
+                v-for="unit in units"
+                :key="unit.id"
+                :label="unit.label"
+                size="sm"
+                no-bold
+                no-uppercase
+                @click="setUnit(unit.id)"
+                @mousedown.stop.prevent=""
+              />
+            </template>
+          </Menu>
+        </Btn>
+
+        <Btn
+          size="xs"
+          :class="{
+            'color-white !bg-primary': isExact,
+            'color-ca': !isExact,
+          }"
+          no-bold
+          no-uppercase
+          :label="$t('table.exactFilter')"
+          @click="isExact = !isExact"
+        />
+      </div>
     </template>
   </NumberInput>
 </template>
