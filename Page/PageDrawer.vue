@@ -1,12 +1,10 @@
 <script setup lang="ts">
-// TYPES
+// Types
 import type { IPageDrawerProps } from '~~/components/Page/types/page-drawer-props.type'
 
-// COMPOSITION FUNCTIONS
-import { usePageWidth } from '~/layouts/functions/usePageWidth'
-
 const props = withDefaults(defineProps<IPageDrawerProps>(), {
-  breakpoint: 'sm',
+  absoluteBreakpoint: 'md',
+  absoluteFullWidthBreakpoint: 'sm',
   side: 'left',
   width: 280,
   miniWidth: 64,
@@ -16,32 +14,30 @@ const emits = defineEmits<{
   (e: 'update:mini', val: boolean): void
 }>()
 
-// UTILS
-const { isPageWidth } = usePageWidth()
+// Mini mode
+const miniOriginal = useVModel(props, 'mini', emits)
+const miniLocal = ref(!!miniOriginal.value)
 
-// MINI
-const miniLocal = ref(props.mini)
-const mini = useVModel(props, 'mini', emits)
-
-const isMini = computedEager(() => miniLocal.value && isPageWidth.value)
+const isMini = computedEager(() => miniLocal.value)
 
 function toggleMini() {
-  emits('update:mini', !miniLocal.value)
   miniLocal.value = !miniLocal.value
+  miniOriginal.value = miniLocal.value
 }
 
-watch(mini, mini => (miniLocal.value = mini))
+watch(miniOriginal, mini => (miniLocal.value = mini))
 
 // LAYOUT
 const pageDrawerClasses = computedEager(() => {
   return [
-    'lt-md:w-full',
     `page-drawer--${props.side}`,
     `${isMini.value ? 'w-$drawerMiniWidth' : 'w-$drawerWidth'}`,
     {
       'is-mini': isMini.value,
       'is-open': props.modelValue,
-      'is-absolute': $bp.isSmaller('lg'),
+      'is-absolute': !$bp[props.absoluteBreakpoint].value,
+      'is-absolute-full-width':
+        !isMini.value && !$bp[props.absoluteFullWidthBreakpoint].value,
     },
   ]
 })
@@ -102,13 +98,17 @@ header.is-hidden ~ .page-drawer {
     }
   }
 
+  &.is-absolute-full-width {
+    --apply: w-full;
+  }
+
   &-content {
     --apply: flex flex-col flex-grow overflow-auto pointer-events-auto bg-ca;
   }
 
   &-bottom {
     --apply: flex flex-shrink-0 pointer-events-auto flex-center p-2 w-full bg-ca
-      border-t-1 border-ca lt-page:display-none;
+      border-t-1 border-ca;
 
     // Project specific
     // --apply: '!display-none';

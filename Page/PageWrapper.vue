@@ -57,7 +57,7 @@ onMounted(() => {
   }
 }
 
-.page-drawer.is-open.page-drawer--left:not(.is-absolute) ~ .page-wrapper {
+.page-drawer.is-open.page-drawer--left ~ .page-wrapper {
   padding-left: calc(var(--drawerLeftMiniWidth) + 8px);
 }
 
@@ -66,7 +66,7 @@ onMounted(() => {
   padding-left: calc(var(--drawerLeftWidth) + 8px);
 }
 
-.page-drawer.is-open.page-drawer--right:not(.is-absolute) ~ .page-wrapper {
+.page-drawer.is-open.page-drawer--right ~ .page-wrapper {
   padding-right: var(--drawerRightMiniWidth);
 }
 
