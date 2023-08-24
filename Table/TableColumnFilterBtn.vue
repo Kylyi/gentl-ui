@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Placement } from '@floating-ui/dom'
+import { config } from '~/config'
 
 // Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
@@ -17,12 +18,17 @@ type IProps = {
 const props = defineProps<IProps>()
 
 // Layout
+const emptyValue = config.table.emptyValue
 const column = toRef(props, 'column')
 
 // We remove any undefined filters on menu hide
 function handleMenuBeforeHide() {
   column.value.filters = column.value.filters.filter(filter => {
-    return filter.value !== undefined
+    const isNonValueComparator = NON_VALUE_COMPARATORS.includes(
+      filter.comparator
+    )
+
+    return filter.value !== undefined || isNonValueComparator
   })
 }
 </script>
@@ -114,6 +120,8 @@ function handleMenuBeforeHide() {
             <ValueFormatter
               :value="filter.value"
               :data-type="column.dataType"
+              :empty-value="emptyValue"
+              :empty-value-string="$t('empty')"
               text="sm"
             />
           </div>

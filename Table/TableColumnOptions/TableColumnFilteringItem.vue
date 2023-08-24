@@ -29,9 +29,6 @@ const { getAvailableComparators, isSelectorComparator, isDateAgoComparator } =
 // Injections
 const tableRefresh = injectStrict(tableRefreshKey)
 
-// Constants
-const BOOLEANISH_COMPARATORS = [ComparatorEnum.IS, ComparatorEnum.NOT_IS]
-
 // Layout
 const inputEl = ref<any>()
 const filter = toRef(props, 'filter')
@@ -39,6 +36,10 @@ const column = toRef(props, 'column')
 
 const isBooleanishComparator = computedEager(() => {
   return BOOLEANISH_COMPARATORS.includes(filter.value.comparator)
+})
+
+const isNonValueComparator = computedEager(() => {
+  return NON_VALUE_COMPARATORS.includes(filter.value.comparator)
 })
 
 const component = computed(() => {
@@ -196,16 +197,15 @@ defineExpose({
     <!-- Boolean value -->
     <QueryBuilderBooleanInput
       v-else-if="isBooleanishComparator"
-      v-model:item="filter"
-      :data-type="column.dataType"
-      @update:model-value="tableRefresh"
+      :item="filter"
+      @update:item="tableRefresh"
       @remove:item="handleRemoveFilter"
     />
 
     <!-- Primitive value -->
     <Component
       :is="component.component"
-      v-else-if="component.component"
+      v-else-if="component.component && !isNonValueComparator"
       v-bind="component.props"
       ref="inputEl"
       v-model="filter.value"

@@ -1,14 +1,8 @@
 <script setup lang="ts">
-import { config } from '~/config'
-
 // Types
 import type { IQueryBuilderItem } from '~/components/QueryBuilder/types/query-builder-item-props.type'
 
-// Models
-import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
-
 type IProps = {
-  dataType: DataType
   item: Pick<IQueryBuilderItem, 'value' | 'comparator'>
   noDelete?: boolean
 }
@@ -22,55 +16,67 @@ const emits = defineEmits<{
 // Layout
 const item = toRef(props, 'item')
 
-const isBooleanDataType = computedEager(() => {
-  const booleanDataTypes = ['boolean', 'bool']
+const model = computed({
+  get() {
+    if (isNil(item.value.value)) {
+      return null
+    }
 
-  return booleanDataTypes.includes(props.dataType)
+    return JSON.parse(item.value.value)
+  },
+  set(val?: any) {
+    item.value.value = val
+
+    emits('update:item', item.value)
+  },
 })
 
-function handleUpdateValue(val?: any) {
-  if (isBooleanDataType.value) {
-    item.value.value = val
-  } else {
-    item.value.value = config.table.emptyValue
-    item.value.comparator = val
-  }
+const positiveBtnClass = computed(() => {
+  return model.value
+    ? ['bg-positive', 'border-green-800', 'color-white']
+    : ['color-positive', 'border-positive']
+})
 
-  emits('update:item', item.value)
-}
+const negativeBtnClass = computed(() => {
+  return model.value === false
+    ? ['bg-negative', 'border-red-800', 'color-white']
+    : ['color-negative', 'border-negative']
+})
 </script>
 
 <template>
-  <Toggle
-    :model-value="isBooleanDataType ? item.value : item.comparator"
-    :check-value="isBooleanDataType ? false : ComparatorEnum.IS"
-    :uncheck-value="isBooleanDataType ? true : ComparatorEnum.NOT_IS"
-    container-class="p-l-3 p-r-2"
-    :visuals="{
-      unchecked: { bullet: 'bg-positive' },
-      checked: { bullet: 'bg-negative' },
-    }"
-    @update:model-value="handleUpdateValue"
+  <div
+    flex="~ gap-1"
+    p="l-1 r-2"
   >
-    <template #prepend>
-      <span>
-        {{ isBooleanDataType ? $t('yes') : $t('general.isNotEmpty') }}
-      </span>
-    </template>
-    <template #append>
-      <span grow>
-        {{ isBooleanDataType ? $t('no') : $t('comparator.isEmpty') }}
-      </span>
+    <Btn
+      size="sm"
+      no-uppercase
+      grow
+      border="l-4"
+      :class="positiveBtnClass"
+      :label="$t('yes')"
+      @click="model = true"
+    />
+    <Btn
+      size="sm"
+      no-uppercase
+      grow
+      border="r-4"
+      :class="negativeBtnClass"
+      :label="$t('no')"
+      @click="model = false"
+    />
 
-      <!-- Remove -->
-      <Btn
-        v-if="!noDelete"
-        size="sm"
-        preset="TRASH"
-        no-dim
-        @mousedown.stop
-        @click.stop.prevent="$emit('remove:item')"
-      />
-    </template>
-  </Toggle>
+    <!-- Remove -->
+    <Btn
+      v-if="!noDelete"
+      size="sm"
+      preset="TRASH"
+      no-dim
+      flex="shrink-0"
+      @mousedown.stop
+      @click.stop.prevent="$emit('remove:item')"
+    />
+  </div>
 </template>

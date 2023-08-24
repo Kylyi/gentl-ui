@@ -11,13 +11,14 @@ defineOptions({
 
 const props = defineProps<IValueFormatter>()
 
-// UTILS
+// Utils
 const { formatValue } = useValueFormatterUtils()
 
 const formattedValue = computedEager(() => {
   return formatValue(props.value, props.row, {
     dataType: props.dataType,
     format: props.format,
+    emptyValue: props.emptyValue,
   })
 })
 </script>

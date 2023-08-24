@@ -48,9 +48,6 @@ defineExpose({
   },
 })
 
-// Constants
-const BOOLEANISH_COMPARATORS = [ComparatorEnum.IS, ComparatorEnum.NOT_IS]
-
 // Injections
 const columns = injectStrict(qbColumnsKey)
 const items = injectStrict(qbItemsKey)
@@ -73,6 +70,10 @@ const colSelected = computed(() => {
 
 const isBooleanishComparator = computedEager(() => {
   return BOOLEANISH_COMPARATORS.includes(item.value.comparator)
+})
+
+const isNonValueComparator = computedEager(() => {
+  return NON_VALUE_COMPARATORS.includes(item.value.comparator)
 })
 
 const component = computed(() => {
@@ -141,7 +142,9 @@ const $v = useVuelidate(
     item: {
       field: { required },
       comparator: { required },
-      value: { required },
+      value: {
+        requiredIf: requiredIf(() => !isNonValueComparator.value),
+      },
     },
   },
   { item },
@@ -187,7 +190,6 @@ const $v = useVuelidate(
       <template v-if="item.field && colSelected">
         <!-- Comparator selector -->
         <Selector
-          v-if="!isBooleanishComparator"
           ref="comparatorInputEl"
           :model-value="item.comparator"
           :options="colSelected.comparators || comparators"
@@ -226,13 +228,13 @@ const $v = useVuelidate(
         <QueryBuilderTimeAgoInput
           v-else-if="isDateAgoComparator(item.comparator)"
           v-model:item="item"
+          :errors="$v.item.value.$errors"
         />
 
         <!-- $Empty/Boolean value -->
         <QueryBuilderBooleanInput
           v-else-if="isBooleanishComparator"
           :item="item"
-          :data-type="colSelected.dataType"
           no-delete
           @remove:item="handleRemoveCondition"
         />
@@ -240,7 +242,7 @@ const $v = useVuelidate(
         <!-- Primitive value -->
         <Component
           :is="component.component"
-          v-else-if="component.component"
+          v-else-if="component.component && !isNonValueComparator"
           ref="valueInputEl"
           v-model="item.value"
           size="sm"

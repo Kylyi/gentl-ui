@@ -147,11 +147,12 @@ function parseItemSegment(
     (a, b) => b.length - a.length
   )
   let foundComparator: ComparatorEnum | null = null
+  let foundComparatorIdx: number = -1
 
   for (const comparator of comparatorKeys) {
-    if (segment.includes(`.${comparator}.`)) {
+    foundComparatorIdx = segment.lastIndexOf(`.${comparator}`)
+    if (foundComparatorIdx !== -1) {
       foundComparator = comparator as ComparatorEnum
-
       break
     }
   }
@@ -160,14 +161,20 @@ function parseItemSegment(
     throw new Error(`No valid comparator found in segment: ${segment}`)
   }
 
-  const [field] = segment.split(`.${foundComparator}.`)
-  const value = segment.slice(segment.lastIndexOf('.') + 1)
+  const [field] = segment.substring(0, foundComparatorIdx).split('.')
+  let value: string | undefined = segment.substring(
+    foundComparatorIdx + foundComparator.length + 2
+  ) // +2 to skip the dot
+
+  if (foundComparatorIdx + foundComparator.length + 1 >= segment.length) {
+    value = undefined
+  }
 
   // We check for arrays to parse each value in the array
-  const isArray = value.startsWith('(') && value.endsWith(')')
+  const isArray = value?.startsWith('(') && value?.endsWith(')')
   const parsedValue = isArray
     ? value
-        .slice(1, -1)
+        ?.slice(1, -1)
         .split(',')
         .map(val => parseValue(val, columnsByField[field]?.dataType))
     : parseValue(value, columnsByField[field]?.dataType)

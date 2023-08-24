@@ -1,9 +1,11 @@
+// Types
+import type { IValueFormatter } from '~/components/ValueFormatter/types/value-formatter-props.type'
+
+// Functions
 import { useNumber } from '~/components/Inputs/NumberInput/functions/useNumber'
-import { IValueFormatter } from '~/components/ValueFormatter/types/value-formatter-props.type'
 
 export function useValueFormatterUtils() {
-  // UTILS
-  const { t } = useI18n()
+  // Utils
   const { formatNumber } = useNumber()
   const { formatDate, formatTime } = useDateUtils()
 
@@ -23,9 +25,14 @@ export function useValueFormatterUtils() {
     options: {
       dataType?: DataType
       format?: (row: any, value: any) => any
+      emptyValue?: any
     } = {}
   ) {
-    const { dataType, format } = options
+    const { dataType, format, emptyValue } = options
+
+    if (emptyValue === value) {
+      return null
+    }
 
     if (format) {
       return format(row ?? {}, value)
@@ -58,7 +65,7 @@ export function useValueFormatterUtils() {
 
       case 'boolean':
       case 'bool':
-        return JSON.parse(value) ? t('yes') : t('no')
+        return JSON.parse(value) ? $t('yes') : $t('no')
 
       case 'string':
       default:

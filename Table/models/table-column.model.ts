@@ -84,8 +84,14 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
       if (Array.isArray(filter.value)) {
         return filter.comparator && filter.value.length
       }
+      const isNonValueComparator = NON_VALUE_COMPARATORS.includes(
+        filter.comparator
+      )
 
-      return filter.comparator && filter.value !== undefined
+      return (
+        filter.comparator &&
+        (filter.value !== undefined || isNonValueComparator)
+      )
     })
 
     if (!validFilters.length) {

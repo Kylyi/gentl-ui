@@ -43,6 +43,10 @@ const colSelected = computed(() => {
   return cols.value.find(col => col.field === item.value.field)
 })
 
+const isNonValueComparator = computedEager(() => {
+  return NON_VALUE_COMPARATORS.includes(item.value.comparator)
+})
+
 const levelColor = computed(() => {
   const color = COLORS[props.level % COLORS.length]
 
@@ -91,7 +95,10 @@ async function applyChanges() {
 }
 
 function handleItemEditMenuBeforeHide() {
-  if (!item.value.comparator || item.value.value === undefined) {
+  if (
+    !item.value.comparator ||
+    (item.value.value === undefined && !isNonValueComparator.value)
+  ) {
     handleRemoveCondition()
   } else {
     applyChanges()
@@ -113,6 +120,7 @@ const $v = useVuelidate({ $scope: 'qb' })
     <span
       font="bold"
       text="caption xs"
+      color="black dark:white"
     >
       {{ colSelected?.label }}
     </span>
@@ -131,6 +139,7 @@ const $v = useVuelidate({ $scope: 'qb' })
 
     <!-- Value -->
     <ValueFormatter
+      v-if="!isNonValueComparator"
       :value="item.value"
       :data-type="getDataType()"
       :format="colSelected?.format"
@@ -180,6 +189,7 @@ const $v = useVuelidate({ $scope: 'qb' })
     </Menu>
   </li>
 
+  <!-- Add -->
   <Btn
     v-if="isLastChild"
     size="xs"

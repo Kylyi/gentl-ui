@@ -44,7 +44,9 @@ export function serializeFilterString(
           val = `(${item.value.join(',')})`
         }
 
-        return `${item.field}.${item.comparator}.${val}`
+        return val !== undefined
+          ? `${item.field}.${item.comparator}.${val}`
+          : `${item.field}.${item.comparator}`
       }
     })
     .join(',')
