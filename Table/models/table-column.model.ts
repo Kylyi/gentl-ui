@@ -31,6 +31,11 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   hidden?: boolean
 
   /**
+   * When true, the column will always be included in the `select` query
+   */
+  alwaysSelected = false
+
+  /**
    * The column's minimum width in px
    */
   minWidth?: number
@@ -183,7 +188,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     }, {})
   }
 
-  // SORTING
+  // Sorting
   sort?: 'asc' | 'desc'
   sortOrder?: number
 
@@ -278,6 +283,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     this.sortable = col.sortable ?? true
     this.searchable = col.searchable ?? false
     this.hidden = col.hidden ?? false
+    this.alwaysSelected = col.alwaysSelected ?? false
 
     this.isHelperCol = col.isHelperCol ?? this.isHelperCol
 

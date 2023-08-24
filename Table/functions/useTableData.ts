@@ -194,9 +194,25 @@ export function useTableData(
         count: true,
       }
 
+      // When there are some columns with `alwaysSelected` attribute set to true,
+      // we need to add them to the `select` array
+      const fetchTableQuery: ITableQuery = {
+        ...tableQuery,
+        select: Array.from(
+          new Set([
+            ...(tableQuery.select || []),
+            ...internalColumnsRef.value
+              .filter(col => col.alwaysSelected)
+              .map(col => col.field),
+          ])
+        ),
+      }
+
       return {
-        queryParams: config.table.getQuery(tableQuery),
         tableQuery,
+        fetchTableQuery,
+        queryParams: config.table.getQuery(tableQuery),
+        fetchQueryParams: config.table.getQuery(fetchTableQuery),
       }
     }
   )
@@ -215,6 +231,7 @@ export function useTableData(
       }
 
       const options = toValue(optionsRef)
+
       const result = await props.getData.fnc(options)
       let data = get(
         result,
@@ -250,11 +267,12 @@ export function useTableData(
     // When fetching more data, we need to manually get the queryParams again as
     // it is not triggered in the `dbQUery` computed
     if (isFetchMore) {
-      options.queryParams = config.table.getQuery({
-        ...options.tableQuery,
+      options.fetchQueryParams = config.table.getQuery({
+        ...options.fetchTableQuery,
         count: false,
         fetchMore: { $key: lastKeyId.value, rowKey: getRowKey(props) },
       })
+      options.tableQuery.count = false
     }
 
     const res = await fetchData(options)

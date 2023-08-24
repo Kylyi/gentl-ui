@@ -74,8 +74,6 @@ export async function useTableMetaData(props: ITableProps) {
             const foundColumn = _columns?.find((c: any) => c.name === col.field)
 
             if (foundColumn) {
-              console.log(foundColumn.name, foundColumn.type)
-
               col.setDataType(foundColumn.type)
             }
 

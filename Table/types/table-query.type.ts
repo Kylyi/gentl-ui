@@ -41,13 +41,26 @@ export type ITableQuery = {
 
 export type ITableDataFetchFncInput = {
   /**
-   * The query parameters for the actual fetch query
-   */
-  queryParams: ReturnType<typeof config.table.getQuery>
-
-  /**
    * The table query object with all the filters, sorting and everything else
    * in the object-like structure
    */
   tableQuery: ITableQuery
+
+  /**
+   * Same as the `tableQuery` but with the `alwaysSelected` columns included
+   * Note: Used for actual data fetching
+   */
+  fetchTableQuery: ITableQuery
+
+  /**
+   * The query parameters for the actual fetch query
+   * Note: Used for navigation
+   */
+  queryParams: ReturnType<typeof config.table.getQuery>
+
+  /**
+   * Same idea as `queryParams` but with the `alwaysSelected` columns included
+   * Note: Used for actual data fetching
+   */
+  fetchQueryParams: ReturnType<typeof config.table.getQuery>
 }
