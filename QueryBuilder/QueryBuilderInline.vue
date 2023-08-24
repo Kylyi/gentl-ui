@@ -57,12 +57,13 @@ function handleAddFirstCondition() {
   const firstGroup = items.value[0] as IQueryBuilderGroup
 
   const path = `${firstGroup.path}.children.0`
+  const firstColumn = toValue(columns)[0]
 
   firstGroup.children = [
     {
       id: generateUUID(),
-      field: undefined as unknown as string,
-      comparator: undefined as unknown as ComparatorEnum,
+      field: firstColumn?.field as string,
+      comparator: firstColumn?.comparator as ComparatorEnum,
       value: undefined as unknown as string,
       path,
     },

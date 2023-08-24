@@ -10,6 +10,7 @@ import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
 
 // Injections
 import {
+  qbColumnsKey,
   qbContainerKey,
   qbItemsKey,
 } from '~/components/QueryBuilder/provide/query-builder.provide'
@@ -27,6 +28,7 @@ const emits = defineEmits<{
 const container = injectStrict(qbContainerKey)
 const items = injectStrict(qbItemsKey)
 const tableRefresh = injectStrict(tableRefreshKey, () => {})
+const columns = injectStrict(qbColumnsKey)
 
 // Layout
 const item = toRef(props, 'item')
@@ -54,13 +56,14 @@ function handleAddCondition(useParent?: boolean) {
   }
 
   const newPath = `${parent.path}.children.${parent.children.length}`
+  const firstColumn = toValue(columns)[0]
 
   parent.children = [
     ...parent.children,
     {
       id: generateUUID(),
-      field: undefined as unknown as string,
-      comparator: undefined as unknown as ComparatorEnum,
+      field: firstColumn?.field as string,
+      comparator: firstColumn?.comparator as ComparatorEnum,
       value: undefined as unknown as string,
       path: newPath,
     },
