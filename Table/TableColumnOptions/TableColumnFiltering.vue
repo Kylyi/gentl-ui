@@ -19,10 +19,6 @@ const tableRefresh = injectStrict(tableRefreshKey)
 // Layout
 const column = toRef(props, 'column')
 
-const hasInteractiveFilter = computed(() => {
-  return column.value.filters.some(filter => !filter.nonInteractive)
-})
-
 function handleClearFilter() {
   column.value.clearFilters()
   tableRefresh()
@@ -30,10 +26,7 @@ function handleClearFilter() {
 </script>
 
 <template>
-  <div
-    v-if="hasInteractiveFilter"
-    class="filter-container"
-  >
+  <div class="filter-container">
     <!-- TITLE -->
     <div class="flex flex-gap-x-2 p-x-3 items-center">
       <span class="filter-container-title">

@@ -57,6 +57,10 @@ export function useTableData(
     ? useVModel(props, 'totalRows')
     : ref<number>()
 
+  // For some reason, the table does not update its `index` when the rows are filtered/refetched
+  // So we use `internalCounter` to force the table to re-render
+  const internalCounter = ref(0)
+
   const storageKey = computed(() => getStorageKey())
 
   // Store
@@ -278,8 +282,16 @@ export function useTableData(
     const res = await fetchData(options)
 
     if (res) {
+      const currentTotalRows = totalRows.value || 0
+
       rows.value = isFetchMore ? [...rows.value, ...res.data] : res.data
       totalRows.value = isFetchMore ? totalRows.value : res.totalRows
+
+      // Force table to rerender
+      if (totalRows.value !== currentTotalRows) {
+        console.log('now')
+        internalCounter.value++
+      }
 
       instance?.emit('update:rows', rows.value)
       instance?.emit('update:totalRows', totalRows.value)
@@ -405,6 +417,7 @@ export function useTableData(
   isInitialized.value = true
 
   return {
+    internalCounter,
     isLoading,
     rows,
     dbQuery,

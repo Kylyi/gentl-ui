@@ -78,6 +78,7 @@ const {
   rows,
   refreshData,
   search,
+  internalCounter,
 
   // Pagination
   currentPage,
@@ -159,6 +160,7 @@ useTableSelection(props)
     <DynamicScroller
       v-show="hasVisibleColumn"
       ref="scrollerEl"
+      :key="internalCounter"
       :items="rows"
       :key-field="rowKey"
       class="scroller"
