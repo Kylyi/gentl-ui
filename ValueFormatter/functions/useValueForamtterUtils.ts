@@ -57,7 +57,8 @@ export function useValueFormatterUtils() {
         return formatTime(value)
 
       case 'boolean':
-        return value ? t('yes') : t('no')
+      case 'bool':
+        return JSON.parse(value) ? t('yes') : t('no')
 
       case 'string':
       default:

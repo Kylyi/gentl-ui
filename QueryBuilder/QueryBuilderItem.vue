@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { config } from '~/config'
-
 // Types
 import {
   IQueryBuilderItem,
   IQueryBuilderItemProps,
 } from '~/components/QueryBuilder/types/query-builder-item-props.type'
+
+// Models
+import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
 
 // Injections
 import {
@@ -23,7 +24,6 @@ import Selector from '~/components/Selector/Selector.vue'
 
 // Constants
 import { COMPARATORS_BY_DATATYPE_MAP } from '~/libs/App/constants/input-map.constant'
-import { ComparatorEnum } from 'libs/App/data/enums/comparator.enum'
 
 const props = defineProps<IQueryBuilderItemProps>()
 const emits = defineEmits<{
@@ -48,6 +48,9 @@ defineExpose({
   },
 })
 
+// Constants
+const BOOLEANISH_COMPARATORS = [ComparatorEnum.IS, ComparatorEnum.NOT_IS]
+
 // Injections
 const columns = injectStrict(qbColumnsKey)
 const items = injectStrict(qbItemsKey)
@@ -68,10 +71,8 @@ const colSelected = computed(() => {
   return cols.value.find(col => col.field === item.value.field)
 })
 
-const isBooleanDataType = computedEager(() => {
-  const booleanDataTypes = ['boolean', 'bool']
-
-  return booleanDataTypes.includes(colSelected.value?.dataType)
+const isBooleanishComparator = computedEager(() => {
+  return BOOLEANISH_COMPARATORS.includes(item.value.comparator)
 })
 
 const component = computed(() => {
@@ -102,13 +103,6 @@ function handleFieldChange(field: string) {
   }
 
   item.value.comparator = col.comparator
-
-  // For boolean, the value is given beforehand
-  const booleanDataTypes = ['boolean', 'bool']
-
-  if (booleanDataTypes.includes(col.dataType)) {
-    item.value.value = config.table.booleanValue
-  }
 }
 
 function handleComparatorChange(comparator: ComparatorEnum) {
@@ -193,14 +187,16 @@ const $v = useVuelidate(
       <template v-if="item.field && colSelected">
         <!-- Comparator selector -->
         <Selector
-          v-if="!isBooleanDataType"
+          v-if="!isBooleanishComparator"
           ref="comparatorInputEl"
           :model-value="item.comparator"
           :options="colSelected.comparators || comparators"
           emit-key
           size="sm"
           class="qb-item__content-comparator"
-          :option-label="comparator => $t(`comparator.${comparator.id}`)"
+          :option-label="
+            comparator => $t(`comparator.${comparator.id.replaceAll('.', '|')}`)
+          "
           no-search
           :errors="$v.item.comparator.$errors"
           @update:model-value="handleComparatorChange"
@@ -232,10 +228,13 @@ const $v = useVuelidate(
           v-model:item="item"
         />
 
-        <!-- Boolean value -->
+        <!-- $Empty/Boolean value -->
         <QueryBuilderBooleanInput
-          v-else-if="isBooleanDataType"
+          v-else-if="isBooleanishComparator"
           :item="item"
+          :data-type="colSelected.dataType"
+          no-delete
+          @remove:item="handleRemoveCondition"
         />
 
         <!-- Primitive value -->

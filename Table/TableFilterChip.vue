@@ -43,7 +43,7 @@ function getLabel(_: any, value: any) {
       whitespace="nowrap"
       lowercase
     >
-      {{ $t(`comparator.${filter.comparator}`) }}
+      {{ $t(`comparator.${filter.comparator.replaceAll('.', '|')}`) }}
     </span>
 
     <!-- Compare value -->

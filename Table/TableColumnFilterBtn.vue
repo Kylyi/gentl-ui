@@ -107,7 +107,7 @@ function handleMenuBeforeHide() {
           >
             <!-- Comparator -->
             <span text="caption xs">
-              {{ $t(`comparator.${filter.comparator}`) }}
+              {{ $t(`comparator.${filter.comparator.replaceAll('.', '|')}`) }}
             </span>
 
             <!-- Filter value -->

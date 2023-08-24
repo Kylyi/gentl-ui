@@ -1,8 +1,11 @@
 <script setup lang="ts">
-// MODELS
-import { useTableUtils } from '~/components/Table/functions/useTableUtils'
+// Models
+import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
 import { TableColumn } from '~/components/Table/models/table-column.model'
 import { FilterItem } from '~/libs/App/data/models/filter-item'
+
+// Functions
+import { useTableUtils } from '~/components/Table/functions/useTableUtils'
 
 type IProps = {
   column: TableColumn
@@ -10,10 +13,13 @@ type IProps = {
 
 const props = defineProps<IProps>()
 
-// UTILS
+// Utils
 const { getAvailableComparators } = useTableUtils()
 
-// LAYOUT
+// Constants
+const BOOLEANISH_COMPARATORS = [ComparatorEnum.IS, ComparatorEnum.NOT_IS]
+
+// Layout
 const isFocusPrevented = refAutoReset(true, 50)
 const column = toRef(props, 'column')
 
@@ -23,9 +29,14 @@ const hasUnusedComparator = computed(() => {
     getAvailableComparators(column.value.dataType, {
       includeSelectorComparators: !!column.value.getDistinctData,
     })
-  const columnComparators = column.value.filters.map(
-    filter => filter.comparator
-  )
+
+  const columnComparators = column.value.filters.flatMap(filter => {
+    const isBooleanishComparator = BOOLEANISH_COMPARATORS.includes(
+      filter.comparator
+    )
+
+    return isBooleanishComparator ? BOOLEANISH_COMPARATORS : [filter.comparator]
+  })
 
   return availableComparators.some(
     comparator => !columnComparators.includes(comparator)

@@ -29,15 +29,16 @@ const { getAvailableComparators, isSelectorComparator, isDateAgoComparator } =
 // Injections
 const tableRefresh = injectStrict(tableRefreshKey)
 
+// Constants
+const BOOLEANISH_COMPARATORS = [ComparatorEnum.IS, ComparatorEnum.NOT_IS]
+
 // Layout
 const inputEl = ref<any>()
 const filter = toRef(props, 'filter')
 const column = toRef(props, 'column')
 
-const isBooleanDataType = computedEager(() => {
-  const booleanDataTypes = ['boolean', 'bool']
-
-  return booleanDataTypes.includes(column.value.dataType)
+const isBooleanishComparator = computedEager(() => {
+  return BOOLEANISH_COMPARATORS.includes(filter.value.comparator)
 })
 
 const component = computed(() => {
@@ -64,9 +65,13 @@ const comparatorOptions = computed(() => {
 
 const hiddenComparators = computed(() => {
   const availableComparators = comparatorOptions.value
-  const columnComparators = column.value.filters.map(
-    filter => filter.comparator
-  )
+  const columnComparators = column.value.filters.flatMap(filter => {
+    const isBooleanishComparator = BOOLEANISH_COMPARATORS.includes(
+      filter.comparator
+    )
+
+    return isBooleanishComparator ? BOOLEANISH_COMPARATORS : [filter.comparator]
+  })
 
   return availableComparators.reduce((agg, comparator) => {
     if (columnComparators.includes(comparator)) {
@@ -83,7 +88,7 @@ function handleRemoveFilter() {
   )
 
   // Refresh the table if the filter actually had a value
-  if (props.filter.value) {
+  if (!isNil(props.filter.value)) {
     tableRefresh()
   }
 }
@@ -132,7 +137,7 @@ defineExpose({
 <template>
   <div class="table-column-filtering-item">
     <div
-      v-if="!isBooleanDataType"
+      v-if="!isBooleanishComparator"
       flex="~ gap-x-2"
     >
       <!-- Comparator -->
@@ -141,7 +146,9 @@ defineExpose({
         :options="comparatorOptions"
         emit-key
         grow
-        :option-label="comparator => $t(`comparator.${comparator.id}`)"
+        :option-label="
+          comparator => $t(`comparator.${comparator.id.replaceAll('.', '|')}`)
+        "
         no-sort
         :hidden-options="hiddenComparators"
         hide-self
@@ -188,9 +195,11 @@ defineExpose({
 
     <!-- Boolean value -->
     <QueryBuilderBooleanInput
-      v-else-if="isBooleanDataType"
+      v-else-if="isBooleanishComparator"
       v-model:item="filter"
+      :data-type="column.dataType"
       @update:model-value="tableRefresh"
+      @remove:item="handleRemoveFilter"
     />
 
     <!-- Primitive value -->

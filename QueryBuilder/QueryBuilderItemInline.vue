@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { config } from '~/config'
-
 // Types
 import type {
   IQueryBuilderItem,
@@ -35,7 +33,6 @@ const columns = injectStrict(qbColumnsKey)
 const tableRefresh = injectStrict(tableRefreshKey, () => {})
 
 // Layout
-const booleanValue = config.table.booleanValue
 const itemEditMenuEl = ref<InstanceType<typeof Menu>>()
 const itemEditEl = ref<InstanceType<typeof QueryBuilderItem>>()
 const item = toRef(props, 'item')
@@ -127,14 +124,13 @@ const $v = useVuelidate({ $scope: 'qb' })
     >
       {{
         $t(
-          `comparator.${item.comparator.replace('.', '|')}`
+          `comparator.${item.comparator?.replaceAll('.', '|')}`
         ).toLocaleLowerCase()
       }}
     </span>
 
     <!-- Value -->
     <ValueFormatter
-      v-if="item.value !== booleanValue"
       :value="item.value"
       :data-type="getDataType()"
       :format="colSelected?.format"
