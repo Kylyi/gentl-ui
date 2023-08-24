@@ -69,7 +69,7 @@ function handleLayoutSelect(_layout?: ITableLayout) {
     if (!col.isHelperCol) {
       col.hidden = !!schemaColumns?.length
       col._internalSort = undefined
-      col.filters = []
+      col.clearFilters()
       col.sort = undefined
       col.sortOrder = undefined
     }

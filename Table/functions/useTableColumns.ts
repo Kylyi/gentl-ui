@@ -176,13 +176,23 @@ export function useTableColumns(
       const col = _columns.find(col => col.field === filter.field)
 
       if (col) {
-        col.filters.push(
-          new FilterItem<any>({
-            field: filter.field,
-            comparator: filter.comparator,
-            value: parseValue(filter.value, col.dataType),
-          })
+        // We check if it is one of the predefined filters and eventually merge
+        // it together with the filter from the URL
+        const predefinedFilter = col.filters.find(
+          f => f.comparator === filter.comparator
         )
+
+        if (predefinedFilter) {
+          predefinedFilter.value = parseValue(filter.value, col.dataType)
+        } else {
+          col.filters.push(
+            new FilterItem<any>({
+              field: filter.field,
+              comparator: filter.comparator,
+              value: parseValue(filter.value, col.dataType),
+            })
+          )
+        }
       }
     })
 

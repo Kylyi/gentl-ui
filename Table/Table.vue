@@ -182,6 +182,14 @@ useTableSelection(props)
             :index="index"
             @click="handleRowClick(item, $event)"
           >
+            <template #row-inside>
+              <slot
+                name="row-inside"
+                :columns="columns"
+                :row="item"
+              />
+            </template>
+
             <template #default>
               <slot
                 name="data-row"

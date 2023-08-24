@@ -23,6 +23,10 @@ const BOOLEANISH_COMPARATORS = [ComparatorEnum.IS, ComparatorEnum.NOT_IS]
 const isFocusPrevented = refAutoReset(true, 50)
 const column = toRef(props, 'column')
 
+const interactiveColumns = computed(() => {
+  return column.value.filters.filter(filter => !filter.nonInteractive)
+})
+
 const hasUnusedComparator = computed(() => {
   const availableComparators =
     column.value.comparators ||
@@ -94,7 +98,7 @@ onMounted(() => {
     class="table-column-filtering-chips"
   >
     <TableColumnFilteringItem
-      v-for="(filter, idx) in column.filters"
+      v-for="(filter, idx) in interactiveColumns"
       :key="idx"
       :filter="filter"
       :column="column"

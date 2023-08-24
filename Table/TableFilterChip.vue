@@ -3,6 +3,9 @@
 import { TableColumn } from '~/components/Table/models/table-column.model'
 import { FilterItem } from '~/libs/App/data/models/filter-item'
 
+// Injections
+import { tableRefreshKey } from '~/components/Table/provide/table.provide'
+
 type IProps = {
   columns: TableColumn<any>[]
   filter: FilterItem<any>
@@ -10,8 +13,11 @@ type IProps = {
 
 const props = defineProps<IProps>()
 
-// LAYOUT
+// Layout
 const filter = toRef(props, 'filter')
+
+// Injections
+const tableRefresh = injectStrict(tableRefreshKey)
 
 const column = computed(() => {
   return props.columns.find(column => column.field === filter.value.field)!
@@ -21,6 +27,8 @@ function removeChip() {
   column.value.filters = column.value.filters.filter(
     filterItem => filterItem.comparator !== filter.value.comparator
   )
+
+  tableRefresh()
 }
 
 function getLabel(_: any, value: any) {
@@ -69,7 +77,12 @@ function getLabel(_: any, value: any) {
       @click.stop.prevent="removeChip"
     />
 
-    <Menu hide-header>
+    <Menu
+      hide-header
+      :no-arrow="false"
+      dense
+      p="1"
+    >
       <TableColumnFilteringItem
         :filter="filter"
         :column="column"

@@ -63,12 +63,12 @@ const pages = computedEager(() => {
 
 <template>
   <ClientOnly>
-    <div class="table-navigation">
+    <div class="table-pagination">
       <!-- Total rows -->
       <div
         absolute
         left-2
-        display="!lt-md:none"
+        :class="{ 'lt-md:display-none': !noPagination }"
         flex="~ gap-x-2 center"
       >
         <span
@@ -170,7 +170,7 @@ const pages = computedEager(() => {
 </template>
 
 <style scoped lang="scss">
-.table-navigation {
+.table-pagination {
   --apply: relative flex flex-center flex-gap-x-1 p-y-1 min-h-10;
 
   .btn.is-active {

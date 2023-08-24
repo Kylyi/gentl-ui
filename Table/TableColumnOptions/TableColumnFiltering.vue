@@ -20,7 +20,7 @@ const tableRefresh = injectStrict(tableRefreshKey)
 const column = toRef(props, 'column')
 
 function handleClearFilter() {
-  column.value.filters = []
+  column.value.clearFilters()
   tableRefresh()
 }
 </script>

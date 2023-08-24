@@ -32,6 +32,8 @@ const isSelectedRow = injectStrict(tableIsSelectedRowKey)
     :class="{ 'is-odd': index % 2, 'is-deleted': row.deleted }"
   >
     <slot>
+      <slot name="row-inside" />
+
       <template
         v-for="(col, idx) in columns"
         :key="idx"

@@ -177,26 +177,10 @@ export function useTableData(
       const filters: ITableFilterRow[] = [
         ...(queryBuilder.value && hasQueryBuilder ? queryBuilder.value : []),
         ...columnFilters.value,
-        // {
-        //   isGroup: true,
-        //   condition: 'AND',
-        //   children: [
-        //     ...(queryBuilder.value && hasQueryBuilder
-        //       ? queryBuilder.value
-        //       : []),
-        //     ...columnFilters.value,
-        //   ],
-        // },
       ]
 
       // We check if we use some filters
-      // const hasFilters = (filters[0] as ITableFilterGroup).children.length > 0
       const hasFilters = filters.length > 0
-
-      // We check if we use some specific columns, if we use all of them, we don't need to specify them
-      // const hasSelect =
-      //   select.value.length !==
-      //   internalColumnsRef.value.filter(col => !col.isHelperCol).length
 
       const tableQuery: ITableQuery = {
         ...pagination.value,
@@ -205,7 +189,6 @@ export function useTableData(
         filters: hasFilters ? filters : undefined, // Query builder and column filters combined
         orderBy: orderBy.value,
         search: search.value,
-        // select: hasSelect ? select.value : undefined,
         select: select.value,
         includeDeleted: tableState.value.includeDeleted,
         count: true,

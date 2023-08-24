@@ -24,6 +24,8 @@ withDefaults(defineProps<IProps>(), {
         class="tr__mobile"
         :class="{ 'is-deleted': row.deleted }"
       >
+        <slot name="row-inside" />
+
         <template
           v-for="(col, idx) in columns"
           :key="idx"
@@ -70,7 +72,7 @@ withDefaults(defineProps<IProps>(), {
 
 <style lang="scss" scoped>
 .tr__mobile {
-  --apply: grid p-3 rounded-custom overflow-auto hover:bg-primary/10 hover:dark:bg-primary/10
+  --apply: relative grid p-3 rounded-custom overflow-auto hover:bg-primary/10 hover:dark:bg-primary/10
   border-1 border-ca gap-x-3 hover:shadow-ca shadow-sm w-full dark:bg-darker bg-white;
 
   &-container {

@@ -69,6 +69,10 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
    */
   noFilterSort = false
 
+  clearFilters() {
+    this.filters = this.filters.filter(filter => !!filter.nonInteractive)
+  }
+
   /**
    * Miscellanous data that can be used for anything
    */
@@ -210,13 +214,13 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     col: TableColumn<T>
   ) => Promise<DistinctData[]> | DistinctData[]
 
-  // STYLING
+  // Styling
   style: CSSProperties = {}
   classes?: ClassType
   headerStyle: CSSProperties = {}
   headerClasses?: ClassType
 
-  // HELPERS
+  // Helpers
   isHelperCol = false // Helper cols are non-data columns like group actions
   adjustedWidth = 1 // Is calculated, not set by user
 
@@ -234,6 +238,8 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   }
 
   setDataType(dataType: DataType, defaultComparator?: ComparatorEnum) {
+    this.dataType = dataType
+
     switch (dataType) {
       case 'number':
       case 'int':
@@ -275,10 +281,8 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
 
     this.isHelperCol = col.isHelperCol ?? this.isHelperCol
 
-    // FILTERING
-    this.filters = col.filters
-      ? col.filters.map(filter => new FilterItem(filter))
-      : []
+    // Filtering
+    this.filters = col.filters ? col.filters : []
     this.comparators = col.comparators
     this.noFilterSort = col.noFilterSort ?? false
     this.filterFormat = col.filterFormat
@@ -289,7 +293,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
 
     this.setDataType(col.dataType, col.comparator)
 
-    // SORTING
+    // Sorting
     this.sort = col.sort
     this.sortOrder = col.sortOrder
     this.sortFormat = col.sortFormat
@@ -301,7 +305,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
       }
     }
 
-    // STYLING
+    // Styling
     this.style = col.style || this.style
     this.classes = col.classes
     this.headerStyle = col.headerStyle || this.headerStyle

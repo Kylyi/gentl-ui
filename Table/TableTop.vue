@@ -16,7 +16,7 @@ import {
 import QueryBuilderInline from '~/components/QueryBuilder/QueryBuilderInline.vue'
 
 const props = defineProps<
-  Pick<ITableProps, 'queryBuilder' | 'selectable'> & { search?: string }
+  Pick<ITableProps, 'queryBuilder' | 'selectable'> & { search: string }
 >()
 
 // Constants
@@ -33,6 +33,7 @@ const tableRefresh = injectStrict(tableRefreshKey)
 // Layout
 const queryBuilder = useVModel(props, 'queryBuilder')
 const queryBuilderInlineEl = ref<InstanceType<typeof QueryBuilderInline>>()
+const search = useVModel(props, 'search')
 
 const queryBuilderHeight = computed(() => {
   return {
@@ -84,7 +85,7 @@ const tableSorting = computed(() => {
 function handleFilterClear(filters?: 'queryBuilder' | 'columns') {
   if (filters === 'columns') {
     columns.value.forEach(col => {
-      col.filters = []
+      col.clearFilters()
     })
 
     tableRefresh()
@@ -92,7 +93,7 @@ function handleFilterClear(filters?: 'queryBuilder' | 'columns') {
     queryBuilderInlineEl.value?.clearFilter()
   } else {
     columns.value.forEach(col => {
-      col.filters = []
+      col.clearFilters()
     })
     queryBuilderInlineEl.value?.clearFilter()
   }
@@ -113,7 +114,10 @@ function handleClearSorting() {
     <!-- Toolbar -->
     <div class="table-top__toolbar">
       <!-- Query builder button -->
-      <div grow>
+      <div
+        flex="~ gap-1 items-center"
+        grow
+      >
         <slot name="left-prepend" />
 
         <TableQueryBuilderBtn
@@ -210,10 +214,15 @@ function handleClearSorting() {
       </Btn>
     </div>
 
-    <Separator
-      v-if="queryBuilder"
-      m="b-1"
+    <!-- Chips - filter columns or search -->
+    <TableSearch
+      v-else
+      v-model:search="search"
+      :columns="columns"
+      class="table-top__qb"
     />
+
+    <Separator m="b-1" />
 
     <!-- Subbar -->
     <div class="table-top__subbar">
@@ -247,6 +256,8 @@ function handleClearSorting() {
         >
           <MenuProxy
             hide-header
+            dense
+            p="1"
             :no-arrow="false"
           >
             <Item

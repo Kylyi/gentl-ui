@@ -124,6 +124,15 @@ function handleMenuBeforeHide() {
               :empty-value-string="$t('empty')"
               text="sm"
             />
+
+            <span
+              v-if="filter.nonInteractive"
+              text="xs caption right"
+              border="t-1 ca"
+              leading="6"
+            >
+              {{ $t('filter.nonInteractiveExplain') }}
+            </span>
           </div>
         </template>
       </div>
