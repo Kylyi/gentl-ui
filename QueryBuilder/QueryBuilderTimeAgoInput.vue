@@ -85,7 +85,7 @@ const isExact = computed({
 
 function setUnit(unitShortName: string) {
   agoValue.value = {
-    unitShortName: isExact ? `${unitShortName}e` : unitShortName,
+    unitShortName: isExact.value ? `${unitShortName}e` : unitShortName,
   }
 
   menuEl.value?.hide()
@@ -111,6 +111,7 @@ function setUnit(unitShortName: string) {
           no-bold
           color="ca"
           tabindex="-1"
+          w="16"
           @mousedown.stop.prevent=""
         >
           <Menu

@@ -123,6 +123,7 @@ async function handleApplyChanges() {
       w="screen-md"
       :title="$t('table.customizeColumns')"
       dense
+      min-h="1/2"
       max-h="6/10"
       h="auto"
       header-class="p-l-3 p-r-1"

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { config } from '~/config'
+
 // Types
 import {
   IQueryBuilderItem,
@@ -66,6 +68,12 @@ const colSelected = computed(() => {
   return cols.value.find(col => col.field === item.value.field)
 })
 
+const isBooleanDataType = computedEager(() => {
+  const booleanDataTypes = ['boolean', 'bool']
+
+  return booleanDataTypes.includes(colSelected.value?.dataType)
+})
+
 const component = computed(() => {
   return COMPONENTS_BY_DATATYPE_MAP[colSelected.value?.dataType]
 })
@@ -94,7 +102,13 @@ function handleFieldChange(field: string) {
   }
 
   item.value.comparator = col.comparator
-  item.value.value = col.dataType === 'boolean' ? true : undefined
+
+  // For boolean, the value is given beforehand
+  const booleanDataTypes = ['boolean', 'bool']
+
+  if (booleanDataTypes.includes(col.dataType)) {
+    item.value.value = config.table.booleanValue
+  }
 }
 
 function handleComparatorChange(comparator: ComparatorEnum) {
@@ -179,7 +193,7 @@ const $v = useVuelidate(
       <template v-if="item.field && colSelected">
         <!-- Comparator selector -->
         <Selector
-          v-if="colSelected.dataType !== 'boolean'"
+          v-if="!isBooleanDataType"
           ref="comparatorInputEl"
           :model-value="item.comparator"
           :options="colSelected.comparators || comparators"
@@ -215,13 +229,19 @@ const $v = useVuelidate(
         <!-- Ago value -->
         <QueryBuilderTimeAgoInput
           v-else-if="isDateAgoComparator(item.comparator)"
+          v-model:item="item"
+        />
+
+        <!-- Boolean value -->
+        <QueryBuilderBooleanInput
+          v-else-if="isBooleanDataType"
           :item="item"
         />
 
         <!-- Primitive value -->
         <Component
           :is="component.component"
-          v-else
+          v-else-if="component.component"
           ref="valueInputEl"
           v-model="item.value"
           size="sm"

@@ -239,6 +239,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
         break
 
       case 'boolean':
+      case 'bool':
         this.comparator = defaultComparator ?? ComparatorEnum.IS
 
         break

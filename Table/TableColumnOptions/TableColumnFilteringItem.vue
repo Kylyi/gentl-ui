@@ -34,6 +34,12 @@ const inputEl = ref<any>()
 const filter = toRef(props, 'filter')
 const column = toRef(props, 'column')
 
+const isBooleanDataType = computedEager(() => {
+  const booleanDataTypes = ['boolean', 'bool']
+
+  return booleanDataTypes.includes(column.value.dataType)
+})
+
 const component = computed(() => {
   return COMPONENTS_BY_DATATYPE_MAP[column.value.dataType]
 })
@@ -110,6 +116,7 @@ function handleComparatorChange(comparator: ComparatorEnum) {
   }
 
   filter.value.comparator = comparator
+
   tableRefresh()
 }
 
@@ -124,7 +131,10 @@ defineExpose({
 
 <template>
   <div class="table-column-filtering-item">
-    <div flex="~ gap-x-2">
+    <div
+      v-if="!isBooleanDataType"
+      flex="~ gap-x-2"
+    >
       <!-- Comparator -->
       <Selector
         :model-value="filter.comparator"
@@ -176,10 +186,17 @@ defineExpose({
       @update:model-value="handleCompareValueChange"
     />
 
+    <!-- Boolean value -->
+    <QueryBuilderBooleanInput
+      v-else-if="isBooleanDataType"
+      v-model:item="filter"
+      @update:model-value="tableRefresh"
+    />
+
     <!-- Primitive value -->
     <Component
       :is="component.component"
-      v-else
+      v-else-if="component.component"
       v-bind="component.props"
       ref="inputEl"
       v-model="filter.value"
