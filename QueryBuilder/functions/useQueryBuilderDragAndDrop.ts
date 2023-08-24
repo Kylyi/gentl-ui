@@ -11,10 +11,11 @@ const GROUP_ROW_CONTROLS_HEIGHT = -38
 export function useQueryBuilderDragAndDrop() {
   const queryBuilderEl = ref<HTMLDivElement>()
   const draggedItem = ref<IQueryBuilderDraggedItem>()
+  const queryBuilderElRect = ref<DOMRect>()
 
-  const queryBuilderElRect = computed(() =>
-    queryBuilderEl.value?.getBoundingClientRect()
-  )
+  // const queryBuilderElRect = computed(() =>
+  //   queryBuilderEl.value?.getBoundingClientRect()
+  // )
 
   provide(qbDraggedItemKey, draggedItem)
 
@@ -115,5 +116,6 @@ export function useQueryBuilderDragAndDrop() {
   return {
     queryBuilderEl,
     draggedItem,
+    queryBuilderElRect,
   }
 }
