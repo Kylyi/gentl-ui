@@ -79,9 +79,16 @@ export const useTableStore = defineStore('table', () => {
     return tableState[tableStorageKey]
   }
 
+  function resetTableState(tableStorageKey: string) {
+    tableState[tableStorageKey] = useLocalStorage(tableStorageKey, {
+      ...getTableStateDefault(),
+    })
+  }
+
   return {
     tableState,
     getTableState,
     setTableState,
+    resetTableState,
   }
 })

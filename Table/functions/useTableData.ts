@@ -61,7 +61,7 @@ export function useTableData(
   const storageKey = computed(() => getStorageKey())
 
   // Store
-  const { getTableState, setTableState } = useTableStore()
+  const { getTableState, setTableState, resetTableState } = useTableStore()
   const tableState = getTableState(storageKey.value)
 
   initializeQueryBuilder()
@@ -264,52 +264,55 @@ export function useTableData(
     optionsRef: MaybeRefOrGetter<ITableDataFetchFncInput>,
     isFetchMore?: boolean
   ) {
-    const options = toValue(optionsRef)
+    try {
+      const options = toValue(optionsRef)
 
-    // When fetching more data, we need to manually get the queryParams again as
-    // it is not triggered in the `dbQuery` computed
-    if (isFetchMore) {
-      options.fetchQueryParams = config.table.getQuery({
-        ...options.fetchTableQuery,
-        count: false,
-        fetchMore: { $key: lastKeyId.value, rowKey: getRowKey(props) },
-      })
-      options.tableQuery.count = false
+      // When fetching more data, we need to manually get the queryParams again as
+      // it is not triggered in the `dbQuery` computed
+      if (isFetchMore) {
+        options.fetchQueryParams = config.table.getQuery({
+          ...options.fetchTableQuery,
+          count: false,
+          fetchMore: { $key: lastKeyId.value, rowKey: getRowKey(props) },
+        })
+        options.tableQuery.count = false
+      }
+
+      // When fetching the data for the first time (on initialization)
+      // we add the `meta` to the `fetchQueryParams`
+      if (!isInitialized.value) {
+        options.fetchQueryParams.set('meta', 'true')
+      }
+
+      const res = await fetchData(options)
+
+      // When hash mismatches, we force metadata refetch and data refetch
+      const currentHash = get(
+        tableState.value.meta,
+        props.getData?.hashKey || config.table.hashKey
+      )
+      const newHash = get(res, 'hash')
+
+      if (!!currentHash && currentHash !== newHash) {
+        await metaDataRefetch?.(true)
+        fetchAndSetData(dbQuery)
+
+        return
+      }
+
+      if (res) {
+        rows.value = isFetchMore ? [...rows.value, ...res.data] : res.data
+        totalRows.value = isFetchMore ? totalRows.value : res.totalRows
+
+        instance?.emit('update:rows', rows.value)
+        instance?.emit('update:totalRows', totalRows.value)
+      }
+
+      // We reset the `fetchMore`
+      fetchMore.value = false
+    } catch (error) {
+      resetTableState(storageKey.value)
     }
-
-    // When fetching the data for the first time (on initialization)
-    // we add the `meta` to the `fetchQueryParams`
-    if (!isInitialized.value) {
-      options.fetchQueryParams.set('meta', 'true')
-    }
-
-    const res = await fetchData(options)
-
-    // When hash mismatches, we force metadata refetch and data refetch
-    const currentHash = get(
-      tableState.value.meta,
-      props.getData?.hashKey || config.table.hashKey
-    )
-    const newHash = get(res, 'hash')
-
-    if (!!currentHash && currentHash !== newHash) {
-      console.log('here')
-      await metaDataRefetch?.(true)
-      fetchAndSetData(dbQuery)
-
-      return
-    }
-
-    if (res) {
-      rows.value = isFetchMore ? [...rows.value, ...res.data] : res.data
-      totalRows.value = isFetchMore ? totalRows.value : res.totalRows
-
-      instance?.emit('update:rows', rows.value)
-      instance?.emit('update:totalRows', totalRows.value)
-    }
-
-    // We reset the `fetchMore`
-    fetchMore.value = false
   }
 
   // Fetch and set data on init and when the `dbQuery` changes

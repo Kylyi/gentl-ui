@@ -10,15 +10,15 @@ import {
   size,
 } from '@floating-ui/dom'
 
-// TYPES
+// Types
 import type { IMenuProps } from '~/components/Menu/types/menu-props.type'
 
-// FLOATING UI MIDDLEWARE
+// Floating UI middleware
 import { fitWidth } from '~/utils/floatingMiddleware/fitWidth'
 import { matchWidth } from '~/utils/floatingMiddleware/matchWidth'
 import { cover } from '~/utils/floatingMiddleware/cover'
 
-// STORE
+// Store
 import { useAppStore } from '~/libs/App/app.store'
 
 defineOptions({
@@ -66,10 +66,10 @@ onBeforeUnmount(() => {
   triggerEl.value?.removeEventListener(props.trigger, toggle)
 })
 
-// STORE
+// Store
 const appStore = useAppStore()
 
-// HELPERS
+// Helpers
 const { color } = useTheme()
 
 async function createFloatInstance(options?: { skipFlip?: boolean }) {
