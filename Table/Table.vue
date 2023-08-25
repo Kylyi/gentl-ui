@@ -52,7 +52,7 @@ const { cloned: queryBuilder } = useCloned(queryBuilderOriginal, {
   clone: klona,
 })
 
-const { columns, layout } = await useTableMetaData(props)
+const { columns, layout, metadataRefetch } = await useTableMetaData(props)
 
 const {
   // Element refs
@@ -78,7 +78,6 @@ const {
   rows,
   refreshData,
   search,
-  internalCounter,
 
   // Pagination
   currentPage,
@@ -92,7 +91,14 @@ const {
 
   // Infinite scroll
   handleInfiniteScroll,
-} = useTableData(props, internalColumns, layout, queryBuilder, scrollerEl)
+} = useTableData(
+  props,
+  internalColumns,
+  layout,
+  queryBuilder,
+  scrollerEl,
+  metadataRefetch
+)
 
 // const { isExporting, handleExportData } = useTableExporting()
 
@@ -160,7 +166,6 @@ useTableSelection(props)
     <DynamicScroller
       v-show="hasVisibleColumn"
       ref="scrollerEl"
-      :key="internalCounter"
       :items="rows"
       :key-field="rowKey"
       class="scroller"
@@ -171,9 +176,9 @@ useTableSelection(props)
     >
       <template #default="{ item, index, active }">
         <DynamicScrollerItem
+          :key="index"
           :item="item"
           :active="active"
-          :data-index="index"
         >
           <Component
             :is="TableRowComponent"
@@ -189,6 +194,7 @@ useTableSelection(props)
                 name="row-inside"
                 :columns="columns"
                 :row="item"
+                :index="index"
               />
             </template>
 
@@ -197,6 +203,7 @@ useTableSelection(props)
                 name="data-row"
                 :columns="columns"
                 :row="item"
+                :index="index"
               />
             </template>
 
@@ -205,6 +212,7 @@ useTableSelection(props)
                 name="inner"
                 :columns="columns"
                 :row="item"
+                :index="index"
               />
             </template>
 
@@ -216,6 +224,7 @@ useTableSelection(props)
               <slot
                 :name="col.name"
                 :row="item"
+                :index="index"
                 :refresh-data-fnc="refreshData"
               />
             </template>

@@ -41,7 +41,7 @@ export function useTableColumns(
   // Utils
   const { t } = useI18n()
   const { scrollbarWidth, isOverflown } = useOverflow()
-  const { parseUrlParams, hasVisibleCol, getStorageKey } = useTableUtils()
+  const { parseUrlParams, hasVisibleCol, getStorageKey } = useTableUtils(props)
 
   // Store
   const { getTableState } = useTableStore()

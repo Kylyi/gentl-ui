@@ -163,6 +163,7 @@ export interface ITableProps {
    * `payloadKey` ~ key in the response that contains the data
    * `countKey` ~ key in the response that contains the total count of rows
    * `urlKey` ~ key in the response that contains the query params for the request
+   * `hashKey` ~ key in the response that contains the hash key for the table
    * `createIdentifier` ~ function to create a unique identifier for each row when the `rowKey` is not unique
    * `errorHandler` ~ function to handle errors that come from fetching the table data
    */
@@ -171,6 +172,7 @@ export interface ITableProps {
     payloadKey?: string
     countKey?: string
     queryParamsKey?: string
+    hashKey?: string
     createIdentifier?: (row: any, idx: number) => string | number
     errorHandler?: (error: any) => void
   }

@@ -12,9 +12,19 @@ import {
   tableViewCodeKey,
 } from '~/components/Table/provide/table.provide'
 
+// Functions
+import { useTableUtils } from '~/components/Table/functions/useTableUtils'
+
+// Store
+import { useTableStore } from '~/components/Table/table.store'
+
 export async function useTableMetaData(props: ITableProps) {
   // Utils
   const { handleRequest } = useRequest()
+  const { getStorageKey } = useTableUtils(props)
+
+  // Store
+  const tableStore = useTableStore()
 
   // Layout
   const layouts = ref<ITableLayout[]>([])
@@ -27,8 +37,14 @@ export async function useTableMetaData(props: ITableProps) {
   provide(tableViewCodeKey, viewCode)
 
   // Data fetching
-  async function fetchAndSetMetaData() {
-    if (!props.getMetaData) {
+  /**
+   * Fetches and sets the metadata
+   * @param forceRefetch when true, the metadata will be fetched from the API
+   */
+  async function fetchAndSetMetaData(forceRefetch?: boolean) {
+    const stateMetaData = tableStore.getTableState(getStorageKey())
+
+    if (!props.getMetaData && !stateMetaData.value?.meta) {
       return
     }
 
@@ -37,7 +53,11 @@ export async function useTableMetaData(props: ITableProps) {
         const { fnc, columnsKey, layoutKey, layoutsKey } =
           props.getMetaData || {}
 
-        const result = (await fnc?.()) as any[]
+        const result = forceRefetch
+          ? await fnc?.()
+          : stateMetaData.value.meta ?? (await fnc?.())
+
+        tableStore.setTableState(getStorageKey(), { meta: result })
 
         layout.value = get(result, layoutKey || config.table.layoutKey)
 
@@ -53,12 +73,12 @@ export async function useTableMetaData(props: ITableProps) {
 
         layouts.value = get(result, layoutsKey || config.table.layoutsKey) || []
 
-        const _columns = get(result, columnsKey || config.table.columnsKey)
+        const apiColumns = get(result, columnsKey || config.table.columnsKey)
 
         // When we have't defined any columns, we just use the data from the API
         // to create the columns
-        if (!columns.value.length && _columns) {
-          columns.value = _columns.map((col: any) => {
+        if (!columns.value.length && apiColumns) {
+          columns.value = apiColumns.map((col: any) => {
             return new TableColumn({
               field: col.name,
               label: col.name,
@@ -71,7 +91,9 @@ export async function useTableMetaData(props: ITableProps) {
         // them with the data from the API
         else if (columns.value.length) {
           columns.value = columns.value.map(col => {
-            const foundColumn = _columns?.find((c: any) => c.name === col.field)
+            const foundColumn = apiColumns?.find(
+              (c: any) => c.name === col.field
+            )
 
             if (foundColumn) {
               col.setDataType(foundColumn.type)
@@ -91,5 +113,7 @@ export async function useTableMetaData(props: ITableProps) {
     layouts,
     layout,
     columns,
+    fetchAndSetMetaData,
+    metadataRefetch: fetchAndSetMetaData,
   }
 }

@@ -48,6 +48,7 @@ export const useTableStore = defineStore('table', () => {
 
         return {
           field: col.field,
+          dataType: col.dataType,
           width: col.width,
           hidden: col.hidden,
           sort: col.sort,

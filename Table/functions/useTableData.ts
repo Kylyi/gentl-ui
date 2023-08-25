@@ -39,12 +39,13 @@ export function useTableData(
   internalColumnsRef: Ref<TableColumn[]>,
   layoutRef: Ref<ITableLayout | undefined>,
   queryBuilder: Ref<IQueryBuilderRow[] | undefined>,
-  scrollerEl: Ref<HTMLElement | undefined>
+  scrollerEl: Ref<HTMLElement | undefined>,
+  metaDataRefetch?: (forceRefetch?: boolean) => Promise<void>
 ) {
   // Utils
   const route = useRoute()
   const instance = getCurrentInstance()
-  const { getStorageKey, parseUrlParams, getRowKey } = useTableUtils()
+  const { getStorageKey, parseUrlParams, getRowKey } = useTableUtils(props)
   const { isLoading, handleRequest } = useRequest({
     loadingInitialState: !props.rows,
   })
@@ -56,10 +57,6 @@ export function useTableData(
   const totalRows = props.totalRows
     ? useVModel(props, 'totalRows')
     : ref<number>()
-
-  // For some reason, the table does not update its `index` when the rows are filtered/refetched
-  // So we use `internalCounter` to force the table to re-render
-  const internalCounter = ref(0)
 
   const storageKey = computed(() => getStorageKey())
 
@@ -255,6 +252,7 @@ export function useTableData(
       return {
         data,
         totalRows: get(result, props.getData.countKey || config.table.countKey),
+        hash: get(result, props.getData.hashKey || config.table.hashKey),
       }
     })
   }
@@ -269,7 +267,7 @@ export function useTableData(
     const options = toValue(optionsRef)
 
     // When fetching more data, we need to manually get the queryParams again as
-    // it is not triggered in the `dbQUery` computed
+    // it is not triggered in the `dbQuery` computed
     if (isFetchMore) {
       options.fetchQueryParams = config.table.getQuery({
         ...options.fetchTableQuery,
@@ -279,19 +277,32 @@ export function useTableData(
       options.tableQuery.count = false
     }
 
+    // When fetching the data for the first time (on initialization)
+    // we add the `meta` to the `fetchQueryParams`
+    if (!isInitialized.value) {
+      options.fetchQueryParams.set('meta', 'true')
+    }
+
     const res = await fetchData(options)
 
-    if (res) {
-      const currentTotalRows = totalRows.value || 0
+    // When hash mismatches, we force metadata refetch and data refetch
+    const currentHash = get(
+      tableState.value.meta,
+      props.getData?.hashKey || config.table.hashKey
+    )
+    const newHash = get(res, 'hash')
 
+    if (!!currentHash && currentHash !== newHash) {
+      console.log('here')
+      await metaDataRefetch?.(true)
+      fetchAndSetData(dbQuery)
+
+      return
+    }
+
+    if (res) {
       rows.value = isFetchMore ? [...rows.value, ...res.data] : res.data
       totalRows.value = isFetchMore ? totalRows.value : res.totalRows
-
-      // Force table to rerender
-      if (totalRows.value !== currentTotalRows) {
-        console.log('now')
-        internalCounter.value++
-      }
 
       instance?.emit('update:rows', rows.value)
       instance?.emit('update:totalRows', totalRows.value)
@@ -315,7 +326,7 @@ export function useTableData(
       fetchAndSetData(dbQuery)
 
       // Set URL
-      if (props.useUrl && isInitialized.value) {
+      if (props.useUrl) {
         const routeQueryWithoutTableParams = omit(route.query, [
           'qb',
           'filters',
@@ -417,7 +428,6 @@ export function useTableData(
   isInitialized.value = true
 
   return {
-    internalCounter,
     isLoading,
     rows,
     dbQuery,
