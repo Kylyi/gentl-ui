@@ -19,7 +19,7 @@ const emits = defineEmits<{
   (e: 'update:modelValue', val?: boolean | null): void
 }>()
 
-// STATE
+// State
 const model = useVModel(props, 'modelValue', emits)
 
 const internalValue = computed<ToggleState>(() => {
@@ -77,7 +77,7 @@ function handleStateChange() {
   }
 }
 
-// LAYOUT
+// Layout
 const itemProps = reactivePick(props, ['noHoverEffect', 'tag'])
 
 const defaultClasses = computed<ToggleClass>(() => {
@@ -176,7 +176,11 @@ export default {
     </div>
 
     <slot v-if="label">
-      <div p="r-3">
+      <div
+        class="toggle-label"
+        p="r-3"
+        :class="[labelClass, `toggle-label--${size}`]"
+      >
         {{ label }}
       </div>
     </slot>
@@ -192,6 +196,11 @@ export default {
 
   &.is-readonly {
     --apply: border-dotted cursor-default;
+  }
+
+  &-label--xs,
+  &-label--sm {
+    --apply: text-sm;
   }
 
   &.is-disabled {

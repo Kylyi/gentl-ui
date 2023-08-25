@@ -112,7 +112,7 @@ function handleStateChange() {
 
 <style lang="scss" scoped>
 .label {
-  --apply: flex items-center relative gap-2 cursor-pointer transition-all
+  --apply: flex items-start relative gap-2 cursor-pointer transition-all
     rounded-custom p-x-2 select-none;
 
   &.is-readonly {
@@ -145,7 +145,7 @@ function handleStateChange() {
     }
 
     .checkbox-label {
-      --apply: font-rem-14 p-y-6px;
+      --apply: font-rem-14 p-t-7px p-b-6px;
     }
   }
 
@@ -178,7 +178,7 @@ function handleStateChange() {
   --apply: flex flex-center rounded-2 border-primary border-2 shrink-0 self-start;
 
   &-label {
-    --apply: leading-none;
+    --apply: leading-tight;
   }
 
   &.is-primary {

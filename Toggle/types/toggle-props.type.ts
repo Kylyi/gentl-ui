@@ -66,6 +66,11 @@ export interface IToggleProps extends IItemProps {
   label?: string
 
   /**
+   * The toggle label class.
+   */
+  labelClass?: ClassType
+
+  /**
    * The actual value of the toggle.
    */
   modelValue?: any

@@ -1,11 +1,11 @@
 <script setup lang="ts">
-// TYPES
+// Types
 import type { IFormProps } from '~~/components/Form/types/form-props.type'
 
-// COMPOSITION FUNCTIONS
+// Functions
 import { useFormErrors } from '~~/components/Form/functions/useFormErrors'
 
-// COMPONENTS
+// Components
 import MenuConfirmation from '~/components/MenuConfirmation/MenuConfirmation.vue'
 
 defineOptions({
@@ -22,11 +22,11 @@ const emits = defineEmits<{
   (e: 'update:errors', errors: string[]): void
 }>()
 
-// ERRORS
+// Errors
 const errors = toRef(props, 'errors', [])
 const { errorsExtended, handleDismissError } = useFormErrors(errors, emits)
 
-// LAYOUT
+// Layout
 const formEl = ref<HTMLFormElement>()
 const menuConfirmationEl = ref<InstanceType<typeof MenuConfirmation>>()
 const isSubmitted = ref(false)

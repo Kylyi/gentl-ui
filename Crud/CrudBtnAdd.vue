@@ -15,6 +15,8 @@ withDefaults(defineProps<IProps>(), {
 <template>
   <Btn
     preset="ADD"
+    bg="primary"
+    color="!white"
     :label="labels && (label || $t('new2'))"
     :loader-type="loaderType"
     :loading="loading"

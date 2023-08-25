@@ -26,6 +26,7 @@ const miniCardProps = getMiniCardProps(props)
       ...miniCardProps,
       ...$attrs,
     }"
+    bg="white dark:darker"
   >
     <template #default="{ val }">
       <slot

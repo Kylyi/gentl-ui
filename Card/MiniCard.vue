@@ -34,7 +34,7 @@ function getShownValue(val: any) {
           <span
             v-if="!to || !val"
             class="value-container-card-value"
-            :class="valueClass"
+            :class="[valueClass, { 'font-bold': !noBold }]"
           >
             {{ getShownValue(val) }}
           </span>
@@ -61,8 +61,6 @@ function getShownValue(val: any) {
   }
 
   &-value {
-    --apply: font-bold;
-
     overflow-wrap: break-word;
   }
 }
