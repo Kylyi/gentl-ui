@@ -121,6 +121,7 @@ function handleMenuBeforeHide() {
               :value="filter.value"
               :data-type="column.dataType"
               :empty-value="emptyValue"
+              :format="column.format"
               :empty-value-string="$t('empty')"
               text="sm"
             />

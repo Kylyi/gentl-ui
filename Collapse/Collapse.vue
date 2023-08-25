@@ -91,7 +91,7 @@ useResizeObserver(headerEl, entries => {
       'is-padded': internalValue && padded,
     }"
   >
-    <!-- HEADER -->
+    <!-- Header -->
     <div
       v-if="!noHeader"
       ref="headerEl"
@@ -151,7 +151,7 @@ useResizeObserver(headerEl, entries => {
       </slot>
     </div>
 
-    <!-- CONTENT -->
+    <!-- Content -->
     <Transition
       @after-enter="handleEnter"
       @after-leave="handleLeave"

@@ -92,7 +92,7 @@ export function useTableColumns(
       _columns.forEach(col => {
         const colInUrl = visibleColumns.indexOf(col.field)
 
-        if (colInUrl > -1 || col.isHelperCol) {
+        if ((colInUrl > -1 || col.isHelperCol) && !col.nonInteractive) {
           col.hidden = false
           col._internalSort = col.isHelperCol ? -1 : colInUrl
         } else {

@@ -89,11 +89,6 @@ function handleColumnVisibilityChange(
   col: TableColumn
 ) {
   col.hidden = val
-
-  // await nextTick()
-
-  // handleTableResize()
-  // setTableState(storageKey.value, { columns: clonedColumns.value })
 }
 
 // Apply changes
@@ -156,6 +151,7 @@ async function handleApplyChanges() {
                 :model-value="item.hidden"
                 :check-value="false"
                 :uncheck-value="true"
+                :editable="!item.nonInteractive"
                 @update:model-value="handleColumnVisibilityChange($event, item)"
               />
 

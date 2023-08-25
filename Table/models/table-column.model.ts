@@ -28,7 +28,18 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   resizable = true
   sortable = true
   searchable?: boolean
+
+  /**
+   * When true, the column will be hidden in the table
+   */
   hidden?: boolean
+
+  /**
+   * When true, the column will not be present in the column selection and will not
+   * be generally accessible
+   * It will also be hidden!
+   */
+  nonInteractive?: boolean
 
   /**
    * When true, the column will always be included in the `select` query
@@ -284,6 +295,12 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     this.searchable = col.searchable ?? false
     this.hidden = col.hidden ?? false
     this.alwaysSelected = col.alwaysSelected ?? false
+    this.nonInteractive = col.nonInteractive ?? false
+
+    // We also hide the column when it's non-interactive
+    if (col.nonInteractive) {
+      this.hidden = true
+    }
 
     this.isHelperCol = col.isHelperCol ?? this.isHelperCol
 
