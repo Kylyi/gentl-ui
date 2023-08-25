@@ -59,14 +59,15 @@ const pageDrawerClasses = computedEager(() => {
 
     <div
       class="page-drawer-content"
-      :class="contentClass"
       bg="ca"
+      :class="contentClass"
     >
       <slot :mini="isMini" />
     </div>
 
     <div
       class="page-drawer-bottom"
+      bg="ca"
       :class="bottomClass"
     >
       <slot
@@ -123,7 +124,7 @@ header.is-hidden ~ .page-drawer {
   }
 
   &-bottom {
-    --apply: flex flex-shrink-0 pointer-events-auto flex-center p-2 w-full bg-ca
+    --apply: flex flex-shrink-0 pointer-events-auto flex-center p-2 w-full
       border-t-1 border-ca;
 
     // Project specific
