@@ -41,7 +41,11 @@ export async function useTableMetaData(props: ITableProps) {
    * Fetches and sets the metadata
    * @param forceRefetch when true, the metadata will be fetched from the API
    */
-  async function fetchAndSetMetaData(forceRefetch?: boolean) {
+  async function fetchAndSetMetaData(
+    forceRefetch?: boolean,
+    options?: { meta?: any }
+  ) {
+    const providedMetaData = options?.meta
     const stateMetaData = tableStore.getTableState(getStorageKey())
 
     if (!props.getMetaData && !stateMetaData.value?.meta) {
@@ -53,9 +57,19 @@ export async function useTableMetaData(props: ITableProps) {
         const { fnc, columnsKey, layoutKey, layoutsKey } =
           props.getMetaData || {}
 
-        const result = forceRefetch
-          ? await fnc?.()
-          : stateMetaData.value.meta ?? (await fnc?.())
+        let result: any
+
+        // When we provide explicit metadata, we use that
+        if (providedMetaData) {
+          result = providedMetaData
+        }
+
+        // Otherwise, we decide whether to use the state or fetch from the API
+        else {
+          result = forceRefetch
+            ? await fnc?.()
+            : stateMetaData.value.meta ?? (await fnc?.())
+        }
 
         tableStore.setTableState(getStorageKey(), { meta: result })
 

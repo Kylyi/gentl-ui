@@ -40,7 +40,10 @@ export function useTableData(
   layoutRef: Ref<ITableLayout | undefined>,
   queryBuilder: Ref<IQueryBuilderRow[] | undefined>,
   scrollerEl: Ref<HTMLElement | undefined>,
-  metaDataRefetch?: (forceRefetch?: boolean) => Promise<void>
+  metaDataRefetch?: (
+    forceRefetch?: boolean,
+    options?: { meta?: any }
+  ) => Promise<void>
 ) {
   // Utils
   const route = useRoute()
@@ -294,7 +297,7 @@ export function useTableData(
       const newHash = get(res, 'hash')
 
       if (!!currentHash && currentHash !== newHash) {
-        await metaDataRefetch?.(true)
+        await metaDataRefetch?.(true, { meta: res })
         fetchAndSetData(dbQuery)
 
         return
