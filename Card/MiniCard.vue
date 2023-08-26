@@ -42,7 +42,7 @@ function getShownValue(val: any) {
           <NuxtLink
             v-else
             :to="to"
-            class="link"
+            class="link text-sm"
           >
             {{ getShownValue(val) }}
           </NuxtLink>
@@ -61,6 +61,7 @@ function getShownValue(val: any) {
   }
 
   &-value {
+    --apply: text-sm;
     overflow-wrap: break-word;
   }
 }
