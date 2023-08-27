@@ -17,9 +17,6 @@ defineEmits<{
   (e: 'scrolled', left: number): void
 }>()
 
-// Utils
-const { handleGqlErrors } = useGqlErrors()
-
 // Layout
 const totalsEl = ref<InstanceType<typeof HorizontalScroller>>()
 const calculateAllRows = ref(false)
@@ -33,7 +30,7 @@ function handleGetTotals() {
     // const { totals } = await props.getTotalsData.fnc(getTableQuery())
     // console.log('Log ~ handleTotals ~ totals:', totals)
   } catch (error) {
-    handleGqlErrors(error, true)
+    // handleGqlErrors(error, true)
   }
 }
 </script>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // TODO: I'm using `props.optionLabel` for adding new items on the fly
 // but it will not work when optionLabel is a function
+import { config } from '~/config'
 
 // Types
 import type { ISelectorProps } from '~~/components/Selector/types/selector-props.type'
@@ -25,6 +26,9 @@ const props = withDefaults(defineProps<ISelectorProps>(), {
   optionLabel: 'label',
   options: () => [],
   size: 'md',
+  stackLabel: undefined,
+  inline: undefined,
+  labelInside: undefined,
 })
 
 const emits = defineEmits<{
@@ -260,10 +264,6 @@ const pickerAnimationState = ref<'show' | 'hide'>('hide')
 function handleBeforeHide() {
   pickerAnimationState.value = 'hide'
   emits('picker-before-hide')
-
-  if (props.loadData?.onSearch) {
-    listEl.value?.clearSearch()
-  }
 }
 
 function handleBeforeShow() {
@@ -274,6 +274,10 @@ function handleBeforeShow() {
 function handleHide() {
   isPickerActive.value = false
   pickerAnimationState.value = 'hide'
+
+  if (props.loadData?.onSearch) {
+    listEl.value?.clearSearch()
+  }
   emits('picker-hide')
 }
 
@@ -329,12 +333,14 @@ if (
 function getData() {
   handleRequest(async () => {
     if (props.loadData) {
+      const mapKey = props.loadData.mapKey ?? config.selector.mapKey
+
       const res = await props.loadData.fnc({ search: undefined })
 
       if (props.loadData.local) {
         optionsInternal.value = res
       } else {
-        optionsInternal.value = get(res, props.loadData.mapKey)
+        optionsInternal.value = get(res, mapKey)
       }
     }
   })
@@ -452,7 +458,7 @@ defineExpose({
         @click="handleFocusOrClick"
       >
         <Btn
-          v-if="clearable && modelValue && !multi && !disabled && !readonly"
+          v-if="clearable && hasContent && !disabled && !readonly"
           icon="eva:close-fill h-6 w-6"
           color="ca"
           size="auto"

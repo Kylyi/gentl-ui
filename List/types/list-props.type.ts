@@ -51,7 +51,7 @@ export interface IListProps extends IListBaseProps {
      * But some queries dont have the search so to prevent TS from complaining, just use any
      */
     fnc: (payload: any) => Promise<any> | any
-    mapKey: string
+    mapKey?: string
     immediate?: boolean
 
     /**

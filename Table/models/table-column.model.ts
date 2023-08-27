@@ -108,10 +108,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
         filter.comparator
       )
 
-      return (
-        filter.comparator &&
-        (filter.value !== undefined || isNonValueComparator)
-      )
+      return filter.comparator && (!isNil(filter.value) || isNonValueComparator)
     })
 
     if (!validFilters.length) {

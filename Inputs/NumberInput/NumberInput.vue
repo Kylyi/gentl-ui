@@ -18,9 +18,11 @@ const props = withDefaults(defineProps<INumberInputProps>(), {
   errorVisible: true,
   fractionDigits: 2,
   mask: () => ({ mask: String }),
-  rounded: true,
   size: 'md',
   step: 'auto',
+  stackLabel: undefined,
+  labelInside: undefined,
+  inline: undefined,
 })
 
 defineEmits<{

@@ -1,14 +1,14 @@
 <script setup lang="ts">
-// TYPES
-import { IListProps } from '~~/components/List/types/list-props.type'
+// Types
+import type { IListProps } from '~~/components/List/types/list-props.type'
+import type { IItemToBeAdded } from '~/components/List/types/list-item-to-add.type'
 
-// COMPOSITION FUNCTIONS
+// Functions
 import { useList } from '@/components/List/functions/useList'
 
-// COMPONENTS
+// Components
 import ListVirtualContainer from '~~/components/List/ListVirtualContainer.vue'
 import ListContainer from '~~/components/List/ListContainer.vue'
-import { IItemToBeAdded } from '~/components/List/types/list-item-to-add.type'
 
 const props = withDefaults(defineProps<IListProps>(), {
   clearable: true,
@@ -43,6 +43,7 @@ const ContainerComponent = computed(() => {
 
 const {
   arr,
+  isLoading,
   hoveredIdx,
   listEl,
   listRowProps,
@@ -104,9 +105,9 @@ onMounted(() => {
       <div class="separator" />
     </template>
 
-    <!-- LOADING -->
+    <!-- Loading -->
     <div
-      v-if="loading"
+      v-if="loading || isLoading"
       flex="~ center"
     >
       <LoaderInline />

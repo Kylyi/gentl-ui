@@ -17,6 +17,9 @@ import NumberInput from '~/components/Inputs/NumberInput/NumberInput.vue'
 const props = withDefaults(defineProps<IDurationInputProps>(), {
   initialDurationUnit: 'hour',
   allowedUnits: () => ['minute', 'hour', 'day'],
+  stackLabel: undefined,
+  labelInside: undefined,
+  inline: undefined,
 })
 
 const emits = defineEmits<{

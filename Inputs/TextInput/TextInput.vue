@@ -12,6 +12,9 @@ const props = withDefaults(defineProps<ITextInputProps>(), {
   mask: () => ({ mask: String }),
   rounded: true,
   size: 'md',
+  stackLabel: undefined,
+  labelInside: undefined,
+  inline: undefined,
 })
 defineEmits<{
   (e: 'update:model-value', val?: string | undefined | null): void

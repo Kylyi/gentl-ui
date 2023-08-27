@@ -22,6 +22,9 @@ const props = withDefaults(defineProps<ITimeInputProps>(), {
   errorTakesSpace: true,
   errorVisible: true,
   immediate: true,
+  stackLabel: undefined,
+  labelInside: undefined,
+  inline: undefined,
 })
 
 const emits = defineEmits<{

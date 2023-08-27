@@ -1,27 +1,26 @@
-import { MaybeElementRef } from '@vueuse/core'
 import { UseFuseOptions, useFuse } from '@vueuse/integrations/useFuse'
 import { klona } from 'klona'
 import { Required } from 'utility-types'
+import { MaybeElementRef } from '@vueuse/core'
+import { config } from '~/config'
 
-// TYPES
-import { IListProps } from '~/components/List/types/list-props.type'
+// Types
+import type { IListProps } from '~/components/List/types/list-props.type'
 import { IGroupRow, useGrouping } from '~/libs/App/data/functions/useGrouping'
 
-// MODELS
+// Models
 import { GroupItem } from '~/libs/App/data/models/group-item.model'
 import { SortItem } from '~/libs/App/data/models/sort-item.model'
 
-// COMPOSITION FUNCTIONS
+// Functions
 import { highlight } from '~/components/List/functions/highlightText'
 import { useSorting } from '~/libs/App/data/functions/useSorting'
 import { useListUtils } from '~/components/List/functions/useListUtils'
 import { useItemAdding } from '~/components/List/functions/useItemAdding'
 
-// COMPONENTS
+// Components
 import ListVirtualContainer from '~~/components/List/ListVirtualContainer.vue'
 import SearchInput from '~~/components/Inputs/SearchInput.vue'
-
-// COMPONENTS
 
 type IItem = {
   ref: any
@@ -44,7 +43,7 @@ export function useList(
   const self = getCurrentInstance()!
   const isInitialized = ref(false)
 
-  // UTILS
+  // Utils
   const { sortData } = useSorting()
   const { groupData } = useGrouping()
   const { getListProps } = useListUtils()
@@ -71,7 +70,7 @@ export function useList(
     },
   }
 
-  // LIST
+  // List
   const isLoading = ref(false)
   const listRowProps = computed(() => getListProps(props))
 
@@ -119,7 +118,7 @@ export function useList(
       return {}
     }
 
-    // MULTI ~ SELECTED IS AN ARRAY
+    // Multi ~ `selected` is an Array
     if (Array.isArray(selected.value)) {
       return selected.value.reduce<Record<string, any>>((agg, sel) => {
         const key = getKey(sel)
@@ -131,7 +130,7 @@ export function useList(
       }, {})
     }
 
-    // MUTLI ~ SELECTED IS AN OBJECT
+    // Multi ~ `selected` is an Object
     else if (
       props.multi &&
       typeof selected.value === 'object' &&
@@ -148,7 +147,7 @@ export function useList(
       )
     }
 
-    // SINGLE ~ SELECTED IS STRING | NUMBER | OBJECT
+    // Single ~ `selected` is String | Number | Object
     else {
       const key = getKey(selected.value)
       const option = getOption(selected.value)
@@ -157,7 +156,7 @@ export function useList(
     }
   })
 
-  // DATA HANDLING
+  // Data handling
   const selected = toRef(props, 'selected')
 
   function handleSelectFiltered() {
@@ -279,7 +278,7 @@ export function useList(
     }
   }
 
-  // SEARCHING
+  // Searching
   const searchEl = ref<InstanceType<typeof SearchInput>>()
   const search = ref(props.search || '')
   const hasExactMatch = ref(false)
@@ -307,7 +306,7 @@ export function useList(
     let _hasExactMatch = false
     let highlightedItems: { ref: any; id: string; _highlighted?: string }[] = []
 
-    // FOUND > 100 ITEMS - do not create highlighted text (performance)
+    // Found > 100 ITEMS - do not create highlighted text (performance)
     if (!search.value || res.length > 100 || props.noHighlight) {
       highlightedItems = res.map(({ item, score }) => {
         _hasExactMatch = _hasExactMatch || score! <= Number.EPSILON
@@ -387,6 +386,8 @@ export function useList(
   // Data fetching
   async function fetchAndSetData(search?: string) {
     if (props.loadData) {
+      const mapKey = props.loadData.mapKey ?? config.selector.mapKey
+
       try {
         isLoading.value = true
 
@@ -395,7 +396,7 @@ export function useList(
         if (props.loadData.local) {
           items.value = res
         } else {
-          items.value = get(res, props.loadData.mapKey)
+          items.value = get(res, mapKey)
         }
 
         isPreventFetchData.value = true
@@ -563,6 +564,7 @@ export function useList(
     hoveredIdx,
     listEl,
     searchEl,
+    isLoading,
     listRowProps,
     search,
     selectedByKey,

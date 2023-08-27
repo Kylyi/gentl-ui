@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { config } from '~/config'
+
 // Types
 import type { IInputWrapperProps } from '~~/components/Inputs/types/input-wrapper-props.type'
 
@@ -9,6 +11,9 @@ const props = withDefaults(defineProps<IInputWrapperProps>(), {
   cursor: 'cursor-text',
   errorVisible: true,
   size: 'md',
+  stackLabel: config.inputs.stackLabel,
+  labelInside: config.inputs.labelInside,
+  inline: config.inputs.inline,
 })
 
 // Utils

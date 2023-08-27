@@ -14,6 +14,9 @@ const props = withDefaults(defineProps<ITextAreaInputProps>(), {
   mask: () => ({ mask: String }),
   rounded: true,
   size: 'md',
+  stackLabel: undefined,
+  labelInside: undefined,
+  inline: undefined,
 })
 
 defineEmits<{
