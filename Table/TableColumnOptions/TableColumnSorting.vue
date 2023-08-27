@@ -56,16 +56,19 @@ function handleSort(sortValue?: 'asc' | 'desc') {
     </div>
 
     <div
-      flex="~ col"
-      p="x-2"
+      grid="~ cols-2"
+      m="x-2"
+      border="1 ca"
+      rounded="custom"
     >
       <Btn
         :label="$t('sorting.asc')"
         size="sm"
-        justify="!start"
         no-uppercase
         color="ca"
-        icon="ph:sort-ascending-bold"
+        icon="ph:sort-descending-bold"
+        class="!rounded-r-0"
+        border="r-1 ca"
         :class="{ 'is-active': column.sort === 'asc' }"
         @click="handleSort('asc')"
       />
@@ -73,10 +76,10 @@ function handleSort(sortValue?: 'asc' | 'desc') {
       <Btn
         :label="$t('sorting.desc')"
         size="sm"
-        justify="!start"
         no-uppercase
         color="ca"
-        icon="ph:sort-descending-bold"
+        class="!rounded-l-0"
+        icon="ph:sort-ascending-bold"
         :class="{ 'is-active': column.sort === 'desc' }"
         @click="handleSort('desc')"
       />
