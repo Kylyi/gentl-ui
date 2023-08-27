@@ -105,14 +105,22 @@ async function handleApplyChanges() {
 <template>
   <Btn
     icon="tabler:columns-2"
-    :label="$t('columns')"
     color="ca"
     self-center
     no-uppercase
     size="sm"
+    p="!x-2"
     label-class="hidden sm:block"
     v-bind="btnProps"
   >
+    <span text="xs">
+      {{ $t('columns') }}
+    </span>
+
+    <span font="rem-10">
+      ({{ filteredCols.length }}/{{ nonHelperCols.length }})
+    </span>
+
     <Dialog
       ref="dialogEl"
       w="screen-md"
