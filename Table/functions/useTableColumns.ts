@@ -433,5 +433,6 @@ export function useTableColumns(
     searchableColumnLabels,
     resizeColumns,
     extendColumns,
+    recreateColumns: createInternalColumns,
   }
 }

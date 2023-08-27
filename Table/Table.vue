@@ -71,6 +71,8 @@ const {
   handleScrollLeft,
   handleRowClick,
   throttledHandleResize,
+  recreateColumns,
+  handleResize,
 } = useTableLayout(props, columns, layout)
 
 const {
@@ -97,7 +99,9 @@ const {
   layout,
   queryBuilder,
   scrollerEl,
-  metadataRefetch
+  metadataRefetch,
+  recreateColumns,
+  handleResize
 )
 
 // const { isExporting, handleExportData } = useTableExporting()

@@ -43,7 +43,9 @@ export function useTableData(
   metaDataRefetch?: (
     forceRefetch?: boolean,
     options?: { meta?: any }
-  ) => Promise<void>
+  ) => Promise<void>,
+  recreateColumns?: (shouldRecreate?: boolean) => void,
+  resizeColumns?: (force?: boolean) => void
 ) {
   // Utils
   const route = useRoute()
@@ -292,6 +294,9 @@ export function useTableData(
 
       if (!!currentHash && currentHash !== newHash) {
         await metaDataRefetch?.(true)
+        recreateColumns?.(false)
+        initializeQueryBuilder()
+        resizeColumns?.(true)
         fetchAndSetData(dbQuery)
 
         return
@@ -317,13 +322,13 @@ export function useTableData(
   // Also save the `TableState`
   watch(
     dbQuery,
-    dbQuery => {
+    async dbQuery => {
       // When we provide the rows, we don't want to fetch them right away
       if (!isInitialized.value && rows.value.length) {
         return
       }
 
-      fetchAndSetData(dbQuery)
+      await fetchAndSetData(dbQuery)
 
       // Set URL
       if (props.useUrl) {

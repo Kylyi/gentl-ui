@@ -36,6 +36,7 @@ export function useTableLayout(
     internalColumns,
     searchableColumnLabels,
     resizeColumns,
+    recreateColumns,
   } = useTableColumns(props, columnsRef, layoutRef)
 
   // Provides
@@ -162,5 +163,7 @@ export function useTableLayout(
     // Functions
     handleRowClick,
     throttledHandleResize,
+    recreateColumns,
+    handleResize,
   }
 }
