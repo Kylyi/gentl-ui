@@ -1,12 +1,17 @@
 <script setup lang="ts">
-// CONSTANTS
+import { config } from '~/config'
+
+// Constants
 import { BUTTON_PRESET } from '~/components/Button/constants/button-preset.constant'
 
 const breadcrumbsInjected = injectStrict(breadcrumbsKey, ref([]))
 
 const breadcrumbs = computed(() => {
   return [
-    { icon: 'material-symbols:home-rounded', to: $p('/') },
+    {
+      icon: 'material-symbols:home-rounded',
+      to: $p(config.breadcrumbs.homePath || '/'),
+    },
     ...breadcrumbsInjected.value,
   ]
     .flatMap(breadcrumb => [breadcrumb, 'splitter'])
