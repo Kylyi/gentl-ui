@@ -249,15 +249,21 @@ const $v = useVuelidate(
           bg="dark:darker white"
           grid="~ md:cols-2 gap-1"
           rounded="custom"
-          p="1"
+          p="1 t-2"
         >
-          <Heading>
+          <span
+            text="caption"
+            font="bold"
+          >
             {{ $t('table.layoutSaveEntities') }}
-          </Heading>
+          </span>
 
-          <Heading>
+          <span
+            text="caption"
+            font="bold"
+          >
             {{ $t('table.layoutSaveOptions') }}
-          </Heading>
+          </span>
 
           <!-- Columns -->
           <Toggle
