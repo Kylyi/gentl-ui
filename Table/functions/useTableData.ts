@@ -281,12 +281,6 @@ export function useTableData(
         options.tableQuery.count = false
       }
 
-      // When fetching the data for the first time (on initialization)
-      // we add the `meta` to the `fetchQueryParams`
-      if (!isInitialized.value) {
-        options.fetchQueryParams.set('meta', 'true')
-      }
-
       const res = await fetchData(options)
 
       // When hash mismatches, we force metadata refetch and data refetch
@@ -297,7 +291,7 @@ export function useTableData(
       const newHash = get(res, 'hash')
 
       if (!!currentHash && currentHash !== newHash) {
-        await metaDataRefetch?.(true, { meta: res })
+        await metaDataRefetch?.(true)
         fetchAndSetData(dbQuery)
 
         return
