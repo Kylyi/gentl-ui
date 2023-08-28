@@ -91,6 +91,12 @@ function handleColumnVisibilityChange(
   col.hidden = val
 }
 
+function handleColumnVisibilityForAll(val: boolean) {
+  nonHelperCols.value.forEach(col => {
+    col.hidden = val ? !!col.nonInteractive : true
+  })
+}
+
 // Apply changes
 async function handleApplyChanges() {
   columns.value = clonedColumns.value.map(col => new TableColumn(col))
@@ -154,6 +160,26 @@ async function handleApplyChanges() {
           </div>
 
           <List :items="nonHelperCols">
+            <template #above>
+              <div
+                flex="~ gap-1"
+                justify-end
+                p="y-1 x-2"
+              >
+                <Btn
+                  size="xs"
+                  :label="$t('general.selectAll')"
+                  @click="handleColumnVisibilityForAll(true)"
+                />
+                <Btn
+                  size="xs"
+                  color="negative"
+                  :label="$t('general.clearAll')"
+                  @click="handleColumnVisibilityForAll(false)"
+                />
+              </div>
+            </template>
+
             <template #option="{ item, highlighted }">
               <Checkbox
                 :model-value="item.hidden"
