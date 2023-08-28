@@ -1,9 +1,9 @@
 import { config } from 'config'
 
 // Types
-import type { IQueryBuilderGroup } from 'components/QueryBuilder/types/query-builder-group-props.type'
-import type { IQueryBuilderItem } from 'components/QueryBuilder/types/query-builder-item-props.type'
-import type { IQueryBuilderRow } from 'components/QueryBuilder/types/query-builder-row-props.type'
+import type { IQueryBuilderGroup } from '~/components/QueryBuilder/types/query-builder-group-props.type'
+import type { IQueryBuilderItem } from '~/components/QueryBuilder/types/query-builder-item-props.type'
+import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
 
 export type ITableOrderBy = { field: string; direction: 'asc' | 'desc' }
 export type ISelect = Record<string, boolean | Record<string, boolean>>
