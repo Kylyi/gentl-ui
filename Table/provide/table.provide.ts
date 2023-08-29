@@ -58,3 +58,15 @@ export const tableIsSelectedRowKey: InjectionKey<(row: any) => boolean> =
 
 export const tableSelectionKey: InjectionKey<Ref<ITableSelection | undefined>> =
   Symbol('tableSelection')
+
+// Export
+export const tableExportKey: InjectionKey<
+  (options?: {
+    rows?: any[]
+    columns?: any[]
+    exportFormat?: 'xlsx' | 'csv'
+  }) => void | Promise<void>
+> = Symbol('tableExport')
+
+export const tableIsExportingKey: InjectionKey<Ref<boolean>> =
+  Symbol('tableIsExporting')

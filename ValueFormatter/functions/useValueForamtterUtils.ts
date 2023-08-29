@@ -27,11 +27,17 @@ export function useValueFormatterUtils() {
       format?: (row: any, value: any) => any
       emptyValue?: any
     } = {}
-  ) {
+  ): any {
     const { dataType, format, emptyValue } = options
 
     if (emptyValue === value) {
       return null
+    }
+
+    if (Array.isArray(value)) {
+      return value
+        .map(val => formatValue(val, row, options))
+        .join(', ') as string
     }
 
     if (format) {

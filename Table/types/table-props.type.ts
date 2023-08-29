@@ -48,12 +48,12 @@ export interface ITableProps {
   /**
    * Whether the column filters should be hidden
    */
-  hideFilters?: boolean
+  noFilters?: boolean
 
   /**
    * Whether the table header should be hidden
    */
-  hideHeader?: boolean
+  noHeader?: boolean
 
   /**
    * Basically the opposite of pagination

@@ -78,7 +78,7 @@ onMounted(() => {
         <slot name="prepend-actions" />
 
         <div
-          v-if="config.environment !== 'production'"
+          v-if="config.environment && config.environment !== 'production'"
           class="environment"
         >
           {{ config.environment }}

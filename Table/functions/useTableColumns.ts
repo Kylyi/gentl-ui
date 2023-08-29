@@ -183,13 +183,17 @@ export function useTableColumns(
         )
 
         if (predefinedFilter) {
-          predefinedFilter.value = parseValue(filter.value, col.dataType)
+          predefinedFilter.value = parseValue(filter.value, col.dataType, {
+            dateFormat: 'YYYY-MM-DD',
+          })
         } else {
           col.filters.push(
             new FilterItem<any>({
               field: filter.field,
               comparator: filter.comparator,
-              value: parseValue(filter.value, col.dataType),
+              value: parseValue(filter.value, col.dataType, {
+                dateFormat: 'YYYY-MM-DD',
+              }),
             })
           )
         }
@@ -204,7 +208,11 @@ export function useTableColumns(
       if (col) {
         // We set the `filters`, `sorting`, `visibility` only in case we don't use
         // server state management and we didn't provide anything in the URL
-        if (!config.table.useServerState && !isUrlUsed) {
+        if (
+          (!config.table.useServerState ||
+            config.table.useLocalStorageForDefaultLayout) &&
+          !isUrlUsed
+        ) {
           col.filters = stateColumn.filters.map(
             filter => new FilterItem(filter)
           )

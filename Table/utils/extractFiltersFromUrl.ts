@@ -64,7 +64,7 @@ function parseGroupSegment(
   filterStr: string,
   idx: number,
   results: IQueryBuilderRow[],
-  parentPath: string = ''
+  parentPath = ''
 ): number {
   const condition = filterStr[idx] === 'a' ? AND_CONDITION : OR_CONDITION
   const conditionEndIdx = idx + condition.length
@@ -122,7 +122,7 @@ function parseItemSegment(
   filterStr: string,
   idx: number,
   results: IQueryBuilderRow[],
-  parentPath: string = ''
+  parentPath = ''
 ): number {
   // Arrays are inserted into parentheses, therefore, we need to be aware
   // of the parentheses depth to know when the segment ends
@@ -147,7 +147,7 @@ function parseItemSegment(
     (a, b) => b.length - a.length
   )
   let foundComparator: ComparatorEnum | null = null
-  let foundComparatorIdx: number = -1
+  let foundComparatorIdx = -1
 
   for (const comparator of comparatorKeys) {
     foundComparatorIdx = segment.lastIndexOf(`.${comparator}`)
@@ -199,7 +199,7 @@ function parseItemSegment(
 export function parseFilterString(
   filterStr: string,
   results: IQueryBuilderRow[] = [],
-  parentPath: string = ''
+  parentPath = ''
 ): IQueryBuilderRow[] {
   let idx = 0
 

@@ -1,12 +1,29 @@
 <script setup lang="ts">
+// Injections
+import {
+  tableExportKey,
+  tableIsExportingKey,
+  tableNonHelpersColumnsKey,
+} from '~/components/Table/provide/table.provide'
+
 type IProps = {
   loading?: boolean
 }
 
 defineProps<IProps>()
-defineEmits<{
-  (e: 'export', type: 'xlsx' | 'csv'): void
-}>()
+
+// Injections
+const tableColumns = injectStrict(tableNonHelpersColumnsKey)
+const handleTableExport = injectStrict(tableExportKey)
+const isExporting = injectStrict(tableIsExportingKey)
+
+// Layout
+async function handleExport(exportFormat: 'xlsx' | 'csv') {
+  await handleTableExport({
+    exportFormat,
+    columns: toValue(tableColumns),
+  })
+}
 </script>
 
 <template>
@@ -17,6 +34,7 @@ defineEmits<{
     size="sm"
     p="!l-1"
     outlined
+    :loading="isExporting"
   >
     <div
       flex="~ gap-2"
@@ -40,20 +58,20 @@ defineEmits<{
       <Btn
         :label="$t('export.excel')"
         icon="bi:filetype-xlsx"
-        :loading="loading"
+        :loading="loading || isExporting"
         align="left"
         no-uppercase
-        @click="$emit('export', 'xlsx')"
+        @click="handleExport('xlsx')"
       />
 
       <!-- CSV -->
       <Btn
         :label="$t('export.csv')"
         icon="bi:filetype-csv"
-        :loading="loading"
+        :loading="loading || isExporting"
         align="left"
         no-uppercase
-        @click="$emit('export', 'csv')"
+        @click="handleExport('csv')"
       />
     </Menu>
   </Btn>

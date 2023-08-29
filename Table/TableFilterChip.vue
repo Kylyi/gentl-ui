@@ -30,12 +30,6 @@ function removeChip() {
 
   tableRefresh()
 }
-
-function getLabel(_: any, value: any) {
-  if (Array.isArray(value)) {
-    return value.map(val => val._label).join(', ')
-  }
-}
 </script>
 
 <template>
@@ -58,9 +52,7 @@ function getLabel(_: any, value: any) {
     <ValueFormatter
       :data-type="filter.dataType"
       :value="filter.value"
-      :format="
-        column.format ?? Array.isArray(filter.value) ? getLabel : undefined
-      "
+      :format="filter.format"
     >
       <template #default="{ val }">
         <span class="filter-value">

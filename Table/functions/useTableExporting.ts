@@ -1,16 +1,30 @@
 import { utils, writeFile, writeFileXLSX } from 'xlsx'
 
-export function useTableExporting() {
+// Injections
+import {
+  tableExportKey,
+  tableIsExportingKey,
+} from '~/components/Table/provide/table.provide'
+
+export function useTableExporting(tableRows?: MaybeRefOrGetter<any[]>) {
   // Utils
   const { formatDate } = useDateUtils()
 
   const isExporting = ref(false)
 
-  function handleExportData(
-    rows: any[],
-    columns: any[],
-    exportFormat: 'xlsx' | 'csv' = 'xlsx'
-  ) {
+  function handleExportData(options?: {
+    rows?: any[]
+    columns?: any[]
+    exportFormat?: 'xlsx' | 'csv'
+  }) {
+    const { columns = [], rows: _rows, exportFormat } = options ?? {}
+
+    const rows = _rows ?? toValue(tableRows)
+
+    if (!rows?.length) {
+      return
+    }
+
     isExporting.value = true
 
     const data = rows.map(row => {
@@ -47,6 +61,10 @@ export function useTableExporting() {
 
     isExporting.value = false
   }
+
+  // Provide
+  provide(tableExportKey, handleExportData)
+  provide(tableIsExportingKey, isExporting)
 
   return {
     isExporting,

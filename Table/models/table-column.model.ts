@@ -22,7 +22,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   align: 'left' | 'center' | 'right' = 'left'
   field: Extract<keyof T, string | number>
   hideLabel?: boolean
-  hideFilters?: boolean
+  noFilters?: boolean
   filterable = true
   reorderable = true
   resizable = true
@@ -250,8 +250,8 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     this.adjustedWidth = width
   }
 
-  setDataType(dataType: DataType, defaultComparator?: ComparatorEnum) {
-    this.dataType = dataType
+  setDataType(dataType?: DataType, defaultComparator?: ComparatorEnum) {
+    this.dataType = dataType || 'string'
 
     switch (dataType) {
       case 'number':
@@ -287,7 +287,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     this.minWidth = col.minWidth
     this.align = col.align || this.align
     this.hideLabel = col.hideLabel
-    this.hideFilters = col.hideFilters
+    this.noFilters = col.noFilters
     this.sortable = col.sortable ?? true
     this.searchable = col.searchable ?? false
     this.hidden = col.hidden ?? false

@@ -8,6 +8,7 @@ type IProps = {
   pageCount: number
   totalRows?: number
   currentRows?: number
+  infiniteScroll?: boolean
 
   prev: () => void
   next: () => void
@@ -19,7 +20,7 @@ const emits = defineEmits<{
   (e: 'update:currentPageSize', page: number): void
 }>()
 
-// LAYOUT
+// Layout
 const currentPage = useVModel(props, 'currentPage', emits)
 const currentPageSize = useVModel(props, 'currentPageSize', emits)
 
@@ -75,10 +76,22 @@ const pages = computedEager(() => {
           v-if="currentRows"
           text="caption"
         >
-          <span font="bold">{{ currentRows }}</span>
-          {{ $t('general.outOf') }}
-          <span font="bold">{{ totalRows }}</span>
-          {{ $t('general.row', totalRows || 0) }}
+          <template v-if="infiniteScroll">
+            <span font="bold">{{ currentRows }}</span>
+            {{ $t('general.outOf') }}
+            <span font="bold">{{ totalRows }}</span>
+            {{ $t('general.row', totalRows || 0) }}
+          </template>
+
+          <template v-else>
+            <span font="bold">
+              {{ (currentPage - 1) * currentPageSize }} -
+              {{ (currentPage - 1) * currentPageSize + currentRows }}
+            </span>
+            {{ $t('general.outOf') }}
+            <span font="bold">{{ totalRows }}</span>
+            {{ $t('general.row', totalRows || 0) }}
+          </template>
         </span>
 
         <span

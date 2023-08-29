@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { config } from '~/config'
+
 // Types
 import { ITableLayout } from '~/components/Table/types/table-layout.type'
 
@@ -7,10 +9,9 @@ import {
   tableLayoutKey,
   tableLayoutsKey,
   tableQueryKey,
+  tableStorageKey,
   tableViewCodeKey,
 } from '~/components/Table/provide/table.provide'
-
-// Functions
 
 // Components
 import Dialog from '~/components/Dialog/Dialog.vue'
@@ -20,6 +21,7 @@ const tableQuery = injectStrict(tableQueryKey)
 const layouts = injectStrict(tableLayoutsKey)
 const currentLayout = injectStrict(tableLayoutKey)
 const viewCode = injectStrict(tableViewCodeKey, ref(''))
+const _tableStorageKey = injectStrict(tableStorageKey)
 
 // Utils
 const { saveLayout, deleteLayout } = useTableSpecifics()
@@ -133,7 +135,7 @@ async function handleSaveLayout() {
 
   const layoutFound = layouts.value.find(l => l.name === layout.value.name)
 
-  const res = await handleRequest<any>(
+  const res = await handleRequest(
     () => {
       const mode = layoutFound ? 'update' : 'create'
 
@@ -144,6 +146,7 @@ async function handleSaveLayout() {
           schema: decodeURIComponent(paramsToSave.toString()),
           viewCode: viewCode.value,
           accessLevel: accessLevel.value,
+          tableName: _tableStorageKey.value,
         },
         { mode }
       )
@@ -153,15 +156,15 @@ async function handleSaveLayout() {
 
   // When we create a new layout, we add it to the layouts array
   if (!layoutFound) {
-    layouts.value = [...layouts.value, res.data.payload]
+    layouts.value = [...layouts.value, res]
   }
 
   // When we update a layout, we update the layout in the layouts array
   else {
-    Object.assign(layoutFound, res.data.payload)
+    Object.assign(layoutFound, res)
   }
 
-  currentLayout.value = res.data.payload
+  currentLayout.value = res
   dialogEl.value?.hide()
 }
 
@@ -173,7 +176,7 @@ async function handleDeleteLayoutState() {
     { notifySuccess: true }
   )
 
-  const deletedFilterId = res.data.payload.id
+  const deletedFilterId = res
   layouts.value = layouts.value.filter(l => l.id !== deletedFilterId)
   currentLayout.value = undefined
 
@@ -268,22 +271,8 @@ const $v = useVuelidate(
           <!-- Columns -->
           <Toggle
             v-model="layout.columns"
-            container-class="bg-white dark:bg-darker"
+            container-class="bg-white dark:bg-darker col-start-1"
             :label="$t('table.saveColumns')"
-          />
-
-          <!-- Default -->
-          <Toggle
-            v-model="layout.default"
-            container-class="bg-white dark:bg-darker"
-            :label="$t('table.saveDefault')"
-          />
-
-          <!-- Filters -->
-          <Toggle
-            v-model="layout.filters"
-            container-class="bg-white dark:bg-darker"
-            :label="$t('table.saveFilters')"
           />
 
           <!-- Public -->
@@ -291,6 +280,21 @@ const $v = useVuelidate(
             v-model="layout.public"
             container-class="bg-white dark:bg-darker"
             :label="$t('table.savePublic')"
+          />
+
+          <!-- Filters -->
+          <Toggle
+            v-model="layout.filters"
+            container-class="bg-white dark:bg-darker col-start-1"
+            :label="$t('table.saveFilters')"
+          />
+
+          <!-- Default -->
+          <Toggle
+            v-if="!config.table.useLocalStorageForDefaultLayout"
+            v-model="layout.default"
+            container-class="bg-white dark:bg-darker"
+            :label="$t('table.saveDefault')"
           />
 
           <!-- Query builder -->
@@ -305,6 +309,7 @@ const $v = useVuelidate(
             v-model="layout.sort"
             container-class="col-start-1 bg-white dark:bg-darker"
             :label="$t('table.saveSort')"
+            col="start-1"
           />
         </div>
 

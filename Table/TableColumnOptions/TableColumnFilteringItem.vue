@@ -61,7 +61,10 @@ const comparatorOptions = computed(() => {
   return getAvailableComparators(props.column.dataType, {
     includeSelectorComparators: !!column.value.getDistinctData,
     allowedComparators: column.value.comparators,
-  })
+  }).map(comparator => ({
+    id: comparator,
+    label: $t(`comparator.${comparator.replaceAll('.', '|')}`),
+  }))
 })
 
 const hiddenComparators = computed(() => {
@@ -75,8 +78,8 @@ const hiddenComparators = computed(() => {
   })
 
   return availableComparators.reduce((agg, comparator) => {
-    if (columnComparators.includes(comparator)) {
-      agg[comparator] = true
+    if (columnComparators.includes(comparator.id)) {
+      agg[comparator.id] = true
     }
 
     return agg
@@ -147,9 +150,6 @@ defineExpose({
         :options="comparatorOptions"
         emit-key
         grow
-        :option-label="
-          comparator => $t(`comparator.${comparator.id.replaceAll('.', '|')}`)
-        "
         no-sort
         :hidden-options="hiddenComparators"
         hide-self
@@ -169,7 +169,7 @@ defineExpose({
 
     <!-- Selector of distinct values -->
     <Selector
-      v-if="column.getDistinctData"
+      v-if="column.getDistinctData && isSelectorComparator(filter.comparator)"
       ref="inputEl"
       v-model="filter.value"
       :load-data="{

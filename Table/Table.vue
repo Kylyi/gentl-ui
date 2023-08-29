@@ -15,6 +15,7 @@ import { useTableData } from '~/components/Table/functions/useTableData'
 import { useTableLayout } from '~/components/Table/functions/useTableLayout'
 import { useTableSelection } from '~/components/Table/functions/useTableSelection'
 import { useTableMetaData } from '~/components/Table/functions/useTableMetaData'
+import { useTableExporting } from '~/components/Table/functions/useTableExporting'
 
 const props = withDefaults(defineProps<ITableProps>(), {
   breakpoint: 'md',
@@ -104,8 +105,7 @@ const {
   handleResize
 )
 
-// const { isExporting, handleExportData } = useTableExporting()
-
+useTableExporting(rows)
 useTableSelection(props)
 </script>
 
@@ -139,6 +139,13 @@ useTableSelection(props)
         <template #right-append>
           <slot name="top-right-append" />
         </template>
+
+        <template
+          v-if="$slots['top-bulk-actions']"
+          #bulk-actions
+        >
+          <slot name="top-bulk-actions" />
+        </template>
       </TableTop>
     </slot>
 
@@ -151,7 +158,7 @@ useTableSelection(props)
     <TableTooManyRowsInfo v-if="rows.length > 1e5" />
 
     <TableHeader
-      v-if="!hideHeader"
+      v-if="!noHeader"
       ref="headerEl"
       class="lt-md:display-none"
       :columns="internalColumns"
@@ -257,6 +264,7 @@ useTableSelection(props)
       :is-last-page="isLastPage"
       :page-count="pageCount"
       :total-rows="totalRows"
+      :infinite-scroll="infiniteScroll"
       :no-pagination="noPagination || infiniteScroll"
       :current-rows="rows.length"
       :prev="prev"

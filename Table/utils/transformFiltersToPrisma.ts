@@ -16,9 +16,31 @@ function transformItemToPrismaCondition(
 ): any {
   switch (item.comparator) {
     case ComparatorEnum.EQUAL:
+      // Date datatype needs special treatment
+      if (/^\d{4}-\d{2}-\d{2}$/.test(item.value)) {
+        return {
+          [item.field]: {
+            gte: $date(item.value).startOf('day'),
+            lte: $date(item.value).endOf('day'),
+          },
+        }
+      }
+
       return { [item.field]: item.value }
 
     case ComparatorEnum.NOT_EQUAL:
+      // Date datatype needs special treatment
+      if (/^\d{4}-\d{2}-\d{2}$/.test(item.value)) {
+        return {
+          [item.field]: {
+            not: {
+              gte: $date(item.value).startOf('day'),
+              lte: $date(item.value).endOf('day'),
+            },
+          },
+        }
+      }
+
       return { [item.field]: { not: item.value } }
 
     case ComparatorEnum.IN:
@@ -58,6 +80,12 @@ function transformItemToPrismaCondition(
 
     case ComparatorEnum.LESS_THAN_OR_EQUAL:
       return { [item.field]: { lte: item.value } }
+
+    case ComparatorEnum.IS_EMPTY:
+      return { [item.field]: null }
+
+    case ComparatorEnum.NOT_IS_EMPTY:
+      return { [item.field]: { not: null } }
 
     case ComparatorEnum.IS:
       return {

@@ -243,12 +243,12 @@ function handleClearSorting() {
           <div fluent:select-all-on-20-regular />
           <span m="l-1">{{ $t('general.selected') }}</span>
           <span font="bold">{{ selectionCount }}</span>
-          <span>{{ $t('general.item', selectionCount) }}</span>
+          <span>{{ $t('general.item', 2) }}</span>
         </div>
 
         <!-- Selection actions -->
         <Btn
-          v-if="selectable"
+          v-if="selectable && $slots['bulk-actions']"
           size="sm"
           no-uppercase
           :label="$t('table.groupEdit')"
@@ -260,20 +260,10 @@ function handleClearSorting() {
             p="1"
             :no-arrow="false"
           >
-            <Item
-              h="8"
-              p="x-2"
-              flex="center"
-            >
-              Something
-            </Item>
-            <Item
-              h="8"
-              p="x-2"
-              flex="center"
-            >
-              here
-            </Item>
+            <slot
+              name="bulk-actions"
+              :selection="selection"
+            />
           </MenuProxy>
         </Btn>
 

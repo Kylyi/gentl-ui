@@ -40,14 +40,14 @@ function handleLayoutSelect(_layout?: ITableLayout) {
   if (!_layout) {
     _layout = {
       id: 0,
-      name: $t('table.layoutStateNoLayout'),
+      name: '',
       schema: `select=${columns.value
         .filter(col => !col.isHelperCol)
         .map(col => col.field)
         .join(',')}`,
     }
 
-    layout.value = _layout
+    layout.value = undefined
   }
 
   // The query params
@@ -87,17 +87,20 @@ function handleLayoutSelect(_layout?: ITableLayout) {
   })
 
   // Set the query builder with the parsed query builder or reset it
-  queryBuilder.value = schemaQueryBuilder?.length
-    ? schemaQueryBuilder
-    : [
-        {
-          id: generateUUID(),
-          isGroup: true,
-          children: [],
-          condition: 'AND',
-          path: '0',
-        },
-      ]
+  // we don't want to set the query builder if it's undefined
+  if (schemaQueryBuilder?.length) {
+    queryBuilder.value = schemaQueryBuilder
+  } else if (props.queryBuilder !== undefined) {
+    queryBuilder.value = [
+      {
+        id: generateUUID(),
+        isGroup: true,
+        children: [],
+        condition: 'AND',
+        path: '0',
+      },
+    ]
+  }
 
   // Set the column filters with the parsed filters
   ;(schemaFilters as IQueryBuilderItem[]).forEach(filter => {
