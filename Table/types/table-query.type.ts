@@ -63,4 +63,9 @@ export type ITableDataFetchFncInput = {
    * Note: Used for actual data fetching
    */
   fetchQueryParams: ReturnType<typeof config.table.getQuery>
+
+  /**
+   * We can also inject our own keys to this object
+   */
+  [key: string]: any
 }

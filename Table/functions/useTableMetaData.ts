@@ -22,6 +22,7 @@ export async function useTableMetaData(props: ITableProps) {
   // Utils
   const { handleRequest } = useRequest()
   const { getStorageKey } = useTableUtils(props)
+  const { getTableMetadata } = useTableSpecifics()
 
   // Store
   const tableStore = useTableStore()
@@ -45,17 +46,31 @@ export async function useTableMetaData(props: ITableProps) {
     forceRefetch?: boolean,
     options?: { meta?: any }
   ) {
+    const storageKey = getStorageKey()
     const providedMetaData = options?.meta
-    const stateMetaData = tableStore.getTableState(getStorageKey())
+    const stateMetaData = tableStore.getTableState(storageKey)
+    const getGenericMetaData: ITableProps['getMetaData'] = {
+      fnc: () => getTableMetadata?.(storageKey),
+    }
 
-    if (!props.getMetaData && !stateMetaData.value?.meta) {
+    // We can either
+    // 1. Provide the metadata via options
+    // 2. Get the metadata from the state
+    // 3. Fetch the metadata from the API (provided we have a props function for it)
+    // 4. Get the metadata from the API (provided we have a general function for it)
+    if (
+      !props.getMetaData &&
+      !stateMetaData.value?.meta &&
+      !getTableMetadata &&
+      !providedMetaData
+    ) {
       return
     }
 
     await handleRequest(
       async () => {
         const { fnc, columnsKey, layoutKey, layoutsKey } =
-          props.getMetaData || {}
+          props.getMetaData ?? getGenericMetaData ?? {}
 
         let result: any
 
@@ -68,7 +83,9 @@ export async function useTableMetaData(props: ITableProps) {
         else {
           result = forceRefetch
             ? await fnc?.()
-            : stateMetaData.value.meta ?? (await fnc?.())
+            : config.table.useLocalStorageForMetaFirst
+            ? stateMetaData.value.meta ?? (await fnc?.())
+            : await fnc?.()
         }
 
         tableStore.setTableState(getStorageKey(), { meta: result })

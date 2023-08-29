@@ -214,12 +214,21 @@ export function useTableData(
         ),
       }
 
-      return {
+      let fetchInput: ITableDataFetchFncInput = {
         tableQuery,
         fetchTableQuery,
         queryParams: config.table.getQuery(tableQuery),
         fetchQueryParams: config.table.getQuery(fetchTableQuery),
       }
+
+      if (
+        'extendTableFetchInput' in config.table &&
+        typeof config.table.extendTableFetchInput === 'function'
+      ) {
+        fetchInput = config.table.extendTableFetchInput(fetchInput)
+      }
+
+      return fetchInput
     }
   )
 

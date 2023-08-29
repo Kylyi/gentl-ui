@@ -4,4 +4,5 @@ export type ITableLayout = {
   schema: string
   accessLevel?: number
   viewCode?: string
+  tableName?: string
 }

@@ -2,6 +2,7 @@
 import type { IQueryBuilderGroup } from '~/components/QueryBuilder/types/query-builder-group-props.type'
 import type { IQueryBuilderItem } from '~/components/QueryBuilder/types/query-builder-item-props.type'
 import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
+import type { ITableFilterRow } from '~/components/Table/types/table-query.type'
 
 // Models
 import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
@@ -18,13 +19,13 @@ function transformItemToPrismaCondition(
       return { [item.field]: item.value }
 
     case ComparatorEnum.NOT_EQUAL:
-      return { [item.field]: { NOT: item.value } }
+      return { [item.field]: { not: item.value } }
 
     case ComparatorEnum.IN:
       return { [item.field]: { in: item.value } }
 
     case ComparatorEnum.NOT_IN:
-      return { [item.field]: { NOT: { in: item.value } } }
+      return { [item.field]: { not: { in: item.value } } }
 
     case ComparatorEnum.LIKE:
     case ComparatorEnum.CONTAINS:
@@ -38,13 +39,13 @@ function transformItemToPrismaCondition(
 
     case ComparatorEnum.NOT_LIKE:
     case ComparatorEnum.NOT_CONTAINS:
-      return { [item.field]: { NOT: { contains: item.value } } }
+      return { [item.field]: { not: { contains: item.value } } }
 
     case ComparatorEnum.NOT_STARTS_WITH:
-      return { [item.field]: { NOT: { startsWith: item.value } } }
+      return { [item.field]: { not: { startsWith: item.value } } }
 
     case ComparatorEnum.NOT_ENDS_WITH:
-      return { [item.field]: { NOT: { endsWith: item.value } } }
+      return { [item.field]: { not: { endsWith: item.value } } }
 
     case ComparatorEnum.GREATER_THAN:
       return { [item.field]: { gt: item.value } }
@@ -66,7 +67,7 @@ function transformItemToPrismaCondition(
     case ComparatorEnum.NOT_IS:
       return {
         [item.field]: {
-          NOT: typeof item.value === 'boolean' ?? item.value === 'true',
+          not: typeof item.value === 'boolean' ?? item.value === 'true',
         },
       }
 
@@ -93,13 +94,13 @@ function transformItemToPrismaCondition(
  * Transform rows to Prisma's where clause format.
  */
 export function transformToPrismaWhere(options: {
-  rows?: Array<IQueryBuilderRow | FilterItem<any>>
+  rows?: Array<ITableFilterRow | IQueryBuilderRow> | undefined
   condition?: any
 }): any {
   const { rows, condition = {} } = options || {}
 
   if (!rows) {
-    return []
+    return {}
   }
 
   rows.forEach(row => {
