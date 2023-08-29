@@ -169,14 +169,13 @@ async function handleSaveLayout() {
 }
 
 async function handleDeleteLayoutState() {
-  const res = await handleRequest(
+  const deletedFilterId = await handleRequest(
     () => {
       return deleteLayout(currentLayoutId.value)
     },
     { notifySuccess: true }
   )
 
-  const deletedFilterId = res
   layouts.value = layouts.value.filter(l => l.id !== deletedFilterId)
   currentLayout.value = undefined
 
