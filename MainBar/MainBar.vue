@@ -13,7 +13,9 @@ defineEmits<{
 
 defineSlots<{
   'subtitle'?: (payload: {}) => void
+  'title-append'?: (payload: {}) => void
   'right'?: (payload: {}) => void
+  'left'?: (payload: {}) => void
   'inner'?: (payload: {}) => void
   'right-bottom'?: (payload: {}) => void
   'actions-prepend'?: (payload: {
@@ -48,14 +50,18 @@ defineExpose({
     </Breadcrumbs>
 
     <div class="main-bar-content">
-      <!-- TITLE & SUBTITLE -->
+      <slot name="left" />
+
+      <!-- Title & Subtitle -->
       <div class="main-bar-title">
-        <!-- TITLE -->
+        <!-- Title -->
         <Heading filled>
           {{ title }}
+
+          <slot name="title-append" />
         </Heading>
 
-        <!-- SUBTITLE -->
+        <!-- Subtitle -->
         <slot name="subtitle">
           <span
             v-if="subtitle"
