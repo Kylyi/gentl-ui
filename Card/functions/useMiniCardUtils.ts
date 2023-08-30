@@ -11,6 +11,7 @@ export function useMiniCardUtils() {
       'format',
       'emptyValueString',
       'emptyValue',
+      'to',
     ])
   }
 
