@@ -31,7 +31,6 @@ export function useValueFormatterUtils() {
   ): any {
     const { dataType, format, emptyValue } = options
 
-    console.log(value, emptyValue, value === emptyValue)
     if (emptyValue === value) {
       return null
     }
