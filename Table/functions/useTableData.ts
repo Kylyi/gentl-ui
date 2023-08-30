@@ -57,6 +57,7 @@ export function useTableData(
 
   // Layout
   const isInitialized = ref(false)
+  const dataHasBeenFetched = ref(false)
   const search = ref('')
   const rows = ref(props.rows || [])
   const totalRows = props.totalRows
@@ -301,12 +302,15 @@ export function useTableData(
       )
       const newHash = get(res, 'hash')
 
-      if (!!currentHash && currentHash !== newHash) {
+      if (
+        !!currentHash &&
+        currentHash !== newHash &&
+        !dataHasBeenFetched.value
+      ) {
         await metaDataRefetch?.(true)
         recreateColumns?.(false)
         initializeQueryBuilder()
         resizeColumns?.(true)
-        fetchAndSetData(dbQuery)
 
         return
       }
@@ -321,6 +325,9 @@ export function useTableData(
 
       // We reset the `fetchMore`
       fetchMore.value = false
+
+      // We set the `dataHasBeenFetched` to true
+      dataHasBeenFetched.value = true
     } catch (error) {
       resetTableState(storageKey.value)
     }
