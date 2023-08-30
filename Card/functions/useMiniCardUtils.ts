@@ -10,6 +10,7 @@ export function useMiniCardUtils() {
       'dataType',
       'format',
       'emptyValueString',
+      'emptyValue',
     ])
   }
 
