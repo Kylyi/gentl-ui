@@ -142,9 +142,12 @@ useTableSelection(props)
 
         <template
           v-if="$slots['top-bulk-actions']"
-          #bulk-actions
+          #bulk-actions="{ selection }"
         >
-          <slot name="top-bulk-actions" />
+          <slot
+            name="top-bulk-actions"
+            :selection="selection"
+          />
         </template>
       </TableTop>
     </slot>
