@@ -135,6 +135,7 @@ onMounted(() => {
       <template #default="{ item, index }">
         <ListRow
           :item="item"
+          :tag="rowTag"
           :is-selected="!('isGroup' in item) && !!selectedByKey[item.id]"
           :is-hovered="hoveredIdx === index"
           :is-disabled="disabledFnc(item)"

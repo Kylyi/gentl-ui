@@ -1,15 +1,14 @@
 <script setup lang="ts">
-// TYPES
+// Types
 import type { IListRowProps } from '~~/components/List/types/list-row-props.type'
 
-// MODELS
-
-// CONSTANTS
+// Constants
 import { BUTTON_PRESET } from '@/components/Button/constants/button-preset.constant'
 
 const props = withDefaults(defineProps<IListRowProps>(), {
   basePadding: 12,
   paddingByLevel: 8,
+  tag: 'div',
 })
 
 const DEFAULT_ROW_HEIGHT = 40
@@ -37,7 +36,8 @@ const rowInfo = computed(() => {
 </script>
 
 <template>
-  <div
+  <Component
+    :is="tag"
     :style="rowInfo._style"
     class="item"
     :class="[
@@ -89,7 +89,7 @@ const rowInfo = computed(() => {
         </span>
       </div>
     </slot>
-  </div>
+  </Component>
 </template>
 
 <style lang="scss" scoped>

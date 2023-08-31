@@ -159,7 +159,10 @@ async function handleApplyChanges() {
             <span text="caption">{{ $t('table.selectVisibleColumns') }}</span>
           </div>
 
-          <List :items="nonHelperCols">
+          <List
+            :items="nonHelperCols"
+            row-tag="label"
+          >
             <template #above>
               <div
                 flex="~ gap-1"

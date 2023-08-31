@@ -7,4 +7,5 @@ export interface IListRowProps extends IListBaseProps {
   isSelected?: boolean
   isHovered?: boolean
   rowHeight?: number
+  tag?: string
 }

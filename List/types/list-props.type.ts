@@ -84,4 +84,9 @@ export interface IListProps extends IListBaseProps {
    * new item locally, will only emit the option to the parent component.
    */
   noLocalAdd?: boolean
+
+  /**
+   * The tag to use for the row
+   */
+  rowTag?: string
 }
