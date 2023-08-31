@@ -343,7 +343,6 @@ export function useTableData(
   watch(
     dbQuery,
     async dbQuery => {
-      console.log('here')
       // When we provide the rows, we don't want to fetch them right away
       if (!isInitialized.value && rows.value.length) {
         return
