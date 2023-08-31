@@ -68,14 +68,18 @@ export function serializeOrderByString(
       if (fetchMore && sort.field === fetchMore.rowKey) {
         return `${sort.field}.${sort.direction}.${fetchMore.$key}`
       } else if (fetchMore) {
-        return `${sort.field}.${sort.direction}.$null`
+        return `${sort.field}.${sort.direction}.${
+          get(fetchMore.lastRow, sort.field) ?? '$null'
+        }`
       }
 
       return `${sort.field}.${sort.direction}`
     })
     .join(',')
 
-  if (fetchMore) {
+  if (!orderBy.length && fetchMore) {
+    orderByString += `${fetchMore.rowKey}.asc.${fetchMore.$key},$key.${fetchMore.$key}`
+  } else if (fetchMore) {
     orderByString += `,$key.${fetchMore.$key}`
   }
 
@@ -120,7 +124,7 @@ export function serializeTableQueryToQueryParams(tableQuery: ITableQuery) {
   // 3. count ~ count.true
 
   const paging: string[] = [
-    ...(orderBy?.length
+    ...(orderBy?.length || fetchMore
       ? [`sort(${serializeOrderByString(orderBy, fetchMore)})`]
       : []),
     ...(tableQuery.take ? [`limit.${tableQuery.take}`] : []),

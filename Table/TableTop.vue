@@ -105,7 +105,7 @@ function handleClearSorting() {
     col.sortOrder = undefined
   })
 
-  tableRefresh()
+  // tableRefresh()
 }
 </script>
 

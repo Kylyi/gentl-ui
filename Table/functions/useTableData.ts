@@ -107,10 +107,8 @@ export function useTableData(
   const fetchMore = ref(false)
 
   // The id of the fetched row (~ is used for fetching more data)
-  const lastKeyId = computed(() => {
-    const lastRow = rows.value[rows.value.length - 1]
-
-    return get(lastRow, getRowKey(props))
+  const lastRow = computed(() => {
+    return rows.value[rows.value.length - 1]
   })
 
   function handleInfiniteScroll(
@@ -288,7 +286,11 @@ export function useTableData(
         options.fetchQueryParams = config.table.getQuery({
           ...options.fetchTableQuery,
           count: false,
-          fetchMore: { $key: lastKeyId.value, rowKey: getRowKey(props) },
+          fetchMore: {
+            $key: get(lastRow.value, getRowKey(props)),
+            rowKey: getRowKey(props),
+            lastRow: lastRow.value,
+          },
         })
         options.tableQuery.count = false
       }

@@ -36,6 +36,7 @@ export type ITableQuery = {
   fetchMore?: {
     rowKey: string
     $key: number | string
+    lastRow: any
   }
 }
 
