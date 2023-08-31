@@ -172,6 +172,8 @@ export function useTableData(
   })
 
   const dbQuery = computedWithControl(
+    // We trigger the `dbQuery` on basically everything except for column filters
+    // Column filters are handled manually!
     () => [orderBy.value, search.value, select.value, queryBuilder.value],
     () => {
       const hasQueryBuilder =
@@ -341,6 +343,7 @@ export function useTableData(
   watch(
     dbQuery,
     async dbQuery => {
+      console.log('here')
       // When we provide the rows, we don't want to fetch them right away
       if (!isInitialized.value && rows.value.length) {
         return
@@ -391,15 +394,16 @@ export function useTableData(
         columns: internalColumnsRef.value,
         queryBuilder: dbQuery.tableQuery.queryBuilder,
       })
-
-      // Scroll to top if we are not fetching more data
-      if (!fetchMore.value) {
-        // @ts-expect-error
-        scrollerEl.value?.scrollToItem?.(0)
-      }
     },
     { immediate: true }
   )
+
+  // We watch the `search`, `filterColumns`, `queryBuilder` and `orderBy`
+  // to scroll to the top when they change
+  watch([search, columnFilters, queryBuilder, orderBy], () => {
+    // @ts-expect-error
+    scrollerEl.value?.scrollToItem?.(0)
+  })
 
   // Initialize query builder
   function initializeQueryBuilder() {
