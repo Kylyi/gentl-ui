@@ -82,6 +82,10 @@ defineExpose({
     @before-hide="emits('before-hide')"
     @before-show="emits('before-show')"
   >
+    <template #title>
+      <slot name="title" />
+    </template>
+
     <template #header="{ hide }">
       <slot
         name="header"

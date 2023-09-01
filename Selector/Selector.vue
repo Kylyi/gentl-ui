@@ -438,7 +438,7 @@ defineExpose({
       </template>
 
       <span
-        v-else-if="model"
+        v-else-if="hasContent"
         self-center
         style="width: calc(100% - 12px)"
         :class="{ truncate: !noTruncate }"
