@@ -176,7 +176,7 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
 
 <style lang="scss" scoped>
 .wrapper {
-  --apply: flex flex-col;
+  --apply: flex flex-col rounded-b-custom;
 
   .wrapper-body {
     --apply: dark:bg-darker bg-white;

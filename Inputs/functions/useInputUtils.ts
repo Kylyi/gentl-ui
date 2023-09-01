@@ -1,11 +1,11 @@
-// COMPOSITION FUNCTIONS
-import { useMask } from '@/components/Inputs/functions/useMask'
-
-// TYPES
+// Types
 import type { IInputUtilsOptions } from '~~/components/Inputs/types/input-utils-options.type'
 
-// STORE
-import { useAppStore } from '~~/libs/App/app.store'
+// Functions
+import { useMask } from '~/components/Inputs/functions/useMask'
+
+// Store
+import { useAppStore } from '~/libs/App/app.store'
 
 export function useInputUtils(options: IInputUtilsOptions) {
   const {

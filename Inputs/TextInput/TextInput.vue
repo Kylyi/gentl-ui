@@ -20,6 +20,7 @@ defineEmits<{
   (e: 'update:model-value', val?: string | undefined | null): void
   (e: 'validation-reset', val?: string | undefined | null): void
   (e: 'blur'): void
+  (e: 'enter', event: KeyboardEvent): void
 }>()
 
 const {
@@ -95,6 +96,7 @@ defineExpose({
       :style="inputStyle"
       @focus="handleFocus"
       @blur="handleBlur"
+      @keypress.enter="$emit('enter', $event)"
     />
 
     <template

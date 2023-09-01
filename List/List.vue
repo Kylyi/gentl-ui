@@ -31,9 +31,10 @@ defineEmits<{
 
 // Layout
 const containerEl = ref<InstanceType<typeof ListVirtualContainer>>()
-const items = props.items
-  ? (useVModel(props, 'items') as Ref<any>)
-  : ref<any[]>([])
+const items =
+  props.items !== undefined
+    ? (useVModel(props, 'items') as Ref<any>)
+    : ref<any[]>([])
 
 const ContainerComponent = computed(() => {
   return props.virtual || items.value.length >= 1e3
@@ -92,7 +93,7 @@ onMounted(() => {
         <SearchInput
           ref="searchEl"
           v-model="search"
-          m="2"
+          :class="{ 'm-2': !dense }"
           grow
           class="bg-white dark:bg-darker"
           :autofocus="!noAutofocus"
@@ -102,7 +103,10 @@ onMounted(() => {
       </div>
 
       <!-- Separator -->
-      <div class="separator" />
+      <div
+        v-if="!dense"
+        class="separator"
+      />
     </template>
 
     <!-- Loading -->
