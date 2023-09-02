@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { CSSProperties } from 'vue'
 
-// TYPES
+// Types
 import type { IVerticalScrollPickerProps } from '~~/components/ScrollPicker/types/vertical-scroll-picker-props.type'
 
 const props = withDefaults(defineProps<IVerticalScrollPickerProps>(), {
@@ -14,7 +14,7 @@ defineEmits<{
   (e: 'update:modelValue', val: any): void
 }>()
 
-// DATA
+// Data
 const internalValue = ref(props.modelValue)
 const model = useVModel(props, 'modelValue')
 const options = toRef(props, 'options', [...Array(11).keys()])
@@ -40,7 +40,7 @@ function getOptions() {
 
 getOptions()
 
-// LAYOUT
+// Layout
 const lastClickY = ref(0)
 const isInitialized = ref(false)
 const hasSmoothScroll = ref(false)
@@ -93,7 +93,7 @@ function handleClick(ev: PointerEvent, idx: number) {
   }
 }
 
-// VIRTUAL LIST
+// Virtual list
 const preventNextScrollRef = autoResetRef(false, 1000)
 const { list, containerProps, wrapperProps, scrollTo } = useVirtualList(
   optionsExtended,
@@ -170,7 +170,7 @@ const adjustScrollDebounced = useDebounceFn(() => {
   start()
 }, 500)
 
-// HELPERSs
+// Helpers
 function reinitializeScroller(preselectIdx?: number) {
   hasSmoothScroll.value = false
   getOptions()
@@ -224,7 +224,7 @@ defineExpose({
     ref="scrollPicker"
     flex="~ col"
   >
-    <!-- HEADER -->
+    <!-- Header -->
     <slot name="header">
       <div
         v-if="title"
@@ -279,7 +279,7 @@ defineExpose({
         </div>
       </div>
 
-      <!-- INDICATOR -->
+      <!-- Indicator -->
       <div
         w="full"
         absolute
@@ -290,7 +290,7 @@ defineExpose({
         :style="{ height: `${itemHeight}px` }"
       />
 
-      <!-- DARKENED AREA - TOP -->
+      <!-- Darkened area - Top side -->
       <div
         top="0"
         w="full"
@@ -301,7 +301,7 @@ defineExpose({
         rounded="t-2"
       />
 
-      <!-- DARKENED AREA - BOTTOM -->
+      <!-- Darkened area - Bottom side -->
       <div
         bottom="0"
         w="full"

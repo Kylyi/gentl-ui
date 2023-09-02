@@ -12,7 +12,7 @@ defineEmits<{
   (e: 'toggle-numbered-list'): void
 }>()
 
-// LIST
+// List
 const isBulletedList = computed(() => props.editor.isActive('bulletList'))
 const isNumberedList = computed(() => props.editor.isActive('orderedList'))
 </script>
