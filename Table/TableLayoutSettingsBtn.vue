@@ -16,6 +16,14 @@ import {
 // Components
 import Dialog from '~/components/Dialog/Dialog.vue'
 
+type IProps = {
+  nonSaveableSettings?: Array<'columns' | 'filters' | 'sorting'>
+}
+
+const props = withDefaults(defineProps<IProps>(), {
+  nonSaveableSettings: () => [],
+})
+
 // Injections
 const tableQuery = injectStrict(tableQueryKey)
 const layouts = injectStrict(tableLayoutsKey)
@@ -39,6 +47,14 @@ const layout = ref({
   queryBuilder: false,
   default: false,
   public: false,
+})
+
+const nonSaveableSettingsByName = computed(() => {
+  return props.nonSaveableSettings?.reduce((agg, curr) => {
+    agg[curr] = true
+
+    return agg
+  }, {} as Record<string, boolean>)
 })
 
 const layoutExists = computed(() => {
@@ -269,6 +285,7 @@ const $v = useVuelidate(
 
           <!-- Columns -->
           <Toggle
+            v-if="!nonSaveableSettingsByName.columns"
             v-model="layout.columns"
             container-class="bg-white dark:bg-darker col-start-1"
             :label="$t('table.saveColumns')"
@@ -283,6 +300,7 @@ const $v = useVuelidate(
 
           <!-- Filters -->
           <Toggle
+            v-if="!nonSaveableSettingsByName.filters"
             v-model="layout.filters"
             container-class="bg-white dark:bg-darker col-start-1"
             :label="$t('table.saveFilters')"
@@ -296,15 +314,9 @@ const $v = useVuelidate(
             :label="$t('table.saveDefault')"
           />
 
-          <!-- Query builder -->
-          <!-- <Toggle
-            v-model="layout.queryBuilder"
-            container-class="bg-white dark:bg-darker"
-            :label="$t('table.saveQueryBuilder')"
-          /> -->
-
           <!-- Sort -->
           <Toggle
+            v-if="!nonSaveableSettingsByName.sorting"
             v-model="layout.sort"
             container-class="col-start-1 bg-white dark:bg-darker"
             :label="$t('table.saveSort')"

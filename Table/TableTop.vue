@@ -16,7 +16,9 @@ import {
 import QueryBuilderInline from '~/components/QueryBuilder/QueryBuilderInline.vue'
 
 const props = defineProps<
-  Pick<ITableProps, 'queryBuilder' | 'selectable'> & { search: string }
+  Pick<ITableProps, 'queryBuilder' | 'selectable' | 'nonSaveableSettings'> & {
+    search: string
+  }
 >()
 
 // Constants
@@ -316,7 +318,9 @@ function handleClearSorting() {
           <TableLayoutSelector v-model:query-builder="queryBuilder" />
 
           <!-- Layout settings -->
-          <TableLayoutSettingsBtn />
+          <TableLayoutSettingsBtn
+            :non-saveable-settings="nonSaveableSettings"
+          />
         </template>
       </div>
     </div>

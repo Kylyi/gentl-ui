@@ -123,6 +123,7 @@ useTableSelection(props)
         v-model:query-builder="queryBuilder"
         v-model:search="search"
         :selectable="selectable"
+        :non-saveable-settings="nonSaveableSettings"
       >
         <template #left-prepend>
           <slot name="top-left-prepend" />
