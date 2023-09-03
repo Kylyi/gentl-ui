@@ -130,9 +130,8 @@ defineExpose({
     >
       <Section
         id="form-controls"
-        flex="~ wrap gap-2"
+        flex="~ wrap gap-2 items-center"
         shrink-0
-        justify="end"
         :section-class="[controlsClass, '!p-x-2 !p-b-2']"
       >
         <slot
@@ -142,9 +141,12 @@ defineExpose({
           <span>&nbsp;</span>
         </slot>
 
+        <!-- Spacer -->
+        <div grow />
+
         <div
           relative
-          grid="~ gap-2 flow-col"
+          flex="~ gap-2"
         >
           <slot name="submit-before" />
 

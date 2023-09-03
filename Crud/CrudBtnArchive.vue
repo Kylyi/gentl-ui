@@ -21,7 +21,7 @@ defineEmits<{
     no-dim
   >
     <MenuConfirmation
-      placement="bottom-end"
+      placement="bottom"
       :title="$t('archive')"
       @ok="$emit('archive')"
     >

@@ -1,4 +1,4 @@
-import { isDayjs } from 'dayjs'
+import dayjs from 'dayjs'
 
 // Types
 import {
@@ -35,7 +35,7 @@ export function serializeFilterString(
         let val: string | number = item.value
 
         // Date
-        if (isDayjs(item.value)) {
+        if (dayjs.isDayjs(item.value)) {
           val = item.value.format('YYYY-MM-DD')
         }
 

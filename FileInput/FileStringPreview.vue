@@ -118,7 +118,7 @@ const imageUrl = computed(() => {
       icon="material-symbols:download"
       self-start
       :label="$t('file.download')"
-      @click="handleDownloadFile"
+      @click.stop.prevent="handleDownloadFile(file)"
     />
   </div>
 </template>
