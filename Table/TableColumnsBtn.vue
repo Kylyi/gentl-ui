@@ -3,6 +3,8 @@ import { DragHandle, SlickItem, SlickList } from 'vue-slicksort'
 
 // Types
 import type { IBtnProps } from '~/components/Button/types/btn-props.type'
+import type { IGroupRow } from '~/libs/App/data/functions/useGrouping'
+import type { IItem } from '~/libs/App/types/item.type'
 
 // Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
@@ -91,9 +93,14 @@ function handleColumnVisibilityChange(
   col.hidden = val
 }
 
-function handleColumnVisibilityForAll(val: boolean) {
-  nonHelperCols.value.forEach(col => {
-    col.hidden = val ? !!col.nonInteractive : true
+function handleColumnVisibilityForAll(
+  val: boolean,
+  colsFiltered: Array<IGroupRow | IItem>
+) {
+  colsFiltered.forEach(col => {
+    if (!('isGroup' in col)) {
+      col.ref.hidden = val ? !!col.ref.nonInteractive : true
+    }
   })
 }
 
@@ -130,13 +137,32 @@ async function handleApplyChanges() {
     <Dialog
       ref="dialogEl"
       w="screen-md"
-      :title="$t('table.customizeColumns')"
       dense
       min-h="1/2"
       max-h="6/10"
       h="auto"
-      header-class="p-l-3 p-r-1"
+      header-class="p-l-3 p-r-1 h-auto"
     >
+      <template #title>
+        <div
+          flex="~ col gap-1"
+          grow
+          p="t-2 b-1"
+        >
+          <h6
+            p="r-2"
+            text="h6"
+          >
+            {{ $t('table.customizeColumns') }}
+          </h6>
+          <span text="caption xs">
+            {{ nonHelperCols.length }}
+            {{ $t('columns').toLowerCase() }}
+            {{ $t('general.available').toLowerCase() }}
+          </span>
+        </div>
+      </template>
+
       <Form
         grid="~ cols-2"
         bg="dark:darker white"
@@ -162,24 +188,44 @@ async function handleApplyChanges() {
           <List
             :items="nonHelperCols"
             row-tag="label"
+            :fuse-options="{
+              threshold: 0.1,
+              distance: 10e4,
+              shouldSort: true,
+            }"
           >
-            <template #above>
+            <template #above="{ itemsFiltered }">
               <div
-                flex="~ gap-1"
-                justify-end
+                flex="~ gap-1 items-center"
+                justify-between
                 p="y-1 x-2"
               >
-                <Btn
-                  size="xs"
-                  :label="$t('general.selectAll')"
-                  @click="handleColumnVisibilityForAll(true)"
-                />
-                <Btn
-                  size="xs"
-                  color="negative"
-                  :label="$t('general.clearAll')"
-                  @click="handleColumnVisibilityForAll(false)"
-                />
+                <span text="caption xs">
+                  {{ itemsFiltered.length }}
+                  {{ $t('columns').toLowerCase() }}
+                </span>
+
+                <div flex="~ gap-1">
+                  <Btn
+                    size="xs"
+                    :label="
+                      itemsFiltered.length === nonHelperCols.length
+                        ? $t('general.selectAll')
+                        : $t('general.selectFiltered')
+                    "
+                    @click="handleColumnVisibilityForAll(true, itemsFiltered)"
+                  />
+                  <Btn
+                    size="xs"
+                    color="negative"
+                    :label="
+                      itemsFiltered.length === nonHelperCols.length
+                        ? $t('general.clearAll')
+                        : $t('general.clearFiltered')
+                    "
+                    @click="handleColumnVisibilityForAll(false, itemsFiltered)"
+                  />
+                </div>
               </div>
             </template>
 
@@ -211,7 +257,16 @@ async function handleApplyChanges() {
             p="t-2"
           >
             <h6 font="bold">{{ $t('table.selectedColumns') }}</h6>
-            <span text="caption">{{ $t('general.dragToReorder') }}</span>
+
+            <div flex="~ justify-between items-center gap-1">
+              <span text="caption">{{ $t('general.dragToReorder') }}</span>
+
+              <span text="caption xs">
+                {{ filteredCols.length }}
+                {{ $t('columns').toLowerCase() }}
+                {{ $t('general.selected').toLowerCase() }}
+              </span>
+            </div>
           </div>
 
           <SlickList

@@ -126,7 +126,10 @@ onMounted(() => {
       @click="handleSelectFiltered"
     />
 
-    <slot name="above" />
+    <slot
+      name="above"
+      :items-filtered="arr"
+    />
 
     <Component
       :is="ContainerComponent"
