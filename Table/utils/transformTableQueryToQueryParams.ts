@@ -69,7 +69,7 @@ export function serializeOrderByString(
         return `${sort.field}.${sort.direction}.${fetchMore.$key}`
       } else if (fetchMore) {
         const fieldValue = get(fetchMore.lastRow, sort.field)
-        const val = fieldValue ?? fieldValue === null ? '$null' : '$empty'
+        const val = fieldValue || (fieldValue === null ? '$null' : '$empty')
 
         return `${sort.field}.${sort.direction}.${val}`
       }
