@@ -5,7 +5,7 @@ import {
   ITableFilterGroup,
   ITableFilterItem,
   ITableQuery,
-} from 'components/Table/types/table-query.type'
+} from '~/components/Table/types/table-query.type'
 
 /**
  * Serializes the table's `filter` into a `filter` query parameter.
