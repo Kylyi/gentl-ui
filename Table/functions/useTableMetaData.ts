@@ -105,6 +105,7 @@ export async function useTableMetaData(props: ITableProps) {
         layouts.value = get(result, layoutsKey || config.table.layoutsKey) || []
 
         const apiColumns = get(result, columnsKey || config.table.columnsKey)
+        console.log('Log ~ apiColumns:', apiColumns)
 
         // When we have't defined any columns, we just use the data from the API
         // to create the columns
@@ -112,7 +113,9 @@ export async function useTableMetaData(props: ITableProps) {
           columns.value = apiColumns.map((col: any) => {
             return new TableColumn({
               field: col.name,
-              label: col.name,
+              label: props.translationPrefix
+                ? $t(`${props.translationPrefix}.${col.name}`)
+                : col.name,
               dataType: col.type,
             })
           })

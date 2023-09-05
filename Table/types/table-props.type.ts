@@ -152,6 +152,15 @@ export interface ITableProps {
   separator?: 'horizontal' | 'vertical' | 'cell'
 
   /**
+   * When columns come from the metadata, this is the prefix used for the
+   * `label` when creating the columns
+   *
+   * For example:
+   *  `label: 'name'` will become `label: '<translationPrefix>.name'`
+   */
+  translationPrefix?: string
+
+  /**
    * Whether the table should include archived rows
    * Note: Project specific
    */
