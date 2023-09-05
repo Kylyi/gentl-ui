@@ -197,10 +197,38 @@ export interface ITableProps {
   }
 
   getMetaData?: {
+    /**
+     * The function to get the metadata
+     */
     fnc: () => any | Promise<any>
+
+    /**
+     * The key in the response that contains the columns
+     * @default config.table.columnsKey
+     */
     columnsKey?: string
+
+    /**
+     * The key in the response that contains the layouts
+     * @default config.table.layoutsKey
+     */
     layoutsKey?: string
+
+    /**
+     * The key in the response that contains the default layout
+     * @default config.table.layoutKey
+     */
     layoutKey?: string
+
+    /**
+     * When true, if metadata returns columns, they all will be used, no matter
+     * if we defined just some of them explcitly in the `columns` prop
+     */
+    useAllColumns?: boolean
+
+    /**
+     * The function that handles the response in case of an error
+     */
     errorHandler?: (error: any) => void
   }
 

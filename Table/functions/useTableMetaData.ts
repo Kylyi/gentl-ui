@@ -18,6 +18,42 @@ import { useTableUtils } from '~/components/Table/functions/useTableUtils'
 // Store
 import { useTableStore } from '~/components/Table/table.store'
 
+// Constants
+const EXTENDABLE_COLUMN_PROPERTIES: Array<keyof TableColumn> = [
+  'label',
+  'width',
+  'align',
+  'alwaysSelected',
+  'classes',
+  'comparator',
+  'comparators',
+  'dataType',
+  'filterFormat',
+  'filterable',
+  'filters',
+  'format',
+  'getDistinctData',
+  'headerClasses',
+  'headerStyle',
+  'hidden',
+  'hideLabel',
+  'link',
+  'minWidth',
+  'misc',
+  'noFilterSort',
+  'noFilters',
+  'nonInteractive',
+  'reorderable',
+  'resizable',
+  'searchable',
+  'sort',
+  'sortFormat',
+  'sortOrder',
+  'sortable',
+  'style',
+  'width',
+]
+
 export async function useTableMetaData(props: ITableProps) {
   // Utils
   const { handleRequest } = useRequest()
@@ -117,6 +153,44 @@ export async function useTableMetaData(props: ITableProps) {
                 : col.name,
               dataType: col.type,
             })
+          })
+        }
+
+        // When we have defined columns, but the API returns more columns, we
+        // extend the columns with the data from the API but only if we
+        // set the `getMetadata.useAllColumns` to true
+        else if (
+          columns.value.length &&
+          apiColumns &&
+          props.getMetaData?.useAllColumns
+        ) {
+          columns.value = apiColumns.map((col: any) => {
+            const foundColumn = columns.value.find(
+              (c: any) => c.field === col.name
+            )
+
+            // We extend the column with the data from the API when found
+            if (foundColumn) {
+              foundColumn.setDataType(col.type)
+
+              EXTENDABLE_COLUMN_PROPERTIES.forEach(prop => {
+                if (col[prop] !== undefined) {
+                  // @ts-expect-error - TS thinks we might use some readonly props
+                  foundColumn[prop] = col[prop]
+                }
+              })
+            }
+
+            return (
+              foundColumn ??
+              new TableColumn({
+                field: col.name,
+                label: props.translationPrefix
+                  ? $t(`${props.translationPrefix}.${col.name}`)
+                  : col.name,
+                dataType: col.type,
+              })
+            )
           })
         }
 

@@ -52,6 +52,7 @@ const isSelectedRow = injectStrict(tableIsSelectedRowKey)
           ]"
           :style="{ ...col.style, width: col.adjustedWidthPx }"
         >
+          <!-- Selection -->
           <div
             v-if="col.field === '_selectable'"
             flex="~ center"
@@ -64,6 +65,7 @@ const isSelectedRow = injectStrict(tableIsSelectedRowKey)
             />
           </div>
 
+          <!-- Regular field -->
           <ValueFormatter
             v-else
             :value="get(row, col.field)"
@@ -76,20 +78,31 @@ const isSelectedRow = injectStrict(tableIsSelectedRowKey)
                 :name="col.name"
                 :value="val"
               >
-                <span
-                  v-if="col.dataType !== 'boolean'"
-                  class="p-x-2 truncate"
-                >
-                  {{ val }}
-                </span>
-
+                <!-- Boolean -->
                 <Checkbox
-                  v-else
+                  v-if="col.dataType === 'boolean'"
                   :model-value="get(row, col.field)"
                   :editable="false"
                   :label="val"
                   m="x-2"
                 />
+
+                <!-- Link -->
+                <NuxtLink
+                  v-else-if="col.link"
+                  class="link"
+                  :to="col.link(row)"
+                  p="x-2"
+                >
+                  {{ val }}
+                </NuxtLink>
+
+                <span
+                  v-else
+                  class="p-x-2 truncate"
+                >
+                  {{ val }}
+                </span>
               </slot>
             </template>
           </ValueFormatter>

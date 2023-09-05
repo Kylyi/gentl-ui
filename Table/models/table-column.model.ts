@@ -47,6 +47,11 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   alwaysSelected = false
 
   /**
+   * When provided, the table will automatically create a link to the provided route
+   */
+  link?: (row: T) => string
+
+  /**
    * The column's minimum width in px
    */
   minWidth?: number
@@ -293,6 +298,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     this.hidden = col.hidden ?? false
     this.alwaysSelected = col.alwaysSelected ?? false
     this.nonInteractive = col.nonInteractive ?? false
+    this.link = col.link
 
     // We also hide the column when it's non-interactive
     if (col.nonInteractive) {
