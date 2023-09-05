@@ -332,7 +332,7 @@ function handleClearSorting() {
   --apply: flex flex-col;
 
   &__toolbar {
-    --apply: flex gap-2 items-center p-x-2 p-y-1;
+    --apply: flex flex-wrap gap-2 items-center p-x-2 p-y-1;
   }
 
   &__qb {
