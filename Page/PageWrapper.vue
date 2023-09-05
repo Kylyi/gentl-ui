@@ -67,7 +67,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .page-wrapper {
-  --apply: ease-out overflow-auto grow p-x-5 p-y-3;
+  --apply: ease-out overflow-auto grow p-3;
 
   &.is-mounted {
     --apply: transition-padding-250 transition-margin-250;
