@@ -30,6 +30,11 @@ export interface ICollapseProps {
   noHeader?: boolean
 
   /**
+   * When true, the collapse will not have the separator line when open
+   */
+  noSeparator?: boolean
+
+  /**
    * The collapse subtitle
    */
   subtitle?: string

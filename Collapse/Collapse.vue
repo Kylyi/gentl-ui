@@ -99,6 +99,7 @@ useResizeObserver(headerEl, entries => {
       :class="[
         { 'is-expanded': internalValue },
         { 'has-subtitle': subtitle },
+        { 'no-separator': !!noSeparator },
         headerClass,
       ]"
       @click="handleToggle"
@@ -187,7 +188,7 @@ useResizeObserver(headerEl, entries => {
   --apply: flex min-h-12 flex-gap-x-2 items-center p-x-4 items-center rounded-custom
     cursor-pointer hover:bg-ca transition-border-radius duration-100;
 
-  &.is-expanded {
+  &.is-expanded:not(.no-separator) {
     --apply: bg-ca rounded-b-0 border-b-1 border-ca;
   }
 
