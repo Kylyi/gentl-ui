@@ -105,7 +105,6 @@ export async function useTableMetaData(props: ITableProps) {
         layouts.value = get(result, layoutsKey || config.table.layoutsKey) || []
 
         const apiColumns = get(result, columnsKey || config.table.columnsKey)
-        console.log('Log ~ apiColumns:', apiColumns)
 
         // When we have't defined any columns, we just use the data from the API
         // to create the columns
