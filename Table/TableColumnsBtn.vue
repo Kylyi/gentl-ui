@@ -189,10 +189,9 @@ async function handleApplyChanges() {
             :items="nonHelperCols"
             row-tag="label"
             :fuse-options="{
-              threshold: 0.1,
-              distance: 10e4,
               shouldSort: true,
             }"
+            fuse-extended-search-token="'"
           >
             <template #above="{ itemsFiltered }">
               <div

@@ -19,8 +19,8 @@ import { useListUtils } from '~/components/List/functions/useListUtils'
 import { useItemAdding } from '~/components/List/functions/useItemAdding'
 
 // Components
-import ListVirtualContainer from '~~/components/List/ListVirtualContainer.vue'
-import SearchInput from '~~/components/Inputs/SearchInput.vue'
+import ListVirtualContainer from '~/components/List/ListVirtualContainer.vue'
+import SearchInput from '~/components/Inputs/SearchInput.vue'
 
 type IItem = {
   ref: any
@@ -295,11 +295,46 @@ export function useList(
       includeScore: true,
       keys: [props.itemLabel],
       findAllMatches: true,
+      useExtendedSearch: true,
 
       ...props.fuseOptions,
     },
   }
-  const { results } = useFuse(search, itemsExtended, fuseOptions)
+
+  // Extended search
+  const extendedSearch = computed(() => {
+    if (!props.fuseExtendedSearchToken || !search.value) {
+      return search.value
+    }
+
+    switch (props.fuseExtendedSearchToken) {
+      case "'":
+        return `'${search.value}`
+
+      case '=':
+        return `=${search.value}`
+
+      case '!':
+        return `!${search.value}`
+
+      case '^':
+        return `^${search.value}`
+
+      case '!^':
+        return `!^${search.value}`
+
+      case '$':
+        return `${search.value}$`
+
+      case '!$':
+        return `!${search.value}$`
+
+      default:
+        return search.value
+    }
+  })
+
+  const { results } = useFuse(extendedSearch, itemsExtended, fuseOptions)
   const useWorker = computed(() => props.useWorker || items.value.length > 5e3)
 
   async function handleSearchedResults(res: typeof results.value) {
@@ -322,10 +357,10 @@ export function useList(
 
     // Create highlighted text
     else {
-      const { highlightedResult, hasExactMatch: HEM } = highlight(
-        res,
-        fuseOptions?.fuseOptions?.keys || []
-      )
+      const { highlightedResult, hasExactMatch: HEM } = highlight(res, {
+        keys: fuseOptions?.fuseOptions?.keys || [],
+        searchValue: search.value,
+      })
       _hasExactMatch = HEM
 
       highlightedItems = highlightedResult.map(({ item, highlighted }) => ({

@@ -38,6 +38,12 @@ export interface IListProps extends IListBaseProps {
   allowSelectAllFiltered?: boolean
 
   /**
+   * The extended search token for fuse.js library
+   * https://www.fusejs.io/examples.html#extended-search
+   */
+  fuseExtendedSearchToken?: "'" | '=' | '!' | '^' | '!^' | '$' | '!$'
+
+  /**
    * Can be either
    * Array<string | number | item>
    * Record<itemKey, boolean | item>

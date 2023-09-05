@@ -13,9 +13,14 @@ import type { IItem } from '~~/libs/App/types/item.type'
  */
 export function highlight<T = IItem>(
   fuseSearchResult: Array<Fuse.FuseResult<T>>,
-  keys: Fuse.FuseOptionKey<any>[],
-  highlightClassName = 'fuse-highlighted'
+  options?: {
+    keys?: Fuse.FuseOptionKey<any>[]
+    highlightClassName?: string
+    highlightExactMatch?: boolean
+    searchValue?: string
+  }
 ) {
+  const { keys = [], highlightClassName = 'fuse-highlighted' } = options || {}
   let hasExactMatch = false
 
   const generateHighlightedText = (
@@ -27,12 +32,16 @@ export function highlight<T = IItem>(
     let nextUnhighlightedRegionStartingIndex = 0
 
     regions.forEach(region => {
-      const lastRegionNextIndex = region[1] + 1
+      const startIndex = region[0]
+      const lastRegionNextIndex = region[1] + 1 // We add +1 to include the last character of the region
 
       content += [
-        inputText.substring(nextUnhighlightedRegionStartingIndex, region[0]),
+        // We add the unhighlighted part
+        inputText.substring(nextUnhighlightedRegionStartingIndex, startIndex),
+
+        // We higlight the matched part
         `<span class="${highlightClassName}">`,
-        inputText.substring(region[0], lastRegionNextIndex),
+        inputText.substring(startIndex, lastRegionNextIndex),
         '</span>',
       ].join('')
 
