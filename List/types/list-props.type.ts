@@ -11,6 +11,7 @@ export interface IListProps extends IListBaseProps {
   bordered?: boolean
   clearable?: boolean
   contentClass?: ClassType
+  dense?: boolean
   disabledFnc?: (item: any) => boolean
   emitKey?: boolean
   emptyValue?: any

@@ -78,6 +78,13 @@ export function useSelectorUtils(options: ISelectorUtilsOptions) {
     }
   }
 
+  // Autofocus on init
+  setTimeout(() => {
+    if (props.autofocus) {
+      focus()
+    }
+  }, 300)
+
   return {
     el,
     model,

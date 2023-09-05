@@ -1,11 +1,11 @@
-import { isDayjs } from 'dayjs'
+import dayjs from 'dayjs'
 
 // Types
 import {
   ITableFilterGroup,
   ITableFilterItem,
   ITableQuery,
-} from 'components/Table/types/table-query.type'
+} from '~/components/Table/types/table-query.type'
 
 /**
  * Serializes the table's `filter` into a `filter` query parameter.
@@ -35,7 +35,7 @@ export function serializeFilterString(
         let val: string | number = item.value
 
         // Date
-        if (isDayjs(item.value)) {
+        if (dayjs.isDayjs(item.value)) {
           val = item.value.format('YYYY-MM-DD')
         }
 
@@ -68,9 +68,10 @@ export function serializeOrderByString(
       if (fetchMore && sort.field === fetchMore.rowKey) {
         return `${sort.field}.${sort.direction}.${fetchMore.$key}`
       } else if (fetchMore) {
-        return `${sort.field}.${sort.direction}.${
-          get(fetchMore.lastRow, sort.field) ?? '$null'
-        }`
+        const fieldValue = get(fetchMore.lastRow, sort.field)
+        const val = fieldValue || (fieldValue === null ? '$null' : '$empty')
+
+        return `${sort.field}.${sort.direction}.${val}`
       }
 
       return `${sort.field}.${sort.direction}`

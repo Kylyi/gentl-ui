@@ -57,6 +57,7 @@ export function useTableData(
 
   // Layout
   const isInitialized = ref(false)
+  const hasMore = ref(false)
   const dataHasBeenFetched = ref(false)
   const search = ref('')
   const rows = ref(props.rows || [])
@@ -121,10 +122,9 @@ export function useTableData(
       return
     }
 
-    const hasMore = totalRows.value > rows.value.length
     const isAtBottom = visibleEndIndex >= rows.value.length - 20
 
-    if (hasMore && isAtBottom && !fetchMore.value) {
+    if (hasMore.value && isAtBottom && !fetchMore.value) {
       fetchMore.value = true
       fetchAndSetData(dbQuery, true)
     }
@@ -322,6 +322,9 @@ export function useTableData(
       if (res) {
         rows.value = isFetchMore ? [...rows.value, ...res.data] : res.data
         totalRows.value = isFetchMore ? totalRows.value : res.totalRows
+        hasMore.value =
+          totalRows.value! > rows.value.length &&
+          options.fetchTableQuery.take! === res.data.length
 
         instance?.emit('update:rows', rows.value)
         instance?.emit('update:totalRows', totalRows.value)

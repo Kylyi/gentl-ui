@@ -82,7 +82,7 @@ const imageUrl = computed(() => {
         w-full
         size="sm"
         :label="$t('file.download')"
-        @click="handleDownloadFile"
+        @click.stop.prevent="handleDownloadFile(file)"
       />
       <Btn
         v-else

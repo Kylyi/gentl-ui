@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { MotionInstance } from '@vueuse/motion'
 
-// TYPES
+// Types
 import type { IDialogProps } from '~/components/Dialog/types/dialog-props.type'
 
 defineOptions({
@@ -21,23 +21,23 @@ const emits = defineEmits<{
   (e: 'before-show'): void
 }>()
 
-// HELPERS
+// Helpers
 function getTargetElement(target: any): any {
   if (!process.client) {
     return
   }
 
-  // TARGET IS AN ELEMENT
+  // Target is an element
   if (target instanceof Element) {
     return target as Element
   }
 
-  // TARGET IS A SELECTOR
+  // Target is a selector
   else if (typeof target === 'string') {
     return document?.querySelector(target) || document?.body || undefined
   }
 
-  // TARGET IS VUE COMPONENT
+  // Target is a Vue element
   else if (target) {
     const el = unrefElement(target)
 
@@ -49,7 +49,7 @@ function getTargetElement(target: any): any {
   return instance?.vnode.el?.parentNode
 }
 
-// LAYOUT
+// Layout
 const instance = getCurrentInstance()
 const dialogEl = ref<HTMLDivElement>()
 const dialogWrapperEl = ref<HTMLDivElement>()
@@ -130,15 +130,15 @@ async function handleAnimation() {
 
   setTimeout(() => (backdropBg.value = 'bg-darker/80'))
 
-  // RESET TRANSFORM ORIGIN
+  // Reset transform origin
   dialogEl.value?.classList.forEach(
     c => c.startsWith('origin-') && dialogEl.value?.classList.remove(c)
   )
 
-  // SET TRANSFORM ORIGIN
+  // Set transform origin
   let transformOrigin: string
 
-  // INITIAL
+  // Initial
   const initial = {
     opacity: 0,
     x: 0,
@@ -228,7 +228,7 @@ async function bounce() {
   await motionInstance.value?.apply('enter')
 }
 
-// INTERACTIONS
+// Interactions
 const preventInteractions = refAutoReset(false, 10)
 const internalValue = ref(props.modelValue)
 
@@ -238,7 +238,7 @@ function show() {
   }
   preventInteractions.value = true
 
-  // IDLE
+  // Idle
   if (!motionInstance.value) {
     animationTimestamp.value.show = new Date().getTime()
     internalValue.value = true
@@ -390,7 +390,7 @@ watch(
   val => (val ? show() : hide(true))
 )
 
-// LIFECYCLE
+// Lifecycle
 onMounted(() => {
   nextTick(() => {
     triggerEl.value = getTargetElement(props.target)
@@ -426,14 +426,14 @@ defineExpose({ show, hide, toggle, getFloatingEl: () => dialogWrapperEl.value })
         '--transition': `${transitionDuration}ms`,
       }"
     >
-      <!-- BACKDROP -->
+      <!-- Backdrop -->
       <div
         v-if="!seamless"
         class="backdrop"
         :class="backdropBg"
       />
 
-      <!-- DIALOG WRAPPER -->
+      <!-- Dialog wrapper -->
       <div
         ref="dialogEl"
         class="dialog"
@@ -445,7 +445,7 @@ defineExpose({ show, hide, toggle, getFloatingEl: () => dialogWrapperEl.value })
         max-w="95vw"
         v-bind="$attrs"
       >
-        <!-- HEADER -->
+        <!-- Header -->
         <slot
           v-if="!hideHeader"
           name="header"
@@ -460,16 +460,18 @@ defineExpose({ show, hide, toggle, getFloatingEl: () => dialogWrapperEl.value })
             shrink-0
             :class="[dialogClasses.headerClass, headerClass]"
           >
-            <h6
-              flex="1"
-              text="h6"
-              p="r-2"
-              truncate
-            >
-              <span>
-                {{ title }}
-              </span>
-            </h6>
+            <slot name="title">
+              <h6
+                flex="1"
+                text="h6"
+                p="r-2"
+                truncate
+              >
+                <span>
+                  {{ title }}
+                </span>
+              </h6>
+            </slot>
 
             <Btn
               preset="CLOSE"
@@ -479,7 +481,7 @@ defineExpose({ show, hide, toggle, getFloatingEl: () => dialogWrapperEl.value })
           </div>
         </slot>
 
-        <!-- CONTENT -->
+        <!-- Content -->
         <div
           flex="~ col 1"
           overflow="auto"
@@ -509,7 +511,7 @@ defineExpose({ show, hide, toggle, getFloatingEl: () => dialogWrapperEl.value })
     duration-$transition ease;
 }
 
-// SPECIFICALLY FOR SELECTOR
+// Specifically for selector
 .selector {
   --apply: w-95vw;
 }

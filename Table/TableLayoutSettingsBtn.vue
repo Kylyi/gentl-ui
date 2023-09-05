@@ -16,6 +16,14 @@ import {
 // Components
 import Dialog from '~/components/Dialog/Dialog.vue'
 
+type IProps = {
+  nonSaveableSettings?: Array<'columns' | 'filters' | 'sorting'>
+}
+
+const props = withDefaults(defineProps<IProps>(), {
+  nonSaveableSettings: () => [],
+})
+
 // Injections
 const tableQuery = injectStrict(tableQueryKey)
 const layouts = injectStrict(tableLayoutsKey)
@@ -39,6 +47,14 @@ const layout = ref({
   queryBuilder: false,
   default: false,
   public: false,
+})
+
+const nonSaveableSettingsByName = computed(() => {
+  return props.nonSaveableSettings?.reduce((agg, curr) => {
+    agg[curr] = true
+
+    return agg
+  }, {} as Record<string, boolean>)
 })
 
 const layoutExists = computed(() => {
@@ -253,63 +269,65 @@ const $v = useVuelidate(
           rounded="custom"
           p="1 t-2"
         >
-          <span
-            text="caption"
-            font="bold"
-          >
-            {{ $t('table.layoutSaveEntities') }}
-          </span>
+          <!-- Left side -->
+          <div flex="~ col gap-1">
+            <span
+              text="caption"
+              font="bold"
+            >
+              {{ $t('table.layoutSaveEntities') }}
+            </span>
 
-          <span
-            text="caption"
-            font="bold"
-          >
-            {{ $t('table.layoutSaveOptions') }}
-          </span>
+            <!-- Columns -->
+            <Toggle
+              v-if="!nonSaveableSettingsByName.columns"
+              v-model="layout.columns"
+              container-class="bg-white dark:bg-darker col-start-1"
+              :label="$t('table.saveColumns')"
+            />
 
-          <!-- Columns -->
-          <Toggle
-            v-model="layout.columns"
-            container-class="bg-white dark:bg-darker col-start-1"
-            :label="$t('table.saveColumns')"
-          />
+            <!-- Filters -->
+            <Toggle
+              v-if="!nonSaveableSettingsByName.filters"
+              v-model="layout.filters"
+              container-class="bg-white dark:bg-darker col-start-1"
+              :label="$t('table.saveFilters')"
+            />
 
-          <!-- Public -->
-          <Toggle
-            v-model="layout.public"
-            container-class="bg-white dark:bg-darker"
-            :label="$t('table.savePublic')"
-          />
+            <!-- Sort -->
+            <Toggle
+              v-if="!nonSaveableSettingsByName.sorting"
+              v-model="layout.sort"
+              container-class="col-start-1 bg-white dark:bg-darker"
+              :label="$t('table.saveSort')"
+              col="start-1"
+            />
+          </div>
 
-          <!-- Filters -->
-          <Toggle
-            v-model="layout.filters"
-            container-class="bg-white dark:bg-darker col-start-1"
-            :label="$t('table.saveFilters')"
-          />
+          <!-- Right side -->
+          <div flex="~ col gap-1">
+            <span
+              text="caption"
+              font="bold"
+            >
+              {{ $t('table.layoutSaveOptions') }}
+            </span>
 
-          <!-- Default -->
-          <Toggle
-            v-if="!config.table.useLocalStorageForDefaultLayout"
-            v-model="layout.default"
-            container-class="bg-white dark:bg-darker"
-            :label="$t('table.saveDefault')"
-          />
+            <!-- Public -->
+            <Toggle
+              v-model="layout.public"
+              container-class="bg-white dark:bg-darker"
+              :label="$t('table.savePublic')"
+            />
 
-          <!-- Query builder -->
-          <!-- <Toggle
-            v-model="layout.queryBuilder"
-            container-class="bg-white dark:bg-darker"
-            :label="$t('table.saveQueryBuilder')"
-          /> -->
-
-          <!-- Sort -->
-          <Toggle
-            v-model="layout.sort"
-            container-class="col-start-1 bg-white dark:bg-darker"
-            :label="$t('table.saveSort')"
-            col="start-1"
-          />
+            <!-- Default -->
+            <Toggle
+              v-if="!config.table.useLocalStorageForDefaultLayout"
+              v-model="layout.default"
+              container-class="bg-white dark:bg-darker"
+              :label="$t('table.saveDefault')"
+            />
+          </div>
         </div>
 
         <!-- Filler -->

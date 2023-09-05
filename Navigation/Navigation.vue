@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { config } from '~/config'
-
 defineProps<{
   noAccountBtn?: boolean
 }>()
@@ -15,17 +13,6 @@ const leftDrawer = inject('leftDrawer', ref(false))
 
 // Layout
 const isInitialized = ref(false)
-
-const navigationProps = computed(() => {
-  return {
-    navigationClass: {
-      'bg-green-700': config.environment === 'development',
-      'bg-purple-600': config.environment === 'staging',
-      'bg-teal-600': config.environment === 'local',
-      'bg-dark': config.environment === 'production',
-    },
-  }
-})
 
 // Scroll utils
 const lastScrollDirection = ref<'up' | 'down'>('down')
@@ -58,7 +45,6 @@ onMounted(() => {
     z="$zNavigation"
     class="navigation-wrapper"
     :class="[
-      navigationProps.navigationClass,
       {
         'is-scrolled': isScrolled,
         'is-hidden': isNavigationHidden && !rightDrawer && !leftDrawer,
@@ -73,16 +59,9 @@ onMounted(() => {
 
       <slot name="before-actions" />
 
-      <!-- THEME & LOCALE & ACCOUNT -->
+      <!-- Theme & Locale & Account -->
       <div class="toolbar">
         <slot name="prepend-actions" />
-
-        <div
-          v-if="config.environment && config.environment !== 'production'"
-          class="environment"
-        >
-          {{ config.environment }}
-        </div>
 
         <slot name="actions">
           <ThemeToggle />
@@ -135,7 +114,7 @@ header {
   --apply: w-full flex flex-gap-2 p-x-1 min-h-52px;
 
   &-wrapper {
-    --apply: flex flex-col;
+    --apply: flex flex-col bg-dark;
   }
 }
 </style>

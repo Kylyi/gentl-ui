@@ -655,16 +655,18 @@ defineExpose({
           rounded="t-inherit"
           :class="[innerClasses.headerClass, headerClass]"
         >
-          <h6
-            flex="1"
-            text="h6"
-            p="r-2"
-            truncate
-          >
-            <span>
-              {{ title }}
-            </span>
-          </h6>
+          <slot name="title">
+            <h6
+              flex="1"
+              text="h6"
+              p="r-2"
+              truncate
+            >
+              <span>
+                {{ title }}
+              </span>
+            </h6>
+          </slot>
 
           <Btn
             preset="CLOSE"

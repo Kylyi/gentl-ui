@@ -88,7 +88,7 @@ export function useList(
     search.value = ''
   }
 
-  // HELPERS
+  // Helpers
   const defaultSortBy = [
     new SortItem<any>({
       name: '_label',
@@ -320,7 +320,7 @@ export function useList(
       })
     }
 
-    // CREATE HIGHLIGHTED text
+    // Create highlighted text
     else {
       const { highlightedResult, hasExactMatch: HEM } = highlight(
         res,
@@ -342,7 +342,12 @@ export function useList(
       })
     })
 
-    const resultsSorted = props.noSort
+    const shouldNotSort =
+      props.noSort ||
+      (fuseOptions.fuseOptions?.shouldSort &&
+        highlightedItems.length !== items.value.length)
+
+    const resultsSorted = shouldNotSort
       ? highlightedItems
       : await sortData(
           highlightedItems,
@@ -441,7 +446,7 @@ export function useList(
     }
   })
 
-  // KEYBOARD NAVIGATION
+  // Keyboard navigation
   const listEl = ref<HTMLDivElement>()
   const { focused: isFocused } = useFocusWithin(listEl)
   const preventNextHoverEventRef = autoResetRef(false, 50)
