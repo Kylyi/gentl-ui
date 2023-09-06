@@ -141,6 +141,7 @@ export async function useTableMetaData(props: ITableProps) {
         layouts.value = get(result, layoutsKey || config.table.layoutsKey) || []
 
         const apiColumns = get(result, columnsKey || config.table.columnsKey)
+        const useAllColumns = props.getMetaData?.useAllColumns ?? true
 
         // When we have't defined any columns, we just use the data from the API
         // to create the columns
@@ -159,11 +160,7 @@ export async function useTableMetaData(props: ITableProps) {
         // When we have defined columns, but the API returns more columns, we
         // extend the columns with the data from the API but only if we
         // set the `getMetadata.useAllColumns` to true
-        else if (
-          columns.value.length &&
-          apiColumns &&
-          props.getMetaData?.useAllColumns
-        ) {
+        else if (columns.value.length && apiColumns && useAllColumns) {
           columns.value = apiColumns.map((col: any) => {
             const foundColumn = columns.value.find(
               (c: any) => c.field === col.name

@@ -49,7 +49,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   /**
    * When provided, the table will automatically create a link to the provided route
    */
-  link?: (row: T) => string
+  link?: (row: T) => string | undefined | false
 
   /**
    * The column's minimum width in px
@@ -97,7 +97,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   /**
    * Miscellanous data that can be used for anything
    */
-  misc?: any
+  misc?: Record<string, any>
 
   get filterDbQuery() {
     if (!this.filters.length) {
@@ -336,5 +336,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     this.classes = col.classes
     this.headerStyle = col.headerStyle || this.headerStyle
     this.headerClasses = col.headerClasses
+
+    this.misc = col.misc
   }
 }

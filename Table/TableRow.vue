@@ -89,9 +89,9 @@ const isSelectedRow = injectStrict(tableIsSelectedRowKey)
 
                 <!-- Link -->
                 <NuxtLink
-                  v-else-if="col.link"
+                  v-else-if="col.link?.(row)"
                   class="link"
-                  :to="col.link(row)"
+                  :to="col.link(row) || ''"
                   p="x-2"
                 >
                   {{ val }}

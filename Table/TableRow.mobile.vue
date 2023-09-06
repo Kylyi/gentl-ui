@@ -53,7 +53,29 @@ withDefaults(defineProps<IProps>(), {
                     :name="col.name"
                     :value="val"
                   >
-                    <span class="p-x-2 truncate">
+                    <!-- Boolean -->
+                    <Checkbox
+                      v-if="col.dataType === 'boolean'"
+                      :model-value="get(row, col.field)"
+                      :editable="false"
+                      :label="val"
+                      m="x-2"
+                    />
+
+                    <!-- Link -->
+                    <NuxtLink
+                      v-else-if="col.link?.(row)"
+                      class="link"
+                      :to="col.link(row) || ''"
+                      p="x-2"
+                    >
+                      {{ val }}
+                    </NuxtLink>
+
+                    <span
+                      v-else
+                      class="p-x-2 truncate"
+                    >
                       {{ val }}
                     </span>
                   </slot>
