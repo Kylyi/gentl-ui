@@ -37,7 +37,7 @@ const eventsAdjusted = computed<Pick<DayEvent, 'color' | 'icon'>[]>(() => {
     class="dp-day"
     :class="classes"
   >
-    <!-- EDGE -->
+    <!-- Edge -->
     <div
       v-if="edge && (day.isEdge.start.month || day.isEdge.end.month)"
       class="edge"
@@ -45,14 +45,14 @@ const eventsAdjusted = computed<Pick<DayEvent, 'color' | 'icon'>[]>(() => {
       {{ $d(day.dateValue, 'monthShort') }}
     </div>
 
-    <!-- TOP -->
+    <!-- Top -->
     <div flex="~">
       <div class="dayNo">
         {{ day.dayOfMonth }}
       </div>
     </div>
 
-    <!-- EVENTS -->
+    <!-- Events -->
     <div
       v-if="eventsAdjusted.length"
       flex="~ 1 wrap gap-1 center"

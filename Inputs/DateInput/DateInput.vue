@@ -3,15 +3,13 @@
 import { AnyMaskedOptions, MaskedRange } from 'imask'
 import type { Dayjs } from 'dayjs'
 
-// TYPES
+// Types
 import type { IDateInputProps } from '~/components/Inputs/DateInput/types/date-input-props.type'
 
-// COMPOSITION FUNCTIONS
+// Functions
 import { useInputUtils } from '@/components/Inputs/functions/useInputUtils'
 
-// STORE
-
-// COMPONENTS
+// Components
 import InputWrapper from '@/components/Inputs/InputWrapper.vue'
 import DatePicker from '@/components/DatePicker/DatePicker.vue'
 import MenuProxy from '@/components/MenuProxy/MenuProxy.vue'
@@ -34,7 +32,7 @@ defineEmits<{
   (e: 'blur'): void
 }>()
 
-// UTILS
+// Utils
 const { getCurrentLocaleDateFormat } = useLocale()
 const { formatDate, parseDate } = useDateUtils()
 
@@ -50,7 +48,7 @@ function isMaskString(val?: string) {
   return val === PATTERN.value
 }
 
-// MASK
+// Mask
 const PATTERN = computed(() => getCurrentLocaleDateFormat())
 
 const mask = computed<AnyMaskedOptions>(() => {
@@ -109,7 +107,7 @@ const mask = computed<AnyMaskedOptions>(() => {
   }
 })
 
-// LAYOUT
+// Layout
 const preventSync = autoResetRef(false, 50)
 const wrapperEl = ref<InstanceType<typeof InputWrapper>>()
 const usedTouch = ref(false)
@@ -129,7 +127,7 @@ function handleDateSelect(val: Dayjs) {
   }
 }
 
-// PICKER
+// Picker
 const menuProxyEl = ref<InstanceType<typeof MenuProxy>>()
 const datePickerEl = ref<InstanceType<typeof DatePicker>>()
 const isPickerActive = ref(false)

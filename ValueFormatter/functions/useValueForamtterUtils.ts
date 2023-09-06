@@ -55,10 +55,10 @@ export function useValueFormatterUtils() {
         return formatNumber(value)
 
       case 'date':
+      case 'DateTime':
         return formatDate(value, 'short')
 
       case 'datetime':
-      case 'DateTime':
         return formatDate(value, 'long')
 
       case 'timestamp':
