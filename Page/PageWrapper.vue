@@ -88,7 +88,7 @@ onMounted(() => {
 
 .page-drawer.is-open.page-drawer--left:not(.is-absolute):not(.is-mini)
   ~ .page-wrapper {
-  margin-left: calc(var(--drawerLeftWidth) + 8px);
+  margin-left: calc(var(--drawerLeftWidth));
 }
 
 .page-drawer.is-open.page-drawer--right ~ .page-wrapper {
