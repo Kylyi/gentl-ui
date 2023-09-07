@@ -8,7 +8,7 @@ const props = withDefaults(defineProps<IProps>(), {
   errorTakesSpace: true,
 })
 
-// VALIDATION
+// Validation
 const errorMessages = computed(() => {
   return props.errors
     ?.map(err => (typeof err === 'string' ? err : err.$message))
