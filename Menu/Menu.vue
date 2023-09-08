@@ -371,9 +371,6 @@ function show(force?: boolean) {
   // probably create a copy of the button and temporarily show that instead?
   if (!props.cover && !props.noUplift) {
     ;(referenceEl.value as any).style.zIndex = '3000'
-    ;(referenceEl.value as any).classList.add('shadow-consistent-sm')
-    ;(referenceEl.value as any).classList.add('shadow-ca')
-    ;(referenceEl.value as any).classList.add('transition-all')
   }
 
   isReferenceElTransparent.value =
@@ -384,6 +381,10 @@ function show(force?: boolean) {
   } else if (isReferenceElTransparent.value) {
     ;(referenceEl.value as any).style.backgroundColor = 'black'
   }
+
+  ;(referenceEl.value as any).classList.add('shadow-consistent-sm')
+  ;(referenceEl.value as any).classList.add('shadow-ca')
+  ;(referenceEl.value as any).classList.add('transition-all')
 
   preventInteractions.value = true
 
