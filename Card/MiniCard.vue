@@ -21,40 +21,63 @@ function getShownValue(val: any) {
 
 <template>
   <div class="value-container-card">
-    <span
-      class="value-container-card-label"
-      :class="labelClass"
+    <div
+      v-if="$slots.icon || icon"
+      class="value-container-card__icon color-primary"
     >
-      {{ label }}
-    </span>
+      <slot name="icon">
+        <div
+          v-if="icon"
+          :class="icon"
+          class="h-6 w-6"
+        />
+      </slot>
+    </div>
 
-    <ValueFormatter v-bind="valueFormatterProps">
-      <template #default="{ val }">
-        <slot :val="val">
-          <span
-            v-if="!to || !val"
-            class="value-container-card-value"
-            :class="[valueClass, { 'font-bold': !noBold }]"
-          >
-            {{ getShownValue(val) }}
-          </span>
+    <div class="value-container-card__content">
+      <span
+        class="value-container-card-label"
+        :class="labelClass"
+      >
+        {{ label }}
+      </span>
 
-          <NuxtLink
-            v-else
-            :to="to"
-            class="link text-sm"
-          >
-            {{ getShownValue(val) }}
-          </NuxtLink>
-        </slot>
-      </template>
-    </ValueFormatter>
+      <ValueFormatter v-bind="valueFormatterProps">
+        <template #default="{ val }">
+          <slot :val="val">
+            <span
+              v-if="!to || !val"
+              class="value-container-card-value"
+              :class="[valueClass, { 'font-bold': !noBold }]"
+            >
+              {{ getShownValue(val) }}
+            </span>
+
+            <NuxtLink
+              v-else
+              :to="to"
+              class="link text-sm"
+            >
+              {{ getShownValue(val) }}
+            </NuxtLink>
+          </slot>
+        </template>
+      </ValueFormatter>
+    </div>
   </div>
 </template>
 
 <style scoped lang="scss">
 .value-container-card {
-  --apply: flex flex-col rounded-custom p-x-2 p-y-1 flex-gap-1;
+  --apply: flex rounded-custom p-x-2 p-y-1 flex-gap-2;
+
+  &__icon {
+    --apply: shrink-0 m-t-.5;
+  }
+
+  &__content {
+    --apply: flex flex-col flex-gap-1;
+  }
 
   &-label {
     --apply: text-caption;

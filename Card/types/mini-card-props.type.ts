@@ -13,6 +13,11 @@ export interface IMiniCardProps extends IValueFormatter {
   labelClass?: ClassType
 
   /**
+   * The icon of the card
+   */
+  icon?: string
+
+  /**
    * Whether the value should be bold or not
    */
   noBold?: boolean
