@@ -48,4 +48,9 @@ export interface ICollapseProps {
    * Visually pad the content of the collapse if set to true
    */
   padded?: boolean
+
+  /**
+   * The class to be applied to the content when transitioning
+   */
+  transitionClass?: ClassType
 }

@@ -154,6 +154,8 @@ useResizeObserver(headerEl, entries => {
 
     <!-- Content -->
     <Transition
+      :enter-active-class="`${transitionClass}  transition-all duration-0.25s ease-linear overflow-hidden will-change-height`"
+      :leave-active-class="`${transitionClass}  transition-all duration-0.25s ease-linear overflow-hidden will-change-height`"
       @after-enter="handleEnter"
       @after-leave="handleLeave"
     >
@@ -206,13 +208,6 @@ useResizeObserver(headerEl, entries => {
 }
 
 // TRANSITION
-.v-enter-active,
-.v-leave-active {
-  transition: all 0.25s linear;
-  overflow: hidden;
-  will-change: height;
-}
-
 .v-enter-from,
 .v-leave-to {
   --apply: opacity-0;
