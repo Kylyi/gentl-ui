@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { DragHandle, SlickItem, SlickList } from 'vue-slicksort'
+import { config } from '~/config'
 
 // Types
 import type { IBtnProps } from '~/components/Button/types/btn-props.type'
@@ -161,6 +162,11 @@ async function handleApplyChanges() {
             {{ $t('general.available').toLowerCase() }}
           </span>
         </div>
+
+        <DocumentationBtn
+          v-if="config.table.hasHelpButtons"
+          path="columnSelection"
+        />
       </template>
 
       <Form
