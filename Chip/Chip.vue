@@ -50,7 +50,7 @@ function handleClick() {
 
     <div
       class="chip-label"
-      :class="{ 'justify-center': center }"
+      :class="[labelClass, { 'justify-center': center }]"
     >
       <slot>
         <span truncate>

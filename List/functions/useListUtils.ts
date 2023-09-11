@@ -13,6 +13,7 @@ export function useListUtils() {
       'truncate',
       'rowClass',
       'loadData',
+      'noFilter',
     ])
   }
 

@@ -22,6 +22,11 @@ export interface IChipProps extends INavigation {
   label?: string | number
 
   /**
+   * The chip's label class
+   */
+  labelClass?: ClassType
+
+  /**
    * Whether the chip has the ripple effect
    */
   ripple?: boolean

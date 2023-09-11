@@ -341,8 +341,21 @@ export function useList(
     let _hasExactMatch = false
     let highlightedItems: { ref: any; id: string; _highlighted?: string }[] = []
 
+    // When we're not using FE filtering
+    if (props.noFilter) {
+      highlightedItems = itemsExtended.value.map(item => {
+        _hasExactMatch = _hasExactMatch || getLabel(item) === search.value
+
+        return {
+          ref: item,
+          id: getKey(item),
+          _highlighted: getLabel(item),
+        }
+      })
+    }
+
     // Found > 100 ITEMS - do not create highlighted text (performance)
-    if (!search.value || res.length > 100 || props.noHighlight) {
+    else if (!search.value || res.length > 100 || props.noHighlight) {
       highlightedItems = res.map(({ item, score }) => {
         _hasExactMatch = _hasExactMatch || score! <= Number.EPSILON
 

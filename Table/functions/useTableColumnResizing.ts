@@ -39,6 +39,8 @@ export function useTableColumnResizing(props: {
   // Store
   const { setTableState } = useTableStore()
 
+  // Layout
+  const splitterJustClicked = refAutoReset(false, 500)
   const headerEl = ref<InstanceType<typeof HorizontalScroller>>()
 
   // Splitters (for resizing columns)
@@ -84,6 +86,16 @@ export function useTableColumnResizing(props: {
 
   function handleSplitterPointerDown(splitter: ISplitter, ev: PointerEvent) {
     const col = props.columns.find(c => c.field === splitter.field)
+
+    // Handle double-click ~ resize to fit
+    if (col && splitterJustClicked.value) {
+      const labelChars = col.hideLabel ? 0 : col.label.length
+      const colMinWidth = col.minWidth || labelChars * 8 + 80 // These numbers are arbitrary
+      col?.setWidth(colMinWidth)
+
+      return
+    }
+
     const splitterCopy = klona(omit(splitter, ['column']))
     // @ts-expect-error some weird type
     const headerDom = unrefElement(headerEl)!
@@ -119,6 +131,8 @@ export function useTableColumnResizing(props: {
       'pointerup',
       handleSplitterPointerUp
     )
+
+    splitterJustClicked.value = true
   }
 
   function handleSplitterPointerMove(ev: PointerEvent) {
