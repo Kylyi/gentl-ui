@@ -17,7 +17,6 @@ const errorMessages = computed(() => {
 </script>
 
 <template>
-  <!-- ERROR -->
   <Collapse
     :model-value="!!errors?.length"
     no-header

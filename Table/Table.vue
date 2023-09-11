@@ -279,7 +279,8 @@ useTableSelection(props)
 
 <style lang="scss" scoped>
 .table-container {
-  --apply: relative flex flex-col overflow-auto max-h-full max-w-full bg-ca;
+  --apply: relative flex flex-col overflow-auto max-h-full max-w-full bg-ca
+    rounded-custom;
 
   &__top {
     --apply: flex flex-col shrink-0 gap-1 border-b-1 border-ca p-2 p-l-1
