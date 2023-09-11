@@ -1,14 +1,13 @@
 // Types
 import type { ITableSelection } from '~/components/Table/types/table-selection.type'
-import type { ITableState } from '~/components/Table/types/table-state.type'
 import type { ITableDataFetchFncInput } from '~/components/Table/types/table-query.type'
 import type { ITableLayout } from '~/components/Table/types/table-layout.type'
 
 // Models
 import { TableColumn } from 'components/Table/models/table-column.model'
 
-export const getTableStateKey: InjectionKey<() => ITableState> =
-  Symbol('getTableStateKey')
+export const getTableStorageKey: InjectionKey<() => string> =
+  Symbol('getTableStorageKey')
 
 export const tableIncludeDeletedKey: InjectionKey<Ref<boolean>> = Symbol(
   'tableIncludeDeleted'

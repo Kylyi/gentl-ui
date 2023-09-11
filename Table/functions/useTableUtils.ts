@@ -6,6 +6,9 @@ import type { ITableProps } from '~/components/Table/types/table-props.type'
 import { TableColumn } from '~/components/Table/models/table-column.model'
 import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
 
+// Injections
+import { getTableStorageKey } from '~/components/Table/provide/table.provide'
+
 // Functions
 import { getComponentName } from '~/libs/App/functions/misc'
 import { parseFiltersFromUrl } from '~/components/Table/utils/extractFiltersFromUrl'
@@ -36,6 +39,8 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
       props?.storageKey || getComponentName(instance?.parent) || generateUUID()
     )
   }
+
+  provide(getTableStorageKey, getStorageKey)
 
   async function getDistinctDataForField<T>(
     col: TableColumn<T>,

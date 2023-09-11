@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { config } from '~/config'
+
 // Types
 import type { IQueryBuilderItem } from '~/components/QueryBuilder/types/query-builder-item-props.type'
 import type { ITableLayout } from '~/components/Table/types/table-layout.type'
@@ -9,6 +11,7 @@ import { FilterItem } from '~/libs/App/data/models/filter-item'
 
 // Injections
 import {
+  getTableStorageKey,
   tableColumnsKey,
   tableLayoutKey,
   tableLayoutsKey,
@@ -17,6 +20,9 @@ import {
 
 // Functions
 import { useTableUtils } from '~/components/Table/functions/useTableUtils'
+
+// Store
+import { useTableStore } from '~/components/Table/table.store'
 
 // Components
 import Selector from '~/components/Selector/Selector.vue'
@@ -30,21 +36,34 @@ const { parseUrlParams } = useTableUtils()
 const columns = injectStrict(tableColumnsKey)
 const layouts = injectStrict(tableLayoutsKey)
 const layout = injectStrict(tableLayoutKey)
+const _getTableStorageKey = injectStrict(getTableStorageKey)
 const tableResize = injectStrict(tableResizeKey)
+
+// Store
+const { getTableState } = useTableStore()
 
 // Layout
 const layoutSelectorEl = ref<InstanceType<typeof Selector>>()
 const queryBuilder = useVModel(props, 'queryBuilder')
 
 function handleLayoutSelect(_layout?: ITableLayout) {
+  const storageKey = _getTableStorageKey()
+  const tableState = getTableState(storageKey)
+  const defaultFilter = get(
+    tableState.value.meta,
+    config.table.layoutKey
+  ) as any
+
   if (!_layout) {
     _layout = {
       id: 0,
       name: '',
-      schema: `select=${columns.value
-        .filter(col => !col.isHelperCol)
-        .map(col => col.field)
-        .join(',')}`,
+      schema:
+        defaultFilter?.schema ||
+        `select=${columns.value
+          .filter(col => !col.isHelperCol)
+          .map(col => col.field)
+          .join(',')}`,
     }
 
     layout.value = undefined
