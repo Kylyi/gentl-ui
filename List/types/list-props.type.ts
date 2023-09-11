@@ -23,6 +23,7 @@ export interface IListProps extends IListBaseProps {
   fuseOptions?: FuseOptions<any>
   multi?: boolean
   noAutofocus?: boolean
+  noFilter?: boolean
   noHighlight?: boolean
   noSearch?: boolean
   noSort?: boolean

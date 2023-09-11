@@ -95,6 +95,7 @@ export type ISelectorProps = IInputProps & {
   itemHeight?: number
   multi?: boolean
   maxChipsRows?: number
+  noFilter?: boolean
   noHighlight?: boolean
   noSort?: boolean
   noSearch?: boolean
