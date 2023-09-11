@@ -174,7 +174,7 @@ useResizeObserver(headerEl, entries => {
 
 <style lang="scss" scoped>
 .collapse {
-  --apply: relative flex flex-col transition-padding rounded-b-custom;
+  --apply: relative flex flex-col rounded-b-custom;
 
   &.is-padded {
     --apply: p-t-2 p-b-4 p-x-2;

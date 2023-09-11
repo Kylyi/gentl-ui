@@ -1,8 +1,8 @@
 <script setup lang="ts">
-// TYPES
+// Types
 import { ITextInputProps } from '~/components/Inputs/TextInput/types/text-input-props.type'
 
-// COMPOSITION FUNCTIONS
+// Functions
 import { useInputUtils } from '@/components/Inputs/functions/useInputUtils'
 
 const props = withDefaults(defineProps<ITextInputProps>(), {
@@ -122,7 +122,7 @@ defineExpose({
       </div>
     </template>
 
-    <!-- TOOLTIP -->
+    <!-- Tooltip -->
     <Menu
       v-if="tooltip || !!$slots.tooltip"
       :model-value="!isBlurred"

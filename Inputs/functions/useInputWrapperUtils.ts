@@ -1,4 +1,4 @@
-// TYPES
+// Types
 import type { IInputWrapperProps } from '~/components/Inputs/types/input-wrapper-props.type'
 
 export function useInputWrapperUtils() {
@@ -37,7 +37,7 @@ export function useInputWrapperUtils() {
     const isInline = props.inline
     const hasLabel = !!props.label
 
-    // SIZE: sm
+    // Size: sm
     if (props.size === 'sm') {
       styleVariables['--fontSize'] = '14px'
       styleVariables['--lineHeight'] = '16px'
@@ -58,7 +58,7 @@ export function useInputWrapperUtils() {
       }
     }
 
-    // SIZE: md
+    // Size: md
     else if (props.size === 'md') {
       styleVariables['--fontSize'] = '16px'
       styleVariables['--lineHeight'] = '24px'
@@ -79,7 +79,7 @@ export function useInputWrapperUtils() {
       }
     }
 
-    // SIZE: lg
+    // Size: lg
     else if (props.size === 'lg') {
       styleVariables['--fontSize'] = '18px'
       styleVariables['--lineHeight'] = '28px'

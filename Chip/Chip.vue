@@ -26,13 +26,26 @@ function handleClick() {
     h="5"
     :class="[
       hasRemove ? 'p-r-1' : 'p-r-2',
-      { 'cursor-pointer': !!to || !!ripple },
+      {
+        'cursor-pointer': !!to || !!ripple,
+        '!overflow-visible': hasCopy,
+      },
     ]"
     @click="handleClick"
   >
     <div
       v-if="icon"
       :class="icon"
+    />
+
+    <CopyBtn
+      v-if="hasCopy"
+      size="auto"
+      color="ca"
+      h="4"
+      w="4"
+      m="x-1"
+      position="bottom"
     />
 
     <div
@@ -65,7 +78,7 @@ function handleClick() {
 <style lang="scss" scoped>
 .chip {
   --apply: flex flex-gap-1 p-y-3px p-l-2 border-px border-ca rounded truncate
-    select-none relative leading-tight items-center self-center;
+    relative leading-tight items-center self-center;
 
   &-label {
     --apply: flex flex-gap-x-2 flex-1 truncate font-rem-14;

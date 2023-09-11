@@ -12,6 +12,7 @@ export function useMiniCardUtils() {
       'emptyValueString',
       'emptyValue',
       'to',
+      'icon',
     ])
   }
 

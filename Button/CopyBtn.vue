@@ -1,8 +1,13 @@
 <script setup lang="ts">
-// TYPES
+// Types
 import { IBtnProps } from '~/components/Button/types/btn-props.type'
 
-const props = defineProps<IBtnProps & { modelValue?: any }>()
+const props = defineProps<
+  IBtnProps & {
+    modelValue?: any
+    position?: 'left' | 'right' | 'top' | 'bottom'
+  }
+>()
 
 // COPY
 const { copy, copied } = useClipboard({ copiedDuring: 2000 })
@@ -18,7 +23,7 @@ const copyBtnSize = computed(() => {
     case 'lg':
       return 'md'
     case 'auto':
-      return 'sm'
+      return 'auto'
   }
 })
 
@@ -57,6 +62,7 @@ function handleCopy() {
 
     <BtnConfirmation
       :model-value="copied"
+      :position="position"
       :label="$t('copied')"
     />
   </Btn>
