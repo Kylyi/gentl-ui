@@ -77,8 +77,6 @@ export function useValueFormatterUtils() {
         return JSON.parse(value) ? $t('yes') : $t('no')
 
       case 'string':
-        return config.removePipes ? value.replace(/\|/g, '') : value
-
       default:
         return typeof value === 'string' && config.removePipes
           ? value.replace(/\|/g, '')
