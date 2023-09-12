@@ -39,7 +39,7 @@ export function useTableColumns(
   layoutRef: Ref<ITableLayout | undefined>
 ) {
   // Utils
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const { scrollbarWidth, isOverflown } = useOverflow()
   const { parseUrlParams, hasVisibleCol, getStorageKey } = useTableUtils(props)
 
@@ -64,7 +64,7 @@ export function useTableColumns(
   provide(tableColumnsRecreateKey, () => createInternalColumns(true))
 
   const searchableColumnLabels = computed(() => {
-    return columnsRef.value.filter(col => col.searchable).map(col => col._label)
+    return columnsRef.value.filter(col => col.searchable).map(col => col.label)
   })
 
   const hasVisibleColumn = computed(() => hasVisibleCol(internalColumns.value))
@@ -434,6 +434,20 @@ export function useTableColumns(
       handleColumnsVisibility(extendColumns(columnsRef.value))
     )
   }
+
+  // Sync the column labels on locale change
+  watch(locale, () => {
+    console.log('here')
+    internalColumns.value.forEach(col => {
+      const foundColumn = props.columns?.find(c => c.field === col.field)
+
+      if (foundColumn) {
+        col.label = foundColumn.label
+      } else {
+        col.label = $t(`${props.translationPrefix}.${col.field}`)
+      }
+    })
+  })
 
   return {
     internalColumns,
