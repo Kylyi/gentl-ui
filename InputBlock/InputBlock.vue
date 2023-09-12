@@ -40,6 +40,9 @@ const miniCardProps = getMiniCardProps(props)
     v-else
     flex
     items-center
+    v-bind="{
+      ...$attrs,
+    }"
   >
     <div
       v-if="miniCardProps.icon"
