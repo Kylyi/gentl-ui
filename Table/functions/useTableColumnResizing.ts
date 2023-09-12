@@ -106,12 +106,12 @@ export function useTableColumnResizing(props: {
 
       const colMinWidth = Math.min(
         Math.max(
+          col.minWidth || 0,
           labelChars * 8 + 80, // These numbers are arbitrary
           maxContentChars * 8 + 20 // These numbers are arbitrary
         ),
         400 // When autofitting, we don't want to go over 400px
       )
-      console.log('Log ~ handleSplitterPointerDown ~ colMinWidth:', colMinWidth)
       col?.setWidth(colMinWidth)
 
       return
