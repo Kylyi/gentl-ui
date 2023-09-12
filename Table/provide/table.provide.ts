@@ -13,6 +13,8 @@ export const tableIncludeDeletedKey: InjectionKey<Ref<boolean>> = Symbol(
   'tableIncludeDeleted'
 )
 
+export const tableRowsKey: InjectionKey<Ref<any[]>> = Symbol('tableRows')
+
 export const tableRefreshKey: InjectionKey<() => void> =
   Symbol('refreshTableData')
 

@@ -437,7 +437,6 @@ export function useTableColumns(
 
   // Sync the column labels on locale change
   watch(locale, () => {
-    console.log('here')
     internalColumns.value.forEach(col => {
       const foundColumn = props.columns?.find(c => c.field === col.field)
 
