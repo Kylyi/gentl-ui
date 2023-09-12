@@ -23,6 +23,7 @@ type IProps = {
 const props = defineProps<IProps>()
 
 // Utils
+const { getCustomFilter } = useTableSpecifics()
 const {
   getAvailableComparators,
   isSelectorComparator,
@@ -65,11 +66,18 @@ const comparatorOptions = computed(() => {
   return getAvailableComparators(props.column.dataType, {
     includeSelectorComparators: !!column.value.getDistinctData,
     allowedComparators: column.value.comparators,
-    extraComparators: column.value.extraComparators,
+    extraComparators: [
+      ...(column.value.extraComparators ?? []),
+      ...(customFilterComponent.value?.comparators ?? []),
+    ],
   }).map(comparator => ({
     id: comparator,
     label: $t(`comparator.${comparator.replaceAll('.', '|')}`),
   }))
+})
+
+const customFilterComponent = computed(() => {
+  return column.value.filterComponent ?? getCustomFilter(column.value)
 })
 
 const hiddenComparators = computed(() => {
@@ -174,13 +182,13 @@ defineExpose({
 
     <!-- Custom component -->
     <Component
-      :is="column.filterComponent.component"
+      :is="customFilterComponent.component"
       v-if="
-        column.filterComponent &&
-        column.filterComponent.comparators.includes(filter.comparator)
+        customFilterComponent &&
+        customFilterComponent.comparators.includes(filter.comparator)
       "
       v-model="filter.value"
-      v-bind="column.filterComponent.props"
+      v-bind="customFilterComponent.props"
       size="sm"
       :placeholder="`${$t('table.filterValue')}...`"
       @update:model-value="handleCompareValueChange"
