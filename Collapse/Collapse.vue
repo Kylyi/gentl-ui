@@ -154,8 +154,8 @@ useResizeObserver(headerEl, entries => {
 
     <!-- Content -->
     <Transition
-      :enter-active-class="`${transitionClass}  transition-all duration-0.25s ease-linear overflow-hidden will-change-height`"
-      :leave-active-class="`${transitionClass}  transition-all duration-0.25s ease-linear overflow-hidden will-change-height`"
+      :enter-active-class="`${transitionClass} transition-all duration-0.25s ease-linear overflow-hidden will-change-height`"
+      :leave-active-class="`${transitionClass} transition-all duration-0.25s ease-linear overflow-hidden will-change-height`"
       @after-enter="handleEnter"
       @after-leave="handleLeave"
     >
@@ -164,7 +164,7 @@ useResizeObserver(headerEl, entries => {
         ref="contentEl"
         class="content"
         w="full"
-        :class="{ 'absolute left-0 z-$zMenu': floating }"
+        :class="[contentClass, { 'absolute left-0 z-$zMenu': floating }]"
       >
         <slot />
       </div>

@@ -5,6 +5,11 @@ export interface ICollapseProps {
   floating?: boolean
 
   /**
+   * The class to be applied to the content
+   */
+  contentClass?: ClassType
+
+  /**
    * The class to be applied to the header
    */
   headerClass?: ClassType

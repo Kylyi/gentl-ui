@@ -204,6 +204,19 @@ const $v = useVuelidate(
           @update:model-value="handleComparatorChange"
         />
 
+        <!-- Custom component -->
+        <Component
+          :is="colSelected.filterComponent.component"
+          v-if="
+            colSelected.filterComponent &&
+            colSelected.filterComponent.comparators.includes(item.comparator)
+          "
+          v-model="item.value"
+          v-bind="colSelected.filterComponent.props"
+          size="sm"
+          :placeholder="`${$t('table.filterValue')}...`"
+        />
+
         <!-- Selector values -->
         <Selector
           v-if="colSelected.getDistinctData"
