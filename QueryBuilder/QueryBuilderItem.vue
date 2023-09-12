@@ -23,7 +23,6 @@ import { useTableUtils } from '~/components/Table/functions/useTableUtils'
 import Selector from '~/components/Selector/Selector.vue'
 
 // Constants
-import { COMPARATORS_BY_DATATYPE_MAP } from '~/libs/App/constants/input-map.constant'
 
 const props = defineProps<IQueryBuilderItemProps>()
 const emits = defineEmits<{
@@ -55,7 +54,9 @@ const hoveredRow = injectStrict(qbHoveredItemKey)
 const isSmallerScreen = injectStrict(qbIsSmallerScreenKey)
 
 // Utils
-const { isSelectorComparator, isDateAgoComparator } = useTableUtils()
+const { isSelectorComparator, isDateAgoComparator, getAvailableComparators } =
+  useTableUtils()
+const { getCustomFilter } = useTableSpecifics()
 
 // Layout
 const fieldInputEl = ref<InstanceType<typeof Selector>>()
@@ -81,7 +82,26 @@ const component = computed(() => {
 })
 
 const comparators = computed(() => {
-  return COMPARATORS_BY_DATATYPE_MAP[colSelected.value?.dataType]
+  if (!colSelected.value) {
+    return []
+  }
+
+  return getAvailableComparators(colSelected.value.dataType, {
+    includeSelectorComparators: !!colSelected.value.getDistinctData,
+    allowedComparators: colSelected.value.comparators,
+    extraComparators: [
+      ...(colSelected.value.extraComparators ?? []),
+      ...(customFilterComponent.value?.comparators ?? []),
+    ],
+  })
+})
+
+const customFilterComponent = computed(() => {
+  if (!colSelected.value) {
+    return
+  }
+
+  return colSelected.value.filterComponent ?? getCustomFilter(colSelected.value)
 })
 
 function handleRemoveCondition() {
@@ -206,20 +226,21 @@ const $v = useVuelidate(
 
         <!-- Custom component -->
         <Component
-          :is="colSelected.filterComponent.component"
+          :is="customFilterComponent.component"
           v-if="
-            colSelected.filterComponent &&
-            colSelected.filterComponent.comparators.includes(item.comparator)
+            customFilterComponent &&
+            customFilterComponent.comparators.includes(item.comparator)
           "
           v-model="item.value"
-          v-bind="colSelected.filterComponent.props"
+          v-bind="customFilterComponent.props"
           size="sm"
+          class="qb-item__content-value"
           :placeholder="`${$t('table.filterValue')}...`"
         />
 
         <!-- Selector values -->
         <Selector
-          v-if="colSelected.getDistinctData"
+          v-else-if="colSelected.getDistinctData"
           ref="valueInputEl"
           v-model="item.value"
           :load-data="{
@@ -309,7 +330,7 @@ const $v = useVuelidate(
     }
 
     &-value {
-      --apply: grow;
+      --apply: min-w-60 grow;
     }
   }
 
