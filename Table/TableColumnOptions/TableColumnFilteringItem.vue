@@ -23,8 +23,12 @@ type IProps = {
 const props = defineProps<IProps>()
 
 // Utils
-const { getAvailableComparators, isSelectorComparator, isDateAgoComparator } =
-  useTableUtils()
+const {
+  getAvailableComparators,
+  isSelectorComparator,
+  canUseSelectorComparator,
+  isDateAgoComparator,
+} = useTableUtils()
 
 // Injections
 const tableRefresh = injectStrict(tableRefreshKey)
@@ -169,7 +173,7 @@ defineExpose({
 
     <!-- Selector of distinct values -->
     <Selector
-      v-if="column.getDistinctData && isSelectorComparator(filter.comparator)"
+      v-if="canUseSelectorComparator(filter.comparator, column)"
       ref="inputEl"
       v-model="filter.value"
       :load-data="{
