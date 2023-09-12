@@ -113,6 +113,7 @@ export function useTableColumnResizing(props: {
         400 // When autofitting, we don't want to go over 400px
       )
       col?.setWidth(colMinWidth)
+      setTableState(storageKey.value, { columns: props.columns })
 
       return
     }
