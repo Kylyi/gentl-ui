@@ -65,6 +65,7 @@ const comparatorOptions = computed(() => {
   return getAvailableComparators(props.column.dataType, {
     includeSelectorComparators: !!column.value.getDistinctData,
     allowedComparators: column.value.comparators,
+    extraComparators: column.value.extraComparators,
   }).map(comparator => ({
     id: comparator,
     label: $t(`comparator.${comparator.replaceAll('.', '|')}`),
@@ -171,9 +172,23 @@ defineExpose({
       />
     </div>
 
+    <!-- Custom component -->
+    <Component
+      :is="column.filterComponent.component"
+      v-if="
+        column.filterComponent &&
+        column.filterComponent.comparators.includes(filter.comparator)
+      "
+      v-model="filter.value"
+      v-bind="column.filterComponent.props"
+      size="sm"
+      :placeholder="`${$t('table.filterValue')}...`"
+      @update:model-value="handleCompareValueChange"
+    />
+
     <!-- Selector of distinct values -->
     <Selector
-      v-if="canUseSelectorComparator(filter.comparator, column)"
+      v-else-if="canUseSelectorComparator(filter.comparator, column)"
       ref="inputEl"
       v-model="filter.value"
       :load-data="{

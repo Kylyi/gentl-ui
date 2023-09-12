@@ -91,9 +91,14 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
     options: {
       includeSelectorComparators?: boolean
       allowedComparators?: ComparatorEnum[]
+      extraComparators?: ComparatorEnum[]
     } = {}
   ) {
-    const { includeSelectorComparators, allowedComparators } = options
+    const {
+      includeSelectorComparators,
+      allowedComparators,
+      extraComparators = [],
+    } = options
     const comparators: ComparatorEnum[] =
       [...COMPARATORS_BY_DATATYPE_MAP[dataType], ...SELECTOR_COMPARATORS] ?? []
 
@@ -102,12 +107,15 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
         allowedComparators.includes(comparator)
       )
     } else if (!includeSelectorComparators) {
-      return comparators.filter(comparator => {
-        return !SELECTOR_COMPARATORS.includes(comparator)
-      })
+      return [
+        ...comparators.filter(comparator => {
+          return !SELECTOR_COMPARATORS.includes(comparator)
+        }),
+        ...extraComparators,
+      ]
     }
 
-    return comparators
+    return [...comparators, ...extraComparators]
   }
 
   /**
