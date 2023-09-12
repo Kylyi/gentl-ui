@@ -36,5 +36,27 @@ const miniCardProps = getMiniCardProps(props)
     </template>
   </MiniCard>
 
-  <slot v-else />
+  <div
+    v-else
+    flex
+    items-center
+    v-bind="{
+      ...$attrs,
+    }"
+  >
+    <div
+      v-if="miniCardProps.icon"
+      class="icon"
+      :class="miniCardProps.icon"
+    />
+    <div flex-grow-1>
+      <slot />
+    </div>
+  </div>
 </template>
+
+<style scoped>
+.icon {
+  --apply: h-6 w-6 translate-y-2 color-blue-500 m-r-3;
+}
+</style>
