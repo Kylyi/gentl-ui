@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { NuxtLink } from '#components'
+
 // Models
-import { TableColumn } from '~/components/Table/models/table-column.model'
+import { ITableProps } from '~/components/Table/types/table-props.type'
 
 // Injections
 import {
@@ -8,11 +10,9 @@ import {
   tableSelectRowKey,
 } from '~/components/Table/provide/table.provide'
 
-type IProps = {
-  columns: TableColumn<any>[]
+type IProps = Pick<ITableProps, 'columns' | 'rowHeight' | 'to'> & {
   index?: number
   row: any
-  rowHeight: number
 }
 
 withDefaults(defineProps<IProps>(), {
@@ -25,11 +25,13 @@ const isSelectedRow = injectStrict(tableIsSelectedRowKey)
 </script>
 
 <template>
-  <div
+  <Component
+    :is="to?.(row) ? NuxtLink : 'div'"
     flex="~"
     class="tr"
     :style="{ minHeight: `${rowHeight}px` }"
     :class="{ 'is-odd': index % 2, 'is-deleted': row.deleted }"
+    :to="to ? to(row) : undefined"
   >
     <slot>
       <slot name="row-inside" />
@@ -109,7 +111,7 @@ const isSelectedRow = injectStrict(tableIsSelectedRowKey)
         </div>
       </template>
     </slot>
-  </div>
+  </Component>
 </template>
 
 <style lang="scss" scoped>

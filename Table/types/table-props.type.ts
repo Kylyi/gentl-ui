@@ -1,3 +1,5 @@
+import { NuxtLink } from '#components'
+
 // Types
 import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
 import type {
@@ -263,6 +265,11 @@ export interface ITableProps {
    * use `null` to disable this functionality
    */
   storageKey?: string | null
+
+  /**
+   * Link to the detail from page
+   */
+  to?: (row: any) => InstanceType<typeof NuxtLink>['to']
 
   /**
    * Whether to use chip-like filters

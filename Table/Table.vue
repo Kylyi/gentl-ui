@@ -199,6 +199,7 @@ useTableSelection(props)
             :is="TableRowComponent"
             :row="item"
             :columns="internalColumns"
+            :to="to"
             :class="{ 'is-clickable': rowClickable, 'odd': index % 2 !== 0 }"
             :row-height="rowHeight"
             :index="index"
