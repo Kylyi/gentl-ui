@@ -125,7 +125,7 @@ defineExpose({
     </slot>
 
     <slot
-      v-if="!noControls"
+      v-if="!noControls && hasControls !== false"
       name="submit"
     >
       <Section
