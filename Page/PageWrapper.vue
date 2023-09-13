@@ -32,7 +32,7 @@ onMounted(() => {
     <!-- TopBar -->
     <Component
       :is="config.pageWrapper.topBar"
-      v-if="includeTopBar"
+      v-if="includeTopBar && config.pageWrapper.topBar"
     >
       <template #title-left>
         <slot name="title-left" />
