@@ -167,6 +167,7 @@ defineExpose({
         :hidden-options="hiddenComparators"
         hide-self
         size="sm"
+        fuse-extended-search-token="'"
         @update:model-value="handleComparatorChange"
       />
 
@@ -210,6 +211,7 @@ defineExpose({
       option-key="_value"
       option-label="_label"
       size="sm"
+      fuse-extended-search-token="'"
       :placeholder="`${$t('table.filterValue')}...`"
       @update:model-value="handleCompareValueChange"
     />

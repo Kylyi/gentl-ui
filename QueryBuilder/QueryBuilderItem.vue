@@ -219,7 +219,7 @@ const $v = useVuelidate(
           :option-label="
             comparator => $t(`comparator.${comparator.id.replaceAll('.', '|')}`)
           "
-          no-search
+          fuse-extended-search-token="'"
           :errors="$v.item.comparator.$errors"
           @update:model-value="handleComparatorChange"
         />
@@ -326,7 +326,7 @@ const $v = useVuelidate(
     }
 
     &-comparator {
-      --apply: w-40;
+      --apply: w-55;
     }
 
     &-value {
