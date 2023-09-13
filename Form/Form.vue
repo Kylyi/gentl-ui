@@ -15,6 +15,7 @@ defineOptions({
 const props = withDefaults(defineProps<IFormProps>(), {
   errorsOnTop: true,
   labelForcedVisibility: true,
+  hasControls: undefined,
 })
 
 const emits = defineEmits<{
