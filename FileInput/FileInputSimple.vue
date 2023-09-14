@@ -1,18 +1,21 @@
 <script setup lang="ts">
-// TYPES
+import { config } from '~/config'
+
+// Types
 import type { IFileInputProps } from '~/components/FileInput/types/file-input-props.type'
 import type { IFile } from '~/components/FileInput/types/file.type'
 
-// COMPOSITION FUNCTIONS
+// Functions
 import { useFieldUtils } from '~/components/Field/functions/useFieldUtils'
 import { useNumber } from '~/components/Inputs/NumberInput/functions/useNumber'
 
-// COMPONENTS
+// Components
 import ScrollArea from '~~/components/ScrollArea/ScrollArea.vue'
 import Field from '~/components/Field/Field.vue'
 
 const props = withDefaults(defineProps<IFileInputProps>(), {
   maxChipsRows: 3,
+  downloadUrl: config.fileInput.downloadUrl,
 })
 const emits = defineEmits<{
   (e: 'update:modelValue', value: Array<File | IFile>): void
@@ -138,7 +141,7 @@ onChange(handleAdd)
             color="white"
             self-center
             icon="material-symbols:download"
-            @click.stop.prevent="handleDownloadFile(chip)"
+            @click.stop.prevent="handleDownloadFile(chip, downloadUrl)"
             @mousedown.stop.prevent
           />
 
@@ -168,7 +171,7 @@ onChange(handleAdd)
             h="4"
             self-center
             icon="material-symbols:download"
-            @click.stop.prevent="handleDownloadFile(chip)"
+            @click.stop.prevent="handleDownloadFile(chip, downloadUrl)"
             @mousedown.stop.prevent
           >
             <Tooltip :offset="10"> {{ $t('general.downloadFile') }} </Tooltip>
