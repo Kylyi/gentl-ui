@@ -137,7 +137,7 @@ function handleComparatorChange(comparator: ComparatorEnum) {
   const isSelectComparator = isSelectorComparator(comparator)
 
   // Same for empty comparator
-  const wasEmptyComparator = isEmptyComparator(filter.value.comparator)
+  const wasEmptyComparator = isEmptyComparator(item.value.comparator)
   const _isEmptyComparator = isEmptyComparator(comparator)
 
   if (wasSelectComparator && !isSelectComparator) {
