@@ -46,7 +46,6 @@ function handleCopy() {
         : '!outline-dotted !outline-ca',
     ]"
     @click.stop.prevent="handleCopy"
-    @mousedown.stop.prevent
   >
     <template #icon>
       <div
