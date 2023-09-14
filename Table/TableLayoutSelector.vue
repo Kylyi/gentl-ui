@@ -83,14 +83,25 @@ function handleLayoutSelect(_layout?: ITableLayout) {
     searchParams,
   })
 
+  const schemaHasAnyFilters =
+    !!schemaFilters?.length || !!schemaQueryBuilder?.length
+
   // We reset the visibility, sorting, order and filters of all columns
   columns.value.forEach(col => {
     if (!col.isHelperCol) {
-      col.hidden = !!schemaColumns?.length
-      col._internalSort = undefined
-      col.clearFilters()
-      col.sort = undefined
-      col.sortOrder = undefined
+      if (schemaColumns?.length) {
+        col.hidden = !!schemaColumns?.length
+        col._internalSort = undefined
+      }
+
+      if (schemaHasAnyFilters) {
+        col.clearFilters()
+      }
+
+      if (schemaSort?.length) {
+        col.sort = undefined
+        col.sortOrder = undefined
+      }
     }
   })
 
