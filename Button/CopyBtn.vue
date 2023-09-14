@@ -10,7 +10,7 @@ const props = defineProps<
 >()
 
 // COPY
-const { copy, copied } = useClipboard({ copiedDuring: 2000 })
+const { copy, copied, isSupported } = useClipboard({ copiedDuring: 2000 })
 
 const copyBtnSize = computed(() => {
   switch (props.size) {
@@ -34,6 +34,7 @@ function handleCopy() {
 
 <template>
   <Btn
+    v-if="isSupported"
     :size="copyBtnSize"
     bg="white dark:darker"
     m="x-2"
