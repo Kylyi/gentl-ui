@@ -257,6 +257,7 @@ const $v = useVuelidate(
           :label="$t('table.layoutName')"
           :errors="$v.layout.name.$errors"
           stack-label
+          no-highlight
           :hint="$t('general.addNewItemByTyping')"
           @update:model-value="handleLayoutSelect"
         />
