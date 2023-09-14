@@ -54,8 +54,12 @@ const hoveredRow = injectStrict(qbHoveredItemKey)
 const isSmallerScreen = injectStrict(qbIsSmallerScreenKey)
 
 // Utils
-const { isSelectorComparator, isDateAgoComparator, getAvailableComparators } =
-  useTableUtils()
+const {
+  isSelectorComparator,
+  isDateAgoComparator,
+  getAvailableComparators,
+  isEmptyComparator,
+} = useTableUtils()
 const { getCustomFilter } = useTableSpecifics()
 
 // Layout
@@ -132,12 +136,24 @@ function handleComparatorChange(comparator: ComparatorEnum) {
   const wasSelectComparator = isSelectorComparator(item.value.comparator)
   const isSelectComparator = isSelectorComparator(comparator)
 
+  // Same for empty comparator
+  const wasEmptyComparator = isEmptyComparator(filter.value.comparator)
+  const _isEmptyComparator = isEmptyComparator(comparator)
+
   if (wasSelectComparator && !isSelectComparator) {
     item.value.value = undefined
   }
 
   if (!wasSelectComparator && isSelectComparator) {
     item.value.value = []
+  }
+
+  if (wasEmptyComparator && !_isEmptyComparator) {
+    item.value.value = undefined
+  }
+
+  if (!wasEmptyComparator && _isEmptyComparator) {
+    item.value.value = undefined
   }
 
   // If the comparator was a date ago comparator and now it's not, reset the value

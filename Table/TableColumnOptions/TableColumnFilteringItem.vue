@@ -29,6 +29,7 @@ const {
   isSelectorComparator,
   canUseSelectorComparator,
   isDateAgoComparator,
+  isEmptyComparator,
 } = useTableUtils()
 
 // Injections
@@ -116,12 +117,24 @@ function handleComparatorChange(comparator: ComparatorEnum) {
   const wasSelectComparator = isSelectorComparator(filter.value.comparator)
   const isSelectComparator = isSelectorComparator(comparator)
 
+  // Same for empty comparator
+  const wasEmptyComparator = isEmptyComparator(filter.value.comparator)
+  const _isEmptyComparator = isEmptyComparator(comparator)
+
   if (wasSelectComparator && !isSelectComparator) {
     filter.value.value = undefined
   }
 
   if (!wasSelectComparator && isSelectComparator) {
     filter.value.value = []
+  }
+
+  if (wasEmptyComparator && !_isEmptyComparator) {
+    filter.value.value = undefined
+  }
+
+  if (!wasEmptyComparator && _isEmptyComparator) {
+    filter.value.value = undefined
   }
 
   // If the comparator was a date ago comparator and now it's not, reset the value

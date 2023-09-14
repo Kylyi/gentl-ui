@@ -147,6 +147,16 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
   }
 
   /**
+   * Checks if a comparator is of type `empty`
+   */
+  function isEmptyComparator(comparator: ComparatorEnum) {
+    return (
+      comparator === ComparatorEnum.IS_EMPTY ||
+      comparator === ComparatorEnum.NOT_IS_EMPTY
+    )
+  }
+
+  /**
    * Checks if a comparator is of type `ago` (AGO, NOT_AGO, UNTIL, NOT_UNTIL)
    */
   function isDateAgoComparator(comparator: ComparatorEnum) {
@@ -243,6 +253,7 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
     canUseSelectorComparator,
     isSelectorComparator,
     isDateAgoComparator,
+    isEmptyComparator,
     parseUrlParams,
   }
 }
