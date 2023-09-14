@@ -90,13 +90,13 @@ function handleDialogBeforeShow() {
         .startsWith('(sort($key.asc)')
     layout.value.filters = layoutSearchParams.has('and')
 
-    layout.value.public =
-      currentLayout.value.accessLevel === 4 ||
-      currentLayout.value.accessLevel === 3
+    // layout.value.public =
+    //   currentLayout.value.accessLevel === 4 ||
+    //   currentLayout.value.accessLevel === 3
 
-    layout.value.default =
-      currentLayout.value.accessLevel === 1 ||
-      currentLayout.value.accessLevel === 3
+    // layout.value.default =
+    //   currentLayout.value.accessLevel === 1 ||
+    //   currentLayout.value.accessLevel === 3
   }
 }
 
