@@ -1,26 +1,25 @@
 <script setup lang="ts">
 // ENHANCEMENT: For now, the only way to use <KeepAlive /> is to use default slot
 // and `v-show` in parent for each tab. There must be a better way to do this.
-
-// TYPES
 import { isVNode } from 'vue'
-import type { ITabsProps } from '~~/components/Tabs/types/tabs-props.type'
 
-// COMPONENTS
+// Types
+import type { ITabsProps } from '~~/components/Tabs/types/tabs-props.type'
 
 const props = defineProps<ITabsProps>()
 const emits = defineEmits<{
   (e: 'update:modelValue', id: string | number): void
 }>()
 
-// LAYOUT
+// Layout
 const keepAliveTabs = ref<string[]>([])
 const model = useVModel(props, 'modelValue', emits)
+const isAnimationOngoing = ref(false)
 
 const transitionProps = computed(() => ({
-  enterActiveClass: `${transitionEnter.value} h-min overflow-visible ease-linear animate-duration-320 absolute inset-0`,
+  enterActiveClass: `${transitionEnter.value} h-min overflow-hidden ease-linear animate-duration-320 inset-0`,
   leaveActiveClass: !props.noLeaveTransition
-    ? `${transitionLeave.value} h-min overflow-visible ease-linear animate-duration-320`
+    ? `${transitionLeave.value} h-min overflow-hidden ease-linear animate-duration-320 absolute`
     : undefined,
 }))
 
@@ -64,7 +63,7 @@ watch(
   { immediate: true }
 )
 
-// HANDLING TAB CHANGES
+// Handling tab changes
 const preventTabChange = autoResetRef(false, 300)
 const transitionEnter = ref('')
 const transitionLeave = ref('')
@@ -98,7 +97,7 @@ watch(model, model => {
     flex="~ col"
     overflow="auto"
   >
-    <!-- LABELS -->
+    <!-- Labels -->
     <HorizontalScroller
       v-if="!noNav"
       content-class="flex gap-x-1 p-x-2 items-center"
@@ -133,16 +132,18 @@ watch(model, model => {
       </slot>
     </HorizontalScroller>
 
-    <!-- CONTENT -->
+    <!-- Content -->
     <div
       v-if="activeTab"
       relative
-      overflow="x-hidden"
-      :class="contentClass"
+      class="tab-content"
+      :class="[contentClass, { 'is-animating': isAnimationOngoing }]"
     >
       <Transition
         v-bind="transitionProps"
         :css="!noAnimation"
+        @before-enter="isAnimationOngoing = true"
+        @after-leave="isAnimationOngoing = false"
       >
         <KeepAlive :include="keepAliveTabs">
           <Component
@@ -163,6 +164,10 @@ watch(model, model => {
 
 <style lang="scss" scoped>
 .tab {
+  &-content {
+    --apply: overflow-x-hidden;
+  }
+
   &-label {
     --apply: min-w-min;
     --apply: '!lt-lg:p-x-4';
