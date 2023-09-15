@@ -174,6 +174,7 @@ async function handleApplyChanges() {
         bg="dark:darker white"
         p="2"
         :label="$t('table.applyColumns')"
+        :submit-disabled="!filteredCols.length"
         @submit="handleApplyChanges"
       >
         <!-- Left side -->
