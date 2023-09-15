@@ -234,6 +234,33 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
     // Column selection
     const visibleColumns = parseVisibleColumnsFromUrl(params)
 
+    // Non-standard filters
+    // In some cases, we get filters that are not in the `filters` or `qb`
+    // query params, but in the URL itself, like `activity=eq.0`
+    // We need to extract those and add them to the filters
+    const queryParamKeys = Array.from(params.keys())
+    const nonStandardFilterKeys = queryParamKeys.filter(key => {
+      return columns?.some(col => col.field === key)
+    })
+
+    const hasNoFiltersAtAll =
+      !filtersAndQueryBuilder?.length &&
+      !filters?.length &&
+      !queryBuilder?.length
+
+    if (hasNoFiltersAtAll && nonStandardFilterKeys.length) {
+      const nonStandardFiltersString = `?qb=and(${nonStandardFilterKeys.map(
+        key => {
+          return `${key}.${params.get(key)}`
+        }
+      )})`
+      const nonStandardFiltersUrl = new URLSearchParams(
+        nonStandardFiltersString
+      )
+
+      return parseUrlParams({ columnsRef, searchParams: nonStandardFiltersUrl })
+    }
+
     return {
       sort,
       schemaSort,
