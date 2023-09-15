@@ -118,7 +118,7 @@ useResizeObserver(headerEl, entries => {
             >
               <span
                 tracking="wide"
-                color="$collapse-header-title-color"
+                color="$Collapse-header-title-color"
               >
                 {{ title }}
               </span>
@@ -149,7 +149,7 @@ useResizeObserver(headerEl, entries => {
         <div
           majesticons:chevron-right
           transition="duration-150"
-          color="$collapse-dropdown-icon-color"
+          color="$Collapse-dropdown-icon-color"
           :class="{ 'rotate-90deg': internalValue }"
         />
       </slot>
@@ -191,7 +191,7 @@ useResizeObserver(headerEl, entries => {
 .header {
   --apply: flex min-h-12 flex-gap-x-2 items-center p-x-4 items-center
     rounded-custom cursor-pointer transition-border-radius duration-100;
-  --apply: bg-$collapse-header-bg;
+  --apply: bg-$Collapse-header-bg;
 
   &.is-expanded:not(.no-separator) {
     --apply: rounded-b-0 border-b-1 border-ca;
