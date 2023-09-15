@@ -91,23 +91,33 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
     options: {
       includeSelectorComparators?: boolean
       allowedComparators?: ComparatorEnum[]
+      extraComparators?: ComparatorEnum[]
     } = {}
   ) {
-    const { includeSelectorComparators, allowedComparators } = options
+    const {
+      includeSelectorComparators,
+      allowedComparators,
+      extraComparators = [],
+    } = options
     const comparators: ComparatorEnum[] =
       [...COMPARATORS_BY_DATATYPE_MAP[dataType], ...SELECTOR_COMPARATORS] ?? []
 
     if (allowedComparators) {
-      return comparators.filter(comparator =>
-        allowedComparators.includes(comparator)
+      return uniq(
+        comparators.filter(comparator =>
+          allowedComparators.includes(comparator)
+        )
       )
     } else if (!includeSelectorComparators) {
-      return comparators.filter(comparator => {
-        return !SELECTOR_COMPARATORS.includes(comparator)
-      })
+      return uniq([
+        ...comparators.filter(comparator => {
+          return !SELECTOR_COMPARATORS.includes(comparator)
+        }),
+        ...extraComparators,
+      ])
     }
 
-    return comparators
+    return uniq([...comparators, ...extraComparators])
   }
 
   /**
@@ -134,6 +144,16 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
    */
   function isSelectorComparator(comparator: ComparatorEnum) {
     return SELECTOR_COMPARATORS.includes(comparator)
+  }
+
+  /**
+   * Checks if a comparator is of type `empty`
+   */
+  function isEmptyComparator(comparator: ComparatorEnum) {
+    return (
+      comparator === ComparatorEnum.IS_EMPTY ||
+      comparator === ComparatorEnum.NOT_IS_EMPTY
+    )
   }
 
   /**
@@ -233,6 +253,7 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
     canUseSelectorComparator,
     isSelectorComparator,
     isDateAgoComparator,
+    isEmptyComparator,
     parseUrlParams,
   }
 }

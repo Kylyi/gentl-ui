@@ -1,12 +1,12 @@
 <script setup lang="ts">
-// MODELS
-import { TableColumn } from '~/components/Table/models/table-column.model'
+import { NuxtLink } from '#components'
 
-type IProps = {
+// Types
+import { ITableProps } from '~/components/Table/types/table-props.type'
+
+type IProps = Pick<ITableProps, 'columns' | 'rowHeight' | 'to'> & {
+  index?: number
   row: any
-  columns: TableColumn<any>[]
-  index: number
-  rowHeight: number
 }
 
 withDefaults(defineProps<IProps>(), {
@@ -15,9 +15,11 @@ withDefaults(defineProps<IProps>(), {
 </script>
 
 <template>
-  <div
+  <Component
+    :is="to?.(row) ? NuxtLink : 'div'"
     class="tr__mobile-container"
     :style="{ minHeight: `${rowHeight}px` }"
+    :to="to ? to(row) : undefined"
   >
     <slot>
       <div
@@ -89,7 +91,7 @@ withDefaults(defineProps<IProps>(), {
 
     <!-- Used for absolutely position info/element -->
     <slot name="inner" />
-  </div>
+  </Component>
 </template>
 
 <style lang="scss" scoped>

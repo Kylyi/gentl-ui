@@ -28,6 +28,7 @@ import {
   tableQueryKey,
   tableRecreateQueryBuilderKey,
   tableRefreshKey,
+  tableRowsKey,
   tableStorageKey,
 } from '~/components/Table/provide/table.provide'
 
@@ -77,6 +78,7 @@ export function useTableData(
   provide(tableRefreshKey, () => refreshData())
   provide(tableRecreateQueryBuilderKey, () => initializeQueryBuilder())
   provide(tableStorageKey, storageKey)
+  provide(tableRowsKey, rows)
 
   // Pagination
   const {

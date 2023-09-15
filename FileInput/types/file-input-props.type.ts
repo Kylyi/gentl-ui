@@ -4,6 +4,7 @@ import { IFile } from '~/components/FileInput/types/file.type'
 export interface IFileInputProps {
   accept?: string
   disabled?: boolean
+  downloadUrl?: string
   errors?: Pick<ErrorObject, '$message'>[]
   errorTakesSpace?: boolean
   hint?: string

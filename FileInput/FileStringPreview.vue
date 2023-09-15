@@ -12,6 +12,7 @@ type IProps = {
     download?: boolean
     remove?: boolean
   }
+  downloadUrl?: string
   editable?: boolean
   file: IFile
 }
@@ -118,7 +119,7 @@ const imageUrl = computed(() => {
       icon="material-symbols:download"
       self-start
       :label="$t('file.download')"
-      @click.stop.prevent="handleDownloadFile(file)"
+      @click.stop.prevent="handleDownloadFile(file, downloadUrl)"
     />
   </div>
 </template>

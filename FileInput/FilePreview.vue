@@ -6,8 +6,9 @@ import type { IFile } from '~/components/FileInput/types/file.type'
 import { ICON_BY_FILE_TYPE } from '~~/components/FileInput/constants/iconByFileType'
 
 type IProps = {
-  file: File | IFile
+  downloadUrl?: string
   editable?: boolean
+  file: File | IFile
   noDownloadButton?: boolean
 }
 
@@ -27,9 +28,9 @@ const icon = computed(() => {
 })
 
 const imageUrl = computed(() => {
-  if ('path' in props.file && props.file.type.startsWith('image/')) {
+  if ('path' in props.file && props.file.type?.startsWith('image/')) {
     return getLocalImageUrl(props.file.path)
-  } else if (!('path' in props.file) && props.file.type.startsWith('image/')) {
+  } else if (!('path' in props.file) && props.file.type?.startsWith('image/')) {
     return URL.createObjectURL(props.file)
   }
 
@@ -82,7 +83,7 @@ const imageUrl = computed(() => {
         w-full
         size="sm"
         :label="$t('file.download')"
-        @click.stop.prevent="handleDownloadFile(file)"
+        @click.stop.prevent="handleDownloadFile(file, downloadUrl)"
       />
       <Btn
         v-else

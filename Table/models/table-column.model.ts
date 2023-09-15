@@ -71,6 +71,18 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   filters: FilterItem<T>[] = []
 
   /**
+   * For some comparators, we should be using a specific component
+   *
+   * For example, when using `in` or `not.in` we should use a multi-select
+   * with autocompletion and stuff
+   */
+  filterComponent?: {
+    component: any
+    props?: Record<string, any>
+    comparators: ComparatorEnum[]
+  }
+
+  /**
    * The initial comparator
    */
   comparator = ComparatorEnum.STARTS_WITH
@@ -79,6 +91,11 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
    * If used, these will be the only available comparators
    */
   comparators?: ComparatorEnum[]
+
+  /**
+   * These are comparators that will be added to the default ones
+   */
+  extraComparators?: ComparatorEnum[]
 
   /**
    * When filtering in the filter dropdown, we can use different formatting than in the table
@@ -309,7 +326,9 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
 
     // Filtering
     this.filters = col.filters ? col.filters : []
+    this.filterComponent = col.filterComponent
     this.comparators = col.comparators
+    this.extraComparators = col.extraComparators
     this.noFilterSort = col.noFilterSort ?? false
     this.filterFormat = col.filterFormat
     this.getDistinctData = col.getDistinctData

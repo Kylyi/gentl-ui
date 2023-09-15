@@ -76,7 +76,7 @@ function getLabel(option: any) {
 
   if (typeof props.optionLabel === 'function') {
     return typeof option !== 'object'
-      ? props.optionLabel(optionsByKey.value[option])
+      ? props.optionLabel(optionsByKey.value[option]) || option
       : props.optionLabel(option)
   }
 
@@ -195,6 +195,7 @@ const listProps = reactivePick(props, [
   'noLocalAdd',
   'loadData',
   'allowSelectAllFiltered',
+  'fuseExtendedSearchToken',
 ])
 
 const optionsExtended = computed(() => {

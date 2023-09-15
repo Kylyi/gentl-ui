@@ -2,7 +2,7 @@
 // TYPES
 import { ICrudBtnProps } from '~~/components/Crud/types/crud-btn-props.type'
 
-defineProps<ICrudBtnProps>()
+defineProps<ICrudBtnProps & { confirmationText?: string }>()
 defineEmits<{
   (e: 'delete'): void
 }>()
@@ -24,6 +24,7 @@ defineEmits<{
       v-if="!noConfirm"
       placement="bottom-end"
       :title="$t('delete')"
+      :confirmation-text="confirmationText"
       @ok="$emit('delete')"
     >
       <slot name="confirmation" />

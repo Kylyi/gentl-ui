@@ -1,7 +1,3 @@
-import { NuxtLink } from '#components'
+import { IBtnProps } from 'components/Button/types/btn-props.type'
 
-export type IBreadcrumb = {
-  icon?: string
-  label?: string
-  to: InstanceType<typeof NuxtLink>['to']
-}
+export type IBreadcrumb = IBtnProps

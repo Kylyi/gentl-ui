@@ -57,6 +57,7 @@ function getShownValue(val: any) {
               v-else
               :to="to"
               class="link text-sm"
+              :class="[valueClass, { 'font-bold': !noBold }]"
             >
               {{ getShownValue(val) }}
             </NuxtLink>

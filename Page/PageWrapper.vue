@@ -32,8 +32,12 @@ onMounted(() => {
     <!-- TopBar -->
     <Component
       :is="config.pageWrapper.topBar"
-      v-if="includeTopBar"
+      v-if="includeTopBar && config.pageWrapper.topBar"
     >
+      <template #breadcrumbs-append>
+        <slot name="breadcrumbs-append" />
+      </template>
+
       <template #title-left>
         <slot name="title-left" />
       </template>

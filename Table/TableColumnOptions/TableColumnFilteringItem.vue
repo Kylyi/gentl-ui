@@ -23,8 +23,14 @@ type IProps = {
 const props = defineProps<IProps>()
 
 // Utils
-const { getAvailableComparators, isSelectorComparator, isDateAgoComparator } =
-  useTableUtils()
+const { getCustomFilter } = useTableSpecifics()
+const {
+  getAvailableComparators,
+  isSelectorComparator,
+  canUseSelectorComparator,
+  isDateAgoComparator,
+  isEmptyComparator,
+} = useTableUtils()
 
 // Injections
 const tableRefresh = injectStrict(tableRefreshKey)
@@ -61,10 +67,18 @@ const comparatorOptions = computed(() => {
   return getAvailableComparators(props.column.dataType, {
     includeSelectorComparators: !!column.value.getDistinctData,
     allowedComparators: column.value.comparators,
+    extraComparators: [
+      ...(column.value.extraComparators ?? []),
+      ...(customFilterComponent.value?.comparators ?? []),
+    ],
   }).map(comparator => ({
     id: comparator,
     label: $t(`comparator.${comparator.replaceAll('.', '|')}`),
   }))
+})
+
+const customFilterComponent = computed(() => {
+  return column.value.filterComponent ?? getCustomFilter(column.value)
 })
 
 const hiddenComparators = computed(() => {
@@ -103,12 +117,24 @@ function handleComparatorChange(comparator: ComparatorEnum) {
   const wasSelectComparator = isSelectorComparator(filter.value.comparator)
   const isSelectComparator = isSelectorComparator(comparator)
 
+  // Same for empty comparator
+  const wasEmptyComparator = isEmptyComparator(filter.value.comparator)
+  const _isEmptyComparator = isEmptyComparator(comparator)
+
   if (wasSelectComparator && !isSelectComparator) {
     filter.value.value = undefined
   }
 
   if (!wasSelectComparator && isSelectComparator) {
     filter.value.value = []
+  }
+
+  if (wasEmptyComparator && !_isEmptyComparator) {
+    filter.value.value = undefined
+  }
+
+  if (!wasEmptyComparator && _isEmptyComparator) {
+    filter.value.value = undefined
   }
 
   // If the comparator was a date ago comparator and now it's not, reset the value
@@ -154,6 +180,7 @@ defineExpose({
         :hidden-options="hiddenComparators"
         hide-self
         size="sm"
+        fuse-extended-search-token="'"
         @update:model-value="handleComparatorChange"
       />
 
@@ -167,9 +194,23 @@ defineExpose({
       />
     </div>
 
+    <!-- Custom component -->
+    <Component
+      :is="customFilterComponent.component"
+      v-if="
+        customFilterComponent &&
+        customFilterComponent.comparators.includes(filter.comparator)
+      "
+      v-model="filter.value"
+      v-bind="customFilterComponent.props"
+      size="sm"
+      :placeholder="`${$t('table.filterValue')}...`"
+      @update:model-value="handleCompareValueChange"
+    />
+
     <!-- Selector of distinct values -->
     <Selector
-      v-if="column.getDistinctData && isSelectorComparator(filter.comparator)"
+      v-else-if="canUseSelectorComparator(filter.comparator, column)"
       ref="inputEl"
       v-model="filter.value"
       :load-data="{
@@ -183,6 +224,7 @@ defineExpose({
       option-key="_value"
       option-label="_label"
       size="sm"
+      fuse-extended-search-token="'"
       :placeholder="`${$t('table.filterValue')}...`"
       @update:model-value="handleCompareValueChange"
     />

@@ -10,7 +10,10 @@ import { useTableStore } from '~/components/Table/table.store'
 import { stringToFloat } from '~/libs/App/data/regex/string-to-float.regex'
 
 // Injections
-import { tableStorageKey } from '~/components/Table/provide/table.provide'
+import {
+  tableRowsKey,
+  tableStorageKey,
+} from '~/components/Table/provide/table.provide'
 
 // Components
 import HorizontalScroller from '~/components/Scroller/HorizontalScroller.vue'
@@ -35,6 +38,7 @@ export function useTableColumnResizing(props: {
 }) {
   // Injections
   const storageKey = injectStrict(tableStorageKey)
+  const rows = injectStrict(tableRowsKey)
 
   // Store
   const { setTableState } = useTableStore()
@@ -90,8 +94,26 @@ export function useTableColumnResizing(props: {
     // Handle double-click ~ resize to fit
     if (col && splitterJustClicked.value) {
       const labelChars = col.hideLabel ? 0 : col.label.length
-      const colMinWidth = col.minWidth || labelChars * 8 + 80 // These numbers are arbitrary
+      const maxContentChars = rows.value.reduce((agg, row) => {
+        const cellValue = get(row, col.field)
+
+        if (cellValue) {
+          return Math.max(agg, String(cellValue).length)
+        }
+
+        return agg
+      }, 0)
+
+      const colMinWidth = Math.min(
+        Math.max(
+          col.minWidth || 0,
+          labelChars * 8 + 80, // These numbers are arbitrary
+          maxContentChars * 8 + 20 // These numbers are arbitrary
+        ),
+        400 // When autofitting, we don't want to go over 400px
+      )
       col?.setWidth(colMinWidth)
+      setTableState(storageKey.value, { columns: props.columns })
 
       return
     }

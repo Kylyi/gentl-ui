@@ -118,10 +118,10 @@ defineExpose({
         <slot :col="col">
           <span
             v-if="col._label"
-            p="l-2 r-1 y-1"
+            p="l-2 r-1"
             grow
             :title="col._label"
-            style="overflow-wrap: anywhere"
+            line-clamp="2"
           >
             {{ col._label }}
           </span>

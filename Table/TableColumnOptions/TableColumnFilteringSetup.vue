@@ -32,6 +32,7 @@ const hasUnusedComparator = computed(() => {
     column.value.comparators ||
     getAvailableComparators(column.value.dataType, {
       includeSelectorComparators: !!column.value.getDistinctData,
+      extraComparators: column.value.extraComparators,
     })
 
   const columnComparators = column.value.filters.flatMap(filter => {
@@ -59,6 +60,7 @@ function handleAddFilter() {
       column.value.comparators ||
       getAvailableComparators(column.value.dataType, {
         includeSelectorComparators: !!column.value.getDistinctData,
+        extraComparators: column.value.extraComparators,
       })
     const columnComparators = column.value.filters.map(
       filter => filter.comparator

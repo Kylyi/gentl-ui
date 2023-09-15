@@ -101,6 +101,12 @@ export type ISelectorProps = IInputProps & {
   noSearch?: boolean
 
   /**
+   * The extended search token for fuse.js library
+   * https://www.fusejs.io/examples.html#extended-search
+   */
+  fuseExtendedSearchToken?: "'" | '=' | '!' | '^' | '!^' | '$' | '!$'
+
+  /**
    * When using `multi` mode, whether to allow selecting all filtered options
    */
   allowSelectAllFiltered?: boolean

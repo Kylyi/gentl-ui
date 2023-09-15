@@ -21,6 +21,16 @@ export interface IFormProps {
   errorsOnTop?: boolean
 
   /**
+   * When explicitly set to `false`, we do not show the controls.
+   * This is the opposite of `noControls` below usable in specific cases
+   *
+   * For example, when checking some claim, the claim-checking function would always
+   * return true if the user is a super-admin. If we used something like `!$hasClaim(ClaimEnum.SUPER_ADMIN)`
+   * the claim-checking function would return false for super-admins, which is not what we want.
+   */
+  hasControls?: boolean
+
+  /**
    * By default, on smaller screens, the buttons in the form will use their icons
    * to save the screen space. If this is true, the buttons will always display
    * the labels as well.

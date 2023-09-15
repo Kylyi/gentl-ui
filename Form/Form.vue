@@ -15,6 +15,7 @@ defineOptions({
 const props = withDefaults(defineProps<IFormProps>(), {
   errorsOnTop: true,
   labelForcedVisibility: true,
+  hasControls: undefined,
 })
 
 const emits = defineEmits<{
@@ -125,7 +126,7 @@ defineExpose({
     </slot>
 
     <slot
-      v-if="!noControls"
+      v-if="!noControls && hasControls !== false"
       name="submit"
     >
       <Section

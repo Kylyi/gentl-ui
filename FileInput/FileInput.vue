@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { config } from '~/config'
+
 // Types
 import type { IFile } from '~/components/FileInput/types/file.type'
 import type { IFileInputProps } from '~/components/FileInput/types/file-input-props.type'
@@ -8,6 +10,7 @@ import { useFieldUtils } from '~/components/Field/functions/useFieldUtils'
 
 const props = withDefaults(defineProps<IFileInputProps>(), {
   maxChipsRows: 3,
+  downloadUrl: config.fileInput.downloadUrl,
 })
 const emits = defineEmits<{
   (e: 'update:modelValue', value: Array<File | IFile>): void
@@ -92,8 +95,9 @@ onChange(handleAdd)
         v-for="(file, idx) in model"
         :key="idx"
         :file="file"
-        :editable="!props.readonly && !props.disabled"
+        :editable="!readonly && !disabled"
         :no-download-button="noDownloadButton"
+        :download-url="downloadUrl"
         @remove="handleRemove(idx)"
       />
 

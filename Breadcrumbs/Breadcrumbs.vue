@@ -26,7 +26,7 @@ const breadcrumbs = computed(() => {
         v-for="breadcrumb in breadcrumbs"
         :key="breadcrumb.to"
       >
-        <!-- CHEVRON -->
+        <!-- Chevron -->
         <span
           v-if="typeof breadcrumb === 'string'"
           :class="BUTTON_PRESET.CHEVRON_RIGHT.icon"
@@ -41,6 +41,8 @@ const breadcrumbs = computed(() => {
           no-uppercase
         />
       </template>
+
+      <slot name="append" />
     </div>
 
     <slot name="right" />

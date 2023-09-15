@@ -40,6 +40,7 @@ function handleClick() {
 
     <CopyBtn
       v-if="hasCopy"
+      :model-value="label"
       size="auto"
       color="ca"
       h="4"
