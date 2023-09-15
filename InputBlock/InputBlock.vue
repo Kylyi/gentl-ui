@@ -58,6 +58,6 @@ const miniCardProps = getMiniCardProps(props)
 <style scoped>
 .icon {
   --apply: h-6 w-6 translate-y-2 m-r-3;
-  --apply: color-$collapse-dropdown-icon-color;
+  --apply: color-$Collapse-dropdown-icon-color;
 }
 </style>
