@@ -193,8 +193,12 @@ useResizeObserver(headerEl, entries => {
     rounded-custom cursor-pointer transition-border-radius duration-100;
   --apply: bg-$Collapse-header-bg;
 
+  &.is-expanded {
+    --apply: rounded-b-0;
+  }
+
   &.is-expanded:not(.no-separator) {
-    --apply: rounded-b-0 border-b-1 border-ca;
+    --apply: border-b-1 border-ca;
   }
 
   &.has-subtitle {
