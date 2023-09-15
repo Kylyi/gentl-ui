@@ -109,19 +109,21 @@ useResizeObserver(headerEl, entries => {
         :toggle="handleToggle"
       >
         <div flex="~ col grow">
-          <h6
-            flex="1"
-            text="h6"
-            truncate
-            leading="!tight"
-          >
-            <span
-              tracking="wide"
-              color="ca"
+          <slot name="title">
+            <h6
+              flex="1"
+              text="h6"
+              truncate
+              leading="!tight"
             >
-              {{ title }}
-            </span>
-          </h6>
+              <span
+                tracking="wide"
+                color="$collapse-header-title-color"
+              >
+                {{ title }}
+              </span>
+            </h6>
+          </slot>
 
           <slot name="subtitle">
             <span
@@ -147,6 +149,7 @@ useResizeObserver(headerEl, entries => {
         <div
           majesticons:chevron-right
           transition="duration-150"
+          color="$collapse-dropdown-icon-color"
           :class="{ 'rotate-90deg': internalValue }"
         />
       </slot>
@@ -185,13 +188,13 @@ useResizeObserver(headerEl, entries => {
   // }
 }
 
-
 .header {
-  --apply: flex min-h-12 flex-gap-x-2 items-center p-x-4 items-center rounded-custom
-    cursor-pointer hover:bg-ca transition-border-radius duration-100;
+  --apply: flex min-h-12 flex-gap-x-2 items-center p-x-4 items-center
+    rounded-custom cursor-pointer transition-border-radius duration-100;
+  --apply: bg-$collapse-header-bg;
 
   &.is-expanded:not(.no-separator) {
-    --apply: bg-ca rounded-b-0 border-b-1 border-ca;
+    --apply: rounded-b-0 border-b-1 border-ca;
   }
 
   &.has-subtitle {
@@ -207,7 +210,7 @@ useResizeObserver(headerEl, entries => {
   --apply: rounded-b-custom;
 }
 
-// TRANSITION
+// Transition
 .v-enter-from,
 .v-leave-to {
   --apply: opacity-0;
