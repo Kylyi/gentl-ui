@@ -82,11 +82,17 @@ function getShownValue(val: any) {
 
   &-label {
     --apply: text-caption;
+    color: var(--miniCard-label-color);
+    font-size: var(--miniCard-label-font-size);
   }
 
   &-value {
     --apply: text-sm;
     overflow-wrap: break-word;
+    font-size: var(--miniCard-value-font-size);
+  }
+  .link {
+    font-size: var(--miniCard-value-font-size);
   }
 }
 </style>
