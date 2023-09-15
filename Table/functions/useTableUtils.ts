@@ -249,16 +249,12 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
       !queryBuilder?.length
 
     if (hasNoFiltersAtAll && nonStandardFilterKeys.length) {
-      const nonStandardFiltersString = `?qb=and(${nonStandardFilterKeys.map(
-        key => {
-          return `${key}.${params.get(key)}`
-        }
-      )})`
-      const nonStandardFiltersUrl = new URLSearchParams(
-        nonStandardFiltersString
-      )
+      const nonStandardFiltersString = `and(${nonStandardFilterKeys.map(key => {
+        return `${key}.${params.get(key)}`
+      })})`
+      params.set('qb', nonStandardFiltersString)
 
-      return parseUrlParams({ columnsRef, searchParams: nonStandardFiltersUrl })
+      return parseUrlParams({ columnsRef, searchParams: params })
     }
 
     return {
