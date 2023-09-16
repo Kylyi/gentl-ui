@@ -90,9 +90,11 @@ function getShownValue(val: any) {
     --apply: text-sm;
     overflow-wrap: break-word;
     font-size: var(--MiniCard-value-font-size);
+    font-weight: var(--MiniCard-value-font-weight);
   }
   .link {
     font-size: var(--MiniCard-value-font-size);
+    font-weight: var(--MiniCard-value-font-weight);
   }
 }
 </style>
