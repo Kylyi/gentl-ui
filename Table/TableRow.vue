@@ -124,7 +124,7 @@ const isSelectedRow = injectStrict(tableIsSelectedRowKey)
 
   &.is-odd {
     .cell {
-      --apply: bg-white dark:bg-darker;
+      --apply: bg-$Table-alternate-row-bg;
     }
   }
 }

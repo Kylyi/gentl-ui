@@ -280,7 +280,7 @@ useTableSelection(props)
 
 <style lang="scss" scoped>
 .table-container {
-  --apply: relative flex flex-col overflow-auto max-h-full max-w-full bg-ca
+  --apply: relative flex flex-col overflow-auto max-h-full max-w-full
     rounded-custom;
 
   &__top {
@@ -293,7 +293,7 @@ useTableSelection(props)
   }
 
   .scroller {
-    --apply: max-h-full;
+    --apply: max-h-full bg-$Table-container-bg;
   }
 }
 
