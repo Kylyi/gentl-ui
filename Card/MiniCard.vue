@@ -94,9 +94,13 @@ function getShownValue(val: any) {
     font-weight: var(--MiniCard-value-font-weight);
   }
   .link {
-    --apply: decoration-none flex items-center;
+    --apply: decoration-none flex items-center border-b-1 border-transparent;
     font-size: var(--MiniCard-value-font-size);
     font-weight: var(--MiniCard-value-font-weight);
+
+    &:hover{
+      --apply: border-color-slate-400;
+    }
 
     &_icon{
       --apply: ph:link h-4 w-4 m-r-1 inline-block;
