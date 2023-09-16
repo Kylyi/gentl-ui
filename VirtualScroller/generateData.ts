@@ -1,11 +1,10 @@
-import { faker } from '@faker-js/faker'
+// import { faker } from '@faker-js/faker'
 
 const minWordCount = 5
 const maxWordCount = 50
 const PAGE_SIZE = 100
 
 export function generateData(currentLength: number) {
-  console.log(faker)
   const items = []
   const length = PAGE_SIZE
 
@@ -17,7 +16,8 @@ export function generateData(currentLength: number) {
     items.push({
       id: currentLength + i,
       index: currentLength + i,
-      value: `Item ${faker.random.words(wordCount)}`,
+      // value: `Item as ${faker.random.words(wordCount)}`,
+      value: `Item as}`,
     })
   }
 
