@@ -235,7 +235,6 @@ const $v = useVuelidate(
           emit-key
           size="sm"
           class="qb-item__content-comparator"
-          fuse-extended-search-token="'"
           :errors="$v.item.comparator.$errors"
           @update:model-value="handleComparatorChange"
         />

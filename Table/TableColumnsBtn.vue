@@ -198,7 +198,6 @@ async function handleApplyChanges() {
             :fuse-options="{
               shouldSort: true,
             }"
-            fuse-extended-search-token="'"
           >
             <template #above="{ itemsFiltered }">
               <div
