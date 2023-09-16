@@ -46,7 +46,15 @@ onMounted(() => {
         v-if="title"
         #title
       >
-        <h2 font-700>{{ title }}</h2>
+        <slot name="title">
+          <h4
+            text="h4"
+            font-700
+            m="b-0"
+          >
+            {{ title }}
+          </h4>
+        </slot>
       </template>
 
       <template #title-right>
