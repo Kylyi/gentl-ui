@@ -329,7 +329,7 @@ function handleClearSorting() {
 
 <style scoped lang="scss">
 .table-top {
-  --apply: flex flex-col;
+  --apply: flex flex-col border-b-1 border-ca;
 
   &__toolbar {
     --apply: flex flex-wrap gap-2 items-center p-x-2 p-y-1;

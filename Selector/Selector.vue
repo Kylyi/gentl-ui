@@ -29,6 +29,7 @@ const props = withDefaults(defineProps<ISelectorProps>(), {
   stackLabel: undefined,
   inline: undefined,
   labelInside: undefined,
+  fuseExtendedSearchToken: config.selector.fuseExtendedSearchToken,
 })
 
 const emits = defineEmits<{

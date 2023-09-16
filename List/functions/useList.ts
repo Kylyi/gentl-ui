@@ -70,12 +70,47 @@ export function useList(
     },
   }
 
+  const fuseOptions: UseFuseOptions<any> = {
+    matchAllWhenSearchEmpty: true,
+    fuseOptions: {
+      minMatchCharLength: 1,
+      threshold: 0.4,
+      isCaseSensitive: false,
+      includeMatches: true,
+      includeScore: true,
+      keys: [props.itemLabel],
+      findAllMatches: true,
+      useExtendedSearch: true,
+
+      ...props.fuseOptions,
+    },
+  }
+
   // List
   const isLoading = ref(false)
   const listRowProps = computed(() => getListProps(props))
 
   const itemsExtended = computed(() => {
-    return [...items.value, ...addedItems.value]
+    const keys = fuseOptions.fuseOptions!.keys
+    const itemsCloned = [...items.value, ...addedItems.value]
+
+    return itemsCloned.map(item => {
+      const itemPartial: Record<string, any> = {
+        _ref: item,
+      }
+
+      if (!config.list.useToBoldLatin) {
+        return itemPartial
+      }
+
+      keys?.forEach(key => {
+        const val = get(item, key as string)
+
+        set(itemPartial, key as string, $toLatin(val?.toString()))
+      })
+
+      return itemPartial
+    })
   })
 
   const scrollTo = (index: number) => {
@@ -285,29 +320,19 @@ export function useList(
   const arr = ref<Array<IGroupRow | IItem>>([])
   const isPreventFetchData = refAutoReset(false, 150)
 
-  const fuseOptions: UseFuseOptions<any> = {
-    matchAllWhenSearchEmpty: true,
-    fuseOptions: {
-      minMatchCharLength: 1,
-      threshold: 0.4,
-      isCaseSensitive: false,
-      includeMatches: true,
-      includeScore: true,
-      keys: [props.itemLabel],
-      findAllMatches: true,
-      useExtendedSearch: true,
-
-      ...props.fuseOptions,
-    },
-  }
-
   // Extended search
   const extendedSearch = computed(() => {
-    if (!props.fuseExtendedSearchToken || !search.value) {
+    if (!search.value) {
       return search.value
     }
 
-    const searchBoldLatin = $toLatin(search.value)
+    const searchBoldLatin = config.list.useToBoldLatin
+      ? $toLatin(search.value)
+      : search.value
+
+    if (!props.fuseExtendedSearchToken) {
+      return searchBoldLatin
+    }
 
     switch (props.fuseExtendedSearchToken) {
       case "'":
@@ -346,12 +371,12 @@ export function useList(
     // When we're not using FE filtering
     if (props.noFilter) {
       highlightedItems = itemsExtended.value.map(item => {
-        _hasExactMatch = _hasExactMatch || getLabel(item) === search.value
+        _hasExactMatch = _hasExactMatch || getLabel(item._ref) === search.value
 
         return {
-          ref: item,
-          id: getKey(item),
-          _highlighted: getLabel(item),
+          ref: item._ref,
+          id: getKey(item._ref),
+          _highlighted: getLabel(item._ref),
         }
       })
     }
@@ -362,9 +387,9 @@ export function useList(
         _hasExactMatch = _hasExactMatch || score! <= Number.EPSILON
 
         return {
-          ref: item,
-          id: getKey(item),
-          _highlighted: getLabel(item),
+          ref: item._ref,
+          id: getKey(item._ref),
+          _highlighted: getLabel(item._ref),
           score,
         }
       })
@@ -378,11 +403,15 @@ export function useList(
       })
       _hasExactMatch = HEM
 
-      highlightedItems = highlightedResult.map(({ item, highlighted }) => ({
-        ref: item,
-        id: getKey(item),
-        _highlighted: highlighted,
-      }))
+      highlightedItems = highlightedResult.map(({ item, highlighted }) => {
+        return {
+          ref: item._ref,
+          id: getKey(item._ref),
+          _highlighted: config.list.useToBoldLatin
+            ? getLabel(item._ref)
+            : highlighted,
+        }
+      })
     }
 
     const groupBy = props.groupBy.map(g => {

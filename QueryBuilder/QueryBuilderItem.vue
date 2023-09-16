@@ -97,7 +97,10 @@ const comparators = computed(() => {
       ...(colSelected.value.extraComparators ?? []),
       ...(customFilterComponent.value?.comparators ?? []),
     ],
-  })
+  }).map(comparator => ({
+    id: comparator,
+    label: $t(`comparator.${comparator.replaceAll('.', '|')}`),
+  }))
 })
 
 const customFilterComponent = computed(() => {
@@ -228,14 +231,10 @@ const $v = useVuelidate(
         <Selector
           ref="comparatorInputEl"
           :model-value="item.comparator"
-          :options="colSelected.comparators || comparators"
+          :options="comparators"
           emit-key
           size="sm"
           class="qb-item__content-comparator"
-          :option-label="
-            comparator => $t(`comparator.${comparator.id.replaceAll('.', '|')}`)
-          "
-          fuse-extended-search-token="'"
           :errors="$v.item.comparator.$errors"
           @update:model-value="handleComparatorChange"
         />
