@@ -307,30 +307,32 @@ export function useList(
       return search.value
     }
 
+    const searchBoldLatin = $toLatin(search.value)
+
     switch (props.fuseExtendedSearchToken) {
       case "'":
-        return `'${search.value}`
+        return `'${searchBoldLatin}`
 
       case '=':
-        return `=${search.value}`
+        return `=${searchBoldLatin}`
 
       case '!':
-        return `!${search.value}`
+        return `!${searchBoldLatin}`
 
       case '^':
-        return `^${search.value}`
+        return `^${searchBoldLatin}`
 
       case '!^':
-        return `!^${search.value}`
+        return `!^${searchBoldLatin}`
 
       case '$':
-        return `${search.value}$`
+        return `${searchBoldLatin}$`
 
       case '!$':
-        return `!${search.value}$`
+        return `!${searchBoldLatin}$`
 
       default:
-        return search.value
+        return searchBoldLatin
     }
   })
 
