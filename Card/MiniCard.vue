@@ -59,6 +59,7 @@ function getShownValue(val: any) {
               class="link text-sm"
               :class="[valueClass, { 'font-bold': !noBold }]"
             >
+              <span class="link_icon" />
               {{ getShownValue(val) }}
             </NuxtLink>
           </slot>
@@ -90,9 +91,20 @@ function getShownValue(val: any) {
     --apply: text-sm;
     overflow-wrap: break-word;
     font-size: var(--MiniCard-value-font-size);
+    font-weight: var(--MiniCard-value-font-weight);
   }
   .link {
+    --apply: decoration-none flex items-center border-b-1 border-transparent;
     font-size: var(--MiniCard-value-font-size);
+    font-weight: var(--MiniCard-value-font-weight);
+
+    &:hover{
+      --apply: border-color-slate-400;
+    }
+
+    &_icon{
+      --apply: ph:link h-4 w-4 m-r-1 inline-block;
+    }
   }
 }
 </style>
