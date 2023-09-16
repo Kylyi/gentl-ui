@@ -118,7 +118,10 @@ defineExpose({
 <template>
   <div
     class="scroller-horizontal"
-    :class="[arrows === 'inside' ? 'arrows-inside' : 'arrows-outside']"
+    :class="[
+      arrows === 'inside' ? 'arrows-inside' : 'arrows-outside',
+      { 'is-overflown': hasArrows },
+    ]"
   >
     <!-- LEFT ARROW -->
     <div

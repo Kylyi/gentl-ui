@@ -65,6 +65,15 @@ const selectionState = computed({
   },
 })
 
+const visibleColumns = computed(() => {
+  return columns.value.filter(col => !col.hidden)
+})
+
+watch(
+  () => visibleColumns.value.length,
+  () => nextTick(() => headerEl.value?.updateArrows())
+)
+
 function handleScroll(x: number) {
   scrollX.value = x
   emits('scrolled', x)
@@ -98,11 +107,10 @@ defineExpose({
   >
     <!-- Columns -->
     <template
-      v-for="(col, idx) in columns"
+      v-for="(col, idx) in visibleColumns"
       :key="idx"
     >
       <div
-        v-if="!col.hidden"
         class="th"
         :class="[
           col.headerClasses,

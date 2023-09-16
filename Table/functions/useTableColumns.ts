@@ -407,7 +407,10 @@ export function useTableColumns(
       if (nonHelperColsSortedDesc[0]) {
         nonHelperColsSortedDesc[0].adjustedWidth--
       }
+    }
 
+    // We add extra width to the last column if the wrapper is overflown
+    if (isWrapperOverflown) {
       const lastCol = cols[cols.length - 1]
 
       if (lastCol) {
