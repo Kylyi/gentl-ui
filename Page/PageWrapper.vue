@@ -53,6 +53,8 @@ onMounted(() => {
             m="b-0"
           >
             {{ title }}
+
+            <slot name="title-append" />
           </h4>
         </slot>
       </template>
