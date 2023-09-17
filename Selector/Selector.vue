@@ -197,6 +197,7 @@ const listProps = reactivePick(props, [
   'loadData',
   'allowSelectAllFiltered',
   'fuseExtendedSearchToken',
+  'searchDebounce',
 ])
 
 const optionsExtended = computed(() => {

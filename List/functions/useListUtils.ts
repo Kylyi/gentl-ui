@@ -14,6 +14,7 @@ export function useListUtils() {
       'rowClass',
       'loadData',
       'noFilter',
+      'searchDebounce',
     ])
   }
 

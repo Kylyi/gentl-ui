@@ -99,6 +99,7 @@ export type ISelectorProps = IInputProps & {
   noHighlight?: boolean
   noSort?: boolean
   noSearch?: boolean
+  searchDebounce?: number
 
   /**
    * The extended search token for fuse.js library

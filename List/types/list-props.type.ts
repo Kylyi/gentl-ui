@@ -97,4 +97,9 @@ export interface IListProps extends IListBaseProps {
    * The tag to use for the row
    */
   rowTag?: string
+
+  /**
+   * Debounce of the search in ms
+   */
+  searchDebounce?: number
 }
