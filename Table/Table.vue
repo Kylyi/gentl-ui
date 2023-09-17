@@ -187,6 +187,7 @@ useTableSelection(props)
       class="scroller"
       :item-size="tableRowHeight"
       :emit-update="infiniteScroll"
+      :buffer="1000"
       @resize="autoResize && throttledHandleResize()"
       @update="handleInfiniteScroll"
     >
