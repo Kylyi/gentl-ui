@@ -23,7 +23,7 @@ function getShownValue(val: any) {
   <div class="value-container-card">
     <div
       v-if="$slots.icon || icon"
-      class="value-container-card__icon color-primary"
+      class="value-container-card__icon color-$MiniCard-icon-color"
     >
       <slot name="icon">
         <div
