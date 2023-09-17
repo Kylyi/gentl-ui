@@ -114,7 +114,7 @@ useTableSelection(props)
     ref="tableEl"
     class="table-container"
   >
-    <!-- TOP -->
+    <!-- Top -->
     <slot
       v-if="!noTop"
       name="top"
@@ -254,7 +254,10 @@ useTableSelection(props)
       :is-visible="!isLoading"
     />
 
-    <TableLoadingData v-if="isLoading" />
+    <TableLoadingData
+      v-if="isLoading"
+      :rows="rows"
+    />
 
     <TableTotals
       v-if="!noTotals && !!getTotalsData"
