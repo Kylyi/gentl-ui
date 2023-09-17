@@ -332,6 +332,12 @@ export function useTableData(
         instance?.emit('update:totalRows', totalRows.value)
       }
 
+      // We scroll to top if we are not fetching more data
+      if (!isFetchMore) {
+        // @ts-expect-error
+        scrollerEl.value?.scrollToItem?.(0)
+      }
+
       // We reset the `fetchMore`
       fetchMore.value = false
 
@@ -401,13 +407,6 @@ export function useTableData(
     },
     { immediate: true }
   )
-
-  // We watch the `search`, `filterColumns`, `queryBuilder` and `orderBy`
-  // to scroll to the top when they change
-  watch([search, columnFilters, queryBuilder, orderBy], () => {
-    // @ts-expect-error
-    scrollerEl.value?.scrollToItem?.(0)
-  })
 
   // Initialize query builder
   function initializeQueryBuilder() {
