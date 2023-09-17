@@ -17,7 +17,7 @@ import InputWrapper from '@/components/Inputs/InputWrapper.vue'
 import ScrollArea from '@/components/ScrollArea/ScrollArea.vue'
 
 const props = withDefaults(defineProps<ISelectorProps>(), {
-  debounce: 500,
+  debounce: 20,
   emptyValue: () => undefined,
   errorTakesSpace: true,
   errorVisible: true,

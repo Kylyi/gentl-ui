@@ -8,7 +8,7 @@ import type { ITextAreaInputProps } from '~/components/Inputs/TextArea/types/tex
 import { useInputUtils } from '@/components/Inputs/functions/useInputUtils'
 
 const props = withDefaults(defineProps<ITextAreaInputProps>(), {
-  debounce: 150,
+  debounce: 20,
   errorTakesSpace: true,
   errorVisible: true,
   mask: () => ({ mask: String }),

@@ -13,7 +13,7 @@ import { useNumber } from '~/components/Inputs/NumberInput/functions/useNumber'
 import Btn from '~~/components/Button/Btn.vue'
 
 const props = withDefaults(defineProps<INumberInputProps>(), {
-  debounce: 150,
+  debounce: 20,
   errorTakesSpace: true,
   errorVisible: true,
   fractionDigits: 2,

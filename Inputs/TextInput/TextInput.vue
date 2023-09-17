@@ -6,7 +6,7 @@ import { ITextInputProps } from '~/components/Inputs/TextInput/types/text-input-
 import { useInputUtils } from '@/components/Inputs/functions/useInputUtils'
 
 const props = withDefaults(defineProps<ITextInputProps>(), {
-  debounce: 25,
+  debounce: 20,
   errorTakesSpace: true,
   errorVisible: true,
   mask: () => ({ mask: String }),

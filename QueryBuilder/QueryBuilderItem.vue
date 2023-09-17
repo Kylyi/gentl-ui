@@ -308,7 +308,6 @@ const $v = useVuelidate(
           "
           v-model="customValue"
           size="sm"
-          :debounce="500"
           :placeholder="`${$t('table.filterValue')}...`"
           empty-value=""
         />
