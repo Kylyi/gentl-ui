@@ -120,6 +120,12 @@ const customValue = computed({
     return item.value.value?.join(',')
   },
   set(value: string) {
+    if (value === '') {
+      item.value.value = undefined
+
+      return
+    }
+
     const cleanedInput = value.replace(/,\s*$/, '').trim()
 
     item.value.value = cleanedInput.split(',').map(s => s.trim())
