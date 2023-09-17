@@ -30,6 +30,7 @@ const breadcrumbs = computed(() => {
         <span
           v-if="typeof breadcrumb === 'string'"
           :class="BUTTON_PRESET.CHEVRON_RIGHT.icon"
+          class="breadcrumb-item"
         />
 
         <Btn
@@ -38,6 +39,10 @@ const breadcrumbs = computed(() => {
           no-active-link
           color="!dark !dark:light"
           size="sm"
+          class="breadcrumb-item"
+          :class="{
+            'is-last': breadcrumb === breadcrumbs[breadcrumbs.length - 1],
+          }"
           no-uppercase
         />
       </template>
@@ -55,6 +60,16 @@ const breadcrumbs = computed(() => {
 
   &-wrapper {
     --apply: flex flex-gap-x-1 items-center;
+  }
+}
+
+@screen lt-lg {
+  .breadcrumbs > .breadcrumb-item {
+    --apply: display-none;
+
+    &.is-last {
+      --apply: display-flex;
+    }
   }
 }
 
