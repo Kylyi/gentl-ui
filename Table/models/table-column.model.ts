@@ -80,6 +80,10 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     component: any
     props?: Record<string, any>
     comparators: ComparatorEnum[]
+    valueFormatter?: {
+      getter: (value: any) => any
+      setter: (value: any) => void
+    }
   }
 
   /**

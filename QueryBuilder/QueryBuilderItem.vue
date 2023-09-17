@@ -85,6 +85,28 @@ const component = computed(() => {
   return COMPONENTS_BY_DATATYPE_MAP[colSelected.value?.dataType]
 })
 
+const customValueComputed = computed({
+  get() {
+    if (colSelected.value?.filterComponent?.valueFormatter) {
+      return colSelected.value.filterComponent.valueFormatter.getter(
+        item.value.value
+      )
+    }
+
+    return item.value.value
+  },
+  set(value) {
+    if (colSelected.value?.filterComponent?.valueFormatter) {
+      item.value.value =
+        colSelected.value.filterComponent.valueFormatter.setter(value)
+
+      return
+    }
+
+    item.value.value = value
+  },
+})
+
 const comparators = computed(() => {
   if (!colSelected.value) {
     return []
@@ -246,7 +268,7 @@ const $v = useVuelidate(
             customFilterComponent &&
             customFilterComponent.comparators.includes(item.comparator)
           "
-          v-model="item.value"
+          v-model="customValueComputed"
           v-bind="customFilterComponent.props"
           size="sm"
           class="qb-item__content-value"

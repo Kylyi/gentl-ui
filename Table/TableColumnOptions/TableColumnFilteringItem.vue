@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { config } from '~/config'
+
 // Types
 import { FilterItem } from '~/libs/App/data/models/filter-item'
 
@@ -63,6 +65,28 @@ const inputDebounce = computed(() => {
   }
 })
 
+const customValueComputed = computed({
+  get() {
+    if (props.column.filterComponent?.valueFormatter) {
+      return props.column.filterComponent.valueFormatter.getter(
+        filter.value.value
+      )
+    }
+
+    return filter.value.value
+  },
+  set(value) {
+    if (props.column.filterComponent?.valueFormatter) {
+      filter.value.value =
+        props.column.filterComponent.valueFormatter.setter(value)
+
+      return
+    }
+
+    filter.value.value = value
+  },
+})
+
 const comparatorOptions = computed(() => {
   return getAvailableComparators(props.column.dataType, {
     includeSelectorComparators: !!column.value.getDistinctData,
@@ -83,6 +107,11 @@ const customFilterComponent = computed(() => {
 
 const hiddenComparators = computed(() => {
   const availableComparators = comparatorOptions.value
+
+  if (config.table.allowComparatorsOfSameType) {
+    return {}
+  }
+
   const columnComparators = column.value.filters.flatMap(filter => {
     const isBooleanishComparator = BOOLEANISH_COMPARATORS.includes(
       filter.comparator
@@ -200,7 +229,7 @@ defineExpose({
         customFilterComponent &&
         customFilterComponent.comparators.includes(filter.comparator)
       "
-      v-model="filter.value"
+      v-model="customValueComputed"
       v-bind="customFilterComponent.props"
       size="sm"
       :placeholder="`${$t('table.filterValue')}...`"
