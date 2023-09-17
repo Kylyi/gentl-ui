@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // Virtual scroller
 // @ts-expect-error - no types
-import { DynamicScroller, DynamicScrollerItem } from 'vue-virtual-scroller'
+import { RecycleScroller } from 'vue-virtual-scroller'
 import { klona } from 'klona'
 
 import { config } from '~/config'
@@ -67,6 +67,7 @@ const {
 
   // General
   isScrolled,
+  tableRowHeight,
   rowKey,
   TableRowComponent,
   handleScrollLeft,
@@ -178,76 +179,76 @@ useTableSelection(props)
       </template>
     </TableHeader>
 
-    <DynamicScroller
+    <RecycleScroller
       v-show="hasVisibleColumn"
       ref="scrollerEl"
       :items="rows"
       :key-field="rowKey"
       class="scroller"
-      :min-item-size="rowHeight"
+      :item-size="tableRowHeight"
       :emit-update="infiniteScroll"
       @resize="autoResize && throttledHandleResize()"
       @update="handleInfiniteScroll"
     >
-      <template #default="{ item, index, active }">
-        <DynamicScrollerItem
+      <template #default="{ item, index }">
+        <!-- <DynamicScrollerItem
           :key="index"
           :item="item"
           :active="active"
+        > -->
+        <Component
+          :is="TableRowComponent"
+          :row="item"
+          :columns="internalColumns"
+          :to="to"
+          :class="{ 'is-clickable': rowClickable, 'odd': index % 2 !== 0 }"
+          :row-height="rowHeight"
+          :index="index"
+          @click="handleRowClick(item, $event)"
         >
-          <Component
-            :is="TableRowComponent"
-            :row="item"
-            :columns="internalColumns"
-            :to="to"
-            :class="{ 'is-clickable': rowClickable, 'odd': index % 2 !== 0 }"
-            :row-height="rowHeight"
-            :index="index"
-            @click="handleRowClick(item, $event)"
+          <template #row-inside>
+            <slot
+              name="row-inside"
+              :columns="columns"
+              :row="item"
+              :index="index"
+            />
+          </template>
+
+          <template #default>
+            <slot
+              name="data-row"
+              :columns="columns"
+              :row="item"
+              :index="index"
+            />
+          </template>
+
+          <template #inner>
+            <slot
+              name="inner"
+              :columns="columns"
+              :row="item"
+              :index="index"
+            />
+          </template>
+
+          <template
+            v-for="col in columns"
+            :key="col.name"
+            #[col.name]
           >
-            <template #row-inside>
-              <slot
-                name="row-inside"
-                :columns="columns"
-                :row="item"
-                :index="index"
-              />
-            </template>
-
-            <template #default>
-              <slot
-                name="data-row"
-                :columns="columns"
-                :row="item"
-                :index="index"
-              />
-            </template>
-
-            <template #inner>
-              <slot
-                name="inner"
-                :columns="columns"
-                :row="item"
-                :index="index"
-              />
-            </template>
-
-            <template
-              v-for="col in columns"
-              :key="col.name"
-              #[col.name]
-            >
-              <slot
-                :name="col.name"
-                :row="item"
-                :index="index"
-                :refresh-data-fnc="refreshData"
-              />
-            </template>
-          </Component>
-        </DynamicScrollerItem>
+            <slot
+              :name="col.name"
+              :row="item"
+              :index="index"
+              :refresh-data-fnc="refreshData"
+            />
+          </template>
+        </Component>
+        <!-- </DynamicScrollerItem> -->
       </template>
-    </DynamicScroller>
+    </RecycleScroller>
 
     <TableNoData
       :has-no-data="!rows.length && !isLoading"

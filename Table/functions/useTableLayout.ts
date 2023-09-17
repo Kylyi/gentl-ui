@@ -130,6 +130,24 @@ export function useTableLayout(
   // Responsivity
   const isBreakpoint = toRef($bp, props.breakpoint || 'md')
 
+  const tableRowHeight = computed(() => {
+    if (isBreakpoint.value) {
+      return props.rowHeight
+    }
+
+    const visibleColumns = internalColumns.value.filter(
+      column => !column.hidden
+    )
+
+    const MOBILE_ROW_Y_PADDING = 2 * (12 + 1) // + 1 is border
+    const MOBILE_ROW_CONTAINER_Y_PADDING = 2 * 4
+    const columnsHeight =
+      visibleColumns.length *
+      (props.mobileRowHeight || props.mobileRowHeight || 40)
+
+    return columnsHeight + MOBILE_ROW_Y_PADDING + MOBILE_ROW_CONTAINER_Y_PADDING
+  })
+
   const TableRowComponent = computed(() => {
     return isBreakpoint.value ? TableRow : TableRowMobile
   })
@@ -145,6 +163,7 @@ export function useTableLayout(
   return {
     isScrolled,
     isOverflown,
+    tableRowHeight,
     TableRowComponent,
     rowKey,
     handleScrollLeft: (left: number) => (scrollLeft.value = left),
