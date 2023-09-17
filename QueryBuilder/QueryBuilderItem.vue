@@ -56,6 +56,7 @@ const isSmallerScreen = injectStrict(qbIsSmallerScreenKey)
 // Utils
 const {
   isSelectorComparator,
+  canUseSelectorComparator,
   isDateAgoComparator,
   getAvailableComparators,
   isEmptyComparator,
@@ -85,6 +86,10 @@ const component = computed(() => {
   return COMPONENTS_BY_DATATYPE_MAP[colSelected.value?.dataType]
 })
 
+/**
+ * When using `TableColumn.filterComponent`, we might need to format the value
+ * by its `valueFormatter`
+ */
 const customValueComputed = computed({
   get() {
     if (colSelected.value?.filterComponent?.valueFormatter) {
@@ -104,6 +109,20 @@ const customValueComputed = computed({
     }
 
     item.value.value = value
+  },
+})
+
+/**
+ * Format value for simple `ComparatorEnum.IN` and `ComparatorEnum.NOT_IN`
+ */
+const customValue = computed({
+  get() {
+    return item.value.value?.join(',')
+  },
+  set(value: string) {
+    const cleanedInput = value.replace(/,\s*$/, '').trim()
+
+    item.value.value = cleanedInput.split(',').map(s => s.trim())
   },
 })
 
@@ -275,9 +294,22 @@ const $v = useVuelidate(
           :placeholder="`${$t('table.filterValue')}...`"
         />
 
+        <!-- Selector for `Comparator.IN` and `Comparator.NOT_IN` for simple string cases -->
+        <TextInput
+          v-else-if="
+            canUseSelectorComparator(item.comparator, colSelected) &&
+            !colSelected?.getDistinctData
+          "
+          v-model="customValue"
+          size="sm"
+          :debounce="500"
+          :placeholder="`${$t('table.filterValue')}...`"
+          empty-value=""
+        />
+
         <!-- Selector values -->
         <Selector
-          v-else-if="colSelected.getDistinctData"
+          v-else-if="canUseSelectorComparator(item.comparator, colSelected)"
           ref="valueInputEl"
           v-model="item.value"
           :load-data="{

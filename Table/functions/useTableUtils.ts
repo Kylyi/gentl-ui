@@ -113,6 +113,7 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
         ...comparators.filter(comparator => {
           return !SELECTOR_COMPARATORS.includes(comparator)
         }),
+        ...COMPARATORS_BY_DATATYPE_MAP[dataType],
         ...extraComparators,
       ])
     }

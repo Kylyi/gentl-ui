@@ -65,6 +65,10 @@ const inputDebounce = computed(() => {
   }
 })
 
+/**
+ * When using `TableColumn.filterComponent`, we might need to format the value
+ * by its `valueFormatter`
+ */
 const customValueComputed = computed({
   get() {
     if (props.column.filterComponent?.valueFormatter) {
@@ -84,6 +88,20 @@ const customValueComputed = computed({
     }
 
     filter.value.value = value
+  },
+})
+
+/**
+ * Format value for simple `ComparatorEnum.IN` and `ComparatorEnum.NOT_IN`
+ */
+const customValue = computed({
+  get() {
+    return filter.value.value?.join(',')
+  },
+  set(value: string) {
+    const cleanedInput = value.replace(/,\s*$/, '').trim()
+
+    filter.value.value = cleanedInput.split(',').map(s => s.trim())
   },
 })
 
@@ -233,6 +251,20 @@ defineExpose({
       v-bind="customFilterComponent.props"
       size="sm"
       :placeholder="`${$t('table.filterValue')}...`"
+      @update:model-value="handleCompareValueChange"
+    />
+
+    <!-- Selector for `Comparator.IN` and `Comparator.NOT_IN` for simple string cases -->
+    <TextInput
+      v-else-if="
+        canUseSelectorComparator(filter.comparator, column) &&
+        !column.getDistinctData
+      "
+      v-model="customValue"
+      size="sm"
+      :debounce="500"
+      :placeholder="`${$t('table.filterValue')}...`"
+      empty-value=""
       @update:model-value="handleCompareValueChange"
     />
 
