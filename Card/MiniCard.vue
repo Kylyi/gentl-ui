@@ -103,7 +103,7 @@ function getShownValue(val: any) {
     }
 
     &_icon{
-      --apply: ph:link h-4 w-4 m-r-1 inline-block;
+      --apply: ph:link min-h-4 h-4 min-w-4 w-4 m-r-1 inline-block;
     }
   }
 }
