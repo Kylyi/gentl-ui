@@ -59,8 +59,10 @@ function getShownValue(val: any) {
               class="link text-sm"
               :class="[valueClass, { 'font-bold': !noBold }]"
             >
-              <span class="link_icon" />
-              {{ getShownValue(val) }}
+              <span class="link_label">
+                <span class="link_label__icon" />
+                {{ getShownValue(val) }}
+              </span>
             </NuxtLink>
           </slot>
         </template>
@@ -70,6 +72,7 @@ function getShownValue(val: any) {
 </template>
 
 <style scoped lang="scss">
+$slate-400-hex: #94a3b8;
 .value-container-card {
   --apply: flex rounded-custom p-x-2 p-y-1 flex-gap-2;
 
@@ -94,17 +97,37 @@ function getShownValue(val: any) {
     font-weight: var(--MiniCard-value-font-weight);
   }
   .link {
-    --apply: decoration-none flex items-center border-b-1 border-transparent;
+    --apply: decoration-none items-center;
     font-size: var(--MiniCard-value-font-size);
     font-weight: var(--MiniCard-value-font-weight);
 
-    &:hover{
-      --apply: border-color-slate-400;
+    &_label{
+      display: inline;
+      position: relative;
+      line-height: 18px;
+
+      &::before{
+        content: "";
+        width: 20px;
+        display: inline-block;
+      }
+
+      &:hover {
+        --apply: color-blue-500 dark:color-blue-700;
+        background-image: linear-gradient(to bottom, transparent 0%, transparent calc(100% - 1px), $slate-400-hex calc(100% - 1px), $slate-400-hex 100%);
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+        background-position: 0% 100%;
+
+      }
+
+      &__icon{
+        --apply: ph:link min-h-4 h-4 min-w-4 w-4;
+        position: absolute;
+        left: 0;
+      }
     }
 
-    &_icon{
-      --apply: ph:link min-h-4 h-4 min-w-4 w-4 m-r-1 inline-block;
-    }
   }
 }
 </style>
