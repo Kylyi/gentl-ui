@@ -72,7 +72,7 @@ function getShownValue(val: any) {
 </template>
 
 <style scoped lang="scss">
-$slate-400-hex: #94a3b8;
+$blue-500-hex: #3b82f6;
 .value-container-card {
   --apply: flex rounded-custom p-x-2 p-y-1 flex-gap-2;
 
@@ -102,29 +102,23 @@ $slate-400-hex: #94a3b8;
     font-weight: var(--MiniCard-value-font-weight);
 
     &_label{
-      display: inline;
-      position: relative;
-      line-height: 18px;
+      --apply: inline relative lh-4.5;
 
       &::before{
-        content: "";
-        width: 20px;
-        display: inline-block;
+        --apply: content-empty inline-block w-4 min-w-4;
       }
 
       &:hover {
         --apply: color-blue-500 dark:color-blue-700;
-        background-image: linear-gradient(to bottom, transparent 0%, transparent calc(100% - 1px), $slate-400-hex calc(100% - 1px), $slate-400-hex 100%);
+
+        background-image: linear-gradient(to bottom, transparent 0%, transparent calc(100% - 1px), $blue-500-hex calc(100% - 1px), $blue-500-hex 100%);
         background-size: 100% 100%;
         background-repeat: no-repeat;
         background-position: 0% 100%;
-
       }
 
       &__icon{
-        --apply: ph:link min-h-4 h-4 min-w-4 w-4;
-        position: absolute;
-        left: 0;
+        --apply: ph:link min-h-4 h-4 min-w-4 w-4 absolute left-0 top-0.4;
       }
     }
 
