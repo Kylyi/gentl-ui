@@ -73,6 +73,7 @@ function getShownValue(val: any) {
 
 <style scoped lang="scss">
 $blue-500-hex: #3b82f6;
+$blue-700-hex: #1d4ed8;
 .value-container-card {
   --apply: flex rounded-custom p-x-2 p-y-1 flex-gap-2;
 
@@ -85,20 +86,17 @@ $blue-500-hex: #3b82f6;
   }
 
   &-label {
-    --apply: text-caption;
-    color: var(--MiniCard-label-color);
-    font-size: var(--MiniCard-label-font-size);
+    --apply: text-caption color-$MiniCard-label-color font-size-$MiniCard-label-font-size;
   }
 
   &-value {
-    --apply: text-sm;
+    --apply: text-sm font-size-$MiniCard-value-font-size;
     overflow-wrap: break-word;
-    font-size: var(--MiniCard-value-font-size);
     font-weight: var(--MiniCard-value-font-weight);
   }
+
   .link {
-    --apply: decoration-none items-center;
-    font-size: var(--MiniCard-value-font-size);
+    --apply: decoration-none items-center font-size-$MiniCard-value-font-size;
     font-weight: var(--MiniCard-value-font-weight);
 
     &_label{
@@ -121,7 +119,19 @@ $blue-500-hex: #3b82f6;
         --apply: ph:link min-h-4 h-4 min-w-4 w-4 absolute left-0 top-0.4;
       }
     }
-
   }
 }
+
+.dark{
+    .link{
+      &_label{
+        &:hover{
+          background-image: linear-gradient(to bottom, transparent 0%, transparent calc(100% - 1px), $blue-700-hex calc(100% - 1px), $blue-700-hex 100%);
+          background-size: 100% 100%;
+          background-repeat: no-repeat;
+          background-position: 0% 100%;
+        }
+      }
+    }
+  }
 </style>
