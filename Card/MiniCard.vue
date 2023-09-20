@@ -72,8 +72,6 @@ function getShownValue(val: any) {
 </template>
 
 <style scoped lang="scss">
-$blue-500-hex: #3b82f6;
-$blue-700-hex: #1d4ed8;
 .value-container-card {
   --apply: flex rounded-custom p-x-2 p-y-1 flex-gap-2;
 
@@ -100,7 +98,7 @@ $blue-700-hex: #1d4ed8;
     font-weight: var(--MiniCard-value-font-weight);
 
     &_label{
-      --apply: inline relative lh-4.5;
+      --apply: inline relative leading-4.5;
 
       &::before{
         --apply: content-empty inline-block w-4 min-w-4;
@@ -109,13 +107,14 @@ $blue-700-hex: #1d4ed8;
       &:hover {
         --apply: color-blue-500 dark:color-blue-700;
 
-        background-image: linear-gradient(to bottom, transparent 0%, transparent calc(100% - 1px), $blue-500-hex calc(100% - 1px), $blue-500-hex 100%);
+        background-image: linear-gradient(to bottom, transparent 0%, transparent calc(100% - 1px), theme('colors.blue.500') calc(100% - 1px), theme('colors.blue.500') 100%);
         background-size: 100% 100%;
         background-repeat: no-repeat;
         background-position: 0% 100%;
       }
 
       &__icon{
+        // top-0.4 makes the icon align with text, no deeper meaning
         --apply: ph:link min-h-4 h-4 min-w-4 w-4 absolute left-0 top-0.4;
       }
     }
@@ -126,7 +125,7 @@ $blue-700-hex: #1d4ed8;
     .link{
       &_label{
         &:hover{
-          background-image: linear-gradient(to bottom, transparent 0%, transparent calc(100% - 1px), $blue-700-hex calc(100% - 1px), $blue-700-hex 100%);
+          background-image: linear-gradient(to bottom, transparent 0%, transparent calc(100% - 1px), theme('colors.blue.700') calc(100% - 1px), theme('colors.blue.700') 100%);
           background-size: 100% 100%;
           background-repeat: no-repeat;
           background-position: 0% 100%;
