@@ -59,8 +59,10 @@ function getShownValue(val: any) {
               class="link text-sm"
               :class="[valueClass, { 'font-bold': !noBold }]"
             >
-              <span class="link_icon" />
-              {{ getShownValue(val) }}
+              <span class="link_label">
+                <span class="link_label__icon" />
+                {{ getShownValue(val) }}
+              </span>
             </NuxtLink>
           </slot>
         </template>
@@ -82,29 +84,53 @@ function getShownValue(val: any) {
   }
 
   &-label {
-    --apply: text-caption;
-    color: var(--MiniCard-label-color);
-    font-size: var(--MiniCard-label-font-size);
+    --apply: text-caption color-$MiniCard-label-color font-size-$MiniCard-label-font-size;
   }
 
   &-value {
-    --apply: text-sm;
+    --apply: text-sm font-size-$MiniCard-value-font-size;
     overflow-wrap: break-word;
-    font-size: var(--MiniCard-value-font-size);
     font-weight: var(--MiniCard-value-font-weight);
   }
+
   .link {
-    --apply: decoration-none flex items-center border-b-1 border-transparent;
-    font-size: var(--MiniCard-value-font-size);
+    --apply: decoration-none items-center font-size-$MiniCard-value-font-size;
     font-weight: var(--MiniCard-value-font-weight);
 
-    &:hover{
-      --apply: border-color-slate-400;
-    }
+    &_label{
+      --apply: inline relative leading-4.5;
 
-    &_icon{
-      --apply: ph:link h-4 w-4 m-r-1 inline-block;
+      &::before{
+        --apply: content-empty inline-block w-4 min-w-4;
+      }
+
+      &:hover {
+        --apply: color-blue-500 dark:color-blue-700;
+
+        background-image: linear-gradient(to bottom, transparent 0%, transparent calc(100% - 1px), theme('colors.blue.500') calc(100% - 1px), theme('colors.blue.500') 100%);
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+        background-position: 0% 100%;
+      }
+
+      &__icon{
+        // top-0.4 makes the icon align with text, no deeper meaning
+        --apply: ph:link min-h-4 h-4 min-w-4 w-4 absolute left-0 top-0.4;
+      }
     }
   }
 }
+
+.dark{
+    .link{
+      &_label{
+        &:hover{
+          background-image: linear-gradient(to bottom, transparent 0%, transparent calc(100% - 1px), theme('colors.blue.700') calc(100% - 1px), theme('colors.blue.700') 100%);
+          background-size: 100% 100%;
+          background-repeat: no-repeat;
+          background-position: 0% 100%;
+        }
+      }
+    }
+  }
 </style>
