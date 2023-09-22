@@ -156,11 +156,11 @@ async function handleApplyChanges() {
           >
             {{ $t('table.customizeColumns') }}
           </h6>
-          <span text="caption xs">
+          <!-- <span text="caption xs">
             {{ nonHelperCols.length }}
             {{ $t('columns').toLowerCase() }}
             {{ $t('general.available').toLowerCase() }}
-          </span>
+          </span> -->
         </div>
 
         <DocumentationBtn
@@ -188,7 +188,10 @@ async function handleApplyChanges() {
             flex="~ col"
             p="t-2"
           >
-            <h6 font="bold">{{ $t('table.availableMetrics') }}</h6>
+            <div flex="~ gap-2 items-center">
+              <h6 font="bold">{{ $t('table.availableMetrics') }}</h6>
+              <span text="caption">({{ nonHelperCols.length }})</span>
+            </div>
             <span text="caption">{{ $t('table.selectVisibleColumns') }}</span>
           </div>
 
