@@ -30,7 +30,7 @@ export function parseSortingFromUrl(
   const sortFields = trimmedSort?.split(',') ?? []
 
   let sortOrder = 1
-  const sortObj = sortFields.reduce((agg, sortField) => {
+  const sorting = sortFields.reduce((agg, sortField) => {
     const fieldSplit = sortField.split('.')
     const direction = fieldSplit.pop() as 'asc' | 'desc'
     const fieldPath = fieldSplit.join('.')
@@ -46,5 +46,7 @@ export function parseSortingFromUrl(
     return agg
   }, [] as { field: string; sort: 'asc' | 'desc'; sortOrder: number }[])
 
-  return sortObj
+  return sorting.filter(sortingObj => {
+    return sortingObj.field !== '$key'
+  })
 }
