@@ -35,12 +35,12 @@ function getShownValue(val: any) {
     </div>
 
     <div class="value-container-card__content">
-      <span
+      <div
         class="value-container-card-label"
         :class="labelClass"
       >
         {{ label }}
-      </span>
+      </div>
 
       <ValueFormatter v-bind="valueFormatterProps">
         <template #default="{ val }">
@@ -56,7 +56,7 @@ function getShownValue(val: any) {
             <NuxtLink
               v-else
               :to="to"
-              class="link text-sm"
+              class="link"
               :class="[valueClass, { 'font-bold': !noBold }]"
             >
               <span class="link_label">
@@ -79,12 +79,8 @@ function getShownValue(val: any) {
     --apply: shrink-0 m-t-.5;
   }
 
-  &__content {
-    --apply: flex flex-col flex-gap-1;
-  }
-
   &-label {
-    --apply: text-caption color-$MiniCard-label-color font-size-$MiniCard-label-font-size;
+    --apply: text-caption color-$MiniCard-label-color font-size-$MiniCard-label-font-size p-b-2;
   }
 
   &-value {
@@ -94,11 +90,11 @@ function getShownValue(val: any) {
   }
 
   .link {
-    --apply: decoration-none items-center font-size-$MiniCard-value-font-size;
+    --apply: decoration-none font-size-$MiniCard-value-font-size text-sm;
     font-weight: var(--MiniCard-value-font-weight);
 
     &_label{
-      --apply: inline relative leading-4.5;
+      --apply: relative leading-4.5;
 
       &::before{
         --apply: content-empty inline-block w-4 min-w-4;
