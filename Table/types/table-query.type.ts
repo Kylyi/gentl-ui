@@ -65,6 +65,7 @@ export type ITableDataFetchFncInput = {
 
   /**
    * Same idea as `queryParams` but with the `alwaysSelected` columns included
+   * Also contains all the sorted columns in `select` even if the column is not visible
    * Note: Used for actual data fetching
    */
   fetchQueryParams: ReturnType<typeof config.table.getQuery>

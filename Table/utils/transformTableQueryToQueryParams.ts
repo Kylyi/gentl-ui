@@ -135,13 +135,8 @@ export function serializeTableQueryToQueryParams(tableQuery: ITableQuery) {
 
   // Visible columns + sorted columns
   // We also check for the sorted columns because we need to know their values for `fetchMore`
-  if (select?.length || orderBy?.length) {
-    const selectWithOrder = uniq([
-      ...(select || []),
-      ...(orderBy?.map(sort => sort.field) || []),
-    ])
-
-    urlParams.append('select', serializeSelectString(selectWithOrder))
+  if (select?.length) {
+    urlParams.append('select', serializeSelectString(select))
   }
 
   return urlParams

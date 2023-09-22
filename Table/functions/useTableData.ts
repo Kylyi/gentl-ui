@@ -212,9 +212,14 @@ export function useTableData(
         select: Array.from(
           new Set([
             ...(tableQuery.select || []),
+
+            // Add `alwaysSelected` columns
             ...internalColumnsRef.value
               .filter(col => col.alwaysSelected)
               .map(col => col.field),
+
+            // Add sorted columns
+            ...(tableQuery.orderBy?.map(order => order.field) || []),
           ])
         ),
       }

@@ -121,15 +121,7 @@ function handleLayoutSelect(_layout?: ITableLayout) {
   if (schemaQueryBuilder?.length) {
     queryBuilder.value = schemaQueryBuilder
   } else if (props.queryBuilder !== undefined) {
-    queryBuilder.value = [
-      {
-        id: generateUUID(),
-        isGroup: true,
-        children: [],
-        condition: 'AND',
-        path: '0',
-      },
-    ]
+    queryBuilder.value = props.queryBuilder
   }
 
   // Set the column filters with the parsed filters
