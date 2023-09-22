@@ -133,9 +133,15 @@ export function serializeTableQueryToQueryParams(tableQuery: ITableQuery) {
   ]
   urlParams.append('paging', `(${paging.join(',')})`)
 
-  // Visible columns
-  if (select?.length) {
-    urlParams.append('select', serializeSelectString(select))
+  // Visible columns + sorted columns
+  // We also check for the sorted columns because we need to know their values for `fetchMore`
+  if (select?.length || orderBy?.length) {
+    const selectWithOrder = uniq([
+      ...(select || []),
+      ...(orderBy?.map(sort => sort.field) || []),
+    ])
+
+    urlParams.append('select', serializeSelectString(selectWithOrder))
   }
 
   return urlParams
