@@ -146,13 +146,15 @@ export function useTableData(
   const orderBy = computed(() => {
     const columns = toValue(internalColumnsRef)
 
-    return columns.reduce((agg, col) => {
-      if (col.sortDbQuery) {
-        agg.push(col.sortDbQuery)
-      }
+    return columns
+      .reduce((agg, col) => {
+        if (col.sortDbQuery) {
+          agg.push(col.sortDbQuery)
+        }
 
-      return agg
-    }, [] as ITableOrderBy[])
+        return agg
+      }, [] as ITableOrderBy[])
+      .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0))
   })
 
   // Columns selection

@@ -5,7 +5,11 @@ import type { IQueryBuilderGroup } from '~/components/QueryBuilder/types/query-b
 import type { IQueryBuilderItem } from '~/components/QueryBuilder/types/query-builder-item-props.type'
 import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
 
-export type ITableOrderBy = { field: string; direction: 'asc' | 'desc' }
+export type ITableOrderBy = {
+  field: string
+  direction: 'asc' | 'desc'
+  sortOrder?: number | undefined
+}
 export type ISelect = Record<string, boolean | Record<string, boolean>>
 
 export type ITableFilterItem = Pick<

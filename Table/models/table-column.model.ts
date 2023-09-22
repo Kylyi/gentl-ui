@@ -242,7 +242,11 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
       return undefined
     }
 
-    return { field: this.field.toString(), direction: this.sort }
+    return {
+      field: this.field.toString(),
+      direction: this.sort,
+      sortOrder: this.sortOrder,
+    }
   }
 
   /**
