@@ -365,14 +365,14 @@ export function useList(
   const useWorker = computed(() => props.useWorker || items.value.length > 5e3)
 
   async function handleSearchedResults(res: typeof results.value) {
-    let _hasExactMatch = false
+    const _hasExactMatch = itemsExtended.value.some(
+      item => getLabel(item._ref) === search.value
+    )
     let highlightedItems: { ref: any; id: string; _highlighted?: string }[] = []
 
     // When we're not using FE filtering
     if (props.noFilter) {
       highlightedItems = itemsExtended.value.map(item => {
-        _hasExactMatch = _hasExactMatch || getLabel(item._ref) === search.value
-
         return {
           ref: item._ref,
           id: getKey(item._ref),
@@ -384,8 +384,6 @@ export function useList(
     // Found > 100 ITEMS - do not create highlighted text (performance)
     else if (!search.value || res.length > 100 || props.noHighlight) {
       highlightedItems = res.map(({ item, score }) => {
-        _hasExactMatch = _hasExactMatch || score! <= Number.EPSILON
-
         return {
           ref: item._ref,
           id: getKey(item._ref),
@@ -397,11 +395,10 @@ export function useList(
 
     // Create highlighted text
     else {
-      const { highlightedResult, hasExactMatch: HEM } = highlight(res, {
+      const { highlightedResult } = highlight(res, {
         keys: fuseOptions?.fuseOptions?.keys || [],
         searchValue: search.value,
       })
-      _hasExactMatch = HEM
 
       highlightedItems = highlightedResult.map(({ item, highlighted }) => {
         return {
