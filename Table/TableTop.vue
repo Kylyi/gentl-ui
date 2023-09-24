@@ -245,7 +245,6 @@ function handleClearSorting() {
           <div fluent:select-all-on-20-regular />
           <span m="l-1">{{ $t('general.selected') }}</span>
           <span font="bold">{{ selectionCount }}</span>
-          <span>{{ $t('general.item', 2) }}</span>
         </div>
 
         <!-- Selection actions -->

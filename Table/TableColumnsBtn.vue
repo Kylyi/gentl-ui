@@ -264,16 +264,13 @@ async function handleApplyChanges() {
             flex="~ col"
             p="t-2"
           >
-            <h6 font="bold">{{ $t('table.selectedColumns') }}</h6>
+            <div flex="~ gap-2 items-center">
+              <h6 font="bold">{{ $t('table.selectedColumns') }}</h6>
+              <span text="caption">({{ filteredCols.length }})</span>
+            </div>
 
-            <div flex="~ justify-between items-center gap-1">
+            <div flex="~ items-center gap-1">
               <span text="caption">{{ $t('general.dragToReorder') }}</span>
-
-              <span text="caption xs">
-                {{ filteredCols.length }}
-                {{ $t('columns').toLowerCase() }}
-                {{ $t('general.selected').toLowerCase() }}
-              </span>
             </div>
           </div>
 
