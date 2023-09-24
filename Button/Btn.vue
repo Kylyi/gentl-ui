@@ -100,10 +100,11 @@ defineExpose({
       <Loader
         :type="loaderType || (label ? 'inline' : 'block')"
         :color="loadingColor"
+        class="loading__loader"
       />
     </div>
 
-    <!-- HOVER FOCUS HELPER -->
+    <!-- Hover focus helper -->
     <span
       v-if="!noHoverEffect"
       class="focus-helper"
@@ -214,6 +215,10 @@ defineExpose({
     .btn-label {
       --apply: font-rem-10 p-y-1;
     }
+
+    .loading__loader {
+      --apply: h-3.5;
+    }
   }
 
   &--sm {
@@ -225,6 +230,10 @@ defineExpose({
 
     .btn-label {
       --apply: font-rem-12 p-y-1.5;
+    }
+
+    .loading__loader {
+      --apply: h-4.5;
     }
   }
 
@@ -238,6 +247,10 @@ defineExpose({
     .btn-label {
       --apply: font-rem-14 p-y-2;
     }
+
+    .loading__loader {
+      --apply: h-5.5;
+    }
   }
 
   &--lg {
@@ -249,6 +262,10 @@ defineExpose({
 
     .btn-label {
       --apply: font-rem-16 p-y-2.5;
+    }
+
+    .loading__loader {
+      --apply: h-6.5;
     }
   }
 
