@@ -409,14 +409,27 @@ export function useTableColumns(
       }
     }
 
-    // We add extra width to the last column if the wrapper is overflown
-    if (isWrapperOverflown) {
-      const lastCol = cols[cols.length - 1]
+    // We add extra width to the last column if the wrapper is overflown horizontally
+    const totalVisibleColumnsWidth = cols.reduce((agg, col) => {
+      if (!col.hidden) {
+        agg += col.adjustedWidth
+      }
 
-      if (lastCol) {
-        lastCol.adjustedWidth += scrollbarWidth
-        cols[cols.length - 1].headerStyle = {
-          ...cols[cols.length - 1].headerStyle,
+      return agg
+    }, 0)
+    const isWrapperOverflownHorizontally =
+      totalVisibleColumnsWidth > contentWidth
+
+    if (isWrapperOverflownHorizontally) {
+      const lastVisibleNonHelperCol = cols
+        .filter(col => !col.isHelperCol)
+        .reverse()
+        .find(col => !col.hidden)
+
+      if (lastVisibleNonHelperCol) {
+        lastVisibleNonHelperCol.adjustedWidth += scrollbarWidth
+        lastVisibleNonHelperCol.headerStyle = {
+          ...lastVisibleNonHelperCol.headerStyle,
           marginRight: `${scrollbarWidth}px`,
         }
       }
