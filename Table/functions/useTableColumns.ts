@@ -357,6 +357,15 @@ export function useTableColumns(
 
     let wExtra = 0
     colsSortedByWidth.forEach(col => {
+      // NOTE - We reset the `headerStyle`, specifically the `marginRight` there
+      // `marginRight` is added to the last column in the table when the table
+      // is horizontally overflown. We need to reset it here because we recalculate
+      // it below
+      col.headerStyle = {
+        ...col.headerStyle,
+        marginRight: undefined,
+      }
+
       const labelChars = col.hideLabel ? 0 : col.label.length
       const colMinWidth = col.minWidth || labelChars * 8 + 80 // These numbers are arbitrary
 
@@ -410,6 +419,7 @@ export function useTableColumns(
     }
 
     // We add extra width to the last column if the wrapper is overflown horizontally
+    // and vertically
     const totalVisibleColumnsWidth = cols.reduce((agg, col) => {
       if (!col.hidden) {
         agg += col.adjustedWidth
@@ -420,7 +430,7 @@ export function useTableColumns(
     const isWrapperOverflownHorizontally =
       totalVisibleColumnsWidth > contentWidth
 
-    if (isWrapperOverflownHorizontally) {
+    if (isWrapperOverflownHorizontally && isWrapperOverflown) {
       const lastVisibleNonHelperCol = cols
         .filter(col => !col.isHelperCol)
         .reverse()

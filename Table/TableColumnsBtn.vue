@@ -55,10 +55,10 @@ const nonHelperCols = computed({
   get() {
     return clonedColumns.value.filter(col => !col.isHelperCol)
   },
-  set(val: TableColumn[]) {
+  set(columns: TableColumn[]) {
     const helpersCols = clonedColumns.value.filter(col => col.isHelperCol)
 
-    clonedColumns.value = [...helpersCols, ...val]
+    clonedColumns.value = [...helpersCols, ...columns]
     setTableState(storageKey.value, { columns: clonedColumns.value })
   },
 })
@@ -67,9 +67,9 @@ const filteredCols = computed({
   get() {
     return nonHelperCols.value.filter(col => !col.hidden)
   },
-  set(val: TableColumn[]) {
+  set(columns: TableColumn[]) {
     nonHelperCols.value = [
-      ...val,
+      ...columns,
       ...clonedColumns.value.filter(col => col.hidden),
     ]
   },
