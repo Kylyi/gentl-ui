@@ -277,6 +277,11 @@ export interface ITableProps {
   useChips?: boolean // default ~ true
 
   /**
+   * Whether to use table component that supports dynamic row height
+   */
+  useDynamicRowHeight?: boolean // default ~ comes from config
+
+  /**
    * Whether to use server-side pagination, filtering and sorting
    */
   useServer?: boolean // default ~ true
