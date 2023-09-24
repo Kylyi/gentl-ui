@@ -38,7 +38,8 @@ defineProps<IProps>()
 }
 
 .heading.is-filled {
-  --apply: bg-ca p-x-4;
+  --apply: p-x-4;
+  --apply: bg-$Heading-bg;
 
   &::before {
     content: unset;

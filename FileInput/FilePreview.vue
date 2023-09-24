@@ -46,7 +46,7 @@ const imageUrl = computed(() => {
         text="caption"
         line-clamp="2"
       >
-        {{ file.name }}
+        {{ file?.name }}
       </span>
 
       <Btn
@@ -115,7 +115,7 @@ const imageUrl = computed(() => {
   }
 
   &:hover {
-    --apply: bg-ca color-dark dark: color-light;
+    --apply: shadow-consistent-xs shadow-ca color-dark dark:color-light;
   }
 }
 </style>

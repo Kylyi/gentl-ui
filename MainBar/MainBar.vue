@@ -1,8 +1,8 @@
 <script setup lang="ts">
-// TYPES
+// Types
 import type { IMainBarProps } from '~~/components/MainBar/types/main-bar-props.type'
 
-// COMPONENTS
+// Components
 import CrudBtns from '@/components/Crud/CrudBtns.vue'
 
 defineProps<IMainBarProps>()
@@ -119,12 +119,12 @@ defineExpose({
   transition: padding 250ms cubic-bezier(0, 0, 0.2, 1);
 
   &-content {
-    --apply: flex flex-gap-x-4 grow items-center rounded-custom
-      bg-ca;
+    --apply: flex flex-gap-x-4 grow items-center rounded-custom;
+    --apply: bg-$MainBar-bg;
   }
 
   &-title {
-    --apply: flex flex-col grow overflow-auto relative bg-ca rounded-custom;
+    --apply: flex flex-col grow overflow-auto relative rounded-custom;
   }
 
   &-subtitle {
