@@ -59,7 +59,7 @@ const pageDrawerClasses = computedEager(() => {
 
     <div
       class="page-drawer-content"
-      bg="ca"
+      bg="$PageDrawer-content-bg"
       :class="contentClass"
     >
       <slot :mini="isMini" />
@@ -67,7 +67,7 @@ const pageDrawerClasses = computedEager(() => {
 
     <div
       class="page-drawer-bottom"
-      bg="ca"
+      bg="$PageDrawer-bottom-bg"
       :class="bottomClass"
     >
       <slot

@@ -114,7 +114,7 @@ header {
   --apply: w-full flex flex-gap-2 p-x-1 min-h-52px;
 
   &-wrapper {
-    --apply: flex flex-col bg-dark;
+    --apply: flex flex-col bg-$Navigation-bg;
   }
 }
 </style>

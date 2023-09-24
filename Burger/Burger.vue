@@ -10,7 +10,6 @@ defineEmits<{
   <button
     name="menu"
     class="burger-wrapper"
-    color="white"
     no-box-shadow
     @click="$emit('update:model-value', !modelValue)"
   >
