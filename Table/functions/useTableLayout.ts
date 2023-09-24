@@ -7,7 +7,7 @@ import type { ITableProps } from '~/components/Table/types/table-props.type'
 import type { ITableLayout } from '~/components/Table/types/table-layout.type'
 
 // Models
-import { TableColumn } from 'components/Table/models/table-column.model'
+import { TableColumn } from '~/components/Table/models/table-column.model'
 
 // Injections
 import { tableResizeKey } from '~/components/Table/provide/table.provide'

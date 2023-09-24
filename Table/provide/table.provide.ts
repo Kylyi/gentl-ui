@@ -4,7 +4,7 @@ import type { ITableDataFetchFncInput } from '~/components/Table/types/table-que
 import type { ITableLayout } from '~/components/Table/types/table-layout.type'
 
 // Models
-import { TableColumn } from 'components/Table/models/table-column.model'
+import { TableColumn } from '~/components/Table/models/table-column.model'
 
 export const getTableStorageKey: InjectionKey<() => string> =
   Symbol('getTableStorageKey')

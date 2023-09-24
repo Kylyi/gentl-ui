@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Types
-import type { TableColumn } from 'components/Table/models/table-column.model'
+import type { TableColumn } from '~/components/Table/models/table-column.model'
 
 type IProps = {
   column: TableColumn

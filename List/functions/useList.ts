@@ -106,7 +106,7 @@ export function useList(
       keys?.forEach(key => {
         const val = get(item, key as string)
 
-        set(itemPartial, key as string, $toLatin(val?.toString()))
+        set(itemPartial, key as string, $toBoldLatin(val?.toString()))
       })
 
       return itemPartial
@@ -327,7 +327,7 @@ export function useList(
     }
 
     const searchBoldLatin = config.list.useToBoldLatin
-      ? $toLatin(search.value)
+      ? $toBoldLatin(search.value)
       : search.value
 
     if (!props.fuseExtendedSearchToken) {

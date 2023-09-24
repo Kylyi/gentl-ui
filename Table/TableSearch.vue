@@ -2,7 +2,7 @@
 import { config } from '~/config'
 
 // Types
-import type { IQueryBuilderRow } from 'components/QueryBuilder/types/query-builder-row-props.type'
+import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
 
 // Injections
 import { tableRefreshKey } from '~/components/Table/provide/table.provide'

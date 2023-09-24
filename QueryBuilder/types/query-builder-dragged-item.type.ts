@@ -1,4 +1,5 @@
-import { IQueryBuilderRow } from 'components/QueryBuilder/types/query-builder-row-props.type'
+// Types
+import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
 
 export type IQueryBuilderDraggedItem = {
   row: IQueryBuilderRow

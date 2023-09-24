@@ -112,7 +112,7 @@ function handleStep() {
     currentValue = 0
   }
 
-  const nextValue = +currentValue + stepAdjusted.value * modifier.value
+  const nextValue = +currentValue! + stepAdjusted.value * modifier.value
   handleManualModelChange(nextValue, false)
 }
 

@@ -6,7 +6,7 @@ import type { ITableFilterRow } from '~/components/Table/types/table-query.type'
 
 // Models
 import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
-import { FilterItem } from 'libs/App/data/models/filter-item'
+import { FilterItem } from '~/libs/App/data/models/filter-item'
 
 /**
  * Transforms the filter row to Prisma's where condition format.

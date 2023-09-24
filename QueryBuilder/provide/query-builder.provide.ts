@@ -1,6 +1,9 @@
-import { IQueryBuilderDraggedItem } from 'components/QueryBuilder/types/query-builder-dragged-item.type'
-import { IQueryBuilderRow } from 'components/QueryBuilder/types/query-builder-row-props.type'
-import { TableColumn } from 'components/Table/models/table-column.model'
+// Types
+import type { IQueryBuilderDraggedItem } from '~/components/QueryBuilder/types/query-builder-dragged-item.type'
+import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
+
+// Models
+import { TableColumn } from '~/components/Table/models/table-column.model'
 
 // Abbreviation `qb` stands for `query builder`
 

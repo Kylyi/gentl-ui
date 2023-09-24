@@ -1,5 +1,3 @@
-import { TableColumn } from 'components/Table/models/table-column.model'
-
 // Types
 import type { IQueryBuilderGroup } from '~/components/QueryBuilder/types/query-builder-group-props.type'
 import type { IQueryBuilderItem } from '~/components/QueryBuilder/types/query-builder-item-props.type'
@@ -7,6 +5,7 @@ import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-bui
 
 // Models
 import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
+import { TableColumn } from '~/components/Table/models/table-column.model'
 
 const AND_CONDITION = 'AND'
 const OR_CONDITION = 'OR'

@@ -93,7 +93,7 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
       allowedComparators?: ComparatorEnum[]
       extraComparators?: ComparatorEnum[]
     } = {}
-  ) {
+  ): ComparatorEnum[] {
     const {
       includeSelectorComparators,
       allowedComparators,

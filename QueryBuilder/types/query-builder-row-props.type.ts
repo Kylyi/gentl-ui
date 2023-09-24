@@ -1,6 +1,6 @@
 // Types
-import { IQueryBuilderGroup } from 'components/QueryBuilder/types/query-builder-group-props.type'
-import { IQueryBuilderItem } from 'components/QueryBuilder/types/query-builder-item-props.type'
+import type { IQueryBuilderGroup } from '~/components/QueryBuilder/types/query-builder-group-props.type'
+import type { IQueryBuilderItem } from '~/components/QueryBuilder/types/query-builder-item-props.type'
 
 export type IQueryBuilderRow = IQueryBuilderItem | IQueryBuilderGroup
 

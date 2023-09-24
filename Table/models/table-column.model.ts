@@ -4,7 +4,7 @@ import { Required } from 'utility-types'
 // Types
 import type { DistinctData } from '~/components/Table/types/distinct-data.type'
 import type { IItem, IItemBase } from '~/libs/App/types/item.type'
-import type { ITableOrderBy } from 'components/Table/types/table-query.type'
+import type { ITableOrderBy } from '~/components/Table/types/table-query.type'
 
 // Models
 import { FilterItem } from '~/libs/App/data/models/filter-item'

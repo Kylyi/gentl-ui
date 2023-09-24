@@ -1,4 +1,4 @@
-import { config } from 'config'
+import { config } from '~/config'
 
 // Types
 import type { IQueryBuilderGroup } from '~/components/QueryBuilder/types/query-builder-group-props.type'

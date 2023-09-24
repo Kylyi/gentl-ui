@@ -1,8 +1,8 @@
 // Types
-import {
+import type {
   IQueryBuilderRow,
   IQueryBuilderRowProps,
-} from 'components/QueryBuilder/types/query-builder-row-props.type'
+} from '~/components/QueryBuilder/types/query-builder-row-props.type'
 
 export type IQueryBuilderGroup = {
   id: string

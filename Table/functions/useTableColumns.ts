@@ -341,11 +341,11 @@ export function useTableColumns(
     // from the smallest to the biggest
     const colsSortedByWidth = sortBy(
       cols.filter(col => !col.hidden),
-      col =>
+      (col: TableColumn) =>
         typeof col.width === 'string'
           ? 9999 * +(stringToFloat(col.width) || 0)
           : col.width
-    )
+    ) as TableColumn[]
 
     function calculateColWidth(
       colWidth: number,
