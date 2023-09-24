@@ -1,8 +1,8 @@
 <script setup lang="ts">
-// TYPES
+// Types
 import type { IChipProps } from '~~/components/Chip/types/chip-props.type'
 
-// DIRECTIVES
+// Directives
 import { vRipple } from '~~/libs/App/directives/ripple'
 
 const props = defineProps<IChipProps>()
