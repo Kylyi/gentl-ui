@@ -1,7 +1,11 @@
 <script setup lang="ts">
 // Virtual scroller
-// @ts-expect-error - no types
-import { DynamicScroller, DynamicScrollerItem, RecycleScroller } from 'vue-virtual-scroller'
+import {
+  DynamicScroller,
+  DynamicScrollerItem,
+  RecycleScroller,
+  // @ts-expect-error - no types
+} from 'vue-virtual-scroller'
 import { klona } from 'klona'
 
 import { config } from '~/config'
@@ -34,7 +38,7 @@ const props = withDefaults(defineProps<ITableProps>(), {
   useChips: config.table.useChips,
   useUrl: true,
   infiniteScroll: config.table.infiniteScroll,
-  useDynamicRowHeight: config.table.useDynamicRowHeight
+  useDynamicRowHeight: config.table.useDynamicRowHeight,
 })
 
 defineEmits<{
@@ -42,6 +46,20 @@ defineEmits<{
   (e: 'update:totalRows', count: number): void
   (e: 'update:queryBuilder', rows: IQueryBuilderRow[]): void
   (e: 'row-click', payload: { row: any; el: Element }): void
+}>()
+
+defineSlots<{
+  [key: string]: any
+  rowInside: { columns: any[]; row: any; index: number }
+  dataRow: { columns: any[]; row: any; index: number }
+  inner: { columns: any[]; row: any; index: number }
+  top: {}
+  topLeftPrepend: {}
+  topLeftAppend: {}
+  topRightPrepend: {}
+  topRightAppend: {}
+  topBulkActions: { selection: any[] }
+  belowTop: { rows: any[] }
 }>()
 
 defineExpose({
@@ -122,58 +140,58 @@ useTableSelection(props)
     ref="tableEl"
     class="table-container"
   >
-  <DefineTemplate v-slot="{ item, index, active }">
-    <Component
-      :is="TableRowComponent"
-      :row="item"
-      :columns="internalColumns"
-      :to="to"
-      :class="{ 'is-clickable': rowClickable, 'odd': index % 2 !== 0 }"
-      :row-height="rowHeight"
-      :index="index"
-      @click="handleRowClick(item, $event)"
-    >
-      <template #row-inside>
-        <slot
-          name="row-inside"
-          :columns="columns"
-          :row="item"
-          :index="index"
-        />
-      </template>
-
-      <template #default>
-        <slot
-          name="data-row"
-          :columns="columns"
-          :row="item"
-          :index="index"
-        />
-      </template>
-
-      <template #inner>
-        <slot
-          name="inner"
-          :columns="columns"
-          :row="item"
-          :index="index"
-        />
-      </template>
-
-      <template
-        v-for="col in columns"
-        :key="col.name"
-        #[col.name]
+    <DefineTemplate v-slot="{ item, index }">
+      <Component
+        :is="TableRowComponent"
+        :row="item"
+        :columns="internalColumns"
+        :to="to"
+        :class="{ 'is-clickable': rowClickable, 'odd': index % 2 !== 0 }"
+        :row-height="rowHeight"
+        :index="index"
+        @click="handleRowClick(item, $event)"
       >
-        <slot
-          :name="col.name"
-          :row="item"
-          :index="index"
-          :refresh-data-fnc="refreshData"
-        />
-      </template>
-    </Component>
-  </DefineTemplate>
+        <template #row-inside>
+          <slot
+            name="row-inside"
+            :columns="columns"
+            :row="item"
+            :index="index"
+          />
+        </template>
+
+        <template #default>
+          <slot
+            name="data-row"
+            :columns="columns"
+            :row="item"
+            :index="index"
+          />
+        </template>
+
+        <template #inner>
+          <slot
+            name="inner"
+            :columns="columns"
+            :row="item"
+            :index="index"
+          />
+        </template>
+
+        <template
+          v-for="col in columns"
+          :key="col.name"
+          #[col.name]
+        >
+          <slot
+            :name="col.name"
+            :row="item"
+            :index="index"
+            :refresh-data-fnc="refreshData"
+          />
+        </template>
+      </Component>
+    </DefineTemplate>
 
     <!-- Top -->
     <slot
