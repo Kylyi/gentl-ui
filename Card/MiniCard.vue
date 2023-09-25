@@ -87,6 +87,7 @@ function getShownValue(val: any) {
     --apply: text-sm font-size-$MiniCard-value-font-size;
     overflow-wrap: break-word;
     font-weight: var(--MiniCard-value-font-weight);
+    white-space: pre-line;
   }
 
   .link {
