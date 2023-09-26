@@ -133,6 +133,10 @@ const {
 
 useTableExporting(rows)
 useTableSelection(props)
+
+onMounted(() => {
+  scrollerEl.value.$el.focus()
+})
 </script>
 
 <template>
@@ -264,6 +268,7 @@ useTableSelection(props)
       :items="rows"
       :key-field="rowKey"
       class="scroller"
+      tabindex="0"
       :item-size="tableRowHeight"
       :min-item-size="rowHeight"
       :emit-update="infiniteScroll"
@@ -339,7 +344,7 @@ useTableSelection(props)
   }
 
   .scroller {
-    --apply: max-h-full bg-$Table-container-bg;
+    --apply: max-h-full bg-$Table-container-bg outline-none;
   }
 }
 

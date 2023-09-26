@@ -40,7 +40,7 @@ export function useTableData(
   internalColumnsRef: Ref<TableColumn[]>,
   layoutRef: Ref<ITableLayout | undefined>,
   queryBuilder: Ref<IQueryBuilderRow[] | undefined>,
-  scrollerEl: Ref<HTMLElement | undefined>,
+  scrollerEl: Ref<any>,
   metaDataRefetch?: (
     forceRefetch?: boolean,
     options?: { meta?: any }
@@ -341,7 +341,6 @@ export function useTableData(
 
       // We scroll to top if we are not fetching more data
       if (!isFetchMore) {
-        // @ts-expect-error
         scrollerEl.value?.scrollToItem?.(0)
       }
 
@@ -361,14 +360,14 @@ export function useTableData(
   watch(
     dbQuery,
     async dbQuery => {
-      // When we provide the rows, we don't want to fetch them right away
+      // NOTE: When we provide the rows, we don't want to fetch them right away
       if (!isInitialized.value && rows.value.length) {
         return
       }
 
       await fetchAndSetData(dbQuery)
 
-      // Set URL
+      // NOTE: Set URL
       if (props.useUrl) {
         const routeQueryWithoutTableParams = omit(route.query, [
           'qb',
@@ -402,7 +401,7 @@ export function useTableData(
         )
       }
 
-      // Save `TableState`
+      // NOTE: Save `TableState`
       setTableState(storageKey.value, {
         page: dbQuery.tableQuery.skip! / dbQuery.tableQuery.take! + 1,
         pageSize: dbQuery.tableQuery.take!,
@@ -411,6 +410,9 @@ export function useTableData(
         columns: internalColumnsRef.value,
         queryBuilder: dbQuery.tableQuery.queryBuilder,
       })
+
+      // NOTE: Focus the table so we can use keyboard navigation
+      scrollerEl.value?.$el.focus()
     },
     { immediate: true }
   )
