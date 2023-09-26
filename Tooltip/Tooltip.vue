@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import { arrow, flip, offset, shift, useFloating } from '@floating-ui/vue'
 
-// TYPES
+// Types
 import { IMenuProps } from '~/components/Menu/types/menu-props.type'
+
+defineOptions({
+  inheritAttrs: false,
+})
 
 const props = withDefaults(
   defineProps<IMenuProps & { noInheritFontStyle?: boolean }>(),
@@ -14,17 +18,17 @@ function getTargetElement(target: any): any {
     return
   }
 
-  // TARGET IS AN ELEMENT
+  // Target is an element
   if (target instanceof Element) {
     return target as Element
   }
 
-  // TARGET IS A SELECTOR
+  // Target is a selector
   else if (typeof target === 'string') {
     return document?.querySelector(target) || document?.body || undefined
   }
 
-  // TARGET IS VUE COMPONENT
+  // Target is Vue component
   else if (target) {
     const el = unrefElement(target)
 
@@ -38,7 +42,7 @@ function getTargetElement(target: any): any {
 
 const instance = getCurrentInstance()
 
-// LAYOUT
+// Layout
 const model = ref(false)
 const tooltipEl = ref<HTMLElement | null>(null)
 const referenceEl = ref<Element>() // Element that menu is attached to
@@ -104,8 +108,9 @@ onMounted(() => {
       p="x-2 y-1"
       :class="tooltipClass"
       :placement="placement"
+      v-bind="$attrs"
     >
-      <!-- ARROW -->
+      <!-- Arrow -->
       <div
         v-if="!noArrow"
         ref="arrowEl"

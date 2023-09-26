@@ -2,7 +2,7 @@
 
 export const BUTTON_PRESET = {
   CLOSE: {
-    icon: 'eva:close-fill',
+    icon: 'ion:close',
     color: 'color-negative',
   },
   ADD: {

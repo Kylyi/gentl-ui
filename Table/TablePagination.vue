@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { config } from '~/config'
+
 type IProps = {
   currentPage: number
   currentPageSize: number
@@ -60,6 +62,16 @@ const pages = computedEager(() => {
     ]
   }
 })
+
+const isLimitRowsReached = computedEager(() => {
+  const limitRows = config.table.limitRows
+  const currentRows = props.currentRows || 0
+  const totalRows = props.totalRows || 0
+
+  return (
+    config.table.limitRows && currentRows >= limitRows && totalRows > limitRows
+  )
+})
 </script>
 
 <template>
@@ -103,8 +115,28 @@ const pages = computedEager(() => {
         </span>
       </div>
 
-      <template v-if="pages.length > 1 && !noPagination">
-        <!-- FIRST BTN -->
+      <!-- Limit amount of rows reached -->
+      <template v-if="isLimitRowsReached">
+        <div
+          flex="~ gap-2 items-center"
+          text="caption"
+        >
+          <div class="color-blue-500 bi:info-lg" />
+          <span>{{ $t('table.limitRowsReached') }}</span>
+
+          <Tooltip
+            placement="top"
+            w="120"
+            :offset="8"
+            text="center"
+          >
+            {{ $t('table.limitRowsReachedTooltip') }}
+          </Tooltip>
+        </div>
+      </template>
+
+      <template v-else-if="pages.length > 1 && !noPagination">
+        <!-- First page -->
         <Btn
           :disabled="isFirstPage"
           size="sm"
@@ -113,7 +145,7 @@ const pages = computedEager(() => {
           @click="currentPage = 1"
         />
 
-        <!-- PREVIOUS BTN -->
+        <!-- Previous page -->
         <Btn
           :disabled="isFirstPage"
           size="sm"
@@ -122,7 +154,7 @@ const pages = computedEager(() => {
           @click="prev"
         />
 
-        <!-- PAGES -->
+        <!-- Pages -->
         <template
           v-for="(page, idx) in pages"
           :key="idx"
@@ -137,7 +169,7 @@ const pages = computedEager(() => {
           <div v-else>...</div>
         </template>
 
-        <!-- NEXT BTN -->
+        <!-- Next page -->
         <Btn
           :disabled="isLastPage"
           size="sm"
@@ -145,7 +177,7 @@ const pages = computedEager(() => {
           @click="next"
         />
 
-        <!-- LAST BTN -->
+        <!-- Last page -->
         <Btn
           :disabled="isLastPage"
           size="sm"

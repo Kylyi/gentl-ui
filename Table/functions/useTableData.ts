@@ -291,6 +291,15 @@ export function useTableData(
     try {
       const options = toValue(optionsRef)
 
+      // NOTE: We check whether the amount of data we already fetched is not
+      // greater than the limit
+      if (
+        config.table.limitRows &&
+        rows.value.length >= config.table.limitRows
+      ) {
+        return
+      }
+
       // When fetching more data, we need to manually get the queryParams again as
       // it is not triggered in the `dbQuery` computed
       if (isFetchMore) {
