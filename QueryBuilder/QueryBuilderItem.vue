@@ -177,6 +177,12 @@ function handleFieldChange(field: string) {
     return
   }
 
+  // NOTE: When datatype changes, we reset value
+  if (col.dataType !== colSelected.value?.dataType) {
+    item.value.value = undefined
+  }
+
+  item.value.field = field
   item.value.comparator = col.comparator
 }
 
@@ -262,7 +268,7 @@ const $v = useVuelidate(
       <!-- Field selector -->
       <Selector
         ref="fieldInputEl"
-        v-model="item.field"
+        :model-value="item.field"
         :options="cols"
         emit-key
         size="sm"
