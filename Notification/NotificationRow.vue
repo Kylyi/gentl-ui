@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// TYPES
+// Types
 import type { INotificationRowProps } from '~/components/Notification/types/notification-row-props.type'
 
 const props = defineProps<INotificationRowProps>()
@@ -19,13 +19,13 @@ const isPausedByForce = ref(false)
 const icon = computed(() => {
   switch (props.notification.type) {
     case 'warning':
-      return 'clarity:warning-solid'
+      return 'fluent:warning-24-filled'
     case 'info':
       return 'bi:info-lg'
     case 'positive':
-      return 'akar-icons:circle-check-fill'
+      return 'ep:success-filled'
     case 'negative':
-      return 'ci:error'
+      return 'octicon:x-circle-fill-24'
     default:
       return 'bi:info-lg'
   }
@@ -59,7 +59,7 @@ function handleHide() {
   emits('hide')
 }
 
-// COUNTER
+// Counter
 const counterEl = ref<HTMLSpanElement>()
 
 const { apply } = useMotion(counterEl, {
@@ -74,7 +74,7 @@ const { apply } = useMotion(counterEl, {
   },
 })
 
-// RESET TIMEOUT ON NOTIFICATION COUNTER CHANGE
+// Reset timeout on notification counter change
 const notificationCounter = toRef(props.notification, 'counter')
 
 watch(notificationCounter, async () => {
@@ -90,26 +90,29 @@ watch(notificationCounter, async () => {
     ref="notificationEl"
     class="notification-row"
     :class="[`is-${notification.type}`]"
+    :style="{
+      '--progress': `${Math.round(((TIMEOUT - counter) / TIMEOUT) * 100)}%`,
+    }"
     @mouseenter="!noClose && pause()"
     @mouseleave="!noClose && handleResume()"
   >
     <slot name="before" />
 
-    <!-- TITLE ROW -->
+    <!-- Title row -->
     <div
       flex="~ gap-x-2"
       w-full
       items-center
     >
-      <!-- ICON -->
+      <!-- Icon -->
       <div
         shrink-0
-        h="6"
-        w="6"
+        h="7"
+        w="7"
         :class="notification.icon || icon"
       />
 
-      <!-- TITLE -->
+      <!-- Title -->
       <span
         p="y-2"
         grow
@@ -120,17 +123,17 @@ watch(notificationCounter, async () => {
         {{ notification.title }}
       </span>
 
-      <!-- CLOSE BUTTON -->
+      <!-- Close button -->
       <Btn
         v-if="!noClose"
         preset="CLOSE"
-        color="white"
+        color="red-500"
         size="sm"
         @click="handleHide"
       />
     </div>
 
-    <!-- SUBTITLE -->
+    <!-- Subtitle -->
     <span
       v-if="notification.subtitle"
       class="notification-subtitle"
@@ -139,19 +142,26 @@ watch(notificationCounter, async () => {
       {{ notification.subtitle }}
     </span>
 
-    <div
+    <Component
+      :is="notification.componentBelow.component"
+      v-if="notification.componentBelow"
+      :notification="notification"
+      v-bind="notification.componentBelow?.props"
+    />
+
+    <!-- Progress -->
+    <!-- <div
       v-if="TIMEOUT"
       class="progress-wrapper"
     >
-      <!-- PROGRESS -->
       <progress
         class="notification-row--progress"
         :value="TIMEOUT - counter"
         :max="TIMEOUT"
       />
-    </div>
+    </div> -->
 
-    <!-- COUNTER -->
+    <!-- Counter -->
     <span
       v-if="notificationCounter && notificationCounter > 1"
       ref="counterEl"
@@ -164,36 +174,45 @@ watch(notificationCounter, async () => {
 
 <style lang="scss" scoped>
 .notification-row {
-  --apply: relative flex flex-col rounded-3 border-2
-    p-l-2 p-r-1 p-y-1 flex-gap-x-2 w-100;
+  --apply: relative bg-white dark:bg-darker relative flex flex-col rounded-custom
+    flex-gap-x-2 w-100 p-4 shadow-consistent-sm shadow-ca gap-3;
+
+  &::before {
+    --apply: content-empty absolute left-0 top-0 h-full w-1 rounded-l-custom bg-current;
+  }
+
+  &::after {
+    --apply: content-empty absolute right-0 top-1/2 translate-y--50% w-1 rounded-r-custom bg-current;
+    --apply: h-$progress;
+  }
 
   &.is-positive {
-    --apply: bg-positive/85 hover:bg-positive color-white border-positive;
+    --apply: color-green-500;
   }
 
   &.is-negative {
-    --apply: bg-negative/85 hover:bg-negative color-white border-negative;
+    --apply: color-red-500;
   }
 
   &.is-warning {
-    --apply: bg-warning/85 hover:bg-warning color-white border-warning;
+    --apply: color-amber-500;
   }
 
   &.is-info {
-    --apply: bg-info/85 hover:bg-info color-white border-info;
+    --apply: color-info;
   }
 
   &.is-primary {
-    --apply: bg-primary/85 hover:bg-primary color-white border-primary;
+    --apply: color-primary;
   }
 
   &.is-secondary {
-    --apply: bg-secondary/85 hover:bg-secondary color-white border-secondary;
+    --apply: color-secondary;
   }
 
   .progress-wrapper {
-    --apply: absolute bottom--2px left--2px w-[calc(100%+4px)] h-[calc(100%+4px)]
-      rounded-3 overflow-hidden pointer-events-none;
+    --apply: absolute bottom-0 left--2px w-[calc(100%+4px)]
+    h-[calc(100%+4px)] rounded-3 overflow-hidden pointer-events-none;
   }
 
   &--progress {
@@ -201,43 +220,29 @@ watch(notificationCounter, async () => {
   }
 
   .notification-subtitle {
-    --apply: bg-white rounded-custom p-2 m-r-2 m-b-1 tracking-wide text-sm;
-
-    &.is-positive {
-      --apply: color-positive;
-    }
-
-    &.is-negative {
-      --apply: color-negative;
-    }
-
-    &.is-warning {
-      --apply: color-warning;
-    }
-
-    &.is-info {
-      --apply: color-info;
-    }
-
-    &.is-primary {
-      --apply: color-primary;
-    }
-
-    &.is-secondary {
-      --apply: color-secondary;
-    }
+    --apply: tracking-wide text-sm color-black dark:color-white;
   }
 
   .counter {
-    --apply: absolute rounded-2 -top-2 -right-4 p-x-1 min-w-7
-    bg-inherit color-white border-2 border-white text-center;
+    --apply: absolute rounded-2 -top-2 -right-4 p-x-1 min-w-7 bg-inherit
+      color-inherit border-2 border-current text-center;
   }
 }
 
-progress::-moz-progress-bar { --apply: bg-white; }
-progress::-webkit-progress-value { --apply: bg-white; }
-progress { --apply: color-white; }
+progress::-moz-progress-bar {
+  --apply: bg-current;
+}
+progress::-webkit-progress-value {
+  --apply: bg-current;
+}
+progress {
+  --apply: color-current;
+}
 
-progress::-webkit-progress-bar { --apply: bg-white/30; }
-progress::-moz-progress-bar { --apply: bg-white/30; }
+progress::-webkit-progress-bar {
+  --apply: bg-ca;
+}
+progress::-moz-progress-bar {
+  --apply: bg-ca;
+}
 </style>
