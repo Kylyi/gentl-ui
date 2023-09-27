@@ -78,6 +78,7 @@ const modelByUnit = computed<Record<DurationUnit, number>>(() => {
     hour: getDuration(model, 'hour').val,
     minute: getDuration(model, 'minute').val,
     second: getDuration(model, 'second').val,
+    millisecond: getDuration(model, 'millisecond').val,
   }
 })
 
