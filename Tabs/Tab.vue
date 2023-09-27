@@ -2,12 +2,10 @@
 import { ITabProps } from '~~/components/Tabs/types/tab-props.type'
 
 defineOptions({
-  name: TAB_NAME,
+  name: 'Tab1',
 })
 
 defineProps<ITabProps>()
-
-const TAB_NAME = 'Tab_1'
 </script>
 
 <template>
