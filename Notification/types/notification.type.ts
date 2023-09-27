@@ -1,5 +1,3 @@
-import { Component } from 'vue'
-
 export type INotification = {
   /**
    * Unique ID of the notification
@@ -40,7 +38,7 @@ export type INotification = {
    * We can inject our own component at the bottom of the notification
    */
   componentBelow?: {
-    component: Component
+    component: any
     props: Record<string, any>
   }
 }

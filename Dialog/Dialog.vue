@@ -117,7 +117,7 @@ const placement = computedEager(() => {
   }
 })
 
-// ANIMATIONS
+// Animations
 const animationTimestamp = ref<{ show: number; hide: number }>({
   show: 0,
   hide: 0,

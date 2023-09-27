@@ -207,7 +207,7 @@ export async function useTableMetaData(props: ITableProps) {
           })
         }
       },
-      { notifyError: false }
+      { notifyError: false, noResolve: true }
     )
   }
 

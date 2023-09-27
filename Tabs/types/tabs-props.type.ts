@@ -8,6 +8,11 @@ export interface ITabsProps {
   noAnimation?: boolean
 
   /**
+   * The classes for the HorizontalScroller inside Tabs
+   */
+  navContentClass?: ClassType
+
+  /**
    * For tabs that should be part of the DOM but not visible
    */
   invisibleTabs?: string[]

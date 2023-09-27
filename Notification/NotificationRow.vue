@@ -106,9 +106,7 @@ watch(notificationCounter, async () => {
     >
       <!-- Icon -->
       <div
-        shrink-0
-        h="7"
-        w="7"
+        class="shrink-0 self-start h-7 w-7 m-t-2"
         :class="notification.icon || icon"
       />
 
@@ -127,7 +125,7 @@ watch(notificationCounter, async () => {
       <Btn
         v-if="!noClose"
         preset="CLOSE"
-        color="red-500"
+        class="color-red-500 self-start"
         size="sm"
         @click="handleHide"
       />

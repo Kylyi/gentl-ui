@@ -22,11 +22,11 @@ defineEmits<{
   (e: 'remove'): void
 }>()
 
-// UTILS
+// Utils
 const rC = useRuntimeConfig()
 const { getLocalImageUrl } = useImages()
 
-// ACTIONS
+// Actions
 const actionsDefault = ref({
   download: true,
   remove: true,
@@ -37,7 +37,7 @@ const actions = computed(() => ({
   ...props.actions,
 }))
 
-// LAYOUT
+// Layout
 const fileUrl = `${rC.public.FILES_HOST}/files${props.file.path}`
 
 const icon = computed(() => {
@@ -63,7 +63,7 @@ const imageUrl = computed(() => {
 
 <template>
   <div class="file-preview">
-    <!-- HEADER -->
+    <!-- Header -->
     <div class="file-preview--header">
       <span
         self-center
@@ -74,7 +74,7 @@ const imageUrl = computed(() => {
       </span>
 
       <div flex="~">
-        <!-- REMOVE -->
+        <!-- Remove -->
         <Btn
           v-if="editable && actions.remove"
           size="xs"
@@ -89,7 +89,7 @@ const imageUrl = computed(() => {
       </div>
     </div>
 
-    <!-- BODY -->
+    <!-- Body -->
     <div
       class="file-preview--image"
       external

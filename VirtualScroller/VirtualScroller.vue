@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { CSSProperties } from 'vue'
+import { config } from '~/config'
 
 // Functions
 import { useVirtualScrollerUtils } from '~/components/VirtualScroller/functions/useVirtualScrollerUtils'
@@ -15,10 +16,10 @@ const emits = defineEmits<{
 }>()
 
 defineExpose({
-  scrollTo,
+  scrollToItem: scrollTo,
 })
 
-const PAGE_SIZE = 100
+const PAGE_SIZE = config.table.defaultPagination.pageSize
 
 // Utils
 const { binarySearch, findStartNode, doesBrowserSupportPassiveScroll } =

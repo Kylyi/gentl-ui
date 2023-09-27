@@ -61,7 +61,7 @@ export function useTableData(
   const hasMore = ref(false)
   const dataHasBeenFetched = ref(false)
   const search = ref('')
-  const rows = ref(props.rows || [])
+  const rows = (props.rows ? useVModel(props, 'rows') : ref([])) as Ref<any[]>
   const totalRows = props.totalRows
     ? useVModel(props, 'totalRows')
     : ref<number>()
@@ -250,35 +250,41 @@ export function useTableData(
    * The function that actually fetches the data from the server
    */
   function fetchData(optionsRef: MaybeRefOrGetter<ITableDataFetchFncInput>) {
-    return handleRequest(async () => {
-      if (!props.getData) {
-        return
-      }
+    return handleRequest(
+      async () => {
+        if (!props.getData) {
+          return
+        }
 
-      const options = toValue(optionsRef)
+        const options = toValue(optionsRef)
 
-      const result = await props.getData.fnc(options)
-      let data = get(
-        result,
-        props.getData.payloadKey || config.table.payloadKey
-      ) as any[]
+        const result = await props.getData.fnc(options)
+        let data = get(
+          result,
+          props.getData.payloadKey || config.table.payloadKey
+        ) as any[]
 
-      if (props.getData.createIdentifier) {
-        data = data.map((row, idx) => {
-          Object.assign(row, {
-            _uuid: props.getData!.createIdentifier!(row, idx),
+        if (props.getData.createIdentifier) {
+          data = data.map((row, idx) => {
+            Object.assign(row, {
+              _uuid: props.getData!.createIdentifier!(row, idx),
+            })
+
+            return row
           })
+        }
 
-          return row
-        })
-      }
-
-      return {
-        data,
-        totalRows: get(result, props.getData.countKey || config.table.countKey),
-        hash: get(result, props.getData.hashKey || config.table.hashKey),
-      }
-    })
+        return {
+          data,
+          totalRows: get(
+            result,
+            props.getData.countKey || config.table.countKey
+          ),
+          hash: get(result, props.getData.hashKey || config.table.hashKey),
+        }
+      },
+      { noResolve: true }
+    )
   }
 
   /**

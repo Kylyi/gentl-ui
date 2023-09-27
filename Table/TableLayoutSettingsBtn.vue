@@ -151,7 +151,7 @@ async function handleSaveLayout() {
 
   const layoutFound = layouts.value.find(l => l.name === layout.value.name)
 
-  const res = await handleRequest(
+  const res = await handleRequest<ITableLayout>(
     () => {
       const mode = layoutFound ? 'update' : 'create'
 
@@ -186,10 +186,8 @@ async function handleSaveLayout() {
 
 async function handleDeleteLayoutState() {
   const deletedFilterId = await handleRequest(
-    () => {
-      return deleteLayout(currentLayoutId.value)
-    },
-    { notifySuccess: true }
+    () => deleteLayout(currentLayoutId.value),
+    { notifySuccess: true, payloadKey: 'data.payload.id' }
   )
 
   layouts.value = layouts.value.filter(l => l.id !== deletedFilterId)

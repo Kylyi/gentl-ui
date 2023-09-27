@@ -100,7 +100,7 @@ watch(model, model => {
     <!-- Labels -->
     <HorizontalScroller
       v-if="!noNav"
-      content-class="flex gap-x-1 p-x-2 items-center"
+      :content-class="['flex gap-x-1 p-x-2 items-center', navContentClass]"
       rounded-1
       shrink-0
       p="y-1"
@@ -131,6 +131,8 @@ watch(model, model => {
         />
       </slot>
     </HorizontalScroller>
+
+    <slot name="above" />
 
     <!-- Content -->
     <div
