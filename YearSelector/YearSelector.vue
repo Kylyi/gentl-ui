@@ -71,6 +71,8 @@ function handleYearSelect(year: number) {
 }
 
 function handleMouseWheel(ev: WheelEvent) {
+  isRangeChanged.value = true
+
   if (ev.deltaY > 0) {
     internalValue.value++
   } else {
@@ -144,6 +146,7 @@ defineExpose({ sync })
         icon="bi:caret-up-fill"
         color="ca"
         name="increment"
+        :ripple="false"
         @pointerdown="startChange($event, false)"
         @mousedown.stop.prevent
       />
@@ -167,6 +170,7 @@ defineExpose({ sync })
         icon="bi:caret-up-fill rotate-180"
         color="ca"
         name="decrement"
+        :ripple="false"
         @pointerdown="startChange($event, true)"
         @mousedown.stop.prevent
       />

@@ -140,9 +140,9 @@ export function useList(
       ...itemsExtended.value,
       ...(preAddedItem.value ? [preAddedItem.value] : []),
     ].reduce((agg, item) => {
-      const key = getKey(item)
+      const key = getKey(item._ref ?? item)
 
-      agg[key] = item
+      agg[key] = item._ref
 
       return agg
     }, {})
@@ -610,14 +610,14 @@ export function useList(
       handleKey(ev)
     }
 
-    // GOT TO A GROUP
+    // Got to a group
     else if ('isGroup' in itemSelected) {
       groupsJumped.value += 1
 
       handleKey(ev)
     }
 
-    // GOT TO FIRST NON-GROUP ITEM
+    // Got to first non-group item
     else if (
       hoveredIdx.value === firstNonGroupItemIndex.value &&
       modifier.value === -1
@@ -625,7 +625,7 @@ export function useList(
       scrollTo(0)
     }
 
-    // REGULAR ITEM
+    // Regular item
     else {
       nextTick(
         () => (hoveredEl.value = listEl.value?.querySelector('.item--hovered'))

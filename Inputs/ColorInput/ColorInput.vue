@@ -1,11 +1,11 @@
 <script setup lang="ts">
-// TYPES
+// Types
 import type { IColorProps } from '~/components/Inputs/ColorInput/types/color-props.type'
 
-// COMPOSITION FUNCTIONS
+// Functions
 import { useFieldUtils } from '~/components/Field/functions/useFieldUtils'
 
-// COMPONENTS
+// Components
 import MenuProxy from '~/components/MenuProxy/MenuProxy.vue'
 import Field from '~/components/Field/Field.vue'
 
@@ -19,7 +19,14 @@ const emits = defineEmits<{
   (e: 'update:modelValue', value: any): void
 }>()
 
-// LAYOUT
+// Lifcecycle
+onMounted(() => {
+  referenceEl.value = unrefElement(fieldEl as any)?.querySelector(
+    '.wrapper-body'
+  ) as HTMLDivElement
+})
+
+// Layout
 const fieldEl = ref<InstanceType<typeof Field>>()
 const referenceEl = ref<HTMLDivElement>()
 const menuEl = ref<InstanceType<typeof MenuProxy>>()
@@ -35,7 +42,7 @@ function handlePickColor(color?: string) {
   })
 }
 
-// FIELD
+// Field
 const { getFieldProps, handleClickWrapper, handleFocusOrClick } = useFieldUtils(
   {
     props,
@@ -44,14 +51,6 @@ const { getFieldProps, handleClickWrapper, handleFocusOrClick } = useFieldUtils(
 )
 
 const fieldProps = getFieldProps(props)
-
-onMounted(() => {
-  nextTick(() => {
-    referenceEl.value = unrefElement(fieldEl as any)?.querySelector(
-      '.control'
-    ) as HTMLDivElement
-  })
-})
 </script>
 
 <template>
@@ -71,7 +70,10 @@ onMounted(() => {
       hide-header
       manual
       tabindex="-1"
+      :fit="false"
+      placement="bottom-start"
       :reference-target="referenceEl"
+      no-uplift
     >
       <ColorBrandingPicker
         v-model="model"
@@ -85,6 +87,7 @@ onMounted(() => {
         :class="icon"
         m="x-2"
         tabindex="-1"
+        cursor="pointer"
         :style="{ color: model }"
       />
     </template>

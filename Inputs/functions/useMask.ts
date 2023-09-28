@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/named
 import IMask, { InputMask, createMask } from 'imask'
 
-// TYPES
+// Types
 import type { IMaskOptions } from '~~/components/Inputs/types/mask-options.type'
 
 const activeElement = useActiveElement()
@@ -11,7 +11,7 @@ export function useMask(options: IMaskOptions) {
 
   const instance = getCurrentInstance()
 
-  // LAYOUT
+  // Layout
   const el = ref<HTMLInputElement | HTMLTextAreaElement>()
   const mask = createMask(unref(maskOptions))
   const elMask = ref<InputMask<any> | null>()
@@ -65,7 +65,7 @@ export function useMask(options: IMaskOptions) {
     elMask.value = null
   }
 
-  // STATE
+  // State
   const lastValidValue = ref<any>(unref(model))
   const maskedValue = ref<string | undefined>()
   const unmaskedValue = ref<string | undefined>(String(unref(model)))
@@ -84,7 +84,11 @@ export function useMask(options: IMaskOptions) {
       elMask.value.typedValue = val
 
       if (emitValue) {
-        instance?.emit('update:model-value', val)
+        if (options.setModel) {
+          options.setModel(val)
+        } else {
+          instance?.emit('update:model-value', val)
+        }
       }
     }
   }
@@ -118,10 +122,10 @@ export function useMask(options: IMaskOptions) {
     }
   }
 
-  // INITIALIZE
+  // Initialize
   maskedValue.value = resolve(unref(model))
 
-  // WATCH FOR MASK OPTIONS CHANGE
+  // Watch for mask options change
   watch(
     maskOptions,
     maskOptions => {
@@ -131,7 +135,7 @@ export function useMask(options: IMaskOptions) {
     { deep: true }
   )
 
-  // WATCH FOR ELEMENT CHANGE
+  // Watch for element change
   // Also serves as SSR handler
   watch(el, el => {
     if (el) {
@@ -144,7 +148,7 @@ export function useMask(options: IMaskOptions) {
     }
   })
 
-  // WATCH FOR MODEL CHANGES
+  // Watch for model changes
   watch(model, model => {
     if (
       activeElement.value !== el.value &&

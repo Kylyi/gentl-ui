@@ -15,6 +15,7 @@ export function useInputUtils(options: IInputUtilsOptions) {
     maskEventHandlers,
     menuElRef,
     preventFocusOnTouch,
+    setModel,
   } = options
 
   const { lastPointerDownEvent } = storeToRefs(useAppStore())
@@ -24,7 +25,7 @@ export function useInputUtils(options: IInputUtilsOptions) {
 
   const debouncedChange = useDebounceFn((val: any) => {
     if (!props.emitOnBlur) {
-      instance?.emit('update:model-value', val)
+      setModel?.(val) ?? instance?.emit('update:model-value', val)
       touch()
     }
   }, props.debounce)
@@ -48,9 +49,10 @@ export function useInputUtils(options: IInputUtilsOptions) {
     updateValueFnc: debouncedChange,
     emptyValue,
     eventHandlers: maskEventHandlers,
+    setModel,
   })
 
-  // WRAPPER
+  // Wrapper
   const wrapperProps = reactivePick(
     props,
     'contentClass',
@@ -76,12 +78,12 @@ export function useInputUtils(options: IInputUtilsOptions) {
     'stackLabel'
   )
 
-  // LAYOUT
+  // Layout
   const isBlurred = ref(true)
   const preventNextBlur = autoResetRef(false, 50)
   const menuEl = computed(() => toValue(menuElRef))
 
-  // INPUT METHODS
+  // Input methods
   const focus = (alignCursor?: boolean) => {
     unrefElement(el)?.focus()
 
@@ -159,7 +161,8 @@ export function useInputUtils(options: IInputUtilsOptions) {
 
       if (props.emitOnBlur) {
         hasJustChanged.value = true
-        instance?.emit('update:model-value', lastValidValue.value)
+        setModel?.(lastValidValue.value) ??
+          instance?.emit('update:model-value', lastValidValue.value)
         touch()
       }
 

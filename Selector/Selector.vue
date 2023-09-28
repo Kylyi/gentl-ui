@@ -254,11 +254,6 @@ const optionsByKey = computed(() => {
   }, {})
 })
 
-// We recalculate the menu position on `listOptions` change
-watch(listOptions, () => {
-  menuProxyEl.value?.recomputePosition()
-})
-
 // Picker
 const menuProxyEl = ref<InstanceType<typeof MenuProxy>>()
 const menuPlacement = ref('bottom')
@@ -266,6 +261,8 @@ const isPickerActive = ref(false)
 const pickerAnimationState = ref<'show' | 'hide'>('hide')
 
 function handleBeforeHide() {
+  const optionsContainerDom = unrefElement(optionsContainerEl)
+  optionsContainerDom?.focus()
   pickerAnimationState.value = 'hide'
   emits('picker-before-hide')
 }
@@ -349,6 +346,11 @@ function getData() {
     }
   })
 }
+
+// We recalculate the menu position on `listOptions` change and `model` changes
+watch([listOptions, model], () => {
+  menuProxyEl.value?.recomputePosition()
+})
 
 defineExpose({
   focus: () => menuProxyEl.value?.show(),

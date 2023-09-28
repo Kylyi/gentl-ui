@@ -1,5 +1,6 @@
 // eslint-disable-next-line import/named
 import { AnyMaskedOptions } from 'imask'
+import { IMaskOptions } from '~/components/Inputs/types/mask-options.type'
 
 // TYPES
 import type { IInputProps } from '~~/components/Inputs/types/input-props.type'
@@ -17,4 +18,9 @@ export interface IInputUtilsOptions {
     onAccept?: () => void
     onCompleted?: (val: any) => void
   }
+
+  /**
+   * Refer to {@link IMaskOptions.setModel}
+   */
+  setModel?: IMaskOptions['setModel']
 }

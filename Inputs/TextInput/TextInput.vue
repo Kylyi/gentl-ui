@@ -31,7 +31,7 @@ const {
   isBlurred,
   handleFocus,
   handleBlur,
-  handleMouseDown,
+  handleClickWrapper,
   focus,
   select,
   blur,
@@ -65,7 +65,7 @@ defineExpose({
   <InputWrapper
     v-bind="wrapperProps"
     :has-content="hasContent || !hasNoValue"
-    @mousedown="handleMouseDown"
+    @click="handleClickWrapper"
   >
     <template
       v-if="$slots.prepend"

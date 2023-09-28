@@ -96,7 +96,7 @@ const stepAdjusted = computed(() => {
   }
 })
 
-const { pause, resume } = useIntervalFn(() => handleStep(), 80, {
+const { pause, resume } = useIntervalFn(() => handleStep(), 120, {
   immediate: false,
   immediateCallback: true,
 })
@@ -154,7 +154,7 @@ defineExpose({
   <InputWrapper
     v-bind="wrapperProps"
     :has-content="!hasNoValue"
-    @click.stop.prevent="handleClickWrapper"
+    @click="handleClickWrapper"
   >
     <template
       v-if="$slots.prepend"

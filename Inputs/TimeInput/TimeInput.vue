@@ -4,15 +4,13 @@
 // eslint-disable-next-line import/named
 import { AnyMaskedOptions, MaskedRange } from 'imask'
 
-// TYPES
+// Types
 import type { ITimeInputProps } from '~/components/Inputs/TimeInput/types/time-input-props.type'
 
-// COMPOSITION FUNCTIONS
+// Functions
 import { useInputUtils } from '@/components/Inputs/functions/useInputUtils'
 
-// STORE
-
-// COMPONENTS
+// Components
 import InputWrapper from '@/components/Inputs/InputWrapper.vue'
 import TimeInputPicker from '~/components/Inputs/TimeInput/TimeInputPicker.vue'
 
@@ -27,13 +25,20 @@ const props = withDefaults(defineProps<ITimeInputProps>(), {
   inline: undefined,
 })
 
-const emits = defineEmits<{
+defineEmits<{
   (e: 'update:model-value', val?: Datetime): void
   (e: 'validation-reset', val?: string | undefined | null): void
   (e: 'blur'): void
 }>()
 
-// UTILS
+// Lifecycle
+onMounted(() => {
+  menuReferenceTarget.value =
+    currentInstance?.proxy?.$el.querySelector('.wrapper-body')
+})
+
+// Utils
+const currentInstance = getCurrentInstance()
 const { localeUses24HourTime } = useDateUtils()
 
 const is12h = computed(() => !localeUses24HourTime())
@@ -80,14 +85,15 @@ function delocalizeTime(time?: string | undefined) {
   return time
 }
 
-// CONSTANTS
+// Constants
 const PATTERN = 'HH:mm'
 
-// LAYOUT
+// Layout
+const model = defineModel<string>({ local: true })
 const preventNextIsAmChange = autoResetRef(false, 50)
 
 const delocalizedTimeParts = computed(() => {
-  const time = props.modelValue || '12:00'
+  const time = model.value || '12:00'
 
   return {
     hh: time.split(':')[0],
@@ -95,7 +101,7 @@ const delocalizedTimeParts = computed(() => {
   }
 })
 
-// MASKS
+// Masks
 const maskFullTime = computed<AnyMaskedOptions>(() => {
   return {
     mask: PATTERN,
@@ -145,11 +151,12 @@ const maskFullTime = computed<AnyMaskedOptions>(() => {
   }
 })
 
-// LAYOUT
+// Layout
+const menuReferenceTarget = ref<HTMLElement>()
 const wrapperEl = ref<InstanceType<typeof InputWrapper>>()
 const isAm = ref(+delocalizedTimeParts.value.hh < 12)
 
-const modelValueLocalized = computed(() => localizeTime(props.modelValue!))
+const modelValueLocalized = computed(() => localizeTime(model.value))
 
 const propsExtended = reactiveComputed(() => ({
   ...props,
@@ -174,36 +181,33 @@ function handleInput(ev: Event) {
   }, 100)
 }
 
-// PICKER
+// Picker
 const timeInputPickerEl = ref<InstanceType<typeof TimeInputPicker>>()
 
-// WATCH `isAm` changes
+// Watch `isAm` changes
 watch(isAm, isAm => {
   if (preventNextIsAmChange.value || !is12h.value) {
     return
   }
 
-  if (isTime(props.modelValue)) {
+  if (isTime(model.value)) {
     const { hh, mm } = delocalizedTimeParts.value
 
     if (isAm && +hh >= 12) {
-      emits('update:model-value', `${padStart(String(+hh % 12), 2, '0')}:${mm}`)
+      model.value = `${padStart(String(+hh % 12), 2, '0')}:${mm}`
     } else if (!isAm && +hh < 12) {
-      emits('update:model-value', `${+hh + 12}:${mm}`)
+      model.value = `${+hh + 12}:${mm}`
     }
   } else {
     handleManualModelChange(isAm ? '00:00' : '12:00', true)
   }
 })
 
-// WATCH `modelValue` changes
-watch(
-  () => props.modelValue,
-  () => {
-    preventNextIsAmChange.value = true
-    isAm.value = +delocalizedTimeParts.value.hh < 12
-  }
-)
+// Watch `modelValue` changes
+watch(model, () => {
+  preventNextIsAmChange.value = true
+  isAm.value = +delocalizedTimeParts.value.hh < 12
+})
 
 const {
   el,
@@ -225,6 +229,7 @@ const {
   maskRef: maskFullTime,
   preventFocusOnTouch: true,
   menuElRef: () => timeInputPickerEl.value?.getMenuEl(),
+  setModel: (val: string) => (model.value = val),
 })
 
 defineExpose({
@@ -314,8 +319,11 @@ defineExpose({
         ref="timeInputPickerEl"
         v-model:is-am="isAm"
         v-model:prevent-next-is-am-change="preventNextIsAmChange"
-        :reference-target="el"
+        :reference-target="menuReferenceTarget"
         :is12h="is12h"
+        :class="{
+          'md:m-l-200px': inline,
+        }"
         :model-value-localized="modelValueLocalized"
         :handle-manual-model-change="handleManualModelChange"
         :shortcuts="shortcuts"

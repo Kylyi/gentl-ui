@@ -44,7 +44,7 @@ const emits = defineEmits<{
   (e: 'before-show'): void
 }>()
 
-// LIFECYCLE
+// Lifecycle
 const hasBeenShown = ref(false)
 
 onMounted(() => {
@@ -90,7 +90,7 @@ async function createFloatInstance(options?: { skipFlip?: boolean }) {
     menuEl.value!.style.height = `${props.expectedHeight}px`
   }
 
-  // VIRTUAL ELEMENT ~ will create the menu in the last pointer down event position
+  // Virtual element ~ will create the menu in the last pointer down event position
   let virtualEl: any
 
   if (props.virtual && appStore.lastPointerDownEvent) {
@@ -188,17 +188,17 @@ function getTargetElement(target: any): any {
     return
   }
 
-  // TARGET IS AN ELEMENT
+  // Target is an element
   if (target instanceof Element) {
     return target as Element
   }
 
-  // TARGET IS A SELECTOR
+  // Target is a selector
   else if (typeof target === 'string') {
     return document?.querySelector(target) || document?.body || undefined
   }
 
-  // TARGET IS VUE COMPONENT
+  // Target is a component
   else if (target) {
     const el = unrefElement(target)
 
@@ -210,17 +210,29 @@ function getTargetElement(target: any): any {
   return instance?.vnode.el?.parentNode
 }
 
-// LAYOUT
+// Layout
 const instance = getCurrentInstance()
 const menuEl = ref<HTMLDivElement>()
 const arrowEl = ref<HTMLDivElement>()
 const triggerEl = ref<HTMLDivElement>() // Element that triggers the menu
-const referenceEl = ref<Element>() // Element that menu is attached to
+const referenceEl = ref<HTMLDivElement>() // Element that menu is attached to
 const backdropBg = ref('bg-transparent')
 const isReferenceElTransparent = ref(false)
 const referenceElOldZIndex = ref<string>()
 const isFirstFloatingEl = ref<boolean>()
 const previousPlacement = ref<Placement>()
+
+const { y: pageY } = useElementBounding(referenceEl, { windowResize: true })
+
+watchThrottled(
+  pageY,
+  () => {
+    if (menuEl.value) {
+      createFloatInstance({ skipFlip: true })
+    }
+  },
+  { trailing: true, throttle: 100 }
+)
 
 const isOverlayVisible = computedEager(() => {
   return !props.noOverlay && isFirstFloatingEl.value
@@ -233,7 +245,7 @@ const innerClasses = computedEager(() => {
   }
 })
 
-// ANIMATIONS
+// Animations
 const animationTimestamp = ref<{ show: number; hide: number }>({
   show: 0,
   hide: 0,
@@ -244,17 +256,17 @@ const animationTimeCorrection = 50
 function handleAnimation(placement: Placement) {
   setTimeout(() => (backdropBg.value = 'bg-darker/80'))
 
-  // RESET TRANSFORM ORIGIN
+  // Reset transform origin
   menuEl.value?.classList.forEach(
     c => c.startsWith('origin-') && menuEl.value?.classList.remove(c)
   )
 
-  // DEFAULT INITIAL STATE
+  // Default initial state
   const opacity = 0.4
   let scaleY = 0.4
   let scaleX = props.cover ? 0.4 : 1
 
-  // SET TRANSFORM ORIGIN
+  // Set transform origin
   let transformOrigin: string
   let originModifier = 0
 
@@ -348,7 +360,7 @@ async function bounce() {
   await motionInstance.value?.apply('enter')
 }
 
-// INTERACTIONS
+// Interactions
 const preventInteractions = refAutoReset(false, 75)
 const preventMotion = refAutoReset(false, 25)
 const model = toRef(props, 'modelValue')
@@ -572,7 +584,7 @@ watch(model, val => {
   val ? show() : hide(true)
 })
 
-// WATCHERS FOR ELEMENTS
+// Watchers for target and referenceTarget
 const referenceTarget = toRef(props, 'referenceTarget')
 const target = toRef(props, 'target')
 
