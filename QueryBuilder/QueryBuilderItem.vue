@@ -254,6 +254,7 @@ const $v = useVuelidate(
       'is-smaller-screen': isSmallerScreen,
     }"
     :data-path="item.path"
+    data-cy="qb-row"
     @mouseover.stop="hoveredRow = item"
     @mouseleave="hoveredRow = undefined"
   >
@@ -276,6 +277,7 @@ const $v = useVuelidate(
         preselect-first
         class="qb-item__content-field"
         :errors="$v.item.field.$errors"
+        data-cy="qb-item__content-field"
         @update:model-value="handleFieldChange"
       />
 
@@ -289,6 +291,7 @@ const $v = useVuelidate(
           size="sm"
           class="qb-item__content-comparator"
           :errors="$v.item.comparator.$errors"
+          data-cy="comparator"
           @update:model-value="handleComparatorChange"
         />
 
@@ -304,6 +307,7 @@ const $v = useVuelidate(
           size="sm"
           class="qb-item__content-value"
           :placeholder="`${$t('table.filterValue')}...`"
+          data-cy="qb-item__content-value"
         />
 
         <!-- Selector for `Comparator.IN` and `Comparator.NOT_IN` for simple string cases -->
@@ -336,6 +340,7 @@ const $v = useVuelidate(
           class="qb-item__content-value"
           size="sm"
           :placeholder="`${$t('table.filterValue')}...`"
+          data-cy="qb-item__content-value"
         />
 
         <!-- Ago value -->
@@ -366,6 +371,7 @@ const $v = useVuelidate(
           v-bind="component.props"
           :placeholder="$t('queryBuilder.value')"
           :errors="$v.item.value.$errors"
+          data-cy="qb-item__content-value"
         />
       </template>
     </div>

@@ -40,6 +40,7 @@ const rowInfo = computed(() => {
     :is="tag"
     :style="rowInfo._style"
     class="item"
+    data-cy="item-selectable"
     :class="[
       rowClass,
       {
