@@ -10,13 +10,20 @@ import {
   tableNonHelpersColumnsKey,
   tableRefreshKey,
   tableSelectionKey,
+  tableStorageKey,
 } from '~/components/Table/provide/table.provide'
+
+// Store
+import { useTableStore } from '~/components/Table/table.store'
 
 // Components
 import QueryBuilderInline from '~/components/QueryBuilder/QueryBuilderInline.vue'
 
 const props = defineProps<
-  Pick<ITableProps, 'queryBuilder' | 'selectable' | 'nonSaveableSettings'> & {
+  Pick<
+    ITableProps,
+    'queryBuilder' | 'selectable' | 'nonSaveableSettings' | 'rows'
+  > & {
     search: string
   }
 >()
@@ -26,10 +33,14 @@ const MIN_VISIBLE_QUERY_BUILDER_ROWS = 1
 const MAX_VISIBLE_QUERY_BUILDER_ROWS = 3
 const QUERY_BUILDER_INLINE_PADDING = 8
 
+// Store
+const { setTableState } = useTableStore()
+
 // Injections
 const selection = injectStrict(tableSelectionKey)
 const columns = injectStrict(tableColumnsKey)
 const nonHelperColumns = injectStrict(tableNonHelpersColumnsKey)
+const storageKey = injectStrict(tableStorageKey)
 const tableRefresh = injectStrict(tableRefreshKey)
 
 // Layout
@@ -106,8 +117,16 @@ function handleClearSorting() {
     col.sort = undefined
     col.sortOrder = undefined
   })
+}
 
-  // tableRefresh()
+function handleFitColumns() {
+  columns.value
+    .filter(col => col.resizable && !col.hidden && !col.isHelperCol)
+    .forEach(col => {
+      col.autoFit(props.rows)
+    })
+
+  setTableState(storageKey.value, { columns: columns.value })
 }
 </script>
 
@@ -311,6 +330,15 @@ function handleClearSorting() {
 
         <!-- Columns btn -->
         <TableColumnsBtn v-model:columns="columns" />
+
+        <!-- Autofit btn -->
+        <Btn
+          size="sm"
+          no-uppercase
+          icon="material-symbols:fit-width"
+          :label="$t('table.fitColumns')"
+          @click="handleFitColumns"
+        />
 
         <template v-if="config.table.useServerState">
           <!-- Layout selector -->

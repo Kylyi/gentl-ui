@@ -1,5 +1,4 @@
 import { klona } from 'klona'
-import { config } from '~/config'
 
 // Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
@@ -94,28 +93,7 @@ export function useTableColumnResizing(props: {
 
     // Handle double-click ~ resize to fit
     if (col && splitterJustClicked.value) {
-      const labelChars = col.hideLabel ? 0 : col.label.length
-      const maxContentChars = rows.value
-        .slice(0, config.table.columnAutoFit.rowsLimit)
-        .reduce((agg, row) => {
-          const cellValue = get(row, col.field)
-
-          if (cellValue) {
-            return Math.max(agg, String(cellValue).length)
-          }
-
-          return agg
-        }, 0)
-
-      const colMinWidth = Math.min(
-        Math.max(
-          col.minWidth || 0,
-          labelChars * 8 + 80, // These numbers are arbitrary
-          maxContentChars * 8 + 20 // These numbers are arbitrary
-        ),
-        config.table.columnAutoFit.maxColumnWidthChars * 8 + 20 // When autofitting, we don't want to go over some predefined value
-      )
-      col?.setWidth(colMinWidth)
+      col.autoFit(rows.value)
       setTableState(storageKey.value, { columns: props.columns })
 
       return

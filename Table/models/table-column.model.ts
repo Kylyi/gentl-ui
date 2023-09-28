@@ -1,5 +1,6 @@
 import { CSSProperties } from 'vue'
 import { Required } from 'utility-types'
+import { config } from '~/config'
 
 // Types
 import type { DistinctData } from '~/components/Table/types/distinct-data.type'
@@ -304,6 +305,33 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
 
         break
     }
+  }
+
+  autoFit(rows?: any[]) {
+    const labelChars = this.hideLabel ? 0 : this.label.length
+    const maxContentChars = (rows || [])
+      .slice(0, config.table.columnAutoFit.rowsLimit)
+      .reduce((agg, row) => {
+        const cellValue = get(row, this.field)
+        const cellFormattedValue = this.format?.(row, cellValue) || cellValue
+
+        if (cellFormattedValue) {
+          return Math.max(agg, String(cellFormattedValue).length)
+        }
+
+        return agg
+      }, 0)
+
+    const colMinWidth = Math.min(
+      Math.max(
+        this.minWidth || 0,
+        labelChars * 8 + 80, // These numbers are arbitrary
+        maxContentChars * 8 + 20 // These numbers are arbitrary
+      ),
+      config.table.columnAutoFit.maxColumnWidthChars * 8 + 20 // When autofitting, we don't want to go over some predefined value
+    )
+
+    this.setWidth(colMinWidth)
   }
 
   constructor(col: Required<Partial<TableColumn<T>>, 'field'>) {
