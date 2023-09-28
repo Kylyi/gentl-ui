@@ -98,7 +98,7 @@ defineExpose({
       @click.stop.prevent
     >
       <Loader
-        :type="loaderType || (label ? 'inline' : 'block')"
+        :type="loaderType || 'block'"
         :color="loadingColor"
         class="loading__loader"
       />

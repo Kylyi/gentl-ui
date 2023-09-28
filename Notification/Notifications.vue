@@ -3,7 +3,7 @@
 import { useNotificationStore } from '~/components/Notification/notification.store'
 
 type IProps = {
-  placement:
+  placement?:
     | 'top-left'
     | 'top'
     | 'top-right'

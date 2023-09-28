@@ -402,6 +402,7 @@ defineExpose({
       class="control"
       box="content"
       tabindex="0"
+      :name="name || label || placeholder"
       :class="[innerClass, { 'is-multi': !!multi }]"
       :style="{ maxHeight: `${maxHeight}px` }"
       @focus="handleFocusOrClick"
