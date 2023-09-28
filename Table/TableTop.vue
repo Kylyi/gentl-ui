@@ -27,6 +27,9 @@ const props = defineProps<
     search: string
   }
 >()
+const emits = defineEmits<{
+  (e: 'update:columnsWidth'): void
+}>()
 
 // Constants
 const MIN_VISIBLE_QUERY_BUILDER_ROWS = 1
@@ -127,6 +130,7 @@ function handleFitColumns() {
     })
 
   setTableState(storageKey.value, { columns: columns.value })
+  emits('update:columnsWidth')
 }
 </script>
 

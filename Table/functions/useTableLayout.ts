@@ -95,6 +95,10 @@ export function useTableLayout(
       )
       containerWidth = width
     }
+
+    if (force) {
+      headerEl.value?.updateArrows()
+    }
   }
 
   // Detect overflow

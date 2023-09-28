@@ -208,6 +208,7 @@ onMounted(() => {
         :selectable="selectable"
         :rows="rows"
         :non-saveable-settings="nonSaveableSettings"
+        @update:columns-width="handleResize(true)"
       >
         <template #left-prepend>
           <slot name="top-left-prepend" />

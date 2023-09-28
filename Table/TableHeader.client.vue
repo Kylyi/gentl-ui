@@ -94,6 +94,9 @@ defineExpose({
       headerEl.value?.scroll(left)
     }
   },
+  updateArrows: () => {
+    headerEl.value?.updateArrows()
+  },
 })
 </script>
 
