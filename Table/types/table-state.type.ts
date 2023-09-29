@@ -14,6 +14,7 @@ export type ITableColumnState = Pick<
   | 'frozen'
   | 'semiFrozen'
   | 'dataType'
+  | 'originalWidth'
 > & {
   filters: Pick<TableColumn['filters'][0], 'field' | 'comparator' | 'value'>[]
 }

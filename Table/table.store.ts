@@ -56,6 +56,7 @@ export const useTableStore = defineStore('table', () => {
           filters,
           frozen: col.frozen,
           semiFrozen: col.semiFrozen,
+          originalWidth: col.originalWidth,
         }
       })
     }

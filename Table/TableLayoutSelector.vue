@@ -49,8 +49,12 @@ const { getTableState } = useTableStore()
 // Layout
 const layoutSelectorEl = ref<InstanceType<typeof Selector>>()
 const queryBuilder = useVModel(props, 'queryBuilder')
+const isResetConfirmationActive = ref(false)
 
-function handleLayoutSelect(_layout?: ITableLayout) {
+function handleLayoutSelect(
+  _layout?: ITableLayout,
+  resetColumnWidths?: boolean
+) {
   const storageKey = _getTableStorageKey()
   const tableState = getTableState(storageKey)
   const defaultFilter = get(
@@ -97,7 +101,7 @@ function handleLayoutSelect(_layout?: ITableLayout) {
   const schemaHasAnyFilters =
     !!schemaFilters?.length || !!schemaQueryBuilder?.length
 
-  // We reset the visibility, sorting, order and filters of all columns
+  // We reset the width, visibility, sorting, order and filters of all columns
   columns.value.forEach(col => {
     if (!col.isHelperCol) {
       if (schemaColumns?.length) {
@@ -112,6 +116,10 @@ function handleLayoutSelect(_layout?: ITableLayout) {
       if (schemaSort?.length || isReset) {
         col.sort = undefined
         col.sortOrder = undefined
+      }
+
+      if (resetColumnWidths) {
+        col.width = col.originalWidth
       }
     }
   })
@@ -200,16 +208,60 @@ function handleLayoutSelect(_layout?: ITableLayout) {
     </template>
 
     <template #above-options>
-      <Btn
-        size="sm"
-        m="x-1 y-.5"
-        color="negative"
-        no-uppercase
-        :label="$t('table.layoutStateReset')"
-        @click="handleLayoutSelect()"
-      />
+      <div
+        relative
+        flex="~ col"
+        overflow="hidden"
+      >
+        <Btn
+          size="sm"
+          m="x-1 y-0.5"
+          color="negative"
+          no-uppercase
+          :label="$t('table.layoutStateReset')"
+          @click="isResetConfirmationActive = true"
+        />
+
+        <div
+          class="reset-confirmation"
+          :class="{ 'is-active': isResetConfirmationActive }"
+        >
+          <span
+            grow
+            text="caption xs center"
+          >
+            Reset columns width?
+          </span>
+
+          <div flex="~ gap-1">
+            <Btn
+              size="xs"
+              label="N"
+              color="red-500"
+              @click="handleLayoutSelect(undefined, false)"
+            />
+            <Btn
+              size="xs"
+              label="Y"
+              color="green-500"
+              @click="handleLayoutSelect(undefined, true)"
+            />
+          </div>
+        </div>
+      </div>
 
       <Separator spaced />
     </template>
   </Selector>
 </template>
+
+<style lang="scss" scoped>
+.reset-confirmation {
+  --apply: absolute flex items-center gap-2 items-center translate-x-100%
+    transition-transform inset-x-1 inset-y-0.5 bg-white dark:bg-darker;
+
+  &.is-active {
+    --apply: translate-x-0;
+  }
+}
+</style>

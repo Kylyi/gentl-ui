@@ -43,6 +43,11 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   nonInteractive?: boolean
 
   /**
+   * The column's original width
+   */
+  originalWidth: number | string = 1
+
+  /**
    * When true, the column will always be included in the `select` query
    */
   alwaysSelected = false
@@ -324,6 +329,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     this.label = String(col.label || col.name)
     this.field = col.field
     this.width = col.width || this.width
+    this.originalWidth = col.width || this.width
     this.minWidth = col.minWidth
     this.align = col.align || this.align
     this.hideLabel = col.hideLabel
