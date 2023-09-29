@@ -27,7 +27,7 @@ const props = withDefaults(defineProps<ITableProps>(), {
   filters: () => [],
   groupExpandWidth: 36,
   groups: () => [],
-  minimumColumnWidth: 64,
+  minimumColumnWidth: 80,
   mobileRowHeight: 32,
   rowHeight: 40,
   rowKey: 'id',
@@ -208,6 +208,7 @@ onMounted(() => {
         :selectable="selectable"
         :rows="rows"
         :non-saveable-settings="nonSaveableSettings"
+        :minimum-column-width="minimumColumnWidth"
         @update:columns-width="handleResize(true)"
       >
         <template #left-prepend>

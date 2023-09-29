@@ -242,7 +242,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     }
   }
 
-  autoFit(rows?: any[]) {
+  autoFit(rows?: any[], tableMinColWidth = 80) {
     const labelChars = this.hideLabel ? 0 : this.label.length
     const maxContentChars = (rows || [])
       .slice(0, config.table.columnAutoFit.rowsLimit)
@@ -259,6 +259,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
 
     const colMinWidth = Math.min(
       Math.max(
+        tableMinColWidth,
         this.minWidth || 0,
         labelChars * 8 + 40, // These numbers are arbitrary
         maxContentChars * 8 + 40 // These numbers are arbitrary

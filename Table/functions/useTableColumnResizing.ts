@@ -93,7 +93,7 @@ export function useTableColumnResizing(props: {
 
     // Handle double-click ~ resize to fit
     if (col && splitterJustClicked.value) {
-      col.autoFit(rows.value)
+      col.autoFit(rows.value, props.minimumColumnWidth)
       setTableState(storageKey.value, { columns: props.columns })
 
       return

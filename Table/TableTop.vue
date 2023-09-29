@@ -22,7 +22,11 @@ import QueryBuilderInline from '~/components/QueryBuilder/QueryBuilderInline.vue
 const props = defineProps<
   Pick<
     ITableProps,
-    'queryBuilder' | 'selectable' | 'nonSaveableSettings' | 'rows'
+    | 'queryBuilder'
+    | 'selectable'
+    | 'nonSaveableSettings'
+    | 'rows'
+    | 'minimumColumnWidth'
   > & {
     search: string
   }
@@ -126,7 +130,7 @@ function handleFitColumns() {
   columns.value
     .filter(col => col.resizable && !col.hidden && !col.isHelperCol)
     .forEach(col => {
-      col.autoFit(props.rows)
+      col.autoFit(props.rows, props.minimumColumnWidth)
     })
 
   setTableState(storageKey.value, { columns: columns.value })
