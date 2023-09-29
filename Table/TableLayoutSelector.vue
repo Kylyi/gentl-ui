@@ -201,6 +201,7 @@ function handleLayoutSelect(
     size="sm"
     w="50"
     :placeholder="$t('table.layoutState')"
+    @picker-hide="isResetConfirmationActive = false"
     @update:model-value="handleLayoutSelect"
   >
     <template #prepend>
