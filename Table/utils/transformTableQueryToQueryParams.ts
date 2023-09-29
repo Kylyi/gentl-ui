@@ -22,11 +22,6 @@ export function serializeFilterString(
       if ((row as ITableFilterGroup).isGroup) {
         const group = row as ITableFilterGroup
 
-        // We check if the group has any children, otherwise we return an empty string
-        // if (!group.children.length) {
-        //   return undefined
-        // }
-
         return `${group.condition.toLowerCase()}(${serializeFilterString(
           group.children
         )})`
