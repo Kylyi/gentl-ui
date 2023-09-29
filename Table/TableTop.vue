@@ -340,6 +340,7 @@ function handleFitColumns() {
           size="sm"
           no-uppercase
           icon="material-symbols:fit-width"
+          color="ca"
           :label="$t('table.fitColumns')"
           @click="handleFitColumns"
         />
