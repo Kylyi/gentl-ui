@@ -231,7 +231,7 @@ function handleLayoutSelect(
             grow
             text="caption xs center"
           >
-            Reset columns width?
+            {{ $t('table.resetColumnWidthsPrompt') }}
           </span>
 
           <div flex="~ gap-1">
