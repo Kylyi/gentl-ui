@@ -40,6 +40,9 @@ export const tableRecreateQueryBuilderKey: InjectionKey<() => void> = Symbol(
 
 export const tableResizeKey: InjectionKey<() => void> = Symbol('tableResize')
 
+export const tableSlotsKey: InjectionKey<Record<string, any>> =
+  Symbol('tableSlots')
+
 // Metadata
 export const tableLayoutsKey: InjectionKey<Ref<ITableLayout[]>> =
   Symbol('tableLayouts')

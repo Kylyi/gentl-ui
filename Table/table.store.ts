@@ -63,6 +63,7 @@ export const useTableStore = defineStore('table', () => {
 
     // We update the local storage state when there is already a state
     if (tableState[tableStorageKey]) {
+      console.log(state?.columns)
       tableState[tableStorageKey].value = {
         ...tableState[tableStorageKey].value,
         ...state,

@@ -215,7 +215,7 @@ function handleLayoutSelect(_layout: ITableLayout & { _isCreate?: boolean }) {
 }
 
 const $v = useVuelidate(
-  { layout: { name: { required, maxLength: maxLength(100) } } },
+  { layout: { name: { required, maxLength: maxLength(64) } } },
   { layout },
   { $scope: false }
 )
