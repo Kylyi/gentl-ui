@@ -257,13 +257,15 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
         return agg
       }, 0)
 
+    console.log(maxContentChars)
+
     const colMinWidth = Math.min(
       Math.max(
         this.minWidth || 0,
-        labelChars * 8 + 80, // These numbers are arbitrary
-        maxContentChars * 8 + 20 // These numbers are arbitrary
+        labelChars * 9 + 40, // These numbers are arbitrary
+        maxContentChars * 9 + 40 // These numbers are arbitrary
       ),
-      config.table.columnAutoFit.maxColumnWidthChars * 8 + 20 // When autofitting, we don't want to go over some predefined value
+      config.table.columnAutoFit.maxColumnWidthChars * 9 + 20 // When autofitting, we don't want to go over some predefined value
     )
 
     this.setWidth(colMinWidth)
