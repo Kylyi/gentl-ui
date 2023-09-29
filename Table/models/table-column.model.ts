@@ -257,8 +257,6 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
         return agg
       }, 0)
 
-    console.log(maxContentChars)
-
     const colMinWidth = Math.min(
       Math.max(
         this.minWidth || 0,
