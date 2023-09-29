@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Types
-import type { YearSelectorProps } from '~~/components/YearSelector/types/year-selector-props.type'
+import type { YearSelectorProps } from '~/components/YearSelector/types/year-selector-props.type'
 
 // Components
 import NumberInput from '~/components/Inputs/NumberInput/NumberInput.vue'

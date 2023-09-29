@@ -1,4 +1,4 @@
-import { CrudAction } from '~~/components/Crud/types/crud-action.type'
+import { CrudAction } from '~/components/Crud/types/crud-action.type'
 
 export interface IMainBarProps {
   actions?: Partial<Record<CrudAction, boolean>> | true

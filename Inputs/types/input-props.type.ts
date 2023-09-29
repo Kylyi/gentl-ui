@@ -3,7 +3,7 @@ import { AnyMaskedOptions } from 'imask'
 import { CSSProperties } from 'vue'
 
 // TYPES
-import type { IInputWrapperProps } from '~~/components/Inputs/types/input-wrapper-props.type'
+import type { IInputWrapperProps } from '~/components/Inputs/types/input-wrapper-props.type'
 
 export interface IInputProps extends IInputWrapperProps {
   /**

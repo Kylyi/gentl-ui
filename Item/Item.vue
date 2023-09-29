@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { IItemProps } from '~~/components/Item/types/item-props.type'
+import type { IItemProps } from '~/components/Item/types/item-props.type'
 
 withDefaults(defineProps<IItemProps>(), {
   tag: 'div',

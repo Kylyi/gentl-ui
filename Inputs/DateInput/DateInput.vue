@@ -7,12 +7,12 @@ import type { Dayjs } from 'dayjs'
 import type { IDateInputProps } from '~/components/Inputs/DateInput/types/date-input-props.type'
 
 // Functions
-import { useInputUtils } from '@/components/Inputs/functions/useInputUtils'
+import { useInputUtils } from '~/components/Inputs/functions/useInputUtils'
 
 // Components
-import InputWrapper from '@/components/Inputs/InputWrapper.vue'
-import DatePicker from '@/components/DatePicker/DatePicker.vue'
-import MenuProxy from '@/components/MenuProxy/MenuProxy.vue'
+import InputWrapper from '~/components/Inputs/InputWrapper.vue'
+import DatePicker from '~/components/DatePicker/DatePicker.vue'
+import MenuProxy from '~/components/MenuProxy/MenuProxy.vue'
 
 const props = withDefaults(defineProps<IDateInputProps>(), {
   autoClose: true,

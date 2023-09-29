@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // TYPES
-import type { IFieldProps } from '~~/components/Field/types/field-props.type'
+import type { IFieldProps } from '~/components/Field/types/field-props.type'
 
 const props = defineProps<IFieldProps>()
 defineEmits<{

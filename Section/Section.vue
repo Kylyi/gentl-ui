@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // TYPES
-import type { ISectionProps } from '~~/components/Section/types/section-props.type'
+import type { ISectionProps } from '~/components/Section/types/section-props.type'
 
 defineOptions({
   inheritAttrs: false,

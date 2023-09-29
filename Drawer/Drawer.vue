@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Types
-import type { IDrawerProps } from '~~/components/Drawer/types/drawer-props.type'
+import type { IDrawerProps } from '~/components/Drawer/types/drawer-props.type'
 
 const props = withDefaults(defineProps<IDrawerProps>(), {
   side: 'right',

@@ -2,10 +2,10 @@ import { FuseOptions } from '@vueuse/integrations/useFuse'
 import { IItemToBeAdded } from '~/components/List/types/list-item-to-add.type'
 
 // TYPES
-import type { IListBaseProps } from '~~/components/List/types/list-base-props.type'
+import type { IListBaseProps } from '~/components/List/types/list-base-props.type'
 
 // MODELS
-import { SortItem } from '~~/libs/App/data/models/sort-item.model'
+import { SortItem } from '~/libs/App/data/models/sort-item.model'
 
 export interface IListProps extends IListBaseProps {
   bordered?: boolean

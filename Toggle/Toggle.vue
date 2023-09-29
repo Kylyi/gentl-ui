@@ -3,7 +3,7 @@ import type {
   IToggleProps,
   ToggleClass,
   ToggleState,
-} from '~~/components/Toggle/types/toggle-props.type'
+} from '~/components/Toggle/types/toggle-props.type'
 
 const props = withDefaults(defineProps<IToggleProps>(), {
   allowString: true,

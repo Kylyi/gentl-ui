@@ -1,5 +1,5 @@
 // TYPES
-import { IItem } from '~~/libs/App/types/item.type'
+import { IItem } from '~/libs/App/types/item.type'
 
 export type ITab = IItem & {
   id: string | number

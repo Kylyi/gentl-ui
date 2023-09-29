@@ -1,4 +1,4 @@
-import { IInputProps } from '~~/components/Inputs/types/input-props.type'
+import { IInputProps } from '~/components/Inputs/types/input-props.type'
 
 export type ITimeInputShortcut = {
   label: string

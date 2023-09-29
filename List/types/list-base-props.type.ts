@@ -1,5 +1,5 @@
 // TYPES
-import type { GroupItem } from '~~/libs/App/data/models/group-item.model'
+import type { GroupItem } from '~/libs/App/data/models/group-item.model'
 
 export interface IListBaseProps {
   basePadding?: number

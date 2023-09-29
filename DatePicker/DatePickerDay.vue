@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // TYPES
-import type { DayEvent } from '@/components/DatePicker/types/DayEvent.type'
-import type { IDatePickerDayProps } from '~~/components/DatePicker/types/datepicker-day-props.type'
+import type { DayEvent } from '~/components/DatePicker/types/DayEvent.type'
+import type { IDatePickerDayProps } from '~/components/DatePicker/types/datepicker-day-props.type'
 
 const props = withDefaults(defineProps<IDatePickerDayProps>(), {
   edge: true,

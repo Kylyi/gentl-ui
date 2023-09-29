@@ -1,5 +1,5 @@
 // Types
-import type { IInputUtilsOptions } from '~~/components/Inputs/types/input-utils-options.type'
+import type { IInputUtilsOptions } from '~/components/Inputs/types/input-utils-options.type'
 
 // Functions
 import { useMask } from '~/components/Inputs/functions/useMask'

@@ -1,12 +1,12 @@
 <script setup lang="ts">
 // TYPES
-import type { IMenuConfirmationProps } from '~~/components/MenuConfirmation/types/menu-confirmation-props.type'
+import type { IMenuConfirmationProps } from '~/components/MenuConfirmation/types/menu-confirmation-props.type'
 
 // COMPOSITION FUNCTIONS
 import { useMenuUtils } from '~/components/Menu/functions/useMenuUtils'
 
 // COMPONENTS
-import Menu from '@/components/Menu/Menu.vue'
+import Menu from '~/components/Menu/Menu.vue'
 import Btn from '~/components/Button/Btn.vue'
 
 const props = withDefaults(defineProps<IMenuConfirmationProps>(), {

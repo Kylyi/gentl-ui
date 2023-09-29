@@ -10,8 +10,8 @@ import {
 } from '~/components/Inputs/DurationInput/functions/useDuration'
 
 // Components
-import Btn from '@/components/Button/Btn.vue'
-import Menu from '@/components/Menu/Menu.vue'
+import Btn from '~/components/Button/Btn.vue'
+import Menu from '~/components/Menu/Menu.vue'
 import NumberInput from '~/components/Inputs/NumberInput/NumberInput.vue'
 
 const props = withDefaults(defineProps<IDurationInputProps>(), {

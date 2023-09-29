@@ -1,6 +1,6 @@
 // REGEX
-import { SummaryEnum } from '~~/libs/App/data/enums/summary.enum'
-import { stringToFloat } from '~~/libs/App/data/regex/string-to-float.regex'
+import { SummaryEnum } from '~/libs/App/data/enums/summary.enum'
+import { stringToFloat } from '~/libs/App/data/regex/string-to-float.regex'
 
 export type INumberOptions = {
   localeIso?: string

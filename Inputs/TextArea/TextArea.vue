@@ -5,7 +5,7 @@ import { MaybeElementRef } from '@vueuse/core'
 import type { ITextAreaInputProps } from '~/components/Inputs/TextArea/types/text-area-props.type'
 
 // COMPOSITION FUNCTIONS
-import { useInputUtils } from '@/components/Inputs/functions/useInputUtils'
+import { useInputUtils } from '~/components/Inputs/functions/useInputUtils'
 
 const props = withDefaults(defineProps<ITextAreaInputProps>(), {
   debounce: 20,

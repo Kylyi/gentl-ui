@@ -4,17 +4,17 @@
 import { config } from '~/config'
 
 // Types
-import type { ISelectorProps } from '~~/components/Selector/types/selector-props.type'
+import type { ISelectorProps } from '~/components/Selector/types/selector-props.type'
 import type { IItemToBeAdded } from '~/components/List/types/list-item-to-add.type'
 
 // Functions
-import { useSelectorUtils } from '~~/components/Selector/functions/useSelectorUtils'
+import { useSelectorUtils } from '~/components/Selector/functions/useSelectorUtils'
 
 // Components
-import List from '@/components/List/List.vue'
-import MenuProxy from '@/components/MenuProxy/MenuProxy.vue'
-import InputWrapper from '@/components/Inputs/InputWrapper.vue'
-import ScrollArea from '@/components/ScrollArea/ScrollArea.vue'
+import List from '~/components/List/List.vue'
+import MenuProxy from '~/components/MenuProxy/MenuProxy.vue'
+import InputWrapper from '~/components/Inputs/InputWrapper.vue'
+import ScrollArea from '~/components/ScrollArea/ScrollArea.vue'
 
 const props = withDefaults(defineProps<ISelectorProps>(), {
   debounce: 20,

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 // Types
-import type { IMainBarProps } from '~~/components/MainBar/types/main-bar-props.type'
+import type { IMainBarProps } from '~/components/MainBar/types/main-bar-props.type'
 
 // Components
-import CrudBtns from '@/components/Crud/CrudBtns.vue'
+import CrudBtns from '~/components/Crud/CrudBtns.vue'
 
 defineProps<IMainBarProps>()
 defineEmits<{

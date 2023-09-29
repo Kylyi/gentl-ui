@@ -9,7 +9,7 @@ import BtnOrNuxtLinkResolver from '~/components/Button/BtnOrNuxtLinkResolver.vue
 import { BUTTON_PRESET } from '~/components/Button/constants/button-preset.constant'
 
 // DIRECTIVES
-import { vRipple } from '~~/libs/App/directives/ripple'
+import { vRipple } from '~/libs/App/directives/ripple.directive'
 
 const props = withDefaults(defineProps<IBtnProps>(), {
   align: 'center',

@@ -2,7 +2,7 @@
 import { config } from '~/config'
 
 // Types
-import type { IInputWrapperProps } from '~~/components/Inputs/types/input-wrapper-props.type'
+import type { IInputWrapperProps } from '~/components/Inputs/types/input-wrapper-props.type'
 
 // Functions
 import { useInputWrapperUtils } from '~/components/Inputs/functions/useInputWrapperUtils'

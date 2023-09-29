@@ -4,7 +4,7 @@
 import { isVNode } from 'vue'
 
 // Types
-import type { ITabsProps } from '~~/components/Tabs/types/tabs-props.type'
+import type { ITabsProps } from '~/components/Tabs/types/tabs-props.type'
 
 const props = defineProps<ITabsProps>()
 const emits = defineEmits<{

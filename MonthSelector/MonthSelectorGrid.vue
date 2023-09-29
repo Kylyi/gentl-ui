@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // TYPES
-import type { IMonthSelectorGridProps } from '~~/components/MonthSelector/types/month-selector-grid-props'
+import type { IMonthSelectorGridProps } from '~/components/MonthSelector/types/month-selector-grid-props'
 
 const props = defineProps<IMonthSelectorGridProps>()
 defineEmits<{

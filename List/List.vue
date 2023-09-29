@@ -1,14 +1,14 @@
 <script setup lang="ts">
 // Types
-import type { IListProps } from '~~/components/List/types/list-props.type'
+import type { IListProps } from '~/components/List/types/list-props.type'
 import type { IItemToBeAdded } from '~/components/List/types/list-item-to-add.type'
 
 // Functions
-import { useList } from '@/components/List/functions/useList'
+import { useList } from '~/components/List/functions/useList'
 
 // Components
-import ListVirtualContainer from '~~/components/List/ListVirtualContainer.vue'
-import ListContainer from '~~/components/List/ListContainer.vue'
+import ListVirtualContainer from '~/components/List/ListVirtualContainer.vue'
+import ListContainer from '~/components/List/ListContainer.vue'
 
 const props = withDefaults(defineProps<IListProps>(), {
   clearable: true,

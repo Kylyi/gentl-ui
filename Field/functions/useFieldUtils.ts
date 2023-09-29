@@ -1,5 +1,5 @@
 // TYPE
-import type { IFieldProps } from '~~/components/Field/types/field-props.type'
+import type { IFieldProps } from '~/components/Field/types/field-props.type'
 
 export function useFieldUtils(options?: {
   props?: IFieldProps

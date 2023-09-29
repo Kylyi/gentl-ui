@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ICrudBtnProps } from '~~/components/Crud/types/crud-btn-props.type'
+import { ICrudBtnProps } from '~/components/Crud/types/crud-btn-props.type'
 
 defineProps<ICrudBtnProps>()
 defineEmits<{

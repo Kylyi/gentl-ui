@@ -1,9 +1,9 @@
 <script setup lang="ts">
 // Types
-import type { IFormProps } from '~~/components/Form/types/form-props.type'
+import type { IFormProps } from '~/components/Form/types/form-props.type'
 
 // Functions
-import { useFormErrors } from '~~/components/Form/functions/useFormErrors'
+import { useFormErrors } from '~/components/Form/functions/useFormErrors'
 
 // Components
 import MenuConfirmation from '~/components/MenuConfirmation/MenuConfirmation.vue'

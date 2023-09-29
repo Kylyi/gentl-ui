@@ -2,7 +2,7 @@
 import IMask, { InputMask, createMask } from 'imask'
 
 // Types
-import type { IMaskOptions } from '~~/components/Inputs/types/mask-options.type'
+import type { IMaskOptions } from '~/components/Inputs/types/mask-options.type'
 
 const activeElement = useActiveElement()
 

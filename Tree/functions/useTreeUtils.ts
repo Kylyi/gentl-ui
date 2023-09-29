@@ -1,8 +1,8 @@
 import { Required } from 'utility-types'
 
 // TYPES
-import type { ITreeNode } from '~~/components/Tree/types/tree-node.type'
-import type { ITreeProps } from '~~/components/Tree/types/tree-props.type'
+import type { ITreeNode } from '~/components/Tree/types/tree-node.type'
+import type { ITreeProps } from '~/components/Tree/types/tree-props.type'
 
 // COMPOSITION FUNCTIONS
 import { useTraversing } from '~/libs/App/functions/useTraversing'

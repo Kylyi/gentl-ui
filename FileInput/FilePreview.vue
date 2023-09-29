@@ -3,7 +3,7 @@
 import type { IFile } from '~/components/FileInput/types/file.type'
 
 // Constants
-import { ICON_BY_FILE_TYPE } from '~~/components/FileInput/constants/iconByFileType'
+import { ICON_BY_FILE_TYPE } from '~/components/FileInput/constants/iconByFileType'
 
 type IProps = {
   downloadUrl?: string

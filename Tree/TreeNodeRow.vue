@@ -1,8 +1,8 @@
 <script setup lang="ts">
 // @ts-nocheck
 // Types
-import type { ITreeNodeRowProps } from '~~/components/Tree/types/tree-node-row-props.type'
-import type { ITreeNode } from '~~/components/Tree/types/tree-node.type'
+import type { ITreeNodeRowProps } from '~/components/Tree/types/tree-node-row-props.type'
+import type { ITreeNode } from '~/components/Tree/types/tree-node.type'
 
 // Injections
 import {

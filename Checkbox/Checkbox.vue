@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // TYPES
-import type { ICheckboxProps } from '~~/components/Checkbox/types/checkbox-props.type'
+import type { ICheckboxProps } from '~/components/Checkbox/types/checkbox-props.type'
 
 const props = withDefaults(defineProps<ICheckboxProps>(), {
   color: 'primary',

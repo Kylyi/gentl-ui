@@ -1,9 +1,9 @@
 <script setup lang="ts">
 // Types
-import type { IChipProps } from '~~/components/Chip/types/chip-props.type'
+import type { IChipProps } from '~/components/Chip/types/chip-props.type'
 
 // Directives
-import { vRipple } from '~~/libs/App/directives/ripple'
+import { vRipple } from '~/libs/App/directives/ripple.directive'
 
 const props = defineProps<IChipProps>()
 defineEmits<{

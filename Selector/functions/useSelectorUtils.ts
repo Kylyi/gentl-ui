@@ -1,4 +1,4 @@
-import { ISelectorUtilsOptions } from '~~/components/Selector/types/selector-utils-options.type'
+import { ISelectorUtilsOptions } from '~/components/Selector/types/selector-utils-options.type'
 
 export function useSelectorUtils(options: ISelectorUtilsOptions) {
   const { props, menuElRef } = options

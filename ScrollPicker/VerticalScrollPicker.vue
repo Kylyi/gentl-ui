@@ -2,7 +2,7 @@
 import { CSSProperties } from 'vue'
 
 // Types
-import type { IVerticalScrollPickerProps } from '~~/components/ScrollPicker/types/vertical-scroll-picker-props.type'
+import type { IVerticalScrollPickerProps } from '~/components/ScrollPicker/types/vertical-scroll-picker-props.type'
 
 const props = withDefaults(defineProps<IVerticalScrollPickerProps>(), {
   maxVisible: 5,

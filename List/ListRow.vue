@@ -1,9 +1,9 @@
 <script setup lang="ts">
 // Types
-import type { IListRowProps } from '~~/components/List/types/list-row-props.type'
+import type { IListRowProps } from '~/components/List/types/list-row-props.type'
 
 // Constants
-import { BUTTON_PRESET } from '@/components/Button/constants/button-preset.constant'
+import { BUTTON_PRESET } from '~/components/Button/constants/button-preset.constant'
 
 const props = withDefaults(defineProps<IListRowProps>(), {
   basePadding: 12,

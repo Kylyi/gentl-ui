@@ -8,10 +8,10 @@ import { AnyMaskedOptions, MaskedRange } from 'imask'
 import type { ITimeInputProps } from '~/components/Inputs/TimeInput/types/time-input-props.type'
 
 // Functions
-import { useInputUtils } from '@/components/Inputs/functions/useInputUtils'
+import { useInputUtils } from '~/components/Inputs/functions/useInputUtils'
 
 // Components
-import InputWrapper from '@/components/Inputs/InputWrapper.vue'
+import InputWrapper from '~/components/Inputs/InputWrapper.vue'
 import TimeInputPicker from '~/components/Inputs/TimeInput/TimeInputPicker.vue'
 
 const props = withDefaults(defineProps<ITimeInputProps>(), {

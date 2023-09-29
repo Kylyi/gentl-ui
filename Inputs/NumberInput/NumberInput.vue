@@ -6,11 +6,11 @@ import { MaskedNumber } from 'imask'
 import type { INumberInputProps } from '~/components/Inputs/NumberInput/types/number-input-props.type'
 
 // COMPOSITION FUNCTIONS
-import { useInputUtils } from '@/components/Inputs/functions/useInputUtils'
+import { useInputUtils } from '~/components/Inputs/functions/useInputUtils'
 import { useNumber } from '~/components/Inputs/NumberInput/functions/useNumber'
 
 // COMPONENTS
-import Btn from '~~/components/Button/Btn.vue'
+import Btn from '~/components/Button/Btn.vue'
 
 const props = withDefaults(defineProps<INumberInputProps>(), {
   debounce: 20,

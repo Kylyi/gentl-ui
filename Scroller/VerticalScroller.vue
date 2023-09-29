@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // TYPES
-import type { IScrollerProps } from '~~/components/Scroller/types/scroller-props.type'
+import type { IScrollerProps } from '~/components/Scroller/types/scroller-props.type'
 
 const props = withDefaults(defineProps<IScrollerProps>(), {
   arrows: 'inside',

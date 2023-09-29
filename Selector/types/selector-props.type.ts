@@ -2,11 +2,11 @@ import { FuseOptions } from '@vueuse/integrations/useFuse'
 import { FloatingUIBaseProps } from '~/components/Dialog/types/dialog-props.type'
 
 // TYPES
-import type { IInputProps } from '~~/components/Inputs/types/input-props.type'
+import type { IInputProps } from '~/components/Inputs/types/input-props.type'
 
 // MODELS
-import { GroupItem } from '~~/libs/App/data/models/group-item.model'
-import { SortItem } from '~~/libs/App/data/models/sort-item.model'
+import { GroupItem } from '~/libs/App/data/models/group-item.model'
+import { SortItem } from '~/libs/App/data/models/sort-item.model'
 
 export type ISelectorProps = IInputProps & {
   /**

@@ -1,4 +1,4 @@
-import { ClassType } from '~~/libs/App/types/class.type'
+import { ClassType } from '~/libs/App/types/class.type'
 
 export interface ISectionProps {
   bordered?: boolean

@@ -14,7 +14,7 @@ import { Link } from '@tiptap/extension-link'
 import { ClientRectObject } from '@floating-ui/vue'
 
 // Types
-import type { IWysiwygProps } from '~~/components/Wysiwyg/types/wysiwyg-props.type'
+import type { IWysiwygProps } from '~/components/Wysiwyg/types/wysiwyg-props.type'
 import type { IWysiwygMentionItem } from '~/components/Wysiwyg/types/wysiwyg-mention-item.type'
 
 // Functions

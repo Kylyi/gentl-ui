@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Types
-import type { IPageDrawerProps } from '~~/components/Page/types/page-drawer-props.type'
+import type { IPageDrawerProps } from '~/components/Page/types/page-drawer-props.type'
 
 const props = withDefaults(defineProps<IPageDrawerProps>(), {
   absoluteBreakpoint: 'md',

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // TYPES
-import type { InputLabelProps } from '~~/components/Inputs/types/input-label-props.type'
+import type { InputLabelProps } from '~/components/Inputs/types/input-label-props.type'
 
 const props = defineProps<InputLabelProps>()
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // TYPES
-import type { IButtonGroupProps } from '~~/components/ButtonGroup/types/button-group-props.type'
+import type { IButtonGroupProps } from '~/components/ButtonGroup/types/button-group-props.type'
 
 withDefaults(defineProps<IButtonGroupProps>(), {
   activeClass: 'bg-primary color-white',

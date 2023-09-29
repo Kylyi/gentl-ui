@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // TYPES
-import type { CrudAction } from '@/components/Crud/types/crud-action.type'
-import type { ICrudBtnProps } from '~~/components/Crud/types/crud-btn-props.type'
+import type { CrudAction } from '~/components/Crud/types/crud-action.type'
+import type { ICrudBtnProps } from '~/components/Crud/types/crud-btn-props.type'
 
 type IProps = {
   actions?: Partial<Record<CrudAction, boolean>> | true

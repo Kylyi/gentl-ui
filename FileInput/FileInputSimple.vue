@@ -10,7 +10,7 @@ import { useFieldUtils } from '~/components/Field/functions/useFieldUtils'
 import { useNumber } from '~/components/Inputs/NumberInput/functions/useNumber'
 
 // Components
-import ScrollArea from '~~/components/ScrollArea/ScrollArea.vue'
+import ScrollArea from '~/components/ScrollArea/ScrollArea.vue'
 import Field from '~/components/Field/Field.vue'
 
 const props = withDefaults(defineProps<IFileInputProps>(), {

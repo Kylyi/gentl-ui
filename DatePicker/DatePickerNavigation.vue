@@ -2,7 +2,7 @@
 import { Dayjs } from 'dayjs'
 
 // TYPES
-import type { IDatePickerNavigationProps } from '~~/components/DatePicker/types/datepicker-navigation-props.type'
+import type { IDatePickerNavigationProps } from '~/components/DatePicker/types/datepicker-navigation-props.type'
 
 const props = defineProps<IDatePickerNavigationProps>()
 

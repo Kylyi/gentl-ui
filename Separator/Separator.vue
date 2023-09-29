@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // TYPES
-import type { ISeparatorProps } from '~~/components/Separator/types/separator-props.type'
+import type { ISeparatorProps } from '~/components/Separator/types/separator-props.type'
 
 defineProps<ISeparatorProps>()
 </script>
