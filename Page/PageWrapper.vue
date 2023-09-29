@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { config } from '~/config'
+import { useMobileStore } from '~/libs/App/mobile.store'
 
 type IProps = {
   pad?: boolean
@@ -12,6 +13,8 @@ withDefaults(defineProps<IProps>(), {
   pad: true,
   includeTopBar: true,
 })
+
+const { isMobile, isSidebarOpen } = toRefs(useMobileStore())
 
 const mounted = ref(false)
 
@@ -27,6 +30,7 @@ onMounted(() => {
       'is-scrollable': $route.meta.isPageScrollable,
       'is-mounted': mounted,
       'is-padded': pad,
+      'is-mobile-and-sidebar-open': isMobile && isSidebarOpen,
     }"
   >
     <!-- TopBar -->
@@ -93,6 +97,10 @@ onMounted(() => {
 
   &.is-padded {
     --apply: m-t-$navHeight;
+  }
+
+  &.is-mobile-and-sidebar-open {
+    --apply: overflow-x-hidden border-rd-l-2 p-r-0;
   }
 }
 
