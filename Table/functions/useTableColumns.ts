@@ -225,9 +225,12 @@ export function useTableColumns(
         // We set the column data that we save in `localStorage`
         col.width = stateColumn.width
 
-        // TODO: Broken frozen columns on init
-        // col.frozen = stateColumn.frozen
-        // col.semiFrozen = stateColumn.semiFrozen
+        // TODO: This can be done better (without the arbitrary timeout...)
+        setTimeout(() => {
+          if (stateColumn.frozen) {
+            col.freeze(_columns)
+          }
+        }, 500)
       }
     })
 

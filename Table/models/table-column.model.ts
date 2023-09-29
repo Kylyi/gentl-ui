@@ -143,76 +143,6 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     }
 
     return validFilters
-
-    // // We can also filter by `null` values
-    // // but Prisma doesn't support `null` in `in` or `not.in` comparators
-    // // so we need to extract those values and add them to the query manually
-    // const comparatorsWithNull: ComparatorEnum[] = []
-
-    // const filterConditions = this.filters.reduce((agg, filter) => {
-    //   const isEmptyArray = Array.isArray(filter) && !filter.length
-
-    //   if (filter.value !== undefined && !isEmptyArray) {
-    //     // When using the `in` or `not.in` comparator, we have an array of values
-    //     if (Array.isArray(filter.value)) {
-    //       if (filter.value.some(item => item._value === null)) {
-    //         comparatorsWithNull.push(filter.comparator)
-    //       }
-
-    //       // The `_value` comes from the DistinctData type
-    //       agg[filter.comparator] = filter.value
-    //         .map(item => item._value)
-    //         .filter(Boolean)
-
-    //       // We don't want to send empty arrays
-    //       if (agg[filter.comparator].length === 0) {
-    //         delete agg[filter.comparator]
-    //       }
-    //     }
-
-    //     // When using `datetime` or `date` datatype, we need to create a range
-    //     else if (
-    //       (this.dataType === 'datetime' || this.dataType === 'date') &&
-    //       filter.comparator === ComparatorEnum.EQUAL
-    //     ) {
-    //       agg.gte = filter.value
-    //       agg.lt = $date(filter.value).add(1, 'day')
-    //     }
-
-    //     // Otherwise, we just use the value
-    //     else {
-    //       agg[filter.comparator] = filter.value
-    //     }
-    //   }
-
-    //   return agg
-    // }, {} as IItem)
-
-    // let query: IItem = {}
-
-    // const isStringLikeFilter = this.dataType === 'string'
-
-    // set(query, this.field, {
-    //   ...filterConditions,
-    //   ...(config.table.useInsensitiveFilter &&
-    //     isStringLikeFilter && { mode: 'insensitive' }),
-    // })
-
-    // if (comparatorsWithNull.length) {
-    //   query = {
-    //     OR: [query],
-    //   }
-
-    //   comparatorsWithNull.forEach(comparator => {
-    //     query.OR.unshift({
-    //       [this.field]: {
-    //         [comparator === ComparatorEnum.IN ? 'equals' : 'not']: null,
-    //       },
-    //     })
-    //   })
-    // }
-
-    // return query
   }
 
   get filteredKeys() {
@@ -332,6 +262,58 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     )
 
     this.setWidth(colMinWidth)
+  }
+
+  freeze(columns: TableColumn[]) {
+    const isFrozen = this.frozen
+
+    // We unfreeze any other frozen column
+    columns.forEach(col => {
+      col.frozen = false
+      col.semiFrozen = false
+      col.headerStyle = omit(this.headerStyle, [
+        'left',
+        'position',
+        'backgroundColor',
+        'zIndex',
+      ])
+      col.style = omit(this.style, [
+        'left',
+        'position',
+        'backgroundColor',
+        'zIndex',
+      ])
+    })
+
+    if (!isFrozen) {
+      // And we freeze the current column
+      const colIdx = columns.findIndex(col => col.field === this.field)
+
+      let left = 0
+      columns.slice(0, colIdx + 1).forEach(col => {
+        col.setWidth(col.adjustedWidth)
+
+        col.semiFrozen = true
+        col.headerStyle = {
+          ...col.headerStyle,
+          left: `${left}px`,
+          position: 'sticky',
+          backgroundColor: 'var(--color-theme)',
+          zIndex: 1,
+        }
+        col.style = {
+          ...col.style,
+          left: `${left}px`,
+          position: 'sticky',
+          backgroundColor: 'var(--color-theme)',
+          zIndex: 1,
+        }
+
+        left += col.adjustedWidth
+      })
+
+      this.frozen = true
+    }
   }
 
   constructor(col: Required<Partial<TableColumn<T>>, 'field'>) {

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { klona } from 'klona'
 import { config } from '~/config'
 
 // Types
@@ -27,6 +28,9 @@ import { useTableStore } from '~/components/Table/table.store'
 // Components
 import Selector from '~/components/Selector/Selector.vue'
 
+// Constants
+import { queryBuilderDefault } from '~/components/QueryBuilder/constants/query-builder-default.constant'
+
 const props = defineProps<Pick<ITableProps, 'queryBuilder'>>()
 
 // Utils
@@ -54,6 +58,13 @@ function handleLayoutSelect(_layout?: ITableLayout) {
     config.table.layoutKey
   ) as any
 
+  // NOTE: We unfreeze any frozen column
+  const frozenCol = columns.value.find(col => col.frozen)
+  if (frozenCol) {
+    frozenCol.freeze(columns.value)
+  }
+
+  const isReset = !_layout
   if (!_layout) {
     _layout = {
       id: 0,
@@ -94,11 +105,11 @@ function handleLayoutSelect(_layout?: ITableLayout) {
         col._internalSort = undefined
       }
 
-      if (schemaHasAnyFilters) {
+      if (schemaHasAnyFilters || isReset) {
         col.clearFilters()
       }
 
-      if (schemaSort?.length) {
+      if (schemaSort?.length || isReset) {
         col.sort = undefined
         col.sortOrder = undefined
       }
@@ -118,7 +129,9 @@ function handleLayoutSelect(_layout?: ITableLayout) {
 
   // Set the query builder with the parsed query builder or reset it
   // we don't want to set the query builder if it's undefined
-  if (schemaQueryBuilder?.length) {
+  if (isReset) {
+    queryBuilder.value = klona(queryBuilderDefault)
+  } else if (schemaQueryBuilder?.length) {
     queryBuilder.value = schemaQueryBuilder
   } else if (props.queryBuilder !== undefined) {
     queryBuilder.value = props.queryBuilder

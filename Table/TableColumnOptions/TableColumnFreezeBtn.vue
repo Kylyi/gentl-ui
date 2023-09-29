@@ -2,12 +2,24 @@
 // Types
 import type { TableColumn } from '~/components/Table/models/table-column.model'
 
+// Injections
+import { tableStorageKey } from '~/components/Table/provide/table.provide'
+
+// Store
+import { useTableStore } from '~/components/Table/table.store'
+
 type IProps = {
   column: TableColumn
   columns: TableColumn[]
 }
 
 const props = defineProps<IProps>()
+
+// Store
+const { setTableState } = useTableStore()
+
+// Injections
+const storageKey = injectStrict(tableStorageKey)
 
 // Layout
 const column = toRef(props, 'column')
@@ -20,55 +32,8 @@ const btnProps = computed(() => {
 })
 
 function handleFreezeColumn() {
-  const isFrozen = props.column.frozen
-
-  // We unfreeze any other frozen column
-  columns.value.forEach(col => {
-    col.frozen = false
-    col.semiFrozen = false
-    col.headerStyle = omit(column.value.headerStyle, [
-      'left',
-      'position',
-      'backgroundColor',
-      'zIndex',
-    ])
-    col.style = omit(column.value.style, [
-      'left',
-      'position',
-      'backgroundColor',
-      'zIndex',
-    ])
-  })
-
-  if (!isFrozen) {
-    // And we freeze the current column
-    const colIdx = columns.value.findIndex(
-      col => col.field === column.value.field
-    )
-
-    let left = 0
-    columns.value.slice(0, colIdx + 1).forEach(col => {
-      col.semiFrozen = true
-      col.headerStyle = {
-        ...col.headerStyle,
-        left: `${left}px`,
-        position: 'sticky',
-        backgroundColor: 'var(--color-theme)',
-        zIndex: 1,
-      }
-      col.style = {
-        ...col.style,
-        left: `${left}px`,
-        position: 'sticky',
-        backgroundColor: 'var(--color-theme)',
-        zIndex: 1,
-      }
-
-      left += col.adjustedWidth
-    })
-
-    column.value.frozen = true
-  }
+  column.value.freeze(columns.value)
+  setTableState(storageKey.value, { columns: columns.value })
 }
 </script>
 

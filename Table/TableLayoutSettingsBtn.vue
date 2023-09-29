@@ -135,13 +135,12 @@ async function handleSaveLayout() {
   // Sort
   if (layout.value.sort && queryParams.has('paging')) {
     // We need to extract only the `sort` part of the `paging` query param
-    const paging =
-      queryParams
-        .get('paging')
-        ?.toString()
-        .replace(/.*\(sort\((.*?)\),.*$/, '$1') || ''
+    const sortPart =
+      queryParams.get('paging')?.match(/\(sort\(([^)]+)\)/)?.[1] || ''
 
-    paramsToSave.set('paging', `(sort(${paging}))`)
+    if (sortPart) {
+      paramsToSave.set('paging', `(sort(${sortPart}))`)
+    }
   }
 
   // Query builder and filters
@@ -216,7 +215,7 @@ function handleLayoutSelect(_layout: ITableLayout & { _isCreate?: boolean }) {
 }
 
 const $v = useVuelidate(
-  { layout: { name: { required } } },
+  { layout: { name: { required, maxLength: maxLength(100) } } },
   { layout },
   { $scope: false }
 )
