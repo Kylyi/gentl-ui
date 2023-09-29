@@ -19,8 +19,6 @@ export const useTableStore = defineStore('table', () => {
       return tableState[tableStorageKey]
     }
 
-    console.log('hloa')
-
     return setTableState(tableStorageKey)
   }
 
