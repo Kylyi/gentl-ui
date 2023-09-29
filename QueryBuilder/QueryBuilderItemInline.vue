@@ -208,7 +208,7 @@ const $v = useVuelidate({ $scope: 'qb' })
     rounded-custom p-l-1.5 m-r-1 m-t-1 items-center cursor-pointer;
 
   &:hover {
-    --apply: shadow-consistent shadow-ca;
+    --apply: shadow-consistent-xs shadow-ca;
   }
 
   &.is-first-child {

@@ -394,7 +394,7 @@ function show(force?: boolean) {
     ;(referenceEl.value as any).style.backgroundColor = 'black'
   }
 
-  ;(referenceEl.value as any).classList.add('shadow-consistent-sm')
+  ;(referenceEl.value as any).classList.add('shadow-consistent-xs')
   ;(referenceEl.value as any).classList.add('shadow-ca')
   ;(referenceEl.value as any).classList.add('transition-all')
 
@@ -523,7 +523,7 @@ function cleanComponent() {
   if (referenceEl.value) {
     ;(referenceEl.value as any).style.zIndex = referenceElOldZIndex.value
     referenceElOldZIndex.value = undefined
-    ;(referenceEl.value as any).classList.remove('shadow-consistent-sm')
+    ;(referenceEl.value as any).classList.remove('shadow-consistent-xs')
     ;(referenceEl.value as any).classList.remove('shadow-ca')
 
     if (isReferenceElTransparent.value) {
