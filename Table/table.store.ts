@@ -19,6 +19,8 @@ export const useTableStore = defineStore('table', () => {
       return tableState[tableStorageKey]
     }
 
+    console.log('hloa')
+
     return setTableState(tableStorageKey)
   }
 
@@ -63,11 +65,13 @@ export const useTableStore = defineStore('table', () => {
 
     // We update the local storage state when there is already a state
     if (tableState[tableStorageKey]) {
-      console.log(state?.columns)
-      tableState[tableStorageKey].value = {
-        ...tableState[tableStorageKey].value,
-        ...state,
-      }
+      localStorage.setItem(
+        tableStorageKey,
+        JSON.stringify({
+          ...tableState[tableStorageKey].value,
+          ...state,
+        })
+      )
     }
 
     // We create the local storage state when there is no state
