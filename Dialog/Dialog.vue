@@ -362,11 +362,13 @@ function handleClickOutside(ev: Event) {
   const lastFloatingElement = document.querySelector(
     '.floating-element:last-child'
   )
+  const isNotifications = !!targetEl.closest('.notifications')
 
   if (
     !isTargetBody &&
     !isPartOfFloatingUI &&
     !isPartOfReferenceEl &&
+    !isNotifications &&
     lastFloatingElement === dialogWrapperEl.value
   ) {
     hide()
