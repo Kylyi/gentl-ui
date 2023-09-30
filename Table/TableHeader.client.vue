@@ -132,7 +132,7 @@ defineExpose({
             :title="col._label"
             class="th-label"
           >
-            {{ col._label }}&nbsp;
+            {{ col._label }}
           </span>
 
           <div v-if="col.name === '_selectable'">
