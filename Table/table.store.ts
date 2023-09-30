@@ -30,6 +30,7 @@ export const useTableStore = defineStore('table', () => {
     tableStorageKey: string,
     state?: Partial<ITableState>
   ) {
+    console.log('Log ~ useTableStore ~ tableStorageKey:', tableStorageKey)
     // We update the server state
     if (config.table.useServerState) {
       // TODO: Implement
@@ -63,6 +64,11 @@ export const useTableStore = defineStore('table', () => {
 
     // We update the local storage state when there is already a state
     if (tableState[tableStorageKey]) {
+      tableState[tableStorageKey].value = {
+        ...tableState[tableStorageKey].value,
+        ...state,
+      }
+
       localStorage.setItem(
         tableStorageKey,
         JSON.stringify({
