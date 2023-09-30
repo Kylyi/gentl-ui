@@ -30,7 +30,6 @@ export const useTableStore = defineStore('table', () => {
     tableStorageKey: string,
     state?: Partial<ITableState>
   ) {
-    console.log('Log ~ useTableStore ~ tableStorageKey:', tableStorageKey)
     // We update the server state
     if (config.table.useServerState) {
       // TODO: Implement

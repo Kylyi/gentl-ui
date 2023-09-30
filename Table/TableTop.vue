@@ -126,18 +126,32 @@ function handleClearSorting() {
   })
 }
 
-async function handleFitColumns() {
+function handleFitColumns() {
   const fittableColumns = columns.value.filter(
     col => col.resizable && !col.hidden && !col.isHelperCol
   )
 
-  for await (const col of fittableColumns) {
-    const slotRenderFnc = tableSlots[col.field]
-    await col.autoFit(tableRows.value, slotRenderFnc, props.minimumColumnWidth)
-  }
+  // We unfreeze any frozen column
+  const frozenColumn = fittableColumns.find(col => col.frozen)
+  frozenColumn?.freeze(fittableColumns)
 
-  setTableState(storageKey.value, { columns: columns.value })
-  emits('update:columnsWidth')
+  setTimeout(async () => {
+    // We autofit the columns
+    for await (const col of fittableColumns) {
+      const slotRenderFnc = tableSlots[col.field]
+      await col.autoFit(
+        tableRows.value,
+        slotRenderFnc,
+        props.minimumColumnWidth
+      )
+    }
+
+    // We freeze the column again
+    frozenColumn?.freeze(fittableColumns)
+
+    setTableState(storageKey.value, { columns: columns.value })
+    emits('update:columnsWidth')
+  }, 0)
 }
 </script>
 
