@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-// TYPES
+// Types
 import type { INotification } from '~/components/Notification/types/notification.type'
 
 export const useNotificationStore = defineStore('notification', () => {
@@ -28,13 +28,13 @@ export const useNotificationStore = defineStore('notification', () => {
       sameNotification.counter++
     } else {
       notifications.value = [
-        { ...notification, counter: 1, id: Date.now() },
+        { ...notification, counter: 1, id: generateUUID() },
         ...notifications.value,
       ]
     }
 
     notificationsHistory.value = [
-      { ...notification, id: Date.now(), timeout: 0 },
+      { ...notification, id: generateUUID(), timeout: 0 },
       ...notificationsHistory.value,
     ].slice(0, 50)
   }
