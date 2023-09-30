@@ -82,29 +82,28 @@ function handleDialogBeforeShow() {
       : ''
   currentLayoutId.value = currentLayout.value?.id
 
-  if (currentLayout.value) {
-    const layoutSearchParams = new URLSearchParams(currentLayout.value.schema)
+  setDefaults(currentLayout.value)
+}
 
-    layout.value.columns = layoutSearchParams.has('select')
-    layout.value.sort =
-      layoutSearchParams.has('paging') &&
-      !layoutSearchParams
-        .get('paging')
-        ?.toString()
-        .startsWith('(sort($key.asc)')
-    layout.value.filters = layoutSearchParams.has('and')
-
-    checkSaveable('filters', layout.value.filters)
-    checkSaveable('sorting', layout.value.sort)
-
-    // layout.value.public =
-    //   currentLayout.value.accessLevel === 4 ||
-    //   currentLayout.value.accessLevel === 3
-
-    // layout.value.default =
-    //   currentLayout.value.accessLevel === 1 ||
-    //   currentLayout.value.accessLevel === 3
+function setDefaults(_layout?: ITableLayout) {
+  if (!currentLayout.value || !_layout) {
+    return
   }
+
+  const layoutSearchParams = new URLSearchParams(_layout.schema)
+
+  layout.value.columns = layoutSearchParams.has('select')
+  layout.value.sort =
+    layoutSearchParams.has('paging') &&
+    !layoutSearchParams.get('paging')?.toString().startsWith('(sort($key.asc)')
+  layout.value.filters = layoutSearchParams.has('and')
+
+  checkSaveable('filters', layout.value.filters)
+  checkSaveable('sorting', layout.value.sort)
+
+  layout.value.public = _layout.accessLevel === 4 || _layout.accessLevel === 3
+
+  layout.value.default = _layout.accessLevel === 1 || _layout.accessLevel === 3
 }
 
 function checkSaveable(
@@ -244,6 +243,8 @@ function reset() {
 function handleLayoutSelect(_layout: ITableLayout & { _isCreate?: boolean }) {
   layout.value.name = _layout.name
   currentLayoutId.value = _layout._isCreate ? undefined : _layout.id
+
+  setDefaults(_layout)
 }
 
 const $v = useVuelidate(
