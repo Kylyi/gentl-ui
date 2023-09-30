@@ -38,6 +38,10 @@ const { handleRequest } = useRequest()
 // Layout
 const dialogEl = ref<InstanceType<typeof Dialog>>()
 const currentLayoutId = ref<number | undefined>(currentLayout.value?.id)
+const saveableEntities = ref<Record<string, boolean>>({
+  filters: true,
+  sorting: true,
+})
 
 const layout = ref({
   name: currentLayout.value?.name,
@@ -90,6 +94,9 @@ function handleDialogBeforeShow() {
         .startsWith('(sort($key.asc)')
     layout.value.filters = layoutSearchParams.has('and')
 
+    checkSaveable('filters', layout.value.filters)
+    checkSaveable('sorting', layout.value.sort)
+
     // layout.value.public =
     //   currentLayout.value.accessLevel === 4 ||
     //   currentLayout.value.accessLevel === 3
@@ -97,6 +104,31 @@ function handleDialogBeforeShow() {
     // layout.value.default =
     //   currentLayout.value.accessLevel === 1 ||
     //   currentLayout.value.accessLevel === 3
+  }
+}
+
+function checkSaveable(
+  entity: 'columns' | 'filters' | 'sorting',
+  value?: boolean | null
+) {
+  if (!value) {
+    saveableEntities.value[entity] = true
+
+    return
+  }
+
+  switch (entity) {
+    case 'filters':
+      saveableEntities.value.filters =
+        !!tableQuery.value.fetchTableQuery.filters?.length
+
+      return saveableEntities.value.filters
+
+    case 'sorting':
+      saveableEntities.value.sorting =
+        !!tableQuery.value.fetchTableQuery.orderBy?.length
+
+      return saveableEntities.value.sorting
   }
 }
 
@@ -290,7 +322,29 @@ const $v = useVuelidate(
               v-model="layout.filters"
               container-class="bg-white dark:bg-darker col-start-1"
               :label="$t('table.saveFilters')"
-            />
+              @update:model-value="checkSaveable('filters', $event)"
+            >
+              <template
+                v-if="!saveableEntities.filters"
+                #append
+              >
+                <div>
+                  <div class="clarity:warning-solid color-amber-500" />
+
+                  <Tooltip
+                    :offset="8"
+                    flex="~ col center"
+                  >
+                    <span color="amber-500">
+                      {{ $t('table.emptyFilters') }}
+                    </span>
+                    <span text="caption xs">
+                      {{ $t('general.willBeIgnored') }}
+                    </span>
+                  </Tooltip>
+                </div>
+              </template>
+            </Toggle>
 
             <!-- Sort -->
             <Toggle
@@ -299,7 +353,29 @@ const $v = useVuelidate(
               container-class="col-start-1 bg-white dark:bg-darker"
               :label="$t('table.saveSort')"
               col="start-1"
-            />
+              @update:model-value="checkSaveable('sorting', $event)"
+            >
+              <template
+                v-if="!saveableEntities.sorting"
+                #append
+              >
+                <div>
+                  <div class="clarity:warning-solid color-amber-500" />
+
+                  <Tooltip
+                    :offset="8"
+                    flex="~ col center"
+                  >
+                    <span color="amber-500">
+                      {{ $t('table.emptySorting') }}
+                    </span>
+                    <span text="caption xs">
+                      {{ $t('general.willBeIgnored') }}
+                    </span>
+                  </Tooltip>
+                </div>
+              </template>
+            </Toggle>
           </div>
 
           <!-- Right side -->
