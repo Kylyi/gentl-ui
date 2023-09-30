@@ -23,6 +23,7 @@ const notificationStore = useNotificationStore()
 const { notifications } = storeToRefs(notificationStore)
 
 // Layout
+const notificationsEl = ref<HTMLDivElement>()
 const notificationsClass = computed(() => {
   switch (props.placement) {
     case 'top-left':
@@ -50,10 +51,24 @@ const notificationsClass = computed(() => {
       return 'bottom-5 right-5'
   }
 })
+
+useMutationObserver(
+  notificationsEl,
+  () => {
+    const notificationsElDom = unrefElement(notificationsEl)
+
+    if (notificationsElDom?.hasAttribute('hide-trigger')) {
+      notificationStore.removeAllNotifications()
+      notificationsElDom?.removeAttribute('hide-trigger')
+    }
+  },
+  { attributeFilter: ['hide-trigger'] }
+)
 </script>
 
 <template>
   <TransitionGroup
+    ref="notificationsEl"
     name="list"
     tag="div"
     class="notifications"

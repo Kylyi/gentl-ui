@@ -15,7 +15,7 @@ export const useNotificationStore = defineStore('notification', () => {
     }, {} as Record<string | number, number>)
   })
 
-  const addNotification = (notification: Omit<INotification, 'id'>) => {
+  function addNotification(notification: Omit<INotification, 'id'>) {
     const sameNotification = notifications.value.find(notif => {
       return (
         notif.title === notification.title &&
@@ -39,8 +39,12 @@ export const useNotificationStore = defineStore('notification', () => {
     ].slice(0, 50)
   }
 
-  const removeNotification = (id: INotification['id']) => {
+  function removeNotification(id: INotification['id']) {
     notifications.value = notifications.value.filter(notif => notif.id !== id)
+  }
+
+  function removeAllNotifications() {
+    notifications.value = []
   }
 
   return {
@@ -49,5 +53,6 @@ export const useNotificationStore = defineStore('notification', () => {
     notificationIdxById,
     addNotification,
     removeNotification,
+    removeAllNotifications,
   }
 })
