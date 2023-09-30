@@ -210,6 +210,19 @@ async function handleSaveLayout() {
     Object.assign(layoutFound, res)
   }
 
+  // When we make some layout default, we make sure the other layouts are not default
+  if (layout.value.default) {
+    layouts.value = layouts.value.map(l => {
+      if (l.id === res.id) {
+        return res
+      }
+
+      const wasPublicPublicAndDefault = l.accessLevel === 3
+
+      return { ...l, accessLevel: wasPublicPublicAndDefault ? 4 : 2 }
+    })
+  }
+
   currentLayout.value = res
   dialogEl.value?.hide()
 }
