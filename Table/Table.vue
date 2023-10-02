@@ -307,6 +307,7 @@ onMounted(() => {
     <TableNoData
       :has-no-data="!rows.length && !isLoading"
       :is-visible="!isLoading"
+      data-cy="no-data"
     />
 
     <TableLoadingData
