@@ -112,7 +112,10 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
         <slot name="prepend" />
       </span>
 
-      <span class="wrapper-body__input">
+      <span 
+        class="wrapper-body__input"  
+        data-cy="search-scheme"
+      >
         <div
           v-if="isModified"
           class="wrapper-body__input-modified"

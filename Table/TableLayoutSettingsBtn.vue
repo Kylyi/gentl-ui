@@ -275,6 +275,7 @@ const $v = useVuelidate(
     no-uppercase
     :label="$t('settings')"
     label-class="hidden sm:block"
+    data-cy="settings"
   >
     <Dialog
       ref="dialogEl"

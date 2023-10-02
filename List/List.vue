@@ -101,6 +101,7 @@ onMounted(() => {
           :debounce="searchDebounce"
           class="bg-white dark:bg-darker"
           :autofocus="!noAutofocus"
+          data-cy="list-search"
         />
 
         <slot name="after-search" />

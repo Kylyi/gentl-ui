@@ -93,6 +93,7 @@ watch(notificationCounter, async () => {
     :style="{
       '--progress': `${Math.round(((TIMEOUT - counter) / TIMEOUT) * 100)}%`,
     }"
+    data-cy="notification-row"
     @mouseenter="!noClose && pause()"
     @mouseleave="!noClose && handleResume()"
   >
