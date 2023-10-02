@@ -20,6 +20,11 @@ export interface FloatingUIBaseProps {
   trigger?: 'click' | 'contextmenu'
 
   /**
+   * The backdrop class
+   */
+  backdropClass?: ClassType
+
+  /**
    * When we're using async data in the Menu, the height is not known before the data is fetched.
    * This prop should help us set the height approximatively to what should be expected.
    * Note: is only used for `Menu`
@@ -37,6 +42,11 @@ export interface FloatingUIBaseProps {
    * to stringify it and throw an error.
    */
   referenceTarget?: any
+
+  /**
+   * When true, the `CLOSE` button will not be shown
+   */
+  noClose?: boolean
 
   /**
    * Used only in <Menu /> to prevent the menu to automatically `uplift` (~ high zIndex)

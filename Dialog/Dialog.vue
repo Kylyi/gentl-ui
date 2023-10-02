@@ -432,7 +432,7 @@ defineExpose({ show, hide, toggle, getFloatingEl: () => dialogWrapperEl.value })
       <div
         v-if="!seamless"
         class="backdrop"
-        :class="backdropBg"
+        :class="[backdropBg, backdropClass]"
       />
 
       <!-- Dialog wrapper -->
@@ -476,6 +476,7 @@ defineExpose({ show, hide, toggle, getFloatingEl: () => dialogWrapperEl.value })
             </slot>
 
             <Btn
+              v-if="!noClose"
               preset="CLOSE"
               size="sm"
               @click="hide(true, undefined, true)"
