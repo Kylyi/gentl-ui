@@ -2,7 +2,7 @@ export type INotification = {
   /**
    * Unique ID of the notification
    */
-  id: number
+  id: number | string
 
   /**
    * Icon to display

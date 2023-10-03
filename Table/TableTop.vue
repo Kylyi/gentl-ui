@@ -9,7 +9,9 @@ import {
   tableColumnsKey,
   tableNonHelpersColumnsKey,
   tableRefreshKey,
+  tableRowsKey,
   tableSelectionKey,
+  tableSlotsKey,
   tableStorageKey,
 } from '~/components/Table/provide/table.provide'
 
@@ -22,11 +24,7 @@ import QueryBuilderInline from '~/components/QueryBuilder/QueryBuilderInline.vue
 const props = defineProps<
   Pick<
     ITableProps,
-    | 'queryBuilder'
-    | 'selectable'
-    | 'nonSaveableSettings'
-    | 'rows'
-    | 'minimumColumnWidth'
+    'queryBuilder' | 'selectable' | 'nonSaveableSettings' | 'minimumColumnWidth'
   > & {
     search: string
   }
@@ -48,7 +46,9 @@ const selection = injectStrict(tableSelectionKey)
 const columns = injectStrict(tableColumnsKey)
 const nonHelperColumns = injectStrict(tableNonHelpersColumnsKey)
 const storageKey = injectStrict(tableStorageKey)
+const tableRows = injectStrict(tableRowsKey)
 const tableRefresh = injectStrict(tableRefreshKey)
+const tableSlots = injectStrict(tableSlotsKey)
 
 // Layout
 const queryBuilder = useVModel(props, 'queryBuilder')
@@ -127,14 +127,31 @@ function handleClearSorting() {
 }
 
 function handleFitColumns() {
-  columns.value
-    .filter(col => col.resizable && !col.hidden && !col.isHelperCol)
-    .forEach(col => {
-      col.autoFit(props.rows, props.minimumColumnWidth)
-    })
+  const fittableColumns = columns.value.filter(
+    col => col.resizable && !col.hidden && !col.isHelperCol
+  )
 
-  setTableState(storageKey.value, { columns: columns.value })
-  emits('update:columnsWidth')
+  // We unfreeze any frozen column
+  const frozenColumn = fittableColumns.find(col => col.frozen)
+  frozenColumn?.freeze(fittableColumns)
+
+  setTimeout(async () => {
+    // We autofit the columns
+    for await (const col of fittableColumns) {
+      const slotRenderFnc = tableSlots[col.field]
+      await col.autoFit(
+        tableRows.value,
+        slotRenderFnc,
+        props.minimumColumnWidth
+      )
+    }
+
+    // We freeze the column again
+    frozenColumn?.freeze(fittableColumns)
+
+    setTableState(storageKey.value, { columns: columns.value })
+    emits('update:columnsWidth')
+  }, 0)
 }
 </script>
 

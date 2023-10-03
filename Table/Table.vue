@@ -20,6 +20,7 @@ import { useTableLayout } from '~/components/Table/functions/useTableLayout'
 import { useTableSelection } from '~/components/Table/functions/useTableSelection'
 import { useTableMetaData } from '~/components/Table/functions/useTableMetaData'
 import { useTableExporting } from '~/components/Table/functions/useTableExporting'
+import { tableSlotsKey } from '~/components/Table/provide/table.provide'
 
 const props = withDefaults(defineProps<ITableProps>(), {
   breakpoint: 'md',
@@ -61,6 +62,10 @@ defineSlots<{
   topBulkActions: { selection: any[] }
   belowTop: { rows: any[] }
 }>()
+
+const slots = useSlots()
+
+provide(tableSlotsKey, slots)
 
 defineExpose({
   refreshData: () => refreshData(),
@@ -206,10 +211,9 @@ onMounted(() => {
         v-model:query-builder="queryBuilder"
         v-model:search="search"
         :selectable="selectable"
-        :rows="rows"
         :non-saveable-settings="nonSaveableSettings"
         :minimum-column-width="minimumColumnWidth"
-        @update:columns-width="handleResize(true)"
+        @update:columns-width="handleResize()"
       >
         <template #left-prepend>
           <slot name="top-left-prepend" />
@@ -303,6 +307,7 @@ onMounted(() => {
     <TableNoData
       :has-no-data="!rows.length && !isLoading"
       :is-visible="!isLoading"
+      data-cy="no-data"
     />
 
     <TableLoadingData

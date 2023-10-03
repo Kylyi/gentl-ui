@@ -93,6 +93,7 @@ watch(notificationCounter, async () => {
     :style="{
       '--progress': `${Math.round(((TIMEOUT - counter) / TIMEOUT) * 100)}%`,
     }"
+    data-cy="notification-row"
     @mouseenter="!noClose && pause()"
     @mouseleave="!noClose && handleResume()"
   >
@@ -180,8 +181,9 @@ watch(notificationCounter, async () => {
   }
 
   &::after {
-    --apply: content-empty absolute right-0 top-1/2 translate-y--50% w-1 rounded-r-custom bg-current;
+    --apply: content-empty absolute right-0 bottom-0 w-1 rounded-r-custom bg-current;
     --apply: h-$progress;
+    // --apply: top-1/2 translate-y--50%;
   }
 
   &.is-positive {
@@ -222,7 +224,7 @@ watch(notificationCounter, async () => {
   }
 
   .counter {
-    --apply: absolute rounded-2 -top-2 -right-4 p-x-1 min-w-7 bg-inherit
+    --apply: absolute z-1 rounded-2 -top-2 -right-4 p-x-1 min-w-7 bg-inherit
       color-inherit border-2 border-current text-center;
   }
 }

@@ -13,6 +13,9 @@ import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
 
 // Constants
 import { DATE_TYPES } from '~/libs/App/types/datetime.type'
+import { useRenderTemporaryTableCell } from '~/components/Table/functions/useRenderTemporaryTableCell'
+
+// Store
 
 export class TableColumn<T = IItem> implements IItemBase<T> {
   name: string | Extract<keyof T, string | number>
@@ -61,6 +64,12 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
    * The column's minimum width in px
    */
   minWidth?: number
+
+  /**
+   * In cases we use chips or any other custom components,
+   * we might need to adjust the width that autofit calculates
+   */
+  autofitAdjustment = 0
 
   /**
    * Frozen columns are columns that are always visible
@@ -242,29 +251,46 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     }
   }
 
-  autoFit(rows?: any[], tableMinColWidth = 80) {
-    const labelChars = this.hideLabel ? 0 : this.label.length
-    const maxContentChars = (rows || [])
+  async autoFit(rows: any[], slotRenderFnc?: Function, tableMinColWidth = 80) {
+    const { getCellWidth } = useRenderTemporaryTableCell()
+
+    // We get the row with the maximum content
+    const maxContentRow = (rows || [])
       .slice(0, config.table.columnAutoFit.rowsLimit)
-      .reduce((agg, row) => {
-        const cellValue = get(row, this.field)
-        const cellFormattedValue = this.format?.(row, cellValue) || cellValue
+      .reduce(
+        (agg, row) => {
+          const cellValue = get(row, this.field)
+          const cellFormattedValue = this.format?.(row, cellValue) || cellValue
 
-        if (cellFormattedValue) {
-          return Math.max(agg, String(cellFormattedValue).length)
-        }
+          if (cellFormattedValue) {
+            const labelChars = String(cellFormattedValue).length
 
-        return agg
-      }, 0)
+            if (labelChars > agg.labelChars) {
+              agg.labelChars = labelChars
+              agg.row = row
+            }
+          }
 
+          return agg
+        },
+        { labelChars: 0, row: undefined } as Record<string, any>
+      )
+
+    const maxContentWidth = await getCellWidth(
+      maxContentRow.row,
+      this,
+      slotRenderFnc
+    )
+
+    const CELL_PADDING = 12
     const colMinWidth = Math.min(
       Math.max(
         tableMinColWidth,
         this.minWidth || 0,
-        labelChars * 8 + 40, // These numbers are arbitrary
-        maxContentChars * 8 + 40 // These numbers are arbitrary
+        // labelChars * 8 + 40, // These numbers are arbitrary
+        maxContentWidth + CELL_PADDING
       ),
-      config.table.columnAutoFit.maxColumnWidthChars * 8 + 20 // When autofitting, we don't want to go over some predefined value
+      config.table.columnAutoFit.maxColumnWidthChars * 6 + 20 // When autofitting, we don't want to go over some predefined value
     )
 
     this.setWidth(colMinWidth)
@@ -340,6 +366,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     this.hidden = col.hidden ?? false
     this.alwaysSelected = col.alwaysSelected ?? false
     this.nonInteractive = col.nonInteractive ?? false
+    this.autofitAdjustment = col.autofitAdjustment ?? 0
     this.link = col.link
 
     // We also hide the column when it's non-interactive

@@ -362,11 +362,13 @@ function handleClickOutside(ev: Event) {
   const lastFloatingElement = document.querySelector(
     '.floating-element:last-child'
   )
+  const isNotifications = !!targetEl.closest('.notifications')
 
   if (
     !isTargetBody &&
     !isPartOfFloatingUI &&
     !isPartOfReferenceEl &&
+    !isNotifications &&
     lastFloatingElement === dialogWrapperEl.value
   ) {
     hide()
@@ -430,7 +432,7 @@ defineExpose({ show, hide, toggle, getFloatingEl: () => dialogWrapperEl.value })
       <div
         v-if="!seamless"
         class="backdrop"
-        :class="backdropBg"
+        :class="[backdropBg, backdropClass]"
       />
 
       <!-- Dialog wrapper -->
@@ -474,6 +476,7 @@ defineExpose({ show, hide, toggle, getFloatingEl: () => dialogWrapperEl.value })
             </slot>
 
             <Btn
+              v-if="!noClose"
               preset="CLOSE"
               size="sm"
               @click="hide(true, undefined, true)"

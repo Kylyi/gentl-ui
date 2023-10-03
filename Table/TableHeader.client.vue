@@ -129,10 +129,8 @@ defineExpose({
         <slot :col="col">
           <span
             v-if="col._label"
-            p="l-2 r-1"
-            grow
             :title="col._label"
-            line-clamp="2"
+            class="th-label"
           >
             {{ col._label }}
           </span>
@@ -210,6 +208,13 @@ defineExpose({
     --apply: border-r-1;
   }
 
+  &-label {
+    --apply: grow p-l-2 p-r-1 line-clamp-2;
+
+    &::after {
+      content: '\00a0';
+    }
+  }
 }
 
 .splitter {

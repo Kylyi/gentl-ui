@@ -160,6 +160,7 @@ defineExpose({
             :loading="loading"
             :icon="icon"
             type="submit"
+            data-cy="save-button"
             :label="label ?? $t('submit')"
           >
             <MenuConfirmation

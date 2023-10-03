@@ -12,6 +12,7 @@ import { stringToFloat } from '~/libs/App/data/regex/string-to-float.regex'
 // Injections
 import {
   tableRowsKey,
+  tableSlotsKey,
   tableStorageKey,
 } from '~/components/Table/provide/table.provide'
 
@@ -38,7 +39,8 @@ export function useTableColumnResizing(props: {
 }) {
   // Injections
   const storageKey = injectStrict(tableStorageKey)
-  const rows = injectStrict(tableRowsKey)
+  const tableSlots = injectStrict(tableSlotsKey)
+  const tableRows = injectStrict(tableRowsKey)
 
   // Store
   const { setTableState } = useTableStore()
@@ -88,12 +90,22 @@ export function useTableColumnResizing(props: {
     return splitters
   })
 
-  function handleSplitterPointerDown(splitter: ISplitter, ev: PointerEvent) {
+  async function handleSplitterPointerDown(
+    splitter: ISplitter,
+    ev: PointerEvent
+  ) {
     const col = props.columns.find(c => c.field === splitter.field)
 
     // Handle double-click ~ resize to fit
     if (col && splitterJustClicked.value) {
-      col.autoFit(rows.value, props.minimumColumnWidth)
+      const slotRenderFnc = tableSlots[col.field]
+
+      await col.autoFit(
+        tableRows.value,
+        slotRenderFnc,
+        props.minimumColumnWidth
+      )
+
       setTableState(storageKey.value, { columns: props.columns })
 
       return
@@ -200,11 +212,11 @@ export function useTableColumnResizing(props: {
       handleSplitterPointerUp
     )
 
+    setTableState(storageKey.value, { columns: props.columns })
+
     nextTick(() => {
       document.documentElement.style.cursor = ''
       document.documentElement.style.userSelect = ''
-
-      setTableState(storageKey.value, { columns: props.columns })
 
       headerEl.value?.updateArrows()
     })

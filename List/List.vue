@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { config } from '~/config'
+
 // Types
 import type { IListProps } from '~/components/List/types/list-props.type'
 import type { IItemToBeAdded } from '~/components/List/types/list-item-to-add.type'
@@ -17,6 +19,7 @@ const props = withDefaults(defineProps<IListProps>(), {
   groupBy: () => [],
   itemKey: 'id',
   itemLabel: 'label',
+  fuseExtendedSearchToken: config.selector.fuseExtendedSearchToken,
 })
 
 defineEmits<{
@@ -98,6 +101,7 @@ onMounted(() => {
           :debounce="searchDebounce"
           class="bg-white dark:bg-darker"
           :autofocus="!noAutofocus"
+          data-cy="list-search"
         />
 
         <slot name="after-search" />

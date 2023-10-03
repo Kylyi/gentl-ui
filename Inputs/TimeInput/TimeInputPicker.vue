@@ -113,7 +113,6 @@ function setValue(
 
     props.handleManualModelChange(val, true)
   } else {
-    console.log(props.modelValueLocalized)
     const [hh, mm] = (props.modelValueLocalized || '12:00').split(':')
 
     if (type === 'h') {
