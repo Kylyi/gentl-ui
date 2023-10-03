@@ -4,7 +4,7 @@ import type { IPageDrawerProps } from '~/components/Page/types/page-drawer-props
 
 const props = withDefaults(defineProps<IPageDrawerProps>(), {
   absoluteBreakpoint: 'md',
-  absoluteFullWidthBreakpoint: 'sm',
+  absoluteFullWidthBreakpoint: 'md',
   side: 'left',
   width: 280,
   miniWidth: 64,
