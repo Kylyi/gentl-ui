@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { config } from '~/config'
-import { useMobileStore } from '~/libs/App/mobile.store'
+import useMobile from '~/libs/App/functions/useMobile'
 
 type IProps = {
   pad?: boolean
@@ -14,7 +14,7 @@ withDefaults(defineProps<IProps>(), {
   includeTopBar: true,
 })
 
-const { isMobile, isSidebarOpen } = toRefs(useMobileStore())
+const { isMobile, isSidebarOpen } = useMobile()
 
 const mounted = ref(false)
 
