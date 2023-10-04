@@ -329,6 +329,7 @@ async function handleApplyChanges() {
                   m="r-1"
                   size="xs"
                   color="ca"
+                  data-cy="arrow-pin-to-top"
                   @click="handleMoveUp(col)"
                 />
 
