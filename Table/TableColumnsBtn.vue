@@ -317,6 +317,7 @@ async function handleApplyChanges() {
                 <span
                   grow
                   p="y-1.5 x-2"
+                  text="sm"
                   truncate
                 >
                   {{ col._label }}
@@ -326,6 +327,7 @@ async function handleApplyChanges() {
                   icon="mingcute:arrow-to-up-line"
                   m="r-1"
                   size="xs"
+                  color="ca"
                   @click="handleMoveUp(col)"
                 />
 
