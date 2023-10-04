@@ -126,6 +126,7 @@ async function handleApplyChanges() {
     p="!x-2"
     label-class="hidden sm:block"
     v-bind="btnProps"
+    data-cy="columns-button"
   >
     <span text="xs">
       {{ $t('columns') }}
@@ -221,6 +222,7 @@ async function handleApplyChanges() {
                         ? $t('general.selectAll')
                         : $t('general.selectFiltered')
                     "
+                    data-cy="choose-all-columns"
                     @click="handleColumnVisibilityForAll(true, itemsFiltered)"
                   />
                   <Btn
@@ -231,6 +233,7 @@ async function handleApplyChanges() {
                         ? $t('general.clearAll')
                         : $t('general.clearFiltered')
                     "
+                    data-cy="choose-none-columns"
                     @click="handleColumnVisibilityForAll(false, itemsFiltered)"
                   />
                 </div>
@@ -296,6 +299,7 @@ async function handleApplyChanges() {
                 <DragHandle
                   v-if="col.reorderable && !col.isHelperCol"
                   class="handle icon-park-outline:drag"
+                  data-cy="dragable-item"
                 />
 
                 <span
@@ -310,6 +314,7 @@ async function handleApplyChanges() {
                   size="xs"
                   preset="TRASH"
                   m="r-1"
+                  data-cy="trash-icon"
                   @click="handleColumnVisibilityChange(true, col)"
                 />
               </Item>

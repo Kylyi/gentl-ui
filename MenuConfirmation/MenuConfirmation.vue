@@ -89,6 +89,7 @@ defineExpose({
       :label="$t('confirm')"
       bg="primary"
       color="white"
+      data-cy="confirm-delete"
       @click="handleConfirm"
     />
   </Menu>

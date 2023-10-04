@@ -106,6 +106,7 @@ defineExpose({
     class="thead"
     content-class="relative"
     :style="{ '--scrollbarWidth': `${scrollbarWidth}px` }"
+    data-cy="table-header"
     @scrolled="handleScroll"
   >
     <!-- Columns -->
@@ -131,6 +132,7 @@ defineExpose({
             v-if="col._label"
             :title="col._label"
             class="th-label"
+            data-cy="table-header-item"
           >
             {{ col._label }}
           </span>
