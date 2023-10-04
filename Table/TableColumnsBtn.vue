@@ -105,6 +105,18 @@ function handleColumnVisibilityForAll(
   })
 }
 
+function handleMoveUp(col: TableColumn) {
+  const idx = filteredCols.value.findIndex(c => c.field === col.field)
+
+  if (idx > 0) {
+    const splicedCol = filteredCols.value.splice(idx, 1)?.[0]
+
+    if (splicedCol) {
+      filteredCols.value = [splicedCol, ...filteredCols.value]
+    }
+  }
+}
+
 // Apply changes
 async function handleApplyChanges() {
   columns.value = clonedColumns.value.map(col => new TableColumn(col))
@@ -309,6 +321,13 @@ async function handleApplyChanges() {
                 >
                   {{ col._label }}
                 </span>
+
+                <Btn
+                  icon="mingcute:arrow-to-up-line"
+                  m="r-1"
+                  size="xs"
+                  @click="handleMoveUp(col)"
+                />
 
                 <Btn
                   size="xs"
