@@ -324,6 +324,7 @@ async function handleApplyChanges() {
                 </span>
 
                 <Btn
+                  v-if="idx > 0"
                   icon="mingcute:arrow-to-up-line"
                   m="r-1"
                   size="xs"
