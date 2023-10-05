@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { config } from '~/config'
-import useMobile from '~/libs/App/functions/useMobile'
 
 type IProps = {
   pad?: boolean
