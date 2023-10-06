@@ -201,6 +201,7 @@ function handleLayoutSelect(
     size="sm"
     w="50"
     :placeholder="$t('table.layoutState')"
+    data-cy="scheme-search"
     @picker-hide="isResetConfirmationActive = false"
     @update:model-value="handleLayoutSelect"
   >
