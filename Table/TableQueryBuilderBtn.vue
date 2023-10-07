@@ -64,7 +64,9 @@ async function syncToParent() {
 
 function handleSync() {
   sync()
-  queryBuilderEl.value?.syncFilters(true)
+  // setTimeout(() => {
+  //   queryBuilderEl.value?.syncFilters(true)
+  // }, 100)
 }
 
 const $v = useVuelidate({ $scope: 'qb' })
