@@ -302,6 +302,7 @@ async function handleApplyChanges() {
               :index="idx"
               :disabled="!col.reorderable || col.isHelperCol"
               z="$zMenu"
+              data-cy="dragable-row"
             >
               <Item
                 cursor="!default"
