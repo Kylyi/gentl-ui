@@ -234,7 +234,10 @@ async function handleDeleteLayoutState() {
   )
 
   layouts.value = layouts.value.filter(l => l.id !== deletedFilterId)
-  currentLayout.value = undefined
+
+  if (currentLayout.value?.id === deletedFilterId) {
+    currentLayout.value = undefined
+  }
 
   reset()
 }
