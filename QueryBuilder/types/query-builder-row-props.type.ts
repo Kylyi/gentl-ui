@@ -29,4 +29,19 @@ export type IQueryBuilderRowProps = {
    * Whether the current item is the last child of its parent
    */
   isLastChild?: boolean
+
+  /**
+   * When true, the add button is not shown
+   */
+  noAdd?: boolean
+
+  /**
+   * When true, the condition may not be changed
+   */
+  noConditionChange?: boolean
+
+  /**
+   * We can provide our own function for removing the item
+   */
+  removeFnc?: (item: IQueryBuilderItem) => void
 }

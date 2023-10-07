@@ -11,6 +11,13 @@ export type IQueryBuilderItem = {
   field: string
   comparator: ComparatorEnum
   value?: any
+  isNotDraggable?: boolean
+  isNotDragOverable?: boolean
+
+  /**
+   * The original object (reference)
+   */
+  ref?: any
 }
 
 export type IQueryBuilderItemProps = IQueryBuilderRowProps & {
@@ -43,4 +50,19 @@ export type IQueryBuilderItemProps = IQueryBuilderRowProps & {
    * Whether the current item is the last child of its parent
    */
   isLastChild?: boolean
+
+  /**
+   * When true, the add button is not shown
+   */
+  noAdd?: boolean
+
+  /**
+   * When true, the remove button is not shown
+   */
+  noRemove?: boolean
+
+  /**
+   * We can provide our own function for removing the item
+   */
+  removeFnc?: (item: IQueryBuilderItem) => void
 }

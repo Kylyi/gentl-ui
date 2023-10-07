@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { config } from '~/config'
+
 // Types
 import type { IQueryBuilderProps } from '~/components/QueryBuilder/types/query-builder-props.type'
 import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
@@ -15,6 +17,7 @@ import {
 
 // Functions
 import { useQueryBuilderDragAndDrop } from '~/components/QueryBuilder/functions/useQueryBuilderDragAndDrop'
+import { useQueryBuilderColumnFilters } from '~/components/QueryBuilder/functions/useQueryBuilderColumnFilters'
 
 const props = defineProps<IQueryBuilderProps>()
 const emits = defineEmits<{
@@ -60,6 +63,10 @@ useResizeObserver(queryBuilderEl, entries => {
   queryBuilderElRect.value = queryBuilderEl.value?.getBoundingClientRect()
 })
 
+// Column filters
+const { qbColumnFilters, syncFilters, removeItem } =
+  useQueryBuilderColumnFilters(props)
+
 // Provide
 const columns = toRef(props, 'columns')
 const hoveredRow = ref<IQueryBuilderRow>()
@@ -80,6 +87,7 @@ if (!props.items.length) {
 
 defineExpose({
   clearFilter,
+  syncFilters,
 })
 </script>
 
@@ -97,6 +105,32 @@ defineExpose({
       p="!l-2"
       m="!l-0"
     />
+
+    <template
+      v-if="
+        config.table.queryBuilder.showColumnFilters && qbColumnFilters?.length
+      "
+    >
+      <Separator m="t-10 b-2" />
+
+      <!-- Column filters -->
+      <div
+        text="sm"
+        font="bold"
+      >
+        {{ $t('table.columnFilters') }}
+      </div>
+      <QueryBuilderRow
+        v-for="item in qbColumnFilters"
+        :key="item.path"
+        :item="item"
+        :level="level"
+        no-add
+        :remove-fnc="removeItem"
+        p="!l-2"
+        m="!l-0"
+      />
+    </template>
 
     <!-- Drop indicator -->
     <div

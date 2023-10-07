@@ -9,17 +9,22 @@ import { tableNonHelpersColumnsKey } from '~/components/Table/provide/table.prov
 
 // Components
 import Dialog from '~/components/Dialog/Dialog.vue'
+import QueryBuilder from '~/components/QueryBuilder/QueryBuilder.vue'
 
 type IProps = {
   queryBuilder: IQueryBuilderRow[]
 }
 
 const props = defineProps<IProps>()
+defineEmits<{
+  (e: 'update:queryBuilder', queryBuilder: IQueryBuilderRow[]): void
+}>()
 
 // Injections
 const nonHelperColumns = injectStrict(tableNonHelpersColumnsKey, ref([]))
 
 // Layout
+const queryBuilderEl = ref<InstanceType<typeof QueryBuilder>>()
 const dialogEl = ref<InstanceType<typeof Dialog>>()
 const queryBuilder = useVModel(props, 'queryBuilder')
 const { sync, cloned } = useCloned(queryBuilder, { clone: klona })
@@ -32,7 +37,34 @@ async function syncToParent() {
   }
 
   queryBuilder.value = cloned.value
+
+  // When using column filters in query builder, we also need to sync the column filters
+  // if (config.table.queryBuilder.showColumnFilters) {
+  //   const columnFiltersExtracted = nonHelperColumns.value.flatMap(
+  //     col => col.filters
+  //   )
+  //   console.log(
+  //     'Log ~ syncToParent ~ columnFiltersExtracted:',
+  //     columnFiltersExtracted
+  //   )
+
+  //   nonHelperColumns.value.forEach(col => {
+  //     const colColumnFilters = columnFiltersExtracted.filter(
+  //       filter => filter.field === col.field
+  //     )
+  //     console.log('Log ~ syncToParent ~ colColumnFilters:', colColumnFilters)
+
+  //     col.filters = colColumnFilters
+  //   })
+  // }
+  queryBuilderEl.value?.syncFilters()
+
   dialogEl.value?.hide()
+}
+
+function handleSync() {
+  sync()
+  queryBuilderEl.value?.syncFilters(true)
 }
 
 const $v = useVuelidate({ $scope: 'qb' })
@@ -56,13 +88,14 @@ const $v = useVuelidate({ $scope: 'qb' })
       h="auto"
       dense
       header-class="p-l-3 p-r-1"
-      @hide="sync"
+      @before-hide="handleSync"
     >
       <Form
         :label="$t('apply')"
         @submit="syncToParent"
       >
         <QueryBuilder
+          ref="queryBuilderEl"
           v-model:items="cloned"
           :columns="nonHelperColumns"
         />

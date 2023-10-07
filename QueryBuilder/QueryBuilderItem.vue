@@ -159,6 +159,12 @@ const customFilterComponent = computed(() => {
 })
 
 function handleRemoveCondition() {
+  if (props.removeFnc) {
+    props.removeFnc(item.value)
+
+    return
+  }
+
   const idx = item.value.path.split('.').pop()
   const parentPath = props.item.path.split('.').slice(0, -2).join('.')
   const parent = get(toValue(items), parentPath)
@@ -250,7 +256,8 @@ const $v = useVuelidate(
     :class="{
       'is-hovered': hoveredRow === item,
       'is-last-child': isLastChild,
-      'no-draggable': noDraggable,
+      'no-drag': noDraggable || item.isNotDraggable,
+      'no-dragover': item.isNotDragOverable,
       'is-smaller-screen': isSmallerScreen,
     }"
     :data-path="item.path"
@@ -260,7 +267,7 @@ const $v = useVuelidate(
   >
     <!-- Move handler -->
     <QueryBuilderMoveHandler
-      v-if="!noDraggable"
+      v-if="!noDraggable && !item.isNotDraggable"
       self-start
       m="t-2.5"
     />
@@ -377,6 +384,7 @@ const $v = useVuelidate(
     </div>
 
     <Btn
+      v-if="!noRemove"
       size="xs"
       preset="TRASH"
       m="t-2 r-2"
@@ -430,7 +438,7 @@ const $v = useVuelidate(
   }
 }
 
-.qb-item:not(.no-draggable) {
+.qb-item:not(.no-drag) {
   &::before {
     --apply: absolute content-empty -left-3 top-0 h-full
       border-l-1 border-ca border-dashed;
