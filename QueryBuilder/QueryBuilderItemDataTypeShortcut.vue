@@ -6,7 +6,7 @@ type IProps = {
 const props = defineProps<IProps>()
 
 const shortcut = computed(() => {
-  return COMPONENTS_BY_DATATYPE_MAP[props.dataType]?.shortcut
+  return COMPONENTS_BY_DATATYPE_MAP[props.dataType]?.shortcutIcon
 })
 </script>
 
@@ -14,14 +14,13 @@ const shortcut = computed(() => {
   <div
     v-if="shortcut"
     class="data-type-shortcut"
-  >
-    {{ shortcut }}
-  </div>
+    :class="shortcut"
+  />
 </template>
 
 <style scoped lang="scss">
 .data-type-shortcut {
-  --apply: uppercase text-caption w-6 h-6 rounded-full border-1 border-ca
-    flex-inline flex-center;
+  --apply: uppercase text-caption w-5 h-5 rounded-full flex-inline flex-center
+    self-center;
 }
 </style>

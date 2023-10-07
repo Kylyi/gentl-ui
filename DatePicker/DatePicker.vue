@@ -17,7 +17,8 @@ const emits = defineEmits<{
 }>()
 
 // Utils
-const { getPeriod, getExtendedPeriod, getDaysInPeriod } = useDateUtils()
+const { formatDate, getPeriod, getExtendedPeriod, getDaysInPeriod } =
+  useDateUtils()
 
 // Layout
 const daysCount = computedEager(() => 7 - props.excludedDays.length)
@@ -131,7 +132,7 @@ defineExpose({
           font="bold rem-13"
           h="8"
         >
-          {{ $d(day.dateValue, 'dayShort') }}
+          {{ formatDate(day.dateValue, 'dayShort') }}
         </div>
       </div>
 

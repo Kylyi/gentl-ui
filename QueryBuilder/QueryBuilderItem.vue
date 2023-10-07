@@ -158,10 +158,6 @@ const customFilterComponent = computed(() => {
   return colSelected.value.filterComponent ?? getCustomFilter(colSelected.value)
 })
 
-function getFieldDataTypeShortcut(dataType: DataType) {
-  return COMPONENTS_BY_DATATYPE_MAP[dataType]?.shortcut
-}
-
 function handleRemoveCondition() {
   if (props.removeFnc) {
     props.removeFnc(item.value)
@@ -293,7 +289,10 @@ const $v = useVuelidate(
       >
         <template #item="{ item }">
           <span>
-            <QueryBuilderItemDataTypeShortcut :data-type="item.dataType" />
+            <QueryBuilderItemDataTypeShortcut
+              :data-type="item.dataType"
+              class="relative top-1"
+            />
 
             {{ item.label }}
           </span>
@@ -303,10 +302,14 @@ const $v = useVuelidate(
           v-if="colSelected"
           #prepend
         >
-          <QueryBuilderItemDataTypeShortcut
+          <div
+            flex="~ center"
             m="l-1"
-            :data-type="colSelected.dataType"
-          />
+          >
+            <QueryBuilderItemDataTypeShortcut
+              :data-type="colSelected.dataType"
+            />
+          </div>
         </template>
       </Selector>
 
