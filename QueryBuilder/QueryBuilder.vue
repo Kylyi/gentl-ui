@@ -106,7 +106,7 @@ defineExpose({
       <div
         text="sm"
         font="bold"
-        p="x-3"
+        p="x-3 t-2"
       >
         {{ $t('table.columnFilters') }}
       </div>
@@ -122,7 +122,7 @@ defineExpose({
         m="!l-0"
       />
 
-      <Separator m="t-2 b-10" />
+      <Separator m="t-2 b-4" />
     </template>
 
     <QueryBuilderRow

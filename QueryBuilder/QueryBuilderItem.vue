@@ -158,6 +158,10 @@ const customFilterComponent = computed(() => {
   return colSelected.value.filterComponent ?? getCustomFilter(colSelected.value)
 })
 
+function getFieldDataTypeShortcut(dataType: DataType) {
+  return COMPONENTS_BY_DATATYPE_MAP[dataType]?.shortcut
+}
+
 function handleRemoveCondition() {
   if (props.removeFnc) {
     props.removeFnc(item.value)
@@ -286,7 +290,25 @@ const $v = useVuelidate(
         :errors="$v.item.field.$errors"
         data-cy="qb-item__content-field"
         @update:model-value="handleFieldChange"
-      />
+      >
+        <template #item="{ item }">
+          <span>
+            <QueryBuilderItemDataTypeShortcut :data-type="item.dataType" />
+
+            {{ item.label }}
+          </span>
+        </template>
+
+        <template
+          v-if="colSelected"
+          #prepend
+        >
+          <QueryBuilderItemDataTypeShortcut
+            m="l-1"
+            :data-type="colSelected.dataType"
+          />
+        </template>
+      </Selector>
 
       <template v-if="item.field && colSelected">
         <!-- Comparator selector -->
