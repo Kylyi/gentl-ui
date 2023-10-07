@@ -113,6 +113,7 @@ const collapseProps = computed(() => {
 
         <!-- Or -->
         <Btn
+          v-if="!noConditionChange"
           :class="{ 'is-active': item.condition === 'OR' }"
           :label="$t('queryBuilder.or')"
           size="xs"

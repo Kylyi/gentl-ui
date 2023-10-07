@@ -21,15 +21,15 @@ export function useQueryBuilderColumnFilters(
 
   const columnFilters = computed(() => {
     const filters = props.columns
-      .flatMap(col => col.filterDbQuery)
-      .filter(Boolean)
+      .flatMap(col => col.filters)
+      .filter(filter => !filter.nonInteractive)
       .map(filter => {
         return {
           id: generateUUID(),
-          field: filter!.field,
-          comparator: filter!.comparator,
-          value: filter!.value,
-          path: `column_filters.${filter!.id}`,
+          field: filter.field,
+          comparator: filter.comparator,
+          value: filter.value,
+          path: `column_filters.${filter.id}`,
           ref: filter,
           isNotDraggable: true,
           isNotDragOverable: true,
@@ -78,7 +78,6 @@ export function useQueryBuilderColumnFilters(
     const _columnFilters = (columnFilters.value[0] as IQueryBuilderGroup)
       ?.children as IQueryBuilderItem[]
 
-    console.log('Log ~ syncFilters ~ _columnFilters:', _columnFilters)
     if (
       !config.table.queryBuilder.showColumnFilters ||
       !_columnFilters?.length

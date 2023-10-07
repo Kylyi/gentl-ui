@@ -339,6 +339,7 @@ function updatePaths(parent?: IQueryBuilderGroup) {
     :parent="parent"
     :is-last-child="isLastChild"
     :no-add="noAdd"
+    :no-condition-change="noConditionChange"
     :remove-fnc="removeFnc"
     v-bind="$attrs"
     @delete:row="updatePaths()"

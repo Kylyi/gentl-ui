@@ -97,26 +97,16 @@ defineExpose({
     class="query-builder"
     :class="{ 'is-collapsed': isSmallerScreen }"
   >
-    <QueryBuilderRow
-      v-for="item in items"
-      :key="item.path"
-      :item="item"
-      :level="level"
-      p="!l-2"
-      m="!l-0"
-    />
-
     <template
       v-if="
         config.table.queryBuilder.showColumnFilters && qbColumnFilters?.length
       "
     >
-      <Separator m="t-10 b-2" />
-
       <!-- Column filters -->
       <div
         text="sm"
         font="bold"
+        p="x-3"
       >
         {{ $t('table.columnFilters') }}
       </div>
@@ -126,11 +116,23 @@ defineExpose({
         :item="item"
         :level="level"
         no-add
+        no-condition-change
         :remove-fnc="removeItem"
         p="!l-2"
         m="!l-0"
       />
+
+      <Separator m="t-2 b-10" />
     </template>
+
+    <QueryBuilderRow
+      v-for="item in items"
+      :key="item.path"
+      :item="item"
+      :level="level"
+      p="!l-2"
+      m="!l-0"
+    />
 
     <!-- Drop indicator -->
     <div

@@ -5,7 +5,10 @@ import { klona } from 'klona'
 import { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
 
 // Injections
-import { tableNonHelpersColumnsKey } from '~/components/Table/provide/table.provide'
+import {
+  tableNonHelpersColumnsKey,
+  tableRefreshKey,
+} from '~/components/Table/provide/table.provide'
 
 // Components
 import Dialog from '~/components/Dialog/Dialog.vue'
@@ -22,6 +25,7 @@ defineEmits<{
 
 // Injections
 const nonHelperColumns = injectStrict(tableNonHelpersColumnsKey, ref([]))
+const tableRefresh = injectStrict(tableRefreshKey, () => {})
 
 // Layout
 const queryBuilderEl = ref<InstanceType<typeof QueryBuilder>>()
@@ -64,9 +68,7 @@ async function syncToParent() {
 
 function handleSync() {
   sync()
-  // setTimeout(() => {
-  //   queryBuilderEl.value?.syncFilters(true)
-  // }, 100)
+  tableRefresh()
 }
 
 const $v = useVuelidate({ $scope: 'qb' })
