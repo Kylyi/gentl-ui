@@ -11,6 +11,7 @@ import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
 // Injections
 import {
   qbColumnsKey,
+  qbIsActivelyModifyingValuesKey,
   qbItemsKey,
 } from '~/components/QueryBuilder/provide/query-builder.provide'
 import { tableRefreshKey } from '~/components/Table/provide/table.provide'
@@ -22,7 +23,9 @@ import QueryBuilderItem from '~/components/QueryBuilder/QueryBuilderItem.vue'
 defineOptions({
   inheritAttrs: false,
 })
-const props = defineProps<IQueryBuilderItemProps>()
+const props = withDefaults(defineProps<IQueryBuilderItemProps>(), {
+  noAdd: undefined,
+})
 const emits = defineEmits<{
   (e: 'add:row'): void
   (e: 'delete:row', item: IQueryBuilderItem): void
@@ -30,6 +33,10 @@ const emits = defineEmits<{
 
 // Injections
 const columns = injectStrict(qbColumnsKey)
+const isActivelyModifyingValues = injectStrict(
+  qbIsActivelyModifyingValuesKey,
+  ref(false)
+)
 const tableRefresh = injectStrict(tableRefreshKey, () => {})
 
 // Layout
@@ -73,6 +80,13 @@ function getDataType(): DataType {
 }
 
 function handleRemoveCondition() {
+  if (props.removeFnc) {
+    props.removeFnc(item.value)
+    tableRefresh()
+
+    return
+  }
+
   const idx = item.value.path.split('.').pop()
   const parentPath = props.item.path.split('.').slice(0, -2).join('.')
   const parent = get(toValue(items), parentPath)
@@ -94,7 +108,11 @@ async function applyChanges() {
   }
 }
 
-function handleItemEditMenuBeforeHide() {
+async function handleItemEditMenuBeforeHide() {
+  isActivelyModifyingValues.value = false
+
+  await nextTick()
+
   if (
     !item.value.comparator ||
     (item.value.value === undefined && !isNonValueComparator.value)
@@ -168,8 +186,9 @@ const $v = useVuelidate({ $scope: 'qb' })
       :no-arrow="false"
       :no-overlay="false"
       dense
-      @before-hide="handleItemEditMenuBeforeHide"
+      @before-show="isActivelyModifyingValues = true"
       @show="itemEditEl?.focusInput()"
+      @before-hide="handleItemEditMenuBeforeHide"
     >
       <Form
         no-controls
@@ -182,7 +201,9 @@ const $v = useVuelidate({ $scope: 'qb' })
           :level="level"
           :parent="parent"
           no-draggable
-          m="!l-0"
+          no-remove
+          m="!0"
+          p="!x-1"
           @delete:row="tableRefresh"
         />
       </Form>
@@ -191,7 +212,7 @@ const $v = useVuelidate({ $scope: 'qb' })
 
   <!-- Add -->
   <Btn
-    v-if="isLastChild"
+    v-if="isLastChild && !noAdd"
     size="xs"
     preset="ADD"
     self-center

@@ -90,6 +90,8 @@ const collapseProps = computed(() => {
       'is-hovered': hoveredRow === item,
       'is-base': !level,
       'is-last-child': isLastChild,
+      'no-drag': item.isNotDraggable,
+      'no-dragover': item.isNotDragOverable,
     }"
     :data-path="item.path"
     @mouseover.stop="hoveredRow = item"
@@ -97,7 +99,7 @@ const collapseProps = computed(() => {
   >
     <!-- Group row -->
     <div class="qb-group-row">
-      <QueryBuilderMoveHandler v-if="level" />
+      <QueryBuilderMoveHandler v-if="level && !item.isNotDraggable" />
 
       <!-- Condition -->
       <div class="qb-group-condition">
@@ -111,6 +113,7 @@ const collapseProps = computed(() => {
 
         <!-- Or -->
         <Btn
+          v-if="!noConditionChange"
           :class="{ 'is-active': item.condition === 'OR' }"
           :label="$t('queryBuilder.or')"
           size="xs"
@@ -151,12 +154,16 @@ const collapseProps = computed(() => {
         :key="child.path"
         :item="child"
         :parent="item"
+        :remove-fnc="removeFnc"
         :level="level + 1"
         :is-last-child="idx === item.children.length - 1"
       />
 
       <!-- Controls -->
-      <div class="qb-group-controls">
+      <div
+        v-if="!noAdd"
+        class="qb-group-controls"
+      >
         <!-- Add row -->
         <Btn
           :label="$t('queryBuilder.addCondition')"

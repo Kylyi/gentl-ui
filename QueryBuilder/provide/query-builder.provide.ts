@@ -16,6 +16,9 @@ export const qbItemsKey: InjectionKey<MaybeRefOrGetter<IQueryBuilderRow[]>> =
 export const qbHoveredItemKey: InjectionKey<Ref<IQueryBuilderRow | undefined>> =
   Symbol('qbHoveredItem')
 
+export const qbIsActivelyModifyingValuesKey: InjectionKey<Ref<boolean>> =
+  Symbol('qbIsActivelyModifyingValues')
+
 export const qbContainerKey: InjectionKey<Ref<HTMLElement | undefined>> =
   Symbol('qbContainer')
 

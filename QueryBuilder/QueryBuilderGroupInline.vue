@@ -19,7 +19,9 @@ import { tableRefreshKey } from '~/components/Table/provide/table.provide'
 // Components
 import Menu from '~/components/Menu/Menu.vue'
 
-const props = defineProps<IQueryBuilderGroupProps>()
+const props = withDefaults(defineProps<IQueryBuilderGroupProps>(), {
+  noAdd: undefined,
+})
 const emits = defineEmits<{
   (e: 'delete:row', item: IQueryBuilderGroup): void
 }>()
@@ -101,13 +103,28 @@ function handleRemoveGroup() {
     "
     size="xs"
     class="condition-btn bg-primary color-white self-center"
-    :class="{ 'is-first-child': isFirstChild }"
+    :class="{
+      'is-first-child': isFirstChild,
+      '!color-primary': noConditionChange,
+    }"
     :style="{ '--bracketColor': levelColor }"
     no-dim
     :data-path="item.path"
+    :disabled="noConditionChange"
     @mouseenter="isHovered = true"
     @mouseleave="isHovered = false"
   >
+    <Tooltip
+      v-if="noConditionChange"
+      w="70"
+      :offset="12"
+      text="center"
+    >
+      <span text="caption center">
+        {{ $t('table.columnFiltersHint') }}
+      </span>
+    </Tooltip>
+
     <Menu
       ref="conditionMenuEl"
       :no-arrow="false"
@@ -151,6 +168,8 @@ function handleRemoveGroup() {
     :parent="item"
     :is-last-child="idx === item.children.length - 1"
     :is-first-child="idx === 0"
+    :no-add="noAdd"
+    :remove-fnc="removeFnc"
     :style="{
       ...(isHovered && {
         borderColor: 'var(--bracketColor)',
@@ -161,7 +180,7 @@ function handleRemoveGroup() {
   />
 
   <Btn
-    v-if="isLastChild"
+    v-if="isLastChild && !noAdd"
     size="xs"
     preset="ADD"
     self-center

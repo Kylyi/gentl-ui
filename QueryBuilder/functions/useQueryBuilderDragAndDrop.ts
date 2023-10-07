@@ -45,6 +45,7 @@ export function useQueryBuilderDragAndDrop() {
     // We also do nothing when we're dragging over descendants of the dragged item
     if (
       !qbRow ||
+      qbRow.classList.contains('no-dragover') ||
       qbRowPath === draggedItem.value?.row.path ||
       qbRowPath?.startsWith(draggedItem.value?.row.path || '')
     ) {
