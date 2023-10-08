@@ -262,13 +262,11 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
           const cellValue = get(row, this.field)
           const cellFormattedValue = this.format?.(row, cellValue) || cellValue
 
-          if (cellFormattedValue) {
-            const labelChars = String(cellFormattedValue).length
+          const labelChars = String(cellFormattedValue || '').length
 
-            if (labelChars > agg.labelChars) {
-              agg.labelChars = labelChars
-              agg.row = row
-            }
+          if (labelChars > agg.labelChars || !agg.labelChars) {
+            agg.labelChars = labelChars
+            agg.row = row
           }
 
           return agg
@@ -282,12 +280,13 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
       slotRenderFnc
     )
 
+    const labelChars = this._label.length
     const CELL_PADDING = 12
     const colMinWidth = Math.min(
       Math.max(
         tableMinColWidth,
         this.minWidth || 0,
-        // labelChars * 8 + 40, // These numbers are arbitrary
+        config.table.columnAutoFit.considerHeader ? labelChars * 8 + 40 : 0, // These numbers are pretty arbitrary
         maxContentWidth + CELL_PADDING
       ),
       config.table.columnAutoFit.maxColumnWidthChars * 6 + 20 // When autofitting, we don't want to go over some predefined value
