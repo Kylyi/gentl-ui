@@ -115,6 +115,7 @@ async function handleItemEditMenuBeforeHide() {
 
   if (
     !item.value.comparator ||
+    (Array.isArray(item.value.value) && !item.value.value.length) ||
     (item.value.value === undefined && !isNonValueComparator.value)
   ) {
     handleRemoveCondition()
@@ -139,6 +140,7 @@ const $v = useVuelidate({ $scope: 'qb' })
       font="bold"
       text="caption xs"
       color="black dark:white"
+      truncate
     >
       {{ colSelected?.label }}
     </span>
@@ -147,6 +149,7 @@ const $v = useVuelidate({ $scope: 'qb' })
     <span
       p="x-1"
       text="caption xs"
+      shrink-0
     >
       {{
         $t(
@@ -161,15 +164,7 @@ const $v = useVuelidate({ $scope: 'qb' })
       :value="item.value"
       :data-type="getDataType()"
       :format="colSelected?.format"
-      bg="white dark:darker rounded-custom"
-      leading="none"
-      p="x-1 y-1"
-      color="black dark:white"
-      rounded="custom"
-      min-w="5"
-      min-h="5"
-      text="xs center"
-      font="bold"
+      class="qb-item__value"
     />
 
     <Btn
@@ -205,6 +200,7 @@ const $v = useVuelidate({ $scope: 'qb' })
           m="!0"
           p="!x-1"
           @delete:row="tableRefresh"
+          @update:comparator="itemEditMenuEl?.recomputePosition"
         />
       </Form>
     </Menu>
@@ -239,11 +235,17 @@ const $v = useVuelidate({ $scope: 'qb' })
   &.is-last-child {
     --apply: m-r-3;
   }
+
+}
+
+:deep(.qb-item__value) {
+--apply: rounded-custom p-1 leading-none min-w-5 min-h-5 text-xs text-center font-bold
+  bg-white dark:bg-darker color-black dark:color-white max-w-70 truncate;
 }
 
 .qb-item.is-first-child {
   &::before {
-    --apply: absolute -top-1.5 -left-2 text-8 leading-none;
+    --apply: absolute -top-7px -left-2 text-8 leading-none;
     content: '[';
     color: var(--bracketColor);
   }
@@ -251,7 +253,7 @@ const $v = useVuelidate({ $scope: 'qb' })
 
 .is-last-child {
   &::after {
-    --apply: absolute bottom-0 -right-2 text-8 leading-none font-normal;
+    --apply: absolute -bottom-2px -right-2 text-8 leading-none font-normal;
     content: ']';
     color: var(--bracketColor);
   }

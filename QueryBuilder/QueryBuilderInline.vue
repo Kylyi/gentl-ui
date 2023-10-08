@@ -139,6 +139,7 @@ defineExpose({
       <Separator
         vertical
         m="r-2 l-1"
+        border="!dark:white !primary !r-2px"
       />
     </template>
 

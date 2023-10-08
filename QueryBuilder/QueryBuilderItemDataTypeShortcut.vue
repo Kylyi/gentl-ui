@@ -1,11 +1,16 @@
 <script setup lang="ts">
 type IProps = {
   dataType: DataType
+  custom?: boolean
 }
 
 const props = defineProps<IProps>()
 
 const shortcut = computed(() => {
+  if (props.custom) {
+    return 'carbon:area-custom'
+  }
+
   return COMPONENTS_BY_DATATYPE_MAP[props.dataType]?.shortcutIcon
 })
 </script>

@@ -10,7 +10,10 @@ import type { ITableLayout } from '~/components/Table/types/table-layout.type'
 import { TableColumn } from '~/components/Table/models/table-column.model'
 
 // Injections
-import { tableResizeKey } from '~/components/Table/provide/table.provide'
+import {
+  tableFocusKey,
+  tableResizeKey,
+} from '~/components/Table/provide/table.provide'
 
 // Functions
 import { useTableColumns } from '~/components/Table/functions/useTableColumns'
@@ -41,6 +44,7 @@ export function useTableLayout(
 
   // Provides
   provide(tableResizeKey, () => handleResize(true))
+  provide(tableFocusKey, () => scrollerEl.value?.$el.focus())
 
   // Layout
   const scrollerEl = ref<InstanceType<typeof RecycleScroller>>()

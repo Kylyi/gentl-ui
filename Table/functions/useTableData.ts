@@ -384,12 +384,19 @@ export function useTableData(
 
       // NOTE: Set URL
       if (props.useUrl) {
+        const tableColumnFields = internalColumnsRef.value
+          .filter(col => !col.isHelperCol)
+          .map(col => col.field)
+
         const routeQueryWithoutTableParams = omit(route.query, [
           'qb',
           'filters',
           'order',
           'select',
           'search',
+          'and',
+          'or',
+          ...tableColumnFields,
         ])
         const qb = serializeFilterString(dbQuery.tableQuery.queryBuilder)
         const filters = serializeFilterString(dbQuery.tableQuery.columnFilters)
@@ -407,9 +414,9 @@ export function useTableData(
               ...(dbQuery.tableQuery.search && {
                 search: dbQuery.tableQuery.search,
               }),
-              // ...(dbQuery.tableQuery.includeDeleted && {
-              //   includeDeleted: dbQuery.tableQuery.includeDeleted,
-              // }),
+              ...(dbQuery.tableQuery.includeDeleted && {
+                includeDeleted: dbQuery.tableQuery.includeDeleted,
+              }),
             },
           },
           { replace: true }
@@ -426,8 +433,14 @@ export function useTableData(
         queryBuilder: dbQuery.tableQuery.queryBuilder,
       })
 
-      // NOTE: Focus the table so we can use keyboard navigation
-      scrollerEl.value?.$el.focus()
+      // NOTE: Focus the table so we can use keyboard navigation (but only if no floating element is visible)
+      if (process.client) {
+        const hasFloatingEl = !!document.querySelector('.floating-element')
+
+        if (!hasFloatingEl) {
+          scrollerEl.value?.$el.focus()
+        }
+      }
     },
     { immediate: true }
   )

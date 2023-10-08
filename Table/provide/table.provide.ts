@@ -74,3 +74,6 @@ export const tableExportKey: InjectionKey<
 
 export const tableIsExportingKey: InjectionKey<Ref<boolean>> =
   Symbol('tableIsExporting')
+
+// Misc
+export const tableFocusKey: InjectionKey<() => void> = Symbol('focusTable')

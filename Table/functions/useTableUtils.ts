@@ -18,11 +18,10 @@ import { parseVisibleColumnsFromUrl } from '~/components/Table/utils/extractVisi
 // Constants
 import { COMPARATORS_BY_DATATYPE_MAP } from '~/libs/App/constants/input-map.constant'
 
-const SELECTOR_COMPARATORS = [ComparatorEnum.IN, ComparatorEnum.NOT_IN]
-
 export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
   // Utils
   const { t } = useI18n()
+  const { extendParseUrlParams } = useTableSpecifics()
 
   const instance = getCurrentInstance()
 
@@ -169,6 +168,13 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
     )
   }
 
+  /**
+   * Checks if a comparator is of type `booleanish` (IS, NOT_IS)
+   */
+  function isBooleanishComparator(comparator: ComparatorEnum) {
+    return BOOLEANISH_COMPARATORS.includes(comparator)
+  }
+
   function hasVisibleCol(columns: TableColumn[]) {
     return columns.some(col => !col.hidden)
   }
@@ -198,75 +204,32 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
     const schemaSort = parseSortingFromUrl(params, { fromSchema: true })
 
     // Column filters
-    let filters = parseFiltersFromUrl({
+    const filters = parseFiltersFromUrl({
       searchParams: params,
       key: 'filters',
       columns,
     })
 
     // Query builder
-    let queryBuilder = parseFiltersFromUrl({
+    const queryBuilder = parseFiltersFromUrl({
       searchParams: params,
       key: 'qb',
       columns,
     })
 
-    // Filters and query builder
-    const filtersAndQueryBuilder = parseFiltersFromUrl({
-      searchParams: params,
-      key: 'and',
-      columns,
-      fromSchema: true,
-    })
-
-    if (filtersAndQueryBuilder.length) {
-      // Column filters do not use grouping, therefore, if the first index is a
-      // group, it is actually the query builder
-      const hasQueryBuilder = 'isGroup' in filtersAndQueryBuilder[0]
-
-      if (hasQueryBuilder) {
-        queryBuilder = [filtersAndQueryBuilder[0]]
-        filters = filtersAndQueryBuilder.slice(1)
-      } else {
-        filters = filtersAndQueryBuilder
-      }
-    }
-
     // Column selection
     const visibleColumns = parseVisibleColumnsFromUrl(params)
 
-    // Non-standard filters
-    // In some cases, we get filters that are not in the `filters` or `qb`
-    // query params, but in the URL itself, like `activity=eq.0`
-    // We need to extract those and add them to the filters
-    const queryParamKeys = Array.from(params.keys())
-    const nonStandardFilterKeys = queryParamKeys.filter(key => {
-      return columns?.some(col => col.field === key)
-    })
-
-    const hasNoFiltersAtAll =
-      !filtersAndQueryBuilder?.length &&
-      !filters?.length &&
-      !queryBuilder?.length
-
-    if (hasNoFiltersAtAll && nonStandardFilterKeys.length) {
-      const nonStandardFilters = nonStandardFilterKeys.map(key => {
-        return `${key}.${params.get(key)}`
-      })
-
-      params.set('filters', nonStandardFilters.join(','))
-
-      return parseUrlParams({ columnsRef, searchParams: params })
-    }
-
-    return {
+    return extendParseUrlParams({
+      searchParams: params,
+      tableColumns: columns,
+      columns: visibleColumns,
+      filters,
       sort,
       schemaSort,
-      filters,
       queryBuilder,
-      columns: visibleColumns,
-      filtersAndQueryBuilder,
-    }
+      parseUrlFnc: parseUrlParams,
+    })
   }
 
   return {
@@ -279,6 +242,7 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
     isSelectorComparator,
     isDateAgoComparator,
     isEmptyComparator,
+    isBooleanishComparator,
     parseUrlParams,
   }
 }

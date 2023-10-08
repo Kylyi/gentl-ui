@@ -41,26 +41,6 @@ async function syncToParent() {
   }
 
   queryBuilder.value = cloned.value
-
-  // When using column filters in query builder, we also need to sync the column filters
-  // if (config.table.queryBuilder.showColumnFilters) {
-  //   const columnFiltersExtracted = nonHelperColumns.value.flatMap(
-  //     col => col.filters
-  //   )
-  //   console.log(
-  //     'Log ~ syncToParent ~ columnFiltersExtracted:',
-  //     columnFiltersExtracted
-  //   )
-
-  //   nonHelperColumns.value.forEach(col => {
-  //     const colColumnFilters = columnFiltersExtracted.filter(
-  //       filter => filter.field === col.field
-  //     )
-  //     console.log('Log ~ syncToParent ~ colColumnFilters:', colColumnFilters)
-
-  //     col.filters = colColumnFilters
-  //   })
-  // }
   queryBuilderEl.value?.syncFilters()
 
   dialogEl.value?.hide()

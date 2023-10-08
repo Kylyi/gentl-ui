@@ -58,6 +58,8 @@ const inputDebounce = computed(() => {
   switch (props.column.dataType) {
     case 'string':
     case 'number':
+    case 'int':
+    case 'percent':
       return 500
 
     default:
@@ -208,7 +210,15 @@ function handleComparatorChange(comparator: ComparatorEnum) {
   tableRefresh()
 }
 
-function handleCompareValueChange() {
+function handleValueChange(val: any, set?: boolean) {
+  if (set) {
+    if (typeof val === 'string') {
+      filter.value.value = val.trim()
+    } else {
+      filter.value.value = val
+    }
+  }
+
   tableRefresh()
 }
 
@@ -249,15 +259,12 @@ defineExpose({
     <!-- Custom component -->
     <Component
       :is="customFilterComponent.component"
-      v-if="
-        customFilterComponent &&
-        customFilterComponent.comparators.includes(filter.comparator)
-      "
+      v-if="customFilterComponent?.comparators.includes(filter.comparator)"
       v-model="customValueComputed"
       v-bind="customFilterComponent.props"
       size="sm"
       :placeholder="`${$t('table.filterValue')}...`"
-      @update:model-value="handleCompareValueChange"
+      @update:model-value="handleValueChange"
     />
 
     <!-- Selector for `Comparator.IN` and `Comparator.NOT_IN` for simple string cases -->
@@ -271,7 +278,7 @@ defineExpose({
       :debounce="500"
       :placeholder="`${$t('table.filterValue')}...`"
       empty-value=""
-      @update:model-value="handleCompareValueChange"
+      @update:model-value="handleValueChange"
     />
 
     <!-- Selector of distinct values -->
@@ -291,14 +298,14 @@ defineExpose({
       option-label="_label"
       size="sm"
       :placeholder="`${$t('table.filterValue')}...`"
-      @update:model-value="handleCompareValueChange"
+      @update:model-value="handleValueChange"
     />
 
     <!-- Ago value -->
     <QueryBuilderTimeAgoInput
       v-else-if="isDateAgoComparator(filter.comparator)"
       :item="filter"
-      @update:model-value="handleCompareValueChange"
+      @update:model-value="handleValueChange"
     />
 
     <!-- Boolean value -->
@@ -319,7 +326,7 @@ defineExpose({
       :debounce="inputDebounce"
       size="sm"
       :placeholder="`${$t('table.filterValue')}...`"
-      @update:model-value="handleCompareValueChange"
+      @update:model-value="handleValueChange($event, true)"
     />
   </div>
 </template>

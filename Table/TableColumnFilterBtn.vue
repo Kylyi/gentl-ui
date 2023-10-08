@@ -5,6 +5,9 @@ import { config } from '~/config'
 // Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
 
+// Injections
+import { tableFocusKey } from '~/components/Table/provide/table.provide'
+
 type IProps = {
   column: TableColumn<any>
   columns: TableColumn<any>[]
@@ -17,6 +20,9 @@ type IProps = {
 
 const props = defineProps<IProps>()
 
+// Injections
+const tableFocus = injectStrict(tableFocusKey)
+
 // Layout
 const emptyValue = config.table.emptyValue
 const column = toRef(props, 'column')
@@ -28,8 +34,13 @@ function handleMenuBeforeHide() {
       filter.comparator
     )
 
-    return filter.value !== undefined || isNonValueComparator
+    const isUndefinedValue = filter.value === undefined
+    const isEmptyArray = Array.isArray(filter.value) && !filter.value.length
+
+    return (!isUndefinedValue && !isEmptyArray) || isNonValueComparator
   })
+
+  tableFocus()
 }
 </script>
 

@@ -21,7 +21,7 @@ export function useQueryBuilderColumnFilters(
 
   const columnFilters = computed(() => {
     const filters = props.columns
-      .flatMap(col => col.filters)
+      .flatMap(col => col.filterDbQuery || [])
       .filter(filter => !filter.nonInteractive)
       .map(filter => {
         return {

@@ -39,6 +39,11 @@ export function serializeFilterString(
           val = `(${item.value.join(',')})`
         }
 
+        // Includes comma
+        if (typeof item.value === 'string' && item.value.includes(',')) {
+          val = `(${item.value})`
+        }
+
         return val !== undefined
           ? `${item.field}.${item.comparator}.${val}`
           : `${item.field}.${item.comparator}`
