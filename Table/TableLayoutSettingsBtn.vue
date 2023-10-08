@@ -17,7 +17,7 @@ import {
 import Dialog from '~/components/Dialog/Dialog.vue'
 
 type IProps = {
-  nonSaveableSettings?: Array<'columns' | 'filters' | 'sorting'>
+  nonSaveableSettings?: Array<'columns' | 'filters' | 'sorting' | 'public'>
 }
 
 const props = withDefaults(defineProps<IProps>(), {
@@ -407,6 +407,7 @@ const $v = useVuelidate(
 
             <!-- Public -->
             <Toggle
+              v-if="!nonSaveableSettingsByName.public"
               v-model="layout.public"
               container-class="bg-white dark:bg-darker"
               :label="$t('table.savePublic')"

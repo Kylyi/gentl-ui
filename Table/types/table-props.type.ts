@@ -141,7 +141,7 @@ export interface ITableProps {
   /**
    * The settings that are saveable whtin the table
    */
-  nonSaveableSettings?: Array<'columns' | 'filters' | 'sorting'>
+  nonSaveableSettings?: Array<'columns' | 'filters' | 'sorting' | 'public'>
 
   /**
    * Whether the table rows should be selectable
