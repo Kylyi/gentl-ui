@@ -126,7 +126,10 @@ export async function useTableMetaData(props: ITableProps) {
 
         tableStore.setTableState(getStorageKey(), { meta: result })
 
-        layout.value = get(result, layoutKey || config.table.layoutKey)
+        const _layout = get(result, layoutKey || config.table.layoutKey)
+        layout.value = _layout
+          ? { ..._layout, preventLayoutReset: true }
+          : undefined
 
         // Project specific
         if (layout.value?.viewCode) {

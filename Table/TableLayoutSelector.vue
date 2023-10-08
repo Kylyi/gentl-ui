@@ -49,7 +49,6 @@ const { getTableState } = useTableStore()
 // Layout
 const layoutSelectorEl = ref<InstanceType<typeof Selector>>()
 const queryBuilder = useVModel(props, 'queryBuilder')
-const isResetConfirmationActive = ref(false)
 
 function handleLayoutSelect(
   _layout?: ITableLayout,
@@ -188,6 +187,11 @@ function handleLayoutSelect(
     tableResize()
   }, 0)
 
+  layout.value = {
+    ..._layout,
+    preventLayoutReset: true,
+  }
+
   layoutSelectorEl.value?.blur()
 }
 </script>
@@ -195,14 +199,13 @@ function handleLayoutSelect(
 <template>
   <Selector
     ref="layoutSelectorEl"
-    v-model="layout"
+    :model-value="layout"
     :options="layouts"
     option-label="name"
     size="sm"
     w="50"
     :placeholder="$t('table.layoutState')"
     data-cy="scheme-search"
-    @picker-hide="isResetConfirmationActive = false"
     @update:model-value="handleLayoutSelect"
   >
     <template #prepend>
@@ -221,49 +224,11 @@ function handleLayoutSelect(
           color="negative"
           no-uppercase
           :label="$t('table.layoutStateReset')"
-          @click="isResetConfirmationActive = true"
+          @click="handleLayoutSelect(undefined, true)"
         />
-
-        <div
-          class="reset-confirmation"
-          :class="{ 'is-active': isResetConfirmationActive }"
-        >
-          <span
-            grow
-            text="caption xs center"
-          >
-            {{ $t('table.resetColumnWidthsPrompt') }}
-          </span>
-
-          <div flex="~ gap-1">
-            <Btn
-              size="xs"
-              label="N"
-              color="red-500"
-              @click="handleLayoutSelect(undefined, false)"
-            />
-            <Btn
-              size="xs"
-              label="Y"
-              color="green-500"
-              @click="handleLayoutSelect(undefined, true)"
-            />
-          </div>
-        </div>
       </div>
 
       <Separator spaced />
     </template>
   </Selector>
 </template>
-
-<style lang="scss" scoped>
-.reset-confirmation {
-  --apply: absolute flex items-center gap-2 items-center translate-x-100%
-    transition-transform inset-x-1 inset-y-0.5 bg-white dark:bg-darker;
-
-  &.is-active {
-    --apply: translate-x-0;
-  }
-}
-</style>

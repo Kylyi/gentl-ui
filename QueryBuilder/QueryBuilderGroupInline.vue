@@ -201,7 +201,7 @@ function handleRemoveGroup() {
     --apply: m-l-2;
 
     &::before {
-      --apply: absolute -top-6px -left-2 text-8 leading-none font-normal;
+      --apply: absolute -top-1.5 -left-2 text-7.5 leading-none font-normal;
       content: '[';
       color: var(--bracketColor);
     }
@@ -212,7 +212,7 @@ function handleRemoveGroup() {
   --apply: relative self-center m-t-1 m-r-2;
 
   &::after {
-    --apply: absolute -top-6px -right-2 text-8 leading-none font-normal;
+    --apply: absolute -top-1.5 -right-2 text-7.5 leading-none font-normal;
     content: ']';
     color: var(--bracketColor);
   }

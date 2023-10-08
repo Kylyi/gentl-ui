@@ -61,10 +61,6 @@ const nonSaveableSettingsByName = computed(() => {
   }, {} as Record<string, boolean>)
 })
 
-const layoutExists = computed(() => {
-  return layouts.value.some(l => l.name === layout.value.name)
-})
-
 const isSaveable = computed(() => {
   return (
     (layout.value.filters ||
@@ -256,13 +252,6 @@ function reset() {
   $v.value.$reset()
 }
 
-function handleLayoutSelect(_layout: ITableLayout & { _isCreate?: boolean }) {
-  layout.value.name = _layout.name
-  currentLayoutId.value = _layout._isCreate ? undefined : _layout.id
-
-  setDefaults(_layout)
-}
-
 const $v = useVuelidate(
   { layout: { name: { required, maxLength: maxLength(64) } } },
   { layout },
@@ -292,21 +281,14 @@ const $v = useVuelidate(
     >
       <Form
         p="2"
-        :label="layoutExists ? $t('save') : $t('saveAs')"
+        :label="$t('save')"
         :submit-disabled="!isSaveable"
         @submit="handleSaveLayout"
       >
-        <Selector
-          :model-value="layout.name"
-          :options="layouts"
-          allow-add
-          option-label="name"
+        <TextInput
+          v-model="layout.name"
           :label="$t('table.layoutName')"
           :errors="$v.layout.name.$errors"
-          stack-label
-          no-highlight
-          :hint="$t('general.addNewItemByTyping')"
-          @update:model-value="handleLayoutSelect"
         />
 
         <Separator spaced />

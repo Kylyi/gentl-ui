@@ -62,6 +62,7 @@ export function useTableData(
   const dataHasBeenFetched = ref(false)
   const search = ref('')
   const rows = (props.rows ? useVModel(props, 'rows') : ref([])) as Ref<any[]>
+  const previousDbQueryFetchParams = ref<string>()
   const totalRows = props.totalRows
     ? useVModel(props, 'totalRows')
     : ref<number>()
@@ -380,7 +381,18 @@ export function useTableData(
         return
       }
 
+      if (
+        previousDbQueryFetchParams.value ===
+          dbQuery.fetchQueryParams.toString() &&
+        layoutRef.value
+      ) {
+        layoutRef.value.preventLayoutReset = false
+
+        return
+      }
+
       await fetchAndSetData(dbQuery)
+      previousDbQueryFetchParams.value = dbQuery.fetchQueryParams.toString()
 
       // NOTE: Set URL
       if (props.useUrl) {
@@ -440,6 +452,12 @@ export function useTableData(
         if (!hasFloatingEl) {
           scrollerEl.value?.$el.focus()
         }
+      }
+
+      if (layoutRef.value?.preventLayoutReset) {
+        layoutRef.value.preventLayoutReset = false
+      } else {
+        layoutRef.value = undefined
       }
     },
     { immediate: true }

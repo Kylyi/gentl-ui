@@ -245,7 +245,7 @@ const $v = useVuelidate({ $scope: 'qb' })
 
 .qb-item.is-first-child {
   &::before {
-    --apply: absolute -top-7px -left-2 text-8 leading-none;
+    --apply: absolute -top-1.5 -left-2 text-7.5 leading-none;
     content: '[';
     color: var(--bracketColor);
   }
@@ -253,7 +253,7 @@ const $v = useVuelidate({ $scope: 'qb' })
 
 .is-last-child {
   &::after {
-    --apply: absolute -bottom-2px -right-2 text-8 leading-none font-normal;
+    --apply: absolute -top-1.5 -right-2 text-7.5 leading-none font-normal;
     content: ']';
     color: var(--bracketColor);
   }
