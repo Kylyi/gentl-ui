@@ -139,7 +139,7 @@ function handleLayoutSelect(
   // we don't want to set the query builder if it's undefined
   if (schemaQueryBuilder?.length) {
     queryBuilder.value = schemaQueryBuilder
-  } else if (isReset) {
+  } else if (isReset && props.queryBuilder !== undefined) {
     queryBuilder.value = klona(queryBuilderDefault)
   } else if (props.queryBuilder !== undefined) {
     queryBuilder.value = props.queryBuilder
