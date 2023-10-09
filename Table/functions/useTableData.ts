@@ -171,6 +171,7 @@ export function useTableData(
   const columnFilters = computed(() => {
     const columns = toValue(internalColumnsRef)
 
+    // TODO: Bad type
     return columns
       .filter(col => !!col.filterDbQuery)
       .flatMap(col => col.filterDbQuery) as any[]
@@ -433,7 +434,7 @@ export function useTableData(
                 search: dbQuery.tableQuery.search,
               }),
               ...(dbQuery.tableQuery.includeDeleted && {
-                includeDeleted: dbQuery.tableQuery.includeDeleted,
+                includeDeleted: String(dbQuery.tableQuery.includeDeleted),
               }),
             },
           },

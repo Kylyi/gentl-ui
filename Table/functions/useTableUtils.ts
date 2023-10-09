@@ -220,16 +220,24 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
     // Column selection
     const visibleColumns = parseVisibleColumnsFromUrl(params)
 
-    return extendParseUrlParams({
-      searchParams: params,
-      tableColumns: columns,
-      columns: visibleColumns,
-      filters,
-      sort,
-      schemaSort,
-      queryBuilder,
-      parseUrlFnc: parseUrlParams,
-    })
+    return extendParseUrlParams
+      ? extendParseUrlParams({
+          searchParams: params,
+          tableColumns: columns,
+          columns: visibleColumns,
+          filters,
+          sort,
+          schemaSort,
+          queryBuilder,
+          parseUrlFnc: parseUrlParams,
+        })
+      : {
+          sort,
+          schemaSort,
+          filters,
+          queryBuilder,
+          columns: visibleColumns,
+        }
   }
 
   return {
