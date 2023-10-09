@@ -20,7 +20,6 @@ import { useTableUtils } from '~/components/Table/functions/useTableUtils'
 import {
   serializeFilterString,
   serializeOrderByString,
-  serializeSelectString,
 } from '~/components/Table/utils/transformTableQueryToQueryParams'
 
 // Injections
@@ -62,7 +61,7 @@ export function useTableData(
   const dataHasBeenFetched = ref(false)
   const search = ref('')
   const rows = (props.rows ? useVModel(props, 'rows') : ref([])) as Ref<any[]>
-  const previousDbQueryFetchParams = ref<string>()
+  const previousDbQuery = ref<ITableDataFetchFncInput>()
   const totalRows = props.totalRows
     ? useVModel(props, 'totalRows')
     : ref<number>()
@@ -383,13 +382,23 @@ export function useTableData(
       }
 
       if (
-        previousDbQueryFetchParams.value === dbQuery.fetchQueryParams.toString()
+        previousDbQuery.value?.fetchQueryParams.toString() ===
+        dbQuery.fetchQueryParams.toString()
       ) {
-        if (layoutRef.value?.preventLayoutReset) {
-          layoutRef.value.preventLayoutReset = false
-        }
+        // We might have some columns `alwaysSelected`, so if we add such column into
+        // the table, it would actually not trigger the refetch, if that happens,
+        // we need to manually adjust the url
+        const hasDifferenVisibletCols =
+          dbQuery.tableQuery.select?.length !==
+          previousDbQuery.value?.tableQuery.select?.length
 
-        return
+        if (!hasDifferenVisibletCols) {
+          if (layoutRef.value?.preventLayoutReset) {
+            layoutRef.value.preventLayoutReset = false
+          }
+
+          return
+        }
       }
 
       if (layoutRef.value?.preventLayoutReset) {
@@ -399,7 +408,7 @@ export function useTableData(
       }
 
       await fetchAndSetData(dbQuery)
-      previousDbQueryFetchParams.value = dbQuery.fetchQueryParams.toString()
+      previousDbQuery.value = dbQuery
 
       // NOTE: Set URL
       if (props.useUrl) {
@@ -420,7 +429,10 @@ export function useTableData(
         const qb = serializeFilterString(dbQuery.tableQuery.queryBuilder)
         const filters = serializeFilterString(dbQuery.tableQuery.columnFilters)
         const order = serializeOrderByString(dbQuery.tableQuery.orderBy)
-        const select = serializeSelectString(dbQuery.tableQuery.select)
+        const select = internalColumnsRef.value
+          .filter(col => !col.hidden && !col.isHelperCol)
+          .map(col => col.field)
+          .join(',')
 
         navigateTo(
           {
