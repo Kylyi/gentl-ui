@@ -213,6 +213,8 @@ onMounted(() => {
         :selectable="selectable"
         :non-saveable-settings="nonSaveableSettings"
         :minimum-column-width="minimumColumnWidth"
+        :sub-bar-only="subBarOnly"
+        :no-layout-options="noLayoutOptions"
         @update:columns-width="handleResize()"
       >
         <template #left-prepend>

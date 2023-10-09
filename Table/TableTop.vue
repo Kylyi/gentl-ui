@@ -24,7 +24,12 @@ import QueryBuilderInline from '~/components/QueryBuilder/QueryBuilderInline.vue
 const props = defineProps<
   Pick<
     ITableProps,
-    'queryBuilder' | 'selectable' | 'nonSaveableSettings' | 'minimumColumnWidth'
+    | 'queryBuilder'
+    | 'selectable'
+    | 'nonSaveableSettings'
+    | 'minimumColumnWidth'
+    | 'subBarOnly'
+    | 'noLayoutOptions'
   > & {
     search: string
   }
@@ -157,118 +162,120 @@ function handleFitColumns() {
 
 <template>
   <div class="table-top">
-    <!-- Toolbar -->
-    <div class="table-top__toolbar">
-      <!-- Query builder button -->
-      <div
-        flex="~ gap-1 items-center"
-        grow
-      >
-        <slot name="left-prepend" />
+    <template v-if="!subBarOnly">
+      <!-- Toolbar -->
+      <div class="table-top__toolbar">
+        <!-- Query builder button -->
+        <div
+          flex="~ gap-1 items-center"
+          grow
+        >
+          <slot name="left-prepend" />
 
-        <TableQueryBuilderBtn
-          v-if="queryBuilder"
-          v-model:query-builder="queryBuilder"
-        />
+          <TableQueryBuilderBtn
+            v-if="queryBuilder"
+            v-model:query-builder="queryBuilder"
+          />
 
-        <slot name="left-append" />
+          <slot name="left-append" />
+        </div>
+
+        <slot name="right-prepend" />
+
+        <!-- Exports -->
+        <ExportBtn />
+
+        <slot name="right-append" />
       </div>
 
-      <slot name="right-prepend" />
+      <Separator />
 
-      <!-- Exports -->
-      <ExportBtn />
-
-      <slot name="right-append" />
-    </div>
-
-    <Separator />
-
-    <!-- Query builder -->
-    <div
-      v-if="queryBuilder"
-      class="table-top__qb"
-    >
-      <VerticalScroller
-        grow
-        :style="queryBuilderHeight"
+      <!-- Query builder -->
+      <div
+        v-if="queryBuilder"
+        class="table-top__qb"
       >
-        <div
-          p="1"
-          bg="white dark:darker"
-          rounded="custom"
-          min-h="10"
+        <VerticalScroller
+          grow
+          :style="queryBuilderHeight"
         >
-          <QueryBuilderInline
-            ref="queryBuilderInlineEl"
-            v-model:items="queryBuilder"
-            :columns="nonHelperColumns"
-          />
-        </div>
-      </VerticalScroller>
+          <div
+            p="1"
+            bg="white dark:darker"
+            rounded="custom"
+            min-h="10"
+          >
+            <QueryBuilderInline
+              ref="queryBuilderInlineEl"
+              v-model:items="queryBuilder"
+              :columns="nonHelperColumns"
+            />
+          </div>
+        </VerticalScroller>
 
-      <Separator
-        vertical
-        h="full"
+        <Separator
+          vertical
+          h="full"
+        />
+
+        <!-- Remove filters -->
+        <Btn
+          no-upeprcase
+          shrink-0
+          size="xs"
+          :label="$t('table.removeQueryBuilderFilters')"
+          no-uppercase
+          w="20"
+          no-truncate
+          stacked
+          h="full"
+          p="!y-0"
+          bg="dark:darker"
+          color="ca hover:negative"
+          border="2 transparent hover:negative"
+        >
+          <Menu
+            placement="left"
+            hide-header
+            :no-arrow="false"
+            content-class="gap-1"
+          >
+            <Btn
+              :label="$t('table.removeQueryBuilderFilter')"
+              size="sm"
+              no-uppercase
+              @click="handleFilterClear('queryBuilder')"
+            />
+            <Btn
+              :label="$t('table.removeColumnsFilter')"
+              size="sm"
+              no-uppercase
+              @click="handleFilterClear('columns')"
+            />
+
+            <Separator />
+
+            <Btn
+              :label="$t('table.removeAllFilters')"
+              size="sm"
+              no-uppercase
+              color="negative"
+              @click="handleFilterClear"
+            />
+          </Menu>
+        </Btn>
+      </div>
+
+      <!-- Chips - filter columns or search -->
+      <TableSearch
+        v-else
+        v-model:search="search"
+        :columns="columns"
+        class="table-top__qb"
       />
 
-      <!-- Remove filters -->
-      <Btn
-        no-upeprcase
-        shrink-0
-        size="xs"
-        :label="$t('table.removeQueryBuilderFilters')"
-        no-uppercase
-        w="20"
-        no-truncate
-        stacked
-        h="full"
-        p="!y-0"
-        bg="dark:darker"
-        color="ca hover:negative"
-        border="2 transparent hover:negative"
-      >
-        <Menu
-          placement="left"
-          hide-header
-          :no-arrow="false"
-          content-class="gap-1"
-        >
-          <Btn
-            :label="$t('table.removeQueryBuilderFilter')"
-            size="sm"
-            no-uppercase
-            @click="handleFilterClear('queryBuilder')"
-          />
-          <Btn
-            :label="$t('table.removeColumnsFilter')"
-            size="sm"
-            no-uppercase
-            @click="handleFilterClear('columns')"
-          />
-
-          <Separator />
-
-          <Btn
-            :label="$t('table.removeAllFilters')"
-            size="sm"
-            no-uppercase
-            color="negative"
-            @click="handleFilterClear"
-          />
-        </Menu>
-      </Btn>
-    </div>
-
-    <!-- Chips - filter columns or search -->
-    <TableSearch
-      v-else
-      v-model:search="search"
-      :columns="columns"
-      class="table-top__qb"
-    />
-
-    <Separator m="b-1" />
+      <Separator m="b-1" />
+    </template>
 
     <!-- Subbar -->
     <div class="table-top__subbar">
@@ -366,7 +373,7 @@ function handleFitColumns() {
           @click="handleFitColumns"
         />
 
-        <template v-if="config.table.useServerState">
+        <template v-if="config.table.useServerState && !noLayoutOptions">
           <!-- Layout selector -->
           <TableLayoutSelector v-model:query-builder="queryBuilder" />
 

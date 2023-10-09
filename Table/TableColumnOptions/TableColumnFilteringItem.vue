@@ -51,7 +51,7 @@ const isNonValueComparator = computedEager(() => {
 })
 
 const component = computed(() => {
-  return COMPONENTS_BY_DATATYPE_MAP[column.value.dataType]
+  return COMPONENTS_BY_DATATYPE_MAP[column.value.dataType.replace('Simple', '')]
 })
 
 const inputDebounce = computed(() => {

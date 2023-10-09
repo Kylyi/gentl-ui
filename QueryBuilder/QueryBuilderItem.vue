@@ -84,7 +84,9 @@ const isNonValueComparator = computedEager(() => {
 })
 
 const component = computed(() => {
-  return COMPONENTS_BY_DATATYPE_MAP[colSelected.value?.dataType]
+  return COMPONENTS_BY_DATATYPE_MAP[
+    colSelected.value?.dataType.replace('Simple', '')
+  ]
 })
 
 /**

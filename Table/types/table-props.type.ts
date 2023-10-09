@@ -113,6 +113,16 @@ export interface ITableProps {
   noTotals?: boolean
 
   /**
+   * When true, the `top` side of the table will only have the `subbar` part visible
+   */
+  subBarOnly?: boolean
+
+  /**
+   * Whether the table should include part for handling layouts
+   */
+  noLayoutOptions?: boolean
+
+  /**
    * Query builder rows
    */
   queryBuilder?: IQueryBuilderRow[]

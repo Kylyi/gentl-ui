@@ -4,8 +4,9 @@ import type { IQueryBuilderRowProps } from '~/components/QueryBuilder/types/quer
 
 // Models
 import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
+import { IItem } from '~/libs/App/types/item.type'
 
-export type IQueryBuilderItem = {
+export type IQueryBuilderItem<T = IItem> = {
   id: string
   path: string
   field: string
@@ -17,7 +18,7 @@ export type IQueryBuilderItem = {
   /**
    * The original object (reference)
    */
-  ref?: any
+  ref?: T
 }
 
 export type IQueryBuilderItemProps = IQueryBuilderRowProps & {

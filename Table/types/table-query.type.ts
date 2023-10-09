@@ -1,6 +1,7 @@
 import { config } from '~/config'
 
 // Types
+import type { IItem } from '~/libs/App/types/item.type'
 import type { IQueryBuilderGroup } from '~/components/QueryBuilder/types/query-builder-group-props.type'
 import type { IQueryBuilderItem } from '~/components/QueryBuilder/types/query-builder-item-props.type'
 import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
@@ -12,19 +13,21 @@ export type ITableOrderBy = {
 }
 export type ISelect = Record<string, boolean | Record<string, boolean>>
 
-export type ITableFilterItem = Pick<
-  IQueryBuilderItem,
+export type ITableFilterItem<T = IItem> = Pick<
+  IQueryBuilderItem<T>,
   'field' | 'value' | 'comparator'
 >
 
-export type ITableFilterGroup = Pick<
+export type ITableFilterGroup<T = IItem> = Pick<
   IQueryBuilderGroup,
   'isGroup' | 'condition'
 > & {
-  children: ITableFilterItem[]
+  children: ITableFilterItem<T>[]
 }
 
-export type ITableFilterRow = ITableFilterItem | ITableFilterGroup
+export type ITableFilterRow<T = IItem> =
+  | ITableFilterItem<T>
+  | ITableFilterGroup<T>
 
 export type ITableQuery = {
   queryBuilder?: IQueryBuilderRow[]
