@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { helpers } from '@vuelidate/validators'
 import { config } from '~/config'
 
 // Types
@@ -51,6 +52,12 @@ const layout = ref({
   queryBuilder: false,
   default: false,
   public: false,
+})
+
+const layoutExists = computed(() => {
+  return layouts.value.some(
+    l => l.name === layout.value.name && l.id !== currentLayoutId.value
+  )
 })
 
 const nonSaveableSettingsByName = computed(() => {
@@ -252,7 +259,18 @@ function reset() {
 }
 
 const $v = useVuelidate(
-  { layout: { name: { required, maxLength: maxLength(64) } } },
+  {
+    layout: {
+      name: {
+        required,
+        maxLength: maxLength(64),
+        unique: helpers.withMessage(
+          () => $t('table.layoutStateNameAlreadyExists'),
+          () => !layoutExists.value
+        ),
+      },
+    },
+  },
   { layout },
   { $scope: false }
 )
