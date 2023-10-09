@@ -114,7 +114,7 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
 
       <span
         class="wrapper-body__input"
-        data-cy="search-scheme"
+        data-cy="input-field"
       >
         <div
           v-if="isModified"
