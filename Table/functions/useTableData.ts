@@ -382,13 +382,19 @@ export function useTableData(
       }
 
       if (
-        previousDbQueryFetchParams.value ===
-          dbQuery.fetchQueryParams.toString() &&
-        layoutRef.value
+        previousDbQueryFetchParams.value === dbQuery.fetchQueryParams.toString()
       ) {
-        layoutRef.value.preventLayoutReset = false
+        if (layoutRef.value?.preventLayoutReset) {
+          layoutRef.value.preventLayoutReset = false
+        }
 
         return
+      }
+
+      if (layoutRef.value?.preventLayoutReset) {
+        layoutRef.value.preventLayoutReset = false
+      } else {
+        layoutRef.value = undefined
       }
 
       await fetchAndSetData(dbQuery)
@@ -452,12 +458,6 @@ export function useTableData(
         if (!hasFloatingEl) {
           scrollerEl.value?.$el.focus()
         }
-      }
-
-      if (layoutRef.value?.preventLayoutReset) {
-        layoutRef.value.preventLayoutReset = false
-      } else {
-        layoutRef.value = undefined
       }
     },
     { immediate: true }

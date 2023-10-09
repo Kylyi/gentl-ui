@@ -175,15 +175,13 @@ async function handleSaveLayout() {
     paramsToSave.set('and', `${queryParams.get('and')}`)
   }
 
-  const layoutFound = layouts.value.find(l => l.name === layout.value.name)
-
   const res = await handleRequest<ITableLayout>(
     () => {
-      const mode = layoutFound ? 'update' : 'create'
+      const mode = currentLayoutId.value ? 'update' : 'create'
 
       return saveLayout(
         {
-          id: layoutFound?.id,
+          id: currentLayoutId.value,
           name: layout.value.name,
           schema: decodeURIComponent(paramsToSave.toString()),
           viewCode: viewCode.value,
@@ -197,13 +195,13 @@ async function handleSaveLayout() {
   )
 
   // When we create a new layout, we add it to the layouts array
-  if (!layoutFound) {
+  if (!currentLayoutId.value) {
     layouts.value = [...layouts.value, res]
   }
 
   // When we update a layout, we update the layout in the layouts array
   else {
-    Object.assign(layoutFound, res)
+    Object.assign(currentLayout.value!, res)
   }
 
   // When we make some layout default, we make sure the other layouts are not default
@@ -236,6 +234,7 @@ async function handleDeleteLayoutState() {
   }
 
   reset()
+  dialogEl.value?.hide()
 }
 
 function reset() {

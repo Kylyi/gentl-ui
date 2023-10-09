@@ -187,7 +187,6 @@ export interface ITableProps {
     fnc: (options: ITableDataFetchFncInput) => Promise<any> | any
     payloadKey?: string
     countKey?: string
-    queryParamsKey?: string
     hashKey?: string
     createIdentifier?: (row: any, idx: number) => string | number
     errorHandler?: (error: any) => void
@@ -218,9 +217,9 @@ export interface ITableProps {
 
     /**
      * The key in the response that contains the default layout
-     * @default config.table.layoutKey
+     * @default config.table.defaultLayoutKey
      */
-    layoutKey?: string
+    defaultLayoutKey?: string
 
     /**
      * When true, if metadata returns columns, they all will be used, no matter

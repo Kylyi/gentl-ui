@@ -105,7 +105,7 @@ export async function useTableMetaData(props: ITableProps) {
 
     await handleRequest(
       async () => {
-        const { fnc, columnsKey, layoutKey, layoutsKey } =
+        const { fnc, columnsKey, defaultLayoutKey, layoutsKey } =
           props.getMetaData ?? getGenericMetaData ?? {}
 
         let result: any
@@ -126,7 +126,11 @@ export async function useTableMetaData(props: ITableProps) {
 
         tableStore.setTableState(getStorageKey(), { meta: result })
 
-        const _layout = get(result, layoutKey || config.table.layoutKey)
+        const _layout = get(
+          result,
+          defaultLayoutKey || config.table.defaultLayoutKey
+        )
+
         layout.value = _layout
           ? { ..._layout, preventLayoutReset: true }
           : undefined

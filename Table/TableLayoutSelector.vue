@@ -58,7 +58,7 @@ function handleLayoutSelect(
   const tableState = getTableState(storageKey)
   const defaultFilter = get(
     tableState.value.meta,
-    config.table.layoutKey
+    config.table.defaultLayoutKey
   ) as any
 
   // NOTE: We unfreeze any frozen column
@@ -199,7 +199,7 @@ function handleLayoutSelect(
 <template>
   <Selector
     ref="layoutSelectorEl"
-    :model-value="layout"
+    :model-value="layout?.id === 0 ? undefined : layout"
     :options="layouts"
     option-label="name"
     size="sm"
