@@ -130,7 +130,7 @@ export function useList(
   const defaultSortBy = [
     new SortItem<any>({
       name: '_label',
-      sort: 1,
+      sort: 'asc',
       format: row =>
         typeof props.itemLabel === 'function'
           ? props.itemLabel(row)
