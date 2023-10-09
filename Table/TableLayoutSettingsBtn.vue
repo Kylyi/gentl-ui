@@ -197,7 +197,7 @@ async function handleSaveLayout() {
         { mode }
       )
     },
-    { notifySuccess: true }
+    { notifySuccess: true, operationName: 'table.layoutSave' }
   )
 
   // When we create a new layout, we add it to the layouts array
@@ -208,6 +208,11 @@ async function handleSaveLayout() {
   // When we update a layout, we update the layout in the layouts array
   else {
     Object.assign(currentLayout.value!, res)
+
+    const foundLayout = layouts.value.find(l => l.id === res.id)
+    if (foundLayout) {
+      Object.assign(foundLayout, res)
+    }
   }
 
   // When we make some layout default, we make sure the other layouts are not default
@@ -230,7 +235,11 @@ async function handleSaveLayout() {
 async function handleDeleteLayoutState() {
   const deletedFilterId = await handleRequest(
     () => deleteLayout(currentLayoutId.value),
-    { notifySuccess: true, payloadKey: 'data.payload.id' }
+    {
+      notifySuccess: true,
+      payloadKey: 'data.payload.id',
+      operationName: 'table.layoutDelete',
+    }
   )
 
   layouts.value = layouts.value.filter(l => l.id !== deletedFilterId)
