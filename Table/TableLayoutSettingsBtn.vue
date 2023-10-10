@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { klona } from 'klona'
 import { config } from '~/config'
 
 // Types
@@ -52,12 +53,11 @@ const layout = ref({
   default: false,
   public: false,
 })
+const layoutClone = ref<typeof layout.value>()
 
-// const layoutExists = computed(() => {
-//   return layouts.value.some(
-//     l => l.name === layout.value.name && l.id !== currentLayoutId.value
-//   )
-// })
+const hasLayoutChanged = computedEager(() => {
+  return !isEqual(layout.value, layoutClone.value)
+})
 
 const nonSaveableSettingsByName = computed(() => {
   return props.nonSaveableSettings?.reduce((agg, curr) => {
@@ -85,6 +85,7 @@ function handleDialogBeforeShow() {
   currentLayoutId.value = currentLayout.value?.id
 
   setDefaults(currentLayout.value)
+  layoutClone.value = klona(layout.value)
 }
 
 function setDefaults(_layout?: ITableLayout) {
@@ -316,7 +317,8 @@ const $v = useVuelidate(
       <Form
         p="2"
         :label="$t('save')"
-        :submit-disabled="!isSaveable"
+        :submit-disabled="!isSaveable || !hasLayoutChanged"
+        submit-class="w-30"
         @submit="handleSaveLayout"
       >
         <TextInput

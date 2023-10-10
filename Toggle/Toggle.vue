@@ -85,7 +85,9 @@ const defaultClasses = computed<ToggleClass>(() => {
     unchecked: {
       toggle: props.filled ? 'bg-negative/15 border-negative' : '',
       bullet:
-        props.indeterminateValue !== undefined ? 'bg-negative' : 'bg-neutral',
+        props.indeterminateValue !== undefined
+          ? 'bg-negative color-negative'
+          : 'bg-neutral',
       icon: '',
     },
     indeterminate: {
@@ -196,6 +198,14 @@ export default {
 
   &.is-readonly {
     --apply: border-dotted cursor-default;
+
+    &.is-checked .bullet {
+      --apply: bg-positive/50 border-2 border-dotted border-positive;
+    }
+
+    &.is-unchecked .bullet {
+      --apply: bg-neutral/50 border-2 border-dotted border-neutral;
+    }
   }
 
   &-label--xs,
