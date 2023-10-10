@@ -177,8 +177,21 @@ async function handleSaveLayout() {
   }
 
   // Query builder and filters
-  if (layout.value.filters && queryParams.has('and')) {
-    paramsToSave.set('and', `${queryParams.get('and')}`)
+  if (layout.value.filters) {
+    // Column filters
+    tableQuery.value.fetchTableQuery.columnFilters?.forEach(columnFilter => {
+      paramsToSave.set(
+        columnFilter.field,
+        `${columnFilter.comparator}.${columnFilter.value}`
+      )
+    })
+
+    // Query builder
+    if (queryParams.get('and')) {
+      paramsToSave.set('and', `${queryParams.get('and')}`)
+    } else if (queryParams.get('or')) {
+      paramsToSave.set('or', `${queryParams.get('or')}`)
+    }
   }
 
   const res = await handleRequest<ITableLayout>(
@@ -326,13 +339,18 @@ const $v = useVuelidate(
               text="caption"
               font="bold"
             >
-              {{ $t('table.layoutSaveEntities') }}
+              {{
+                currentLayoutId
+                  ? $t('table.layoutSavedEntities')
+                  : $t('table.layoutSaveEntities')
+              }}
             </span>
 
             <!-- Columns -->
             <Toggle
               v-if="!nonSaveableSettingsByName.columns"
               v-model="layout.columns"
+              :readonly="!!currentLayoutId"
               container-class="bg-white dark:bg-darker col-start-1"
               :label="$t('table.saveColumns')"
             />
@@ -341,6 +359,7 @@ const $v = useVuelidate(
             <Toggle
               v-if="!nonSaveableSettingsByName.filters"
               v-model="layout.filters"
+              :readonly="!!currentLayoutId"
               container-class="bg-white dark:bg-darker col-start-1"
               :label="$t('table.saveFilters')"
               @update:model-value="checkSaveable('filters', $event)"
@@ -371,6 +390,7 @@ const $v = useVuelidate(
             <Toggle
               v-if="!nonSaveableSettingsByName.sorting"
               v-model="layout.sort"
+              :readonly="!!currentLayoutId"
               container-class="col-start-1 bg-white dark:bg-darker"
               :label="$t('table.saveSort')"
               col="start-1"
