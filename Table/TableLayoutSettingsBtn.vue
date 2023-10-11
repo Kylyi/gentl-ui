@@ -285,7 +285,6 @@ const $v = useVuelidate(
     layout: {
       name: {
         required,
-        maxLength: maxLength(64),
       },
     },
   },

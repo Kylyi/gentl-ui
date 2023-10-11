@@ -54,29 +54,41 @@ export function useValueFormatterUtils() {
     switch (dataType) {
       case 'number':
       case 'int':
+      case 'numberSimple':
+      case 'intSimple':
         return formatNumber(value)
 
       case 'date':
       case 'DateTime':
+      case 'dateSimple':
+      case 'DateTimeSimple':
         return formatDate(value, 'short')
 
       case 'datetime':
+      case 'datetimeSimple':
+        console.log('here')
         return formatDate(value, 'long')
 
       case 'timestamp':
+      case 'timestampSimple':
         return formatDate(value, 'timestamp')
 
       case 'yearMonth':
+      case 'yearMonthSimple':
         return formatDate(value, 'yearMonth')
 
       case 'time':
+      case 'timeSimple':
         return formatTime(value)
 
       case 'boolean':
       case 'bool':
+      case 'booleanSimple':
+      case 'boolSimple':
         return JSON.parse(value) ? $t('yes') : $t('no')
 
       case 'string':
+      case 'stringSimple':
       default:
         return typeof value === 'string' && config.removePipes
           ? value.replace(/\|/g, '')

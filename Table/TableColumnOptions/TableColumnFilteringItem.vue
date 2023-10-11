@@ -114,7 +114,7 @@ const customValue = computed({
 })
 
 const comparatorOptions = computed(() => {
-  return getAvailableComparators(props.column.dataType, {
+  return getAvailableComparators(column.value.dataType, {
     includeSelectorComparators: !!column.value.getDistinctData,
     allowedComparators: column.value.comparators,
     extraComparators: [
@@ -160,8 +160,10 @@ function handleRemoveFilter() {
     filter => filter.comparator !== props.filter.comparator
   )
 
-  // Refresh the table if the filter actually had a value
-  if (!isNil(props.filter.value)) {
+  // Refresh the table if the filter actually had a value OR the comparator was one of the `Comparator.IS_EMPTY` or `Comparator.NOT_IS_EMPTY`
+  const _isEmptyComparator = isEmptyComparator(props.filter.comparator)
+
+  if (!isNil(props.filter.value) || _isEmptyComparator) {
     tableRefresh()
   }
 }

@@ -15,7 +15,7 @@ export type ISelect = Record<string, boolean | Record<string, boolean>>
 
 export type ITableFilterItem<T = IItem> = Pick<
   IQueryBuilderItem<T>,
-  'field' | 'value' | 'comparator'
+  'field' | 'value' | 'comparator' | 'dataType'
 >
 
 export type ITableFilterGroup<T = IItem> = Pick<

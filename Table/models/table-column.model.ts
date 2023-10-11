@@ -226,9 +226,10 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   }
 
   setDataType(dataType?: DataType, defaultComparator?: ComparatorEnum) {
-    this.dataType = dataType?.replace('Simple', '') || 'string'
+    this.dataType = dataType || 'string'
+    const _dataType = this.dataType?.replace('Simple', '')
 
-    switch (this.dataType) {
+    switch (_dataType) {
       case 'number':
       case 'int':
       case 'datetime':

@@ -150,7 +150,7 @@ export function useTableColumns(
 
     // When sorting is provided in the URL, we set the sorting for the columns
     // that are in the URL and reset it for the others
-    if (sort) {
+    if (sort?.length) {
       _columns.forEach(col => {
         const sortInUrlIdx = sort.findIndex(
           sortItem => sortItem.field === col.field
