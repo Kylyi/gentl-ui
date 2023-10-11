@@ -211,7 +211,7 @@ async function handleSaveLayout() {
         { mode }
       )
     },
-    { notifySuccess: true, operationName: 'table.layoutSave' }
+    { notifySuccess: true, logging: { operationName: 'table.layoutSave' } }
   )
 
   // When we create a new layout, we add it to the layouts array
@@ -252,7 +252,7 @@ async function handleDeleteLayoutState() {
     {
       notifySuccess: true,
       payloadKey: 'data.payload.id',
-      operationName: 'table.layoutDelete',
+      logging: { operationName: 'table.layoutDelete' },
     }
   )
 

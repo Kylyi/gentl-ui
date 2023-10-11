@@ -66,7 +66,6 @@ export function useValueFormatterUtils() {
 
       case 'datetime':
       case 'datetimeSimple':
-        console.log('here')
         return formatDate(value, 'long')
 
       case 'timestamp':
