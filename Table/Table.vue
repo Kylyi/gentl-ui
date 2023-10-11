@@ -59,6 +59,7 @@ defineSlots<{
   topLeftAppend: {}
   topRightPrepend: {}
   topRightAppend: {}
+  subbarRight: {}
   topBulkActions: { selection: any[] }
   belowTop: { rows: any[] }
 }>()
@@ -231,6 +232,10 @@ onMounted(() => {
 
         <template #right-append>
           <slot name="top-right-append" />
+        </template>
+
+        <template #subbar-right>
+          <slot name="subbar-right" />
         </template>
 
         <template

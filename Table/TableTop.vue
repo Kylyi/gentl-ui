@@ -389,6 +389,8 @@ function handleFitColumns() {
           />
         </template>
       </div>
+
+      <slot name="subbar-right" />
     </div>
   </div>
 </template>
