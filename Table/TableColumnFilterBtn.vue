@@ -60,6 +60,7 @@ function handleMenuBeforeHide() {
           class="icon bottom-.25 right-.25 basil:sort-outline"
           :class="{ 'color-white': column.sort }"
           z-1
+          data-cy="sort-outline"
         />
 
         <div

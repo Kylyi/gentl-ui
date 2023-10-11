@@ -70,6 +70,7 @@ function handleSort(sortValue?: 'asc' | 'desc') {
         class="!rounded-r-0"
         border="r-1 ca"
         :class="{ 'is-active': column.sort === 'asc' }"
+        data-cy="sort-asc"
         @click="handleSort('asc')"
       />
 
@@ -81,6 +82,7 @@ function handleSort(sortValue?: 'asc' | 'desc') {
         class="!rounded-l-0"
         icon="ph:sort-ascending-bold"
         :class="{ 'is-active': column.sort === 'desc' }"
+        data-cy="sort-desc"
         @click="handleSort('desc')"
       />
     </div>

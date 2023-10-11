@@ -233,6 +233,7 @@ function handleFitColumns() {
           bg="dark:darker"
           color="ca hover:negative"
           border="2 transparent hover:negative"
+          data-cy="remove-filters"
         >
           <Menu
             placement="left"
@@ -244,12 +245,14 @@ function handleFitColumns() {
               :label="$t('table.removeQueryBuilderFilter')"
               size="sm"
               no-uppercase
+              data-cy="remove-advanced-filter"
               @click="handleFilterClear('queryBuilder')"
             />
             <Btn
               :label="$t('table.removeColumnsFilter')"
               size="sm"
               no-uppercase
+              data-cy="remove-columns-filter"
               @click="handleFilterClear('columns')"
             />
 
@@ -260,6 +263,7 @@ function handleFitColumns() {
               size="sm"
               no-uppercase
               color="negative"
+              data-cy="remove-all-filters"
               @click="handleFilterClear"
             />
           </Menu>
@@ -333,6 +337,7 @@ function handleFitColumns() {
           </span>
           <span
             text="caption"
+            data-cy="sort-active-fields"
             v-html="tableSorting"
           />
 
@@ -340,6 +345,7 @@ function handleFitColumns() {
             preset="TRASH"
             size="xs"
             :label="$t('sorting.clear')"
+            data-cy="clear-sorting"
             @click="handleClearSorting"
           />
         </div>
