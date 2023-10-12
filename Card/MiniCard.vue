@@ -50,20 +50,48 @@ function getShownValue(val: any) {
               class="value-container-card-value"
               :class="[valueClass, { 'font-bold': !noBold }]"
             >
-              {{ getShownValue(val) }}
+              <div flex="~ col gap-y-2">
+                <!-- Current value -->
+                <div>
+                  {{ getShownValue(val) }}
+                </div>
+                <!-- Orginal Value -->
+                <div
+                  v-if="originalValue"
+                  text-purple-500
+                >
+                  {{ getShownValue(originalValue) }}
+                </div>
+              </div>
             </span>
-
-            <NuxtLink
+            <div
               v-else
-              :to="to"
-              class="link"
-              :class="[valueClass, { 'font-bold': !noBold }]"
+              flex="~ col gap-y-2"
             >
-              <span class="link_label">
-                <span class="link_label__icon" />
-                {{ getShownValue(val) }}
-              </span>
-            </NuxtLink>
+              <NuxtLink
+                :to="to"
+                class="link"
+                :class="[valueClass, { 'font-bold': !noBold }]"
+              >
+                <span class="link_label">
+                  <span class="link_label__icon" />
+                  {{ getShownValue(val) }}
+                </span>
+              </NuxtLink>
+
+              <NuxtLink
+                v-if="originalValue"
+                :to="to"
+                class="link"
+                :class="[valueClass, { 'font-bold': !noBold }]"
+                text-purple-500
+              >
+                <span class="link_label">
+                  <span class="link_label__icon" />
+                  {{ getShownValue(originalValue) }}
+                </span>
+              </NuxtLink>
+            </div>
           </slot>
         </template>
       </ValueFormatter>
