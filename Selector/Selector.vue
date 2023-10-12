@@ -389,11 +389,11 @@ defineExpose({
     <span
       v-if="$slots.selection"
       class="control"
+      @click="handleFocusOrClick"
     >
       <slot
         name="selection"
         :selected-option="getOption(model)"
-        :handle-click="handleFocusOrClick"
       />
     </span>
 

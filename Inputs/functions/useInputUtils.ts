@@ -76,7 +76,9 @@ export function useInputUtils(options: IInputUtilsOptions) {
     'required',
     'size',
     'stackLabel',
-    'noBorder'
+    'noBorder',
+    'inputContainerClass',
+    'inputContainerStyle'
   )
 
   // Layout

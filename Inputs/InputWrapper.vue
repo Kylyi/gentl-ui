@@ -114,6 +114,8 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
 
       <span
         class="wrapper-body__input"
+        :class="inputContainerClass"
+        :style="inputContainerStyle"
         data-cy="input-field"
       >
         <div
