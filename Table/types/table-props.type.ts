@@ -94,8 +94,11 @@ export interface ITableProps {
 
   /**
    * Whether the pagination should be used
+   *
+   * NOTE - When `null` is used, the pagination will be completely hidden, when
+   * `true` the pagination will still be used but not visible
    */
-  noPagination?: boolean
+  noPagination?: boolean | null
 
   /**
    * Whether the search should be hidden

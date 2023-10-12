@@ -393,6 +393,7 @@ defineExpose({
       <slot
         name="selection"
         :selected-option="getOption(model)"
+        :handle-click="handleFocusOrClick"
       />
     </span>
 
