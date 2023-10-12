@@ -184,6 +184,17 @@ export interface ITableProps {
    */
   useWorker?: boolean
 
+  tableTop?: {
+    noToolbar?: boolean
+    noSubbar?: boolean
+
+    noSort?: boolean
+    noBulk?: boolean
+    noLayout?: boolean
+    noColumnSelection?: boolean
+    noAutoFit?: boolean
+  }
+
   /**
    * Method to get data for the table
    * `payloadKey` ~ key in the response that contains the data

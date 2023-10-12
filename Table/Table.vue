@@ -216,6 +216,7 @@ onMounted(() => {
         :minimum-column-width="minimumColumnWidth"
         :sub-bar-only="subBarOnly"
         :no-layout-options="noLayoutOptions"
+        :table-top="tableTop"
         @update:columns-width="handleResize()"
       >
         <template #left-prepend>

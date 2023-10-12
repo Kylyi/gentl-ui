@@ -24,6 +24,7 @@ import QueryBuilderInline from '~/components/QueryBuilder/QueryBuilderInline.vue
 const props = defineProps<
   Pick<
     ITableProps,
+    | 'tableTop'
     | 'queryBuilder'
     | 'selectable'
     | 'nonSaveableSettings'
@@ -367,10 +368,14 @@ function handleFitColumns() {
         </span>
 
         <!-- Columns btn -->
-        <TableColumnsBtn v-model:columns="columns" />
+        <TableColumnsBtn
+          v-if="!tableTop?.noColumnSelection"
+          v-model:columns="columns"
+        />
 
         <!-- Autofit btn -->
         <Btn
+          v-if="!tableTop?.noAutoFit"
           size="sm"
           no-uppercase
           icon="material-symbols:fit-width"
@@ -379,7 +384,13 @@ function handleFitColumns() {
           @click="handleFitColumns"
         />
 
-        <template v-if="config.table.useServerState && !noLayoutOptions">
+        <template
+          v-if="
+            config.table.useServerState &&
+            !noLayoutOptions &&
+            !tableTop?.noLayout
+          "
+        >
           <!-- Layout selector -->
           <TableLayoutSelector v-model:query-builder="queryBuilder" />
 
