@@ -72,6 +72,11 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   autofitAdjustment = 0
 
   /**
+   * When true, the column cannot be frozen
+   */
+  noFreeze?: boolean
+
+  /**
    * Frozen columns are columns that are always visible
    */
   frozen?: boolean
@@ -253,6 +258,10 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   }
 
   async autoFit(rows: any[], slotRenderFnc?: Function, tableMinColWidth = 80) {
+    if (!this.resizable) {
+      return
+    }
+
     const { getCellWidth } = useRenderTemporaryTableCell()
 
     // We get the row with the maximum content
@@ -368,6 +377,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     this.nonInteractive = col.nonInteractive ?? false
     this.autofitAdjustment = col.autofitAdjustment ?? 0
     this.link = col.link
+    this.noFreeze = col.noFreeze
 
     // We also hide the column when it's non-interactive
     if (col.nonInteractive) {

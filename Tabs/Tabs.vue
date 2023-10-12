@@ -43,6 +43,7 @@ const tabs = computed(() => {
         id: t.props!.name,
         label: t.props!.label || t.props!.name,
         icon: t.props!.icon,
+        size: t.props!.size,
         component: t,
         componentName: (t.type as any).name,
       }
@@ -119,7 +120,7 @@ watch(model, model => {
           :icon="tab.icon"
           no-uppercase
           class="tab-label"
-          size="lg"
+          :size="tab.size || 'lg'"
           :class="[
             labelClass,
             {

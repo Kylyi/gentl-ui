@@ -146,7 +146,7 @@ defineExpose({
             relative
           >
             <TableColumnFreezeBtn
-              v-if="!col.isHelperCol"
+              v-if="!col.isHelperCol && !col.noFreeze"
               :column="col"
               :columns="columns"
               position="!absolute"

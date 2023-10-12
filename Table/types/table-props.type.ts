@@ -94,8 +94,11 @@ export interface ITableProps {
 
   /**
    * Whether the pagination should be used
+   *
+   * NOTE - When `null` is used, the pagination will be completely hidden, when
+   * `true` the pagination will still be used but not visible
    */
-  noPagination?: boolean
+  noPagination?: boolean | null
 
   /**
    * Whether the search should be hidden
@@ -183,6 +186,17 @@ export interface ITableProps {
    * @default 'depends on amount of rows'
    */
   useWorker?: boolean
+
+  tableTop?: {
+    noToolbar?: boolean
+    noSubbar?: boolean
+
+    noSort?: boolean
+    noBulk?: boolean
+    noLayout?: boolean
+    noColumnSelection?: boolean
+    noAutoFit?: boolean
+  }
 
   /**
    * Method to get data for the table

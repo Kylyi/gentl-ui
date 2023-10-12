@@ -393,6 +393,7 @@ defineExpose({
       <slot
         name="selection"
         :selected-option="getOption(model)"
+        :handle-click="handleFocusOrClick"
       />
     </span>
 
@@ -532,6 +533,7 @@ defineExpose({
             :item-key="optionKey"
             :item-label="optionLabel"
             v-bind="listProps"
+            :class="listClass"
             @update:selected="handleSelect"
             @added="handleSelectAdd"
             @selected-multiple="handleSelectedMultiple"

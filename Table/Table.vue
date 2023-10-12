@@ -14,13 +14,18 @@ import { config } from '~/config'
 import type { ITableProps } from '~/components/Table/types/table-props.type'
 import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
 
+// Injections
+import { tableSlotsKey } from '~/components/Table/provide/table.provide'
+
+// Models
+import { TableColumn } from '~/components/Table/models/table-column.model'
+
 // Functions
 import { useTableData } from '~/components/Table/functions/useTableData'
 import { useTableLayout } from '~/components/Table/functions/useTableLayout'
 import { useTableSelection } from '~/components/Table/functions/useTableSelection'
 import { useTableMetaData } from '~/components/Table/functions/useTableMetaData'
 import { useTableExporting } from '~/components/Table/functions/useTableExporting'
-import { tableSlotsKey } from '~/components/Table/provide/table.provide'
 
 const props = withDefaults(defineProps<ITableProps>(), {
   breakpoint: 'md',
@@ -70,6 +75,10 @@ provide(tableSlotsKey, slots)
 
 defineExpose({
   refreshData: () => refreshData(),
+  resizeColumns: (force?: boolean) => handleResize(force),
+  adjustColumns: (fnc: (columns: TableColumn[]) => void) => {
+    fnc(internalColumns.value)
+  },
 })
 
 // Layout
@@ -216,6 +225,7 @@ onMounted(() => {
         :minimum-column-width="minimumColumnWidth"
         :sub-bar-only="subBarOnly"
         :no-layout-options="noLayoutOptions"
+        :table-top="tableTop"
         @update:columns-width="handleResize()"
       >
         <template #left-prepend>
@@ -329,6 +339,7 @@ onMounted(() => {
     />
 
     <TablePagination
+      v-if="noPagination !== null"
       v-model:current-page="currentPage"
       v-model:current-page-size="currentPageSize"
       :is-first-page="isFirstPage"
