@@ -3,7 +3,7 @@ import { IMiniCardProps } from '~/components/Card/types/mini-card-props.type'
 import { useValueFormatterUtils } from '~/components/ValueFormatter/functions/useValueForamtterUtils'
 
 const props = withDefaults(defineProps<IMiniCardProps>(), {
-  originalValue: '',
+  originalValue: undefined,
 })
 
 // UTILS
@@ -16,7 +16,7 @@ function getShownValue(val: any) {
   if (isNil(val) || val === '' || (Array.isArray(val) && val.length === 0)) {
     return props.emptyValueString
   }
-  console.log(props.originalValue)
+
   return val
 }
 </script>
@@ -59,7 +59,7 @@ function getShownValue(val: any) {
                 </div>
                 <!-- Orginal Value -->
                 <div
-                  v-if="originalValue !== ''"
+                  v-if="originalValue !== undefined"
                   text-purple-500
                 >
                   {{ getShownValue(originalValue) }}
@@ -82,7 +82,7 @@ function getShownValue(val: any) {
               </NuxtLink>
 
               <NuxtLink
-                v-if="originalValue !== ''"
+                v-if="originalValue !== undefined"
                 :to="to"
                 class="link"
                 :class="[valueClass, { 'font-bold': !noBold }]"
