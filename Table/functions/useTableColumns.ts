@@ -321,7 +321,14 @@ export function useTableColumns(
       (agg, col) => {
         if (!col.hidden) {
           if (typeof col.width === 'string') {
-            agg.fixed += +(stringToFloat(col.width) || 0)
+            if (col.width === 'fit-label') {
+              const columnLabelCharsLength = col.label.length
+
+              // These numbers are arbitrary
+              agg.fixed += columnLabelCharsLength * 8 + 40
+            } else {
+              agg.fixed += +(stringToFloat(col.width) || 0)
+            }
           } else {
             agg.relative += col.width || 1
           }
@@ -370,12 +377,18 @@ export function useTableColumns(
       }
 
       const labelChars = col.hideLabel ? 0 : col.label.length
-      const colMinWidth = col.minWidth || labelChars * 8 + 40 // These numbers are arbitrary
+      const colMinWidth = col.minWidth || labelChars * 8 // These numbers are arbitrary
 
       if (typeof col.width === 'string') {
-        col.adjustedWidth = col.name.startsWith('_')
-          ? +(stringToFloat(col.width) || 0)
-          : Math.max(+(stringToFloat(col.width) || 0), minColWidth)
+        if (col.width === 'fit-label') {
+          const columnLabelCharsLength = col.label.length
+
+          col.adjustedWidth = columnLabelCharsLength * 8 // These numbers are arbitrary
+        } else {
+          col.adjustedWidth = col.name.startsWith('_')
+            ? +(stringToFloat(col.width) || 0)
+            : Math.max(+(stringToFloat(col.width) || 0), minColWidth)
+        }
       } else if (shouldAdjustCols) {
         const widthN = Math.max(
           calculateColWidth(
