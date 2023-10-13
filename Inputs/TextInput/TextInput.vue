@@ -21,6 +21,7 @@ defineEmits<{
   (e: 'validation-reset', val?: string | undefined | null): void
   (e: 'blur'): void
   (e: 'enter', event: KeyboardEvent): void
+  (e: 'focus'): void
 }>()
 
 const {
@@ -94,7 +95,12 @@ defineExpose({
       role="presentation"
       :class="[inputClass]"
       :style="inputStyle"
-      @focus="handleFocus"
+      @focus="
+        (arg: any) => {
+          handleFocus(arg)
+          $emit('focus')
+        }
+      "
       @blur="handleBlur"
       @keypress.enter="$emit('enter', $event)"
     />
