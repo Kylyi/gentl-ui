@@ -65,6 +65,7 @@ defineExpose({
   clear,
   getInputElement,
   sync: () => handleManualModelChange(props.modelValue),
+  handleManualModelChange,
 })
 </script>
 
@@ -100,6 +101,7 @@ defineExpose({
       :rows="rows"
       :class="[inputClass, resizeClass]"
       :style="inputStyle"
+      v-bind="textAreaProps"
       @focus="handleFocusOrClick"
     />
 
