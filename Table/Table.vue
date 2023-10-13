@@ -74,7 +74,7 @@ const slots = useSlots()
 provide(tableSlotsKey, slots)
 
 defineExpose({
-  refreshData: () => refreshData(),
+  refreshData: () => refreshData(true),
   resizeColumns: (force?: boolean) => handleResize(force),
   adjustColumns: (fnc: (columns: TableColumn[]) => void) => {
     fnc(internalColumns.value)

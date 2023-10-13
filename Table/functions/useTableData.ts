@@ -59,6 +59,7 @@ export function useTableData(
   const isInitialized = ref(false)
   const hasMore = ref(false)
   const dataHasBeenFetched = ref(false)
+  const isForcedRefetch = ref(false)
   const search = ref('')
   const rows = (props.rows ? useVModel(props, 'rows') : ref([])) as Ref<any[]>
   const previousDbQuery = ref<ITableDataFetchFncInput>()
@@ -245,7 +246,11 @@ export function useTableData(
 
   provide(tableQueryKey, dbQuery)
 
-  const refreshData = useDebounceFn(dbQuery.trigger, 100)
+  const refreshData = useDebounceFn((force?: boolean) => {
+    isForcedRefetch.value = !!force
+
+    dbQuery.trigger()
+  }, 100)
 
   /**
    * The function that actually fetches the data from the server
@@ -382,8 +387,9 @@ export function useTableData(
       }
 
       if (
+        !isForcedRefetch.value &&
         previousDbQuery.value?.fetchQueryParams.toString() ===
-        dbQuery.fetchQueryParams.toString()
+          dbQuery.fetchQueryParams.toString()
       ) {
         // We might have some columns `alwaysSelected`, so if we add such column into
         // the table, it would actually not trigger the refetch, if that happens,
