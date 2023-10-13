@@ -105,6 +105,7 @@ export type ISelectorProps = IInputProps & {
   noSearch?: boolean
   searchDebounce?: number
   listClass?: ClassType
+  search?: string
 
   /**
    * The extended search token for fuse.js library
