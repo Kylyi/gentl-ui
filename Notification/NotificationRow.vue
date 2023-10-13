@@ -12,7 +12,7 @@ const STEP = 25
 const DEFAULT_TIMEOUT = 2500
 const TIMEOUT = (props.notification.timeout ?? DEFAULT_TIMEOUT) / STEP
 
-// LAYOUT
+// Layout
 const notificationEl = ref<HTMLDivElement>()
 const isPausedByForce = ref(false)
 
@@ -29,6 +29,16 @@ const icon = computed(() => {
     default:
       return 'bi:info-lg'
   }
+})
+
+const subtitleArr = computed(() => {
+  if (!props.notification.subtitle) {
+    return null
+  }
+
+  return Array.isArray(props.notification.subtitle)
+    ? props.notification.subtitle
+    : [props.notification.subtitle]
 })
 
 const { pause, resume, counter } = useInterval(STEP, {
@@ -133,13 +143,19 @@ watch(notificationCounter, async () => {
     </div>
 
     <!-- Subtitle -->
-    <span
-      v-if="notification.subtitle"
+    <ul
+      v-if="subtitleArr"
       class="notification-subtitle"
       :class="[`is-${notification.type}`]"
     >
-      {{ notification.subtitle }}
-    </span>
+      <li
+        v-for="(subtitle, idx) in subtitleArr"
+        :key="idx"
+        list="inside none"
+      >
+        {{ subtitle }}
+      </li>
+    </ul>
 
     <Component
       :is="notification.componentBelow.component"

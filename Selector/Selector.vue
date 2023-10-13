@@ -413,6 +413,8 @@ defineExpose({
       <span
         v-if="placeholder && !hasContent"
         class="placeholder"
+        :class="placeholderClass"
+        :style="placeholderStyle"
       >
         {{ placeholder }}
       </span>
