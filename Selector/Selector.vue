@@ -348,10 +348,10 @@ function getData() {
   })
 }
 
-// We recalculate the menu position on `listOptions` change and `model` changes
-watch([listOptions, model], () => {
-  menuProxyEl.value?.recomputePosition()
-})
+// // We recalculate the menu position on `listOptions` change and `model` changes
+// watch([listOptions, model], () => {
+//   menuProxyEl.value?.recomputePosition()
+// })
 
 defineExpose({
   focus: () => menuProxyEl.value?.show(),
@@ -537,6 +537,7 @@ defineExpose({
             :item-label="optionLabel"
             v-bind="listProps"
             :class="listClass"
+            @search="isPickerActive && menuProxyEl?.recomputePosition()"
             @update:selected="handleSelect"
             @added="handleSelectAdd"
             @selected-multiple="handleSelectedMultiple"
