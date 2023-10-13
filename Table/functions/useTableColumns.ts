@@ -383,7 +383,10 @@ export function useTableColumns(
         if (col.width === 'fit-label') {
           const columnLabelCharsLength = col.label.length
 
-          col.adjustedWidth = columnLabelCharsLength * 8 + 20 // These numbers are arbitrary
+          col.adjustedWidth = Math.max(
+            columnLabelCharsLength * 8 + 20,
+            col.minWidth || 0
+          ) // These numbers are arbitrary
         } else {
           col.adjustedWidth = col.name.startsWith('_')
             ? +(stringToFloat(col.width) || 0)

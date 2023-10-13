@@ -588,6 +588,7 @@ defineExpose({
 
 <style lang="scss" scoped>
 .placeholder {
+  --apply: truncate max-w-9/10%;
   color: #9ca3af;
 }
 
