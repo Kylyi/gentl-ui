@@ -643,6 +643,14 @@ export function useList(
 
   onKeyStroke(['ArrowUp', 'ArrowDown', 'Enter'], handleKey)
 
+  whenever(
+    () => props.search,
+    _search => {
+      console.log(_search)
+      search.value = _search
+    }
+  )
+
   return {
     arr,
     hoveredIdx,
