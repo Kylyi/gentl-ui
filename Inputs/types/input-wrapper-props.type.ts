@@ -1,6 +1,6 @@
 import { CSSProperties } from 'vue'
 
-// TYPES
+// Types
 import type { InputLabelProps } from '~/components/Inputs/types/input-label-props.type'
 
 export interface IInputWrapperProps extends InputLabelProps {

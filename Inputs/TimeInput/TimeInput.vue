@@ -275,6 +275,7 @@ defineExpose({
       class="control"
       :class="[inputClass]"
       :style="inputStyle"
+      v-bind="inputProps"
       @focus="handleFocusOrClick"
       @input="handleInput"
     />

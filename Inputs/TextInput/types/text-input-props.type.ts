@@ -15,4 +15,9 @@ export interface ITextInputProps extends IInputProps {
    * The type of the input (native HTML attribute)
    */
   type?: 'text' | 'password'
+
+  /**
+   * The props that should be passed to the input tag (<input>)
+   */
+  inputProps?: Record<string, any>
 }

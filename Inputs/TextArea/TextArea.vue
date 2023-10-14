@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { MaybeElementRef } from '@vueuse/core'
 
-// TYPES
+// Types
 import type { ITextAreaInputProps } from '~/components/Inputs/TextArea/types/text-area-props.type'
 
-// COMPOSITION FUNCTIONS
+// Functions
 import { useInputUtils } from '~/components/Inputs/functions/useInputUtils'
 
 const props = withDefaults(defineProps<ITextAreaInputProps>(), {
@@ -101,7 +101,7 @@ defineExpose({
       :rows="rows"
       :class="[inputClass, resizeClass]"
       :style="inputStyle"
-      v-bind="textAreaProps"
+      v-bind="inputProps"
       @focus="handleFocusOrClick"
     />
 

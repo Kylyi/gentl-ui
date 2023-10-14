@@ -1,6 +1,6 @@
 // @unocss-include
 
-// TYPES
+// Types
 import { IFieldProps } from '~/components/Field/types/field-props.type'
 
 export type IColorProps = {
