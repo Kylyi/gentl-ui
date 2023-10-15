@@ -3,4 +3,4 @@ import { IValueFormatter } from '~/components/ValueFormatter/types/value-formatt
 
 export interface IFieldWithFormatterProps
   extends IFieldProps,
-    IValueFormatter {}
+    Omit<IValueFormatter, 'value'> {}
