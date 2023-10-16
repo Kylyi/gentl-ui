@@ -1,4 +1,6 @@
 <script setup lang="ts">
+// eslint-disable-next-line import/named
+import { InputMask } from 'imask'
 import { MaybeElementRef } from '@vueuse/core'
 
 // Types
@@ -40,6 +42,7 @@ const {
   handleManualModelChange,
   handleClickWrapper,
   handleFocusOrClick,
+  elMask,
 } = useInputUtils({
   props,
   maskRef: toRef(props, 'mask'),
@@ -65,6 +68,9 @@ defineExpose({
   clear,
   getInputElement,
   sync: () => handleManualModelChange(props.modelValue),
+  updateMask: (fnc: (mask: InputMask<any>) => void) => {
+    fnc(elMask.value as InputMask<any>)
+  },
   handleManualModelChange,
 })
 </script>

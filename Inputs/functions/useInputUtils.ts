@@ -192,7 +192,7 @@ export function useInputUtils(options: IInputUtilsOptions) {
 
     focusedProgramatically.value = true
 
-    blurAnyFocusedInput()
+    // blurAnyFocusedInput()
 
     if (
       !preventFocusOnTouch ||
@@ -260,5 +260,6 @@ export function useInputUtils(options: IInputUtilsOptions) {
     handleManualModelChange,
     handleFocusOrClick,
     handleClickWrapper,
+    elMask,
   }
 }
