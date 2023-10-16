@@ -37,6 +37,7 @@ const {
   touch,
   clear,
   getInputElement,
+  handleBlur,
   handleManualModelChange,
   handleClickWrapper,
   handleFocusOrClick,
@@ -103,6 +104,7 @@ defineExpose({
       :style="inputStyle"
       v-bind="inputProps"
       @focus="handleFocusOrClick"
+      @blur="handleBlur"
     />
 
     <template
