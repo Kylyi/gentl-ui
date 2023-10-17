@@ -150,7 +150,7 @@ function handleRemoveGroup() {
 
       <!-- Delete btn -->
       <Btn
-        v-if="level && editable"
+        v-if="level"
         size="xs"
         :label="$t('remove')"
         preset="TRASH"

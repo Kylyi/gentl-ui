@@ -176,7 +176,6 @@ const $v = useVuelidate({ $scope: 'qb' })
 
     <!-- Item edit menu -->
     <Menu
-      v-if="editable"
       ref="itemEditMenuEl"
       hide-header
       :no-arrow="false"
