@@ -82,6 +82,7 @@ const $v = useVuelidate({ $scope: 'qb' })
           ref="queryBuilderEl"
           v-model:items="cloned"
           :columns="nonHelperColumns"
+          editable
         />
       </Form>
     </Dialog>

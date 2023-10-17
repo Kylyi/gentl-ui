@@ -133,6 +133,7 @@ defineExpose({
         :level="level"
         no-add
         no-condition-change
+        :editable="editable"
         :remove-fnc="removeItem"
       />
 
@@ -148,6 +149,7 @@ defineExpose({
       :key="item.id"
       :item="item"
       :level="level"
+      :editable="editable"
     />
 
     <!-- Add first condition -->

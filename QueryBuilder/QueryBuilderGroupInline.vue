@@ -105,12 +105,12 @@ function handleRemoveGroup() {
     class="condition-btn bg-primary color-white self-center"
     :class="{
       'is-first-child': isFirstChild,
-      '!color-primary': noConditionChange,
+      '!color-primary': noConditionChange || !editable,
     }"
     :style="{ '--bracketColor': levelColor }"
     no-dim
     :data-path="item.path"
-    :disabled="noConditionChange"
+    :disabled="noConditionChange || !editable"
     @mouseenter="isHovered = true"
     @mouseleave="isHovered = false"
   >
@@ -181,7 +181,7 @@ function handleRemoveGroup() {
   />
 
   <Btn
-    v-if="isLastChild && !noAdd"
+    v-if="isLastChild && !noAdd && editable"
     size="xs"
     preset="ADD"
     self-center
@@ -192,6 +192,16 @@ function handleRemoveGroup() {
     class="last-child-bracket"
     @click="handleAddCondition(true)"
   />
+
+  <!-- Close bracket (When no add buttom is present) -->
+  <div
+    v-else-if="isLastChild && !noAdd"
+    class="last-child-bracket"
+    :class="{ 'is-last-child': isLastChild }"
+    :style="{ '--bracketColor': levelColor, 'color': levelColor }"
+  >
+    &ZeroWidthSpace;
+  </div>
 </template>
 
 <style scoped lang="scss">

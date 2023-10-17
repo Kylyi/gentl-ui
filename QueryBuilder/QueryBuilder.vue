@@ -115,6 +115,7 @@ defineExpose({
         :key="item.path"
         :item="item"
         :level="level"
+        :editable="editable"
         no-add
         no-condition-change
         :remove-fnc="removeItem"

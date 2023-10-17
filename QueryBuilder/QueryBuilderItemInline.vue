@@ -168,6 +168,7 @@ const $v = useVuelidate({ $scope: 'qb' })
     />
 
     <Btn
+      v-if="editable"
       size="xs"
       preset="TRASH"
       @click.stop.prevent="handleRemoveCondition"
@@ -176,6 +177,7 @@ const $v = useVuelidate({ $scope: 'qb' })
 
     <!-- Item edit menu -->
     <Menu
+      v-if="editable"
       ref="itemEditMenuEl"
       hide-header
       :no-arrow="false"
@@ -195,6 +197,7 @@ const $v = useVuelidate({ $scope: 'qb' })
           :item="item"
           :level="level"
           :parent="parent"
+          :editable="editable"
           no-draggable
           no-remove
           m="!0"
@@ -208,15 +211,24 @@ const $v = useVuelidate({ $scope: 'qb' })
 
   <!-- Add -->
   <Btn
-    v-if="isLastChild && !noAdd"
+    v-if="isLastChild && !noAdd && editable"
     size="xs"
     preset="ADD"
-    self-center
-    m="t-1 r-2"
+    class="close-bracket"
     :class="{ 'is-last-child': isLastChild }"
     :style="{ '--bracketColor': levelColor, 'color': levelColor }"
     @click="$emit('add:row')"
   />
+
+  <!-- Close bracket (When no add buttom is present) -->
+  <div
+    v-else-if="isLastChild && !noAdd"
+    class="close-bracket"
+    :class="{ 'is-last-child': isLastChild }"
+    :style="{ '--bracketColor': levelColor, 'color': levelColor }"
+  >
+    &ZeroWidthSpace;
+  </div>
 </template>
 
 <style scoped lang="scss">
@@ -252,10 +264,16 @@ const $v = useVuelidate({ $scope: 'qb' })
 }
 
 .is-last-child {
+  --apply: relative;
+
   &::after {
     --apply: absolute -top-1.5 -right-2 text-7.5 leading-none font-normal;
     content: ']';
     color: var(--bracketColor);
   }
+}
+
+.close-bracket {
+  --apply: m-t-1 m-r-2 self-center;
 }
 </style>
