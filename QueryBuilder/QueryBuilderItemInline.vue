@@ -222,7 +222,7 @@ const $v = useVuelidate({ $scope: 'qb' })
 
   <!-- Close bracket (When no add buttom is present) -->
   <div
-    v-else-if="isLastChild && !noAdd"
+    v-else-if="isLastChild"
     class="close-bracket"
     :class="{ 'is-last-child': isLastChild }"
     :style="{ '--bracketColor': levelColor, 'color': levelColor }"

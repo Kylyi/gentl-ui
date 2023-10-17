@@ -106,7 +106,7 @@ provide(qbIsSmallerScreenKey, isSmallerScreen)
 
 // Lifecycle
 // When no items are provided, initialize the items with a group
-if (!props.items.length) {
+if (!props.items.length && !props.noInitialization) {
   initializeItems()
 }
 
@@ -138,6 +138,7 @@ defineExpose({
       />
 
       <Separator
+        v-if="items.length"
         vertical
         m="r-2 l-1"
         border="!dark:white !primary !r-2px"
@@ -154,7 +155,7 @@ defineExpose({
 
     <!-- Add first condition -->
     <Btn
-      v-if="noChildren"
+      v-if="noChildren && editable"
       size="xs"
       preset="ADD"
       m="t-1 l-2"
