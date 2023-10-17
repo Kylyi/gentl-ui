@@ -49,6 +49,7 @@ export function useTableData(
 ) {
   // Utils
   const route = useRoute()
+  // const request = useRequestEvent()
   const instance = getCurrentInstance()
   const { getStorageKey, parseUrlParams, getRowKey } = useTableUtils(props)
   const { isLoading, handleRequest } = useRequest({
@@ -209,15 +210,18 @@ export function useTableData(
 
       // When there are some columns with `alwaysSelected` attribute set to true,
       // we need to add them to the `select` array
+      // TODO: SSR version for this
+      const isStrictMode = route.query.strict === 'true'
+
       const fetchTableQuery: ITableQuery = {
         ...tableQuery,
         select: Array.from(
           new Set([
             ...(tableQuery.select || []),
 
-            // Add `alwaysSelected` columns
+            // Add `alwaysSelected` columns when `strict` is not used
             ...internalColumnsRef.value
-              .filter(col => col.alwaysSelected)
+              .filter(col => col.alwaysSelected && !isStrictMode)
               .map(col => col.field),
 
             // Add sorted columns
