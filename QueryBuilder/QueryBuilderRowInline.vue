@@ -35,6 +35,7 @@ function updatePaths(parent?: IQueryBuilderGroup) {
     :is-last-child="isLastChild"
     :is-first-child="isFirstChild"
     :no-add="noAdd"
+    :editable="editable"
     :remove-fnc="removeFnc"
     :no-condition-change="noConditionChange"
     @delete:row="updatePaths()"
@@ -48,6 +49,7 @@ function updatePaths(parent?: IQueryBuilderGroup) {
     :is-last-child="isLastChild"
     :is-first-child="isFirstChild"
     :no-add="noAdd"
+    :editable="editable"
     :remove-fnc="removeFnc"
     @delete:row="updatePaths()"
   />

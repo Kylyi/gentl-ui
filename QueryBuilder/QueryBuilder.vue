@@ -130,6 +130,7 @@ defineExpose({
       :key="item.path"
       :item="item"
       :level="level"
+      :editable="editable"
       p="!l-2"
       m="!l-0"
     />

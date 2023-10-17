@@ -5,6 +5,7 @@ import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-bui
 import { TableColumn } from '~/components/Table/models/table-column.model'
 
 export type IQueryBuilderProps = {
+  editable?: boolean
   columns: TableColumn<any>[]
   items: IQueryBuilderRow[]
 }

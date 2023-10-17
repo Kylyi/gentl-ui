@@ -210,6 +210,7 @@ function handleFitColumns() {
               ref="queryBuilderInlineEl"
               v-model:items="queryBuilder"
               :columns="nonHelperColumns"
+              editable
             />
           </div>
         </VerticalScroller>

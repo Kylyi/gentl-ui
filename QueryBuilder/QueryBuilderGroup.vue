@@ -156,6 +156,7 @@ const collapseProps = computed(() => {
         :parent="item"
         :remove-fnc="removeFnc"
         :level="level + 1"
+        :editable="editable"
         :is-last-child="idx === item.children.length - 1"
       />
 

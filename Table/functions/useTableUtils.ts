@@ -185,8 +185,15 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
   function parseUrlParams(options: {
     columnsRef?: MaybeRefOrGetter<TableColumn[]>
     searchParams?: URLSearchParams | string
+    fromSchema?: boolean
+    allowAnyNonStandardFilter?: boolean
   }) {
-    const { columnsRef, searchParams } = options
+    const {
+      columnsRef,
+      searchParams,
+      fromSchema,
+      allowAnyNonStandardFilter = false,
+    } = options
     const customSearchParams = searchParams
       ? new URLSearchParams(searchParams)
       : undefined
@@ -208,6 +215,7 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
       searchParams: params,
       key: 'filters',
       columns,
+      fromSchema,
     })
 
     // Query builder
@@ -215,6 +223,7 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
       searchParams: params,
       key: 'qb',
       columns,
+      fromSchema,
     })
 
     // Column selection
@@ -229,6 +238,7 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
           sort,
           schemaSort,
           queryBuilder,
+          allowAnyNonStandardFilter,
           parseUrlFnc: parseUrlParams,
         })
       : {

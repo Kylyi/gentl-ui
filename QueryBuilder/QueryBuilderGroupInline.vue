@@ -150,7 +150,7 @@ function handleRemoveGroup() {
 
       <!-- Delete btn -->
       <Btn
-        v-if="level"
+        v-if="level && editable"
         size="xs"
         :label="$t('remove')"
         preset="TRASH"
@@ -170,6 +170,7 @@ function handleRemoveGroup() {
     :is-first-child="idx === 0"
     :no-add="noAdd"
     :remove-fnc="removeFnc"
+    :editable="editable"
     :style="{
       ...(isHovered && {
         borderColor: 'var(--bracketColor)',
