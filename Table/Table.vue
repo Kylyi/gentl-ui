@@ -52,6 +52,7 @@ defineEmits<{
   (e: 'update:totalRows', count: number): void
   (e: 'update:queryBuilder', rows: IQueryBuilderRow[]): void
   (e: 'row-click', payload: { row: any; el: Element }): void
+  (e: 'update:loading', loading: boolean): void
 }>()
 
 defineSlots<{

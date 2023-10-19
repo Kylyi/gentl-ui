@@ -533,6 +533,9 @@ export function useTableData(
     }
   }
 
+  // Emit loading events
+  watch(isLoading, loading => instance?.emit('update:loading', loading))
+
   isInitialized.value = true
 
   return {
