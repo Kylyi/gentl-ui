@@ -77,7 +77,7 @@ export function useTableData(
   initializeQueryBuilder()
 
   // Provides
-  provide(tableRefreshKey, () => refreshData())
+  provide(tableRefreshKey, (force?: boolean) => refreshData(force))
   provide(tableRecreateQueryBuilderKey, () => initializeQueryBuilder())
   provide(tableStorageKey, storageKey)
   provide(tableRowsKey, rows)

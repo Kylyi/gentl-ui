@@ -181,7 +181,7 @@ async function handleSaveLayout() {
   if (layout.value.filters) {
     // Column filters
     tableQuery.value.fetchTableQuery.columnFilters?.forEach(columnFilter => {
-      paramsToSave.set(
+      paramsToSave.append(
         columnFilter.field,
         `${columnFilter.comparator}.${columnFilter.value}`
       )

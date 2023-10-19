@@ -16,6 +16,7 @@ import {
   tableColumnsKey,
   tableLayoutKey,
   tableLayoutsKey,
+  tableRefreshKey,
   tableResizeKey,
 } from '~/components/Table/provide/table.provide'
 
@@ -40,6 +41,7 @@ const { parseUrlParams } = useTableUtils()
 const columns = injectStrict(tableColumnsKey)
 const layouts = injectStrict(tableLayoutsKey)
 const layout = injectStrict(tableLayoutKey)
+const tableRefresh = injectStrict(tableRefreshKey)
 const _getTableStorageKey = injectStrict(getTableStorageKey)
 const tableResize = injectStrict(tableResizeKey)
 
@@ -140,6 +142,12 @@ function handleLayoutSelect(
     queryBuilder.value = schemaQueryBuilder
   } else if (isReset && props.queryBuilder !== undefined) {
     queryBuilder.value = klona(queryBuilderDefault)
+  } else if (
+    schemaHasAnyFilters &&
+    !schemaQueryBuilder?.length &&
+    props.queryBuilder !== undefined
+  ) {
+    queryBuilder.value = klona(queryBuilderDefault)
   } else if (props.queryBuilder !== undefined) {
     queryBuilder.value = props.queryBuilder
   }
@@ -185,6 +193,18 @@ function handleLayoutSelect(
   // Refresh
   setTimeout(() => {
     tableResize()
+
+    // When only filter columns are part of the schema, we manually trigger the
+    // table refresh as it is not watched
+    const isOnlyColFilters =
+      schemaFilters.length &&
+      !schemaColumns.length &&
+      !schemaSort.length &&
+      !schemaQueryBuilder.length
+
+    if (isOnlyColFilters) {
+      tableRefresh(true)
+    }
   }, 0)
 
   layout.value = {
