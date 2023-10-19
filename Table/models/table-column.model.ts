@@ -237,6 +237,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     switch (_dataType) {
       case 'number':
       case 'int':
+      case 'long':
       case 'datetime':
       case 'DateTime':
       case 'date':
