@@ -59,6 +59,7 @@ defineExpose({
           h="8"
           icon="carbon:close text-2xl"
           color="ca"
+          data-cy="clear-search"
           @click="clear()"
         />
 
