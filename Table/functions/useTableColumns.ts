@@ -487,7 +487,7 @@ export function useTableColumns(
 
       if (foundColumn) {
         col.label = foundColumn.label
-      } else {
+      } else if (props.translationPrefix) {
         col.label = $t(`${props.translationPrefix}.${col.field}`)
       }
     })
