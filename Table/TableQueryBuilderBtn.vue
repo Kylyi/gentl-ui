@@ -61,8 +61,14 @@ const $v = useVuelidate({ $scope: 'qb' })
     outlined
     color="ca"
     icon="basil:filter-solid"
-    :label="$t('queryBuilder.self')"
   >
+    <Tooltip
+      placement="right"
+      :offset="8"
+    >
+      {{ $t('queryBuilder.self') }}
+    </Tooltip>
+
     <Dialog
       ref="dialogEl"
       :title="$t('queryBuilder.self')"

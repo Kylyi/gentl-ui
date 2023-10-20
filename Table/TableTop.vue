@@ -183,23 +183,10 @@ function handleFitColumns() {
         >
           <slot name="left-prepend" />
 
-          <TableQueryBuilderBtn
-            v-if="queryBuilder"
-            v-model:query-builder="queryBuilder"
-          />
-
           <slot name="left-append" />
         </div>
 
         <slot name="right-prepend" />
-
-        <!-- Exports -->
-        <slot name="export">
-          <Component
-            :is="ExportBtn"
-            v-bind="exportProps"
-          />
-        </slot>
 
         <slot name="right-append" />
       </div>
@@ -211,6 +198,19 @@ function handleFitColumns() {
         v-if="queryBuilder"
         class="table-top__qb"
       >
+        <TableQueryBuilderBtn
+          v-if="queryBuilder"
+          v-model:query-builder="queryBuilder"
+          self-start
+          m="t-1"
+        />
+
+        <Separator
+          vertical
+          h="full"
+          m="l-1"
+        />
+
         <VerticalScroller
           grow
           :style="queryBuilderHeight"
@@ -285,6 +285,21 @@ function handleFitColumns() {
             />
           </Menu>
         </Btn>
+
+        <Separator
+          vertical
+          h="full"
+          m="r-1"
+        />
+
+        <slot name="export">
+          <Component
+            :is="ExportBtn"
+            v-bind="exportProps"
+            self-center
+            shrink-0
+          />
+        </slot>
       </div>
 
       <!-- Chips - filter columns or search -->
