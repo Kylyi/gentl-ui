@@ -34,7 +34,7 @@ const _tableStorageKey = injectStrict(tableStorageKey)
 
 // Utils
 const { saveLayout, deleteLayout } = useTableSpecifics()
-const { handleRequest } = useRequest()
+const { isLoading, handleRequest } = useRequest()
 
 // Layout
 const dialogEl = ref<InstanceType<typeof Dialog>>()
@@ -158,57 +158,26 @@ async function handleSaveLayout() {
     return
   }
 
-  const queryParams = tableQuery.value.queryParams
-  const paramsToSave = new URLSearchParams()
-
-  // Columns
-  if (layout.value.columns && queryParams.has('select')) {
-    paramsToSave.set('select', `${queryParams.get('select')}`)
-  }
-
-  // Sort
-  if (layout.value.sort && queryParams.has('paging')) {
-    // We need to extract only the `sort` part of the `paging` query param
-    const sortPart =
-      queryParams.get('paging')?.match(/\(sort\(([^)]+)\)/)?.[1] || ''
-
-    if (sortPart) {
-      paramsToSave.set('paging', `(sort(${sortPart}))`)
-    }
-  }
-
-  // Query builder and filters
-  if (layout.value.filters) {
-    // Column filters
-    tableQuery.value.fetchTableQuery.columnFilters?.forEach(columnFilter => {
-      paramsToSave.append(
-        columnFilter.field,
-        `${columnFilter.comparator}.${columnFilter.value}`
-      )
-    })
-
-    // Query builder
-    if (queryParams.get('and')) {
-      paramsToSave.set('and', `${queryParams.get('and')}`)
-    } else if (queryParams.get('or')) {
-      paramsToSave.set('or', `${queryParams.get('or')}`)
-    }
-  }
-
   const res = await handleRequest<ITableLayout>(
     () => {
       const mode = currentLayoutId.value ? 'update' : 'create'
+      const toSave: Array<'columns' | 'filters' | 'sorting'> = []
+
+      layout.value.columns && toSave.push('columns')
+      layout.value.filters && toSave.push('filters')
+      layout.value.sort && toSave.push('sorting')
 
       return saveLayout(
         {
           id: currentLayoutId.value,
           name: layout.value.name,
-          schema: decodeURIComponent(paramsToSave.toString()),
+          schema: tableQuery.value.queryParams.toString(),
           viewCode: viewCode.value,
           accessLevel: accessLevel.value,
           tableName: _tableStorageKey.value,
         },
-        { mode }
+        toSave,
+        { mode, tableQuery: tableQuery.value }
       )
     },
     { notifySuccess: true, logging: { operationName: 'table.layoutSave' } }
@@ -318,6 +287,7 @@ const $v = useVuelidate(
         :label="$t('save')"
         :submit-disabled="!isSaveable || !hasLayoutChanged"
         submit-class="w-30"
+        :loading="isLoading"
         @submit="handleSaveLayout"
       >
         <TextInput

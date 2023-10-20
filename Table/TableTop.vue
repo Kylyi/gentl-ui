@@ -20,17 +20,19 @@ import { useTableStore } from '~/components/Table/table.store'
 
 // Components
 import QueryBuilderInline from '~/components/QueryBuilder/QueryBuilderInline.vue'
+import TableExportBtn from '~/components/Table/TableExportBtn.vue'
 
 const props = defineProps<
   Pick<
     ITableProps,
-    | 'tableTop'
+    | 'tableTopFunctionality'
     | 'queryBuilder'
     | 'selectable'
     | 'nonSaveableSettings'
     | 'minimumColumnWidth'
     | 'subBarOnly'
     | 'noLayoutOptions'
+    | 'exportProps'
   > & {
     search: string
   }
@@ -70,6 +72,14 @@ const queryBuilderHeight = computed(() => {
       MAX_VISIBLE_QUERY_BUILDER_ROWS * 32 + QUERY_BUILDER_INLINE_PADDING
     }px`,
   }
+})
+
+const ExportBtn = computed(() => {
+  if ('exportComponent' in config.table && config.table.exportComponent) {
+    return config.table.exportComponent
+  }
+
+  return TableExportBtn
 })
 
 const selectionCount = computed(() => {
@@ -184,7 +194,12 @@ function handleFitColumns() {
         <slot name="right-prepend" />
 
         <!-- Exports -->
-        <ExportBtn />
+        <slot name="export">
+          <Component
+            :is="ExportBtn"
+            v-bind="exportProps"
+          />
+        </slot>
 
         <slot name="right-append" />
       </div>
@@ -370,13 +385,13 @@ function handleFitColumns() {
 
         <!-- Columns btn -->
         <TableColumnsBtn
-          v-if="!tableTop?.noColumnSelection"
+          v-if="!tableTopFunctionality?.noColumnSelection"
           v-model:columns="columns"
         />
 
         <!-- Autofit btn -->
         <Btn
-          v-if="!tableTop?.noAutoFit"
+          v-if="!tableTopFunctionality?.noAutoFit"
           size="sm"
           no-uppercase
           icon="material-symbols:fit-width"
@@ -389,7 +404,7 @@ function handleFitColumns() {
           v-if="
             config.table.useServerState &&
             !noLayoutOptions &&
-            !tableTop?.noLayout
+            !tableTopFunctionality?.noLayout
           "
         >
           <!-- Layout selector -->

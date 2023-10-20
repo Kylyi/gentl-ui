@@ -7,6 +7,9 @@ import {
   ITableQuery,
 } from '~/components/Table/types/table-query.type'
 
+// Models
+import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
+
 /**
  * Serializes the table's `filter` into a `filter` query parameter.
  */
@@ -142,6 +145,18 @@ export function serializeTableQueryToQueryParams(tableQuery: ITableQuery) {
   // Column filters
   if (columnFilters?.length) {
     columnFilters.forEach(filter => {
+      // We don't need the value when using the ComparatorEnum.IS_EMPTY and ComparatorEnum.NOT_IS_EMPTY comparators
+      const EMPTY_COMPARATORS = [
+        ComparatorEnum.IS_EMPTY,
+        ComparatorEnum.NOT_IS_EMPTY,
+      ]
+
+      if (EMPTY_COMPARATORS.includes(filter.comparator)) {
+        urlParams.append(filter.field, filter.comparator)
+
+        return
+      }
+
       urlParams.append(filter.field, `${filter.comparator}.${filter.value}`)
     })
   }

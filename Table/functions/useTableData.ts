@@ -1,4 +1,3 @@
-// TODO: Client-side pagination, filtering, grouping and sorting
 import { config } from '~/config'
 
 // Types

@@ -28,6 +28,18 @@ export interface ITableProps {
   columns?: TableColumn<any>[]
 
   /**
+   * The export props - gets passed to the `ExportBtn` component (in TableTop.vue)
+   */
+  exportProps?: {
+    /**
+     * When true, the default export btn (`TableExportBtn.vue`) will be used
+     */
+    useDefault?: boolean
+
+    [key: string]: any
+  }
+
+  /**
    * The default width for expand columns
    */
   groupExpandWidth?: number
@@ -187,7 +199,7 @@ export interface ITableProps {
    */
   useWorker?: boolean
 
-  tableTop?: {
+  tableTopFunctionality?: {
     noToolbar?: boolean
     noSubbar?: boolean
 
