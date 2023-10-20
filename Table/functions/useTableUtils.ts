@@ -207,7 +207,7 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
     // Not relevant for Infinite scrolling
 
     // Sorting
-    const sort = parseSortingFromUrl(params)
+    const sort = parseSortingFromUrl(params, { fromSchema })
     const schemaSort = parseSortingFromUrl(params, { fromSchema })
 
     // Column filters
@@ -239,6 +239,7 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
           schemaSort,
           queryBuilder,
           allowAnyNonStandardFilter,
+          fromSchema,
           parseUrlFnc: parseUrlParams,
         })
       : {

@@ -39,6 +39,7 @@ export function useTableColumns(
   layoutRef: Ref<ITableLayout | undefined>
 ) {
   // Utils
+  const route = useRoute()
   const { t, locale } = useI18n()
   const { scrollbarWidth, isOverflown } = useOverflow()
   const { parseUrlParams, hasVisibleCol, getStorageKey } = useTableUtils(props)
@@ -124,12 +125,14 @@ export function useTableColumns(
    * Note: Mutates the columns
    */
   function handleColumnsData(_columns: TableColumn[]) {
+    const fromSchema = route.query.fromSchema === 'true'
+
     const {
       sort: urlSort,
       filters: urlFilters,
       columns: urlVisibleColumns,
       queryBuilder: urlQueryBuilder,
-    } = parseUrlParams({ columnsRef: _columns })
+    } = parseUrlParams({ columnsRef: _columns, fromSchema })
 
     const { schemaSort, filters: schemaFilters } = parseUrlParams({
       columnsRef: _columns,
