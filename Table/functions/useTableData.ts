@@ -497,6 +497,7 @@ export function useTableData(
     const { queryBuilder: schemaQueryBuilder } = parseUrlParams({
       columnsRef: internalColumnsRef,
       searchParams: layoutRef.value?.schema,
+      fromSchema: !!layoutRef.value?.schema,
     })
 
     const isUrlUsed =

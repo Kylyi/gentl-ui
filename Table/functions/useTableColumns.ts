@@ -80,6 +80,7 @@ export function useTableColumns(
     const { columns: schemaVisibleColumns } = parseUrlParams({
       columnsRef: _columns,
       searchParams: layoutRef.value?.schema,
+      fromSchema: !!layoutRef.value?.schema,
     })
 
     const visibleColumns = urlVisibleColumns.length
@@ -133,6 +134,7 @@ export function useTableColumns(
     const { schemaSort, filters: schemaFilters } = parseUrlParams({
       columnsRef: _columns,
       searchParams: layoutRef.value?.schema,
+      fromSchema: !!layoutRef.value?.schema,
     })
 
     const { columns: stateColumns } = tableState.value

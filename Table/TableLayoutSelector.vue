@@ -97,6 +97,7 @@ function handleLayoutSelect(
   } = parseUrlParams({
     columnsRef: columns,
     searchParams,
+    fromSchema: true,
   })
 
   const schemaHasAnyFilters =

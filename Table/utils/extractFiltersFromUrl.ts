@@ -168,6 +168,7 @@ function parseItemSegment(
     foundComparatorIdx + foundComparator.length + 2
   ) // +2 to skip the dot
 
+  // For ComparatorEnum.IS_EMPTY and ComparatorEnum.NOT_IS_EMPTY
   if (foundComparatorIdx + foundComparator.length + 1 >= segment.length) {
     value = undefined
   }
@@ -264,6 +265,8 @@ export function parseFiltersFromUrl(options: {
     fromSchema,
     modifyFnc,
   } = options
+
+  // console.log(decodeURIComponent(searchParams.toString()))
 
   // We save the columns in a temporary variable
   columnsByField = columns.reduce((agg, col) => {

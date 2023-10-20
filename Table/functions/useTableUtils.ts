@@ -208,7 +208,7 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
 
     // Sorting
     const sort = parseSortingFromUrl(params)
-    const schemaSort = parseSortingFromUrl(params, { fromSchema: true })
+    const schemaSort = parseSortingFromUrl(params, { fromSchema })
 
     // Column filters
     const filters = parseFiltersFromUrl({
