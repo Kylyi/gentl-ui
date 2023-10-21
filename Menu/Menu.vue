@@ -688,11 +688,17 @@ defineExpose({
             </h6>
           </slot>
 
-          <Btn
-            preset="CLOSE"
-            size="sm"
-            @click="hide(true, undefined, true)"
-          />
+          <div flex="~ gap-1">
+            <slot name="header-right-prepend" />
+
+            <Btn
+              preset="CLOSE"
+              size="sm"
+              @click="hide(true, undefined, true)"
+            />
+
+            <slot name="header-right-append" />
+          </div>
         </div>
       </slot>
 
