@@ -63,7 +63,7 @@ const $v = useVuelidate({ $scope: 'qb' })
     icon="basil:filter-solid"
   >
     <Tooltip
-      placement="right"
+      placement="top"
       :offset="8"
     >
       {{ $t('queryBuilder.self') }}
