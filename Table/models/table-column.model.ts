@@ -212,6 +212,8 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   classes?: ClassType
   headerStyle: CSSProperties = {}
   headerClasses?: ClassType
+  totalsStyle: CSSProperties = {}
+  totalsClasses?: ClassType
 
   // Helpers
   isHelperCol = false // Helper cols are non-data columns like group actions
@@ -418,6 +420,8 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     this.classes = col.classes
     this.headerStyle = col.headerStyle || this.headerStyle
     this.headerClasses = col.headerClasses
+    this.totalsStyle = col.totalsStyle || this.totalsStyle
+    this.totalsClasses = col.totalsClasses || 'flex-center'
 
     this.misc = col.misc
   }

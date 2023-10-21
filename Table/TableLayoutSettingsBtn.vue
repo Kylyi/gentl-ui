@@ -18,11 +18,11 @@ import {
 import Dialog from '~/components/Dialog/Dialog.vue'
 
 type IProps = {
-  nonSaveableSettings?: Array<'columns' | 'filters' | 'sorting' | 'public'>
+  nonSavableSettings?: Array<'columns' | 'filters' | 'sorting' | 'public'>
 }
 
 const props = withDefaults(defineProps<IProps>(), {
-  nonSaveableSettings: () => [],
+  nonSavableSettings: () => [],
 })
 
 // Injections
@@ -60,7 +60,7 @@ const hasLayoutChanged = computedEager(() => {
 })
 
 const nonSaveableSettingsByName = computed(() => {
-  return props.nonSaveableSettings?.reduce((agg, curr) => {
+  return props.nonSavableSettings?.reduce((agg, curr) => {
     agg[curr] = true
 
     return agg

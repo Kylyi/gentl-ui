@@ -6,10 +6,8 @@ export function useTableTopUtils() {
     return reactivePick(props, [
       'tableTopFunctionality',
       'selectable',
-      'nonSaveableSettings',
+      'nonSavableSettings',
       'minimumColumnWidth',
-      'subBarOnly',
-      'noLayoutOptions',
       'exportProps',
     ])
   }

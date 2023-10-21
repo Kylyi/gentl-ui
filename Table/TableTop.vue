@@ -28,10 +28,8 @@ const props = defineProps<
     | 'tableTopFunctionality'
     | 'queryBuilder'
     | 'selectable'
-    | 'nonSaveableSettings'
+    | 'nonSavableSettings'
     | 'minimumColumnWidth'
-    | 'subBarOnly'
-    | 'noLayoutOptions'
     | 'exportProps'
   > & {
     search: string
@@ -173,24 +171,25 @@ function handleFitColumns() {
 
 <template>
   <div class="table-top">
-    <template v-if="!subBarOnly">
-      <!-- Toolbar -->
-      <div class="table-top__toolbar">
-        <!-- Query builder button -->
-        <div
-          flex="~ gap-1 items-center"
-          grow
-        >
-          <slot name="left-prepend" />
+    <!-- Action bar -->
+    <div class="table-top__actionbar">
+      <!-- Query builder button -->
+      <div
+        flex="~ gap-1 items-center"
+        grow
+      >
+        <slot name="left-prepend" />
 
-          <slot name="left-append" />
-        </div>
-
-        <slot name="right-prepend" />
-
-        <slot name="right-append" />
+        <slot name="left-append" />
       </div>
 
+      <slot name="right-prepend" />
+
+      <slot name="right-append" />
+    </div>
+
+    <!-- Toolbar -->
+    <template v-if="!tableTopFunctionality?.noToolbar">
       <Separator />
 
       <!-- Query builder -->
@@ -314,7 +313,10 @@ function handleFitColumns() {
     </template>
 
     <!-- Subbar -->
-    <div class="table-top__subbar">
+    <div
+      v-if="!tableTopFunctionality?.noSubbar"
+      class="table-top__subbar"
+    >
       <!-- Selection & Sorting -->
       <div
         grow
@@ -357,7 +359,7 @@ function handleFitColumns() {
 
         <!-- Sorting -->
         <div
-          v-if="tableSorting"
+          v-if="tableSorting && !tableTopFunctionality?.noSort"
           flex="~ gap-1"
           items-center
         >
@@ -391,6 +393,7 @@ function handleFitColumns() {
         justify="end"
       >
         <span
+          v-if="!tableTopFunctionality?.noLayout"
           text="caption xs"
           font="bold"
           display="lt-md:none"
@@ -416,19 +419,13 @@ function handleFitColumns() {
         />
 
         <template
-          v-if="
-            config.table.useServerState &&
-            !noLayoutOptions &&
-            !tableTopFunctionality?.noLayout
-          "
+          v-if="config.table.useServerState && !tableTopFunctionality?.noLayout"
         >
           <!-- Layout selector -->
           <TableLayoutSelector v-model:query-builder="queryBuilder" />
 
           <!-- Layout settings -->
-          <TableLayoutSettingsBtn
-            :non-saveable-settings="nonSaveableSettings"
-          />
+          <TableLayoutSettingsBtn :non-saveable-settings="nonSavableSettings" />
         </template>
       </div>
 
@@ -439,9 +436,9 @@ function handleFitColumns() {
 
 <style scoped lang="scss">
 .table-top {
-  --apply: flex flex-col border-b-1 border-ca;
+  --apply: flex flex-col;
 
-  &__toolbar {
+  &__actionbar {
     --apply: flex flex-wrap gap-2 items-center p-x-2 p-y-1;
   }
 

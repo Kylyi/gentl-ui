@@ -51,6 +51,8 @@ const EXTENDABLE_COLUMN_PROPERTIES: Array<keyof TableColumn> = [
   'sortOrder',
   'sortable',
   'style',
+  'totalsStyle',
+  'totalsClasses',
   'width',
 ]
 
@@ -154,13 +156,17 @@ export async function useTableMetaData(props: ITableProps) {
         // to create the columns
         if (!columns.value.length && apiColumns) {
           columns.value = apiColumns.map((col: any) => {
-            return new TableColumn({
+            const _col = new TableColumn({
               field: col.name,
               label: props.translationPrefix
                 ? $t(`${props.translationPrefix}.${col.name}`)
                 : col.name,
               dataType: col.type,
             })
+
+            props.getMetaData?.modifyColumnFnc?.(_col)
+
+            return _col
           })
         }
 

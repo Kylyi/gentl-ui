@@ -105,6 +105,7 @@ const {
   // Element refs
   scrollerEl,
   headerEl,
+  totalsEl,
   tableEl,
 
   // Columns
@@ -335,8 +336,10 @@ onMounted(() => {
 
     <TableTotals
       v-if="!noTotals && !!getTotalsData"
+      ref="totalsEl"
       :columns="internalColumns"
       :get-totals-data="getTotalsData"
+      @scrolled="handleScrollLeft"
     />
 
     <TablePagination
