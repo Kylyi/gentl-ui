@@ -327,6 +327,7 @@ export function useTableData(
             lastRow: lastRow.value,
           },
         })
+
         options.tableQuery.count = false
       }
 
@@ -397,11 +398,11 @@ export function useTableData(
         // We might have some columns `alwaysSelected`, so if we add such column into
         // the table, it would actually not trigger the refetch, if that happens,
         // we need to manually adjust the url
-        const hasDifferenVisibletCols =
+        const hasDifferentVisibleCols =
           dbQuery.tableQuery.select?.length !==
           previousDbQuery.value?.tableQuery.select?.length
 
-        if (!hasDifferenVisibletCols) {
+        if (!hasDifferentVisibleCols) {
           if (layoutRef.value?.preventLayoutReset) {
             layoutRef.value.preventLayoutReset = false
           }
