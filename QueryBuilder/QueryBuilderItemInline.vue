@@ -236,6 +236,8 @@ const $v = useVuelidate({ $scope: 'qb' })
   --apply: relative flex gap-1 bg-ca border-1 border-dashed border-ca
     rounded-custom p-l-1.5 m-r-1 m-t-1 items-center cursor-pointer;
 
+  --apply: min-h-26px; // Arbitrary number that looks good...
+
   &:hover {
     --apply: shadow-consistent-xs shadow-ca;
   }
