@@ -295,8 +295,9 @@ function handleFitColumns() {
           <Component
             :is="ExportBtn"
             v-bind="exportProps"
-            self-center
             shrink-0
+            self-start
+            m="t-1"
           />
         </slot>
       </div>
