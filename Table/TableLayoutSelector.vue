@@ -191,27 +191,28 @@ function handleLayoutSelect(
     return a._internalSort - b._internalSort
   })
 
+  layout.value = {
+    ..._layout,
+    preventLayoutReset: true,
+  }
+
   // Refresh
   setTimeout(() => {
     tableResize()
 
     // When only filter columns are part of the schema, we manually trigger the
     // table refresh as it is not watched
-    const isOnlyColFilters =
-      schemaFilters.length &&
-      !schemaColumns.length &&
-      !schemaSort.length &&
-      !schemaQueryBuilder.length
+    // const isOnlyColFilters =
+    //   schemaFilters.length &&
+    //   !schemaColumns.length &&
+    //   !schemaSort.length &&
+    //   !schemaQueryBuilder.length
 
-    if (isOnlyColFilters) {
-      tableRefresh(true)
-    }
+    // if (isOnlyColFilters) {
+    //   console.log('Log ~ setTimeout ~ isOnlyColFilters:', isOnlyColFilters)
+    //   // tableRefresh(true)
+    // }
   }, 0)
-
-  layout.value = {
-    ..._layout,
-    preventLayoutReset: true,
-  }
 
   layoutSelectorEl.value?.blur()
 }
