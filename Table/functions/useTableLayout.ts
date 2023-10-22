@@ -23,7 +23,7 @@ import { useTableUtils } from '~/components/Table/functions/useTableUtils'
 import TableRow from '~/components/Table/TableRow.vue'
 import TableRowMobile from '~/components/Table/TableRow.mobile.vue'
 import TableHeader from '~/components/Table/TableHeader.client.vue'
-import TableTotals from '~/components/Table/TableTotals.vue'
+import TableTotals from '~/components/Table/TableTotals/TableTotals.vue'
 
 export function useTableLayout(
   props: ITableProps,
