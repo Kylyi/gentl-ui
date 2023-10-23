@@ -1,5 +1,6 @@
 export interface IValueFormatter {
   value: any
+  originalValue?: any
   dataType?: DataType
 
   /**

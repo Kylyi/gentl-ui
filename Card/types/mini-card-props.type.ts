@@ -28,9 +28,19 @@ export interface IMiniCardProps extends IValueFormatter {
   valueClass?: ClassType
 
   /**
+   * The orginal value class of the card
+   */
+  originalValueClass?: ClassType
+
+  /**
    * The link we want to redirect to
    */
   to?: IBtnProps['to']
+
+  /**
+   * The link we want to redirect to orginal value
+   */
+  toOriginalValue?: IBtnProps['to']
 
   /**
    * The orginal value of the field used to compare with current value
