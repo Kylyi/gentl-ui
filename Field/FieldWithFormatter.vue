@@ -23,6 +23,13 @@ const fieldProps = getFieldProps(props)
         <template v-if="!val">&nbsp;</template>
       </template>
     </ValueFormatter>
+
+    <template
+      v-if="$slots.append"
+      #append
+    >
+      <slot name="append" />
+    </template>
   </Field>
 </template>
 

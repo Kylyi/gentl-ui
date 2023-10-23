@@ -85,7 +85,7 @@ function getSplitterLeft(splitter: ISplitter) {
   // We move the splitter by the scrollX value when the column is frozen
   const offsetX = column.semiFrozen ? scrollX.value : 0
 
-  return `${splitter.left + offsetX - 2}px`
+  return `${splitter.left + offsetX - 3}px`
 }
 
 defineExpose({
@@ -106,6 +106,7 @@ defineExpose({
     class="thead"
     content-class="relative"
     :style="{ '--scrollbarWidth': `${scrollbarWidth}px` }"
+    data-cy="table-header"
     @scrolled="handleScroll"
   >
     <!-- Columns -->
@@ -122,6 +123,7 @@ defineExpose({
             'has-data': !col.isHelperCol,
             'is-frozen': col.frozen,
             'is-semi-frozen': col.semiFrozen,
+            'is-last': idx === visibleColumns.length - 1,
           },
         ]"
         :style="{ ...col.headerStyle, [`--colWidth`]: col.adjustedWidthPx }"
@@ -131,6 +133,7 @@ defineExpose({
             v-if="col._label"
             :title="col._label"
             class="th-label"
+            data-cy="table-header-item"
           >
             {{ col._label }}
           </span>
@@ -144,7 +147,7 @@ defineExpose({
             relative
           >
             <TableColumnFreezeBtn
-              v-if="!col.isHelperCol"
+              v-if="!col.isHelperCol && !col.noFreeze"
               :column="col"
               :columns="columns"
               position="!absolute"
@@ -171,7 +174,7 @@ defineExpose({
       v-if="activeSplitter"
       class="splitter splitter-active"
       :style="{
-        left: `${activeSplitter.left - 2}px`,
+        left: `${activeSplitter.left - 3}px`,
         top: `${activeSplitter.top}px`,
         height: `${activeSplitter.height}px`,
       }"
@@ -198,13 +201,13 @@ defineExpose({
 
 .th {
   --apply: flex shrink-0 items-center font-semibold text-xs tracking-wide
-    border-ca border-b-1 sm:w-$colWidth;
+    border-ca border-b-1 sm:w-$colWidth border-t-1;
 
   &.has-data {
     --apply: border-l-1;
   }
 
-  &:last-of-type {
+  &.is-last {
     --apply: border-r-1;
   }
 

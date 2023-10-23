@@ -19,7 +19,9 @@ import { tableRefreshKey } from '~/components/Table/provide/table.provide'
 // Components
 import Menu from '~/components/Menu/Menu.vue'
 
-const props = defineProps<IQueryBuilderGroupProps>()
+const props = withDefaults(defineProps<IQueryBuilderGroupProps>(), {
+  noAdd: undefined,
+})
 const emits = defineEmits<{
   (e: 'delete:row', item: IQueryBuilderGroup): void
 }>()
@@ -101,13 +103,28 @@ function handleRemoveGroup() {
     "
     size="xs"
     class="condition-btn bg-primary color-white self-center"
-    :class="{ 'is-first-child': isFirstChild }"
+    :class="{
+      'is-first-child': isFirstChild,
+      '!color-primary': noConditionChange || !editable,
+    }"
     :style="{ '--bracketColor': levelColor }"
     no-dim
     :data-path="item.path"
+    :disabled="noConditionChange || !editable"
     @mouseenter="isHovered = true"
     @mouseleave="isHovered = false"
   >
+    <Tooltip
+      v-if="noConditionChange"
+      w="70"
+      :offset="12"
+      text="center"
+    >
+      <span text="caption center">
+        {{ $t('table.columnFiltersHint') }}
+      </span>
+    </Tooltip>
+
     <Menu
       ref="conditionMenuEl"
       :no-arrow="false"
@@ -151,6 +168,9 @@ function handleRemoveGroup() {
     :parent="item"
     :is-last-child="idx === item.children.length - 1"
     :is-first-child="idx === 0"
+    :no-add="noAdd"
+    :remove-fnc="removeFnc"
+    :editable="editable"
     :style="{
       ...(isHovered && {
         borderColor: 'var(--bracketColor)',
@@ -161,7 +181,7 @@ function handleRemoveGroup() {
   />
 
   <Btn
-    v-if="isLastChild"
+    v-if="isLastChild && !noAdd && editable"
     size="xs"
     preset="ADD"
     self-center
@@ -172,6 +192,16 @@ function handleRemoveGroup() {
     class="last-child-bracket"
     @click="handleAddCondition(true)"
   />
+
+  <!-- Close bracket (When no add buttom is present) -->
+  <div
+    v-else-if="isLastChild"
+    class="last-child-bracket"
+    :class="{ 'is-last-child': isLastChild }"
+    :style="{ '--bracketColor': levelColor, 'color': levelColor }"
+  >
+    &ZeroWidthSpace;
+  </div>
 </template>
 
 <style scoped lang="scss">
@@ -182,7 +212,7 @@ function handleRemoveGroup() {
     --apply: m-l-2;
 
     &::before {
-      --apply: absolute -top-7px -left-2 text-8 leading-none font-normal;
+      --apply: absolute -top-1.5 -left-2 text-7.5 leading-none font-normal;
       content: '[';
       color: var(--bracketColor);
     }
@@ -193,7 +223,7 @@ function handleRemoveGroup() {
   --apply: relative self-center m-t-1 m-r-2;
 
   &::after {
-    --apply: absolute -top-7px -right-2 text-8 leading-none font-normal;
+    --apply: absolute -top-1.5 -right-2 text-7.5 leading-none font-normal;
     content: ']';
     color: var(--bracketColor);
   }

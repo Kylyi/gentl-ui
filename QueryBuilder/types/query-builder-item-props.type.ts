@@ -4,13 +4,22 @@ import type { IQueryBuilderRowProps } from '~/components/QueryBuilder/types/quer
 
 // Models
 import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
+import { IItem } from '~/libs/App/types/item.type'
 
-export type IQueryBuilderItem = {
+export type IQueryBuilderItem<T = IItem> = {
   id: string
   path: string
   field: string
   comparator: ComparatorEnum
   value?: any
+  isNotDraggable?: boolean
+  isNotDragOverable?: boolean
+  dataType?: DataType
+
+  /**
+   * The original object (reference)
+   */
+  ref?: T
 }
 
 export type IQueryBuilderItemProps = IQueryBuilderRowProps & {
@@ -43,4 +52,19 @@ export type IQueryBuilderItemProps = IQueryBuilderRowProps & {
    * Whether the current item is the last child of its parent
    */
   isLastChild?: boolean
+
+  /**
+   * When true, the add button is not shown
+   */
+  noAdd?: boolean
+
+  /**
+   * When true, the remove button is not shown
+   */
+  noRemove?: boolean
+
+  /**
+   * We can provide our own function for removing the item
+   */
+  removeFnc?: (item: IQueryBuilderItem) => void
 }

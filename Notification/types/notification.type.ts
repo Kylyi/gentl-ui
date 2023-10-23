@@ -17,7 +17,7 @@ export type INotification = {
   /**
    * Subtitle of the notification
    */
-  subtitle?: string
+  subtitle?: string | string[]
 
   /**
    * Type of the notification

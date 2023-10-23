@@ -51,13 +51,16 @@ const isNonValueComparator = computedEager(() => {
 })
 
 const component = computed(() => {
-  return COMPONENTS_BY_DATATYPE_MAP[column.value.dataType]
+  return COMPONENTS_BY_DATATYPE_MAP[column.value.dataType.replace('Simple', '')]
 })
 
 const inputDebounce = computed(() => {
   switch (props.column.dataType) {
     case 'string':
     case 'number':
+    case 'int':
+    case 'percent':
+    case 'long':
       return 500
 
     default:
@@ -112,7 +115,7 @@ const customValue = computed({
 })
 
 const comparatorOptions = computed(() => {
-  return getAvailableComparators(props.column.dataType, {
+  return getAvailableComparators(column.value.dataType, {
     includeSelectorComparators: !!column.value.getDistinctData,
     allowedComparators: column.value.comparators,
     extraComparators: [
@@ -158,8 +161,10 @@ function handleRemoveFilter() {
     filter => filter.comparator !== props.filter.comparator
   )
 
-  // Refresh the table if the filter actually had a value
-  if (!isNil(props.filter.value)) {
+  // Refresh the table if the filter actually had a value OR the comparator was one of the `Comparator.IS_EMPTY` or `Comparator.NOT_IS_EMPTY`
+  const _isEmptyComparator = isEmptyComparator(props.filter.comparator)
+
+  if (!isNil(props.filter.value) || _isEmptyComparator) {
     tableRefresh()
   }
 }
@@ -208,7 +213,15 @@ function handleComparatorChange(comparator: ComparatorEnum) {
   tableRefresh()
 }
 
-function handleCompareValueChange() {
+function handleValueChange(val: any, set?: boolean) {
+  if (set) {
+    if (typeof val === 'string') {
+      filter.value.value = val.trim()
+    } else {
+      filter.value.value = val
+    }
+  }
+
   tableRefresh()
 }
 
@@ -249,15 +262,12 @@ defineExpose({
     <!-- Custom component -->
     <Component
       :is="customFilterComponent.component"
-      v-if="
-        customFilterComponent &&
-        customFilterComponent.comparators.includes(filter.comparator)
-      "
+      v-if="customFilterComponent?.comparators.includes(filter.comparator)"
       v-model="customValueComputed"
       v-bind="customFilterComponent.props"
       size="sm"
       :placeholder="`${$t('table.filterValue')}...`"
-      @update:model-value="handleCompareValueChange"
+      @update:model-value="handleValueChange"
     />
 
     <!-- Selector for `Comparator.IN` and `Comparator.NOT_IN` for simple string cases -->
@@ -271,7 +281,7 @@ defineExpose({
       :debounce="500"
       :placeholder="`${$t('table.filterValue')}...`"
       empty-value=""
-      @update:model-value="handleCompareValueChange"
+      @update:model-value="handleValueChange"
     />
 
     <!-- Selector of distinct values -->
@@ -291,14 +301,14 @@ defineExpose({
       option-label="_label"
       size="sm"
       :placeholder="`${$t('table.filterValue')}...`"
-      @update:model-value="handleCompareValueChange"
+      @update:model-value="handleValueChange"
     />
 
     <!-- Ago value -->
     <QueryBuilderTimeAgoInput
       v-else-if="isDateAgoComparator(filter.comparator)"
       :item="filter"
-      @update:model-value="handleCompareValueChange"
+      @update:model-value="handleValueChange"
     />
 
     <!-- Boolean value -->
@@ -319,7 +329,7 @@ defineExpose({
       :debounce="inputDebounce"
       size="sm"
       :placeholder="`${$t('table.filterValue')}...`"
-      @update:model-value="handleCompareValueChange"
+      @update:model-value="handleValueChange($event, true)"
     />
   </div>
 </template>

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { config } from '~/config'
+
 // Types
 import type { IQueryBuilderProps } from '~/components/QueryBuilder/types/query-builder-props.type'
 import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
@@ -15,6 +17,7 @@ import {
 
 // Functions
 import { useQueryBuilderDragAndDrop } from '~/components/QueryBuilder/functions/useQueryBuilderDragAndDrop'
+import { useQueryBuilderColumnFilters } from '~/components/QueryBuilder/functions/useQueryBuilderColumnFilters'
 
 const props = defineProps<IQueryBuilderProps>()
 const emits = defineEmits<{
@@ -60,6 +63,10 @@ useResizeObserver(queryBuilderEl, entries => {
   queryBuilderElRect.value = queryBuilderEl.value?.getBoundingClientRect()
 })
 
+// Column filters
+const { qbColumnFilters, syncFilters, removeItem } =
+  useQueryBuilderColumnFilters(props)
+
 // Provide
 const columns = toRef(props, 'columns')
 const hoveredRow = ref<IQueryBuilderRow>()
@@ -74,12 +81,13 @@ provide(qbIsSmallerScreenKey, isSmallerScreen)
 
 // Lifecycle
 // When no items are provided, initialize the items with a group
-if (!props.items.length) {
+if (!props.items.length && !props.noInitialization) {
   initializeItems()
 }
 
 defineExpose({
   clearFilter,
+  syncFilters,
 })
 </script>
 
@@ -89,11 +97,41 @@ defineExpose({
     class="query-builder"
     :class="{ 'is-collapsed': isSmallerScreen }"
   >
+    <template
+      v-if="
+        config.table.queryBuilder.showColumnFilters && qbColumnFilters?.length
+      "
+    >
+      <!-- Column filters -->
+      <div
+        text="sm"
+        font="bold"
+        p="x-3 t-2"
+      >
+        {{ $t('table.columnFilters') }}
+      </div>
+      <QueryBuilderRow
+        v-for="item in qbColumnFilters"
+        :key="item.path"
+        :item="item"
+        :level="level"
+        :editable="editable"
+        no-add
+        no-condition-change
+        :remove-fnc="removeItem"
+        p="!l-2"
+        m="!l-0"
+      />
+
+      <Separator m="t-2 b-4" />
+    </template>
+
     <QueryBuilderRow
       v-for="item in items"
       :key="item.path"
       :item="item"
       :level="level"
+      :editable="editable"
       p="!l-2"
       m="!l-0"
     />

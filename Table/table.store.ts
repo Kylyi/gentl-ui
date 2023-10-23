@@ -68,13 +68,15 @@ export const useTableStore = defineStore('table', () => {
         ...state,
       }
 
-      localStorage.setItem(
-        tableStorageKey,
-        JSON.stringify({
-          ...tableState[tableStorageKey].value,
-          ...state,
-        })
-      )
+      if (process.client) {
+        localStorage.setItem(
+          tableStorageKey,
+          JSON.stringify({
+            ...tableState[tableStorageKey].value,
+            ...state,
+          })
+        )
+      }
     }
 
     // We create the local storage state when there is no state

@@ -16,6 +16,7 @@ import {
   tableColumnsKey,
   tableLayoutKey,
   tableLayoutsKey,
+  tableRefreshKey,
   tableResizeKey,
 } from '~/components/Table/provide/table.provide'
 
@@ -40,6 +41,7 @@ const { parseUrlParams } = useTableUtils()
 const columns = injectStrict(tableColumnsKey)
 const layouts = injectStrict(tableLayoutsKey)
 const layout = injectStrict(tableLayoutKey)
+const tableRefresh = injectStrict(tableRefreshKey)
 const _getTableStorageKey = injectStrict(getTableStorageKey)
 const tableResize = injectStrict(tableResizeKey)
 
@@ -49,7 +51,6 @@ const { getTableState } = useTableStore()
 // Layout
 const layoutSelectorEl = ref<InstanceType<typeof Selector>>()
 const queryBuilder = useVModel(props, 'queryBuilder')
-const isResetConfirmationActive = ref(false)
 
 function handleLayoutSelect(
   _layout?: ITableLayout,
@@ -59,7 +60,7 @@ function handleLayoutSelect(
   const tableState = getTableState(storageKey)
   const defaultFilter = get(
     tableState.value.meta,
-    config.table.layoutKey
+    config.table.defaultLayoutKey
   ) as any
 
   // NOTE: We unfreeze any frozen column
@@ -96,6 +97,7 @@ function handleLayoutSelect(
   } = parseUrlParams({
     columnsRef: columns,
     searchParams,
+    fromSchema: true,
   })
 
   const schemaHasAnyFilters =
@@ -139,7 +141,13 @@ function handleLayoutSelect(
   // we don't want to set the query builder if it's undefined
   if (schemaQueryBuilder?.length) {
     queryBuilder.value = schemaQueryBuilder
-  } else if (isReset) {
+  } else if (isReset && props.queryBuilder !== undefined) {
+    queryBuilder.value = klona(queryBuilderDefault)
+  } else if (
+    schemaHasAnyFilters &&
+    !schemaQueryBuilder?.length &&
+    props.queryBuilder !== undefined
+  ) {
     queryBuilder.value = klona(queryBuilderDefault)
   } else if (props.queryBuilder !== undefined) {
     queryBuilder.value = props.queryBuilder
@@ -183,9 +191,27 @@ function handleLayoutSelect(
     return a._internalSort - b._internalSort
   })
 
+  layout.value = {
+    ..._layout,
+    preventLayoutReset: true,
+  }
+
   // Refresh
   setTimeout(() => {
     tableResize()
+
+    // When only filter columns are part of the schema, we manually trigger the
+    // table refresh as it is not watched
+    // const isOnlyColFilters =
+    //   schemaFilters.length &&
+    //   !schemaColumns.length &&
+    //   !schemaSort.length &&
+    //   !schemaQueryBuilder.length
+
+    // if (isOnlyColFilters) {
+    //   console.log('Log ~ setTimeout ~ isOnlyColFilters:', isOnlyColFilters)
+    //   // tableRefresh(true)
+    // }
   }, 0)
 
   layoutSelectorEl.value?.blur()
@@ -195,13 +221,13 @@ function handleLayoutSelect(
 <template>
   <Selector
     ref="layoutSelectorEl"
-    v-model="layout"
+    :model-value="layout?.id === 0 ? undefined : layout"
     :options="layouts"
     option-label="name"
     size="sm"
     w="50"
     :placeholder="$t('table.layoutState')"
-    @picker-hide="isResetConfirmationActive = false"
+    data-cy="scheme-search"
     @update:model-value="handleLayoutSelect"
   >
     <template #prepend>
@@ -220,49 +246,11 @@ function handleLayoutSelect(
           color="negative"
           no-uppercase
           :label="$t('table.layoutStateReset')"
-          @click="isResetConfirmationActive = true"
+          @click="handleLayoutSelect(undefined, true)"
         />
-
-        <div
-          class="reset-confirmation"
-          :class="{ 'is-active': isResetConfirmationActive }"
-        >
-          <span
-            grow
-            text="caption xs center"
-          >
-            {{ $t('table.resetColumnWidthsPrompt') }}
-          </span>
-
-          <div flex="~ gap-1">
-            <Btn
-              size="xs"
-              label="N"
-              color="red-500"
-              @click="handleLayoutSelect(undefined, false)"
-            />
-            <Btn
-              size="xs"
-              label="Y"
-              color="green-500"
-              @click="handleLayoutSelect(undefined, true)"
-            />
-          </div>
-        </div>
       </div>
 
       <Separator spaced />
     </template>
   </Selector>
 </template>
-
-<style lang="scss" scoped>
-.reset-confirmation {
-  --apply: absolute flex items-center gap-2 items-center translate-x-100%
-    transition-transform inset-x-1 inset-y-0.5 bg-white dark:bg-darker;
-
-  &.is-active {
-    --apply: translate-x-0;
-  }
-}
-</style>

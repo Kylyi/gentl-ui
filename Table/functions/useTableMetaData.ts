@@ -51,6 +51,8 @@ const EXTENDABLE_COLUMN_PROPERTIES: Array<keyof TableColumn> = [
   'sortOrder',
   'sortable',
   'style',
+  'totalsStyle',
+  'totalsClasses',
   'width',
 ]
 
@@ -105,7 +107,7 @@ export async function useTableMetaData(props: ITableProps) {
 
     await handleRequest(
       async () => {
-        const { fnc, columnsKey, layoutKey, layoutsKey } =
+        const { fnc, columnsKey, defaultLayoutKey, layoutsKey } =
           props.getMetaData ?? getGenericMetaData ?? {}
 
         let result: any
@@ -126,7 +128,14 @@ export async function useTableMetaData(props: ITableProps) {
 
         tableStore.setTableState(getStorageKey(), { meta: result })
 
-        layout.value = get(result, layoutKey || config.table.layoutKey)
+        const _layout = get(
+          result,
+          defaultLayoutKey || config.table.defaultLayoutKey
+        )
+
+        layout.value = _layout
+          ? { ..._layout, preventLayoutReset: true }
+          : undefined
 
         // Project specific
         if (layout.value?.viewCode) {
@@ -147,13 +156,17 @@ export async function useTableMetaData(props: ITableProps) {
         // to create the columns
         if (!columns.value.length && apiColumns) {
           columns.value = apiColumns.map((col: any) => {
-            return new TableColumn({
+            const _col = new TableColumn({
               field: col.name,
               label: props.translationPrefix
                 ? $t(`${props.translationPrefix}.${col.name}`)
                 : col.name,
               dataType: col.type,
             })
+
+            props.getMetaData?.modifyColumnFnc?.(_col)
+
+            return _col
           })
         }
 

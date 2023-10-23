@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { klona } from 'klona'
 import { config } from '~/config'
 
 // Types
@@ -17,11 +18,11 @@ import {
 import Dialog from '~/components/Dialog/Dialog.vue'
 
 type IProps = {
-  nonSaveableSettings?: Array<'columns' | 'filters' | 'sorting'>
+  nonSavableSettings?: Array<'columns' | 'filters' | 'sorting' | 'public'>
 }
 
 const props = withDefaults(defineProps<IProps>(), {
-  nonSaveableSettings: () => [],
+  nonSavableSettings: () => [],
 })
 
 // Injections
@@ -33,7 +34,7 @@ const _tableStorageKey = injectStrict(tableStorageKey)
 
 // Utils
 const { saveLayout, deleteLayout } = useTableSpecifics()
-const { handleRequest } = useRequest()
+const { isLoading, handleRequest } = useRequest()
 
 // Layout
 const dialogEl = ref<InstanceType<typeof Dialog>>()
@@ -52,17 +53,18 @@ const layout = ref({
   default: false,
   public: false,
 })
+const layoutClone = ref<typeof layout.value>()
+
+const hasLayoutChanged = computedEager(() => {
+  return !isEqual(layout.value, layoutClone.value)
+})
 
 const nonSaveableSettingsByName = computed(() => {
-  return props.nonSaveableSettings?.reduce((agg, curr) => {
+  return props.nonSavableSettings?.reduce((agg, curr) => {
     agg[curr] = true
 
     return agg
   }, {} as Record<string, boolean>)
-})
-
-const layoutExists = computed(() => {
-  return layouts.value.some(l => l.name === layout.value.name)
 })
 
 const isSaveable = computed(() => {
@@ -83,6 +85,7 @@ function handleDialogBeforeShow() {
   currentLayoutId.value = currentLayout.value?.id
 
   setDefaults(currentLayout.value)
+  layoutClone.value = klona(layout.value)
 }
 
 function setDefaults(_layout?: ITableLayout) {
@@ -155,59 +158,44 @@ async function handleSaveLayout() {
     return
   }
 
-  const queryParams = tableQuery.value.queryParams
-  const paramsToSave = new URLSearchParams()
-
-  // Columns
-  if (layout.value.columns && queryParams.has('select')) {
-    paramsToSave.set('select', `${queryParams.get('select')}`)
-  }
-
-  // Sort
-  if (layout.value.sort && queryParams.has('paging')) {
-    // We need to extract only the `sort` part of the `paging` query param
-    const sortPart =
-      queryParams.get('paging')?.match(/\(sort\(([^)]+)\)/)?.[1] || ''
-
-    if (sortPart) {
-      paramsToSave.set('paging', `(sort(${sortPart}))`)
-    }
-  }
-
-  // Query builder and filters
-  if (layout.value.filters && queryParams.has('and')) {
-    paramsToSave.set('and', `${queryParams.get('and')}`)
-  }
-
-  const layoutFound = layouts.value.find(l => l.name === layout.value.name)
-
   const res = await handleRequest<ITableLayout>(
     () => {
-      const mode = layoutFound ? 'update' : 'create'
+      const mode = currentLayoutId.value ? 'update' : 'create'
+      const toSave: Array<'columns' | 'filters' | 'sorting'> = []
+
+      layout.value.columns && toSave.push('columns')
+      layout.value.filters && toSave.push('filters')
+      layout.value.sort && toSave.push('sorting')
 
       return saveLayout(
         {
-          id: layoutFound?.id,
+          id: currentLayoutId.value,
           name: layout.value.name,
-          schema: decodeURIComponent(paramsToSave.toString()),
+          schema: tableQuery.value.queryParams.toString(),
           viewCode: viewCode.value,
           accessLevel: accessLevel.value,
           tableName: _tableStorageKey.value,
         },
-        { mode }
+        toSave,
+        { mode, tableQuery: tableQuery.value }
       )
     },
-    { notifySuccess: true }
+    { notifySuccess: true, logging: { operationName: 'table.layoutSave' } }
   )
 
   // When we create a new layout, we add it to the layouts array
-  if (!layoutFound) {
+  if (!currentLayoutId.value) {
     layouts.value = [...layouts.value, res]
   }
 
   // When we update a layout, we update the layout in the layouts array
   else {
-    Object.assign(layoutFound, res)
+    Object.assign(currentLayout.value!, res)
+
+    const foundLayout = layouts.value.find(l => l.id === res.id)
+    if (foundLayout) {
+      Object.assign(foundLayout, res)
+    }
   }
 
   // When we make some layout default, we make sure the other layouts are not default
@@ -230,13 +218,21 @@ async function handleSaveLayout() {
 async function handleDeleteLayoutState() {
   const deletedFilterId = await handleRequest(
     () => deleteLayout(currentLayoutId.value),
-    { notifySuccess: true, payloadKey: 'data.payload.id' }
+    {
+      notifySuccess: true,
+      payloadKey: 'data.payload.id',
+      logging: { operationName: 'table.layoutDelete' },
+    }
   )
 
   layouts.value = layouts.value.filter(l => l.id !== deletedFilterId)
-  currentLayout.value = undefined
+
+  if (currentLayout.value?.id === deletedFilterId) {
+    currentLayout.value = undefined
+  }
 
   reset()
+  dialogEl.value?.hide()
 }
 
 function reset() {
@@ -253,15 +249,14 @@ function reset() {
   $v.value.$reset()
 }
 
-function handleLayoutSelect(_layout: ITableLayout & { _isCreate?: boolean }) {
-  layout.value.name = _layout.name
-  currentLayoutId.value = _layout._isCreate ? undefined : _layout.id
-
-  setDefaults(_layout)
-}
-
 const $v = useVuelidate(
-  { layout: { name: { required, maxLength: maxLength(64) } } },
+  {
+    layout: {
+      name: {
+        required,
+      },
+    },
+  },
   { layout },
   { $scope: false }
 )
@@ -289,21 +284,16 @@ const $v = useVuelidate(
     >
       <Form
         p="2"
-        :label="layoutExists ? $t('save') : $t('saveAs')"
-        :submit-disabled="!isSaveable"
+        :label="$t('save')"
+        :submit-disabled="!isSaveable || !hasLayoutChanged"
+        submit-class="w-30"
+        :loading="isLoading"
         @submit="handleSaveLayout"
       >
-        <Selector
-          :model-value="layout.name"
-          :options="layouts"
-          allow-add
-          option-label="name"
+        <TextInput
+          v-model="layout.name"
           :label="$t('table.layoutName')"
           :errors="$v.layout.name.$errors"
-          stack-label
-          no-highlight
-          :hint="$t('general.addNewItemByTyping')"
-          @update:model-value="handleLayoutSelect"
         />
 
         <Separator spaced />
@@ -320,13 +310,18 @@ const $v = useVuelidate(
               text="caption"
               font="bold"
             >
-              {{ $t('table.layoutSaveEntities') }}
+              {{
+                currentLayoutId
+                  ? $t('table.layoutSavedEntities')
+                  : $t('table.layoutSaveEntities')
+              }}
             </span>
 
             <!-- Columns -->
             <Toggle
               v-if="!nonSaveableSettingsByName.columns"
               v-model="layout.columns"
+              :readonly="!!currentLayoutId"
               container-class="bg-white dark:bg-darker col-start-1"
               :label="$t('table.saveColumns')"
             />
@@ -335,6 +330,7 @@ const $v = useVuelidate(
             <Toggle
               v-if="!nonSaveableSettingsByName.filters"
               v-model="layout.filters"
+              :readonly="!!currentLayoutId"
               container-class="bg-white dark:bg-darker col-start-1"
               :label="$t('table.saveFilters')"
               @update:model-value="checkSaveable('filters', $event)"
@@ -365,6 +361,7 @@ const $v = useVuelidate(
             <Toggle
               v-if="!nonSaveableSettingsByName.sorting"
               v-model="layout.sort"
+              :readonly="!!currentLayoutId"
               container-class="col-start-1 bg-white dark:bg-darker"
               :label="$t('table.saveSort')"
               col="start-1"
@@ -404,6 +401,7 @@ const $v = useVuelidate(
 
             <!-- Public -->
             <Toggle
+              v-if="!nonSaveableSettingsByName.public"
               v-model="layout.public"
               container-class="bg-white dark:bg-darker"
               :label="$t('table.savePublic')"

@@ -35,7 +35,10 @@ export function useSelectorUtils(options: ISelectorUtilsOptions) {
     'readonly',
     'required',
     'size',
-    'stackLabel'
+    'stackLabel',
+    'noBorder',
+    'inputContainerClass',
+    'inputContainerStyle'
   )
 
   // Click & focus handler

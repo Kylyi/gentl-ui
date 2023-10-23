@@ -1,14 +1,16 @@
 <script setup lang="ts">
+// eslint-disable-next-line import/named
+import { InputMask } from 'imask'
 import { MaybeElementRef } from '@vueuse/core'
 
-// TYPES
+// Types
 import type { ITextAreaInputProps } from '~/components/Inputs/TextArea/types/text-area-props.type'
 
-// COMPOSITION FUNCTIONS
+// Functions
 import { useInputUtils } from '~/components/Inputs/functions/useInputUtils'
 
 const props = withDefaults(defineProps<ITextAreaInputProps>(), {
-  debounce: 20,
+  debounce: 0,
   errorTakesSpace: true,
   errorVisible: true,
   mask: () => ({ mask: String }),
@@ -37,9 +39,11 @@ const {
   touch,
   clear,
   getInputElement,
+  handleBlur,
   handleManualModelChange,
   handleClickWrapper,
   handleFocusOrClick,
+  elMask,
 } = useInputUtils({
   props,
   maskRef: toRef(props, 'mask'),
@@ -65,6 +69,10 @@ defineExpose({
   clear,
   getInputElement,
   sync: () => handleManualModelChange(props.modelValue),
+  updateMask: (fnc: (mask: InputMask<any>) => void) => {
+    fnc(elMask.value as InputMask<any>)
+  },
+  handleManualModelChange,
 })
 </script>
 
@@ -100,7 +108,9 @@ defineExpose({
       :rows="rows"
       :class="[inputClass, resizeClass]"
       :style="inputStyle"
+      v-bind="inputProps"
       @focus="handleFocusOrClick"
+      @blur="handleBlur"
     />
 
     <template

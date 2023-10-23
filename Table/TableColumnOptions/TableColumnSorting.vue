@@ -5,20 +5,20 @@ import { TableColumn } from '~/components/Table/models/table-column.model'
 type IProps = {
   columns?: TableColumn[]
   column: TableColumn
-  multiSort?: boolean
 }
 
-const props = withDefaults(defineProps<IProps>(), {
-  multiSort: true,
-})
-// LAYOUT
+const props = defineProps<IProps>()
+
+// Layout
 const column = toRef(props, 'column')
 
-function handleSort(sortValue?: 'asc' | 'desc') {
+function handleSort(sortValue?: 'asc' | 'desc', ev?: PointerEvent) {
   column.value.sort = sortValue || undefined
 
+  const isHoldingShift = ev?.shiftKey
+
   // Using multisort
-  if (props.multiSort && props.columns) {
+  if (isHoldingShift && props.columns) {
     if (!sortValue) {
       // These are the columns that have higher sortOrder than the current column
       // We need to adjust their number accordingly, so that the order is not broken
@@ -35,6 +35,18 @@ function handleSort(sortValue?: 'asc' | 'desc') {
       column.value.sortOrder =
         props.columns.filter(col => col.sortOrder !== undefined).length + 1
     }
+  }
+
+  // Using single sort
+  else {
+    props.columns?.forEach(col => {
+      if (col !== column.value) {
+        col.sort = undefined
+        col.sortOrder = undefined
+      } else {
+        col.sortOrder = 1
+      }
+    })
   }
 }
 </script>
@@ -70,7 +82,8 @@ function handleSort(sortValue?: 'asc' | 'desc') {
         class="!rounded-r-0"
         border="r-1 ca"
         :class="{ 'is-active': column.sort === 'asc' }"
-        @click="handleSort('asc')"
+        data-cy="sort-asc"
+        @click="handleSort('asc', $event)"
       />
 
       <Btn
@@ -81,7 +94,8 @@ function handleSort(sortValue?: 'asc' | 'desc') {
         class="!rounded-l-0"
         icon="ph:sort-ascending-bold"
         :class="{ 'is-active': column.sort === 'desc' }"
-        @click="handleSort('desc')"
+        data-cy="sort-desc"
+        @click="handleSort('desc', $event)"
       />
     </div>
   </div>

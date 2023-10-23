@@ -14,13 +14,19 @@ import { config } from '~/config'
 import type { ITableProps } from '~/components/Table/types/table-props.type'
 import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
 
+// Injections
+import { tableSlotsKey } from '~/components/Table/provide/table.provide'
+
+// Models
+import { TableColumn } from '~/components/Table/models/table-column.model'
+
 // Functions
 import { useTableData } from '~/components/Table/functions/useTableData'
 import { useTableLayout } from '~/components/Table/functions/useTableLayout'
 import { useTableSelection } from '~/components/Table/functions/useTableSelection'
 import { useTableMetaData } from '~/components/Table/functions/useTableMetaData'
 import { useTableExporting } from '~/components/Table/functions/useTableExporting'
-import { tableSlotsKey } from '~/components/Table/provide/table.provide'
+import { useTableTopUtils } from '~/components/Table/functions/useTableTopUtils'
 
 const props = withDefaults(defineProps<ITableProps>(), {
   breakpoint: 'md',
@@ -47,6 +53,7 @@ defineEmits<{
   (e: 'update:totalRows', count: number): void
   (e: 'update:queryBuilder', rows: IQueryBuilderRow[]): void
   (e: 'row-click', payload: { row: any; el: Element }): void
+  (e: 'update:loading', loading: boolean): void
 }>()
 
 defineSlots<{
@@ -59,6 +66,7 @@ defineSlots<{
   topLeftAppend: {}
   topRightPrepend: {}
   topRightAppend: {}
+  subbarRight: {}
   topBulkActions: { selection: any[] }
   belowTop: { rows: any[] }
 }>()
@@ -68,10 +76,18 @@ const slots = useSlots()
 provide(tableSlotsKey, slots)
 
 defineExpose({
-  refreshData: () => refreshData(),
+  refreshData: () => refreshData(true),
+  resizeColumns: (force?: boolean) => handleResize(force),
+  adjustColumns: (fnc: (columns: TableColumn[]) => void) => {
+    fnc(internalColumns.value)
+  },
 })
 
+// Utils
+const { getTableTopProps } = useTableTopUtils()
+
 // Layout
+const tableTopProps = getTableTopProps(props)
 const queryBuilderOriginal = useVModel(props, 'queryBuilder')
 const { cloned: queryBuilder } = useCloned(queryBuilderOriginal, {
   clone: klona,
@@ -89,6 +105,7 @@ const {
   // Element refs
   scrollerEl,
   headerEl,
+  totalsEl,
   tableEl,
 
   // Columns
@@ -210,9 +227,7 @@ onMounted(() => {
       <TableTop
         v-model:query-builder="queryBuilder"
         v-model:search="search"
-        :selectable="selectable"
-        :non-saveable-settings="nonSaveableSettings"
-        :minimum-column-width="minimumColumnWidth"
+        v-bind="tableTopProps"
         @update:columns-width="handleResize()"
       >
         <template #left-prepend>
@@ -229,6 +244,10 @@ onMounted(() => {
 
         <template #right-append>
           <slot name="top-right-append" />
+        </template>
+
+        <template #subbar-right>
+          <slot name="subbar-right" />
         </template>
 
         <template
@@ -276,7 +295,7 @@ onMounted(() => {
       :key-field="rowKey"
       class="scroller"
       tabindex="0"
-      :item-size="tableRowHeight"
+      :item-size="useDynamicRowHeight ? undefined : tableRowHeight"
       :min-item-size="rowHeight"
       :emit-update="infiniteScroll"
       :buffer="1000"
@@ -317,11 +336,14 @@ onMounted(() => {
 
     <TableTotals
       v-if="!noTotals && !!getTotalsData"
+      ref="totalsEl"
       :columns="internalColumns"
       :get-totals-data="getTotalsData"
+      @scrolled="handleScrollLeft"
     />
 
     <TablePagination
+      v-if="noPagination !== null"
       v-model:current-page="currentPage"
       v-model:current-page-size="currentPageSize"
       :is-first-page="isFirstPage"

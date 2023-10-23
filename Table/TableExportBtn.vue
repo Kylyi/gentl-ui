@@ -36,14 +36,8 @@ async function handleExport(exportFormat: 'xlsx' | 'csv') {
     outlined
     :loading="isExporting"
   >
-    <div
-      flex="~ gap-2"
-      p="r-2"
-      font="normal"
-      text="sm"
-      items-center
-    >
-      {{ $t('table.export') }}
+    <div class="export-btn__label">
+      {{ $t('table.export', 1) }}
 
       <div class="line-md:chevron-small-right rotate-90" />
     </div>
@@ -76,3 +70,11 @@ async function handleExport(exportFormat: 'xlsx' | 'csv') {
     </Menu>
   </Btn>
 </template>
+
+<style scoped lang="scss">
+.export-btn {
+  &__label {
+    --apply: flex flex-gap-2 p-r-2 font-normal text-sm items-center;
+  }
+}
+</style>

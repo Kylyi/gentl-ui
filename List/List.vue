@@ -143,6 +143,7 @@ onMounted(() => {
       :items="arr"
       :class="contentClass"
       tabindex="0"
+      data-cy="search-results"
     >
       <template #default="{ item, index }">
         <ListRow

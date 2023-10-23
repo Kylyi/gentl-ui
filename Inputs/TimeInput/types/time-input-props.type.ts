@@ -6,5 +6,13 @@ export type ITimeInputShortcut = {
 }
 
 export interface ITimeInputProps extends IInputProps {
+  /**
+   * The shortcuts
+   */
   shortcuts?: ITimeInputShortcut[]
+
+  /**
+   * The props that should be passed to the input tag (<input>)
+   */
+  inputProps?: Record<string, any>
 }

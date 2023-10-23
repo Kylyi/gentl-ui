@@ -1,3 +1,5 @@
+import { TableColumn } from '~/components/Table/models/table-column.model'
+
 /**
  * Extracts `sorting` from the URL
  * The URL might look like: `?order=(name.value.asc,id.desc)`
@@ -8,7 +10,7 @@
 export function parseSortingFromUrl(
   params: URLSearchParams,
   options?: { fromSchema?: boolean }
-) {
+): Array<Pick<TableColumn, 'field' | 'sort' | 'sortOrder'>> {
   const { fromSchema } = options ?? {}
 
   const sort = fromSchema ? params.get('paging') : params.get('order')

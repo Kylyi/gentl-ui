@@ -89,13 +89,21 @@ const isLimitRowsReached = computedEager(() => {
           text="caption"
         >
           <template v-if="infiniteScroll">
-            <span font="bold">{{ currentRows }}</span>
+            <span
+              font="bold"
+              data-cy="current-rows"
+              >{{ currentRows }}</span
+            >
             {{ $t('general.outOf') }}
-            <span font="bold">{{ totalRows }}</span>
+            <span
+              font="bold"
+              data-cy="total-rows"
+              >{{ totalRows }}</span
+            >
             {{ $t('general.row', totalRows || 0) }}
           </template>
 
-          <template v-else>
+          <template v-else-if="!noPagination">
             <span font="bold">
               {{ (currentPage - 1) * currentPageSize }} -
               {{ (currentPage - 1) * currentPageSize + currentRows }}

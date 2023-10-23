@@ -22,7 +22,7 @@ defineProps<ISeparatorProps>()
 
 <style lang="scss" scoped>
 .separator {
-  --apply: flex border-true-gray/40;
+  --apply: flex border-true-gray/40 rounded-full;
 
   &-horizontal {
     --apply: w-full border-b-1;

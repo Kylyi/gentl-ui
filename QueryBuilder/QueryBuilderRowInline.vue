@@ -6,7 +6,9 @@ import type { IQueryBuilderGroup } from '~/components/QueryBuilder/types/query-b
 // Injections
 import { qbItemsKey } from '~/components/QueryBuilder/provide/query-builder.provide'
 
-defineProps<IQueryBuilderRowProps>()
+withDefaults(defineProps<IQueryBuilderRowProps>(), {
+  noAdd: undefined,
+})
 
 // Injections
 const items = injectStrict(qbItemsKey)
@@ -32,6 +34,10 @@ function updatePaths(parent?: IQueryBuilderGroup) {
     :parent="parent"
     :is-last-child="isLastChild"
     :is-first-child="isFirstChild"
+    :no-add="noAdd"
+    :editable="editable"
+    :remove-fnc="removeFnc"
+    :no-condition-change="noConditionChange"
     @delete:row="updatePaths()"
   />
 
@@ -42,6 +48,9 @@ function updatePaths(parent?: IQueryBuilderGroup) {
     :parent="parent"
     :is-last-child="isLastChild"
     :is-first-child="isFirstChild"
+    :no-add="noAdd"
+    :editable="editable"
+    :remove-fnc="removeFnc"
     @delete:row="updatePaths()"
   />
 </template>

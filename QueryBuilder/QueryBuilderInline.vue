@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { config } from '~/config'
+
 // Types
 import type { IQueryBuilderProps } from '~/components/QueryBuilder/types/query-builder-props.type'
 import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
@@ -17,6 +19,7 @@ import {
   qbIsSmallerScreenKey,
   qbItemsKey,
 } from '~/components/QueryBuilder/provide/query-builder.provide'
+import { useQueryBuilderColumnFilters } from '~/components/QueryBuilder/functions/useQueryBuilderColumnFilters'
 
 const props = defineProps<IQueryBuilderProps>()
 
@@ -86,6 +89,9 @@ useResizeObserver(queryBuilderEl, entries => {
   isSmallerScreen.value = contentRect.width < 1024
 })
 
+// Column filters
+const { qbColumnFilters, removeItem } = useQueryBuilderColumnFilters(props)
+
 // Provide
 const columns = toRef(props, 'columns')
 const hoveredRow = ref<IQueryBuilderRow>()
@@ -100,7 +106,7 @@ provide(qbIsSmallerScreenKey, isSmallerScreen)
 
 // Lifecycle
 // When no items are provided, initialize the items with a group
-if (!props.items.length) {
+if (!props.items.length && !props.noInitialization) {
   initializeItems()
 }
 
@@ -114,16 +120,42 @@ defineExpose({
     ref="queryBuilderEl"
     class="query-builder-inline"
   >
+    <!-- Column filters -->
+    <template
+      v-if="
+        config.table.queryBuilder.showColumnFilters && qbColumnFilters?.length
+      "
+    >
+      <QueryBuilderRowInline
+        v-for="item in qbColumnFilters"
+        :key="item.path"
+        :item="item"
+        :level="level"
+        no-add
+        no-condition-change
+        :editable="editable"
+        :remove-fnc="removeItem"
+      />
+
+      <Separator
+        v-if="items.length"
+        vertical
+        m="r-2 l-1"
+        border="!dark:white !primary !r-2px"
+      />
+    </template>
+
     <QueryBuilderRowInline
       v-for="item in items"
       :key="item.id"
       :item="item"
       :level="level"
+      :editable="editable"
     />
 
     <!-- Add first condition -->
     <Btn
-      v-if="noChildren"
+      v-if="noChildren && editable"
       size="xs"
       preset="ADD"
       m="t-1 l-2"

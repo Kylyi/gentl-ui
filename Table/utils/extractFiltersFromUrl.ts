@@ -29,13 +29,16 @@ function generatePath(parentPath: string, idx: number): string {
 function extractFilterFromSearchParams(
   searchParams: URLSearchParams,
   key = 'filters',
-  fromSchema?: boolean
+  fromSchema?: boolean,
+  modifyFnc?: (queryString: string, key: string) => string
 ): string | null {
-  const paramsString = searchParams.get(key)
+  let paramsString = searchParams.get(key)
 
   if (!paramsString) {
     return null
   }
+
+  paramsString = modifyFnc?.(paramsString, key) || paramsString
 
   if (fromSchema) {
     if (paramsString.startsWith('(') && paramsString.endsWith(')')) {
@@ -165,8 +168,19 @@ function parseItemSegment(
     foundComparatorIdx + foundComparator.length + 2
   ) // +2 to skip the dot
 
+  // For ComparatorEnum.IS_EMPTY and ComparatorEnum.NOT_IS_EMPTY
   if (foundComparatorIdx + foundComparator.length + 1 >= segment.length) {
     value = undefined
+  }
+
+  // When the comparator cannot be an array, but we get a value that acts like one
+  // -> `(<value>)`, we need to remove the brackets
+  else if (
+    !SELECTOR_COMPARATORS.includes(foundComparator) &&
+    value?.startsWith('(') &&
+    value?.endsWith(')')
+  ) {
+    value = value?.slice(1, -1)
   }
 
   // We check for arrays to parse each value in the array
@@ -238,8 +252,21 @@ export function parseFiltersFromUrl(options: {
   key?: string
   columns?: TableColumn<any>[]
   fromSchema?: boolean
+
+  /**
+   * The function that will be called before the query string is parsed
+   */
+  modifyFnc?: (queryString: string, key: string) => string
 }): IQueryBuilderRow[] {
-  const { searchParams, key = 'filters', columns = [], fromSchema } = options
+  const {
+    searchParams,
+    key = 'filters',
+    columns = [],
+    fromSchema,
+    modifyFnc,
+  } = options
+
+  // console.log(decodeURIComponent(searchParams.toString()))
 
   // We save the columns in a temporary variable
   columnsByField = columns.reduce((agg, col) => {
@@ -251,7 +278,8 @@ export function parseFiltersFromUrl(options: {
   const filterQuery = extractFilterFromSearchParams(
     searchParams,
     key,
-    fromSchema
+    fromSchema,
+    modifyFnc
   )
 
   return filterQuery ? parseFilterString(filterQuery) : []

@@ -5,6 +5,13 @@ import { config } from '~/config'
 // Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
 
+// Injections
+import { tableFocusKey } from '~/components/Table/provide/table.provide'
+
+// Components
+import MenuProxy from '~/components/MenuProxy/MenuProxy.vue'
+import TableColumnSorting from '~/components/Table/TableColumnOptions/TableColumnSorting.vue'
+
 type IProps = {
   column: TableColumn<any>
   columns: TableColumn<any>[]
@@ -17,9 +24,62 @@ type IProps = {
 
 const props = defineProps<IProps>()
 
+// Injections
+const tableFocus = injectStrict(tableFocusKey)
+
 // Layout
+const menuEl = ref<InstanceType<typeof MenuProxy>>()
+const sortingEl = ref<InstanceType<typeof TableColumnSorting>>()
 const emptyValue = config.table.emptyValue
 const column = toRef(props, 'column')
+
+function handleSort(sortValue?: 'asc' | 'desc') {
+  column.value.sort = sortValue || undefined
+
+  if (!sortValue) {
+    // These are the columns that have higher sortOrder than the current column
+    // We need to adjust their number accordingly, so that the order is not broken
+    const sortedColumnsAfter = props.columns.filter(
+      col =>
+        col.sortOrder !== undefined && col.sortOrder > column.value.sortOrder!
+    )
+
+    sortedColumnsAfter.forEach(col => {
+      col.sortOrder! -= 1
+    })
+    column.value.sortOrder = undefined
+  } else if (!column.value.sortOrder) {
+    column.value.sortOrder =
+      props.columns.filter(col => col.sortOrder !== undefined).length + 1
+  }
+}
+
+function handleMenuShow(ev: PointerEvent) {
+  const isShiftKey = ev.shiftKey
+
+  if (!isShiftKey) {
+    menuEl.value?.show()
+  } else {
+    let sort: TableColumn['sort']
+
+    switch (column.value.sort) {
+      case 'asc':
+        sort = 'desc'
+
+        break
+
+      case 'desc':
+        sort = undefined
+
+        break
+
+      default:
+        sort = 'asc'
+    }
+
+    handleSort(sort)
+  }
+}
 
 // We remove any undefined filters on menu hide
 function handleMenuBeforeHide() {
@@ -28,8 +88,13 @@ function handleMenuBeforeHide() {
       filter.comparator
     )
 
-    return filter.value !== undefined || isNonValueComparator
+    const isUndefinedValue = filter.value === undefined
+    const isEmptyArray = Array.isArray(filter.value) && !filter.value.length
+
+    return (!isUndefinedValue && !isEmptyArray) || isNonValueComparator
   })
+
+  tableFocus()
 }
 </script>
 
@@ -38,6 +103,7 @@ function handleMenuBeforeHide() {
     class="filter-btn"
     size="sm"
     :class="{ 'is-filtered': column.filterDbQuery, 'is-sorted': column.sort }"
+    @click="handleMenuShow"
   >
     <template #icon>
       <div class="w-7 h-7 relative">
@@ -49,6 +115,7 @@ function handleMenuBeforeHide() {
           class="icon bottom-.25 right-.25 basil:sort-outline"
           :class="{ 'color-white': column.sort }"
           z-1
+          data-cy="sort-outline"
         />
 
         <div
@@ -140,6 +207,8 @@ function handleMenuBeforeHide() {
     </Tooltip>
 
     <MenuProxy
+      ref="menuEl"
+      manual
       w="90"
       dense
       hide-header
@@ -153,6 +222,7 @@ function handleMenuBeforeHide() {
     >
       <TableColumnSorting
         v-if="column.sortable"
+        ref="sortingEl"
         :column="column"
         :columns="columns"
       />

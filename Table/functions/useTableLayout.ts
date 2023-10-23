@@ -10,7 +10,10 @@ import type { ITableLayout } from '~/components/Table/types/table-layout.type'
 import { TableColumn } from '~/components/Table/models/table-column.model'
 
 // Injections
-import { tableResizeKey } from '~/components/Table/provide/table.provide'
+import {
+  tableFocusKey,
+  tableResizeKey,
+} from '~/components/Table/provide/table.provide'
 
 // Functions
 import { useTableColumns } from '~/components/Table/functions/useTableColumns'
@@ -20,6 +23,7 @@ import { useTableUtils } from '~/components/Table/functions/useTableUtils'
 import TableRow from '~/components/Table/TableRow.vue'
 import TableRowMobile from '~/components/Table/TableRow.mobile.vue'
 import TableHeader from '~/components/Table/TableHeader.client.vue'
+import TableTotals from '~/components/Table/TableTotals/TableTotals.vue'
 
 export function useTableLayout(
   props: ITableProps,
@@ -41,11 +45,13 @@ export function useTableLayout(
 
   // Provides
   provide(tableResizeKey, () => handleResize(true))
+  provide(tableFocusKey, () => scrollerEl.value?.$el.focus())
 
   // Layout
   const scrollerEl = ref<InstanceType<typeof RecycleScroller>>()
   const tableEl = ref<HTMLDivElement>()
   const headerEl = ref<InstanceType<typeof TableHeader>>()
+  const totalsEl = ref<InstanceType<typeof TableTotals>>()
   const containerEl = ref<HTMLDivElement>()
 
   const rowKey = computedEager(() => getRowKey(props))
@@ -97,6 +103,7 @@ export function useTableLayout(
     }
 
     headerEl.value?.updateArrows()
+    totalsEl.value?.updateArrows()
   }
 
   // Detect overflow
@@ -116,6 +123,7 @@ export function useTableLayout(
     onScroll: ev => {
       const el = ev.target as HTMLDivElement
       headerEl.value?.syncScroll(el.scrollLeft)
+      totalsEl.value?.syncScroll(el.scrollLeft)
       isScrolled.value = el.scrollTop !== 0
     },
   })
@@ -174,6 +182,7 @@ export function useTableLayout(
     scrollerEl,
     tableEl,
     headerEl,
+    totalsEl,
     containerEl,
 
     // Columns

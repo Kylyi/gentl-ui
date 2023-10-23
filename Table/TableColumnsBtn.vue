@@ -105,6 +105,18 @@ function handleColumnVisibilityForAll(
   })
 }
 
+function handleMoveUp(col: TableColumn) {
+  const idx = filteredCols.value.findIndex(c => c.field === col.field)
+
+  if (idx > 0) {
+    const splicedCol = filteredCols.value.splice(idx, 1)?.[0]
+
+    if (splicedCol) {
+      filteredCols.value = [splicedCol, ...filteredCols.value]
+    }
+  }
+}
+
 // Apply changes
 async function handleApplyChanges() {
   columns.value = clonedColumns.value.map(col => new TableColumn(col))
@@ -126,6 +138,7 @@ async function handleApplyChanges() {
     p="!x-2"
     label-class="hidden sm:block"
     v-bind="btnProps"
+    data-cy="columns-button"
   >
     <span text="xs">
       {{ $t('columns') }}
@@ -221,6 +234,7 @@ async function handleApplyChanges() {
                         ? $t('general.selectAll')
                         : $t('general.selectFiltered')
                     "
+                    data-cy="choose-all-columns"
                     @click="handleColumnVisibilityForAll(true, itemsFiltered)"
                   />
                   <Btn
@@ -231,6 +245,7 @@ async function handleApplyChanges() {
                         ? $t('general.clearAll')
                         : $t('general.clearFiltered')
                     "
+                    data-cy="choose-none-columns"
                     @click="handleColumnVisibilityForAll(false, itemsFiltered)"
                   />
                 </div>
@@ -265,7 +280,7 @@ async function handleApplyChanges() {
             p="t-2"
           >
             <div flex="~ gap-2 items-center">
-              <h6 font="bold">{{ $t('table.selectedColumns') }}</h6>
+              <h6 font="bold">{{ $t('table.columnsSelected') }}</h6>
               <span text="caption">({{ filteredCols.length }})</span>
             </div>
 
@@ -287,6 +302,7 @@ async function handleApplyChanges() {
               :index="idx"
               :disabled="!col.reorderable || col.isHelperCol"
               z="$zMenu"
+              data-cy="dragable-row"
             >
               <Item
                 cursor="!default"
@@ -296,20 +312,33 @@ async function handleApplyChanges() {
                 <DragHandle
                   v-if="col.reorderable && !col.isHelperCol"
                   class="handle icon-park-outline:drag"
+                  data-cy="dragable-item"
                 />
 
                 <span
                   grow
                   p="y-1.5 x-2"
+                  text="sm"
                   truncate
                 >
                   {{ col._label }}
                 </span>
 
                 <Btn
+                  v-if="idx > 0"
+                  icon="mingcute:arrow-to-up-line"
+                  m="r-1"
+                  size="xs"
+                  color="ca"
+                  data-cy="arrow-pin-to-top"
+                  @click="handleMoveUp(col)"
+                />
+
+                <Btn
                   size="xs"
                   preset="TRASH"
                   m="r-1"
+                  data-cy="trash-icon"
                   @click="handleColumnVisibilityChange(true, col)"
                 />
               </Item>

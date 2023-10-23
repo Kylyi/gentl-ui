@@ -1,11 +1,11 @@
 import { CSSProperties } from 'vue'
 
-// TYPES
+// Types
 import type { InputLabelProps } from '~/components/Inputs/types/input-label-props.type'
 
 export interface IInputWrapperProps extends InputLabelProps {
   /**
-   * The class of the input container
+   * The class of the input wrapper (including label,...)
    */
   contentClass?: ClassType
 
@@ -39,6 +39,16 @@ export interface IInputWrapperProps extends InputLabelProps {
    * The hint that will be shown below the input
    */
   hint?: string
+
+  /**
+   * Class of the input container
+   */
+  inputContainerClass?: ClassType
+
+  /**
+   * Style of the input container
+   */
+  inputContainerStyle?: CSSProperties
 
   /**
    * Whether the input is loading

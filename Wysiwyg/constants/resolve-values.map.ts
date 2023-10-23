@@ -187,15 +187,6 @@ export const grantRequestMentionItems: IWysiwygMentionItem[] = [
     group: t('grantRequest.self', 1),
   },
 
-  // Costs character
-  {
-    id: 'grantRequest.costsCharacter',
-    label: t('grantRequest.costsCharacter.self'),
-    format: row =>
-      t(`grantRequest.costsCharacter.${row.grantRequest.costsCharacter}`),
-    group: t('grantRequest.self', 1),
-  },
-
   // Evidence number
   {
     id: 'grantRequest.evidenceNumber',

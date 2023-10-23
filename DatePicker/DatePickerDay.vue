@@ -7,6 +7,10 @@ const props = withDefaults(defineProps<IDatePickerDayProps>(), {
   edge: true,
 })
 
+// Utils
+const { formatDate } = useDateUtils()
+
+// Layout
 const day = toRef(props, 'day')
 
 const classes = computed(() => {
@@ -42,7 +46,7 @@ const eventsAdjusted = computed<Pick<DayEvent, 'color' | 'icon'>[]>(() => {
       v-if="edge && (day.isEdge.start.month || day.isEdge.end.month)"
       class="edge"
     >
-      {{ $d(day.dateValue, 'monthShort') }}
+      {{ formatDate(day.dateValue, 'monthShort') }}
     </div>
 
     <!-- Top -->

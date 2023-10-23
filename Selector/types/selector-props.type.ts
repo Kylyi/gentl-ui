@@ -1,10 +1,12 @@
+import { CSSProperties } from 'vue'
+
 import { FuseOptions } from '@vueuse/integrations/useFuse'
 import { FloatingUIBaseProps } from '~/components/Dialog/types/dialog-props.type'
 
-// TYPES
+// Types
 import type { IInputProps } from '~/components/Inputs/types/input-props.type'
 
-// MODELS
+// Models
 import { GroupItem } from '~/libs/App/data/models/group-item.model'
 import { SortItem } from '~/libs/App/data/models/sort-item.model'
 
@@ -82,6 +84,8 @@ export type ISelectorProps = IInputProps & {
   options?: any[]
   scroller?: boolean
   innerClass?: ClassType
+  placeholderClass?: ClassType
+  placeholderStyle?: CSSProperties
 
   /**
    * When true (with combination of `alowAdd`), the component will not add the
@@ -100,6 +104,8 @@ export type ISelectorProps = IInputProps & {
   noSort?: boolean
   noSearch?: boolean
   searchDebounce?: number
+  listClass?: ClassType
+  search?: string
 
   /**
    * The extended search token for fuse.js library

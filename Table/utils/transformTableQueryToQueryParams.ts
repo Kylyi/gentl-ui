@@ -7,6 +7,9 @@ import {
   ITableQuery,
 } from '~/components/Table/types/table-query.type'
 
+// Models
+import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
+
 /**
  * Serializes the table's `filter` into a `filter` query parameter.
  */
@@ -37,6 +40,11 @@ export function serializeFilterString(
         // Array
         if (Array.isArray(item.value)) {
           val = `(${item.value.join(',')})`
+        }
+
+        // Includes comma
+        if (typeof item.value === 'string' && item.value.includes(',')) {
+          val = `(${item.value})`
         }
 
         return val !== undefined
@@ -94,21 +102,63 @@ export function serializeSelectString(select: ITableQuery['select']): string {
 }
 
 export function serializeTableQueryToQueryParams(tableQuery: ITableQuery) {
-  const { filters, orderBy, select, fetchMore } = tableQuery
+  const { orderBy, select, fetchMore, queryBuilder, columnFilters } = tableQuery
 
   const urlParams = new URLSearchParams()
 
-  // Filters
-  if (filters?.length) {
+  // Query builder
+  if (queryBuilder?.length) {
     // We remove empty groups
-    const _filtersTrimmed = serializeFilterString(filters).replace(
-      /and\(\)|and\(\)|or\(\)|or\(\)/g,
-      ''
-    )
+    let _queryBuilderTrimmed = serializeFilterString(queryBuilder)
 
-    if (_filtersTrimmed.length) {
-      urlParams.append('and', `(${_filtersTrimmed})`)
+    // Regular expression to match and() or or() substrings
+    const regex = /and\(\)|or\(\)/g
+
+    let prevResult: string
+    do {
+      prevResult = _queryBuilderTrimmed
+      // Replace matched substrings with an empty string
+      _queryBuilderTrimmed = _queryBuilderTrimmed.replace(regex, '')
+
+      // To also remove consecutive commas resulting from the removal, use another regex replacement
+      _queryBuilderTrimmed = _queryBuilderTrimmed.replace(/,+,/g, ',')
+
+      // Remove trailing commas within parentheses
+      _queryBuilderTrimmed = _queryBuilderTrimmed.replace(/,(?=\))/g, '')
+
+      // If comma starts or ends the string, remove it.
+      _queryBuilderTrimmed = _queryBuilderTrimmed.replace(/^,|,$/g, '')
+    } while (prevResult !== _queryBuilderTrimmed) // Continue as long as changes are being made
+
+    if (_queryBuilderTrimmed.length) {
+      const firstBracket = _queryBuilderTrimmed.indexOf('(')
+      const condition = _queryBuilderTrimmed.substring(0, firstBracket)
+      const content = _queryBuilderTrimmed.substring(
+        firstBracket + 1,
+        _queryBuilderTrimmed.length - 1
+      )
+
+      urlParams.append(condition, `(${content})`)
     }
+  }
+
+  // Column filters
+  if (columnFilters?.length) {
+    columnFilters.forEach(filter => {
+      // We don't need the value when using the ComparatorEnum.IS_EMPTY and ComparatorEnum.NOT_IS_EMPTY comparators
+      const EMPTY_COMPARATORS = [
+        ComparatorEnum.IS_EMPTY,
+        ComparatorEnum.NOT_IS_EMPTY,
+      ]
+
+      if (EMPTY_COMPARATORS.includes(filter.comparator)) {
+        urlParams.append(filter.field, filter.comparator)
+
+        return
+      }
+
+      urlParams.append(filter.field, `${filter.comparator}.${filter.value}`)
+    })
   }
 
   // Sorting

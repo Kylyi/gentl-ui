@@ -37,6 +37,14 @@ onMounted(() => {
       :is="config.pageWrapper.topBar"
       v-if="includeTopBar && config.pageWrapper.topBar"
     >
+      <template #breadcrumbs-above>
+        <slot name="breadcrumbs-above" />
+      </template>
+
+      <template #breadcrumbs-below>
+        <slot name="breadcrumbs-below" />
+      </template>
+
       <template #breadcrumbs-append>
         <slot name="breadcrumbs-append" />
       </template>

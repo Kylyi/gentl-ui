@@ -17,7 +17,7 @@ import InputWrapper from '~/components/Inputs/InputWrapper.vue'
 import ScrollArea from '~/components/ScrollArea/ScrollArea.vue'
 
 const props = withDefaults(defineProps<ISelectorProps>(), {
-  debounce: 20,
+  debounce: 0,
   emptyValue: () => undefined,
   errorTakesSpace: true,
   errorVisible: true,
@@ -198,6 +198,7 @@ const listProps = reactivePick(props, [
   'allowSelectAllFiltered',
   'fuseExtendedSearchToken',
   'searchDebounce',
+  'search',
 ])
 
 const optionsExtended = computed(() => {
@@ -347,10 +348,10 @@ function getData() {
   })
 }
 
-// We recalculate the menu position on `listOptions` change and `model` changes
-watch([listOptions, model], () => {
-  menuProxyEl.value?.recomputePosition()
-})
+// // We recalculate the menu position on `listOptions` change and `model` changes
+// watch([listOptions, model], () => {
+//   menuProxyEl.value?.recomputePosition()
+// })
 
 defineExpose({
   focus: () => menuProxyEl.value?.show(),
@@ -389,6 +390,7 @@ defineExpose({
     <span
       v-if="$slots.selection"
       class="control"
+      @click="handleFocusOrClick"
     >
       <slot
         name="selection"
@@ -412,6 +414,8 @@ defineExpose({
       <span
         v-if="placeholder && !hasContent"
         class="placeholder"
+        :class="placeholderClass"
+        :style="placeholderStyle"
       >
         {{ placeholder }}
       </span>
@@ -532,6 +536,8 @@ defineExpose({
             :item-key="optionKey"
             :item-label="optionLabel"
             v-bind="listProps"
+            :class="listClass"
+            @search="isPickerActive && menuProxyEl?.recomputePosition()"
             @update:selected="handleSelect"
             @added="handleSelectAdd"
             @selected-multiple="handleSelectedMultiple"
@@ -586,6 +592,7 @@ defineExpose({
 
 <style lang="scss" scoped>
 .placeholder {
+  --apply: truncate max-w-9/10%;
   color: #9ca3af;
 }
 

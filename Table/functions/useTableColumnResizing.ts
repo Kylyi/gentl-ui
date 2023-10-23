@@ -64,7 +64,7 @@ export function useTableColumnResizing(props: {
     let lastLeftPosition = 0
 
     props.columns
-      .filter(col => !col.hidden)
+      .filter(col => !col.hidden && col.resizable)
       .forEach(col => {
         lastLeftPosition += col.adjustedWidth
 

@@ -14,6 +14,7 @@ const emits = defineEmits<{
   (e: 'hide'): void
 }>()
 
+// Layout
 const headerEl = ref<HTMLDivElement>()
 const contentEl = ref<HTMLDivElement>()
 const model = toRef(props, 'modelValue')

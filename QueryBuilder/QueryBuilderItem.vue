@@ -27,6 +27,7 @@ import Selector from '~/components/Selector/Selector.vue'
 const props = defineProps<IQueryBuilderItemProps>()
 const emits = defineEmits<{
   (e: 'delete:row', item: IQueryBuilderItem): void
+  (e: 'update:comparator', comparator: ComparatorEnum): void
 }>()
 
 defineExpose({
@@ -83,14 +84,16 @@ const isNonValueComparator = computedEager(() => {
 })
 
 const component = computed(() => {
-  return COMPONENTS_BY_DATATYPE_MAP[colSelected.value?.dataType]
+  return COMPONENTS_BY_DATATYPE_MAP[
+    colSelected.value?.dataType.replace('Simple', '')
+  ]
 })
 
 /**
  * When using `TableColumn.filterComponent`, we might need to format the value
  * by its `valueFormatter`
  */
-const customValueComputed = computed({
+const customValue = computed({
   get() {
     if (colSelected.value?.filterComponent?.valueFormatter) {
       return colSelected.value.filterComponent.valueFormatter.getter(
@@ -101,21 +104,23 @@ const customValueComputed = computed({
     return item.value.value
   },
   set(value) {
+    const val = typeof value === 'string' ? value.trim() : value
+
     if (colSelected.value?.filterComponent?.valueFormatter) {
       item.value.value =
-        colSelected.value.filterComponent.valueFormatter.setter(value)
+        colSelected.value.filterComponent.valueFormatter.setter(val)
 
       return
     }
 
-    item.value.value = value
+    item.value.value = val
   },
 })
 
 /**
  * Format value for simple `ComparatorEnum.IN` and `ComparatorEnum.NOT_IN`
  */
-const customValue = computed({
+const inValueSimple = computed({
   get() {
     return item.value.value?.join(',')
   },
@@ -159,6 +164,12 @@ const customFilterComponent = computed(() => {
 })
 
 function handleRemoveCondition() {
+  if (props.removeFnc) {
+    props.removeFnc(item.value)
+
+    return
+  }
+
   const idx = item.value.path.split('.').pop()
   const parentPath = props.item.path.split('.').slice(0, -2).join('.')
   const parent = get(toValue(items), parentPath)
@@ -177,8 +188,15 @@ function handleFieldChange(field: string) {
     return
   }
 
-  // NOTE: When datatype changes, we reset value
-  if (col.dataType !== colSelected.value?.dataType) {
+  // NOTE: When datatype changes OR we're using non-primitive comparators, we reset value
+  const isNonPrimitiveComparator =
+    customFilterComponent.value?.comparators.includes(item.value.comparator) ||
+    canUseSelectorComparator(item.value.comparator, colSelected.value || col)
+
+  if (
+    col.dataType !== colSelected.value?.dataType ||
+    isNonPrimitiveComparator
+  ) {
     item.value.value = undefined
   }
 
@@ -226,6 +244,15 @@ function handleComparatorChange(comparator: ComparatorEnum) {
   }
 
   item.value.comparator = comparator
+  emits('update:comparator', comparator)
+}
+
+function handleValueChange(value: any) {
+  if (typeof value === 'string') {
+    item.value.value = value.trim()
+  } else {
+    item.value.value = value
+  }
 }
 
 // Validation
@@ -250,7 +277,8 @@ const $v = useVuelidate(
     :class="{
       'is-hovered': hoveredRow === item,
       'is-last-child': isLastChild,
-      'no-draggable': noDraggable,
+      'no-drag': noDraggable || item.isNotDraggable,
+      'no-dragover': item.isNotDragOverable,
       'is-smaller-screen': isSmallerScreen,
     }"
     :data-path="item.path"
@@ -260,7 +288,7 @@ const $v = useVuelidate(
   >
     <!-- Move handler -->
     <QueryBuilderMoveHandler
-      v-if="!noDraggable"
+      v-if="!noDraggable && !item.isNotDraggable"
       self-start
       m="t-2.5"
     />
@@ -279,7 +307,34 @@ const $v = useVuelidate(
         :errors="$v.item.field.$errors"
         data-cy="qb-item__content-field"
         @update:model-value="handleFieldChange"
-      />
+      >
+        <template #item="{ item: col }">
+          <span>
+            <QueryBuilderItemDataTypeShortcut
+              :data-type="col.dataType"
+              :custom="canUseSelectorComparator(item.comparator, col)"
+              class="relative top-1"
+            />
+
+            {{ col.label }}
+          </span>
+        </template>
+
+        <template
+          v-if="colSelected"
+          #prepend
+        >
+          <div
+            flex="~ center"
+            m="l-1"
+          >
+            <QueryBuilderItemDataTypeShortcut
+              :data-type="colSelected.dataType"
+              :custom="canUseSelectorComparator(item.comparator, colSelected)"
+            />
+          </div>
+        </template>
+      </Selector>
 
       <template v-if="item.field && colSelected">
         <!-- Comparator selector -->
@@ -298,11 +353,8 @@ const $v = useVuelidate(
         <!-- Custom component -->
         <Component
           :is="customFilterComponent.component"
-          v-if="
-            customFilterComponent &&
-            customFilterComponent.comparators.includes(item.comparator)
-          "
-          v-model="customValueComputed"
+          v-if="customFilterComponent?.comparators.includes(item.comparator)"
+          v-model="customValue"
           v-bind="customFilterComponent.props"
           size="sm"
           class="qb-item__content-value"
@@ -316,13 +368,14 @@ const $v = useVuelidate(
             canUseSelectorComparator(item.comparator, colSelected) &&
             !colSelected?.getDistinctData
           "
-          v-model="customValue"
+          v-model="inValueSimple"
           size="sm"
           :placeholder="`${$t('table.filterValue')}...`"
           empty-value=""
+          :errors="$v.item.value.$errors"
         />
 
-        <!-- Selector values -->
+        <!-- Selector of distinct values -->
         <Selector
           v-else-if="canUseSelectorComparator(item.comparator, colSelected)"
           ref="valueInputEl"
@@ -341,6 +394,7 @@ const $v = useVuelidate(
           size="sm"
           :placeholder="`${$t('table.filterValue')}...`"
           data-cy="qb-item__content-value"
+          :errors="$v.item.value.$errors"
         />
 
         <!-- Ago value -->
@@ -363,7 +417,7 @@ const $v = useVuelidate(
           :is="component.component"
           v-else-if="component.component && !isNonValueComparator"
           ref="valueInputEl"
-          v-model="item.value"
+          :model-value="item.value"
           size="sm"
           :class="{
             'qb-item__content-value': colSelected.dataType !== 'boolean',
@@ -372,11 +426,13 @@ const $v = useVuelidate(
           :placeholder="$t('queryBuilder.value')"
           :errors="$v.item.value.$errors"
           data-cy="qb-item__content-value"
+          @update:model-value="handleValueChange"
         />
       </template>
     </div>
 
     <Btn
+      v-if="!noRemove"
       size="xs"
       preset="TRASH"
       m="t-2 r-2"
@@ -430,7 +486,7 @@ const $v = useVuelidate(
   }
 }
 
-.qb-item:not(.no-draggable) {
+.qb-item:not(.no-drag) {
   &::before {
     --apply: absolute content-empty -left-3 top-0 h-full
       border-l-1 border-ca border-dashed;

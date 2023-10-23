@@ -64,7 +64,8 @@ const numberInputProps = reactivePick(
   'required',
   'size',
   'stackLabel',
-  'step'
+  'step',
+  'inputProps'
 )
 
 const modelByUnit = computed<Record<DurationUnit, number>>(() => {

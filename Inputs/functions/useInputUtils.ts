@@ -75,7 +75,10 @@ export function useInputUtils(options: IInputUtilsOptions) {
     'readonly',
     'required',
     'size',
-    'stackLabel'
+    'stackLabel',
+    'noBorder',
+    'inputContainerClass',
+    'inputContainerStyle'
   )
 
   // Layout
@@ -189,7 +192,7 @@ export function useInputUtils(options: IInputUtilsOptions) {
 
     focusedProgramatically.value = true
 
-    blurAnyFocusedInput()
+    // blurAnyFocusedInput()
 
     if (
       !preventFocusOnTouch ||
@@ -257,5 +260,6 @@ export function useInputUtils(options: IInputUtilsOptions) {
     handleManualModelChange,
     handleFocusOrClick,
     handleClickWrapper,
+    elMask,
   }
 }

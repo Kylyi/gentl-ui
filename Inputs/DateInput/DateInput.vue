@@ -208,6 +208,7 @@ defineExpose({
       :name="name || label || placeholder"
       class="control"
       :class="[inputClass]"
+      v-bind="inputProps"
       @focus.stop.prevent="handleFocusOrClick"
     />
 

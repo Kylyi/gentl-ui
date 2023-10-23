@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// TYPES
+// Types
 import type { IDatePickerDaySeparatorsProps } from '~/components/DatePicker/types/datepicker-day-separators-props.type'
 
 withDefaults(defineProps<IDatePickerDaySeparatorsProps>(), {

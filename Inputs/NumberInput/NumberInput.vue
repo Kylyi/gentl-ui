@@ -2,18 +2,18 @@
 // eslint-disable-next-line import/named
 import { MaskedNumber } from 'imask'
 
-// TYPES
+// Types
 import type { INumberInputProps } from '~/components/Inputs/NumberInput/types/number-input-props.type'
 
-// COMPOSITION FUNCTIONS
+// Functions
 import { useInputUtils } from '~/components/Inputs/functions/useInputUtils'
 import { useNumber } from '~/components/Inputs/NumberInput/functions/useNumber'
 
-// COMPONENTS
+// Components
 import Btn from '~/components/Button/Btn.vue'
 
 const props = withDefaults(defineProps<INumberInputProps>(), {
-  debounce: 20,
+  debounce: 0,
   errorTakesSpace: true,
   errorVisible: true,
   fractionDigits: 2,
@@ -30,10 +30,10 @@ defineEmits<{
   (e: 'blur'): void
 }>()
 
-// UTILS
+// Utils
 const { separators } = useNumber()
 
-// MASK
+// Mask
 // @ts-expect-error IMask type
 const mask = computed<MaskedNumber>(() => {
   return {
@@ -73,7 +73,7 @@ const {
   maskRef: mask,
 })
 
-// STEP
+// Step
 const increment = ref<InstanceType<typeof Btn>>()
 const decrement = ref<InstanceType<typeof Btn>>()
 const modifier = ref<-1 | 1>(1)
@@ -181,6 +181,7 @@ defineExpose({
       role="presentation"
       :class="[inputClass]"
       :style="inputStyle"
+      v-bind="inputProps"
       @focus="handleFocusOrClick"
       @blur="handleBlur"
     />
@@ -200,7 +201,7 @@ defineExpose({
           :focus="focus"
         />
 
-        <!-- STEP -->
+        <!-- Step -->
         <div
           v-if="step && !readonly && !disabled"
           flex="~ col shrink"

@@ -18,6 +18,7 @@ defineEmits<{
     :size="size"
     :no-uppercase="noUppercase"
     :disabled="disabled"
+    data-cy="delete-button"
     @click="noConfirm && $emit('delete')"
   >
     <MenuConfirmation

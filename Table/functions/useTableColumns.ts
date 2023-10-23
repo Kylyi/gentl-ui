@@ -39,6 +39,7 @@ export function useTableColumns(
   layoutRef: Ref<ITableLayout | undefined>
 ) {
   // Utils
+  const route = useRoute()
   const { t, locale } = useI18n()
   const { scrollbarWidth, isOverflown } = useOverflow()
   const { parseUrlParams, hasVisibleCol, getStorageKey } = useTableUtils(props)
@@ -80,6 +81,7 @@ export function useTableColumns(
     const { columns: schemaVisibleColumns } = parseUrlParams({
       columnsRef: _columns,
       searchParams: layoutRef.value?.schema,
+      fromSchema: !!layoutRef.value?.schema,
     })
 
     const visibleColumns = urlVisibleColumns.length
@@ -123,16 +125,19 @@ export function useTableColumns(
    * Note: Mutates the columns
    */
   function handleColumnsData(_columns: TableColumn[]) {
+    const fromSchema = route.query.fromSchema === 'true'
+
     const {
       sort: urlSort,
       filters: urlFilters,
       columns: urlVisibleColumns,
       queryBuilder: urlQueryBuilder,
-    } = parseUrlParams({ columnsRef: _columns })
+    } = parseUrlParams({ columnsRef: _columns, fromSchema })
 
     const { schemaSort, filters: schemaFilters } = parseUrlParams({
       columnsRef: _columns,
       searchParams: layoutRef.value?.schema,
+      fromSchema: !!layoutRef.value?.schema,
     })
 
     const { columns: stateColumns } = tableState.value
@@ -150,7 +155,7 @@ export function useTableColumns(
 
     // When sorting is provided in the URL, we set the sorting for the columns
     // that are in the URL and reset it for the others
-    if (sort) {
+    if (sort?.length) {
       _columns.forEach(col => {
         const sortInUrlIdx = sort.findIndex(
           sortItem => sortItem.field === col.field
@@ -321,7 +326,14 @@ export function useTableColumns(
       (agg, col) => {
         if (!col.hidden) {
           if (typeof col.width === 'string') {
-            agg.fixed += +(stringToFloat(col.width) || 0)
+            if (col.width === 'fit-label') {
+              const columnLabelCharsLength = col.label.length
+
+              // These numbers are arbitrary
+              agg.fixed += columnLabelCharsLength * 8 + 40
+            } else {
+              agg.fixed += +(stringToFloat(col.width) || 0)
+            }
           } else {
             agg.relative += col.width || 1
           }
@@ -370,12 +382,21 @@ export function useTableColumns(
       }
 
       const labelChars = col.hideLabel ? 0 : col.label.length
-      const colMinWidth = col.minWidth || labelChars * 8 + 40 // These numbers are arbitrary
+      const colMinWidth = col.minWidth || labelChars * 8 // These numbers are arbitrary
 
       if (typeof col.width === 'string') {
-        col.adjustedWidth = col.name.startsWith('_')
-          ? +(stringToFloat(col.width) || 0)
-          : Math.max(+(stringToFloat(col.width) || 0), minColWidth)
+        if (col.width === 'fit-label') {
+          const columnLabelCharsLength = col.label.length
+
+          col.adjustedWidth = Math.max(
+            columnLabelCharsLength * 8 + 20,
+            col.minWidth || 0
+          ) // These numbers are arbitrary
+        } else {
+          col.adjustedWidth = col.name.startsWith('_')
+            ? +(stringToFloat(col.width) || 0)
+            : Math.max(+(stringToFloat(col.width) || 0), minColWidth)
+        }
       } else if (shouldAdjustCols) {
         const widthN = Math.max(
           calculateColWidth(
@@ -471,7 +492,7 @@ export function useTableColumns(
 
       if (foundColumn) {
         col.label = foundColumn.label
-      } else {
+      } else if (props.translationPrefix) {
         col.label = $t(`${props.translationPrefix}.${col.field}`)
       }
     })

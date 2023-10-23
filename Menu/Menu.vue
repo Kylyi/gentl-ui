@@ -9,6 +9,7 @@ import {
   shift,
   size,
 } from '@floating-ui/dom'
+import { config } from '~/config'
 
 // Types
 import type { IMenuProps } from '~/components/Menu/types/menu-props.type'
@@ -118,6 +119,7 @@ async function createFloatInstance(options?: { skipFlip?: boolean }) {
     return
   }
 
+  let idx = Number(!!skipFlip)
   const { x, y, middlewareData, placement } = await computePosition(
     referenceElement,
     menuEl.value,
@@ -133,13 +135,17 @@ async function createFloatInstance(options?: { skipFlip?: boolean }) {
           : [flip({ fallbackPlacements: props.fallbackPlacements })]),
         size({
           apply({ availableWidth, availableHeight, elements }) {
-            Object.assign(elements.floating.style, {
-              maxWidth: `${availableWidth}px`,
-              maxHeight:
-                typeof props.maxHeight === 'number'
-                  ? `${Math.min(availableHeight, props.maxHeight)}px`
-                  : `min(${availableHeight}px, ${props.maxHeight})`,
-            })
+            if (idx > 0) {
+              Object.assign(elements.floating.style, {
+                maxWidth: `${availableWidth}px`,
+                maxHeight:
+                  typeof props.maxHeight === 'number'
+                    ? `${Math.min(availableHeight, props.maxHeight)}px`
+                    : `min(${availableHeight}px, ${props.maxHeight})`,
+              })
+            }
+
+            idx++
           },
           padding: 8,
           boundary: props.boundary,
@@ -619,7 +625,7 @@ defineExpose({
       menuDom.style.maxHeight = ''
     }
 
-    createFloatInstance({ skipFlip: true })
+    createFloatInstance({ skipFlip: config.selector.shouldFlipOnSearch })
   },
 })
 </script>
@@ -682,11 +688,17 @@ defineExpose({
             </h6>
           </slot>
 
-          <Btn
-            preset="CLOSE"
-            size="sm"
-            @click="hide(true, undefined, true)"
-          />
+          <div flex="~ gap-1">
+            <slot name="header-right-prepend" />
+
+            <Btn
+              preset="CLOSE"
+              size="sm"
+              @click="hide(true, undefined, true)"
+            />
+
+            <slot name="header-right-append" />
+          </div>
         </div>
       </slot>
 

@@ -72,6 +72,11 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   autofitAdjustment = 0
 
   /**
+   * When true, the column cannot be frozen
+   */
+  noFreeze?: boolean
+
+  /**
    * Frozen columns are columns that are always visible
    */
   frozen?: boolean
@@ -207,6 +212,8 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   classes?: ClassType
   headerStyle: CSSProperties = {}
   headerClasses?: ClassType
+  totalsStyle: CSSProperties = {}
+  totalsClasses?: ClassType
 
   // Helpers
   isHelperCol = false // Helper cols are non-data columns like group actions
@@ -227,10 +234,12 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
 
   setDataType(dataType?: DataType, defaultComparator?: ComparatorEnum) {
     this.dataType = dataType || 'string'
+    const _dataType = this.dataType?.replace('Simple', '')
 
-    switch (dataType) {
+    switch (_dataType) {
       case 'number':
       case 'int':
+      case 'long':
       case 'datetime':
       case 'DateTime':
       case 'date':
@@ -252,6 +261,10 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   }
 
   async autoFit(rows: any[], slotRenderFnc?: Function, tableMinColWidth = 80) {
+    if (!this.resizable) {
+      return
+    }
+
     const { getCellWidth } = useRenderTemporaryTableCell()
 
     // We get the row with the maximum content
@@ -262,13 +275,11 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
           const cellValue = get(row, this.field)
           const cellFormattedValue = this.format?.(row, cellValue) || cellValue
 
-          if (cellFormattedValue) {
-            const labelChars = String(cellFormattedValue).length
+          const labelChars = String(cellFormattedValue || '').length
 
-            if (labelChars > agg.labelChars) {
-              agg.labelChars = labelChars
-              agg.row = row
-            }
+          if (labelChars > agg.labelChars || !agg.labelChars) {
+            agg.labelChars = labelChars
+            agg.row = row
           }
 
           return agg
@@ -282,12 +293,13 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
       slotRenderFnc
     )
 
+    const labelChars = this._label.length
     const CELL_PADDING = 12
     const colMinWidth = Math.min(
       Math.max(
         tableMinColWidth,
         this.minWidth || 0,
-        // labelChars * 8 + 40, // These numbers are arbitrary
+        config.table.columnAutoFit.considerHeader ? labelChars * 8 + 40 : 0, // These numbers are pretty arbitrary
         maxContentWidth + CELL_PADDING
       ),
       config.table.columnAutoFit.maxColumnWidthChars * 6 + 20 // When autofitting, we don't want to go over some predefined value
@@ -368,6 +380,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     this.nonInteractive = col.nonInteractive ?? false
     this.autofitAdjustment = col.autofitAdjustment ?? 0
     this.link = col.link
+    this.noFreeze = col.noFreeze
 
     // We also hide the column when it's non-interactive
     if (col.nonInteractive) {
@@ -407,6 +420,8 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     this.classes = col.classes
     this.headerStyle = col.headerStyle || this.headerStyle
     this.headerClasses = col.headerClasses
+    this.totalsStyle = col.totalsStyle || this.totalsStyle
+    this.totalsClasses = col.totalsClasses || 'flex-center'
 
     this.misc = col.misc
   }

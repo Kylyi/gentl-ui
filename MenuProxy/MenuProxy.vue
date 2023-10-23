@@ -86,6 +86,14 @@ defineExpose({
       <slot name="title" />
     </template>
 
+    <template #header-right-prepend>
+      <slot name="header-right-prepend" />
+    </template>
+
+    <template #header-right-append>
+      <slot name="header-right-append" />
+    </template>
+
     <template #header="{ hide }">
       <slot
         name="header"

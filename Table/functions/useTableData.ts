@@ -1,4 +1,3 @@
-// TODO: Client-side pagination, filtering, grouping and sorting
 import { config } from '~/config'
 
 // Types
@@ -20,7 +19,6 @@ import { useTableUtils } from '~/components/Table/functions/useTableUtils'
 import {
   serializeFilterString,
   serializeOrderByString,
-  serializeSelectString,
 } from '~/components/Table/utils/transformTableQueryToQueryParams'
 
 // Injections
@@ -50,6 +48,7 @@ export function useTableData(
 ) {
   // Utils
   const route = useRoute()
+  // const request = useRequestEvent()
   const instance = getCurrentInstance()
   const { getStorageKey, parseUrlParams, getRowKey } = useTableUtils(props)
   const { isLoading, handleRequest } = useRequest({
@@ -60,8 +59,10 @@ export function useTableData(
   const isInitialized = ref(false)
   const hasMore = ref(false)
   const dataHasBeenFetched = ref(false)
+  const isForcedRefetch = ref(false)
   const search = ref('')
   const rows = (props.rows ? useVModel(props, 'rows') : ref([])) as Ref<any[]>
+  const previousDbQuery = ref<ITableDataFetchFncInput>()
   const totalRows = props.totalRows
     ? useVModel(props, 'totalRows')
     : ref<number>()
@@ -75,7 +76,7 @@ export function useTableData(
   initializeQueryBuilder()
 
   // Provides
-  provide(tableRefreshKey, () => refreshData())
+  provide(tableRefreshKey, (force?: boolean) => refreshData(force))
   provide(tableRecreateQueryBuilderKey, () => initializeQueryBuilder())
   provide(tableStorageKey, storageKey)
   provide(tableRowsKey, rows)
@@ -170,6 +171,7 @@ export function useTableData(
   const columnFilters = computed(() => {
     const columns = toValue(internalColumnsRef)
 
+    // TODO: Bad type
     return columns
       .filter(col => !!col.filterDbQuery)
       .flatMap(col => col.filterDbQuery) as any[]
@@ -207,15 +209,18 @@ export function useTableData(
 
       // When there are some columns with `alwaysSelected` attribute set to true,
       // we need to add them to the `select` array
+      // TODO: SSR version for this
+      const isStrictMode = route.query.strict === 'true'
+
       const fetchTableQuery: ITableQuery = {
         ...tableQuery,
         select: Array.from(
           new Set([
             ...(tableQuery.select || []),
 
-            // Add `alwaysSelected` columns
+            // Add `alwaysSelected` columns when `strict` is not used
             ...internalColumnsRef.value
-              .filter(col => col.alwaysSelected)
+              .filter(col => col.alwaysSelected && !isStrictMode)
               .map(col => col.field),
 
             // Add sorted columns
@@ -244,7 +249,11 @@ export function useTableData(
 
   provide(tableQueryKey, dbQuery)
 
-  const refreshData = useDebounceFn(dbQuery.trigger, 100)
+  const refreshData = useDebounceFn((force?: boolean) => {
+    isForcedRefetch.value = !!force
+
+    dbQuery.trigger()
+  }, 100)
 
   /**
    * The function that actually fetches the data from the server
@@ -318,6 +327,7 @@ export function useTableData(
             lastRow: lastRow.value,
           },
         })
+
         options.tableQuery.count = false
       }
 
@@ -380,21 +390,59 @@ export function useTableData(
         return
       }
 
+      if (
+        !isForcedRefetch.value &&
+        previousDbQuery.value?.fetchQueryParams.toString() ===
+          dbQuery.fetchQueryParams.toString()
+      ) {
+        // We might have some columns `alwaysSelected`, so if we add such column into
+        // the table, it would actually not trigger the refetch, if that happens,
+        // we need to manually adjust the url
+        const hasDifferentVisibleCols =
+          dbQuery.tableQuery.select?.length !==
+          previousDbQuery.value?.tableQuery.select?.length
+
+        if (!hasDifferentVisibleCols) {
+          if (layoutRef.value?.preventLayoutReset) {
+            layoutRef.value.preventLayoutReset = false
+          }
+
+          return
+        }
+      }
+
+      if (layoutRef.value?.preventLayoutReset) {
+        layoutRef.value.preventLayoutReset = false
+      } else {
+        layoutRef.value = undefined
+      }
+
       await fetchAndSetData(dbQuery)
+      previousDbQuery.value = dbQuery
 
       // NOTE: Set URL
       if (props.useUrl) {
+        const tableColumnFields = internalColumnsRef.value
+          .filter(col => !col.isHelperCol)
+          .map(col => col.field)
+
         const routeQueryWithoutTableParams = omit(route.query, [
           'qb',
           'filters',
           'order',
           'select',
           'search',
+          'and',
+          'or',
+          ...tableColumnFields,
         ])
         const qb = serializeFilterString(dbQuery.tableQuery.queryBuilder)
         const filters = serializeFilterString(dbQuery.tableQuery.columnFilters)
         const order = serializeOrderByString(dbQuery.tableQuery.orderBy)
-        const select = serializeSelectString(dbQuery.tableQuery.select)
+        const select = internalColumnsRef.value
+          .filter(col => !col.hidden && !col.isHelperCol)
+          .map(col => col.field)
+          .join(',')
 
         navigateTo(
           {
@@ -407,9 +455,9 @@ export function useTableData(
               ...(dbQuery.tableQuery.search && {
                 search: dbQuery.tableQuery.search,
               }),
-              // ...(dbQuery.tableQuery.includeDeleted && {
-              //   includeDeleted: dbQuery.tableQuery.includeDeleted,
-              // }),
+              ...(dbQuery.tableQuery.includeDeleted && {
+                includeDeleted: String(dbQuery.tableQuery.includeDeleted),
+              }),
             },
           },
           { replace: true }
@@ -426,8 +474,14 @@ export function useTableData(
         queryBuilder: dbQuery.tableQuery.queryBuilder,
       })
 
-      // NOTE: Focus the table so we can use keyboard navigation
-      scrollerEl.value?.$el.focus()
+      // NOTE: Focus the table so we can use keyboard navigation (but only if no floating element is visible)
+      if (process.client) {
+        const hasFloatingEl = !!document.querySelector('.floating-element')
+
+        if (!hasFloatingEl) {
+          scrollerEl.value?.$el.focus()
+        }
+      }
     },
     { immediate: true }
   )
@@ -443,6 +497,7 @@ export function useTableData(
     const { queryBuilder: schemaQueryBuilder } = parseUrlParams({
       columnsRef: internalColumnsRef,
       searchParams: layoutRef.value?.schema,
+      fromSchema: !!layoutRef.value?.schema,
     })
 
     const isUrlUsed =
@@ -478,6 +533,9 @@ export function useTableData(
       queryBuilder.value = tableState.value.queryBuilder
     }
   }
+
+  // Emit loading events
+  watch(isLoading, loading => instance?.emit('update:loading', loading))
 
   isInitialized.value = true
 

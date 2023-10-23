@@ -44,6 +44,7 @@ export function useList(
   const isInitialized = ref(false)
 
   // Utils
+  const { normalizeText } = useText()
   const { sortData } = useSorting()
   const { groupData } = useGrouping()
   const { getListProps } = useListUtils()
@@ -99,14 +100,16 @@ export function useList(
         _ref: item,
       }
 
-      if (!config.list.useToBoldLatin) {
-        return itemPartial
-      }
-
       keys?.forEach(key => {
         const val = get(item, key as string)
 
-        set(itemPartial, key as string, $toBoldLatin(val?.toString()))
+        set(
+          itemPartial,
+          key as string,
+          config.list.useToBoldLatin
+            ? $toBoldLatin(val?.toString())
+            : normalizeText(val?.toString())
+        )
       })
 
       return itemPartial
@@ -127,7 +130,7 @@ export function useList(
   const defaultSortBy = [
     new SortItem<any>({
       name: '_label',
-      sort: 1,
+      sort: 'asc',
       format: row =>
         typeof props.itemLabel === 'function'
           ? props.itemLabel(row)
