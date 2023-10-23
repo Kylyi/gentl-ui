@@ -12,13 +12,18 @@ type IProps = {
   getTotalsData: ITableProps['getTotalsData']
 }
 
-defineProps<IProps>()
+const props = defineProps<IProps>()
 defineEmits<{
   (e: 'scrolled', left: number): void
 }>()
 
 // Layout
 const totalsEl = ref<InstanceType<typeof HorizontalScroller>>()
+const columns = toRef(props, 'columns')
+
+const visibleColumns = computed(() => {
+  return columns.value.filter(col => !col.hidden)
+})
 
 defineExpose({
   syncScroll: (left: number) => {
@@ -41,7 +46,7 @@ defineExpose({
   >
     <!-- Columns -->
     <TableTotalCell
-      v-for="col in columns"
+      v-for="col in visibleColumns"
       :key="col.field"
       :column="col"
       :get-totals-data="getTotalsData"
