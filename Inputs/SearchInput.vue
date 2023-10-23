@@ -38,7 +38,9 @@ defineExpose({
     @update:model-value="$emit('update:model-value', $event)"
   >
     <template #prepend>
+      <slot name="prepend" />
       <div
+        v-if="!$slots.prepend"
         carbon:search
         color="ca"
         m="l-2"
