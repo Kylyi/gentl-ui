@@ -75,7 +75,7 @@ function getShownValue(val: any) {
             <span
               v-if="!toOriginalValue || !val"
               class="value-container-card-value text-purple-500"
-              :class="[valueClass, { 'font-bold': !noBold }]"
+              :class="[originalValueClass, { 'font-bold': !noBold }]"
             >
               {{ getShownValue(val) }}
             </span>
