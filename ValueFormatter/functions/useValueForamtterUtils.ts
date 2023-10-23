@@ -19,6 +19,8 @@ export function useValueFormatterUtils() {
       'emptyValueString',
       'row',
       'emptyValue',
+      'originalValue',
+      'formatOriginalValue',
     ])
   }
 

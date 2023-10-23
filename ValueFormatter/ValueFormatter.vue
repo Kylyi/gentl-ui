@@ -21,12 +21,38 @@ const formattedValue = computedEager(() => {
     emptyValue: props.emptyValue,
   })
 })
+
+const formattedOriginalValue = computedEager(() => {
+  return formatValue(props.originalValue, props.row, {
+    dataType: props.dataType,
+    format: props.formatOriginalValue
+      ? props.formatOriginalValue
+      : props.format,
+    emptyValue: props.emptyValue,
+  })
+})
 </script>
 
 <template>
   <slot :val="formattedValue">
     <span v-bind="$attrs">
       {{ isNil(formattedValue) ? emptyValueString : formattedValue }}
+    </span>
+  </slot>
+
+  <slot
+    name="originalValue"
+    :val="formattedOriginalValue"
+  >
+    <span
+      v-if="originalValue !== undefined"
+      v-bind="$attrs"
+    >
+      {{
+        isNil(formattedOriginalValue)
+          ? emptyValueString
+          : formattedOriginalValue
+      }}
     </span>
   </slot>
 </template>

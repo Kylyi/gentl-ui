@@ -33,6 +33,11 @@ export interface IMiniCardProps extends IValueFormatter {
   to?: IBtnProps['to']
 
   /**
+   * The link we want to redirect to orginal value
+   */
+  toOriginalValue?: IBtnProps['to']
+
+  /**
    * The orginal value of the field used to compare with current value
    */
   originalValue?: string
