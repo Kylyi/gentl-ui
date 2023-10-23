@@ -25,9 +25,7 @@ const formattedValue = computedEager(() => {
 const formattedOriginalValue = computedEager(() => {
   return formatValue(props.originalValue, props.row, {
     dataType: props.dataType,
-    format: props.formatOriginalValue
-      ? props.formatOriginalValue
-      : props.format,
+    format: props.format,
     emptyValue: props.emptyValue,
   })
 })

@@ -20,7 +20,6 @@ export function useValueFormatterUtils() {
       'row',
       'emptyValue',
       'originalValue',
-      'formatOriginalValue',
     ])
   }
 

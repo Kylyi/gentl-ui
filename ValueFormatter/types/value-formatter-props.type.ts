@@ -9,11 +9,6 @@ export interface IValueFormatter {
   format?: (row: any, value: any) => any
 
   /**
-   * A custom formatter function for the original value
-   */
-  formatOriginalValue?: (row: any, value: any) => any
-
-  /**
    * When the `value` is the same as `emptyValue`, the `emptyValueString` will be shown instead
    */
   emptyValue?: any
