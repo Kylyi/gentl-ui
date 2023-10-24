@@ -1,3 +1,12 @@
+import { ToggleState } from '~/components/Toggle/types/toggle-props.type'
+
+export type CheckboxClass = Record<
+  ToggleState,
+  {
+    checkbox?: ClassType
+    label?: ClassType
+  }
+>
 export interface ICheckboxProps {
   checkValue?: any
   color?:
@@ -21,4 +30,5 @@ export interface ICheckboxProps {
   name?: string
   size?: 'xs' | 'sm' | 'md' | 'lg'
   uncheckValue?: any
+  visuals?: Partial<CheckboxClass>
 }
