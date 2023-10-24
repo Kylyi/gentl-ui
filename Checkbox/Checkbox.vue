@@ -46,6 +46,30 @@ function handleStateChange() {
     )
   }
 }
+
+const checkboxClassVisuals = computed(() => {
+  if (toggleState.value.checked) {
+    return props.visuals?.checked?.checkbox
+  }
+
+  if (toggleState.value.indeterminate) {
+    return props.visuals?.indeterminate?.checkbox
+  }
+
+  return props.visuals?.unchecked?.checkbox
+})
+
+const labelClassVisuals = computed(() => {
+  if (toggleState.value.checked) {
+    return props.visuals?.checked?.label
+  }
+
+  if (toggleState.value.indeterminate) {
+    return props.visuals?.indeterminate?.label
+  }
+
+  return props.visuals?.unchecked?.label
+})
 </script>
 
 <template>
@@ -72,7 +96,11 @@ function handleStateChange() {
 
     <div
       class="checkbox"
-      :class="[`is-${color}`, { 'is-readonly': !editable }]"
+      :class="[
+        `is-${color}`,
+        { 'is-readonly': !editable },
+        `${checkboxClassVisuals}`,
+      ]"
     >
       <Checkmark
         :class="{ hidden: !toggleState.checked }"
@@ -95,7 +123,7 @@ function handleStateChange() {
       <span
         v-if="label"
         class="checkbox-label"
-        :class="labelClass"
+        :class="[`${labelClass}`, `${labelClassVisuals}`]"
       >
         {{ label }}
       </span>
