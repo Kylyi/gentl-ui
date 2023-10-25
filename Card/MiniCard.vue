@@ -45,50 +45,56 @@ function getShownValue(val: any) {
       </div>
 
       <ValueFormatter v-bind="valueFormatterProps">
-        <!-- Value -->
         <template #default="{ val }">
           <slot :val="val">
             <span
               v-if="!to || !val"
               class="value-container-card-value"
-              :class="valueClass"
+              :class="[valueClass, { 'font-bold': !noBold }]"
             >
-              {{ getShownValue(val) }}
+              <div flex="~ col gap-y-2">
+                <!-- Current value -->
+                <div>
+                  {{ getShownValue(val) }}
+                </div>
+                <!-- Orginal Value -->
+                <div
+                  v-if="originalValue !== undefined"
+                  text-purple-500
+                >
+                  {{ getShownValue(originalValue) }}
+                </div>
+              </div>
             </span>
-
-            <NuxtLink
+            <div
               v-else
-              :to="to"
-              class="link"
+              flex="~ col gap-y-2"
             >
-              {{ getShownValue(val) }}
-            </NuxtLink>
+              <NuxtLink
+                :to="to"
+                class="link"
+                :class="[valueClass, { 'font-bold': !noBold }]"
+              >
+                <span class="link_label">
+                  <span class="link_label__icon" />
+                  {{ getShownValue(val) }}
+                </span>
+              </NuxtLink>
+
+              <NuxtLink
+                v-if="originalValue !== undefined"
+                :to="to"
+                class="link"
+                :class="[valueClass, { 'font-bold': !noBold }]"
+                text-purple-500
+              >
+                <span class="link_label">
+                  <span class="link_label__icon" />
+                  {{ getShownValue(originalValue) }}
+                </span>
+              </NuxtLink>
+            </div>
           </slot>
-        </template>
-
-        <!-- Orginal Value -->
-        <template
-          v-if="originalValue !== undefined"
-          #originalValue="{ val }"
-        >
-          <div m-t-2>
-            <span
-              v-if="!toOriginalValue || !val"
-              class="value-container-card-value text-purple-500"
-              :class="[originalValueClass, { 'font-bold': !noBold }]"
-            >
-              {{ getShownValue(val) }}
-            </span>
-
-            <NuxtLink
-              v-else
-              :to="toOriginalValue"
-              class="link"
-              text-purple-500
-            >
-              {{ getShownValue(val) }}
-            </NuxtLink>
-          </div>
         </template>
       </ValueFormatter>
     </div>
@@ -99,9 +105,6 @@ function getShownValue(val: any) {
 .value-container-card {
   --apply: flex rounded-custom p-x-2 p-y-1 flex-gap-2;
 
-  &__content {
-    --apply:  flex flex-col;
-  }
   &__icon {
     --apply: shrink-0 m-t-.5;
   }
