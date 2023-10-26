@@ -240,6 +240,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
       case 'number':
       case 'int':
       case 'long':
+      case 'double':
       case 'datetime':
       case 'DateTime':
       case 'date':
