@@ -487,15 +487,17 @@ export function useTableColumns(
 
   // Sync the column labels on locale change
   watch(locale, () => {
-    internalColumns.value.forEach(col => {
-      const foundColumn = props.columns?.find(c => c.field === col.field)
+    setTimeout(() => {
+      internalColumns.value.forEach(col => {
+        const foundColumn = props.columns?.find(c => c.field === col.field)
 
-      if (foundColumn) {
-        col.label = foundColumn.label
-      } else if (props.translationPrefix) {
-        col.label = $t(`${props.translationPrefix}.${col.field}`)
-      }
-    })
+        if (foundColumn) {
+          col.label = foundColumn.label
+        } else if (props.translationPrefix) {
+          col.label = $t(`${props.translationPrefix}.${col.field}`)
+        }
+      })
+    }, 0)
   })
 
   return {
