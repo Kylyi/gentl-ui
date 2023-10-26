@@ -82,6 +82,7 @@ const $v = useVuelidate({ $scope: 'qb' })
     >
       <Form
         :label="$t('apply')"
+        :submit-confirmation="false"
         @submit="syncToParent"
       >
         <QueryBuilder

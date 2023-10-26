@@ -288,6 +288,7 @@ const $v = useVuelidate(
         :submit-disabled="!isSaveable || !hasLayoutChanged"
         submit-class="w-30"
         :loading="isLoading"
+        :submit-confirmation="false"
         @submit="handleSaveLayout"
       >
         <TextInput
