@@ -122,16 +122,21 @@ watch(notificationCounter, async () => {
       />
 
       <!-- Title -->
-      <span
+      <div
         p="y-2"
         grow
-        break-all
+        overflow="auto"
         :class="{
           'font-bold tracking-wide': notification.subtitle,
         }"
       >
-        {{ notification.title }}
-      </span>
+        <p
+          max-w="full"
+          break="words"
+        >
+          {{ notification.title }}
+        </p>
+      </div>
 
       <!-- Close button -->
       <Btn
