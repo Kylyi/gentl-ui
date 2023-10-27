@@ -42,16 +42,18 @@ const isBreadcrumbVisibleByIndex = computed(() => {
     return Array(breadcrumbs.value.length).fill(true)
   }
 
-  const result = Array(breadcrumbs.value.length).fill(true)
+  let result = Array(breadcrumbs.value.length).fill(true)
   let visibleBreadcrumbsWidth = breadcrumbsWidthByIndex.value.reduce(
     (a: number, b: number) => a + b,
     0
   )
   while (visibleBreadcrumbsWidth > breadcrumbsAvaiableWidth.value - 15) {
-    const lastVisibleBreadcrumbIndex = result.lastIndexOf(true)
-    result[lastVisibleBreadcrumbIndex] = false
-    visibleBreadcrumbsWidth -=
-      breadcrumbsWidthByIndex.value[lastVisibleBreadcrumbIndex]
+    const { b, index } = hideTheRightBreadcrumb(result)
+    result = b
+    if (index === undefined) {
+      break
+    }
+    visibleBreadcrumbsWidth -= breadcrumbsWidthByIndex.value[index]
   }
 
   return result
@@ -74,6 +76,24 @@ onMounted(() => {
     isMounted.value = true
   }, 1)
 })
+
+function hideTheRightBreadcrumb(b: boolean[]) {
+  if (b.length <= 2) {
+    return { b }
+  }
+
+  const index = b.findIndex(
+    (value, i) => i !== 0 && i !== b.length - 1 && value === true
+  )
+
+  if (index === -1) {
+    return { b }
+  }
+
+  b[index] = false
+
+  return { b, index }
+}
 </script>
 
 <template>
