@@ -125,6 +125,7 @@ watch(notificationCounter, async () => {
       <span
         p="y-2"
         grow
+        break-all
         :class="{
           'font-bold tracking-wide': notification.subtitle,
         }"
