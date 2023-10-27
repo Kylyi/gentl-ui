@@ -226,9 +226,18 @@ function handleMenuBeforeHide() {
         :column="column"
         :columns="columns"
       />
+
       <TableColumnFiltering
         v-if="column.filterable"
         v-bind="props"
+      />
+      <Banner
+        v-else-if="column.filters?.length"
+        :label="$t('filter.nonInteractiveExplain')"
+        icon-center
+        type="info"
+        outlined
+        m="x-2 b-2"
       />
     </MenuProxy>
   </Btn>
