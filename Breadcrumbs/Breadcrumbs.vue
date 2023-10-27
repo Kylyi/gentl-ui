@@ -14,14 +14,9 @@ const breadcrumbs = computed(() => {
     },
     ...breadcrumbsInjected.value,
   ]
-  // .flatMap(breadcrumb => [breadcrumb, 'splitter'])
-  // .slice(0, -1)
 })
 
 const breadcrumbEls = ref<(Element | ComponentPublicInstance | null)[]>([])
-
-const breadcrumbsWrapperEl = ref<HTMLElement>()
-const { width: containerWidth } = useElementSize(breadcrumbsWrapperEl)
 
 const breadcrumbsDivEl = ref<HTMLElement>()
 const { width: breadcrumbsDivWidth } = useElementSize(breadcrumbsDivEl)
@@ -37,6 +32,7 @@ const breadcrumbsAvaiableWidth = computed(() => {
 // Calculate visible breadcrumbs
 const breadcrumbsWidthByIndex = ref<number[]>([])
 
+const isMounted = ref(false)
 const isBreadcrumbVisibleByIndex = computed(() => {
   if (!isMounted.value) {
     return Array(breadcrumbs.value.length).fill(true)
@@ -47,7 +43,7 @@ const isBreadcrumbVisibleByIndex = computed(() => {
     (a: number, b: number) => a + b,
     0
   )
-  while (visibleBreadcrumbsWidth > breadcrumbsAvaiableWidth.value - 15) {
+  while (visibleBreadcrumbsWidth > breadcrumbsAvaiableWidth.value - 70) {
     const { b, index } = hideTheRightBreadcrumb(result)
     result = b
     if (index === undefined) {
@@ -59,7 +55,10 @@ const isBreadcrumbVisibleByIndex = computed(() => {
   return result
 })
 
-const isMounted = ref(false)
+const isAnyBreadcrumbHidden = computedEager(() => {
+  return isBreadcrumbVisibleByIndex.value.includes(false)
+})
+
 onMounted(() => {
   setTimeout(() => {
     // calculate breadcrumbs width
@@ -97,7 +96,6 @@ function hideTheRightBreadcrumb(b: boolean[]) {
 </script>
 
 <template>
-  {{ containerWidth }}
   <br />
   breadCrumbsAvaiableWidth: {{ breadcrumbsAvaiableWidth }}
   <br />
@@ -106,15 +104,12 @@ function hideTheRightBreadcrumb(b: boolean[]) {
   <br />
   visible breadcrumbs by index {{ isBreadcrumbVisibleByIndex }}
 
-  <div
-    ref="breadcrumbsWrapperEl"
-    class="breadcrumbs-wrapper"
-  >
+  <div class="breadcrumbs-wrapper">
     <div
       ref="breadcrumbsDivEl"
       class="breadcrumbs"
       :class="{
-        absolute: !isMounted, // to calculate widths on ssr
+        absolute: !isMounted, // to calculate widths right after mounting
       }"
     >
       <template
@@ -138,7 +133,6 @@ function hideTheRightBreadcrumb(b: boolean[]) {
             :class="BUTTON_PRESET.CHEVRON_RIGHT.icon"
             class="breadcrumb-item"
           />
-
           <Btn
             v-bind="breadcrumb"
             no-active-link
@@ -150,6 +144,19 @@ function hideTheRightBreadcrumb(b: boolean[]) {
             }"
             no-uppercase
           />
+
+          <span
+            v-if="isAnyBreadcrumbHidden && index === 0"
+            flex
+            items-center
+            p-l-1
+          >
+            <span
+              :class="BUTTON_PRESET.CHEVRON_RIGHT.icon"
+              class="breadcrumb-item"
+            />
+            <Btn label="..." />
+          </span>
         </div>
       </template>
       <div ref="slotAppendEl">
