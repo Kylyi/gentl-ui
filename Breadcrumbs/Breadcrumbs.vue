@@ -18,31 +18,50 @@ const breadcrumbs = computed(() => {
   // .slice(0, -1)
 })
 
-// Refs for breadcrumb container and items
-const breadcrumbsWrapperEl = ref<HTMLElement>()
 const breadcrumbEls = ref<(Element | ComponentPublicInstance | null)[]>([])
-const slotRightEl = ref<HTMLElement>()
-const slotAppendEl = ref<HTMLElement>()
 
-// Widths
+const breadcrumbsWrapperEl = ref<HTMLElement>()
 const { width: containerWidth } = useElementSize(breadcrumbsWrapperEl)
-const { width: slotRightWidth } = useElementSize(slotRightEl)
+
+const breadcrumbsDivEl = ref<HTMLElement>()
+const { width: breadcrumbsDivWidth } = useElementSize(breadcrumbsDivEl)
+
+const slotAppendEl = ref<HTMLElement>()
 const { width: slotAppendWidth } = useElementSize(slotAppendEl)
-const slotsWidth = computed(() => {
-  return floor(slotRightWidth.value + slotAppendWidth.value)
-})
+
 const breadcrumbsAvaiableWidth = computed(() => {
-  return containerWidth.value - slotsWidth.value
+  // breadcrumbs div width - appended slot width - 4px for gap
+  return floor(breadcrumbsDivWidth.value - slotAppendWidth.value - 4)
 })
 
 // Calculate visible breadcrumbs
-const isBreadcrumbVisibleByIndex = ref<boolean[]>([])
 const breadcrumbsWidthByIndex = ref<number[]>([])
 
+const isBreadcrumbVisibleByIndex = computed(() => {
+  if (!isMounted.value) {
+    return Array(breadcrumbs.value.length).fill(true)
+  }
+
+  const result = Array(breadcrumbs.value.length).fill(true)
+  let visibleBreadcrumbsWidth = breadcrumbsWidthByIndex.value.reduce(
+    (a: number, b: number) => a + b,
+    0
+  )
+  while (visibleBreadcrumbsWidth > breadcrumbsAvaiableWidth.value - 15) {
+    const lastVisibleBreadcrumbIndex = result.lastIndexOf(true)
+    result[lastVisibleBreadcrumbIndex] = false
+    visibleBreadcrumbsWidth -=
+      breadcrumbsWidthByIndex.value[lastVisibleBreadcrumbIndex]
+  }
+
+  return result
+})
+
+const isMounted = ref(false)
 onMounted(() => {
   setTimeout(() => {
+    // calculate breadcrumbs width
     for (const [index, breadcrumb] of breadcrumbs.value.entries()) {
-      isBreadcrumbVisibleByIndex.value[index] = true
       const breadcrumbEl = breadcrumbEls.value[
         breadcrumbs.value.indexOf(breadcrumb)
       ] as HTMLElement
@@ -52,14 +71,13 @@ onMounted(() => {
           breadcrumbEl.offsetWidth + (index === 0 ? 0 : 4) // 4px for gap
       }
     }
+    isMounted.value = true
   }, 1)
 })
 </script>
 
 <template>
   {{ containerWidth }}
-  <br />
-  slotsWidth: {{ slotsWidth }}
   <br />
   breadCrumbsAvaiableWidth: {{ breadcrumbsAvaiableWidth }}
   <br />
@@ -72,12 +90,19 @@ onMounted(() => {
     ref="breadcrumbsWrapperEl"
     class="breadcrumbs-wrapper"
   >
-    <div class="breadcrumbs">
+    <div
+      ref="breadcrumbsDivEl"
+      class="breadcrumbs"
+      :class="{
+        absolute: !isMounted, // to calculate widths on ssr
+      }"
+    >
       <template
         v-for="(breadcrumb, index) in breadcrumbs"
         :key="breadcrumb.to"
       >
         <div
+          v-if="isBreadcrumbVisibleByIndex![index]"
           :ref="
             el => {
               breadcrumbEls[index] = el
@@ -111,9 +136,7 @@ onMounted(() => {
         <slot name="append" />
       </div>
     </div>
-    <div ref="slotRightEl">
-      <slot name="right" />
-    </div>
+    <slot name="right" />
   </div>
 </template>
 
