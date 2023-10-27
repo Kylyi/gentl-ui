@@ -91,7 +91,11 @@ function handleMenuBeforeHide() {
     const isUndefinedValue = filter.value === undefined
     const isEmptyArray = Array.isArray(filter.value) && !filter.value.length
 
-    return (!isUndefinedValue && !isEmptyArray) || isNonValueComparator
+    return (
+      (!isUndefinedValue && !isEmptyArray) ||
+      isNonValueComparator ||
+      filter.nonInteractive
+    )
   })
 
   tableFocus()
