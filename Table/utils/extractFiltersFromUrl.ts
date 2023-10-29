@@ -201,7 +201,7 @@ function parseItemSegment(
   const item: IQueryBuilderItem = {
     id: generateUUID(),
     path,
-    field: (columnsByField[field].field as string) ?? field,
+    field: (columnsByField[field]?.field as string) ?? field,
     comparator: foundComparator,
     value: parsedValue,
   }
