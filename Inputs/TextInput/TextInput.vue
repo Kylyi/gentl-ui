@@ -1,9 +1,9 @@
 <script setup lang="ts">
 // Types
-import { ITextInputProps } from '~/components/Inputs/TextInput/types/text-input-props.type'
+import { type ITextInputProps } from '~/components/Inputs/TextInput/types/text-input-props.type';
 
 // Functions
-import { useInputUtils } from '~/components/Inputs/functions/useInputUtils'
+import { useInputUtils } from '~/components/Inputs/functions/useInputUtils';
 
 const props = withDefaults(defineProps<ITextInputProps>(), {
   debounce: 0,

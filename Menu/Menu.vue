@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { MotionInstance } from '@vueuse/motion'
+import { type MotionInstance } from '@vueuse/motion'
 import {
-  Placement,
+  type Placement,
   arrow,
   computePosition,
   flip,

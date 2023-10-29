@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Placement } from '@floating-ui/dom'
+import { type Placement } from '@floating-ui/dom'
 import { config } from '~/config'
 
 // Models

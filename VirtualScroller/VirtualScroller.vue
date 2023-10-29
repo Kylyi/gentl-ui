@@ -1,16 +1,14 @@
 <script setup lang="ts">
-import { CSSProperties } from 'vue'
+import { type CSSProperties } from 'vue'
 import { config } from '~/config'
+
+// Types
+import type { IVirtualScrollerProps } from '~/components/VirtualScroller/types/virtual-scroller-props.type'
 
 // Functions
 import { useVirtualScrollerUtils } from '~/components/VirtualScroller/functions/useVirtualScrollerUtils'
 
-type IProps = {
-  emitEnabled?: boolean
-  items: any[]
-}
-
-const props = defineProps<IProps>()
+const props = defineProps<IVirtualScrollerProps>()
 const emits = defineEmits<{
   (e: 'v-scroll', payload: { startIndex: number; endIndex: number }): void
 }>()
@@ -23,7 +21,7 @@ const PAGE_SIZE = config.table.defaultPagination.pageSize
 
 // Utils
 const { binarySearch, findStartNode, doesBrowserSupportPassiveScroll } =
-  useVirtualScrollerUtils()
+  useVirtualScrollerUtils(props)
 
 // Layout
 const self = getCurrentInstance()
@@ -34,7 +32,7 @@ const viewportEl = ref<HTMLElement>()
 const isEmitEnabled = toRef(props, 'emitEnabled')
 const isMounted = ref(false)
 // const isLoading = ref(false)
-const items = toRef(props, 'items')
+const rowsModel = defineModel<any[]>('rows', { default: [], local: true })
 
 function setRef(el: any, id: number) {
   if (el) {
@@ -52,7 +50,7 @@ const largestRowHeight = ref(Number.MIN_SAFE_INTEGER)
 // The height of each item in the list
 const heights = ref<number[]>([])
 
-// Index of the starting page, each page has PAGE_SIZE items
+// Index of the starting page, each page has PAGE_SIZE rows
 const pageStartIndex = ref(0)
 
 // Index of the first list item on DOM
@@ -61,10 +59,10 @@ const startIndex = ref(0)
 // Index of the last list item on DOM
 const endIndex = ref(PAGE_SIZE)
 
-// How much to shift the content vertically so that the scrollbar is not disturbed when hiding items
+// How much to shift the content vertically so that the scrollbar is not disturbed when hiding rows
 const translateY = ref(0)
 
-// Height of the outermost div inside which all the list items are present
+// Height of the outermost div inside which all the list rows are present
 const rootHeight = ref(0)
 
 // Total height of all the rows of all the pages
@@ -77,7 +75,7 @@ const scrollTop = ref(0)
 // On page 0 , lets say all PAGE_SIZE rows add up to 2000
 // On page 1, lets say all PAGE_SIZE rows add up to 2500, then
 // rollingPageHeights: [2000, 4500]
-// page 1 = page 0 height of PAGE_SIZE items + page 1 height of PAGE_SIZE items
+// page 1 = page 0 height of PAGE_SIZE rows + page 1 height of PAGE_SIZE rows
 const rollingPageHeights = ref<number[]>([])
 
 // The id of the currently selected item, by default set to 0
@@ -129,15 +127,15 @@ const rowPositions = computed(() => {
 })
 
 /**
-	Subset of list items rendered on the DOM
+	Subset of list rows rendered on the DOM
 	*/
-const visibleItems = computed(() => {
-  return items.value.slice(startIndex.value, endIndex.value)
+const visibleRows = computed(() => {
+  return rowsModel.value.slice(startIndex.value, endIndex.value)
 })
 
 /**
   Translate the content verticaly to keep the scrollbar intact
-  We only show N items at a time so the scrollbar would get affected if we dont translate
+  We only show N rows at a time so the scrollbar would get affected if we dont translate
 */
 const spacerStyle = computed(() => {
   return {
@@ -148,8 +146,8 @@ const spacerStyle = computed(() => {
 
 /**
   Set the height of the viewport
-  For a list where all items are of equal height, height of the viewport = number of items x height of each item
-  For a list where all items are of different height, it is the sum of height of each row
+  For a list where all rows are of equal height, height of the viewport = number of rows x height of each item
+  For a list where all rows are of different height, it is the sum of height of each row
 */
 const viewportStyle = computed<CSSProperties>(() => {
   return {
@@ -163,8 +161,8 @@ const viewportStyle = computed<CSSProperties>(() => {
 function init() {
   isMounted.value = true
   // Insert the dummy data
-  // const insertedItems = this.dummyData(items.value.length)
-  // items.value.push(...insertedItems)
+  // const insertedrows = this.dummyData(rowsModel.value.length)
+  // rowsModel.value.push(...insertedRows)
 
   const el = self?.proxy?.$el
 
@@ -177,9 +175,9 @@ function init() {
 
   // window.addEventListener('keydown', handleKeyDown)
 
-  // After the items are added when they are rendered on DOM, update the heights and other properties
+  // After the rows are added when they are rendered on DOM, update the heights and other properties
   nextTick(() => {
-    update(items.value)
+    update(rowsModel.value)
     // Observe one or multiple elements
     // this.isEmitEnabled && this.emit()
   })
@@ -240,7 +238,7 @@ function scrollTo(index: number) {
 //       break
 //     // In case of right arrow key, move to the next item
 //     case 39:
-//       if (selectedIndex.value < items.value.length - 1) {
+//       if (selectedIndex.value < rowsModel.value.length - 1) {
 //         select(selectedIndex.value + 1)
 //         scrollTo(selectedIndex.value)
 //       }
@@ -248,7 +246,7 @@ function scrollTo(index: number) {
 //       break
 //     // In case of down arrow key, move to the next item
 //     case 40:
-//       if (selectedIndex.value < items.value.length - 1) {
+//       if (selectedIndex.value < rowsModel.value.length - 1) {
 //         select(selectedIndex.value + 1)
 //         scrollTo(selectedIndex.value)
 //       }
@@ -257,12 +255,12 @@ function scrollTo(index: number) {
 //   }
 // }
 
-function update(insertedItems: any[]) {
+function update(insertedRows: any[]) {
   const el = self?.proxy?.$el
 
-  for (let i = 0; i < insertedItems.length; i++) {
-    // Get the id and index of the inserted items from the array
-    const { id, index } = insertedItems[i]
+  for (let i = 0; i < insertedRows.length; i++) {
+    // Get the id and index of the inserted rows from the array
+    const { id, index } = insertedRows[i]
 
     // Check if the id has been rendered on DOM and is available
     if (itemRefs.value[id] && itemRefs.value[id]) {
@@ -293,6 +291,8 @@ function update(insertedItems: any[]) {
     }
   }
 
+  console.log(heights.value.length)
+
   rootHeight.value = el?.offsetHeight
 
   // Total height of the viewport is the sum of heights of all the rows on all the pages currently stored at the last index of page positions
@@ -311,6 +311,7 @@ const handleScroll = useThrottleFn(
     // isEmitEnabled.value && this.emit()
 
     if (_scrollTop + offsetHeight >= scrollHeight - 10) {
+      console.log('here')
       // loadMore()
     }
   },
@@ -320,6 +321,7 @@ const handleScroll = useThrottleFn(
 )
 
 watch(scrollTop, scrollTop => {
+  console.log('Log ~ scrollTop:', scrollTop)
   pageStartIndex.value = binarySearch(rollingPageHeights.value, scrollTop)
 
   const startNodeIndex = Math.max(
@@ -331,6 +333,7 @@ watch(scrollTop, scrollTop => {
   endIndex.value =
     startIndex.value + Math.floor(rootHeight.value / smallestRowHeight.value)
 
+  console.log('Log ~ endIndex.value:', endIndex.value)
   translateY.value = rowPositions.value[startNodeIndex]
 
   if (isEmitEnabled.value) {
@@ -371,7 +374,7 @@ onUnmounted(() => {
         :style="spacerStyle"
       >
         <div
-          v-for="i in visibleItems"
+          v-for="i in visibleRows"
           :key="i.id"
           :ref="el => setRef(el, i.id)"
           class="list-item"

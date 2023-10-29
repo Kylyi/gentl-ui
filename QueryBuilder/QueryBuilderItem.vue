@@ -1,8 +1,8 @@
 <script setup lang="ts">
 // Types
 import {
-  IQueryBuilderItem,
-  IQueryBuilderItemProps,
+  type IQueryBuilderItem,
+  type IQueryBuilderItemProps,
 } from '~/components/QueryBuilder/types/query-builder-item-props.type'
 
 // Models

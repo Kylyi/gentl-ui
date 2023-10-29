@@ -2,7 +2,7 @@
 import { config } from '~/config'
 
 // Types
-import { ITableProps } from '~/components/Table/types/table-props.type'
+import { type ITableProps } from '~/components/Table/types/table-props.type'
 
 // Injections
 import {

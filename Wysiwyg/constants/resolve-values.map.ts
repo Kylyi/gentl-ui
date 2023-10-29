@@ -1,7 +1,7 @@
 import { LOCALE_DEFAULT, messages } from '~/utils/i18n'
 
 // Types
-import { IWysiwygMentionItem } from '~/components/Wysiwyg/types/wysiwyg-mention-item.type'
+import { type IWysiwygMentionItem } from '~/components/Wysiwyg/types/wysiwyg-mention-item.type'
 
 const locale = LOCALE_DEFAULT
 

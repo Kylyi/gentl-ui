@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { LocaleObject } from '@nuxtjs/i18n/dist/runtime/composables'
+import { type LocaleObject } from '#i18n'
 
-// UTILS
+// Utils
 const { localesByCode } = useLocale()
 const { locale, locales } = useI18n()
 const switchLocalePath = useSwitchLocalePath()

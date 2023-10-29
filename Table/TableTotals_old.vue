@@ -5,7 +5,7 @@ import { TableColumn } from '~/components/Table/models/table-column.model'
 
 // Components
 import HorizontalScroller from '~/components/Scroller/HorizontalScroller.vue'
-import { ITableProps } from '~/components/Table/types/table-props.type'
+import { type ITableProps } from '~/components/Table/types/table-props.type'
 
 type IProps = {
   columns: TableColumn<any>[]

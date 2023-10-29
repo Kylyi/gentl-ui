@@ -3,7 +3,7 @@ import { klona } from 'klona'
 import { config } from '~/config'
 
 // Types
-import { ITableLayout } from '~/components/Table/types/table-layout.type'
+import { type ITableLayout } from '~/components/Table/types/table-layout.type'
 
 // Injections
 import {

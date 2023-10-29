@@ -1,7 +1,9 @@
 <script setup lang="ts">
+// Types
+import { type IFieldWithFormatterProps } from '~/components/Field/types/field-with-formatter.type'
+
 // Functions
 import { useFieldUtils } from '~/components/Field/functions/useFieldUtils'
-import { IFieldWithFormatterProps } from '~/components/Field/types/field-with-formatter.type'
 
 const props = defineProps<IFieldWithFormatterProps>()
 
