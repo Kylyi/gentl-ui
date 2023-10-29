@@ -35,36 +35,56 @@ const layoutInfo = computed(() => {
 
 <template>
   <div
-    flex="~ col gap-0.5 center shrink-0"
+    flex="~ gap-0.5 self-start shrink-0"
     color="blue-100"
     p="r-1"
   >
     <!-- What was saved -->
     <div flex="~ gap-0.5">
       <div
-        class="layout-info-icon tabler:columns-2"
-        :class="{ 'color-primary': !layoutInfo.hasColumns }"
-      />
+        v-if="!layoutInfo.hasColumns"
+        class="layout-info-icon tabler:columns-2 color-blue-500"
+      >
+        <Tooltip>
+          {{ $t('table.layout.hasColumns') }}
+        </Tooltip>
+      </div>
       <div
-        class="layout-info-icon ic:round-filter-alt"
-        :class="{ 'color-primary': !layoutInfo.hasFilters }"
-      />
+        v-if="!layoutInfo.hasFilters"
+        class="layout-info-icon ic:round-filter-alt color-blue-500"
+      >
+        <Tooltip>
+          {{ $t('table.layout.hasFilters') }}
+        </Tooltip>
+      </div>
       <div
-        class="layout-info-icon basil:sort-outline"
-        :class="{ 'color-primary': !layoutInfo.hasSorting }"
-      />
+        v-if="!layoutInfo.hasSorting"
+        class="layout-info-icon basil:sort-outline color-blue-500"
+      >
+        <Tooltip>
+          {{ $t('table.layout.hasSorting') }}
+        </Tooltip>
+      </div>
     </div>
 
     <!-- Layout settings -->
     <div flex="~ gap-0.5">
       <div
-        class="layout-info-icon ic:round-public"
-        :class="{ 'color-primary': !layoutInfo.isPublic }"
-      />
+        v-if="!layoutInfo.isPublic"
+        class="layout-info-icon ic:round-public color-blue-500"
+      >
+        <Tooltip>
+          {{ $t('table.layout.isPublic') }}
+        </Tooltip>
+      </div>
       <div
-        class="layout-info-icon fluent:book-default-28-filled"
-        :class="{ 'color-primary': !layoutInfo.isDefault }"
-      />
+        v-if="!layoutInfo.isDefault"
+        class="layout-info-icon fluent:book-default-28-filled color-blue-500"
+      >
+        <Tooltip>
+          {{ $t('table.layout.isDefault') }}
+        </Tooltip>
+      </div>
     </div>
   </div>
 </template>
