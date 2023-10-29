@@ -84,15 +84,22 @@ export function useTableColumns(
       fromSchema: !!layoutRef.value?.schema,
     })
 
-    const visibleColumns = urlVisibleColumns.length
+    let visibleColumns = urlVisibleColumns.length
       ? urlVisibleColumns
       : schemaVisibleColumns
+
+    visibleColumns = config.table.allowCaseInsensitiveColumns
+      ? visibleColumns.map(col => col.toLowerCase())
+      : visibleColumns
 
     // When columns are provided in the URL or in the layout schema, we set
     //  visibility for the columns that are present and reset it for the others
     if (visibleColumns?.length || schemaVisibleColumns?.length) {
       _columns.forEach(col => {
-        const colInUrl = visibleColumns.indexOf(col.field)
+        const colField = config.table.allowCaseInsensitiveColumns
+          ? col.field.toLowerCase()
+          : col.field
+        const colInUrl = visibleColumns.indexOf(colField)
 
         if ((colInUrl > -1 || col.isHelperCol) && !col.nonInteractive) {
           col.hidden = false
