@@ -53,7 +53,7 @@ export function useSelectorUtils(options: ISelectorUtilsOptions) {
     }
   }
 
-  function handleFocusOrClick(ev?: MouseEvent | FocusEvent) {
+  function handleFocusOrClick(ev?: MouseEvent | FocusEvent, noHide?: boolean) {
     if (focusedProgramatically.value) {
       return
     }
@@ -66,7 +66,7 @@ export function useSelectorUtils(options: ISelectorUtilsOptions) {
       ev?.target as HTMLElement
     )?.closest('.floating-element')
 
-    if (!hasClickedInsideFloatingElement) {
+    if (!hasClickedInsideFloatingElement && !noHide) {
       document.querySelectorAll('.floating-element').forEach(el => {
         const currentMenuDom = menuEl.value?.getFloatingEl()
 
@@ -84,7 +84,7 @@ export function useSelectorUtils(options: ISelectorUtilsOptions) {
   // Autofocus on init
   setTimeout(() => {
     if (props.autofocus) {
-      handleFocusOrClick()
+      handleFocusOrClick(undefined, true)
     }
   }, 300)
 
