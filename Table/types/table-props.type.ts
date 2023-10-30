@@ -220,10 +220,12 @@ export interface ITableProps {
   getTotalsData?: {
     fnc: (
       options: ITableDataFetchFncInput,
-      column: TableColumn
+      column: TableColumn,
+      rows: any[]
     ) => Promise<any> | any
     errorHandler?: (error: any) => void
     payloadKey?: string
+    labelKey?: string
 
     /**
      * Whether to get the totals data immediately
