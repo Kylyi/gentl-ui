@@ -164,10 +164,10 @@ function parseItemSegment(
     throw new Error(`No valid comparator found in segment: ${segment}`)
   }
 
-  let [field] = segment.substring(0, foundComparatorIdx).split('.')
-  field = config.table?.allowCaseInsensitiveColumns
-    ? String(field).toLowerCase()
-    : field
+  const [fieldOriginal] = segment.substring(0, foundComparatorIdx).split('.')
+  const field = config.table?.allowCaseInsensitiveColumns
+    ? String(fieldOriginal).toLowerCase()
+    : fieldOriginal
 
   let value: string | undefined = segment.substring(
     foundComparatorIdx + foundComparator.length + 2
@@ -201,7 +201,7 @@ function parseItemSegment(
   const item: IQueryBuilderItem = {
     id: generateUUID(),
     path,
-    field: (columnsByField[field]?.field as string) ?? field,
+    field: (columnsByField[field]?.field as string) ?? fieldOriginal,
     comparator: foundComparator,
     value: parsedValue,
   }
