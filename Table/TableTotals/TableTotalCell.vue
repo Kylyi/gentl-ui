@@ -29,22 +29,28 @@ const tableRows = injectStrict(tableRowsKey)
 
 // Layout
 const total = ref<number>()
+const label = ref<string>()
 
 async function fetchAndSetTotals() {
   const payloadKey = props.getTotalsData?.payloadKey || config.table.payloadKey
 
-  total.value = await handleRequest(
-    () => props.getTotalsData?.fnc(dbQuery.value, props.column),
-    { payloadKey }
+  const res = await handleRequest(
+    () =>
+      props.getTotalsData?.fnc(dbQuery.value, props.column, tableRows.value),
+    { noResolve: true }
   )
+
+  total.value = get(res, payloadKey)
+
+  if (props.getTotalsData?.labelKey) {
+    label.value = get(res, props.getTotalsData.labelKey)
+  }
 }
 
 if (props.getTotalsData?.immediate) {
   await fetchAndSetTotals()
 
-  watch(tableRows, () => {
-    fetchAndSetTotals()
-  })
+  watch(tableRows, () => fetchAndSetTotals(), { immediate: true })
 }
 </script>
 
@@ -62,6 +68,15 @@ if (props.getTotalsData?.immediate) {
     ]"
     :style="{ ...column.totalsStyle, [`--colWidth`]: column.adjustedWidthPx }"
   >
+    <!-- Label -->
+    <span
+      v-if="label"
+      text="caption"
+    >
+      {{ label }}:
+    </span>
+
+    <!-- Value -->
     <ValueFormatter
       :value="total"
       data-type="number"
@@ -78,7 +93,7 @@ if (props.getTotalsData?.immediate) {
 
 .th {
   --apply: relative flex shrink-0 items-center text-xs tracking-wide
-    border-ca sm:w-$colWidth border-l-1 p-x-2 border-b-1;
+    border-ca sm:w-$colWidth border-l-1 p-x-2 border-b-1 gap-x-2;
 
   &:last-of-type {
     --apply: border-r-1;
