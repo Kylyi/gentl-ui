@@ -312,7 +312,6 @@ const $v = useVuelidate(
           <span>
             <QueryBuilderItemDataTypeShortcut
               :data-type="col.dataType"
-              :custom="canUseSelectorComparator(item.comparator, col)"
               class="relative top-1"
             />
 
