@@ -4,17 +4,17 @@ export function useSelectorUtils(options: ISelectorUtilsOptions) {
   const { props, menuElRef } = options
   const instance = getCurrentInstance()
 
-  // LAYOUT
+  // Layout
   const el = ref<any>()
   const model = useVModel(props, 'modelValue')
   const menuEl = computed(() => toValue(menuElRef))
 
-  // INPUT METHODS
+  // Input methods
   const clear = () => {
     instance?.emit('update:modelValue', props.emptyValue)
   }
 
-  // WRAPPER
+  // Wrapper
   const wrapperProps = reactivePick(
     props,
     'contentClass',
@@ -53,7 +53,7 @@ export function useSelectorUtils(options: ISelectorUtilsOptions) {
     }
   }
 
-  function handleFocusOrClick(ev: MouseEvent | FocusEvent) {
+  function handleFocusOrClick(ev?: MouseEvent | FocusEvent) {
     if (focusedProgramatically.value) {
       return
     }
@@ -63,8 +63,8 @@ export function useSelectorUtils(options: ISelectorUtilsOptions) {
     blurAnyFocusedInput()
 
     const hasClickedInsideFloatingElement = !!(
-      ev.target as HTMLElement
-    ).closest('.floating-element')
+      ev?.target as HTMLElement
+    )?.closest('.floating-element')
 
     if (!hasClickedInsideFloatingElement) {
       document.querySelectorAll('.floating-element').forEach(el => {
@@ -84,7 +84,7 @@ export function useSelectorUtils(options: ISelectorUtilsOptions) {
   // Autofocus on init
   setTimeout(() => {
     if (props.autofocus) {
-      focus()
+      handleFocusOrClick()
     }
   }, 300)
 
