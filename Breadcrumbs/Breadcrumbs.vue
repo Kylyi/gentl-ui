@@ -65,7 +65,7 @@ const hiddenBreadcrumbs = computedEager(() => {
 })
 
 onMounted(() => {
-  setTimeout(() => {
+  nextTick(() => {
     // calculate breadcrumbs width
     for (const [index, breadcrumb] of breadcrumbs.value.entries()) {
       const breadcrumbEl = breadcrumbEls.value[
@@ -78,7 +78,7 @@ onMounted(() => {
       }
     }
     isMounted.value = true
-  }, 1)
+  })
 })
 
 function hideTheRightBreadcrumb(b: boolean[]) {
@@ -112,7 +112,7 @@ function hideTheRightBreadcrumb(b: boolean[]) {
       ref="breadcrumbsDivEl"
       class="breadcrumbs"
       :class="{
-        absolute: !isMounted, // to calculate widths right after mounting
+        'absolute invisible': !isMounted, // to calculate widths right after mounting
       }"
     >
       <template
@@ -166,7 +166,10 @@ function hideTheRightBreadcrumb(b: boolean[]) {
         <slot name="append" />
       </div>
     </div>
-    <slot name="right" />
+    <!-- margin is for breadcrumb measuring purpose (in breadcrumbs absolute stays on the left) -->
+    <div m-l-a>
+      <slot name="right" />
+    </div>
   </div>
 </template>
 
