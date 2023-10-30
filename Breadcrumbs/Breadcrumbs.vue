@@ -59,6 +59,12 @@ const isAnyBreadcrumbHidden = computedEager(() => {
   return isBreadcrumbVisibleByIndex.value.includes(false)
 })
 
+const hiddenBreadcrumbs = computed(() => {
+  return breadcrumbs.value.filter(
+    (_, index) => !isBreadcrumbVisibleByIndex.value[index]
+  )
+})
+
 onMounted(() => {
   setTimeout(() => {
     // calculate breadcrumbs width
@@ -155,7 +161,7 @@ function hideTheRightBreadcrumb(b: boolean[]) {
               :class="BUTTON_PRESET.CHEVRON_RIGHT.icon"
               class="breadcrumb-item"
             />
-            <Btn label="..." />
+            <HiddenBreadcrumbsBtn :breadcrumbs="hiddenBreadcrumbs" />
           </span>
         </div>
       </template>
