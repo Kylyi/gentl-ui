@@ -309,14 +309,13 @@ const $v = useVuelidate(
         @update:model-value="handleFieldChange"
       >
         <template #item="{ item: col }">
-          <span>
-            <QueryBuilderItemDataTypeShortcut
-              :data-type="col.dataType"
-              class="relative top-1"
-            />
-
-            {{ col.label }}
-          </span>
+          <QueryBuilderItemDataTypeShortcut
+            :data-type="col.dataType"
+            class="relative top-1"
+            self-start
+            shrink-0
+          />
+          {{ col.label }}
         </template>
 
         <template
@@ -329,7 +328,6 @@ const $v = useVuelidate(
           >
             <QueryBuilderItemDataTypeShortcut
               :data-type="colSelected.dataType"
-              :custom="canUseSelectorComparator(item.comparator, colSelected)"
             />
           </div>
         </template>
