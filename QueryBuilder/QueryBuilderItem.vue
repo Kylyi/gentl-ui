@@ -315,7 +315,10 @@ const $v = useVuelidate(
             self-start
             shrink-0
           />
-          {{ col.label }}
+
+          <span m="t-0.5">
+            {{ col.label }}
+          </span>
         </template>
 
         <template

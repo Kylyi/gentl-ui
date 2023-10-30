@@ -95,8 +95,8 @@ const rowInfo = computed(() => {
 
 <style lang="scss" scoped>
 .item {
-  --apply: relative flex flex-gap-x-2 cursor-default select-none items-center
-    rounded-custom;
+  --apply: relative flex flex-gap-x-2 cursor-default select-none items-start
+    rounded-custom p-r-2;
 
   &--group {
     --apply: uppercase color-true-gray text-sm items-end p-b-0.5;
