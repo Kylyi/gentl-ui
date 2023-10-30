@@ -24,10 +24,9 @@ const { width: breadcrumbsDivWidth } = useElementSize(breadcrumbsDivEl)
 const slotAppendEl = ref<HTMLElement>()
 const { width: slotAppendWidth } = useElementSize(slotAppendEl)
 
-const breadcrumbsAvaiableWidth = computed(() => {
-  // breadcrumbs div width - appended slot width - 4px for gap
+function calculateAvailableWidth() {
   return floor(breadcrumbsDivWidth.value - slotAppendWidth.value - 4)
-})
+}
 
 // Calculate visible breadcrumbs
 const breadcrumbsWidthByIndex = ref<number[]>([])
@@ -43,7 +42,7 @@ const isBreadcrumbVisibleByIndex = computed(() => {
     (a: number, b: number) => a + b,
     0
   )
-  while (visibleBreadcrumbsWidth > breadcrumbsAvaiableWidth.value - 70) {
+  while (visibleBreadcrumbsWidth > calculateAvailableWidth() - 70) {
     const { b, index } = hideTheRightBreadcrumb(result)
     result = b
     if (index === undefined) {
@@ -59,7 +58,7 @@ const isAnyBreadcrumbHidden = computedEager(() => {
   return isBreadcrumbVisibleByIndex.value.includes(false)
 })
 
-const hiddenBreadcrumbs = computed(() => {
+const hiddenBreadcrumbs = computedEager(() => {
   return breadcrumbs.value.filter(
     (_, index) => !isBreadcrumbVisibleByIndex.value[index]
   )
@@ -102,8 +101,6 @@ function hideTheRightBreadcrumb(b: boolean[]) {
 </script>
 
 <template>
-  <br />
-  breadCrumbsAvaiableWidth: {{ breadcrumbsAvaiableWidth }}
   <br />
   {{ breadcrumbsWidthByIndex }}
   {{ breadcrumbsWidthByIndex.reduce((a, b) => a + b, 0) }}
