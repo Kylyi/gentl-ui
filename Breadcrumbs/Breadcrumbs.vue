@@ -65,19 +65,20 @@ const hiddenBreadcrumbs = computedEager(() => {
 })
 
 onMounted(() => {
-  // calculate breadcrumbs width
-  for (const [index, breadcrumb] of breadcrumbs.value.entries()) {
-    const breadcrumbEl = breadcrumbEls.value[
-      breadcrumbs.value.indexOf(breadcrumb)
-    ] as HTMLElement
+  setTimeout(() => {
+    // calculate breadcrumbs width
+    for (const [index, breadcrumb] of breadcrumbs.value.entries()) {
+      const breadcrumbEl = breadcrumbEls.value[
+        breadcrumbs.value.indexOf(breadcrumb)
+      ] as HTMLElement
 
-    if (breadcrumbEl) {
-      breadcrumbsWidthByIndex.value[index] =
-        breadcrumbEl.offsetWidth + (index === 0 ? 0 : 4) // 4px for gap
-      console.log(breadcrumbEl.offsetWidth)
+      if (breadcrumbEl) {
+        breadcrumbsWidthByIndex.value[index] =
+          breadcrumbEl.offsetWidth + (index === 0 ? 0 : 4) // 4px for gap
+      }
     }
-  }
-  isMounted.value = true
+    isMounted.value = true
+  }, 100)
 })
 
 function hideTheRightBreadcrumb(b: boolean[]) {
