@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { config } from '~/config'
+
 // Types
 import type { ITableLayout } from '~/components/Table/types/table-layout.type'
 
@@ -10,6 +12,7 @@ const props = defineProps<IProps>()
 
 const layoutInfo = computed(() => {
   const schemaSplit = props.layout.schema.split('&')
+  console.log('Log ~ layoutInfo ~  props.layout.schema:', props.layout.schema)
 
   const hasColumns = schemaSplit.some(s => s.startsWith('select='))
   const hasSorting = schemaSplit.some(s => s.startsWith('paging='))
@@ -42,49 +45,31 @@ const layoutInfo = computed(() => {
     <!-- What was saved -->
     <div flex="~ gap-0.5">
       <div
-        v-if="!layoutInfo.hasColumns"
+        v-if="layoutInfo.hasColumns"
         class="layout-info-icon tabler:columns-2 color-blue-500"
-      >
-        <Tooltip>
-          {{ $t('table.layout.hasColumns') }}
-        </Tooltip>
-      </div>
+      />
       <div
-        v-if="!layoutInfo.hasFilters"
+        v-if="layoutInfo.hasFilters"
         class="layout-info-icon ic:round-filter-alt color-blue-500"
-      >
-        <Tooltip>
-          {{ $t('table.layout.hasFilters') }}
-        </Tooltip>
-      </div>
+      />
       <div
-        v-if="!layoutInfo.hasSorting"
+        v-if="layoutInfo.hasSorting"
         class="layout-info-icon basil:sort-outline color-blue-500"
-      >
-        <Tooltip>
-          {{ $t('table.layout.hasSorting') }}
-        </Tooltip>
-      </div>
+      />
     </div>
 
     <!-- Layout settings -->
     <div flex="~ gap-0.5">
       <div
-        v-if="!layoutInfo.isPublic"
+        v-if="layoutInfo.isPublic"
         class="layout-info-icon ic:round-public color-blue-500"
-      >
-        <Tooltip>
-          {{ $t('table.layout.isPublic') }}
-        </Tooltip>
-      </div>
+      />
       <div
-        v-if="!layoutInfo.isDefault"
+        v-if="
+          layoutInfo.isDefault && !config.table.useLocalStorageForDefaultLayout
+        "
         class="layout-info-icon fluent:book-default-28-filled color-blue-500"
-      >
-        <Tooltip>
-          {{ $t('table.layout.isDefault') }}
-        </Tooltip>
-      </div>
+      />
     </div>
   </div>
 </template>

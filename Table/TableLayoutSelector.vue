@@ -212,8 +212,6 @@ function handleLayoutSelect(
     //   console.log('Log ~ setTimeout ~ isOnlyColFilters:', isOnlyColFilters)
     //   // tableRefresh(true)
     // }
-
-    console.log(schemaFilters)
   }, 0)
 
   layoutSelectorEl.value?.blur()
