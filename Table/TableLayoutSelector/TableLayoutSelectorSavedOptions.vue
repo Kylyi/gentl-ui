@@ -12,6 +12,7 @@ const props = defineProps<IProps>()
 
 const layoutInfo = computed(() => {
   const schemaSplit = props.layout.schema.split('&')
+  console.log('Log ~ layoutInfo ~ schemaSplit:', schemaSplit)
 
   const hasColumns = schemaSplit.some(s => s.startsWith('select='))
   const hasSorting = schemaSplit.some(
@@ -63,8 +64,9 @@ const layoutInfo = computed(() => {
       <div
         v-if="layoutInfo.hasSorting"
         class="layout-info-icon color-blue-500"
+        m="l--1"
       >
-        <div pepicons-pop:sort />
+        <div basil:sort-outline />
       </div>
     </div>
 
