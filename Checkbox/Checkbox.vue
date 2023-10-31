@@ -24,9 +24,28 @@ const toggleState = computed(() => {
     props.comparatorFn?.(props.modelValue, props.indeterminateValue) ??
     props.modelValue === props.indeterminateValue
 
+  const checkboxClass: ClassType = isChecked
+    ? props.visuals?.checked?.checkbox
+    : isIndeterminate
+    ? props.visuals?.indeterminate?.checkbox
+    : props.visuals?.unchecked?.checkbox
+
+  const labelClassFromVisuals = isChecked
+    ? props.visuals?.checked?.label
+    : isIndeterminate
+    ? props.visuals?.indeterminate?.label
+    : props.visuals?.unchecked?.label
+
+  const labelClass: ClassType = {
+    ...props.labelClass,
+    ...labelClassFromVisuals,
+  }
+
   return {
     checked: !isIndeterminate ? isChecked : undefined,
     indeterminate: isIndeterminate || undefined,
+    checkboxClass,
+    labelClass,
   }
 })
 
@@ -46,30 +65,6 @@ function handleStateChange() {
     )
   }
 }
-
-const checkboxClassVisuals = computed(() => {
-  if (toggleState.value.checked) {
-    return props.visuals?.checked?.checkbox
-  }
-
-  if (toggleState.value.indeterminate) {
-    return props.visuals?.indeterminate?.checkbox
-  }
-
-  return props.visuals?.unchecked?.checkbox
-})
-
-const labelClassVisuals = computed(() => {
-  if (toggleState.value.checked) {
-    return props.visuals?.checked?.label
-  }
-
-  if (toggleState.value.indeterminate) {
-    return props.visuals?.indeterminate?.label
-  }
-
-  return props.visuals?.unchecked?.label
-})
 </script>
 
 <template>
@@ -99,7 +94,7 @@ const labelClassVisuals = computed(() => {
       :class="[
         `is-${color}`,
         { 'is-readonly': !editable },
-        `${checkboxClassVisuals}`,
+        toggleState.checkboxClass,
       ]"
     >
       <Checkmark
@@ -123,7 +118,7 @@ const labelClassVisuals = computed(() => {
       <span
         v-if="label"
         class="checkbox-label"
-        :class="[`${labelClass}`, `${labelClassVisuals}`]"
+        :class="toggleState.labelClass"
       >
         {{ label }}
       </span>
