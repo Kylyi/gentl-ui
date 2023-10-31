@@ -25,25 +25,21 @@ const toggleState = computed(() => {
     props.modelValue === props.indeterminateValue
 
   // Checkbox class
-  let checkboxClass: ClassType
+  let checkboxClass: ClassType = props.visuals?.unchecked?.checkbox
 
   if (isChecked) {
     checkboxClass = props.visuals?.checked?.checkbox
   } else if (isIndeterminate) {
     checkboxClass = props.visuals?.indeterminate?.checkbox
-  } else {
-    checkboxClass = props.visuals?.unchecked?.checkbox
   }
 
   // Label class
-  let labelClassVisuals: ClassType
+  let labelClassVisuals: ClassType = props.visuals?.unchecked?.label
 
   if (isChecked) {
     labelClassVisuals = props.visuals?.checked?.label
   } else if (isIndeterminate) {
     labelClassVisuals = props.visuals?.indeterminate?.label
-  } else {
-    labelClassVisuals = props.visuals?.unchecked?.label
   }
 
   const labelClass = [props.labelClass, labelClassVisuals]
