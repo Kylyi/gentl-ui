@@ -44,10 +44,12 @@ function transformItemToPrismaCondition(
       return { [item.field]: { not: item.value } }
 
     case ComparatorEnum.IN:
-      return { [item.field]: { in: item.value } }
+      return { [item.field]: { in: item.value.map((id: any) => Number(id)) } }
 
     case ComparatorEnum.NOT_IN:
-      return { [item.field]: { not: { in: item.value } } }
+      return {
+        [item.field]: { not: { in: item.value.map((id: any) => Number(id)) } },
+      }
 
     case ComparatorEnum.LIKE:
     case ComparatorEnum.CONTAINS:

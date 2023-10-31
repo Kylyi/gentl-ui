@@ -52,7 +52,7 @@ function removeChip() {
     <ValueFormatter
       :data-type="filter.dataType"
       :value="filter.value"
-      :format="filter.format"
+      :format="filter.format ?? column.format"
     >
       <template #default="{ val }">
         <span class="filter-value">
