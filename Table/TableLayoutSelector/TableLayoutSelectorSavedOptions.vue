@@ -12,12 +12,17 @@ const props = defineProps<IProps>()
 
 const layoutInfo = computed(() => {
   const schemaSplit = props.layout.schema.split('&')
-  console.log('Log ~ layoutInfo ~  props.layout.schema:', props.layout.schema)
+  console.log('Log ~ layoutInfo ~ schemaSplit:', schemaSplit)
 
   const hasColumns = schemaSplit.some(s => s.startsWith('select='))
-  const hasSorting = schemaSplit.some(s => s.startsWith('paging='))
+  const hasSorting = schemaSplit.some(
+    s => s.startsWith('paging=') || s.startsWith('order=')
+  )
   const hasFilters = schemaSplit.some(
-    s => !s.startsWith('select=') && !s.startsWith('paging=')
+    s =>
+      !s.startsWith('select=') &&
+      !s.startsWith('paging=') &&
+      !s.startsWith('order=')
   )
 
   const isDefault =
@@ -46,16 +51,22 @@ const layoutInfo = computed(() => {
     <div flex="~ gap-0.5">
       <div
         v-if="layoutInfo.hasColumns"
-        class="layout-info-icon tabler:columns-2 color-blue-500"
-      />
+        class="layout-info-icon color-blue-500"
+      >
+        <div tabler:columns-2 />
+      </div>
       <div
         v-if="layoutInfo.hasFilters"
-        class="layout-info-icon ic:round-filter-alt color-blue-500"
-      />
+        class="layout-info-icon color-blue-500"
+      >
+        <div ic:round-filter-alt />
+      </div>
       <div
         v-if="layoutInfo.hasSorting"
-        class="layout-info-icon basil:sort-outline color-blue-500"
-      />
+        class="layout-info-icon color-blue-500"
+      >
+        <div basil:sort-outline />
+      </div>
     </div>
 
     <!-- Layout settings -->
@@ -76,6 +87,6 @@ const layoutInfo = computed(() => {
 
 <style scoped lang="scss">
 .layout-info-icon {
-  --apply: w-4 h-4;
+  --apply: flex flex-center w-4 h-4 rounded-custom;
 }
 </style>
