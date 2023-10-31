@@ -116,12 +116,12 @@ export const grantMentionItems: IWysiwygMentionItem[] = [
   },
 
   // Fund usage deadline
-  {
-    id: 'grant.fundUsageDeadline',
-    label: t('grant.fundUsageDeadline'),
-    group: t('grant.self', 1),
-    dataType: 'date',
-  },
+  // {
+  //   id: 'grant.fundUsageDeadline',
+  //   label: t('grant.fundUsageDeadline'),
+  //   group: t('grant.self', 1),
+  //   dataType: 'date',
+  // },
 
   // Territory dimensions
   {
