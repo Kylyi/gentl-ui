@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { MotionInstance } from '@vueuse/motion'
+import { type MotionInstance } from '@vueuse/motion'
 
 // Types
 import type { IDialogProps } from '~/components/Dialog/types/dialog-props.type'
@@ -475,12 +475,18 @@ defineExpose({ show, hide, toggle, getFloatingEl: () => dialogWrapperEl.value })
               </h6>
             </slot>
 
-            <Btn
-              v-if="!noClose"
-              preset="CLOSE"
-              size="sm"
-              @click="hide(true, undefined, true)"
-            />
+            <div flex="~ gap-1">
+              <slot name="header-right-prepend" />
+
+              <Btn
+                v-if="!noClose"
+                preset="CLOSE"
+                size="sm"
+                @click="hide(true, undefined, true)"
+              />
+
+              <slot name="header-right-append" />
+            </div>
           </div>
         </slot>
 

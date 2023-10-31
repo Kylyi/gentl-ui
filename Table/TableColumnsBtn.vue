@@ -188,6 +188,7 @@ async function handleApplyChanges() {
         p="2"
         :label="$t('table.applyColumns')"
         :submit-disabled="!filteredCols.length"
+        :submit-confirmation="false"
         @submit="handleApplyChanges"
       >
         <!-- Left side -->
@@ -280,7 +281,7 @@ async function handleApplyChanges() {
             p="t-2"
           >
             <div flex="~ gap-2 items-center">
-              <h6 font="bold">{{ $t('table.selectedColumns') }}</h6>
+              <h6 font="bold">{{ $t('table.columnsSelected') }}</h6>
               <span text="caption">({{ filteredCols.length }})</span>
             </div>
 

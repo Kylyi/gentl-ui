@@ -39,6 +39,7 @@ export function useTableColumns(
   layoutRef: Ref<ITableLayout | undefined>
 ) {
   // Utils
+  const route = useRoute()
   const { t, locale } = useI18n()
   const { scrollbarWidth, isOverflown } = useOverflow()
   const { parseUrlParams, hasVisibleCol, getStorageKey } = useTableUtils(props)
@@ -80,17 +81,25 @@ export function useTableColumns(
     const { columns: schemaVisibleColumns } = parseUrlParams({
       columnsRef: _columns,
       searchParams: layoutRef.value?.schema,
+      fromSchema: !!layoutRef.value?.schema,
     })
 
-    const visibleColumns = urlVisibleColumns.length
+    let visibleColumns = urlVisibleColumns.length
       ? urlVisibleColumns
       : schemaVisibleColumns
+
+    visibleColumns = config.table.allowCaseInsensitiveColumns
+      ? visibleColumns.map(col => col.toLowerCase())
+      : visibleColumns
 
     // When columns are provided in the URL or in the layout schema, we set
     //  visibility for the columns that are present and reset it for the others
     if (visibleColumns?.length || schemaVisibleColumns?.length) {
       _columns.forEach(col => {
-        const colInUrl = visibleColumns.indexOf(col.field)
+        const colField = config.table.allowCaseInsensitiveColumns
+          ? col.field.toLowerCase()
+          : col.field
+        const colInUrl = visibleColumns.indexOf(colField)
 
         if ((colInUrl > -1 || col.isHelperCol) && !col.nonInteractive) {
           col.hidden = false
@@ -123,16 +132,19 @@ export function useTableColumns(
    * Note: Mutates the columns
    */
   function handleColumnsData(_columns: TableColumn[]) {
+    const fromSchema = route.query.fromSchema === 'true'
+
     const {
       sort: urlSort,
       filters: urlFilters,
       columns: urlVisibleColumns,
       queryBuilder: urlQueryBuilder,
-    } = parseUrlParams({ columnsRef: _columns })
+    } = parseUrlParams({ columnsRef: _columns, fromSchema })
 
     const { schemaSort, filters: schemaFilters } = parseUrlParams({
       columnsRef: _columns,
       searchParams: layoutRef.value?.schema,
+      fromSchema: !!layoutRef.value?.schema,
     })
 
     const { columns: stateColumns } = tableState.value
@@ -482,15 +494,17 @@ export function useTableColumns(
 
   // Sync the column labels on locale change
   watch(locale, () => {
-    internalColumns.value.forEach(col => {
-      const foundColumn = props.columns?.find(c => c.field === col.field)
+    setTimeout(() => {
+      internalColumns.value.forEach(col => {
+        const foundColumn = props.columns?.find(c => c.field === col.field)
 
-      if (foundColumn) {
-        col.label = foundColumn.label
-      } else {
-        col.label = $t(`${props.translationPrefix}.${col.field}`)
-      }
-    })
+        if (foundColumn) {
+          col.label = foundColumn.label
+        } else if (props.translationPrefix) {
+          col.label = $t(`${props.translationPrefix}.${col.field}`)
+        }
+      })
+    }, 0)
   })
 
   return {

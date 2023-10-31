@@ -69,10 +69,11 @@ const rowInfo = computed(() => {
       <div
         flex="~ 1 col"
         w="full"
-        p="y-2 r-3"
+        p="y-0.5 r-3"
       >
         <span
           :class="{ truncate }"
+          p="y-1.5"
           v-html="rowInfo.isGroup ? item.label : item._highlighted"
         />
 
@@ -96,7 +97,7 @@ const rowInfo = computed(() => {
 <style lang="scss" scoped>
 .item {
   --apply: relative flex flex-gap-x-2 cursor-default select-none items-center
-    rounded-custom;
+    rounded-custom p-r-1;
 
   &--group {
     --apply: uppercase color-true-gray text-sm items-end p-b-0.5;

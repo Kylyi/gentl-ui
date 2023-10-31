@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Types
-import { IMonthSelectorProps } from '~/components/MonthSelector/types/month-selector-props.type'
+import { type IMonthSelectorProps } from '~/components/MonthSelector/types/month-selector-props.type'
 
 type Month = {
   idx: number

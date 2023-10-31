@@ -1,8 +1,8 @@
 <script setup lang="ts">
 // Types
 import {
-  IQueryBuilderGroup,
-  IQueryBuilderGroupProps,
+  type IQueryBuilderGroup,
+  type IQueryBuilderGroupProps,
 } from '~/components/QueryBuilder/types/query-builder-group-props.type'
 
 // Models
@@ -156,6 +156,7 @@ const collapseProps = computed(() => {
         :parent="item"
         :remove-fnc="removeFnc"
         :level="level + 1"
+        :editable="editable"
         :is-last-child="idx === item.children.length - 1"
       />
 

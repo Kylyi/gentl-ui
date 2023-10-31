@@ -6,6 +6,11 @@ export type IQueryBuilderRow = IQueryBuilderItem | IQueryBuilderGroup
 
 export type IQueryBuilderRowProps = {
   /**
+   * Whether the item is editable
+   */
+  editable?: boolean
+
+  /**
    * The actual query builder row item
    */
   item: IQueryBuilderRow

@@ -18,9 +18,9 @@ export function useTableDataClient() {
     const { columnFilters, orderBy } = tableFetchInput.fetchTableQuery
 
     const filtered = filterData(dataRef, columnFilters || [])
-    const sorted = await sortData(filtered, orderBy || [])
+    const rows = await sortData(filtered, orderBy || [])
 
-    return sorted
+    return { rows, totalRows: toValue(dataRef)?.length }
   }
 
   return {

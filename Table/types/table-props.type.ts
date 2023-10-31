@@ -2,10 +2,7 @@ import { NuxtLink } from '#components'
 
 // Types
 import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
-import type {
-  ITableDataFetchFncInput,
-  ITableQuery,
-} from '~/components/Table/types/table-query.type'
+import type { ITableDataFetchFncInput } from '~/components/Table/types/table-query.type'
 import type { ITableSelection } from '~/components/Table/types/table-selection.type'
 
 // Models
@@ -26,6 +23,18 @@ export interface ITableProps {
    * Definition of the table columns
    */
   columns?: TableColumn<any>[]
+
+  /**
+   * The export props - gets passed to the `ExportBtn` component (in TableTop.vue)
+   */
+  exportProps?: {
+    /**
+     * When true, the default export btn (`TableExportBtn.vue`) will be used
+     */
+    useDefault?: boolean
+
+    [key: string]: any
+  }
 
   /**
    * The default width for expand columns
@@ -83,11 +92,6 @@ export interface ITableProps {
   mobileRowHeight?: number
 
   /**
-   * Whether the tabe actions should be hidden
-   */
-  noActions?: boolean
-
-  /**
    * Whether the export btn should be hidden
    */
   noExport?: boolean
@@ -114,16 +118,6 @@ export interface ITableProps {
    * Whether the totals should be hidden
    */
   noTotals?: boolean
-
-  /**
-   * When true, the `top` side of the table will only have the `subbar` part visible
-   */
-  subBarOnly?: boolean
-
-  /**
-   * Whether the table should include part for handling layouts
-   */
-  noLayoutOptions?: boolean
 
   /**
    * Query builder rows
@@ -154,7 +148,7 @@ export interface ITableProps {
   /**
    * The settings that are saveable whtin the table
    */
-  nonSaveableSettings?: Array<'columns' | 'filters' | 'sorting' | 'public'>
+  nonSavableSettings?: Array<'columns' | 'filters' | 'sorting' | 'public'>
 
   /**
    * Whether the table rows should be selectable
@@ -187,8 +181,15 @@ export interface ITableProps {
    */
   useWorker?: boolean
 
-  tableTop?: {
+  tableTopFunctionality?: {
+    /**
+     * Whether to show the table top's row with query builder, filters, etc.
+     */
     noToolbar?: boolean
+
+    /**
+     * Whether to show the table top's sorting, table layout, etc.
+     */
     noSubbar?: boolean
 
     noSort?: boolean
@@ -217,8 +218,19 @@ export interface ITableProps {
   }
 
   getTotalsData?: {
-    fnc: (options: ITableQuery) => Promise<any> | any
+    fnc: (
+      options: ITableDataFetchFncInput,
+      column: TableColumn,
+      rows: any[]
+    ) => Promise<any> | any
     errorHandler?: (error: any) => void
+    payloadKey?: string
+    labelKey?: string
+
+    /**
+     * Whether to get the totals data immediately
+     */
+    immediate?: boolean
   }
 
   getMetaData?: {
@@ -234,16 +246,21 @@ export interface ITableProps {
     columnsKey?: string
 
     /**
+     * The key in the response that contains the default layout
+     * @default config.table.defaultLayoutKey
+     */
+    defaultLayoutKey?: string
+
+    /**
      * The key in the response that contains the layouts
      * @default config.table.layoutsKey
      */
     layoutsKey?: string
 
     /**
-     * The key in the response that contains the default layout
-     * @default config.table.defaultLayoutKey
+     * The function to modify the column before it's added to the table
      */
-    defaultLayoutKey?: string
+    modifyColumnFnc?: (column: TableColumn) => void
 
     /**
      * When true, if metadata returns columns, they all will be used, no matter

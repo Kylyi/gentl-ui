@@ -19,6 +19,18 @@ const formattedValue = computedEager(() => {
     dataType: props.dataType,
     format: props.format,
     emptyValue: props.emptyValue,
+    predictDataType: props.predictDataType,
+    resolveEnums: props.resolveEnums,
+  })
+})
+
+const formattedOriginalValue = computedEager(() => {
+  return formatValue(props.originalValue, props.row, {
+    dataType: props.dataType,
+    format: props.format,
+    emptyValue: props.emptyValue,
+    predictDataType: props.predictDataType,
+    resolveEnums: props.resolveEnums,
   })
 })
 </script>
@@ -27,6 +39,22 @@ const formattedValue = computedEager(() => {
   <slot :val="formattedValue">
     <span v-bind="$attrs">
       {{ isNil(formattedValue) ? emptyValueString : formattedValue }}
+    </span>
+  </slot>
+
+  <slot
+    name="originalValue"
+    :val="formattedOriginalValue"
+  >
+    <span
+      v-if="originalValue !== undefined"
+      v-bind="$attrs"
+    >
+      {{
+        isNil(formattedOriginalValue)
+          ? emptyValueString
+          : formattedOriginalValue
+      }}
     </span>
   </slot>
 </template>

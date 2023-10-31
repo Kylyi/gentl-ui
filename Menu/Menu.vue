@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { MotionInstance } from '@vueuse/motion'
+import { type MotionInstance } from '@vueuse/motion'
 import {
-  Placement,
+  type Placement,
   arrow,
   computePosition,
   flip,
@@ -688,11 +688,17 @@ defineExpose({
             </h6>
           </slot>
 
-          <Btn
-            preset="CLOSE"
-            size="sm"
-            @click="hide(true, undefined, true)"
-          />
+          <div flex="~ gap-1">
+            <slot name="header-right-prepend" />
+
+            <Btn
+              preset="CLOSE"
+              size="sm"
+              @click="hide(true, undefined, true)"
+            />
+
+            <slot name="header-right-append" />
+          </div>
         </div>
       </slot>
 

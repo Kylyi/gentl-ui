@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // eslint-disable-next-line import/named
-import { AnyMaskedOptions, MaskedRange } from 'imask'
 import type { Dayjs } from 'dayjs'
+import { MaskedRange, type AnyMaskedOptions } from 'imask'
 
 // Types
 import type { IDateInputProps } from '~/components/Inputs/DateInput/types/date-input-props.type'
@@ -10,8 +10,8 @@ import type { IDateInputProps } from '~/components/Inputs/DateInput/types/date-i
 import { useInputUtils } from '~/components/Inputs/functions/useInputUtils'
 
 // Components
-import InputWrapper from '~/components/Inputs/InputWrapper.vue'
 import DatePicker from '~/components/DatePicker/DatePicker.vue'
+import InputWrapper from '~/components/Inputs/InputWrapper.vue'
 import MenuProxy from '~/components/MenuProxy/MenuProxy.vue'
 
 const props = withDefaults(defineProps<IDateInputProps>(), {

@@ -1,8 +1,8 @@
-import { ImageOptions } from '@tiptap/extension-image'
+import { type ImageOptions } from '@tiptap/extension-image'
 
 // TYPES
-import type { IWysiwygMentionItem } from '~/components/Wysiwyg/types/wysiwyg-mention-item.type'
 import type { IInputWrapperProps } from '~/components/Inputs/types/input-wrapper-props.type'
+import type { IWysiwygMentionItem } from '~/components/Wysiwyg/types/wysiwyg-mention-item.type'
 
 export interface IWysiwygProps extends IInputWrapperProps {
   allowLink?: boolean

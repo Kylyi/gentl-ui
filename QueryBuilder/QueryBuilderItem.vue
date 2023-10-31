@@ -1,8 +1,8 @@
 <script setup lang="ts">
 // Types
 import {
-  IQueryBuilderItem,
-  IQueryBuilderItemProps,
+  type IQueryBuilderItem,
+  type IQueryBuilderItemProps,
 } from '~/components/QueryBuilder/types/query-builder-item-props.type'
 
 // Models
@@ -309,13 +309,15 @@ const $v = useVuelidate(
         @update:model-value="handleFieldChange"
       >
         <template #item="{ item: col }">
-          <span>
-            <QueryBuilderItemDataTypeShortcut
-              :data-type="col.dataType"
-              :custom="canUseSelectorComparator(item.comparator, col)"
-              class="relative top-1"
-            />
+          <QueryBuilderItemDataTypeShortcut
+            :data-type="col.dataType"
+            class="relative top-1"
+            self-start
+            shrink-0
+            m="t-1.5"
+          />
 
+          <span p="y-1.5">
             {{ col.label }}
           </span>
         </template>
@@ -330,7 +332,6 @@ const $v = useVuelidate(
           >
             <QueryBuilderItemDataTypeShortcut
               :data-type="colSelected.dataType"
-              :custom="canUseSelectorComparator(item.comparator, colSelected)"
             />
           </div>
         </template>

@@ -1,5 +1,5 @@
 // Types
-import { IQueryBuilderItem } from '~/components/QueryBuilder/types/query-builder-item-props.type'
+import { type IQueryBuilderItem } from '~/components/QueryBuilder/types/query-builder-item-props.type'
 import type {
   IQueryBuilderRow,
   IQueryBuilderRowProps,
@@ -16,6 +16,11 @@ export type IQueryBuilderGroup = {
 }
 
 export type IQueryBuilderGroupProps = IQueryBuilderRowProps & {
+  /**
+   * Whether the item is editable
+   */
+  editable?: boolean
+
   /**
    * The actual query builder row item
    */

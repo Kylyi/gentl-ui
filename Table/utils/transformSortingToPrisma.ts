@@ -1,4 +1,4 @@
-import { ITableOrderBy } from '~/components/Table/types/table-query.type'
+import { type ITableOrderBy } from '~/components/Table/types/table-query.type'
 
 /**
  * Transforms the sorting to Prisma's `orderBy` format.
@@ -11,8 +11,10 @@ export function transformSortingToPrismaOrderBy(
   }
 
   return orderBy.map(item => {
-    return {
-      [item.field]: item.direction,
-    }
+    const orderByObj: Record<string, any> = {}
+
+    set(orderByObj, item.field, item.direction)
+
+    return orderByObj
   })
 }

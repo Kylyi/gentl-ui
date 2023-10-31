@@ -1,6 +1,5 @@
-// eslint-disable-next-line import/named
-import { AnyMaskedOptions } from 'imask'
-import { CSSProperties } from 'vue'
+import { type AnyMaskedOptions } from 'imask'
+import { type CSSProperties } from 'vue'
 
 // Types
 import type { IInputWrapperProps } from '~/components/Inputs/types/input-wrapper-props.type'

@@ -5,7 +5,7 @@ import { TableColumn } from '~/components/Table/models/table-column.model'
 
 // Components
 import HorizontalScroller from '~/components/Scroller/HorizontalScroller.vue'
-import { ITableProps } from '~/components/Table/types/table-props.type'
+import { type ITableProps } from '~/components/Table/types/table-props.type'
 
 type IProps = {
   columns: TableColumn<any>[]
@@ -22,10 +22,6 @@ const totalsEl = ref<InstanceType<typeof HorizontalScroller>>()
 const calculateAllRows = ref(false)
 
 function handleGetTotals() {
-  if (!props.getTotalsData) {
-    return
-  }
-
   try {
     // const { totals } = await props.getTotalsData.fnc(getTableQuery())
     // console.log('Log ~ handleTotals ~ totals:', totals)
@@ -43,7 +39,7 @@ function handleGetTotals() {
     border="y-1 ca"
     @scrolled="$emit('scrolled', $event)"
   >
-    <!-- COLUMNS -->
+    <!-- Columns -->
     <template
       v-for="(col, idx) in columns"
       :key="idx"

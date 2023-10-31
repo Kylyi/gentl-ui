@@ -1,4 +1,9 @@
-export function useVirtualScrollerUtils() {
+// Types
+import type { IVirtualScrollerProps } from '~/components/VirtualScroller/types/virtual-scroller-props.type'
+
+export function useVirtualScrollerUtils(props: IVirtualScrollerProps) {
+  const isLoading = ref(false)
+
   function binarySearch(arr: any[], scrollTop: number) {
     let low = 0
     let high = Array.isArray(arr) ? arr.length - 1 : Object.keys(arr).length - 1

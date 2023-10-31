@@ -2,7 +2,7 @@
 import { klona } from 'klona'
 
 // Types
-import { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
+import { type IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
 
 // Injections
 import {
@@ -61,8 +61,14 @@ const $v = useVuelidate({ $scope: 'qb' })
     outlined
     color="ca"
     icon="basil:filter-solid"
-    :label="$t('queryBuilder.self')"
   >
+    <Tooltip
+      placement="top"
+      :offset="8"
+    >
+      {{ $t('queryBuilder.self') }}
+    </Tooltip>
+
     <Dialog
       ref="dialogEl"
       :title="$t('queryBuilder.self')"
@@ -76,12 +82,14 @@ const $v = useVuelidate({ $scope: 'qb' })
     >
       <Form
         :label="$t('apply')"
+        :submit-confirmation="false"
         @submit="syncToParent"
       >
         <QueryBuilder
           ref="queryBuilderEl"
           v-model:items="cloned"
           :columns="nonHelperColumns"
+          editable
         />
       </Form>
     </Dialog>

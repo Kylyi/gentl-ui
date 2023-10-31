@@ -1,10 +1,9 @@
-// TODO: Client-side pagination, filtering, grouping and sorting
 import { config } from '~/config'
 
 // Types
-import type { ITableLayout } from '~/components/Table/types/table-layout.type'
-import type { ITableProps } from '~/components/Table/types/table-props.type'
-import { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
+import { type IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
+import { type ITableLayout } from '~/components/Table/types/table-layout.type'
+import { type ITableProps } from '~/components/Table/types/table-props.type'
 import type {
   ITableDataFetchFncInput,
   ITableFilterRow,
@@ -49,6 +48,7 @@ export function useTableData(
 ) {
   // Utils
   const route = useRoute()
+  // const request = useRequestEvent()
   const instance = getCurrentInstance()
   const { getStorageKey, parseUrlParams, getRowKey } = useTableUtils(props)
   const { isLoading, handleRequest } = useRequest({
@@ -76,7 +76,7 @@ export function useTableData(
   initializeQueryBuilder()
 
   // Provides
-  provide(tableRefreshKey, () => refreshData())
+  provide(tableRefreshKey, (force?: boolean) => refreshData(force))
   provide(tableRecreateQueryBuilderKey, () => initializeQueryBuilder())
   provide(tableStorageKey, storageKey)
   provide(tableRowsKey, rows)
@@ -209,15 +209,18 @@ export function useTableData(
 
       // When there are some columns with `alwaysSelected` attribute set to true,
       // we need to add them to the `select` array
+      // TODO: SSR version for this
+      const isStrictMode = route.query.strict === 'true'
+
       const fetchTableQuery: ITableQuery = {
         ...tableQuery,
         select: Array.from(
           new Set([
             ...(tableQuery.select || []),
 
-            // Add `alwaysSelected` columns
+            // Add `alwaysSelected` columns when `strict` is not used
             ...internalColumnsRef.value
-              .filter(col => col.alwaysSelected)
+              .filter(col => col.alwaysSelected && !isStrictMode)
               .map(col => col.field),
 
             // Add sorted columns
@@ -324,6 +327,7 @@ export function useTableData(
             lastRow: lastRow.value,
           },
         })
+
         options.tableQuery.count = false
       }
 
@@ -394,11 +398,11 @@ export function useTableData(
         // We might have some columns `alwaysSelected`, so if we add such column into
         // the table, it would actually not trigger the refetch, if that happens,
         // we need to manually adjust the url
-        const hasDifferenVisibletCols =
+        const hasDifferentVisibleCols =
           dbQuery.tableQuery.select?.length !==
           previousDbQuery.value?.tableQuery.select?.length
 
-        if (!hasDifferenVisibletCols) {
+        if (!hasDifferentVisibleCols) {
           if (layoutRef.value?.preventLayoutReset) {
             layoutRef.value.preventLayoutReset = false
           }
@@ -493,6 +497,7 @@ export function useTableData(
     const { queryBuilder: schemaQueryBuilder } = parseUrlParams({
       columnsRef: internalColumnsRef,
       searchParams: layoutRef.value?.schema,
+      fromSchema: !!layoutRef.value?.schema,
     })
 
     const isUrlUsed =
@@ -528,6 +533,9 @@ export function useTableData(
       queryBuilder.value = tableState.value.queryBuilder
     }
   }
+
+  // Emit loading events
+  watch(isLoading, loading => instance?.emit('update:loading', loading))
 
   isInitialized.value = true
 

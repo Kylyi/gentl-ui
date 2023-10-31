@@ -81,7 +81,7 @@ provide(qbIsSmallerScreenKey, isSmallerScreen)
 
 // Lifecycle
 // When no items are provided, initialize the items with a group
-if (!props.items.length) {
+if (!props.items.length && !props.noInitialization) {
   initializeItems()
 }
 
@@ -115,6 +115,7 @@ defineExpose({
         :key="item.path"
         :item="item"
         :level="level"
+        :editable="editable"
         no-add
         no-condition-change
         :remove-fnc="removeItem"
@@ -130,6 +131,7 @@ defineExpose({
       :key="item.path"
       :item="item"
       :level="level"
+      :editable="editable"
       p="!l-2"
       m="!l-0"
     />

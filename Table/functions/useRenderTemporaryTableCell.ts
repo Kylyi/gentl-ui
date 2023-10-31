@@ -1,5 +1,5 @@
 /* eslint-disable vue/one-component-per-file */
-import { DefineComponent } from 'vue'
+import { type DefineComponent } from 'vue'
 import TableCell from '~/components/Table/TableCell.vue'
 import { TableColumn } from '~/components/Table/models/table-column.model'
 
