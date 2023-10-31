@@ -8,10 +8,7 @@ defineProps<{
 
 <template>
   <Btn label="...">
-    <Menu
-      no-overlay
-      hide-header
-    >
+    <Menu hide-header>
       <template
         v-for="breadcrumb in breadcrumbs"
         :key="breadcrumb.to"
