@@ -7,6 +7,8 @@ export interface IFormProps {
   label?: string
   icon?: string
   loading?: boolean
+  hasFocus?: boolean
+  isEditing?: boolean
 
   /**
    * By default, the form will display the controls on the bottom of the form. (Submit button, etc.)

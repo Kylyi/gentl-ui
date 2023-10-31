@@ -6,6 +6,7 @@ import type { IFormProps } from '~/components/Form/types/form-props.type'
 
 // Functions
 import { useFormErrors } from '~/components/Form/functions/useFormErrors'
+import { useAppStore } from '~/libs/App/app.store'
 
 // Components
 import MenuConfirmation from '~/components/MenuConfirmation/MenuConfirmation.vue'
@@ -19,12 +20,17 @@ const props = withDefaults(defineProps<IFormProps>(), {
   labelForcedVisibility: true,
   hasControls: undefined,
   submitConfirmation: config.form.confirmation.enabled,
+  hasFocus: false,
+  isEditing: false,
 })
 
 const emits = defineEmits<{
   (e: 'submit', payload?: any): void
   (e: 'update:errors', errors: string[]): void
 }>()
+
+// Store
+const { lastPointerDownType } = storeToRefs(useAppStore())
 
 // Errors
 const errors = toRef(props, 'errors', [])
@@ -34,6 +40,7 @@ const { errorsExtended, handleDismissError } = useFormErrors(errors, emits)
 const formEl = ref<HTMLFormElement>()
 const menuConfirmationEl = ref<InstanceType<typeof MenuConfirmation>>()
 const isSubmitted = ref(false)
+const isEditing = toRef(props, 'isEditing')
 
 const FormConfirmation = computed(() => {
   return config.form?.confirmation?.component ?? MenuConfirmation
@@ -82,6 +89,33 @@ const throttledSubmit = useThrottleFn(
   true
 )
 
+// Functions
+function focusFirstInputOnMousePointerIfRequested() {
+  if (lastPointerDownType?.value === 'mouse' && props.hasFocus) {
+    const spanElements = formEl?.value?.querySelectorAll(
+      'span.wrapper-body__input'
+    )
+
+    if (spanElements) {
+      for (const spanElement of spanElements) {
+        // Check if there is an input child without readonly and required
+        const inputChild = spanElement.querySelector(
+          'input:not([readonly]):not([required])'
+        ) as HTMLInputElement
+
+        // If an eligible input child exists, focus on it
+        if (inputChild) {
+          inputChild.focus()
+          return
+        }
+
+        // Otherwise, focus on the span element itself
+        ;(spanElement as HTMLElement)?.focus()
+      }
+    }
+  }
+}
+
 defineExpose({
   submit: throttledSubmit,
   fakeSubmit: () => (isSubmitted.value = true),
@@ -89,6 +123,20 @@ defineExpose({
   recomputeConfirmationMenuPosition: () => {
     menuConfirmationEl.value?.recomputeMenuPosition()
   },
+})
+
+// For purpose of update form
+watchEffect(() => {
+  if (isEditing.value) {
+    // Small delay for waiting to input getting appended in EDIT mode
+    setTimeout(() => {
+      focusFirstInputOnMousePointerIfRequested()
+    }, 100)
+  }
+})
+
+onMounted(() => {
+  focusFirstInputOnMousePointerIfRequested()
 })
 </script>
 
