@@ -71,11 +71,7 @@ const throttledSubmit = useThrottleFn(
       return
     }
 
-    if (
-      !props.loading &&
-      !props.submitDisabled &&
-      !config.form.preventSubmitOnEnter
-    ) {
+    if (!props.loading && !props.submitDisabled) {
       emits('submit', payload)
     }
 
