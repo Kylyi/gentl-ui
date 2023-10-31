@@ -10,4 +10,5 @@ export const ICON_BY_FILE_EXTENSION = {
   pptx: 'bi:filetype-pptx', // PPTX
   ppt: 'bi:filetype-ppt', // PPT
   txt: 'bi:filetype-txt', // TXT
+  json: 'bi:filetype-json', // JSON
 } as const

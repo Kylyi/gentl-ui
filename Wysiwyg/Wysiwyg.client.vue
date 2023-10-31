@@ -11,7 +11,7 @@ import { Color } from '@tiptap/extension-color'
 import { Mention } from '@tiptap/extension-mention'
 import { Image } from '@tiptap/extension-image'
 import { Link } from '@tiptap/extension-link'
-import { ClientRectObject } from '@floating-ui/vue'
+import { type ClientRectObject } from '@floating-ui/vue'
 
 // Types
 import type { IWysiwygProps } from '~/components/Wysiwyg/types/wysiwyg-props.type'
@@ -275,7 +275,7 @@ function handleToggleNumberedList() {
   editor.value?.chain().focus().toggleOrderedList().run()
 }
 
-function handleSetColor(color?: string) {
+function handleSetColor(color?: string | null) {
   color
     ? editor.value?.chain().focus().setColor(color).run()
     : editor.value?.chain().focus().unsetColor().run()

@@ -26,6 +26,7 @@ import { useTableLayout } from '~/components/Table/functions/useTableLayout'
 import { useTableSelection } from '~/components/Table/functions/useTableSelection'
 import { useTableMetaData } from '~/components/Table/functions/useTableMetaData'
 import { useTableExporting } from '~/components/Table/functions/useTableExporting'
+import { useTableTopUtils } from '~/components/Table/functions/useTableTopUtils'
 
 const props = withDefaults(defineProps<ITableProps>(), {
   breakpoint: 'md',
@@ -52,6 +53,7 @@ defineEmits<{
   (e: 'update:totalRows', count: number): void
   (e: 'update:queryBuilder', rows: IQueryBuilderRow[]): void
   (e: 'row-click', payload: { row: any; el: Element }): void
+  (e: 'update:loading', loading: boolean): void
 }>()
 
 defineSlots<{
@@ -81,7 +83,11 @@ defineExpose({
   },
 })
 
+// Utils
+const { getTableTopProps } = useTableTopUtils()
+
 // Layout
+const tableTopProps = getTableTopProps(props)
 const queryBuilderOriginal = useVModel(props, 'queryBuilder')
 const { cloned: queryBuilder } = useCloned(queryBuilderOriginal, {
   clone: klona,
@@ -99,6 +105,7 @@ const {
   // Element refs
   scrollerEl,
   headerEl,
+  totalsEl,
   tableEl,
 
   // Columns
@@ -220,12 +227,7 @@ onMounted(() => {
       <TableTop
         v-model:query-builder="queryBuilder"
         v-model:search="search"
-        :selectable="selectable"
-        :non-saveable-settings="nonSaveableSettings"
-        :minimum-column-width="minimumColumnWidth"
-        :sub-bar-only="subBarOnly"
-        :no-layout-options="noLayoutOptions"
-        :table-top="tableTop"
+        v-bind="tableTopProps"
         @update:columns-width="handleResize()"
       >
         <template #left-prepend>
@@ -334,8 +336,10 @@ onMounted(() => {
 
     <TableTotals
       v-if="!noTotals && !!getTotalsData"
+      ref="totalsEl"
       :columns="internalColumns"
       :get-totals-data="getTotalsData"
+      @scrolled="handleScrollLeft"
     />
 
     <TablePagination

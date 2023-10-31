@@ -96,6 +96,12 @@ export interface IToggleProps extends IItemProps {
   uncheckValue?: any
 
   /**
+   * In some edge cases, we want the uncheck value to be represeented by `undefined`
+   * But there is no way how to pass `undefined` as a prop, so we use this prop to force it.
+   */
+  undefinedUncheckValue?: boolean
+
+  /**
    * Extra options for the visuals of the toggle.
    */
   visuals?: Partial<ToggleClass>

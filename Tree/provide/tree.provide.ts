@@ -1,4 +1,5 @@
-import { ITreeNode } from '~/components/Tree/types/tree-node.type'
+// Types
+import { type ITreeNode } from '~/components/Tree/types/tree-node.type'
 
 export const treeCollapsedKey: InjectionKey<
   Ref<Record<string | number, boolean>>

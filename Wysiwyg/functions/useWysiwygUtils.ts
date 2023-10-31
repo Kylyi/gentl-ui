@@ -1,7 +1,13 @@
-import { SuggestionKeyDownProps } from '@tiptap/suggestion'
+import { type SuggestionKeyDownProps } from '@tiptap/suggestion'
+
+// Functions
 import { useValueFormatterUtils } from '~/components/ValueFormatter/functions/useValueForamtterUtils'
-import { mentionItemsMap } from '~/components/Wysiwyg/constants/resolve-values.map'
+
+// Injections
 import { mentionEntityKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
+
+// Constants
+import { mentionItemsMap } from '~/components/Wysiwyg/constants/resolve-values.map'
 
 export function useWysiwygUtils() {
   const { formatValue } = useValueFormatterUtils()

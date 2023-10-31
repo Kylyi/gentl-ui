@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Placement } from '@floating-ui/dom'
+import { type Placement } from '@floating-ui/dom'
 import { config } from '~/config'
 
 // Models
@@ -91,7 +91,11 @@ function handleMenuBeforeHide() {
     const isUndefinedValue = filter.value === undefined
     const isEmptyArray = Array.isArray(filter.value) && !filter.value.length
 
-    return (!isUndefinedValue && !isEmptyArray) || isNonValueComparator
+    return (
+      (!isUndefinedValue && !isEmptyArray) ||
+      isNonValueComparator ||
+      filter.nonInteractive
+    )
   })
 
   tableFocus()
@@ -226,9 +230,18 @@ function handleMenuBeforeHide() {
         :column="column"
         :columns="columns"
       />
+
       <TableColumnFiltering
         v-if="column.filterable"
         v-bind="props"
+      />
+      <Banner
+        v-else-if="column.filters?.length"
+        :label="$t('filter.nonInteractiveExplain')"
+        icon-center
+        type="info"
+        outlined
+        m="x-2 b-2"
       />
     </MenuProxy>
   </Btn>

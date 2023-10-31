@@ -46,6 +46,7 @@ watchEffect(() => {
         :disabled="disabled"
         class="crud-edit-btn"
         :class="{ 'is-archived': archived }"
+        data-cy="crud-edit-button"
         @click="handleClick"
       />
     </div>

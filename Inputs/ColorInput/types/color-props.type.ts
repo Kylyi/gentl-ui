@@ -1,7 +1,7 @@
 // @unocss-include
 
 // Types
-import { IFieldProps } from '~/components/Field/types/field-props.type'
+import { type IFieldProps } from '~/components/Field/types/field-props.type'
 
 export type IColorProps = {
   modelValue?: any

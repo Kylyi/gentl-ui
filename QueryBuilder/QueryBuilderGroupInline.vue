@@ -102,15 +102,15 @@ function handleRemoveGroup() {
       item.condition === 'AND' ? $t('queryBuilder.and') : $t('queryBuilder.or')
     "
     size="xs"
-    class="condition-btn bg-primary color-white self-center"
+    class="condition-btn color-blue-500 self-center"
     :class="{
       'is-first-child': isFirstChild,
-      '!color-primary': noConditionChange,
+      '!color-blue-500': noConditionChange || !editable,
     }"
     :style="{ '--bracketColor': levelColor }"
     no-dim
     :data-path="item.path"
-    :disabled="noConditionChange"
+    :disabled="noConditionChange || !editable"
     @mouseenter="isHovered = true"
     @mouseleave="isHovered = false"
   >
@@ -135,11 +135,13 @@ function handleRemoveGroup() {
       <Btn
         size="xs"
         :label="$t('queryBuilder.and')"
+        :class="{ 'color-blue-500': item.condition === 'AND' }"
         @click="handleSetCondition('AND')"
       />
       <Btn
         size="xs"
         :label="$t('queryBuilder.or')"
+        :class="{ 'color-blue-500': item.condition === 'OR' }"
         @click="handleSetCondition('OR')"
       />
 
@@ -170,6 +172,7 @@ function handleRemoveGroup() {
     :is-first-child="idx === 0"
     :no-add="noAdd"
     :remove-fnc="removeFnc"
+    :editable="editable"
     :style="{
       ...(isHovered && {
         borderColor: 'var(--bracketColor)',
@@ -180,7 +183,7 @@ function handleRemoveGroup() {
   />
 
   <Btn
-    v-if="isLastChild && !noAdd"
+    v-if="isLastChild && !noAdd && editable"
     size="xs"
     preset="ADD"
     self-center
@@ -191,6 +194,16 @@ function handleRemoveGroup() {
     class="last-child-bracket"
     @click="handleAddCondition(true)"
   />
+
+  <!-- Close bracket (When no add buttom is present) -->
+  <div
+    v-else-if="isLastChild"
+    class="last-child-bracket"
+    :class="{ 'is-last-child': isLastChild }"
+    :style="{ '--bracketColor': levelColor, 'color': levelColor }"
+  >
+    &ZeroWidthSpace;
+  </div>
 </template>
 
 <style scoped lang="scss">
@@ -201,7 +214,7 @@ function handleRemoveGroup() {
     --apply: m-l-2;
 
     &::before {
-      --apply: absolute -top-1.5 -left-2 text-7.5 leading-none font-normal;
+      --apply: absolute -top-1.5 -left-2.5 text-7.5 leading-none font-normal;
       content: '[';
       color: var(--bracketColor);
     }

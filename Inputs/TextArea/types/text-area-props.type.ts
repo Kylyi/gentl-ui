@@ -1,4 +1,4 @@
-import { IInputProps } from '~/components/Inputs/types/input-props.type'
+import { type IInputProps } from '~/components/Inputs/types/input-props.type'
 
 export interface ITextAreaInputProps extends IInputProps {
   /**

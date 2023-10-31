@@ -1,5 +1,5 @@
-import { CSSProperties } from 'vue'
-import { Required } from 'utility-types'
+import { type CSSProperties } from 'vue'
+import { type Required } from 'utility-types'
 import { config } from '~/config'
 
 // Types
@@ -212,6 +212,8 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   classes?: ClassType
   headerStyle: CSSProperties = {}
   headerClasses?: ClassType
+  totalsStyle: CSSProperties = {}
+  totalsClasses?: ClassType
 
   // Helpers
   isHelperCol = false // Helper cols are non-data columns like group actions
@@ -237,6 +239,8 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     switch (_dataType) {
       case 'number':
       case 'int':
+      case 'long':
+      case 'double':
       case 'datetime':
       case 'DateTime':
       case 'date':
@@ -417,6 +421,8 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     this.classes = col.classes
     this.headerStyle = col.headerStyle || this.headerStyle
     this.headerClasses = col.headerClasses
+    this.totalsStyle = col.totalsStyle || this.totalsStyle
+    this.totalsClasses = col.totalsClasses || 'flex-center'
 
     this.misc = col.misc
   }

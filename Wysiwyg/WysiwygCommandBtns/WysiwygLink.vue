@@ -77,6 +77,7 @@ function handleSubmit() {
       <Form
         p="2"
         label-forced-visibility
+        :submit-confirmation="false"
         @submit="handleSubmit"
       >
         <template #submit-start>

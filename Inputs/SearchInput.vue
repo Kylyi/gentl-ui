@@ -38,7 +38,9 @@ defineExpose({
     @update:model-value="$emit('update:model-value', $event)"
   >
     <template #prepend>
+      <slot name="prepend" />
       <div
+        v-if="!$slots.prepend"
         carbon:search
         color="ca"
         m="l-2"
@@ -59,6 +61,7 @@ defineExpose({
           h="8"
           icon="carbon:close text-2xl"
           color="ca"
+          data-cy="clear-search"
           @click="clear()"
         />
 

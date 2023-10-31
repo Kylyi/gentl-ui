@@ -90,7 +90,7 @@ export function useInputUtils(options: IInputUtilsOptions) {
   const focus = (alignCursor?: boolean) => {
     unrefElement(el)?.focus()
 
-    if (alignCursor) {
+    if (alignCursor === true) {
       setTimeout(() => elMask.value?.updateCursor(elMask.value.value.length), 0)
     }
   }
@@ -237,7 +237,7 @@ export function useInputUtils(options: IInputUtilsOptions) {
     if (!isEmptyValue) {
       touch()
     }
-  })
+  }, 300)
 
   return {
     el,

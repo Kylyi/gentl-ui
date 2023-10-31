@@ -20,17 +20,17 @@ import { useTableStore } from '~/components/Table/table.store'
 
 // Components
 import QueryBuilderInline from '~/components/QueryBuilder/QueryBuilderInline.vue'
+import TableExportBtn from '~/components/Table/TableExportBtn.vue'
 
 const props = defineProps<
   Pick<
     ITableProps,
-    | 'tableTop'
+    | 'tableTopFunctionality'
     | 'queryBuilder'
     | 'selectable'
-    | 'nonSaveableSettings'
+    | 'nonSavableSettings'
     | 'minimumColumnWidth'
-    | 'subBarOnly'
-    | 'noLayoutOptions'
+    | 'exportProps'
   > & {
     search: string
   }
@@ -70,6 +70,14 @@ const queryBuilderHeight = computed(() => {
       MAX_VISIBLE_QUERY_BUILDER_ROWS * 32 + QUERY_BUILDER_INLINE_PADDING
     }px`,
   }
+})
+
+const ExportBtn = computed(() => {
+  if ('exportComponent' in config.table && config.table.exportComponent) {
+    return config.table.exportComponent
+  }
+
+  return TableExportBtn
 })
 
 const selectionCount = computed(() => {
@@ -163,32 +171,25 @@ function handleFitColumns() {
 
 <template>
   <div class="table-top">
-    <template v-if="!subBarOnly">
-      <!-- Toolbar -->
-      <div class="table-top__toolbar">
-        <!-- Query builder button -->
-        <div
-          flex="~ gap-1 items-center"
-          grow
-        >
-          <slot name="left-prepend" />
+    <!-- Action bar -->
+    <div class="table-top__actionbar">
+      <!-- Query builder button -->
+      <div
+        flex="~ gap-1 items-center"
+        grow
+      >
+        <slot name="left-prepend" />
 
-          <TableQueryBuilderBtn
-            v-if="queryBuilder"
-            v-model:query-builder="queryBuilder"
-          />
-
-          <slot name="left-append" />
-        </div>
-
-        <slot name="right-prepend" />
-
-        <!-- Exports -->
-        <ExportBtn />
-
-        <slot name="right-append" />
+        <slot name="left-append" />
       </div>
 
+      <slot name="right-prepend" />
+
+      <slot name="right-append" />
+    </div>
+
+    <!-- Toolbar -->
+    <template v-if="!tableTopFunctionality?.noToolbar">
       <Separator />
 
       <!-- Query builder -->
@@ -196,6 +197,19 @@ function handleFitColumns() {
         v-if="queryBuilder"
         class="table-top__qb"
       >
+        <TableQueryBuilderBtn
+          v-if="queryBuilder"
+          v-model:query-builder="queryBuilder"
+          self-start
+          m="t-1"
+        />
+
+        <Separator
+          vertical
+          h="full"
+          m="l-1"
+        />
+
         <VerticalScroller
           grow
           :style="queryBuilderHeight"
@@ -210,6 +224,7 @@ function handleFitColumns() {
               ref="queryBuilderInlineEl"
               v-model:items="queryBuilder"
               :columns="nonHelperColumns"
+              editable
             />
           </div>
         </VerticalScroller>
@@ -269,6 +284,22 @@ function handleFitColumns() {
             />
           </Menu>
         </Btn>
+
+        <Separator
+          vertical
+          h="full"
+          m="r-1"
+        />
+
+        <slot name="export">
+          <Component
+            :is="ExportBtn"
+            v-bind="exportProps"
+            shrink-0
+            self-start
+            m="t-1"
+          />
+        </slot>
       </div>
 
       <!-- Chips - filter columns or search -->
@@ -283,7 +314,10 @@ function handleFitColumns() {
     </template>
 
     <!-- Subbar -->
-    <div class="table-top__subbar">
+    <div
+      v-if="!tableTopFunctionality?.noSubbar"
+      class="table-top__subbar"
+    >
       <!-- Selection & Sorting -->
       <div
         grow
@@ -326,7 +360,7 @@ function handleFitColumns() {
 
         <!-- Sorting -->
         <div
-          v-if="tableSorting"
+          v-if="tableSorting && !tableTopFunctionality?.noSort"
           flex="~ gap-1"
           items-center
         >
@@ -360,6 +394,7 @@ function handleFitColumns() {
         justify="end"
       >
         <span
+          v-if="!tableTopFunctionality?.noLayout"
           text="caption xs"
           font="bold"
           display="lt-md:none"
@@ -369,13 +404,13 @@ function handleFitColumns() {
 
         <!-- Columns btn -->
         <TableColumnsBtn
-          v-if="!tableTop?.noColumnSelection"
+          v-if="!tableTopFunctionality?.noColumnSelection"
           v-model:columns="columns"
         />
 
         <!-- Autofit btn -->
         <Btn
-          v-if="!tableTop?.noAutoFit"
+          v-if="!tableTopFunctionality?.noAutoFit"
           size="sm"
           no-uppercase
           icon="material-symbols:fit-width"
@@ -385,19 +420,13 @@ function handleFitColumns() {
         />
 
         <template
-          v-if="
-            config.table.useServerState &&
-            !noLayoutOptions &&
-            !tableTop?.noLayout
-          "
+          v-if="config.table.useServerState && !tableTopFunctionality?.noLayout"
         >
           <!-- Layout selector -->
           <TableLayoutSelector v-model:query-builder="queryBuilder" />
 
           <!-- Layout settings -->
-          <TableLayoutSettingsBtn
-            :non-saveable-settings="nonSaveableSettings"
-          />
+          <TableLayoutSettingsBtn :non-saveable-settings="nonSavableSettings" />
         </template>
       </div>
 
@@ -408,9 +437,9 @@ function handleFitColumns() {
 
 <style scoped lang="scss">
 .table-top {
-  --apply: flex flex-col border-b-1 border-ca;
+  --apply: flex flex-col;
 
-  &__toolbar {
+  &__actionbar {
     --apply: flex flex-wrap gap-2 items-center p-x-2 p-y-1;
   }
 

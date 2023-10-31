@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CSSProperties } from 'vue'
+import { type CSSProperties } from 'vue'
 
 // Types
 import type { IVerticalScrollPickerProps } from '~/components/ScrollPicker/types/vertical-scroll-picker-props.type'

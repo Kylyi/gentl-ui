@@ -1,6 +1,6 @@
 <script setup lang="ts">
-// TYPES
-import { ICrudBtnProps } from '~/components/Crud/types/crud-btn-props.type'
+// Types
+import { type ICrudBtnProps } from '~/components/Crud/types/crud-btn-props.type'
 
 defineProps<ICrudBtnProps & { confirmationText?: string }>()
 defineEmits<{

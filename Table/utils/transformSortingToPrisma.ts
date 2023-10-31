@@ -1,4 +1,4 @@
-import { ITableOrderBy } from '~/components/Table/types/table-query.type'
+import { type ITableOrderBy } from '~/components/Table/types/table-query.type'
 
 /**
  * Transforms the sorting to Prisma's `orderBy` format.
