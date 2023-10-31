@@ -3,7 +3,7 @@ import { klona } from 'klona'
 import { config } from '~/config'
 
 // Types
-import { ITableLayout } from '~/components/Table/types/table-layout.type'
+import { type ITableLayout } from '~/components/Table/types/table-layout.type'
 
 // Injections
 import {
@@ -288,6 +288,7 @@ const $v = useVuelidate(
         :submit-disabled="!isSaveable || !hasLayoutChanged"
         submit-class="w-30"
         :loading="isLoading"
+        :submit-confirmation="false"
         @submit="handleSaveLayout"
       >
         <TextInput

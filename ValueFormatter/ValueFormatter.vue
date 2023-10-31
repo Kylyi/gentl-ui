@@ -19,6 +19,8 @@ const formattedValue = computedEager(() => {
     dataType: props.dataType,
     format: props.format,
     emptyValue: props.emptyValue,
+    predictDataType: props.predictDataType,
+    resolveEnums: props.resolveEnums,
   })
 })
 
@@ -27,6 +29,8 @@ const formattedOriginalValue = computedEager(() => {
     dataType: props.dataType,
     format: props.format,
     emptyValue: props.emptyValue,
+    predictDataType: props.predictDataType,
+    resolveEnums: props.resolveEnums,
   })
 })
 </script>

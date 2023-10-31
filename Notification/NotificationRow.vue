@@ -122,15 +122,21 @@ watch(notificationCounter, async () => {
       />
 
       <!-- Title -->
-      <span
+      <div
         p="y-2"
         grow
+        overflow="auto"
         :class="{
           'font-bold tracking-wide': notification.subtitle,
         }"
       >
-        {{ notification.title }}
-      </span>
+        <p
+          max-w="full"
+          break="words"
+        >
+          {{ notification.title }}
+        </p>
+      </div>
 
       <!-- Close button -->
       <Btn
@@ -138,6 +144,7 @@ watch(notificationCounter, async () => {
         preset="CLOSE"
         class="color-red-500 self-start"
         size="sm"
+        data-cy="close-notification"
         @click="handleHide"
       />
     </div>

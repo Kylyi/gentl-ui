@@ -1,5 +1,5 @@
 // Types
-import { IQueryBuilderItem } from '~/components/QueryBuilder/types/query-builder-item-props.type'
+import { type IQueryBuilderItem } from '~/components/QueryBuilder/types/query-builder-item-props.type'
 import type {
   IQueryBuilderRow,
   IQueryBuilderRowProps,

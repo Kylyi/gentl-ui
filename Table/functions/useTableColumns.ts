@@ -84,15 +84,22 @@ export function useTableColumns(
       fromSchema: !!layoutRef.value?.schema,
     })
 
-    const visibleColumns = urlVisibleColumns.length
+    let visibleColumns = urlVisibleColumns.length
       ? urlVisibleColumns
       : schemaVisibleColumns
+
+    visibleColumns = config.table.allowCaseInsensitiveColumns
+      ? visibleColumns.map(col => col.toLowerCase())
+      : visibleColumns
 
     // When columns are provided in the URL or in the layout schema, we set
     //  visibility for the columns that are present and reset it for the others
     if (visibleColumns?.length || schemaVisibleColumns?.length) {
       _columns.forEach(col => {
-        const colInUrl = visibleColumns.indexOf(col.field)
+        const colField = config.table.allowCaseInsensitiveColumns
+          ? col.field.toLowerCase()
+          : col.field
+        const colInUrl = visibleColumns.indexOf(colField)
 
         if ((colInUrl > -1 || col.isHelperCol) && !col.nonInteractive) {
           col.hidden = false
@@ -487,15 +494,17 @@ export function useTableColumns(
 
   // Sync the column labels on locale change
   watch(locale, () => {
-    internalColumns.value.forEach(col => {
-      const foundColumn = props.columns?.find(c => c.field === col.field)
+    setTimeout(() => {
+      internalColumns.value.forEach(col => {
+        const foundColumn = props.columns?.find(c => c.field === col.field)
 
-      if (foundColumn) {
-        col.label = foundColumn.label
-      } else if (props.translationPrefix) {
-        col.label = $t(`${props.translationPrefix}.${col.field}`)
-      }
-    })
+        if (foundColumn) {
+          col.label = foundColumn.label
+        } else if (props.translationPrefix) {
+          col.label = $t(`${props.translationPrefix}.${col.field}`)
+        }
+      })
+    }, 0)
   })
 
   return {

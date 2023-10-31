@@ -6,6 +6,7 @@ import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-bui
 // Models
 import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
 import { TableColumn } from '~/components/Table/models/table-column.model'
+import { config } from '~/config'
 
 const AND_CONDITION = 'AND'
 const OR_CONDITION = 'OR'
@@ -163,7 +164,11 @@ function parseItemSegment(
     throw new Error(`No valid comparator found in segment: ${segment}`)
   }
 
-  const [field] = segment.substring(0, foundComparatorIdx).split('.')
+  const [fieldOriginal] = segment.substring(0, foundComparatorIdx).split('.')
+  const field = config.table?.allowCaseInsensitiveColumns
+    ? String(fieldOriginal).toLowerCase()
+    : fieldOriginal
+
   let value: string | undefined = segment.substring(
     foundComparatorIdx + foundComparator.length + 2
   ) // +2 to skip the dot
@@ -196,7 +201,7 @@ function parseItemSegment(
   const item: IQueryBuilderItem = {
     id: generateUUID(),
     path,
-    field,
+    field: (columnsByField[field]?.field as string) ?? fieldOriginal,
     comparator: foundComparator,
     value: parsedValue,
   }
@@ -266,11 +271,12 @@ export function parseFiltersFromUrl(options: {
     modifyFnc,
   } = options
 
-  // console.log(decodeURIComponent(searchParams.toString()))
-
   // We save the columns in a temporary variable
   columnsByField = columns.reduce((agg, col) => {
-    agg[col.field] = col
+    const colField = config.table?.allowCaseInsensitiveColumns
+      ? String(col.field).toLowerCase()
+      : col.field
+    agg[colField] = col
 
     return agg
   }, {} as Record<string, TableColumn<any>>)

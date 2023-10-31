@@ -1,11 +1,11 @@
 <script setup lang="ts">
-// TYPES
+// Types
 import type { IMenuConfirmationProps } from '~/components/MenuConfirmation/types/menu-confirmation-props.type'
 
-// COMPOSITION FUNCTIONS
+// Functions
 import { useMenuUtils } from '~/components/Menu/functions/useMenuUtils'
 
-// COMPONENTS
+// Components
 import Menu from '~/components/Menu/Menu.vue'
 import Btn from '~/components/Button/Btn.vue'
 
@@ -18,10 +18,10 @@ const emits = defineEmits<{
   (e: 'hide'): void
 }>()
 
-// UTILS
+// Utils
 const { getMenuProps } = useMenuUtils()
 
-// LAYOUT
+// Layout
 const confirmBtnEl = ref<InstanceType<typeof Btn>>()
 const isConfirmation = ref(false)
 
@@ -39,7 +39,7 @@ function handleConfirm() {
   }
 }
 
-// MENU
+// Menu
 const menuEl = ref<InstanceType<typeof Menu>>()
 const menuProps = getMenuProps(props)
 
@@ -54,14 +54,16 @@ defineExpose({
     confirmBtnDom?.focus()
   },
   recomputeMenuPosition: () => menuEl.value?.recomputePosition(),
+  hide: () => menuEl.value?.hide(),
 })
 </script>
 
 <template>
-  <Menu
+  <MenuProxy
     ref="menuEl"
     v-bind="menuProps"
     min-w="60"
+    position="top"
     :title="menuProps.title ?? $t('confirmAction')"
     @hide="handleMenuHide"
   >
@@ -84,7 +86,7 @@ defineExpose({
     <slot name="append" />
 
     <Btn
-      v-if="!isConfirmation"
+      v-if="!isConfirmation && !noConfirmBtn"
       ref="confirmBtnEl"
       :label="$t('confirm')"
       bg="primary"
@@ -92,5 +94,5 @@ defineExpose({
       data-cy="confirm-delete"
       @click="handleConfirm"
     />
-  </Menu>
+  </MenuProxy>
 </template>

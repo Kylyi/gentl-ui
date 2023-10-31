@@ -1,5 +1,5 @@
-import { Boundary } from '@floating-ui/dom'
-import { CSSProperties } from 'vue'
+import { type Boundary } from '@floating-ui/dom'
+import { type CSSProperties } from 'vue'
 
 export type DialogPosition = 'top' | 'bottom' | 'left' | 'right'
 

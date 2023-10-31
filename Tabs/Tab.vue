@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ITabProps } from '~/components/Tabs/types/tab-props.type'
+// Types
+import { type ITabProps } from '~/components/Tabs/types/tab-props.type';
 
 defineProps<ITabProps>()
 

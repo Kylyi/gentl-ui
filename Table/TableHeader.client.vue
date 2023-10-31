@@ -4,7 +4,7 @@ import { TableColumn } from '~/components/Table/models/table-column.model'
 
 // Functions
 import {
-  ISplitter,
+  type ISplitter,
   useTableColumnResizing,
 } from '~/components/Table/functions/useTableColumnResizing'
 

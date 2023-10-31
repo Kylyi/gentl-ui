@@ -59,7 +59,7 @@ export interface IFormProps {
   submitClass?: ClassType
 
   /**
-   * If true, the form submit will beed to be confirmed in a confirmation menu.
+   * If true, the form submit will need to be confirmed in a confirmation menu.
    */
   submitConfirmation?: boolean
 

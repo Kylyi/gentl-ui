@@ -1,8 +1,8 @@
 // COMPOSITION FUNCTIONS
 
 import {
-  INumberOptions,
-  useNumber,
+useNumber,
+type INumberOptions,
 } from '~/components/Inputs/NumberInput/functions/useNumber'
 
 export type DurationUnit =

@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import { IMiniCardProps } from '~/components/Card/types/mini-card-props.type'
+// Types
+import { type IMiniCardProps } from '~/components/Card/types/mini-card-props.type'
+
+// Functions
 import { useValueFormatterUtils } from '~/components/ValueFormatter/functions/useValueForamtterUtils'
 
 const props = withDefaults(defineProps<IMiniCardProps>(), {
@@ -45,24 +48,36 @@ function getShownValue(val: any) {
       </div>
 
       <ValueFormatter v-bind="valueFormatterProps">
-        <!-- Value -->
         <template #default="{ val }">
           <slot :val="val">
             <span
               v-if="!to || !val"
               class="value-container-card-value"
-              :class="valueClass"
+              :class="[valueClass, { 'font-bold': !noBold }]"
             >
-              {{ getShownValue(val) }}
+              <div flex="~ col gap-y-2">
+                <!-- Current value -->
+                <div>
+                  {{ getShownValue(val) }}
+                </div>
+              </div>
             </span>
 
-            <NuxtLink
+            <div
               v-else
-              :to="to"
-              class="link"
+              flex="~ col gap-y-2"
             >
-              {{ getShownValue(val) }}
-            </NuxtLink>
+              <NuxtLink
+                :to="to"
+                class="link"
+                :class="[valueClass, { 'font-bold': !noBold }]"
+              >
+                <span class="link_label">
+                  <span class="link_label__icon" />
+                  {{ getShownValue(val) }}
+                </span>
+              </NuxtLink>
+            </div>
           </slot>
         </template>
 
@@ -84,9 +99,13 @@ function getShownValue(val: any) {
               v-else
               :to="toOriginalValue"
               class="link"
+              :class="[originalValueClass, { 'font-bold': !noBold }]"
               text-purple-500
             >
-              {{ getShownValue(val) }}
+              <span class="link_label">
+                <span class="link_label__icon" />
+                {{ getShownValue(val) }}
+              </span>
             </NuxtLink>
           </div>
         </template>
@@ -99,9 +118,6 @@ function getShownValue(val: any) {
 .value-container-card {
   --apply: flex rounded-custom p-x-2 p-y-1 flex-gap-2;
 
-  &__content {
-    --apply:  flex flex-col;
-  }
   &__icon {
     --apply: shrink-0 m-t-.5;
   }

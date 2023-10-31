@@ -1,12 +1,15 @@
-import { UseFuseOptions, useFuse } from '@vueuse/integrations/useFuse'
+import { type UseFuseOptions, useFuse } from '@vueuse/integrations/useFuse'
 import { klona } from 'klona'
-import { Required } from 'utility-types'
-import { MaybeElementRef } from '@vueuse/core'
+import { type Required } from 'utility-types'
+import { type MaybeElementRef } from '@vueuse/core'
 import { config } from '~/config'
 
 // Types
 import type { IListProps } from '~/components/List/types/list-props.type'
-import { IGroupRow, useGrouping } from '~/libs/App/data/functions/useGrouping'
+import {
+  type IGroupRow,
+  useGrouping,
+} from '~/libs/App/data/functions/useGrouping'
 
 // Models
 import { GroupItem } from '~/libs/App/data/models/group-item.model'

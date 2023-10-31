@@ -1,4 +1,4 @@
-import { Placement } from '@floating-ui/dom'
+import { type Placement } from '@floating-ui/dom'
 
 // TYPES
 import type { FloatingUIBaseProps } from '~/components/Dialog/types/dialog-props.type'

@@ -1,9 +1,9 @@
 import { config } from '~/config'
 
 // Types
-import type { ITableLayout } from '~/components/Table/types/table-layout.type'
-import type { ITableProps } from '~/components/Table/types/table-props.type'
-import { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
+import { type IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
+import { type ITableLayout } from '~/components/Table/types/table-layout.type'
+import { type ITableProps } from '~/components/Table/types/table-props.type'
 import type {
   ITableDataFetchFncInput,
   ITableFilterRow,

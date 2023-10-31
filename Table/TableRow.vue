@@ -2,7 +2,7 @@
 import { NuxtLink } from '#components'
 
 // Models
-import { ITableProps } from '~/components/Table/types/table-props.type'
+import { type ITableProps } from '~/components/Table/types/table-props.type'
 
 type IProps = Pick<ITableProps, 'columns' | 'rowHeight' | 'to'> & {
   index?: number

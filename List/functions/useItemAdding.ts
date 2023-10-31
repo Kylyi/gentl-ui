@@ -1,5 +1,6 @@
-import { IItemToBeAdded } from '~/components/List/types/list-item-to-add.type'
-import { IListProps } from '~/components/List/types/list-props.type'
+// Types
+import { type IItemToBeAdded } from '~/components/List/types/list-item-to-add.type'
+import { type IListProps } from '~/components/List/types/list-props.type'
 
 export function useItemAdding(
   props: Pick<

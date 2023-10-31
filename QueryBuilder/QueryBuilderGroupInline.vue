@@ -102,10 +102,10 @@ function handleRemoveGroup() {
       item.condition === 'AND' ? $t('queryBuilder.and') : $t('queryBuilder.or')
     "
     size="xs"
-    class="condition-btn bg-primary color-white self-center"
+    class="condition-btn color-blue-500 self-center"
     :class="{
       'is-first-child': isFirstChild,
-      '!color-primary': noConditionChange || !editable,
+      '!color-blue-500': noConditionChange || !editable,
     }"
     :style="{ '--bracketColor': levelColor }"
     no-dim
@@ -135,11 +135,13 @@ function handleRemoveGroup() {
       <Btn
         size="xs"
         :label="$t('queryBuilder.and')"
+        :class="{ 'color-blue-500': item.condition === 'AND' }"
         @click="handleSetCondition('AND')"
       />
       <Btn
         size="xs"
         :label="$t('queryBuilder.or')"
+        :class="{ 'color-blue-500': item.condition === 'OR' }"
         @click="handleSetCondition('OR')"
       />
 
@@ -212,7 +214,7 @@ function handleRemoveGroup() {
     --apply: m-l-2;
 
     &::before {
-      --apply: absolute -top-1.5 -left-2 text-7.5 leading-none font-normal;
+      --apply: absolute -top-1.5 -left-2.5 text-7.5 leading-none font-normal;
       content: '[';
       color: var(--bracketColor);
     }

@@ -61,6 +61,7 @@ const inputDebounce = computed(() => {
     case 'int':
     case 'percent':
     case 'long':
+    case 'double':
       return 500
 
     default:

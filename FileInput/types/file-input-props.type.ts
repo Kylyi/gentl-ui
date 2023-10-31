@@ -1,5 +1,5 @@
 // Types
-import { IFile } from '~/components/FileInput/types/file.type'
+import { type IFile } from '~/components/FileInput/types/file.type'
 
 export interface IFileInputProps {
   accept?: string

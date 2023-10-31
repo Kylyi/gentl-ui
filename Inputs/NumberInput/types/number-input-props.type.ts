@@ -1,4 +1,5 @@
-import { IInputProps } from '~/components/Inputs/types/input-props.type'
+// Types
+import { type IInputProps } from '~/components/Inputs/types/input-props.type'
 
 export interface INumberInputProps extends IInputProps {
   /**

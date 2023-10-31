@@ -2,9 +2,9 @@ import dayjs from 'dayjs'
 
 // Types
 import {
-  ITableFilterGroup,
-  ITableFilterItem,
-  ITableQuery,
+type ITableFilterGroup,
+type ITableFilterItem,
+type ITableQuery,
 } from '~/components/Table/types/table-query.type'
 
 // Models
