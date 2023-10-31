@@ -20,8 +20,7 @@ const props = withDefaults(defineProps<IFormProps>(), {
   labelForcedVisibility: true,
   hasControls: undefined,
   submitConfirmation: config.form.confirmation.enabled,
-  hasFocus: false,
-  isEditing: false,
+  focusFirstInput: false,
 })
 
 const emits = defineEmits<{
@@ -40,7 +39,8 @@ const { errorsExtended, handleDismissError } = useFormErrors(errors, emits)
 const formEl = ref<HTMLFormElement>()
 const menuConfirmationEl = ref<InstanceType<typeof MenuConfirmation>>()
 const isSubmitted = ref(false)
-const isEditing = toRef(props, 'isEditing')
+const isInEditMode = ref<any>(!!props.isEditing)
+provide('isInEditMode', isInEditMode)
 
 const FormConfirmation = computed(() => {
   return config.form?.confirmation?.component ?? MenuConfirmation
@@ -91,7 +91,7 @@ const throttledSubmit = useThrottleFn(
 
 // Functions
 function focusFirstInputOnMousePointerIfRequested() {
-  if (lastPointerDownType?.value === 'mouse' && props.hasFocus) {
+  if (lastPointerDownType?.value === 'mouse' && props.focusFirstInput) {
     const spanElements = formEl?.value?.querySelectorAll(
       'span.wrapper-body__input'
     )
@@ -127,7 +127,7 @@ defineExpose({
 
 // For purpose of update form
 watchEffect(() => {
-  if (isEditing.value) {
+  if (isInEditMode.value) {
     // Small delay for waiting to input getting appended in EDIT mode
     setTimeout(() => {
       focusFirstInputOnMousePointerIfRequested()

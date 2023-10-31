@@ -11,6 +11,9 @@ const emits = defineEmits<{
   (e: 'restore'): void
 }>()
 
+// Injections
+const isInEditMode = inject('isInEditMode', ref<any>())
+
 const isEditing = useVModel(props, 'isEditing', emits)
 
 const transitionProps = computed(() => ({
@@ -26,10 +29,12 @@ function handleClick() {
   }
 
   isEditing.value = true
+  isInEditMode.value = true
 }
 
 watchEffect(() => {
   isEditing.value = props.isEditing
+  isInEditMode.value = props.isEditing
 })
 </script>
 

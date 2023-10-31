@@ -7,7 +7,7 @@ export interface IFormProps {
   label?: string
   icon?: string
   loading?: boolean
-  hasFocus?: boolean
+  focusFirstInput?: boolean
   isEditing?: boolean
 
   /**
