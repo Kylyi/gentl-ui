@@ -11,6 +11,9 @@ import { useAppStore } from '~/libs/App/app.store'
 // Components
 import MenuConfirmation from '~/components/MenuConfirmation/MenuConfirmation.vue'
 
+// Injections
+import { formIsInEditModeKey } from '~/components/Form/provide/form.provide'
+
 defineOptions({
   inheritAttrs: false,
 })
@@ -39,8 +42,8 @@ const { errorsExtended, handleDismissError } = useFormErrors(errors, emits)
 const formEl = ref<HTMLFormElement>()
 const menuConfirmationEl = ref<InstanceType<typeof MenuConfirmation>>()
 const isSubmitted = ref(false)
-const isInEditMode = ref<any>(!!props.isEditing)
-provide('isInEditMode', isInEditMode)
+const isInEditMode = ref<boolean>(!!props.isEditing)
+provide(formIsInEditModeKey, isInEditMode)
 
 const FormConfirmation = computed(() => {
   return config.form?.confirmation?.component ?? MenuConfirmation

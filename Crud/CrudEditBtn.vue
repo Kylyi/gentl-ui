@@ -1,4 +1,7 @@
 <script setup lang="ts">
+// Injections
+import { formIsInEditModeKey } from '~/components/Form/provide/form.provide'
+
 type IProps = {
   archived?: boolean
   disabled?: boolean
@@ -12,7 +15,7 @@ const emits = defineEmits<{
 }>()
 
 // Injections
-const isInEditMode = inject('isInEditMode', ref<any>())
+const isInEditMode = injectStrict(formIsInEditModeKey)
 
 const isEditing = useVModel(props, 'isEditing', emits)
 
