@@ -40,7 +40,7 @@ const FormConfirmation = computed(() => {
 })
 
 const isFormEnableEnterSubmit = computed<boolean>(() => {
-  return config.form.enableEnterSubmit
+  return config.form?.enableEnterSubmit ?? true
 })
 
 const formClass = computed(() => ({
