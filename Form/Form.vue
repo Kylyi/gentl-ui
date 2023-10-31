@@ -42,7 +42,7 @@ const { errorsExtended, handleDismissError } = useFormErrors(errors, emits)
 const formEl = ref<HTMLFormElement>()
 const menuConfirmationEl = ref<InstanceType<typeof MenuConfirmation>>()
 const isSubmitted = ref(false)
-const isInEditMode = ref<boolean>(!!props.isEditing)
+const isInEditMode = ref(!!props.isEditing)
 provide(formIsInEditModeKey, isInEditMode)
 
 const FormConfirmation = computed(() => {

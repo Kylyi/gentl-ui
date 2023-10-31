@@ -15,7 +15,7 @@ const emits = defineEmits<{
 }>()
 
 // Injections
-const isInEditMode = injectStrict(formIsInEditModeKey)
+const isInEditMode = injectStrict(formIsInEditModeKey, ref())
 
 const isEditing = useVModel(props, 'isEditing', emits)
 
