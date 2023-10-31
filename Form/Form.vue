@@ -39,10 +39,6 @@ const FormConfirmation = computed(() => {
   return config.form?.confirmation?.component ?? MenuConfirmation
 })
 
-const preventSubmitOnEnter = computed(() => {
-  return !!config.form?.preventSubmitOnEnter
-})
-
 const formClass = computed(() => ({
   'form--dense': props.dense,
   'is-bordered': props.bordered,
@@ -104,7 +100,6 @@ defineExpose({
     autocomplete="off"
     novalidate
     @submit.stop.prevent="throttledSubmit()"
-    @keydown.enter.prevent="!preventSubmitOnEnter && throttledSubmit()"
   >
     <slot name="above" />
 
