@@ -106,14 +106,23 @@ function focusFirstInput() {
           'input:not([readonly]):not([required])'
         ) as HTMLInputElement
 
-        // If an eligible input child exists, focus on it
+        // If an eligible input child exists, focus on it & break
         if (inputChild) {
           inputChild.focus()
-          return
-        }
+          break
+        } else {
+          // If an input exists and it is selector => focus on it and break, otherwise contineu
+          const controller = spanElement.querySelector(
+            '.control.ps'
+          ) as HTMLElement
 
-        // Otherwise, focus on the span element itself
-        ;(spanElement as HTMLElement)?.focus()
+          if (controller) {
+            setTimeout(() => {
+              controller.focus()
+            }, 200)
+            break
+          }
+        }
       }
     }
   }
