@@ -8,6 +8,24 @@ import type { ITableFilterRow } from '~/components/Table/types/table-query.type'
 import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
 import { FilterItem } from '~/libs/App/data/models/filter-item'
 
+function possiblyTransformToID(value: any): boolean {
+  if (typeof value === 'string') {
+    // Check if the string can be converted to a number
+    const numericValue = Number.parseFloat(value)
+
+    if (!Number.isNaN(numericValue)) {
+      // If it's a valid number, check its length
+      const valueAsString: string = numericValue.toString()
+
+      if (valueAsString.length === 9) {
+        return numericValue
+      }
+    }
+  }
+
+  return value
+}
+
 /**
  * Transforms the filter row to Prisma's where condition format.
  */
@@ -26,7 +44,7 @@ function transformItemToPrismaCondition(
         }
       }
 
-      return { [item.field]: item.value }
+      return { [item.field]: possiblyTransformToID(item.value) }
 
     case ComparatorEnum.NOT_EQUAL:
       // Date datatype needs special treatment
@@ -41,14 +59,22 @@ function transformItemToPrismaCondition(
         }
       }
 
-      return { [item.field]: { not: item.value } }
+      return { [item.field]: { not: possiblyTransformToID(item.value) } }
 
     case ComparatorEnum.IN:
-      return { [item.field]: { in: item.value.map((id: any) => Number(id)) } }
+      return {
+        [item.field]: {
+          in: item.value.map((id: any) => possiblyTransformToID(id)),
+        },
+      }
 
     case ComparatorEnum.NOT_IN:
       return {
-        [item.field]: { not: { in: item.value.map((id: any) => Number(id)) } },
+        [item.field]: {
+          not: {
+            in: item.value.map((id: any) => possiblyTransformToID(id)),
+          },
+        },
       }
 
     case ComparatorEnum.LIKE:
