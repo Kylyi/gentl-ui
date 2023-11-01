@@ -12,6 +12,7 @@ import { useAppStore } from '~/libs/App/app.store'
 import MenuConfirmation from '~/components/MenuConfirmation/MenuConfirmation.vue'
 
 // Injections
+import { formIsInEditModeKey } from '~/components/Form/provide/form.provide'
 
 defineOptions({
   inheritAttrs: false,
@@ -41,10 +42,8 @@ const { errorsExtended, handleDismissError } = useFormErrors(errors, emits)
 const formEl = ref<HTMLFormElement>()
 const menuConfirmationEl = ref<InstanceType<typeof MenuConfirmation>>()
 const isSubmitted = ref(false)
-const isEditing = defineModel('isEditing', {
-  local: true,
-  default: false,
-})
+const isInEditMode = ref(!!props.isEditing)
+provide(formIsInEditModeKey, isInEditMode)
 
 const FormConfirmation = computed(() => {
   return config.form?.confirmation?.component ?? MenuConfirmation
@@ -130,17 +129,15 @@ defineExpose({
 })
 
 // For purpose of update form
-whenever(isEditing, () => {
-  // Small delay for waiting to input getting appended in EDIT mode
+whenever(isInEditMode, () => {
+  // Small delay for waiting for the input to be appended in EDIT mode
   setTimeout(() => {
     focusFirstInput()
   }, 100)
 })
 
 onMounted(() => {
-  if (isEditing.value) {
-    focusFirstInput()
-  }
+  focusFirstInput()
 })
 </script>
 
@@ -153,10 +150,7 @@ onMounted(() => {
     novalidate
     @submit.stop.prevent="throttledSubmit()"
   >
-    <slot
-      name="above"
-      :is-editing="isEditing"
-    />
+    <slot name="above" />
 
     <div
       class="form-content"
@@ -165,7 +159,7 @@ onMounted(() => {
       :class="{ 'flex flex-col': !$attrs.grid }"
       v-bind="$attrs"
     >
-      <slot :is-editing="isEditing" />
+      <slot />
     </div>
 
     <slot name="errors">
@@ -192,7 +186,6 @@ onMounted(() => {
     <slot
       v-if="!noControls && hasControls !== false"
       name="submit"
-      :is-editing="isEditing"
     >
       <Section
         id="form-controls"
@@ -203,7 +196,6 @@ onMounted(() => {
         <slot
           v-if="$slots['submit-start']"
           name="submit-start"
-          :is-editing="isEditing"
         >
           <span>&nbsp;</span>
         </slot>
@@ -215,10 +207,7 @@ onMounted(() => {
           relative
           flex="~ gap-2"
         >
-          <slot
-            name="submit-before"
-            :is-editing="isEditing"
-          />
+          <slot name="submit-before" />
 
           <Btn
             v-if="!noSubmit"
@@ -245,10 +234,7 @@ onMounted(() => {
             </Component>
           </Btn>
 
-          <slot
-            name="submit-after"
-            :is-editing="isEditing"
-          />
+          <slot name="submit-after" />
         </div>
       </Section>
     </slot>
