@@ -111,12 +111,17 @@ function focusFirstInput() {
           inputChild.focus()
           break
         } else {
-          // If an input exists and it is selector => focus on it and break, otherwise contineu
-          const controller = spanElement.querySelector(
-            '.control.ps'
-          ) as HTMLElement
+          // If an input exists and it is selector => focus on it and break, otherwise continue
+          const mainInputWrapperParent =
+            spanElement.parentElement?.parentElement
+          const isSelector =
+            mainInputWrapperParent?.classList.value.includes('has-menu')
 
-          if (controller) {
+          if (isSelector) {
+            const controller = spanElement.querySelector(
+              '.control'
+            ) as HTMLElement
+
             setTimeout(() => {
               controller.focus()
             }, 200)
