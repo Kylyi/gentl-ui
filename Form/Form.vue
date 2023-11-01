@@ -45,6 +45,10 @@ const isSubmitted = ref(false)
 const isInEditMode = ref(!!props.isEditing)
 provide(formIsInEditModeKey, isInEditMode)
 
+const preventSubmitOnEnter = computed(() => {
+  return !!config.form?.preventSubmitOnEnter
+})
+
 const FormConfirmation = computed(() => {
   return config.form?.confirmation?.component ?? MenuConfirmation
 })
@@ -163,6 +167,7 @@ onMounted(() => {
     autocomplete="off"
     novalidate
     @submit.stop.prevent="throttledSubmit()"
+    @keydown.enter.prevent="!preventSubmitOnEnter && throttledSubmit()"
   >
     <slot name="above" />
 
