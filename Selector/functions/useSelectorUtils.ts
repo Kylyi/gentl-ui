@@ -1,20 +1,20 @@
-import { ISelectorUtilsOptions } from '~/components/Selector/types/selector-utils-options.type'
+import { type ISelectorUtilsOptions } from '~/components/Selector/types/selector-utils-options.type'
 
 export function useSelectorUtils(options: ISelectorUtilsOptions) {
   const { props, menuElRef } = options
   const instance = getCurrentInstance()
 
-  // LAYOUT
+  // Layout
   const el = ref<any>()
   const model = useVModel(props, 'modelValue')
   const menuEl = computed(() => toValue(menuElRef))
 
-  // INPUT METHODS
+  // Input methods
   const clear = () => {
     instance?.emit('update:modelValue', props.emptyValue)
   }
 
-  // WRAPPER
+  // Wrapper
   const wrapperProps = reactivePick(
     props,
     'contentClass',
@@ -53,7 +53,7 @@ export function useSelectorUtils(options: ISelectorUtilsOptions) {
     }
   }
 
-  function handleFocusOrClick(ev: MouseEvent | FocusEvent) {
+  function handleFocusOrClick(ev?: MouseEvent | FocusEvent, noHide?: boolean) {
     if (focusedProgramatically.value) {
       return
     }
@@ -63,10 +63,10 @@ export function useSelectorUtils(options: ISelectorUtilsOptions) {
     blurAnyFocusedInput()
 
     const hasClickedInsideFloatingElement = !!(
-      ev.target as HTMLElement
-    ).closest('.floating-element')
+      ev?.target as HTMLElement
+    )?.closest('.floating-element')
 
-    if (!hasClickedInsideFloatingElement) {
+    if (!hasClickedInsideFloatingElement && !noHide) {
       document.querySelectorAll('.floating-element').forEach(el => {
         const currentMenuDom = menuEl.value?.getFloatingEl()
 
@@ -84,7 +84,7 @@ export function useSelectorUtils(options: ISelectorUtilsOptions) {
   // Autofocus on init
   setTimeout(() => {
     if (props.autofocus) {
-      focus()
+      handleFocusOrClick(undefined, true)
     }
   }, 300)
 

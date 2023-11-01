@@ -1,4 +1,4 @@
-import { CSSProperties } from 'vue'
+import { type CSSProperties } from 'vue'
 
 // Types
 import type { InputLabelProps } from '~/components/Inputs/types/input-label-props.type'

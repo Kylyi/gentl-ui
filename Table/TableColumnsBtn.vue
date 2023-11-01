@@ -188,6 +188,7 @@ async function handleApplyChanges() {
         p="2"
         :label="$t('table.applyColumns')"
         :submit-disabled="!filteredCols.length"
+        :submit-confirmation="false"
         @submit="handleApplyChanges"
       >
         <!-- Left side -->

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 // Types
 import {
-  IQueryBuilderGroup,
-  IQueryBuilderGroupProps,
+  type IQueryBuilderGroup,
+  type IQueryBuilderGroupProps,
 } from '~/components/QueryBuilder/types/query-builder-group-props.type'
 
 // Models

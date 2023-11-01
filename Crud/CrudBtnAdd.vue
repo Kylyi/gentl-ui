@@ -24,5 +24,6 @@ withDefaults(defineProps<IProps>(), {
     no-dim
     :no-uppercase="noUppercase"
     :size="size"
+    data-cy="add-button"
   />
 </template>

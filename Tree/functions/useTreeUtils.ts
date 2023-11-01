@@ -1,4 +1,4 @@
-import { Required } from 'utility-types'
+import { type Required } from 'utility-types'
 
 // TYPES
 import type { ITreeNode } from '~/components/Tree/types/tree-node.type'

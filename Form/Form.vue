@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { config } from '~/config'
+
 // Types
 import type { IFormProps } from '~/components/Form/types/form-props.type'
 
@@ -16,10 +18,11 @@ const props = withDefaults(defineProps<IFormProps>(), {
   errorsOnTop: true,
   labelForcedVisibility: true,
   hasControls: undefined,
+  submitConfirmation: config.form.confirmation.enabled,
 })
 
 const emits = defineEmits<{
-  (e: 'submit'): void
+  (e: 'submit', payload?: any): void
   (e: 'update:errors', errors: string[]): void
 }>()
 
@@ -31,6 +34,10 @@ const { errorsExtended, handleDismissError } = useFormErrors(errors, emits)
 const formEl = ref<HTMLFormElement>()
 const menuConfirmationEl = ref<InstanceType<typeof MenuConfirmation>>()
 const isSubmitted = ref(false)
+
+const FormConfirmation = computed(() => {
+  return config.form?.confirmation?.component ?? MenuConfirmation
+})
 
 const formClass = computed(() => ({
   'form--dense': props.dense,
@@ -57,15 +64,15 @@ const controlsClass = computed(() => {
 })
 
 const throttledSubmit = useThrottleFn(
-  (isConfirmed?: boolean) => {
+  (isConfirmed?: boolean, payload?: any) => {
     if (!isConfirmed && props.submitConfirmation) {
-      menuConfirmationEl.value?.focusConfirmButton()
+      menuConfirmationEl.value?.focusConfirmButton?.()
 
       return
     }
 
     if (!props.loading && !props.submitDisabled) {
-      emits('submit')
+      emits('submit', payload)
     }
 
     isSubmitted.value = true
@@ -94,6 +101,8 @@ defineExpose({
     novalidate
     @submit.stop.prevent="throttledSubmit()"
   >
+    <slot name="above" />
+
     <div
       class="form-content"
       rounded="custom"
@@ -163,17 +172,17 @@ defineExpose({
             data-cy="save-button"
             :label="label ?? $t('submit')"
           >
-            <MenuConfirmation
+            <Component
+              :is="FormConfirmation"
               v-if="submitConfirmation"
               ref="menuConfirmationEl"
-              :title="$t('confirmAction')"
               :confirmation-text="submitConfirmationText"
-              @ok="throttledSubmit(true)"
+              @ok="throttledSubmit(true, $event)"
             >
               <template #append>
                 <slot name="confirmation"> </slot>
               </template>
-            </MenuConfirmation>
+            </Component>
           </Btn>
 
           <slot name="submit-after" />

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { MotionInstance } from '@vueuse/motion'
+import { type MotionInstance } from '@vueuse/motion'
 
 // Types
 import type { IDialogProps } from '~/components/Dialog/types/dialog-props.type'

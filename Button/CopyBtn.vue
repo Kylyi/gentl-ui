@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Types
-import { IBtnProps } from '~/components/Button/types/btn-props.type'
+import { type IBtnProps } from '~/components/Button/types/btn-props.type';
 
 const props = defineProps<
   IBtnProps & {

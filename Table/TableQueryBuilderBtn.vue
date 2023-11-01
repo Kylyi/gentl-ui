@@ -2,7 +2,7 @@
 import { klona } from 'klona'
 
 // Types
-import { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
+import { type IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
 
 // Injections
 import {
@@ -82,6 +82,7 @@ const $v = useVuelidate({ $scope: 'qb' })
     >
       <Form
         :label="$t('apply')"
+        :submit-confirmation="false"
         @submit="syncToParent"
       >
         <QueryBuilder

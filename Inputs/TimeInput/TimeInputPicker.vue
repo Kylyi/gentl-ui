@@ -1,14 +1,14 @@
 <script setup lang="ts">
 // eslint-disable-next-line import/named
-import { AnyMaskedOptions, MaskedRange } from 'imask'
+import { MaskedRange, type AnyMaskedOptions } from 'imask'
 
 // Types
 import type { ITimeInputPickerProps } from '~/components/Inputs/TimeInput/types/time-input-picker-props.type'
 
 // Components
-import VerticalScrollPicker from '~/components/ScrollPicker/VerticalScrollPicker.vue'
-import MenuProxy from '~/components/MenuProxy/MenuProxy.vue'
 import TextInput from '~/components/Inputs/TextInput/TextInput.vue'
+import MenuProxy from '~/components/MenuProxy/MenuProxy.vue'
+import VerticalScrollPicker from '~/components/ScrollPicker/VerticalScrollPicker.vue'
 import { useAppStore } from '~/libs/App/app.store'
 
 const props = defineProps<ITimeInputPickerProps>()

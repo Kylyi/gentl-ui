@@ -1,7 +1,7 @@
 import { LOCALE_DEFAULT, messages } from '~/utils/i18n'
 
 // Types
-import { IWysiwygMentionItem } from '~/components/Wysiwyg/types/wysiwyg-mention-item.type'
+import { type IWysiwygMentionItem } from '~/components/Wysiwyg/types/wysiwyg-mention-item.type'
 
 const locale = LOCALE_DEFAULT
 
@@ -116,12 +116,12 @@ export const grantMentionItems: IWysiwygMentionItem[] = [
   },
 
   // Fund usage deadline
-  {
-    id: 'grant.fundUsageDeadline',
-    label: t('grant.fundUsageDeadline'),
-    group: t('grant.self', 1),
-    dataType: 'date',
-  },
+  // {
+  //   id: 'grant.fundUsageDeadline',
+  //   label: t('grant.fundUsageDeadline'),
+  //   group: t('grant.self', 1),
+  //   dataType: 'date',
+  // },
 
   // Territory dimensions
   {

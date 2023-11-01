@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import {
-  ClientRectObject,
-  VirtualElement,
-  flip,
-  offset,
-  shift,
-} from '@floating-ui/dom'
-import { MaybeElement, useFloating } from '@floating-ui/vue'
+flip,
+offset,
+shift,
+type ClientRectObject,
+type VirtualElement,
+} from '@floating-ui/dom';
+import { useFloating, type MaybeElement } from '@floating-ui/vue';
 
 // Types
-import type { IWysiwygMentionItem } from '~/components/Wysiwyg/types/wysiwyg-mention-item.type'
+import type { IWysiwygMentionItem } from '~/components/Wysiwyg/types/wysiwyg-mention-item.type';
 
 // Components
-import List from '~/components/List/List.vue'
+import List from '~/components/List/List.vue';
 
 type IProps = {
   items: IWysiwygMentionItem[]

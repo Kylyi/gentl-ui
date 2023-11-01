@@ -1,5 +1,5 @@
-import { CSSProperties } from 'vue'
-import { Required } from 'utility-types'
+import { type CSSProperties } from 'vue'
+import { type Required } from 'utility-types'
 import { config } from '~/config'
 
 // Types
@@ -240,6 +240,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
       case 'number':
       case 'int':
       case 'long':
+      case 'double':
       case 'datetime':
       case 'DateTime':
       case 'date':

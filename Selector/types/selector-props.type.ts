@@ -1,7 +1,7 @@
-import { CSSProperties } from 'vue'
+import { type CSSProperties } from 'vue'
 
-import { FuseOptions } from '@vueuse/integrations/useFuse'
-import { FloatingUIBaseProps } from '~/components/Dialog/types/dialog-props.type'
+import { type FuseOptions } from '@vueuse/integrations/useFuse'
+import { type FloatingUIBaseProps } from '~/components/Dialog/types/dialog-props.type'
 
 // Types
 import type { IInputProps } from '~/components/Inputs/types/input-props.type'

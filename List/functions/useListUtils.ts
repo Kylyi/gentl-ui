@@ -1,4 +1,5 @@
-import { IListProps } from '~/components/List/types/list-props.type'
+// Types
+import { type IListProps } from '~/components/List/types/list-props.type'
 
 export function useListUtils() {
   function getListProps(props: IListProps) {

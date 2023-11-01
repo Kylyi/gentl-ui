@@ -1,6 +1,9 @@
 <script setup lang="ts">
+// Types
+import { type IMiniCardProps } from '~/components/Card/types/mini-card-props.type'
+
+// Functions
 import { useMiniCardUtils } from '~/components/Card/functions/useMiniCardUtils'
-import { IMiniCardProps } from '~/components/Card/types/mini-card-props.type'
 
 defineOptions({
   inheritAttrs: false,
@@ -28,6 +31,7 @@ const miniCardProps = getMiniCardProps(props)
     }"
     bg="white dark:darker"
     :original-value="originalValue"
+    :to-original-value="toOriginalValue"
   >
     <template #default="{ val }">
       <slot

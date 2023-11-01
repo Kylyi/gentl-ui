@@ -252,5 +252,30 @@ function handleLayoutSelect(
 
       <Separator spaced />
     </template>
+
+    <template #item="{ item }">
+      <div
+        flex="~ items-center"
+        p="y-2"
+        w="full"
+        class="x"
+      >
+        <span grow>
+          {{ item.name }}
+        </span>
+
+        <TableLayoutSelectorSavedOptions :layout="item" />
+      </div>
+    </template>
   </Selector>
 </template>
+
+<style scoped lang="scss">
+.x {
+  --apply: relative;
+
+  &::after {
+    --apply: absolute content-empty bottom-0 left-0 w-full h-px bg-ca left--2;
+  }
+}
+</style>

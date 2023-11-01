@@ -1,7 +1,6 @@
 <script setup lang="ts">
-// eslint-disable-next-line import/named
 import { InputMask } from 'imask'
-import { MaybeElementRef } from '@vueuse/core'
+import { type MaybeElementRef } from '@vueuse/core'
 
 // Types
 import type { ITextAreaInputProps } from '~/components/Inputs/TextArea/types/text-area-props.type'

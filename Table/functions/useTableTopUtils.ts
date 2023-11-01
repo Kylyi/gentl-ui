@@ -1,5 +1,5 @@
 // Types
-import { ITableProps } from '~/components/Table/types/table-props.type'
+import { type ITableProps } from '~/components/Table/types/table-props.type'
 
 export function useTableTopUtils() {
   function getTableTopProps(props: ITableProps) {
