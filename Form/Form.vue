@@ -129,9 +129,9 @@ defineExpose({
 })
 
 // For purpose of update form
-watchEffect(() => {
-  if (isInEditMode.value) {
-    // Small delay for waiting to input getting appended in EDIT mode
+watch(isInEditMode, newEditModeState => {
+  if (newEditModeState) {
+    // Small delay for waiting for the input to be appended in EDIT mode
     setTimeout(() => {
       focusFirstInputOnMousePointerIfRequested()
     }, 100)
