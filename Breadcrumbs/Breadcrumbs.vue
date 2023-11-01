@@ -9,7 +9,7 @@ const breadcrumbsInjected = injectStrict(breadcrumbsKey, ref([]))
 const breadcrumbs = computed(() => {
   return [
     {
-      icon: 'material-symbols:home-rounded',
+      icon: 'lucide:home',
       to: $p(config.breadcrumbs.homePath || '/'),
     },
     ...breadcrumbsInjected.value,
@@ -59,7 +59,7 @@ const breadcrumbs = computed(() => {
   --apply: flex grow flex-gap-x-1 items-center text-sm m-t-2 m-b-1;
 
   &-wrapper {
-    --apply: flex flex-gap-x-1 items-center p-x-3 p-t-3 bg-slate-100;
+    --apply: flex flex-gap-x-1 items-center p-x-3 p-y-2.5 bg-slate-100;
   }
 }
 
