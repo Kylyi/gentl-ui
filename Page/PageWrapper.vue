@@ -74,25 +74,27 @@ onMounted(() => {
         <slot name="title-right" />
       </template>
     </Component>
-    <slot v-if="!loading" />
+    <div p-x-3>
+      <slot v-if="!loading" />
 
-    <slot
-      v-else
-      name="loading"
-    >
-      <div
-        flex="~ center"
-        fit
+      <slot
+        v-else
+        name="loading"
       >
-        <Loader />
-      </div>
-    </slot>
+        <div
+          flex="~ center"
+          fit
+        >
+          <Loader />
+        </div>
+      </slot>
+    </div>
   </main>
 </template>
 
 <style lang="scss" scoped>
 .page-wrapper {
-  --apply: ease-out overflow-auto grow p-3;
+  --apply: ease-out overflow-auto grow;
 
   &.is-mounted {
     --apply: transition-padding-250 transition-margin-250;
