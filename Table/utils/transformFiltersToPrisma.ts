@@ -44,6 +44,7 @@ function transformItemToPrismaCondition(
         }
       }
 
+      // TODO: This should be done in transforming the URL to the filters, not here!
       return { [item.field]: possiblyTransformToID(item.value) }
 
     case ComparatorEnum.NOT_EQUAL:
