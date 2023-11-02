@@ -46,6 +46,7 @@ const QUERY_BUILDER_INLINE_PADDING = 8
 
 // Store
 const { setTableState } = useTableStore()
+const { isMobile } = useMobile()
 
 // Injections
 const selection = injectStrict(tableSelectionKey)
@@ -204,15 +205,10 @@ function handleFitColumns() {
           m="t-1"
         />
 
-        <Separator
-          vertical
-          h="full"
-          m="l-1"
-        />
-
         <VerticalScroller
           grow
           :style="queryBuilderHeight"
+          display="md:flex! none!"
         >
           <div
             p="1"
@@ -228,11 +224,7 @@ function handleFitColumns() {
             />
           </div>
         </VerticalScroller>
-
-        <Separator
-          vertical
-          h="full"
-        />
+        <div flex-grow />
 
         <!-- Remove filters -->
         <Btn
@@ -252,7 +244,7 @@ function handleFitColumns() {
           data-cy="remove-filters"
         >
           <Menu
-            placement="left"
+            :placement="isMobile ? 'bottom' : 'left'"
             hide-header
             :no-arrow="false"
             content-class="gap-1"
@@ -284,12 +276,6 @@ function handleFitColumns() {
             />
           </Menu>
         </Btn>
-
-        <Separator
-          vertical
-          h="full"
-          m="r-1"
-        />
 
         <slot name="export">
           <Component
@@ -386,51 +372,119 @@ function handleFitColumns() {
         </div>
       </div>
 
+      <Btn
+        v-if="isMobile"
+        label="More actions"
+        icon="ri:more-2-fill color-white"
+        label-class="color-white"
+        bg-blue-500
+        w-full
+      >
+        <Menu hide-header>
+          <span
+            v-if="!tableTopFunctionality?.noLayout"
+            text="caption xs"
+            font="bold"
+            display="lt-md:none"
+          >
+            {{ $t('table.layoutState') }}:
+          </span>
+
+          <!-- Columns btn -->
+          <TableColumnsBtn
+            v-if="!tableTopFunctionality?.noColumnSelection"
+            v-model:columns="columns"
+          />
+          <!-- Autofit btn -->
+          <Btn
+            v-if="!tableTopFunctionality?.noAutoFit"
+            size="sm"
+            no-uppercase
+            icon="material-symbols:fit-width"
+            color="ca"
+            :label="$t('table.fitColumns')"
+            @click="handleFitColumns"
+          />
+
+          <template
+            v-if="
+              config.table.useServerState && !tableTopFunctionality?.noLayout
+            "
+          >
+            <!-- Layout selector -->
+            <TableLayoutSelector
+              v-model:query-builder="queryBuilder"
+              m-auto
+            />
+
+            <!-- Layout settings -->
+            <TableLayoutSettingsBtn
+              :non-saveable-settings="nonSavableSettings"
+              label="Layout settings"
+            />
+          </template>
+
+          <slot name="subbar-right" />
+        </Menu>
+      </Btn>
       <!-- Layout -->
       <div
-        flex="~ gap-2"
-        items-center
+        v-else
+        flex="~ gap-2 md:row col"
+        items="md:center start"
         grow
         justify="end"
       >
-        <span
-          v-if="!tableTopFunctionality?.noLayout"
-          text="caption xs"
-          font="bold"
-          display="lt-md:none"
+        <div
+          flex
+          items-center
         >
-          {{ $t('table.layoutState') }}:
-        </span>
+          <span
+            v-if="!tableTopFunctionality?.noLayout"
+            text="caption xs"
+            font="bold"
+            display="lt-md:none"
+          >
+            {{ $t('table.layoutState') }}:
+          </span>
 
-        <!-- Columns btn -->
-        <TableColumnsBtn
-          v-if="!tableTopFunctionality?.noColumnSelection"
-          v-model:columns="columns"
-        />
-
-        <!-- Autofit btn -->
-        <Btn
-          v-if="!tableTopFunctionality?.noAutoFit"
-          size="sm"
-          no-uppercase
-          icon="material-symbols:fit-width"
-          color="ca"
-          :label="$t('table.fitColumns')"
-          @click="handleFitColumns"
-        />
-
-        <template
-          v-if="config.table.useServerState && !tableTopFunctionality?.noLayout"
+          <!-- Columns btn -->
+          <TableColumnsBtn
+            v-if="!tableTopFunctionality?.noColumnSelection"
+            v-model:columns="columns"
+          />
+          <!-- Autofit btn -->
+          <Btn
+            v-if="!tableTopFunctionality?.noAutoFit"
+            size="sm"
+            no-uppercase
+            icon="material-symbols:fit-width"
+            color="ca"
+            :label="$t('table.fitColumns')"
+            @click="handleFitColumns"
+          />
+        </div>
+        <div
+          flex
+          items-center
         >
-          <!-- Layout selector -->
-          <TableLayoutSelector v-model:query-builder="queryBuilder" />
+          <template
+            v-if="
+              config.table.useServerState && !tableTopFunctionality?.noLayout
+            "
+          >
+            <!-- Layout selector -->
+            <TableLayoutSelector v-model:query-builder="queryBuilder" />
 
-          <!-- Layout settings -->
-          <TableLayoutSettingsBtn :non-saveable-settings="nonSavableSettings" />
-        </template>
+            <!-- Layout settings -->
+            <TableLayoutSettingsBtn
+              :non-saveable-settings="nonSavableSettings"
+            />
+          </template>
+
+          <slot name="subbar-right" />
+        </div>
       </div>
-
-      <slot name="subbar-right" />
     </div>
   </div>
 </template>

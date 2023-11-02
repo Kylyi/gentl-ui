@@ -269,7 +269,7 @@ const $v = useVuelidate(
     color="ca"
     no-uppercase
     :label="$t('settings')"
-    label-class="hidden sm:block"
+    label-class="block"
     data-cy="settings"
   >
     <Dialog
