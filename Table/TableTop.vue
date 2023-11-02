@@ -374,9 +374,9 @@ function handleFitColumns() {
 
       <Btn
         v-if="isMobile"
-        label="More actions"
+        :label="$t('general.moreActions')"
         icon="ri:more-2-fill color-white"
-        label-class="color-white"
+        label-class="color-white lowercase first-letter:capitalize"
         bg-blue-500
         w-full
       >
