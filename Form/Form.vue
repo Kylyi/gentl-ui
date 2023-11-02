@@ -107,28 +107,16 @@ function focusFirstInput() {
       for (const spanElement of spanElements) {
         // Check if there is an input child without readonly and required
         const inputChild = spanElement.querySelector(
-          'input:not([readonly]):not([required])'
-        ) as HTMLInputElement
+          '.control:not([readonly]):not([required])'
+        ) as HTMLElement
 
         // If an eligible input child exists, focus on it & break
         if (inputChild) {
-          inputChild.focus()
+          setTimeout(() => {
+            inputChild.focus()
+          }, 200)
+
           break
-        } else {
-          // If an input exists and it is selector => focus on it and break, otherwise continue
-          const isSelector =
-            spanElement.parentElement?.classList.contains('selector-wrapper')
-
-          if (isSelector) {
-            const controller = spanElement.querySelector(
-              '.control'
-            ) as HTMLElement
-
-            setTimeout(() => {
-              controller.focus()
-            }, 200)
-            break
-          }
         }
       }
     }
