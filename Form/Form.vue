@@ -116,10 +116,8 @@ function focusFirstInput() {
           break
         } else {
           // If an input exists and it is selector => focus on it and break, otherwise continue
-          const mainInputWrapperParent =
-            spanElement.parentElement?.parentElement
           const isSelector =
-            mainInputWrapperParent?.classList.value.includes('has-menu')
+            spanElement.parentElement?.classList.contains('selector-wrapper')
 
           if (isSelector) {
             const controller = spanElement.querySelector(
