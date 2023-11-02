@@ -16,20 +16,36 @@ export function highlight<T = IItem>(
   options?: {
     keys?: Fuse.FuseOptionKey<any>[]
     highlightClassName?: string
-    highlightExactMatch?: boolean
     searchValue?: string
+
+    /**
+     * When `displayKey` is provided, the highlightted text will be combined with
+     * value from the `displayKey` property of the item.
+     *
+     * So basically, let's say we have an item:
+     * { name: 'John Doe', nameLocalized: 'Джон До' }
+     * we set `displayKey` to 'nameLocalized'
+     * and we search for 'Джон', then the highlighted text will be 'Джон Doe'
+     */
+    displayKeys?: string[]
   }
 ) {
-  const { keys = [], highlightClassName = 'fuse-highlighted' } = options || {}
+  const {
+    keys = [],
+    highlightClassName = 'fuse-highlighted',
+    displayKeys,
+  } = options || {}
   let hasExactMatch = false
 
   const generateHighlightedText = (
     highlighted: string,
     inputText = '',
-    regions: readonly Fuse.RangeTuple[]
+    regions: readonly Fuse.RangeTuple[],
+    displayText?: string
   ) => {
     let content = ''
     let nextUnhighlightedRegionStartingIndex = 0
+    const text = displayText ?? inputText
 
     regions.forEach(region => {
       const startIndex = region[0]
@@ -37,18 +53,18 @@ export function highlight<T = IItem>(
 
       content += [
         // We add the unhighlighted part
-        inputText.substring(nextUnhighlightedRegionStartingIndex, startIndex),
+        text.substring(nextUnhighlightedRegionStartingIndex, startIndex),
 
         // We higlight the matched part
         `<span class="${highlightClassName}">`,
-        inputText.substring(startIndex, lastRegionNextIndex),
+        text.substring(startIndex, lastRegionNextIndex),
         '</span>',
       ].join('')
 
       nextUnhighlightedRegionStartingIndex = lastRegionNextIndex
     })
 
-    content += inputText.substring(nextUnhighlightedRegionStartingIndex)
+    content += text.substring(nextUnhighlightedRegionStartingIndex)
 
     return `${highlighted.trim()} ${content}`
   }
@@ -58,12 +74,19 @@ export function highlight<T = IItem>(
     .map(({ item, matches, score }) => {
       let highlighted = ''
 
-      keys.forEach(key => {
+      keys.forEach((key, idx) => {
         const match = matches?.find(match => match.key === key)
+        const displayKey = displayKeys?.[idx]
+        const displayText = displayKey ? get(item, displayKey) : undefined
 
         highlighted = match
-          ? generateHighlightedText(highlighted, match.value, match.indices)
-          : `${highlighted} ${get(item, key as string)}`
+          ? generateHighlightedText(
+              highlighted,
+              match.value,
+              match.indices,
+              displayText
+            )
+          : `${highlighted} ${get(item, displayKey ?? (key as string))}`
       })
 
       hasExactMatch = hasExactMatch || score! <= Number.EPSILON
