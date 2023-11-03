@@ -527,6 +527,7 @@ defineExpose({
         :fit="false"
         no-uplift
         max-height="50%"
+        data-cy="drop-down-list"
         @placement="menuPlacement = $event"
         @before-hide="handleBeforeHide"
         @hide="handleHide"
