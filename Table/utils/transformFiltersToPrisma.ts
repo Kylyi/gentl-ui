@@ -8,7 +8,7 @@ import type { ITableFilterRow } from '~/components/Table/types/table-query.type'
 import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
 import { FilterItem } from '~/libs/App/data/models/filter-item'
 
-function possiblyTransformToID(value: any): boolean {
+function possiblyTransformToID(value: any) {
   if (typeof value === 'string') {
     // Check if the string can be converted to a number
     const numericValue = Number.parseFloat(value)

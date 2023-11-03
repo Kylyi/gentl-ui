@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { NuxtLink } from '#components'
+
 // Types
 import type { IChipProps } from '~/components/Chip/types/chip-props.type'
 
@@ -54,9 +56,13 @@ function handleClick() {
       :class="[labelClass, { 'justify-center': center }]"
     >
       <slot>
-        <span truncate>
+        <Component
+          :is="to ? NuxtLink : 'span'"
+          truncate
+          :class="{ link: !!to }"
+        >
           {{ label }}
-        </span>
+        </Component>
       </slot>
     </div>
 
