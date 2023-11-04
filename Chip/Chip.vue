@@ -12,7 +12,7 @@ defineEmits<{
   (e: 'remove'): void
 }>()
 
-// UTILS
+// Utils
 function handleClick() {
   if (props.to) {
     $nav(props.to)
