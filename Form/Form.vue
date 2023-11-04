@@ -33,7 +33,7 @@ const emits = defineEmits<{
 }>()
 
 // Store
-const { lastPointerDownType } = storeToRefs(useAppStore())
+const { lastPointerDownType, activeElement } = storeToRefs(useAppStore())
 
 // Errors
 const errors = toRef(props, 'errors', [])
@@ -126,8 +126,17 @@ function focusFirstInput() {
 
 function handleEnter(ev: KeyboardEvent) {
   const isCtrlKey = ev.ctrlKey || ev.metaKey
+  const isInput = activeElement.value?.tagName === 'INPUT'
+  const hasCustomEnterHandler =
+    activeElement.value?.classList.contains('custom-enter')
 
-  if (preventSubmitOnEnter.value && !isCtrlKey) {
+  const isInputWithCustomEnterHandler = isInput && hasCustomEnterHandler
+
+  if (
+    preventSubmitOnEnter.value &&
+    !isCtrlKey &&
+    !isInputWithCustomEnterHandler
+  ) {
     ev.preventDefault()
   } else if (isCtrlKey) {
     throttledSubmit()

@@ -95,7 +95,6 @@ function handleAddFilter() {
       focusOnSpecificFilterInput(column.value.filters.length - 1)
     }
   } else {
-    console.log('First default')
     column.value.filters = [
       ...column.value.filters,
       new FilterItem(column.value),
