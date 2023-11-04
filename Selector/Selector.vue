@@ -370,7 +370,7 @@ defineExpose({
     v-bind="wrapperProps"
     :loading="isLoading"
     :has-content="hasContent"
-    :content-class="contentClass"
+    :content-class="[contentClass, 'selector-wrapper']"
     :class="[
       menuPlacement === 'bottom' ? 'has-menu-bottom' : 'has-menu-top',
       {
