@@ -56,6 +56,13 @@ export interface IFormProps {
   noSubmit?: boolean
 
   /**
+   * If true, the form will not submit on enter.
+   *
+   * Note: Will be sumitted on ctrl+enter.
+   */
+  preventSubmitOnEnter?: boolean
+
+  /**
    * Class for the submit button.
    */
   submitClass?: ClassType

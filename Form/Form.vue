@@ -24,6 +24,7 @@ const props = withDefaults(defineProps<IFormProps>(), {
   hasControls: undefined,
   submitConfirmation: config.form.confirmation.enabled,
   focusFirstInput: false,
+  preventSubmitOnEnter: config.form.preventSubmitOnEnter,
 })
 
 const emits = defineEmits<{
@@ -46,7 +47,7 @@ const isInEditMode = ref(!!props.isEditing)
 provide(formIsInEditModeKey, isInEditMode)
 
 const preventSubmitOnEnter = computed(() => {
-  return !!config.form?.preventSubmitOnEnter
+  return !!props.preventSubmitOnEnter
 })
 
 const FormConfirmation = computed(() => {
@@ -123,6 +124,16 @@ function focusFirstInput() {
   }
 }
 
+function handleEnter(ev: KeyboardEvent) {
+  const isCtrlKey = ev.ctrlKey || ev.metaKey
+
+  if (preventSubmitOnEnter.value && !isCtrlKey) {
+    ev.preventDefault()
+  } else if (isCtrlKey) {
+    throttledSubmit()
+  }
+}
+
 defineExpose({
   submit: throttledSubmit,
   fakeSubmit: () => (isSubmitted.value = true),
@@ -134,7 +145,7 @@ defineExpose({
 
 // For purpose of update form
 whenever(isInEditMode, () => {
-  // Small delay for waiting for the input to be appended in EDIT mode
+  // Small delay for waiting for the input to be appended in EDIT modea
   setTimeout(() => {
     focusFirstInput()
   }, 100)
@@ -153,7 +164,7 @@ onMounted(() => {
     autocomplete="off"
     novalidate
     @submit.stop.prevent="throttledSubmit()"
-    @keydown.enter.prevent="!preventSubmitOnEnter && throttledSubmit()"
+    @keydown.enter="handleEnter"
   >
     <slot name="above" />
 
