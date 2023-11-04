@@ -134,6 +134,7 @@ function handleEnter(ev: KeyboardEvent) {
 
   if (
     preventSubmitOnEnter.value &&
+    isInput &&
     !isCtrlKey &&
     !isInputWithCustomEnterHandler
   ) {
