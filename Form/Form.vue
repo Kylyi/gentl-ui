@@ -46,6 +46,7 @@ const formEl = ref<HTMLFormElement>()
 const menuConfirmationEl = ref<InstanceType<typeof MenuConfirmation>>()
 const isSubmitted = ref(false)
 const isEditing = defineModel('isEditing', { default: false, local: true })
+const { isDesktop } = useDevice()
 provide(formIsInEditModeKey, isEditing)
 
 const formConfirmation = computed(() => {
@@ -158,7 +159,11 @@ function focusFirstInput() {
   // We only focus the first input if the last pointer down type was a mouse
   // because on touch devices, it would most likely open a virtual keyboard
   // which might take unnecessary space on the screen
-  if (lastPointerDownType?.value === 'mouse' && props.focusFirstInput) {
+  const shouldFocus =
+    lastPointerDownType?.value === 'mouse' ||
+    (isDesktop && !lastPointerDownType.value)
+
+  if (shouldFocus && props.focusFirstInput) {
     const spanElements =
       formEl?.value?.querySelectorAll('span.wrapper-body__input') || []
 
