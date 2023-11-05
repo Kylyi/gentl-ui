@@ -33,7 +33,7 @@ export function useTableExporting(tableRows?: MaybeRefOrGetter<any[]>) {
       columns.forEach(col => {
         let val = get(row, col.field)
 
-        val = col.format?.(row, val) ?? val
+        val = col?.format?.(row, val) ?? val
 
         const label = col.label || col.name
 
