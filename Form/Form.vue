@@ -211,7 +211,7 @@ function handleEnter(ev: KeyboardEvent) {
     !isInputWithCustomEnterHandler
   ) {
     ev.preventDefault()
-  } else if (isCtrlKey) {
+  } else if (isCtrlKey && !props.submitDisabled) {
     throttledSubmit()
   }
 }
