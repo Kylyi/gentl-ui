@@ -22,7 +22,7 @@ const props = withDefaults(defineProps<IFormProps>(), {
   errorsOnTop: true,
   labelForcedVisibility: true,
   hasControls: undefined,
-  submitConfirmation: config.form.confirmation.enabled,
+  submitConfirmation: undefined,
   focusFirstInput: false,
   preventSubmitOnEnter: config.form.preventSubmitOnEnter,
 })
@@ -35,7 +35,7 @@ const emits = defineEmits<{
 
 // Store
 const appStore = useAppStore()
-const { lastPointerDownType, activeElement } = storeToRefs(appStore)
+const { appState, lastPointerDownType, activeElement } = storeToRefs(appStore)
 
 // Errors
 const errors = toRef(props, 'errors', [])
@@ -47,6 +47,28 @@ const menuConfirmationEl = ref<InstanceType<typeof MenuConfirmation>>()
 const isSubmitted = ref(false)
 const isEditing = defineModel('isEditing', { default: false, local: true })
 provide(formIsInEditModeKey, isEditing)
+
+const formConfirmation = computed(() => {
+  // When set in code, we want to use the value from the code
+  if (props.submitConfirmation !== undefined) {
+    return props.submitConfirmation
+  }
+
+  // When we don't allow people to edit the confirmation we just use whatever is
+  // in the config
+  const isEditable = config.form.confirmation.editable
+
+  if (!isEditable) {
+    return config.form.confirmation.enabled
+  }
+
+  // Otherwise, we use the value from the app state (with fallback to config)
+  const isEnabled =
+    !!appState.value.form?.confirmation?.enabled ||
+    config.form.confirmation.enabled
+
+  return isEnabled
+})
 
 const preventSubmitOnEnter = computed(() => {
   return !!props.preventSubmitOnEnter
@@ -106,7 +128,7 @@ onKeyStroke(['e', 'E'], (ev: KeyboardEvent) => {
 // Functions
 const throttledSubmit = useThrottleFn(
   async (isConfirmed?: boolean, payload?: any) => {
-    if (!isConfirmed && props.submitConfirmation) {
+    if (!isConfirmed && formConfirmation.value) {
       const isValid = await $v.value.$validate()
 
       if (!isValid) {
@@ -298,7 +320,7 @@ const $v = useVuelidate()
           >
             <Component
               :is="FormConfirmation"
-              v-if="submitConfirmation"
+              v-if="formConfirmation"
               ref="menuConfirmationEl"
               manual
               :confirmation-text="submitConfirmationText"
