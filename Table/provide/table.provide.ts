@@ -2,6 +2,7 @@
 import type { ITableSelection } from '~/components/Table/types/table-selection.type'
 import type { ITableDataFetchFncInput } from '~/components/Table/types/table-query.type'
 import type { ITableLayout } from '~/components/Table/types/table-layout.type'
+import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
 
 // Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
@@ -20,6 +21,10 @@ export const tableRefreshKey: InjectionKey<(force?: boolean) => void> =
 
 export const tableColumnsKey: InjectionKey<Ref<TableColumn[]>> =
   Symbol('tableColumns')
+
+export const tableQueryBuilderKey: InjectionKey<
+  Ref<IQueryBuilderRow[] | undefined>
+> = Symbol('tableQueryBuilder')
 
 export const tableNonHelpersColumnsKey: InjectionKey<Ref<TableColumn[]>> =
   Symbol('tableNonHelpersColumns')
