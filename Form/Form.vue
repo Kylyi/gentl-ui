@@ -30,10 +30,12 @@ const props = withDefaults(defineProps<IFormProps>(), {
 const emits = defineEmits<{
   (e: 'submit', payload?: any): void
   (e: 'update:errors', errors: string[]): void
+  (e: 'update:isEditing', val: boolean): void
 }>()
 
 // Store
-const { lastPointerDownType, activeElement } = storeToRefs(useAppStore())
+const appStore = useAppStore()
+const { lastPointerDownType, activeElement } = storeToRefs(appStore)
 
 // Errors
 const errors = toRef(props, 'errors', [])
@@ -43,8 +45,8 @@ const { errorsExtended, handleDismissError } = useFormErrors(errors, emits)
 const formEl = ref<HTMLFormElement>()
 const menuConfirmationEl = ref<InstanceType<typeof MenuConfirmation>>()
 const isSubmitted = ref(false)
-const isInEditMode = ref(!!props.isEditing)
-provide(formIsInEditModeKey, isInEditMode)
+const isEditing = defineModel('isEditing', { default: false, local: true })
+provide(formIsInEditModeKey, isEditing)
 
 const preventSubmitOnEnter = computed(() => {
   return !!props.preventSubmitOnEnter
@@ -78,6 +80,29 @@ const controlsClass = computed(() => {
   return [...classes, props.controlsClass]
 })
 
+// Keyboard shortcuts
+onKeyStroke('e', (ev: KeyboardEvent) => {
+  // When using CTRL or META, we return back to readonly mode
+  const isControlKey = ev.ctrlKey || ev.metaKey
+
+  if (isControlKey) {
+    ev.preventDefault()
+    isEditing.value = false
+
+    return
+  }
+
+  // When `e` is pressed, we want to enter the edit mode
+  const isFocusedInInput = appStore.isActiveElementInput()
+
+  if (isFocusedInInput) {
+    return
+  }
+
+  isEditing.value = true
+})
+
+// Functions
 const throttledSubmit = useThrottleFn(
   (isConfirmed?: boolean, payload?: any) => {
     if (!isConfirmed && props.submitConfirmation) {
@@ -97,7 +122,6 @@ const throttledSubmit = useThrottleFn(
   true
 )
 
-// Functions
 function focusFirstInput() {
   // We only focus the first input if the last pointer down type was a mouse
   // because on touch devices, it would most likely open a virtual keyboard
@@ -164,14 +188,15 @@ defineExpose({
   },
 })
 
-// For purpose of update form
-whenever(isInEditMode, () => {
+// When triggering the edit mode, we want to focus the first input
+whenever(isEditing, () => {
   // Small delay for waiting for the input to be appended in EDIT modea
   setTimeout(() => {
     focusFirstInput()
   }, 100)
 })
 
+// We also try to focus the first input when the form is mounted
 onMounted(() => {
   focusFirstInput()
 })

@@ -17,6 +17,7 @@ const emits = defineEmits<{
 // Injections
 const isInEditMode = injectStrict(formIsInEditModeKey, ref())
 
+// Layout
 const isEditing = useVModel(props, 'isEditing', emits)
 
 const transitionProps = computed(() => ({
@@ -35,9 +36,12 @@ function handleClick() {
   isInEditMode.value = true
 }
 
-watchEffect(() => {
-  isEditing.value = props.isEditing
-  isInEditMode.value = props.isEditing
+watch(isInEditMode, val => {
+  isEditing.value = !!val
+})
+
+watch(isEditing, val => {
+  isInEditMode.value = !!val
 })
 </script>
 

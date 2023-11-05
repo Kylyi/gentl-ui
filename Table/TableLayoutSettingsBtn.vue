@@ -289,6 +289,7 @@ const $v = useVuelidate(
         submit-class="w-30"
         :loading="isLoading"
         :submit-confirmation="false"
+        focus-first-input
         @submit="handleSaveLayout"
       >
         <TextInput

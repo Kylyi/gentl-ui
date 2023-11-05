@@ -38,7 +38,7 @@ const {
 const tableRefresh = injectStrict(tableRefreshKey)
 
 // Layout
-const inputEl = ref<any>()
+const valueInputEl = ref<any>()
 const filter = toRef(props, 'filter')
 const column = toRef(props, 'column')
 
@@ -212,6 +212,10 @@ function handleComparatorChange(comparator: ComparatorEnum) {
   filter.value.comparator = comparator
 
   tableRefresh()
+
+  nextTick(() => {
+    valueInputEl.value?.focus?.()
+  })
 }
 
 function handleValueChange(val: any, set?: boolean) {
@@ -227,7 +231,7 @@ function handleValueChange(val: any, set?: boolean) {
 }
 
 defineExpose({
-  focus: () => inputEl.value?.focus?.(),
+  focus: () => valueInputEl.value?.focus?.(),
 })
 </script>
 
@@ -264,6 +268,7 @@ defineExpose({
     <Component
       :is="customFilterComponent.component"
       v-if="customFilterComponent?.comparators.includes(filter.comparator)"
+      ref="valueInputEl"
       v-model="customValueComputed"
       v-bind="customFilterComponent.props"
       size="sm"
@@ -277,6 +282,7 @@ defineExpose({
         canUseSelectorComparator(filter.comparator, column) &&
         !column.getDistinctData
       "
+      ref="valueInputEl"
       v-model="customValue"
       size="sm"
       :debounce="500"
@@ -288,7 +294,7 @@ defineExpose({
     <!-- Selector of distinct values -->
     <Selector
       v-else-if="canUseSelectorComparator(filter.comparator, column)"
-      ref="inputEl"
+      ref="valueInputEl"
       v-model="filter.value"
       :load-data="{
         fnc: () => column.getDistinctData?.(column),
@@ -308,6 +314,7 @@ defineExpose({
     <!-- Ago value -->
     <QueryBuilderTimeAgoInput
       v-else-if="isDateAgoComparator(filter.comparator)"
+      ref="valueInputEl"
       :item="filter"
       @update:model-value="handleValueChange"
     />
@@ -325,7 +332,7 @@ defineExpose({
       :is="component.component"
       v-else-if="component.component && !isNonValueComparator"
       v-bind="component.props"
-      ref="inputEl"
+      ref="valueInputEl"
       v-model="filter.value"
       :debounce="inputDebounce"
       size="sm"
