@@ -81,13 +81,14 @@ const controlsClass = computed(() => {
 })
 
 // Keyboard shortcuts
-onKeyStroke('e', (ev: KeyboardEvent) => {
+onKeyStroke(['e', 'E'], (ev: KeyboardEvent) => {
   // When using CTRL or META, we return back to readonly mode
   const isControlKey = ev.ctrlKey || ev.metaKey
 
   if (isControlKey) {
     ev.preventDefault()
     isEditing.value = false
+    menuConfirmationEl.value?.hide()
 
     return
   }
@@ -104,8 +105,17 @@ onKeyStroke('e', (ev: KeyboardEvent) => {
 
 // Functions
 const throttledSubmit = useThrottleFn(
-  (isConfirmed?: boolean, payload?: any) => {
+  async (isConfirmed?: boolean, payload?: any) => {
     if (!isConfirmed && props.submitConfirmation) {
+      const isValid = await $v.value.$validate()
+
+      if (!isValid) {
+        notify($t('form.invalid'), 'negative')
+
+        return
+      }
+
+      menuConfirmationEl.value?.show()
       menuConfirmationEl.value?.focusConfirmButton?.()
 
       return
@@ -200,6 +210,9 @@ whenever(isEditing, () => {
 onMounted(() => {
   focusFirstInput()
 })
+
+// Validation
+const $v = useVuelidate()
 </script>
 
 <template>
@@ -287,6 +300,7 @@ onMounted(() => {
               :is="FormConfirmation"
               v-if="submitConfirmation"
               ref="menuConfirmationEl"
+              manual
               :confirmation-text="submitConfirmationText"
               @ok="throttledSubmit(true, $event)"
             >

@@ -55,6 +55,7 @@ defineExpose({
   },
   recomputeMenuPosition: () => menuEl.value?.recomputePosition(),
   hide: () => menuEl.value?.hide(),
+  show: () => menuEl.value?.show(),
 })
 </script>
 
