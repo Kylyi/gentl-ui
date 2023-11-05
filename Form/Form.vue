@@ -99,27 +99,38 @@ const throttledSubmit = useThrottleFn(
 
 // Functions
 function focusFirstInput() {
+  // We only focus the first input if the last pointer down type was a mouse
+  // because on touch devices, it would most likely open a virtual keyboard
+  // which might take unnecessary space on the screen
   if (lastPointerDownType?.value === 'mouse' && props.focusFirstInput) {
-    const spanElements = formEl?.value?.querySelectorAll(
-      'span.wrapper-body__input'
-    )
+    const spanElements =
+      formEl?.value?.querySelectorAll('span.wrapper-body__input') || []
 
-    if (spanElements) {
-      for (const spanElement of spanElements) {
-        // Check if there is an input child without readonly and required
-        const inputChild = spanElement.querySelector(
-          '.control:not([readonly]):not([required])'
-        ) as HTMLElement
+    const firstEditableField = Array.from(spanElements).find(el => {
+      const inputChild = el.querySelector(
+        '.control:not([readonly]):not([disabled])'
+      ) as HTMLElement
 
-        // If an eligible input child exists, focus on it & break
-        if (inputChild) {
-          setTimeout(() => {
-            inputChild.focus()
-          }, 200)
+      return !!inputChild
+    }) as HTMLElement
 
-          break
-        }
-      }
+    const firstEditableInput = firstEditableField?.querySelector(
+      '.control:not([readonly]):not([disabled])'
+    ) as HTMLElement
+
+    if (firstEditableInput) {
+      // We only want to focus the input if it's currently visible because
+      // we don't want to scroll the page to the input if it's not visible
+      const { stop } = useIntersectionObserver(firstEditableInput, observer => {
+        setTimeout(() => {
+          if (observer[0].isIntersecting) {
+            firstEditableInput.focus()
+          }
+
+          // We deactivate the intersection observer
+          stop()
+        }, 200)
+      })
     }
   }
 }
