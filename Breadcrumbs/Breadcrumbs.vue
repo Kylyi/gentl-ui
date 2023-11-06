@@ -4,6 +4,14 @@ import { config } from '~/config'
 // Constants
 import { BUTTON_PRESET } from '~/components/Button/constants/button-preset.constant'
 
+const { notAdaptive = false, hideBtnPosition = 'left' } = defineProps<{
+  /*
+   * Turns off hiding breadcrumbs based on available width
+   */
+  notAdaptive?: boolean
+  hideBtnPosition?: 'left' | 'right'
+}>()
+
 const breadcrumbsInjected = injectStrict(breadcrumbsKey, ref([]))
 
 const breadcrumbs = computed(() => {
@@ -44,8 +52,8 @@ const isBreadcrumbVisibleByIndex = computed(() => {
 
   // 61px = hidden breadcrumbs btn width
   while (visibleBreadcrumbsWidth > calculateAvailableWidth() - 61) {
-    const { b, index } = hideTheRightBreadcrumb(result)
-    result = b
+    const { breadcrumbsVisibleByIndex, index } = hideTheRightBreadcrumb(result)
+    result = breadcrumbsVisibleByIndex
     if (index === undefined) {
       break
     }
@@ -66,6 +74,10 @@ const hiddenBreadcrumbs = computedEager(() => {
 })
 
 onMounted(() => {
+  if (notAdaptive) {
+    isMounted.value = true
+    return
+  }
   // setTimeout is needed for non-ssr applications. NextTick isnt enough, lower values than 100ms arent sometimes enough
   setTimeout(() => {
     // calculate breadcrumbs width
@@ -84,23 +96,50 @@ onMounted(() => {
   }, 100)
 })
 
-function hideTheRightBreadcrumb(b: boolean[]) {
-  if (b.length <= 2) {
-    return { b }
+function hideTheRightBreadcrumb(breadcrumbsVisibleByIndex: boolean[]) {
+  if (breadcrumbsVisibleByIndex.length <= 2) {
+    return { breadcrumbsVisibleByIndex }
   }
 
-  const index = b.findIndex(
-    (value, i) => i !== 0 && i !== b.length - 1 && value === true
-  )
-
-  if (index === -1) {
-    return { b }
+  let index: number
+  if (hideBtnPosition === 'right') {
+    // Start hiding from the second-to-last breadcrumb when on the right
+    for (index = breadcrumbsVisibleByIndex.length - 2; index > 0; index--) {
+      if (breadcrumbsVisibleByIndex[index]) {
+        break
+      }
+    }
+  } else {
+    // Start hiding from the first non-first breadcrumb when on the left
+    index = breadcrumbsVisibleByIndex.findIndex(
+      (value, i) => i !== 0 && value === true
+    )
   }
 
-  b[index] = false
+  if (index === -1 || index === 0) {
+    // If all are hidden or only first breadcrumb is visible, do not hide any further breadcrumbs
+    return { breadcrumbsVisibleByIndex }
+  }
 
-  return { b, index }
+  breadcrumbsVisibleByIndex[index] = false
+
+  return { breadcrumbsVisibleByIndex, index }
 }
+
+const hideBtnIndex = computedEager(() => {
+  if (hideBtnPosition === 'left') {
+    return 0 // right after home icon
+  }
+  return (
+    breadcrumbs.value.length -
+    // calculate how many breadcrumbs are hidden
+    isBreadcrumbVisibleByIndex.value.reduce(
+      (acc, val) => acc + (val === false ? 1 : 0),
+      0
+    ) -
+    2 // before last breadcrumb
+  )
+})
 </script>
 
 <template>
@@ -147,7 +186,7 @@ function hideTheRightBreadcrumb(b: boolean[]) {
 
           <!-- Hidden breadcrumbs btn -->
           <span
-            v-if="isAnyBreadcrumbHidden && index === 0"
+            v-if="isAnyBreadcrumbHidden && index === hideBtnIndex"
             flex
             items-center
             p-l-1
