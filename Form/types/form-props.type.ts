@@ -1,7 +1,5 @@
 export interface IFormProps {
   bordered?: boolean
-  contentClass?: ClassType
-  controlsClass?: ClassType
   dense?: boolean
   errors?: string[]
   label?: string
@@ -63,11 +61,6 @@ export interface IFormProps {
   preventSubmitOnEnter?: boolean
 
   /**
-   * Class for the submit button.
-   */
-  submitClass?: ClassType
-
-  /**
    * If true, the form submit will need to be confirmed in a confirmation menu.
    */
   submitConfirmation?: boolean
@@ -81,4 +74,21 @@ export interface IFormProps {
    * If true, the submit button will be disabled.
    */
   submitDisabled?: boolean
+
+  ui?: {
+    /**
+     * Class for the submit button.
+     */
+    submitClass?: ClassType
+
+    /**
+     * Class for controls section
+     */
+    controlsClass?: ClassType
+
+    /**
+     *  Class for the wrapper around the submit button
+     */
+    submitWrapperClass?: ClassType
+  }
 }

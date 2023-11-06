@@ -100,7 +100,7 @@ const controlsClass = computed(() => {
     classes.push('border-t-1')
   }
 
-  return [...classes, props.controlsClass]
+  return [...classes, props.ui?.controlsClass]
 })
 
 // Keyboard shortcuts
@@ -289,11 +289,11 @@ const $v = useVuelidate()
       v-if="!noControls && hasControls !== false"
       name="submit"
     >
-      <Section
+      <div
         id="form-controls"
-        flex="~ wrap gap-2 items-center"
-        shrink-0
-        :section-class="[controlsClass, '!p-x-2 !p-b-2']"
+        flex="~ wrap gap-2 items-center shrink-0"
+        p="2"
+        :class="controlsClass"
       >
         <slot
           v-if="$slots['submit-start']"
@@ -308,6 +308,7 @@ const $v = useVuelidate()
         <div
           relative
           flex="~ gap-2"
+          :class="ui?.submitWrapperClass"
         >
           <slot name="submit-before" />
 
@@ -315,7 +316,7 @@ const $v = useVuelidate()
             v-if="!noSubmit"
             bg="primary"
             color="white"
-            :class="submitClass"
+            :class="ui?.submitClass"
             :disabled="submitDisabled"
             :loading="loading"
             :icon="icon"
@@ -339,7 +340,7 @@ const $v = useVuelidate()
 
           <slot name="submit-after" />
         </div>
-      </Section>
+      </div>
     </slot>
   </form>
 </template>
