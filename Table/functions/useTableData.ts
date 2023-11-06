@@ -23,6 +23,7 @@ import {
 
 // Injections
 import {
+  tableQueryBuilderKey,
   tableQueryKey,
   tableRecreateQueryBuilderKey,
   tableRefreshKey,
@@ -80,6 +81,7 @@ export function useTableData(
   provide(tableRecreateQueryBuilderKey, () => initializeQueryBuilder())
   provide(tableStorageKey, storageKey)
   provide(tableRowsKey, rows)
+  provide(tableQueryBuilderKey, queryBuilder)
 
   // Pagination
   const {

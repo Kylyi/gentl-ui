@@ -2,6 +2,7 @@ import { type CSSProperties } from 'vue'
 
 import { type FuseOptions } from '@vueuse/integrations/useFuse'
 import { type FloatingUIBaseProps } from '~/components/Dialog/types/dialog-props.type'
+import { NuxtLink } from '#components'
 
 // Types
 import type { IInputProps } from '~/components/Inputs/types/input-props.type'
@@ -86,6 +87,11 @@ export type ISelectorProps = IInputProps & {
   innerClass?: ClassType
   placeholderClass?: ClassType
   placeholderStyle?: CSSProperties
+
+  /**
+   * When selected, the item can have a link attached to it
+   */
+  optionTo?: (item: any) => InstanceType<typeof NuxtLink>['to']
 
   /**
    * When true (with combination of `alowAdd`), the component will not add the

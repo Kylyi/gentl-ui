@@ -325,38 +325,44 @@ function handleFitColumns() {
         items-center
         display="lt-md:none"
       >
-        <!-- Selection info -->
-        <div
-          v-if="selectable"
-          flex="~ gap-1"
-          items-center
-          text="caption xs"
-        >
-          <div fluent:select-all-on-20-regular />
-          <span m="l-1">{{ $t('general.selected') }}</span>
-          <span font="bold">{{ selectionCount }}</span>
-        </div>
-
-        <!-- Selection actions -->
-        <Btn
-          v-if="selectable && $slots['bulk-actions']"
-          size="sm"
-          no-uppercase
-          :label="$t('table.groupEdit')"
-          icon="line-md:chevron-small-right rotate-90 order-2"
-        >
-          <MenuProxy
-            hide-header
-            dense
-            p="1"
-            :no-arrow="false"
+        <template v-if="selectable && $slots['bulk-actions']">
+          <!-- Selection actions -->
+          <slot
+            name="bulk-actions"
+            :selection="selection"
           >
-            <slot
-              name="bulk-actions"
-              :selection="selection"
-            />
-          </MenuProxy>
-        </Btn>
+            <!-- Selection info -->
+            <div
+              v-if="selectable"
+              flex="~ gap-1 items-center"
+              leading="none"
+              text="caption xs"
+            >
+              <div fluent:select-all-on-20-regular />
+              <span m="l-1">{{ $t('general.selected') }}:</span>
+              <span font="bold">{{ selectionCount }}</span>
+            </div>
+
+            <Btn
+              size="sm"
+              no-uppercase
+              :label="$t('table.groupEdit')"
+              icon="line-md:chevron-small-right rotate-90 order-2"
+            >
+              <MenuProxy
+                hide-header
+                dense
+                p="1"
+                :no-arrow="false"
+              >
+                <slot
+                  name="bulk-actions-menu"
+                  :selection="selection"
+                />
+              </MenuProxy>
+            </Btn>
+          </slot>
+        </template>
 
         <!-- Sorting -->
         <div

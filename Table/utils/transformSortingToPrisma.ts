@@ -11,8 +11,10 @@ export function transformSortingToPrismaOrderBy(
   }
 
   return orderBy.map(item => {
-    return {
-      [item.field]: item.direction,
-    }
+    const orderByObj: Record<string, any> = {}
+
+    set(orderByObj, item.field, item.direction)
+
+    return orderByObj
   })
 }

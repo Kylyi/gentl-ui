@@ -30,7 +30,7 @@ export function useInputUtils(options: IInputUtilsOptions) {
     }
   }, props.debounce)
 
-  // MASK
+  // Mask
   const { modelValue, emptyValue } = toRefs(props)
   const {
     el,
@@ -237,7 +237,7 @@ export function useInputUtils(options: IInputUtilsOptions) {
     if (!isEmptyValue) {
       touch()
     }
-  })
+  }, 300)
 
   return {
     el,

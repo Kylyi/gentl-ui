@@ -286,9 +286,10 @@ const $v = useVuelidate(
         p="2"
         :label="$t('save')"
         :submit-disabled="!isSaveable || !hasLayoutChanged"
-        submit-class="w-30"
+        :ui="{ submitClass: 'w-40' }"
         :loading="isLoading"
         :submit-confirmation="false"
+        focus-first-input
         @submit="handleSaveLayout"
       >
         <TextInput

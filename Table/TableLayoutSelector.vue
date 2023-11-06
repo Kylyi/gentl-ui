@@ -16,7 +16,6 @@ import {
   tableColumnsKey,
   tableLayoutKey,
   tableLayoutsKey,
-  tableRefreshKey,
   tableResizeKey,
 } from '~/components/Table/provide/table.provide'
 
@@ -41,7 +40,6 @@ const { parseUrlParams } = useTableUtils()
 const columns = injectStrict(tableColumnsKey)
 const layouts = injectStrict(tableLayoutsKey)
 const layout = injectStrict(tableLayoutKey)
-const tableRefresh = injectStrict(tableRefreshKey)
 const _getTableStorageKey = injectStrict(getTableStorageKey)
 const tableResize = injectStrict(tableResizeKey)
 
@@ -212,8 +210,6 @@ function handleLayoutSelect(
     //   console.log('Log ~ setTimeout ~ isOnlyColFilters:', isOnlyColFilters)
     //   // tableRefresh(true)
     // }
-
-    console.log(schemaFilters)
   }, 0)
 
   layoutSelectorEl.value?.blur()

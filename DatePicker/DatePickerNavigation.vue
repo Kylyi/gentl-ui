@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Dayjs } from 'dayjs'
+import dayjs from 'dayjs'
 
 // TYPES
 import type { IDatePickerNavigationProps } from '~/components/DatePicker/types/datepicker-navigation-props.type'
@@ -7,7 +7,7 @@ import type { IDatePickerNavigationProps } from '~/components/DatePicker/types/d
 const props = defineProps<IDatePickerNavigationProps>()
 
 const emits = defineEmits<{
-  (e: 'update:model-value', val: Dayjs): void
+  (e: 'update:model-value', val: dayjs.Dayjs): void
 }>()
 
 const navigationEl = ref<HTMLDivElement>()

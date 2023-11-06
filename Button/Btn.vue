@@ -1,14 +1,14 @@
 <script setup lang="ts">
-// TYPES
+// Types
 import type { IBtnProps } from '~/components/Button/types/btn-props.type'
 
-// COMPONENTS
+// Components
 import BtnOrNuxtLinkResolver from '~/components/Button/BtnOrNuxtLinkResolver.vue'
 
-// CONSTANTS
+// Constants
 import { BUTTON_PRESET } from '~/components/Button/constants/button-preset.constant'
 
-// DIRECTIVES
+// Directives
 import { vRipple } from '~/libs/App/directives/ripple.directive'
 
 const props = withDefaults(defineProps<IBtnProps>(), {
@@ -30,7 +30,7 @@ const btnProps = reactivePick(props, [
   'exact',
 ])
 
-// LAYOUT
+// Layout
 const slots = useSlots()
 const component = ref<InstanceType<typeof BtnOrNuxtLinkResolver>>()
 const preset = computed(() =>

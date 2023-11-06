@@ -1,12 +1,12 @@
 export interface IFormProps {
   bordered?: boolean
-  contentClass?: ClassType
-  controlsClass?: ClassType
   dense?: boolean
   errors?: string[]
   label?: string
   icon?: string
   loading?: boolean
+  focusFirstInput?: boolean
+  isEditing?: boolean
 
   /**
    * By default, the form will display the controls on the bottom of the form. (Submit button, etc.)
@@ -54,9 +54,11 @@ export interface IFormProps {
   noSubmit?: boolean
 
   /**
-   * Class for the submit button.
+   * If true, the form will not submit on enter.
+   *
+   * Note: Will be sumitted on ctrl+enter.
    */
-  submitClass?: ClassType
+  preventSubmitOnEnter?: boolean
 
   /**
    * If true, the form submit will need to be confirmed in a confirmation menu.
@@ -72,4 +74,21 @@ export interface IFormProps {
    * If true, the submit button will be disabled.
    */
   submitDisabled?: boolean
+
+  ui?: {
+    /**
+     * Class for the submit button.
+     */
+    submitClass?: ClassType
+
+    /**
+     * Class for controls section
+     */
+    controlsClass?: ClassType
+
+    /**
+     *  Class for the wrapper around the submit button
+     */
+    submitWrapperClass?: ClassType
+  }
 }

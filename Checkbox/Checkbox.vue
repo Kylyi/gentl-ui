@@ -24,9 +24,31 @@ const toggleState = computed(() => {
     props.comparatorFn?.(props.modelValue, props.indeterminateValue) ??
     props.modelValue === props.indeterminateValue
 
+  // Checkbox class
+  let checkboxClass: ClassType = props.visuals?.unchecked?.checkbox
+
+  if (isChecked) {
+    checkboxClass = props.visuals?.checked?.checkbox
+  } else if (isIndeterminate) {
+    checkboxClass = props.visuals?.indeterminate?.checkbox
+  }
+
+  // Label class
+  let labelClassVisuals: ClassType = props.visuals?.unchecked?.label
+
+  if (isChecked) {
+    labelClassVisuals = props.visuals?.checked?.label
+  } else if (isIndeterminate) {
+    labelClassVisuals = props.visuals?.indeterminate?.label
+  }
+
+  const labelClass = [props.labelClass, labelClassVisuals]
+
   return {
     checked: !isIndeterminate ? isChecked : undefined,
     indeterminate: isIndeterminate || undefined,
+    checkboxClass,
+    labelClass,
   }
 })
 
@@ -72,7 +94,11 @@ function handleStateChange() {
 
     <div
       class="checkbox"
-      :class="[`is-${color}`, { 'is-readonly': !editable }]"
+      :class="[
+        `is-${color}`,
+        { 'is-readonly': !editable },
+        toggleState.checkboxClass,
+      ]"
     >
       <Checkmark
         :class="{ hidden: !toggleState.checked }"
@@ -95,7 +121,7 @@ function handleStateChange() {
       <span
         v-if="label"
         class="checkbox-label"
-        :class="labelClass"
+        :class="toggleState.labelClass"
       >
         {{ label }}
       </span>
@@ -103,10 +129,10 @@ function handleStateChange() {
 
     <slot name="append" />
 
-    <span
+    <!-- <span
       v-if="!noHoverEffect"
       class="focus-helper"
-    />
+    /> -->
   </label>
 </template>
 
@@ -175,7 +201,8 @@ function handleStateChange() {
 }
 
 .checkbox {
-  --apply: flex flex-center rounded-2 border-primary border-2 shrink-0 self-start;
+  --apply: flex flex-center rounded-2 border-primary border-2 shrink-0
+    self-start;
 
   &-label {
     --apply: leading-tight;
@@ -234,8 +261,13 @@ function handleStateChange() {
   }
 }
 
-.focus-helper {
-  --apply: absolute inset-0 z-3 hover:bg-current hover:opacity-10 cursor-pointer
-    rounded-inherit;
+// .focus-helper {
+//   --apply: content-empty absolute inset-0 hover:bg-current hover:opacity-10 cursor-pointer
+//     rounded-inherit;
+// }
+
+.label:hover::before {
+  --apply: content-empty absolute inset-0 bg-current opacity-10 cursor-pointer
+    rounded-inherit pointer-events-none;
 }
 </style>

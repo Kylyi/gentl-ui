@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Dayjs } from 'dayjs'
+import dayjs from 'dayjs'
 
 // Types
 import type { DayEvent } from '~/components/DatePicker/types/DayEvent.type'
@@ -13,7 +13,7 @@ const props = withDefaults(defineProps<IDatePickerProps>(), {
 })
 
 const emits = defineEmits<{
-  (e: 'update:model-value', val: Dayjs): void
+  (e: 'update:model-value', val: dayjs.Dayjs): void
 }>()
 
 // Utils

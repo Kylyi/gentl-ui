@@ -4,6 +4,7 @@ import type { IQueryBuilderItem } from '~/components/QueryBuilder/types/query-bu
 
 // Components
 import Menu from '~/components/Menu/Menu.vue'
+import NumberInput from '~/components/Inputs/NumberInput/NumberInput.vue'
 
 type IAgoValue = {
   value?: number | null | undefined
@@ -20,7 +21,12 @@ const emits = defineEmits<{
   (e: 'update:modelValue', val: any): void
 }>()
 
+defineExpose({
+  focus: () => inputEl.value?.focus(),
+})
+
 // Layout
+const inputEl = ref<InstanceType<typeof NumberInput>>()
 const menuEl = ref<InstanceType<typeof Menu>>()
 const item = toRef(props, 'item')
 
@@ -94,6 +100,7 @@ function setUnit(unitShortName: string) {
 
 <template>
   <NumberInput
+    ref="inputEl"
     :model-value="agoValue.value"
     size="sm"
     class="qb-item__content-value"

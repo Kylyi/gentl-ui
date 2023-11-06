@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { config } from '~/config'
+
 // Types
 import type { ITableLayout } from '~/components/Table/types/table-layout.type'
 
@@ -12,9 +14,14 @@ const layoutInfo = computed(() => {
   const schemaSplit = props.layout.schema.split('&')
 
   const hasColumns = schemaSplit.some(s => s.startsWith('select='))
-  const hasSorting = schemaSplit.some(s => s.startsWith('paging='))
+  const hasSorting = schemaSplit.some(
+    s => s.startsWith('paging=') || s.startsWith('order=')
+  )
   const hasFilters = schemaSplit.some(
-    s => !s.startsWith('select=') && !s.startsWith('paging=')
+    s =>
+      !s.startsWith('select=') &&
+      !s.startsWith('paging=') &&
+      !s.startsWith('order=')
   )
 
   const isDefault =
@@ -42,55 +49,44 @@ const layoutInfo = computed(() => {
     <!-- What was saved -->
     <div flex="~ gap-0.5">
       <div
-        v-if="!layoutInfo.hasColumns"
-        class="layout-info-icon tabler:columns-2 color-blue-500"
+        v-if="layoutInfo.hasColumns"
+        class="layout-info-icon color-blue-500"
       >
-        <Tooltip>
-          {{ $t('table.layout.hasColumns') }}
-        </Tooltip>
+        <div tabler:columns-2 />
       </div>
       <div
-        v-if="!layoutInfo.hasFilters"
-        class="layout-info-icon ic:round-filter-alt color-blue-500"
+        v-if="layoutInfo.hasFilters"
+        class="layout-info-icon color-blue-500"
       >
-        <Tooltip>
-          {{ $t('table.layout.hasFilters') }}
-        </Tooltip>
+        <div ic:round-filter-alt />
       </div>
       <div
-        v-if="!layoutInfo.hasSorting"
-        class="layout-info-icon basil:sort-outline color-blue-500"
+        v-if="layoutInfo.hasSorting"
+        class="layout-info-icon color-blue-500"
+        m="l--1"
       >
-        <Tooltip>
-          {{ $t('table.layout.hasSorting') }}
-        </Tooltip>
+        <div basil:sort-outline />
       </div>
     </div>
 
     <!-- Layout settings -->
     <div flex="~ gap-0.5">
       <div
-        v-if="!layoutInfo.isPublic"
+        v-if="layoutInfo.isPublic"
         class="layout-info-icon ic:round-public color-blue-500"
-      >
-        <Tooltip>
-          {{ $t('table.layout.isPublic') }}
-        </Tooltip>
-      </div>
+      />
       <div
-        v-if="!layoutInfo.isDefault"
+        v-if="
+          layoutInfo.isDefault && !config.table.useLocalStorageForDefaultLayout
+        "
         class="layout-info-icon fluent:book-default-28-filled color-blue-500"
-      >
-        <Tooltip>
-          {{ $t('table.layout.isDefault') }}
-        </Tooltip>
-      </div>
+      />
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
 .layout-info-icon {
-  --apply: w-4 h-4;
+  --apply: flex flex-center w-4 h-4 rounded-custom;
 }
 </style>

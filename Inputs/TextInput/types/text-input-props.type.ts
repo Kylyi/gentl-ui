@@ -3,6 +3,11 @@ import { type IInputProps } from '~/components/Inputs/types/input-props.type'
 
 export interface ITextInputProps extends IInputProps {
   /**
+   * If true, the input has its own enter key handler
+   */
+  customEnter?: boolean
+
+  /**
    * The inputmode (native HTML attribute)
    */
   inputmode?: 'text' | 'decimal'
