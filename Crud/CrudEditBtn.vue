@@ -1,4 +1,7 @@
 <script setup lang="ts">
+// Injections
+import { formIsInEditModeKey } from '~/components/Form/provide/form.provide'
+
 type IProps = {
   archived?: boolean
   disabled?: boolean
@@ -11,6 +14,10 @@ const emits = defineEmits<{
   (e: 'restore'): void
 }>()
 
+// Injections
+const isInEditMode = injectStrict(formIsInEditModeKey, ref())
+
+// Layout
 const isEditing = useVModel(props, 'isEditing', emits)
 
 const transitionProps = computed(() => ({
@@ -26,10 +33,15 @@ function handleClick() {
   }
 
   isEditing.value = true
+  isInEditMode.value = true
 }
 
-watchEffect(() => {
-  isEditing.value = props.isEditing
+watch(isInEditMode, val => {
+  isEditing.value = !!val
+})
+
+watch(isEditing, val => {
+  isInEditMode.value = !!val
 })
 </script>
 

@@ -1,5 +1,5 @@
-import { Dayjs } from 'dayjs'
+import dayjs from 'dayjs'
 
 export interface IDatePickerNavigationProps {
-  modelValue: Dayjs
+  modelValue: dayjs.Dayjs
 }

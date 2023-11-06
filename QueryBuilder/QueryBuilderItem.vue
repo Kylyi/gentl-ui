@@ -245,6 +245,11 @@ function handleComparatorChange(comparator: ComparatorEnum) {
 
   item.value.comparator = comparator
   emits('update:comparator', comparator)
+
+  // Focus value input
+  nextTick(() => {
+    valueInputEl.value?.focus?.()
+  })
 }
 
 function handleValueChange(value: any) {
@@ -355,6 +360,7 @@ const $v = useVuelidate(
         <Component
           :is="customFilterComponent.component"
           v-if="customFilterComponent?.comparators.includes(item.comparator)"
+          ref="valueInputEl"
           v-model="customValue"
           v-bind="customFilterComponent.props"
           size="sm"
@@ -369,6 +375,7 @@ const $v = useVuelidate(
             canUseSelectorComparator(item.comparator, colSelected) &&
             !colSelected?.getDistinctData
           "
+          ref="valueInputEl"
           v-model="inValueSimple"
           size="sm"
           :placeholder="`${$t('table.filterValue')}...`"
@@ -401,6 +408,7 @@ const $v = useVuelidate(
         <!-- Ago value -->
         <QueryBuilderTimeAgoInput
           v-else-if="isDateAgoComparator(item.comparator)"
+          ref="valueInputEl"
           v-model:item="item"
           :errors="$v.item.value.$errors"
         />

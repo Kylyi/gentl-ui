@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { NuxtLink } from '#components'
+
 // Types
 import type { IChipProps } from '~/components/Chip/types/chip-props.type'
 
@@ -10,10 +12,12 @@ defineEmits<{
   (e: 'remove'): void
 }>()
 
-// UTILS
+// Utils
 function handleClick() {
+  console.log(props.navigateToOptions)
+
   if (props.to) {
-    $nav(props.to)
+    $nav(props.to, undefined, props.navigateToOptions)
   }
 }
 </script>
@@ -31,7 +35,6 @@ function handleClick() {
         '!overflow-visible': hasCopy,
       },
     ]"
-    @click="handleClick"
   >
     <div
       v-if="icon"
@@ -54,7 +57,26 @@ function handleClick() {
       :class="[labelClass, { 'justify-center': center }]"
     >
       <slot>
-        <span truncate>
+        <NuxtLink
+          v-if="to"
+          :to="to"
+        >
+          <template #default="{ route }">
+            <a
+              :href="route.path"
+              class="link"
+              truncate
+              @click.stop.prevent="handleClick"
+            >
+              {{ label }}
+            </a>
+          </template>
+        </NuxtLink>
+
+        <span
+          v-else
+          truncate
+        >
           {{ label }}
         </span>
       </slot>
