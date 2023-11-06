@@ -24,12 +24,11 @@ const { width: breadcrumbsDivWidth } = useElementSize(breadcrumbsDivEl)
 const slotAppendEl = ref<HTMLElement>()
 const { width: slotAppendWidth } = useElementSize(slotAppendEl)
 
+const breadcrumbsWidthByIndex = ref<number[]>([])
+
 function calculateAvailableWidth() {
   return floor(breadcrumbsDivWidth.value - slotAppendWidth.value - 4)
 }
-
-// Calculate visible breadcrumbs
-const breadcrumbsWidthByIndex = ref<number[]>([])
 
 const isMounted = ref(false)
 const isBreadcrumbVisibleByIndex = computed(() => {
@@ -42,7 +41,9 @@ const isBreadcrumbVisibleByIndex = computed(() => {
     (a: number, b: number) => a + b,
     0
   )
-  while (visibleBreadcrumbsWidth > calculateAvailableWidth() - 70) {
+
+  // 61px = hidden breadcrumbs btn width
+  while (visibleBreadcrumbsWidth > calculateAvailableWidth() - 61) {
     const { b, index } = hideTheRightBreadcrumb(result)
     result = b
     if (index === undefined) {
@@ -77,6 +78,7 @@ onMounted(() => {
           breadcrumbEl.offsetWidth + (index === 0 ? 0 : 4) // 4px for gap
       }
     }
+
     isMounted.value = true
   }, 100)
 })
@@ -101,12 +103,6 @@ function hideTheRightBreadcrumb(b: boolean[]) {
 </script>
 
 <template>
-  <br />
-  {{ breadcrumbsWidthByIndex }}
-  {{ breadcrumbsWidthByIndex.reduce((a, b) => a + b, 0) }}
-  <br />
-  visible breadcrumbs by index {{ isBreadcrumbVisibleByIndex }}
-
   <div class="breadcrumbs-wrapper">
     <div
       ref="breadcrumbsDivEl"
@@ -148,6 +144,7 @@ function hideTheRightBreadcrumb(b: boolean[]) {
             no-uppercase
           />
 
+          <!-- Hidden breadcrumbs btn -->
           <span
             v-if="isAnyBreadcrumbHidden && index === 0"
             flex
