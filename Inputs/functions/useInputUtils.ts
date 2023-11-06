@@ -30,7 +30,7 @@ export function useInputUtils(options: IInputUtilsOptions) {
     }
   }, props.debounce)
 
-  // MASK
+  // Mask
   const { modelValue, emptyValue } = toRefs(props)
   const {
     el,

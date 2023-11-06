@@ -92,7 +92,7 @@ defineExpose({
       :name="name || label || placeholder"
       class="control"
       role="presentation"
-      :class="[inputClass]"
+      :class="[inputClass, { 'custom-enter': !!customEnter }]"
       :style="inputStyle"
       @focus="handleFocus"
       @blur="handleBlur"

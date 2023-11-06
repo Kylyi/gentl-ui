@@ -370,7 +370,7 @@ defineExpose({
     v-bind="wrapperProps"
     :loading="isLoading"
     :has-content="hasContent"
-    :content-class="contentClass"
+    :content-class="[contentClass, 'selector-wrapper']"
     :class="[
       menuPlacement === 'bottom' ? 'has-menu-bottom' : 'has-menu-top',
       {
@@ -411,6 +411,7 @@ defineExpose({
       :style="{ maxHeight: `${maxHeight}px` }"
       @focus="handleFocusOrClick"
     >
+      <!-- Placeholder -->
       <span
         v-if="placeholder && !hasContent"
         class="placeholder"
@@ -420,6 +421,7 @@ defineExpose({
         {{ placeholder }}
       </span>
 
+      <!-- Multi & scroller -->
       <HorizontalScroller
         v-if="multi && scroller"
         content-class="flex-gap-x-2"
@@ -429,6 +431,8 @@ defineExpose({
           v-for="(chip, idx) in modelValue"
           :key="idx"
           :label="getLabel(chip)"
+          :to="optionTo?.(chip)"
+          :navigate-to-options="{ open: { target: '_blank' } }"
           min-w="20"
           p="!y-1px"
           :has-remove="!(readonly || disabled)"
@@ -436,11 +440,14 @@ defineExpose({
         />
       </HorizontalScroller>
 
+      <!-- Multi -->
       <template v-else-if="multi && model">
         <Chip
           v-for="(chip, idx) in modelValue"
           :key="idx"
           :label="getLabel(chip)"
+          :to="optionTo?.(chip)"
+          :navigate-to-options="{ open: { target: '_blank' } }"
           :has-remove="!(readonly || disabled) && !noItemsClear"
           min-w="20"
           p="!y-1px"
@@ -448,6 +455,7 @@ defineExpose({
         />
       </template>
 
+      <!-- Single selection -->
       <span
         v-else-if="hasContent"
         self-center
@@ -521,6 +529,7 @@ defineExpose({
         :fit="false"
         no-uplift
         max-height="50%"
+        data-cy="drop-down-list"
         @placement="menuPlacement = $event"
         @before-hide="handleBeforeHide"
         @hide="handleHide"

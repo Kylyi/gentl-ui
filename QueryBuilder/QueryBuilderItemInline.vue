@@ -202,6 +202,7 @@ const $v = useVuelidate({ $scope: 'qb' })
           no-remove
           m="!0"
           p="!x-1"
+          min-w="70"
           @delete:row="tableRefresh"
           @update:comparator="itemEditMenuEl?.recomputePosition"
         />

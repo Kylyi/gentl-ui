@@ -1,7 +1,7 @@
 // Types
 import { type INavigation } from '~/components/Button/types/btn-props.type'
 
-export interface IChipProps extends INavigation {
+export type IChipProps = {
   /**
    * Whether the chip has the CopyBtn
    */
@@ -36,4 +36,4 @@ export interface IChipProps extends INavigation {
    * Whether the chip centered
    */
   center?: boolean
-}
+} & INavigation

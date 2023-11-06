@@ -129,10 +129,10 @@ function handleStateChange() {
 
     <slot name="append" />
 
-    <span
+    <!-- <span
       v-if="!noHoverEffect"
       class="focus-helper"
-    />
+    /> -->
   </label>
 </template>
 
@@ -201,7 +201,8 @@ function handleStateChange() {
 }
 
 .checkbox {
-  --apply: flex flex-center rounded-2 border-primary border-2 shrink-0 self-start;
+  --apply: flex flex-center rounded-2 border-primary border-2 shrink-0
+    self-start;
 
   &-label {
     --apply: leading-tight;
@@ -260,8 +261,13 @@ function handleStateChange() {
   }
 }
 
-.focus-helper {
-  --apply: absolute inset-0 z-3 hover:bg-current hover:opacity-10 cursor-pointer
-    rounded-inherit;
+// .focus-helper {
+//   --apply: content-empty absolute inset-0 hover:bg-current hover:opacity-10 cursor-pointer
+//     rounded-inherit;
+// }
+
+.label:hover::before {
+  --apply: content-empty absolute inset-0 bg-current opacity-10 cursor-pointer
+    rounded-inherit pointer-events-none;
 }
 </style>

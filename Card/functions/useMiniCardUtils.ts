@@ -14,6 +14,7 @@ export function useMiniCardUtils() {
       'emptyValue',
       'to',
       'icon',
+      'row',
     ])
   }
 
