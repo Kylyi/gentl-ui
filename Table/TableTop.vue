@@ -226,6 +226,13 @@ function handleFitColumns() {
         </VerticalScroller>
         <div flex-grow />
 
+        <!-- Layout selector -->
+        <TableLayoutSelector
+          v-model:query-builder="queryBuilder"
+          m="t-1 auto"
+          display="md:none"
+        />
+
         <!-- Remove filters -->
         <Btn
           no-upeprcase
@@ -238,6 +245,7 @@ function handleFitColumns() {
           stacked
           h="full"
           p="!y-0"
+          display="none! md:flex!"
           bg="dark:darker"
           color="ca hover:negative"
           border="2 transparent hover:negative"
@@ -372,6 +380,7 @@ function handleFitColumns() {
         </div>
       </div>
 
+      <!-- More actions btn (mobile) -->
       <Btn
         v-if="isMobile"
         :label="$t('general.moreActions')"
@@ -395,6 +404,7 @@ function handleFitColumns() {
             v-if="!tableTopFunctionality?.noColumnSelection"
             v-model:columns="columns"
           />
+
           <!-- Autofit btn -->
           <Btn
             v-if="!tableTopFunctionality?.noAutoFit"
@@ -406,17 +416,62 @@ function handleFitColumns() {
             @click="handleFitColumns"
           />
 
+          <!-- Remove filters -->
+          <Btn
+            no-upeprcase
+            shrink-0
+            size="xs"
+            :label="$t('table.removeQueryBuilderFilters')"
+            no-uppercase
+            no-truncate
+            stacked
+            p="!y-0"
+            m="auto"
+            w="full"
+            h="8"
+            bg="dark:darker"
+            color="ca hover:negative"
+            border="2 transparent hover:negative"
+            data-cy="remove-filters"
+          >
+            <Menu
+              :placement="isMobile ? 'bottom' : 'left'"
+              hide-header
+              :no-arrow="false"
+              content-class="gap-1"
+            >
+              <Btn
+                :label="$t('table.removeQueryBuilderFilter')"
+                size="sm"
+                no-uppercase
+                data-cy="remove-advanced-filter"
+                @click="handleFilterClear('queryBuilder')"
+              />
+              <Btn
+                :label="$t('table.removeColumnsFilter')"
+                size="sm"
+                no-uppercase
+                data-cy="remove-columns-filter"
+                @click="handleFilterClear('columns')"
+              />
+
+              <Separator />
+
+              <Btn
+                :label="$t('table.removeAllFilters')"
+                size="sm"
+                no-uppercase
+                color="negative"
+                data-cy="remove-all-filters"
+                @click="handleFilterClear"
+              />
+            </Menu>
+          </Btn>
           <template
             v-if="
               config.table.useServerState && !tableTopFunctionality?.noLayout
             "
           >
-            <!-- Layout selector -->
-            <TableLayoutSelector
-              v-model:query-builder="queryBuilder"
-              m-auto
-            />
-
             <!-- Layout settings -->
             <TableLayoutSettingsBtn
               :non-saveable-settings="nonSavableSettings"
