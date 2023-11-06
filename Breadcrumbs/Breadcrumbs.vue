@@ -4,7 +4,7 @@ import { config } from '~/config'
 // Constants
 import { BUTTON_PRESET } from '~/components/Button/constants/button-preset.constant'
 
-const { notAdaptive = false, hideBtnPosition = 'right' } = defineProps<{
+const { notAdaptive = false, hideBtnPosition = 'left' } = defineProps<{
   /*
    * Turns off hiding breadcrumbs based on available width
    */
@@ -53,8 +53,8 @@ const isBreadcrumbVisibleByIndex = computed(() => {
     0
   )
 
-  // 61px = hidden breadcrumbs btn width
-  while (visibleBreadcrumbsWidth > calculateAvailableWidth() - 61) {
+  // 65px = hidden breadcrumbs btn width
+  while (visibleBreadcrumbsWidth > calculateAvailableWidth() - 65) {
     const { breadcrumbsVisibleByIndex, index } = hideTheRightBreadcrumb(result)
     result = breadcrumbsVisibleByIndex
     if (index === undefined) {
