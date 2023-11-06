@@ -66,6 +66,7 @@ const hiddenBreadcrumbs = computedEager(() => {
 })
 
 onMounted(() => {
+  // setTimeout is needed for non-ssr applications. NextTick isnt enough, lower values than 100ms arent sometimes enough
   setTimeout(() => {
     // calculate breadcrumbs width
     for (const [index, breadcrumb] of breadcrumbs.value.entries()) {
