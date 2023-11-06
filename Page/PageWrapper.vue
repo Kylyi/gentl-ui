@@ -109,7 +109,7 @@ onMounted(() => {
   }
 
   &.is-mobile-and-sidebar-open {
-    --apply: overflow-x-hidden border-rd-l-2 p-r-0;
+    --apply: overflow-x-hidden rounded-l-2 p-r-0;
   }
 }
 

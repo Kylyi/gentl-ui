@@ -420,7 +420,7 @@ function handleFitColumns() {
           <Btn
             no-upeprcase
             shrink-0
-            size="xs"
+            size="sm"
             :label="$t('table.removeQueryBuilderFilters')"
             no-uppercase
             no-truncate
@@ -467,17 +467,14 @@ function handleFitColumns() {
               />
             </Menu>
           </Btn>
-          <template
+
+          <!-- Layout settings -->
+          <TableLayoutSettingsBtn
             v-if="
               config.table.useServerState && !tableTopFunctionality?.noLayout
             "
-          >
-            <!-- Layout settings -->
-            <TableLayoutSettingsBtn
-              :non-saveable-settings="nonSavableSettings"
-              label="Layout settings"
-            />
-          </template>
+            :non-saveable-settings="nonSavableSettings"
+          />
 
           <slot name="subbar-right" />
         </Menu>
@@ -519,10 +516,7 @@ function handleFitColumns() {
             @click="handleFitColumns"
           />
         </div>
-        <div
-          flex
-          items-center
-        >
+        <div flex="~ items-center">
           <template
             v-if="
               config.table.useServerState && !tableTopFunctionality?.noLayout
