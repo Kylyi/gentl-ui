@@ -4,11 +4,14 @@ import { config } from '~/config'
 // Constants
 import { BUTTON_PRESET } from '~/components/Button/constants/button-preset.constant'
 
-const { notAdaptive = false, hideBtnPosition = 'left' } = defineProps<{
+const { notAdaptive = false, hideBtnPosition = 'right' } = defineProps<{
   /*
    * Turns off hiding breadcrumbs based on available width
    */
   notAdaptive?: boolean
+  /*
+   * Position of the hidden breadcrumbs btn
+   */
   hideBtnPosition?: 'left' | 'right'
 }>()
 
@@ -103,24 +106,19 @@ function hideTheRightBreadcrumb(breadcrumbsVisibleByIndex: boolean[]) {
 
   let index: number
   if (hideBtnPosition === 'right') {
-    // Start hiding from the second-to-last breadcrumb when on the right
-    for (index = breadcrumbsVisibleByIndex.length - 2; index > 0; index--) {
+    // Start hiding from the second-to-last to second
+    for (index = breadcrumbsVisibleByIndex.length - 2; index > 1; index--) {
       if (breadcrumbsVisibleByIndex[index]) {
         break
       }
     }
   } else {
-    // Start hiding from the first non-first breadcrumb when on the left
+    // Start hiding from the second to second-to-last
     index = breadcrumbsVisibleByIndex.findIndex(
-      (value, i) => i !== 0 && value === true
+      (value, i) =>
+        i !== 0 && i !== breadcrumbsVisibleByIndex.length - 1 && value === true
     )
   }
-
-  if (index === -1 || index === 0) {
-    // If all are hidden or only first breadcrumb is visible, do not hide any further breadcrumbs
-    return { breadcrumbsVisibleByIndex }
-  }
-
   breadcrumbsVisibleByIndex[index] = false
 
   return { breadcrumbsVisibleByIndex, index }
