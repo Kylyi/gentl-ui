@@ -12,6 +12,7 @@ const hasRows = computed(() => props.rows && props.rows?.length > 0)
   <div
     class="loading"
     :class="{ 'is-absolute': hasRows }"
+    data-cy="loading-table"
   >
     <LoaderInline size="sm" />
   </div>
