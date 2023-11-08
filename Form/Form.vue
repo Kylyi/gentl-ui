@@ -180,18 +180,18 @@ function focusFirstInput() {
     ) as HTMLElement
 
     if (firstEditableInput) {
+      firstEditableInput.focus()
       // We only want to focus the input if it's currently visible because
       // we don't want to scroll the page to the input if it's not visible
-      const { stop } = useIntersectionObserver(firstEditableInput, observer => {
-        setTimeout(() => {
-          if (observer[0].isIntersecting) {
-            firstEditableInput.focus()
-          }
-
-          // We deactivate the intersection observer
-          stop()
-        }, 200)
-      })
+      // const { stop } = useIntersectionObserver(firstEditableInput, observer => {
+      //   setTimeout(() => {
+      //     if (observer[0].isIntersecting) {
+      //       firstEditableInput.focus()
+      //     }
+      //     // We deactivate the intersection observer
+      //     stop()
+      //   }, 200)
+      // })
     }
   }
 }
