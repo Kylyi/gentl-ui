@@ -336,6 +336,8 @@ const $v = useVuelidate()
                 <slot name="confirmation"> </slot>
               </template>
             </Component>
+
+            <slot name="submit-btn" />
           </Btn>
 
           <slot name="submit-after" />
