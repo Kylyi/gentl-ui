@@ -549,7 +549,7 @@ function handleFitColumns() {
   --apply: flex flex-col;
 
   &__actionbar {
-    --apply: flex flex-wrap gap-2 items-center p-x-2 p-y-1;
+    --apply: flex flex-wrap gap-2 items-center p-x-2 md:p-t-5;
   }
 
   &__qb {
