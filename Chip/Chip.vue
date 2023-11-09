@@ -14,8 +14,6 @@ defineEmits<{
 
 // Utils
 function handleClick() {
-  console.log(props.navigateToOptions)
-
   if (props.to) {
     $nav(props.to, undefined, props.navigateToOptions)
   }
