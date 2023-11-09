@@ -103,6 +103,7 @@ useResizeObserver(headerEl, entries => {
         { 'no-separator': !!noSeparator },
         headerClass,
       ]"
+      :style="headerStyle"
       @click="handleToggle"
     >
       <slot

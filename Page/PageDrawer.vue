@@ -15,7 +15,7 @@ const emits = defineEmits<{
 }>()
 
 // Utils
-const { bgGeneralLayoutClass } = useEnvLayout()
+const { bgGeneralLayoutStyleVar } = useEnvLayout()
 
 // Mini mode
 const miniOriginal = useVModel(props, 'mini', emits)
@@ -62,14 +62,16 @@ const pageDrawerClasses = computedEager(() => {
 
     <div
       class="page-drawer-content"
-      :class="[contentClass, bgGeneralLayoutClass]"
+      :style="bgGeneralLayoutStyleVar"
+      :class="contentClass"
     >
       <slot :mini="isMini" />
     </div>
 
     <div
       class="page-drawer-bottom"
-      :class="[bottomClass, bgGeneralLayoutClass]"
+      :style="bgGeneralLayoutStyleVar"
+      :class="bottomClass"
     >
       <slot
         name="bottom"
