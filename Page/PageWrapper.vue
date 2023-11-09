@@ -74,9 +74,13 @@ onMounted(() => {
         <slot name="title-right" />
       </template>
     </Component>
-    <div p-x-3>
-      <slot v-if="!loading" />
 
+    <!-- Content -->
+    <ScrollArea
+      p-x-3
+      flex="~ col grow"
+    >
+      <slot v-if="!loading" />
       <slot
         v-else
         name="loading"
@@ -88,7 +92,7 @@ onMounted(() => {
           <Loader />
         </div>
       </slot>
-    </div>
+    </ScrollArea>
   </main>
 </template>
 
