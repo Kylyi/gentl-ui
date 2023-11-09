@@ -35,6 +35,9 @@ export const tableQueryKey: InjectionKey<Ref<ITableDataFetchFncInput>> =
 export const tableStorageKey: InjectionKey<Ref<string>> =
   Symbol('tableStorageKey')
 
+export const tableVersionKey: InjectionKey<Ref<number | undefined>> =
+  Symbol('tableVersion')
+
 export const tableColumnsRecreateKey: InjectionKey<() => void> = Symbol(
   'tableColumnsRecreate'
 )
