@@ -49,6 +49,21 @@ const isEditing = defineModel('isEditing', { default: false, local: true })
 const { isDesktop } = useDevice()
 provide(formIsInEditModeKey, isEditing)
 
+function isElementInViewport(el: Element) {
+  const rect = el.getBoundingClientRect()
+
+  return (
+    rect.top >= 0 &&
+    rect.left >= 0 &&
+    rect.bottom <=
+      (window.innerHeight ||
+        document.documentElement.clientHeight) /* or $(window).height() */ &&
+    rect.right <=
+      (window.innerWidth ||
+        document.documentElement.clientWidth) /* or $(window).width() */
+  )
+}
+
 const formConfirmation = computed(() => {
   // When set in code, we want to use the value from the code
   if (props.submitConfirmation !== undefined) {
@@ -180,18 +195,11 @@ function focusFirstInput() {
     ) as HTMLElement
 
     if (firstEditableInput) {
-      // We only want to focus the input if it's currently visible because
-      // we don't want to scroll the page to the input if it's not visible
-      const { stop } = useIntersectionObserver(firstEditableInput, observer => {
-        setTimeout(() => {
-          if (observer[0].isIntersecting) {
-            firstEditableInput.focus()
-          }
+      const isInViewPort = isElementInViewport(firstEditableInput)
 
-          // We deactivate the intersection observer
-          stop()
-        }, 200)
-      })
+      if (isInViewPort) {
+        firstEditableInput.focus()
+      }
     }
   }
 }
@@ -227,10 +235,10 @@ defineExpose({
 
 // When triggering the edit mode, we want to focus the first input
 whenever(isEditing, () => {
-  // Small delay for waiting for the input to be appended in EDIT modea
-  setTimeout(() => {
+  // Small delay for waiting for the input to be appended in EDIT mode
+  nextTick(() => {
     focusFirstInput()
-  }, 100)
+  })
 })
 
 // We also try to focus the first input when the form is mounted
@@ -336,6 +344,8 @@ const $v = useVuelidate()
                 <slot name="confirmation"> </slot>
               </template>
             </Component>
+
+            <slot name="submit-btn" />
           </Btn>
 
           <slot name="submit-after" />
