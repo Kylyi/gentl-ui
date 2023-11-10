@@ -77,10 +77,13 @@ onMounted(() => {
 
     <!-- Content -->
     <ScrollArea
-      p-x-3
-      flex="~ col grow"
+      class="page-wrapper__content"
+      p="s-2! md:s-5! e-2 md:e-0"
     >
-      <slot v-if="!loading" />
+      <slot
+        v-if="!loading"
+        p="r-2!"
+      />
       <slot
         v-else
         name="loading"
@@ -114,6 +117,10 @@ onMounted(() => {
 
   &.is-mobile-and-sidebar-open {
     --apply: overflow-x-hidden rounded-l-2 p-r-0;
+  }
+
+  &__content {
+    --apply: flex flex-col grow;
   }
 }
 
