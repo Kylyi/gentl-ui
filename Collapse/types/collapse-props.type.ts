@@ -15,6 +15,11 @@ export interface ICollapseProps {
   headerClass?: ClassType
 
   /**
+   * The CSS style for the header
+   */
+  headerStyle?: ClassType
+
+  /**
    * The initial state of the collapse
    */
   initialValue?: boolean

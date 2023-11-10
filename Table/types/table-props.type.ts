@@ -213,6 +213,7 @@ export interface ITableProps {
     payloadKey?: string
     countKey?: string
     hashKey?: string
+    versionKey?: string
     createIdentifier?: (row: any, idx: number) => string | number
     errorHandler?: (error: any) => void
   }

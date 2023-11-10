@@ -373,7 +373,11 @@ const model = toRef(props, 'modelValue')
 const internalValue = ref(props.modelValue)
 
 function show(force?: boolean) {
-  if (preventInteractions.value || (internalValue.value && !force)) {
+  if (
+    preventInteractions.value ||
+    (internalValue.value && !force) ||
+    !referenceEl.value
+  ) {
     return
   }
 

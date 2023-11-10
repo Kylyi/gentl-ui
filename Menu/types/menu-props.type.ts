@@ -15,6 +15,11 @@ export interface IMenuProps extends FloatingUIBaseProps {
   virtual?: boolean
 
   /**
+   * Delay in milliseconds before the menu is [shown, hidden]
+   */
+  delay?: [number, number]
+
+  /**
    * Function we can inject before the hide event
    * Should return whether the hide event should go through or not (Boolean)
    */

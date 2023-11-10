@@ -14,6 +14,9 @@ const emits = defineEmits<{
   (e: 'update:mini', val: boolean): void
 }>()
 
+// Utils
+const { bgGeneralLayoutStyleVar } = useEnvLayout()
+
 // Mini mode
 const miniOriginal = useVModel(props, 'mini', emits)
 const miniLocal = ref(!!miniOriginal.value)
@@ -59,7 +62,7 @@ const pageDrawerClasses = computedEager(() => {
 
     <div
       class="page-drawer-content"
-      bg="$PageDrawer-content-bg"
+      :style="bgGeneralLayoutStyleVar"
       :class="contentClass"
     >
       <slot :mini="isMini" />
@@ -67,7 +70,7 @@ const pageDrawerClasses = computedEager(() => {
 
     <div
       class="page-drawer-bottom"
-      bg="$PageDrawer-bottom-bg"
+      :style="bgGeneralLayoutStyleVar"
       :class="bottomClass"
     >
       <slot
