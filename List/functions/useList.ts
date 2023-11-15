@@ -103,7 +103,7 @@ export function useList(
         _ref: item,
       }
 
-      keys?.forEach(key => {
+      keys?.forEach((key: string) => {
         const val = get(item, key as string)
 
         set(

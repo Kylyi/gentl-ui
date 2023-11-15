@@ -1,4 +1,4 @@
-import { VirtualItem } from '@tanstack/vue-virtual'
+import type { VirtualItem } from '@tanstack/vue-virtual'
 
 export type IVirtualScrollEvent = {
   visibleStartItem: VirtualItem

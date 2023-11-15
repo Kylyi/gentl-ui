@@ -1,23 +1,22 @@
 <script setup lang="ts">
-// @ts-expect-error - vue-virtual-scroller missing types
-import { DynamicScroller, DynamicScrollerItem } from 'vue-virtual-scroller'
-
 defineProps<{
   items: any[]
 }>()
 
-const dynamicScrollerEl = ref<InstanceType<typeof DynamicScroller>>()
+const dynamicScrollerEl = ref<HTMLDivElement>()
 
 defineExpose({
   getElement: () => unrefElement(dynamicScrollerEl),
   scrollToIdx: (idx: number) => {
-    dynamicScrollerEl.value?.scrollToItem(idx)
+    //
+    // dynamicScrollerEl.value?.scrollToItem(idx)
   },
 })
 </script>
 
 <template>
-  <DynamicScroller
+  <div ref="dynamicScrollerEl">x</div>
+  <!-- <DynamicScroller
     ref="dynamicScrollerEl"
     :items="items"
     :min-item-size="40"
@@ -37,5 +36,5 @@ defineExpose({
         />
       </DynamicScrollerItem>
     </template>
-  </DynamicScroller>
+  </DynamicScroller> -->
 </template>

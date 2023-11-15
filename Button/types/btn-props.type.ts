@@ -1,7 +1,7 @@
 import { NuxtLink } from '#components'
 
 // Types
-import { NavigateToOptions } from '~/shims'
+import type { NavigateToOptions } from '~/shims'
 
 // Constants
 import { BUTTON_PRESET } from '~/components/Button/constants/button-preset.constant'
