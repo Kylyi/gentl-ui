@@ -100,7 +100,7 @@ header {
 
   .toolbar {
     --apply: flex flex-gap-1.5 self-start h-$navigation items-center min-h-40px
-      dark:bg-darker bg-light self-center p-x-2 rounded-full;
+      bg-darker self-center p-x-2 rounded-full;
 
     .environment {
       --apply: absolute left-50% -translate-x-1/2 p-y-1 p-x-2 color-white

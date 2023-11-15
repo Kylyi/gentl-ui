@@ -11,15 +11,14 @@ const { color, toggleDark } = useTheme()
     size="sm"
     m="!none"
     no-hover-effect
-    bg="white dark:darker"
     :visuals="{
       unchecked: {
         bullet: 'bg-transparent',
-        icon: 'clarity:moon-solid text-sm',
+        icon: 'clarity:moon-solid color-light text-sm',
       },
       checked: {
         bullet: 'bg-transparent',
-        icon: 'akar-icons:sun color-amber text-sm',
+        icon: 'akar-icons:sun color-light text-sm',
       },
     }"
     @update:model-value="toggleDark()"
