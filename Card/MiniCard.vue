@@ -133,6 +133,10 @@ function getShownValue(val: any) {
     white-space: pre-line;
   }
 
+  &__content {
+    --apply: w-full;
+  }
+
   .link {
     --apply: decoration-none font-size-$MiniCard-value-font-size text-sm;
     font-weight: var(--MiniCard-value-font-weight);
