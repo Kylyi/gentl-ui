@@ -1,7 +1,3 @@
-// Virtual scroller
-// @ts-expect-error - no types
-import { RecycleScroller } from 'vue-virtual-scroller'
-
 // Types
 import type { ITableProps } from '~/components/Table/types/table-props.type'
 import type { ITableLayout } from '~/components/Table/types/table-layout.type'
@@ -24,6 +20,7 @@ import TableRow from '~/components/Table/TableRow.vue'
 import TableRowMobile from '~/components/Table/TableRow.mobile.vue'
 import TableHeader from '~/components/Table/TableHeader.client.vue'
 import TableTotals from '~/components/Table/TableTotals/TableTotals.vue'
+import VirtualScroller from '~/components/VirtualScroller/VirtualScroller.vue'
 
 export function useTableLayout(
   props: ITableProps,
@@ -45,10 +42,10 @@ export function useTableLayout(
 
   // Provides
   provide(tableResizeKey, () => handleResize(true))
-  provide(tableFocusKey, () => scrollerEl.value?.$el.focus())
+  provide(tableFocusKey, () => scrollerEl.value?.focus())
 
   // Layout
-  const scrollerEl = ref<InstanceType<typeof RecycleScroller>>()
+  const scrollerEl = ref<InstanceType<typeof VirtualScroller>>()
   const tableEl = ref<HTMLDivElement>()
   const headerEl = ref<InstanceType<typeof TableHeader>>()
   const totalsEl = ref<InstanceType<typeof TableTotals>>()
@@ -81,7 +78,9 @@ export function useTableLayout(
   let containerWidth = 0
 
   function handleResize(force?: boolean) {
-    const { width } = scrollerEl.value.$el.getBoundingClientRect()
+    const { width } = unrefElement(
+      scrollerEl.value as any
+    ).getBoundingClientRect()
 
     if (
       scrollerEl.value &&
@@ -166,7 +165,7 @@ export function useTableLayout(
     const selfDom = instance?.vnode.el as HTMLElement
 
     containerEl.value = selfDom.querySelector(
-      '.vue-recycle-scroller'
+      '.virtual-scroll'
     ) as HTMLDivElement
   })
 

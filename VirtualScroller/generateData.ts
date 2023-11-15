@@ -4,9 +4,9 @@ const minWordCount = 5
 const maxWordCount = 50
 const PAGE_SIZE = 100
 
-export function generateData(currentLength: number) {
+export function generateData(currentLength: number, size = PAGE_SIZE) {
   const items = []
-  const length = PAGE_SIZE
+  const length = size
 
   for (let i = 0; i < length; i++) {
     const wordCount =
@@ -14,10 +14,10 @@ export function generateData(currentLength: number) {
     // For each item we take a UUID, an index and a value
     // UUID clashes here will be bad
     items.push({
-      id: currentLength + i,
+      id: generateUUID(),
       index: currentLength + i,
       // value: `Item as ${faker.random.words(wordCount)}`,
-      value: `Item as}`,
+      value: `Item ${i}`,
     })
   }
 

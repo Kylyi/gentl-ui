@@ -4,6 +4,7 @@ import { config } from '~/config'
 import { type IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
 import { type ITableLayout } from '~/components/Table/types/table-layout.type'
 import { type ITableProps } from '~/components/Table/types/table-props.type'
+import type { IVirtualScrollEvent } from '~/components/VirtualScroller/types/virtual-scroll-event.type'
 import type {
   ITableDataFetchFncInput,
   ITableFilterRow,
@@ -120,17 +121,14 @@ export function useTableData(
     return rows.value[rows.value.length - 1]
   })
 
-  function handleInfiniteScroll(
-    _startIndex: number,
-    _endIndex: number,
-    _visibleStartIndex: number,
-    visibleEndIndex: number
-  ) {
+  function handleInfiniteScroll(payload: IVirtualScrollEvent) {
+    const { visibleEndItem } = payload
+
     if (!totalRows.value || !rows.value) {
       return
     }
 
-    const isAtBottom = visibleEndIndex >= rows.value.length - 20
+    const isAtBottom = visibleEndItem.index >= rows.value.length - 20
 
     if (hasMore.value && isAtBottom && !fetchMore.value) {
       fetchMore.value = true
@@ -377,7 +375,7 @@ export function useTableData(
 
       // We scroll to top if we are not fetching more data
       if (!isFetchMore) {
-        scrollerEl.value?.scrollToItem?.(0)
+        scrollerEl.value?.scrollTo(0)
       }
 
       // We reset the `fetchMore`
@@ -490,7 +488,7 @@ export function useTableData(
         const hasFloatingEl = !!document.querySelector('.floating-element')
 
         if (!hasFloatingEl) {
-          scrollerEl.value?.$el.focus()
+          scrollerEl.value?.focus()
         }
       }
     },
