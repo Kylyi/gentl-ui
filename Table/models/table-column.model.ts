@@ -316,13 +316,13 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     // When necessary, we can put `autofitLongestText = false` to calculate the
     // autofit width based on all the rows
     else {
-      maxContentWidth = (rows || [])
-        .slice(0, config.table.columnAutoFit.rowsLimit)
-        .reduce(async (agg, row) => {
-          const width = await getCellWidth(row, this, slotRenderFnc)
+      const _rows = (rows || []).slice(0, config.table.columnAutoFit.rowsLimit)
 
-          return Math.max(agg, width)
-        }, 0)
+      for await (const row of _rows) {
+        const width = await getCellWidth(row, this, slotRenderFnc)
+
+        maxContentWidth = Math.max(maxContentWidth, width)
+      }
     }
 
     const labelChars = this._label.length
