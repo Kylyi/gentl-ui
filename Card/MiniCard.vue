@@ -50,34 +50,26 @@ function getShownValue(val: any) {
       <ValueFormatter v-bind="valueFormatterProps">
         <template #default="{ val }">
           <slot :val="val">
+            <!-- Current value -->
             <span
               v-if="!to || !val"
-              class="value-container-card-value"
+              class="value-container-card__value"
               :class="[valueClass, { 'font-bold': !noBold }]"
             >
-              <div flex="~ col gap-y-2">
-                <!-- Current value -->
-                <div>
-                  {{ getShownValue(val) }}
-                </div>
-              </div>
+              {{ getShownValue(val) }}
             </span>
 
-            <div
+            <NuxtLink
               v-else
-              flex="~ col gap-y-2"
+              :to="to"
+              class="link"
+              :class="[valueClass, { 'font-bold': !noBold }]"
             >
-              <NuxtLink
-                :to="to"
-                class="link"
-                :class="[valueClass, { 'font-bold': !noBold }]"
-              >
-                <span class="link_label">
-                  <span class="link_label__icon" />
-                  {{ getShownValue(val) }}
-                </span>
-              </NuxtLink>
-            </div>
+              <span class="link__label">
+                <span class="link__label-icon" />
+                {{ getShownValue(val) }}
+              </span>
+            </NuxtLink>
           </slot>
         </template>
 
@@ -89,7 +81,7 @@ function getShownValue(val: any) {
           <div m-t-2>
             <span
               v-if="!toOriginalValue || !val"
-              class="value-container-card-value text-purple-500"
+              class="value-container-card__value text-purple-500"
               :class="[originalValueClass, { 'font-bold': !noBold }]"
             >
               {{ getShownValue(val) }}
@@ -102,9 +94,9 @@ function getShownValue(val: any) {
               :class="[originalValueClass, { 'font-bold': !noBold }]"
               text-purple-500
             >
-              <span class="link_label">
-                <span class="link_label__icon" />
-                {{ getShownValue(val) }}
+              <span class="link__label">
+                <span class="link__label-icon" />
+                <span>{{ getShownValue(val) }}</span>
               </span>
             </NuxtLink>
           </div>
@@ -123,22 +115,26 @@ function getShownValue(val: any) {
   }
 
   &-label {
-    --apply: text-caption color-$MiniCard-label-color font-size-$MiniCard-label-font-size p-b-2;
+    --apply: text-caption color-$MiniCard-label-color font-size-$MiniCard-label-font-size p-b-1;
   }
 
-  &-value {
+  &__value {
     --apply: text-sm font-size-$MiniCard-value-font-size;
     overflow-wrap: break-word;
     font-weight: var(--MiniCard-value-font-weight);
     white-space: pre-line;
   }
 
+  &__content {
+    --apply: w-full leading-4.5;
+  }
+
   .link {
     --apply: decoration-none font-size-$MiniCard-value-font-size text-sm;
     font-weight: var(--MiniCard-value-font-weight);
 
-    &_label{
-      --apply: relative leading-4.5;
+    &__label{
+      --apply: relative;
 
       &::before{
         --apply: content-empty inline-block w-4 min-w-4;
@@ -153,7 +149,7 @@ function getShownValue(val: any) {
         background-position: 0% 100%;
       }
 
-      &__icon{
+      &-icon{
         // top-0.4 makes the icon align with text, no deeper meaning
         --apply: ph:link min-h-4 h-4 min-w-4 w-4 absolute left-0 top-0.4;
       }
@@ -163,7 +159,7 @@ function getShownValue(val: any) {
 
 .dark{
     .link{
-      &_label{
+      &__label{
         &:hover{
           background-image: linear-gradient(to bottom, transparent 0%, transparent calc(100% - 1px), theme('colors.blue.700') calc(100% - 1px), theme('colors.blue.700') 100%);
           background-size: 100% 100%;
