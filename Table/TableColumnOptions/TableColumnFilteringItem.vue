@@ -218,6 +218,10 @@ function handleComparatorChange(comparator: ComparatorEnum) {
   })
 }
 
+const tableRefreshDebounce = useDebounceFn(() => {
+  tableRefresh()
+}, inputDebounce.value || 0)
+
 function handleValueChange(val: any, set?: boolean) {
   if (set) {
     if (typeof val === 'string') {
@@ -227,7 +231,7 @@ function handleValueChange(val: any, set?: boolean) {
     }
   }
 
-  tableRefresh()
+  tableRefreshDebounce()
 }
 
 defineExpose({
@@ -334,7 +338,6 @@ defineExpose({
       v-bind="component.props"
       ref="valueInputEl"
       v-model="filter.value"
-      :debounce="inputDebounce"
       size="sm"
       :placeholder="`${$t('table.filterValue')}...`"
       @update:model-value="handleValueChange($event, true)"

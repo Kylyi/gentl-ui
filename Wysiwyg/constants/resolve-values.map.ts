@@ -107,10 +107,18 @@ export const grantMentionItems: IWysiwygMentionItem[] = [
     dataType: 'number',
   },
 
-  // Application deadline
+  // Application deadline - From
   {
-    id: 'grant.applicationDeadline',
-    label: t('grant.applicationDeadline'),
+    id: 'grant.applicationDeadlineFrom',
+    label: t('grant.applicationDeadlineFrom'),
+    group: t('grant.self', 1),
+    dataType: 'date',
+  },
+
+  // Application deadline - To
+  {
+    id: 'grant.applicationDeadlineTo',
+    label: t('grant.applicationDeadlineTo'),
     group: t('grant.self', 1),
     dataType: 'date',
   },
@@ -137,9 +145,6 @@ export const grantMentionItems: IWysiwygMentionItem[] = [
     id: 'grant.entityTypes',
     label: t('grant.entityTypes'),
     group: t('grant.self', 1),
-    format: (row: any) => {
-      return row.grant.entityTypes?.map((item: any) => item.value).join(', ')
-    },
   },
 
   // Workgroup
