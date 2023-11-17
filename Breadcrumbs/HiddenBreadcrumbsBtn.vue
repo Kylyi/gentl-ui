@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { IBreadcrumb } from './types/breadcrumb.type'
+// Types
+import { IBreadcrumb } from '~/components/Breadcrumbs/types/breadcrumb.type'
 
 defineProps<{
   breadcrumbs: IBreadcrumb[]
@@ -12,18 +13,15 @@ defineProps<{
       hide-header
       :no-arrow="false"
     >
-      <template
+      <Btn
         v-for="breadcrumb in breadcrumbs"
-        :key="breadcrumb.to"
-      >
-        <Btn
-          v-bind="breadcrumb"
-          no-active-link
-          color="!dark !dark:light"
-          size="sm"
-          no-uppercase
-        />
-      </template>
+        :key="breadcrumb.to?.toString()"
+        v-bind="breadcrumb"
+        no-active-link
+        color="dark dark:light"
+        size="sm"
+        no-uppercase
+      />
     </Menu>
   </Btn>
 </template>

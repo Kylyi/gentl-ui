@@ -4,16 +4,23 @@ import { config } from '~/config'
 // Constants
 import { BUTTON_PRESET } from '~/components/Button/constants/button-preset.constant'
 
-const { notAdaptive = false, hideBtnPosition = 'left' } = defineProps<{
-  /*
-   * Turns off hiding breadcrumbs based on available width
-   */
-  notAdaptive?: boolean
-  /*
-   * Position of the hidden breadcrumbs btn
-   */
-  hideBtnPosition?: 'left' | 'right'
-}>()
+const props = withDefaults(
+  defineProps<{
+    /*
+     * Turns off hiding breadcrumbs based on available width
+     */
+    notAdaptive?: boolean
+
+    /*
+     * Position of the hidden breadcrumbs btn
+     */
+    hideBtnPosition?: 'left' | 'right'
+  }>(),
+  {
+    notAdaptive: false,
+    hideBtnPosition: 'left',
+  }
+)
 
 const breadcrumbsInjected = injectStrict(breadcrumbsKey, ref([]))
 
@@ -49,7 +56,7 @@ const isBreadcrumbVisibleByIndex = computed(() => {
 
   let result = Array(breadcrumbs.value.length).fill(true)
   let visibleBreadcrumbsWidth = breadcrumbsWidthByIndex.value.reduce(
-    (a: number, b: number) => a + b,
+    (agg: number, width: number) => agg + width,
     0
   )
 
@@ -77,7 +84,7 @@ const hiddenBreadcrumbs = computedEager(() => {
 })
 
 onMounted(() => {
-  if (notAdaptive) {
+  if (props.notAdaptive) {
     isMounted.value = true
     return
   }
@@ -105,7 +112,7 @@ function hideTheRightBreadcrumb(breadcrumbsVisibleByIndex: boolean[]) {
   }
 
   let index: number
-  if (hideBtnPosition === 'right') {
+  if (props.hideBtnPosition === 'right') {
     // Start hiding from the second-to-last to second
     for (index = breadcrumbsVisibleByIndex.length - 2; index > 1; index--) {
       if (breadcrumbsVisibleByIndex[index]) {
@@ -125,7 +132,7 @@ function hideTheRightBreadcrumb(breadcrumbsVisibleByIndex: boolean[]) {
 }
 
 const hideBtnIndex = computedEager(() => {
-  if (hideBtnPosition === 'left') {
+  if (props.hideBtnPosition === 'left') {
     return 0 // right after home icon
   }
   return (
@@ -197,6 +204,7 @@ const hideBtnIndex = computedEager(() => {
           </span>
         </div>
       </template>
+
       <div ref="slotAppendEl">
         <slot name="append" />
       </div>
