@@ -157,14 +157,14 @@ const hideBtnIndex = computedEager(() => {
       }"
     >
       <template
-        v-for="(breadcrumb, index) in breadcrumbs"
+        v-for="(breadcrumb, idx) in breadcrumbs"
         :key="`${breadcrumb.to}-${idx}`"
       >
         <div
-          v-if="isBreadcrumbVisibleByIndex![index]"
+          v-if="isBreadcrumbVisibleByIndex![idx]"
           :ref="
             el => {
-              breadcrumbEls[index] = el
+              breadcrumbEls[idx] = el
             }
           "
           flex
@@ -173,7 +173,7 @@ const hideBtnIndex = computedEager(() => {
         >
           <!-- Chevron -->
           <span
-            v-if="index !== 0"
+            v-if="idx !== 0"
             :class="BUTTON_PRESET.CHEVRON_RIGHT.icon"
             class="breadcrumb-item"
           />
@@ -191,7 +191,7 @@ const hideBtnIndex = computedEager(() => {
 
           <!-- Hidden breadcrumbs btn -->
           <span
-            v-if="isAnyBreadcrumbHidden && index === hideBtnIndex"
+            v-if="isAnyBreadcrumbHidden && idx === hideBtnIndex"
             flex
             items-center
             p-l-1
