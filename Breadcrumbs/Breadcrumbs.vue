@@ -158,7 +158,7 @@ const hideBtnIndex = computedEager(() => {
     >
       <template
         v-for="(breadcrumb, index) in breadcrumbs"
-        :key="breadcrumb.to"
+        :key="`${breadcrumb.to}-${idx}`"
       >
         <div
           v-if="isBreadcrumbVisibleByIndex![index]"

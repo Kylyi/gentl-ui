@@ -151,7 +151,9 @@ defineExpose({
               :column="col"
               :columns="columns"
               position="!absolute"
-              left="-7"
+              :class="[
+                !(col.noFilterSort || col.isHelperCol) ? 'left--7' : 'left--9',
+              ]"
               backdrop-blur="sm"
             />
 
