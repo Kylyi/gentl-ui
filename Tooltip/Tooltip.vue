@@ -152,7 +152,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .tooltip {
-  --apply: dark: bg-darker bg-white border-ca border-custom rounded-custom
+  --apply: dark:bg-darker bg-white border-ca border-custom rounded-custom
     z-$zMenu;
 
   &.is-dense {
@@ -161,10 +161,10 @@ onMounted(() => {
 }
 
 .arrow {
-  --apply: absolute w-2 h-2 rotate-45 dark: bg-darker bg-white;
+  --apply: absolute w-2 h-2 rotate-45 dark:bg-darker bg-white;
 
   &.has-header {
-    --apply: bg-white dark: bg-darker;
+    --apply: bg-white dark:bg-darker;
   }
 }
 
