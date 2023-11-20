@@ -1,7 +1,8 @@
 <script setup lang="ts">
-// eslint-disable-next-line import/named
 import type { Dayjs } from 'dayjs'
-import { MaskedRange, type AnyMaskedOptions } from 'imask'
+
+// eslint-disable-next-line import/named
+import { type AnyMaskedOptions, MaskedRange } from 'imask'
 
 // Types
 import type { IDateInputProps } from '~/components/Inputs/DateInput/types/date-input-props.type'
