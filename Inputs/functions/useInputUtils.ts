@@ -45,6 +45,7 @@ export function useInputUtils(options: IInputUtilsOptions) {
     handleManualModelChange,
   } = useMask({
     modelValue,
+    allowIncompleteMaskValue: props.allowIncompleteMaskValue,
     maskOptions: maskRef,
     updateValueFnc: debouncedChange,
     emptyValue,
@@ -160,7 +161,7 @@ export function useInputUtils(options: IInputUtilsOptions) {
     if (!preventNextBlur.value) {
       onBlur?.()
       blur()
-      !props.allowIncompleteMaskValue && refresh()
+      refresh()
 
       if (props.emitOnBlur) {
         hasJustChanged.value = true

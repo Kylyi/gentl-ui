@@ -7,7 +7,13 @@ import type { IMaskOptions } from '~/components/Inputs/types/mask-options.type'
 const activeElement = useActiveElement()
 
 export function useMask(options: IMaskOptions) {
-  const { maskOptions, updateValueFnc, emptyValue, eventHandlers } = options
+  const {
+    maskOptions,
+    updateValueFnc,
+    emptyValue,
+    eventHandlers,
+    allowIncompleteMaskValue,
+  } = options
 
   const instance = getCurrentInstance()
 
@@ -40,7 +46,7 @@ export function useMask(options: IMaskOptions) {
    * Returns the input back to its last valid value
    */
   const refresh = () => {
-    if (elMask.value && !hasBeenCleared.value) {
+    if (elMask.value && !hasBeenCleared.value && !allowIncompleteMaskValue) {
       if (lastValidValue.value === unref(emptyValue)) {
         elMask.value.typedValue = unref(emptyValue)
       } else {

@@ -56,6 +56,8 @@ export interface IInputProps extends IInputWrapperProps {
     onCompleted?: (val: any) => void
   }
 
-  // Allow incomplete mask value
+  /**
+   * When set to true, blur state will not erase the value and will keep the last typed value with the mask
+   */
   allowIncompleteMaskValue?: boolean
 }
