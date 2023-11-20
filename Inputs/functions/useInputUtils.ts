@@ -160,7 +160,7 @@ export function useInputUtils(options: IInputUtilsOptions) {
     if (!preventNextBlur.value) {
       onBlur?.()
       blur()
-      refresh()
+      !props.allowIncompleteMaskValue && refresh()
 
       if (props.emitOnBlur) {
         hasJustChanged.value = true

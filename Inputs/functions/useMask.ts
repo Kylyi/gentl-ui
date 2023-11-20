@@ -99,7 +99,7 @@ export function useMask(options: IMaskOptions) {
     typedValue.value = elMask.value?.typedValue
 
     hasBeenCleared.value = false
-    eventHandlers?.onAccept?.()
+    eventHandlers?.onAccept?.(elMask.value?.unmaskedValue)
 
     if (maskedValue.value === '' || elMask.value?.mask === maskedValue.value) {
       handleComplete()

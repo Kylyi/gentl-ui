@@ -9,7 +9,7 @@ export interface IMaskOptions {
   emptyValue?: MaybeRefOrGetter<any>
 
   eventHandlers?: {
-    onAccept?: () => void
+    onAccept?: (val: any) => void
     onCompleted?: (val: any) => void
   }
 

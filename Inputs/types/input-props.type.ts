@@ -49,4 +49,13 @@ export interface IInputProps extends IInputWrapperProps {
 
   // Mask (https://imask.js.org/guide.html)
   mask?: AnyMaskedOptions
+
+  // Mask event handlers
+  maskEventHandlers?: {
+    onAccept?: (val: any) => void
+    onCompleted?: (val: any) => void
+  }
+
+  // Allow incomplete mask value
+  allowIncompleteMaskValue?: boolean
 }
