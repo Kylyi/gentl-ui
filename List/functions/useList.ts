@@ -540,7 +540,7 @@ export function useList(
   const listEl = ref<HTMLDivElement>()
   const { focused: isFocused } = useFocusWithin(listEl)
   const preventNextHoverEventRef = autoResetRef(false, 50)
-  const hoveredEl = ref<HTMLDivElement | null | undefined>(null)
+  const hoveredEl = ref<HTMLDivElement>()
   const hoveredIdx = ref(-1)
   const groupsJumped = ref(1) // How many groups we jumped over while using keyboard
   const modifier = ref<-1 | 0 | 1>(0) // negative ~ above, positive ~ below
@@ -641,9 +641,11 @@ export function useList(
 
     // Regular item
     else {
-      nextTick(
-        () => (hoveredEl.value = listEl.value?.querySelector('.item--hovered'))
-      )
+      nextTick(() => {
+        hoveredEl.value = listEl.value?.querySelector(
+          '.item--hovered'
+        ) as HTMLDivElement
+      })
     }
 
     preventNextHoverEventRef.value = true
