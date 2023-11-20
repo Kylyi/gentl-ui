@@ -212,6 +212,7 @@ export function useTableData(
 
       // When there are some columns with `alwaysSelected` attribute set to true,
       // we need to add them to the `select` array
+      // When `strict` is used, we ignore this behaviour
       // TODO: SSR version for this
       const isStrictMode = route.query.strict === 'true'
 
@@ -461,6 +462,10 @@ export function useTableData(
               ...(filters && { filters }),
               ...(order && { order: `(${order})` }),
               ...(select && { select }),
+              ...(!config.table.infiniteScroll && {
+                skip: dbQuery.tableQuery.skip,
+                take: dbQuery.tableQuery.take,
+              }),
               ...(dbQuery.tableQuery.search && {
                 search: dbQuery.tableQuery.search,
               }),

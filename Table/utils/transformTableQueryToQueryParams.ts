@@ -6,6 +6,7 @@ import {
   type ITableFilterItem,
   type ITableQuery,
 } from '~/components/Table/types/table-query.type'
+import { config } from '~/config'
 
 // Models
 import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
@@ -172,6 +173,9 @@ export function serializeTableQueryToQueryParams(tableQuery: ITableQuery) {
   const paging: string[] = [
     ...(orderBy?.length || fetchMore
       ? [`sort(${serializeOrderByString(orderBy, fetchMore)})`]
+      : []),
+    ...(!config.table.infiniteScroll && !isNil(tableQuery.skip)
+      ? [`skip.${tableQuery.skip}`]
       : []),
     ...(tableQuery.take ? [`limit.${tableQuery.take}`] : []),
     ...(tableQuery.count ? ['count.true'] : []),
