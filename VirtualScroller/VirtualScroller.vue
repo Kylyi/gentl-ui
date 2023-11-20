@@ -11,6 +11,11 @@ type IProps = {
   noScrollEmit?: boolean
 
   /**
+   * The number of items to overscan for virtualization
+   */
+  overscan?: number
+
+  /**
    * The data rows
    */
   rows?: any[]
@@ -29,6 +34,7 @@ type IProps = {
 const props = withDefaults(defineProps<IProps>(), {
   rowHeight: 40,
   rowKey: 'id',
+  overscan: 100,
 })
 
 const emits = defineEmits<{
@@ -50,7 +56,7 @@ const virtualScrollOptions = computed(() => ({
   estimateSize: () => props.rowHeight,
   getScrollElement: () => containerEl.value!,
   getItemKey: () => props.rowKey,
-  overscan: 10,
+  overscan: props.overscan,
 
   ...(!props.noScrollEmit && {
     onChange: (instance: any): void => {
