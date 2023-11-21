@@ -45,6 +45,7 @@ export function useInputUtils(options: IInputUtilsOptions) {
     handleManualModelChange,
   } = useMask({
     modelValue,
+    allowIncompleteMaskValue: props.allowIncompleteMaskValue,
     maskOptions: maskRef,
     updateValueFnc: debouncedChange,
     emptyValue,

@@ -49,4 +49,15 @@ export interface IInputProps extends IInputWrapperProps {
 
   // Mask (https://imask.js.org/guide.html)
   mask?: AnyMaskedOptions
+
+  // Mask event handlers
+  maskEventHandlers?: {
+    onAccept?: (val: any) => void
+    onCompleted?: (val: any) => void
+  }
+
+  /**
+   * When set to true, blur state will not erase the value and will keep the last typed value with the mask
+   */
+  allowIncompleteMaskValue?: boolean
 }

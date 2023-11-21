@@ -15,7 +15,7 @@ export interface IInputUtilsOptions {
   eventHandlers?: IInputWrapperEventHandlers
 
   maskEventHandlers?: {
-    onAccept?: () => void
+    onAccept?: (val: any) => void
     onCompleted?: (val: any) => void
   }
 
