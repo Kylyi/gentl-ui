@@ -257,6 +257,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
       case 'datetime':
       case 'DateTime':
       case 'date':
+      case 'timestamp':
         this.comparator = defaultComparator ?? ComparatorEnum.EQUAL
 
         break
