@@ -171,8 +171,6 @@ export function useMask(options: IMaskOptions) {
     }
   })
 
-  onBeforeUnmount(destroyMask)
-
   return {
     el,
     elMask,
@@ -186,5 +184,6 @@ export function useMask(options: IMaskOptions) {
     refresh,
     clear,
     handleManualModelChange,
+    destroyMask,
   }
 }

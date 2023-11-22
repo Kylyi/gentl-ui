@@ -37,6 +37,7 @@ export function useInputUtils(options: IInputUtilsOptions) {
     elMask,
     hasJustChanged,
     refresh,
+    destroyMask,
     maskedValue,
     typedValue,
     lastValidValue,
@@ -239,6 +240,8 @@ export function useInputUtils(options: IInputUtilsOptions) {
       touch()
     }
   }, 300)
+
+  onBeforeUnmount(destroyMask)
 
   return {
     el,
