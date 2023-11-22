@@ -109,6 +109,12 @@ export function useMask(options: IMaskOptions) {
 
     if (maskedValue.value === '' || elMask.value?.mask === maskedValue.value) {
       handleComplete()
+    } else if (allowIncompleteMaskValue) {
+      if (updateValueFnc) {
+        updateValueFnc(elMask.value?.typedValue)
+      } else {
+        instance?.emit('update:model-value', elMask.value?.typedValue)
+      }
     }
   }
 
