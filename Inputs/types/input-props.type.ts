@@ -4,7 +4,7 @@ import { type CSSProperties } from 'vue'
 // Types
 import type { IInputWrapperProps } from '~/components/Inputs/types/input-wrapper-props.type'
 
-export interface IInputProps extends IInputWrapperProps {
+export type IInputProps = IInputWrapperProps & {
   /**
    * Whether the input should be autofocused
    */

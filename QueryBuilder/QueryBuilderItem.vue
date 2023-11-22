@@ -309,7 +309,7 @@ const $v = useVuelidate(
         option-key="field"
         preselect-first
         class="qb-item__content-field"
-        :errors="$v.item.field.$errors"
+        :validation="$v.item.field"
         data-cy="qb-item__content-field"
         @update:model-value="handleFieldChange"
       >
@@ -351,7 +351,7 @@ const $v = useVuelidate(
           emit-key
           size="sm"
           class="qb-item__content-comparator"
-          :errors="$v.item.comparator.$errors"
+          :validation="$v.item.comparator"
           data-cy="comparator"
           @update:model-value="handleComparatorChange"
         />
@@ -380,7 +380,7 @@ const $v = useVuelidate(
           size="sm"
           :placeholder="`${$t('table.filterValue')}...`"
           empty-value=""
-          :errors="$v.item.value.$errors"
+          :validation="$v.item.value"
         />
 
         <!-- Selector of distinct values -->
@@ -402,7 +402,7 @@ const $v = useVuelidate(
           size="sm"
           :placeholder="`${$t('table.filterValue')}...`"
           data-cy="qb-item__content-value"
-          :errors="$v.item.value.$errors"
+          :validation="$v.item.value"
         />
 
         <!-- Ago value -->
@@ -410,7 +410,7 @@ const $v = useVuelidate(
           v-else-if="isDateAgoComparator(item.comparator)"
           ref="valueInputEl"
           v-model:item="item"
-          :errors="$v.item.value.$errors"
+          :validation="$v.item.value"
         />
 
         <!-- $Empty/Boolean value -->
@@ -433,7 +433,7 @@ const $v = useVuelidate(
           }"
           v-bind="component.props"
           :placeholder="$t('queryBuilder.value')"
-          :errors="$v.item.value.$errors"
+          :validation="$v.item.value"
           data-cy="qb-item__content-value"
           @update:model-value="handleValueChange"
         />

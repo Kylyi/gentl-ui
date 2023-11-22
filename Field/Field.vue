@@ -16,7 +16,7 @@ const wrapperProps = reactivePick(
   'contentClass',
   'contentStyle',
   'disabled',
-  'errors',
+  'validation',
   'errorTakesSpace',
   'errorVisible',
   'hint',

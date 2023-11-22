@@ -1,7 +1,7 @@
 // Types
 import { type IInputProps } from '~/components/Inputs/types/input-props.type'
 
-export interface INumberInputProps extends IInputProps {
+export type INumberInputProps = IInputProps & {
   /**
    * The number of decimal places to display
    */

@@ -1,7 +1,6 @@
 import { type CSSProperties } from 'vue'
 
-export interface InputLabelProps {
-  errors?: Pick<ErrorObject, '$message'>[]
+export type InputLabelProps = {
   hasContent?: boolean
   inline?: boolean
   label?: string
@@ -16,4 +15,10 @@ export interface InputLabelProps {
   required?: boolean
   size?: 'sm' | 'md' | 'lg'
   stackLabel?: boolean
+
+  // FIXME: Type
+  /**
+   * Validation object
+   */
+  validation?: any
 }

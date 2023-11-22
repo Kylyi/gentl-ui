@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // TODO: am/pm values are not reactive on language change (broken only for 13h for some reason...)
 
+// eslint-disable-next-line import/named
 import { type AnyMaskedOptions, MaskedRange } from 'imask'
 
 // Types
@@ -270,7 +271,7 @@ defineExpose({
       :readonly="readonly"
       :disabled="disabled"
       :label="label || placeholder"
-      :name="name || label || placeholder"
+      :name="name || validation?.$path || label || placeholder"
       class="control"
       :class="[inputClass]"
       :style="inputStyle"

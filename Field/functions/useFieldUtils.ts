@@ -62,7 +62,7 @@ export function useFieldUtils(options?: {
       'disabled',
       'errorTakesSpace',
       'errorVisible',
-      'errors',
+      'validation',
       'hint',
       'inline',
       'label',

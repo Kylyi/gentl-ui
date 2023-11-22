@@ -1,6 +1,6 @@
 import { type IInputProps } from '~/components/Inputs/types/input-props.type'
 
-export interface ITextAreaInputProps extends IInputProps {
+export type ITextAreaInputProps = IInputProps & {
   /**
    * Whether the textarea should automatically grow
    */

@@ -61,7 +61,6 @@ export function useInputUtils(options: IInputUtilsOptions) {
     'contentStyle',
     'disabled',
     'emptyValue',
-    'errors',
     'errorTakesSpace',
     'errorVisible',
     'hint',
@@ -80,7 +79,8 @@ export function useInputUtils(options: IInputUtilsOptions) {
     'stackLabel',
     'noBorder',
     'inputContainerClass',
-    'inputContainerStyle'
+    'inputContainerStyle',
+    'validation'
   )
 
   // Layout
