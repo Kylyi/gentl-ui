@@ -81,7 +81,7 @@ const isLimitRowsReached = computedEager(() => {
       <div
         absolute
         left-2
-        :class="{ 'lt-md:display-none': !noPagination }"
+        :class="{ 'lt-md:hidden': !noPagination }"
         flex="~ gap-x-2 center"
       >
         <span

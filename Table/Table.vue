@@ -106,7 +106,7 @@ const {
   TableRowComponent,
   handleScrollLeft,
   handleRowClick,
-  // eslint-disable-next-line unused-imports/no-unused-vars, @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line unused-imports/no-unused-vars
   throttledHandleResize,
   recreateColumns,
   handleResize,
@@ -208,7 +208,7 @@ onMounted(() => {
     <TableHeader
       v-if="!noHeader"
       ref="headerEl"
-      class="lt-md:display-none"
+      class="lt-md:hidden"
       :columns="internalColumns"
       :rows="rows"
       :use-server="useServer"

@@ -46,7 +46,9 @@ const { getBtnProps } = useBtnUtils()
 
 // Layout
 const dialogEl = ref<InstanceType<typeof Dialog>>()
+const sortableEl = ref<HTMLElement>()
 const columns = useVModel(props, 'columns', emits)
+
 const { cloned: clonedColumns } = useCloned(columns, {
   clone: cols => cols.map((col: TableColumn) => new TableColumn(col)),
 })
@@ -212,9 +214,7 @@ async function handleApplyChanges() {
           <List
             :items="nonHelperCols"
             row-tag="label"
-            :fuse-options="{
-              shouldSort: true,
-            }"
+            :fuse-options="{ shouldSort: true }"
           >
             <template #above="{ itemsFiltered }">
               <div

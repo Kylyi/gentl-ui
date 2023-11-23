@@ -244,11 +244,11 @@ defineExpose({
 }
 
 .column-lock {
-  --apply: display-none;
+  --apply: hidden;
 }
 
 .th:hover .column-lock,
 .th.is-frozen .column-lock {
-  --apply: display-flex;
+  --apply: flex;
 }
 </style>

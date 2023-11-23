@@ -65,10 +65,10 @@ const breadcrumbs = computed(() => {
 
 @screen lt-lg {
   .breadcrumbs > .breadcrumb-item {
-    --apply: display-none;
+    --apply: hidden;
 
     &.is-last {
-      --apply: display-flex;
+      --apply: flex;
     }
   }
 }
