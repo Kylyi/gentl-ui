@@ -1,26 +1,16 @@
 <script setup lang="ts">
 import { config } from '~/config'
 
+// Types
+import { IBreadcrumbProps } from '~/components/Breadcrumbs/types/breadcrumbs-props.type'
+
 // Constants
 import { BUTTON_PRESET } from '~/components/Button/constants/button-preset.constant'
 
-const props = withDefaults(
-  defineProps<{
-    /*
-     * Turns off hiding breadcrumbs based on available width
-     */
-    notAdaptive?: boolean
-
-    /*
-     * Position of the hidden breadcrumbs btn
-     */
-    hideBtnPosition?: 'left' | 'right'
-  }>(),
-  {
-    notAdaptive: false,
-    hideBtnPosition: 'left',
-  }
-)
+const props = withDefaults(defineProps<IBreadcrumbProps>(), {
+  notAdaptive: false,
+  hideBtnPosition: 'left',
+})
 
 const breadcrumbsInjected = injectStrict(breadcrumbsKey, ref([]))
 
