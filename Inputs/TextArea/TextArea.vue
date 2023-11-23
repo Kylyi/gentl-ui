@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// eslint-disable-next-line import/named
 import { InputMask } from 'imask'
 import { type MaybeElementRef } from '@vueuse/core'
 
@@ -101,7 +102,7 @@ defineExpose({
       :disabled="disabled"
       autocomplete="off"
       :label="label || placeholder"
-      :name="name || label || placeholder"
+      :name="name || validation?.$path || label || placeholder"
       class="control"
       role="presentation"
       :rows="rows"

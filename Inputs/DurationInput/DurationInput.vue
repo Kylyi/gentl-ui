@@ -42,7 +42,7 @@ const numberInputProps = reactivePick(
   'debounce',
   'disabled',
   'emptyValue',
-  'errors',
+  'validation',
   'errorTakesSpace',
   'errorVisible',
   'fractionDigits',

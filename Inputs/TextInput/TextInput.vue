@@ -15,6 +15,7 @@ const props = withDefaults(defineProps<ITextInputProps>(), {
   stackLabel: undefined,
   labelInside: undefined,
   inline: undefined,
+  allowIncompleteMaskValue: false,
 })
 defineEmits<{
   (e: 'update:model-value', val?: string | undefined | null): void
@@ -43,6 +44,7 @@ const {
 } = useInputUtils({
   props,
   maskRef: toRef(props, 'mask'),
+  maskEventHandlers: props.maskEventHandlers,
 })
 
 const hasCopyBtn = computedEager(() => {
@@ -89,7 +91,7 @@ defineExpose({
       :disabled="disabled"
       autocomplete="off"
       :label="label || placeholder"
-      :name="name || label || placeholder"
+      :name="name || validation?.$path || label || placeholder"
       class="control"
       role="presentation"
       :class="[inputClass, { 'custom-enter': !!customEnter }]"

@@ -52,6 +52,7 @@ const isSelectedRow = injectStrict(tableIsSelectedRowKey, () => false)
       :data-type="col.dataType"
       :format="col.format"
       :row="row"
+      :empty-value="{}"
     >
       <template #default="{ val }">
         <slot :value="val">

@@ -5,7 +5,7 @@ export type ITimeInputShortcut = {
   value: string
 }
 
-export interface ITimeInputProps extends IInputProps {
+export type ITimeInputProps = IInputProps & {
   /**
    * The shortcuts
    */

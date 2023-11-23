@@ -295,7 +295,7 @@ const $v = useVuelidate(
         <TextInput
           v-model="layout.name"
           :label="$t('table.layoutName')"
-          :errors="$v.layout.name.$errors"
+          :validation="$v.layout.name"
         />
 
         <Separator spaced />

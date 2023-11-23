@@ -9,7 +9,7 @@ export interface IMaskOptions {
   emptyValue?: MaybeRefOrGetter<any>
 
   eventHandlers?: {
-    onAccept?: () => void
+    onAccept?: (val: any) => void
     onCompleted?: (val: any) => void
   }
 
@@ -24,4 +24,9 @@ export interface IMaskOptions {
    * (val: any) => model.value = 'new value'
    */
   setModel?: (value: any) => void
+
+  /**
+   * When set to true, input's blur state will not erase the value and will keep the last typed value with the mask
+   */
+  allowIncompleteMaskValue?: boolean
 }

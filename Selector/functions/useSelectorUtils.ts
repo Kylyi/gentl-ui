@@ -20,7 +20,7 @@ export function useSelectorUtils(options: ISelectorUtilsOptions) {
     'contentClass',
     'disabled',
     'emptyValue',
-    'errors',
+    'validation',
     'errorTakesSpace',
     'errorVisible',
     'hint',
