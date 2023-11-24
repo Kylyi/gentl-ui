@@ -46,7 +46,6 @@ const { getBtnProps } = useBtnUtils()
 
 // Layout
 const dialogEl = ref<InstanceType<typeof Dialog>>()
-const sortableEl = ref<HTMLElement>()
 const columns = useVModel(props, 'columns', emits)
 
 const { cloned: clonedColumns } = useCloned(columns, {

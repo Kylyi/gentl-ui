@@ -51,7 +51,9 @@ const isNonValueComparator = computedEager(() => {
 })
 
 const component = computed(() => {
-  return COMPONENTS_BY_DATATYPE_MAP[column.value.dataType.replace('Simple', '')]
+  return COMPONENTS_BY_DATATYPE_MAP[
+    column.value.dataType.replace('Simple', '') as DataType
+  ]
 })
 
 const inputDebounce = computed(() => {
@@ -334,7 +336,7 @@ defineExpose({
     <!-- Primitive value -->
     <Component
       :is="component.component"
-      v-else-if="component.component && !isNonValueComparator"
+      v-else-if="component?.component && !isNonValueComparator"
       v-bind="component.props"
       ref="valueInputEl"
       v-model="filter.value"

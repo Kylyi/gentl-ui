@@ -85,7 +85,7 @@ const isNonValueComparator = computedEager(() => {
 
 const component = computed(() => {
   return COMPONENTS_BY_DATATYPE_MAP[
-    colSelected.value?.dataType.replace('Simple', '')
+    colSelected.value?.dataType.replace('Simple', '') as DataType
   ]
 })
 
@@ -424,7 +424,7 @@ const $v = useVuelidate(
         <!-- Primitive value -->
         <Component
           :is="component.component"
-          v-else-if="component.component && !isNonValueComparator"
+          v-else-if="component?.component && !isNonValueComparator"
           ref="valueInputEl"
           :model-value="item.value"
           size="sm"

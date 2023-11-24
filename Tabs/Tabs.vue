@@ -123,10 +123,8 @@ watch(model, model => {
           :size="tab.size || 'lg'"
           :class="[
             labelClass,
-            {
-              'is-active': tab.id === activeTab?.id,
-              [labelActiveClass]: tab.id === activeTab?.id,
-            },
+            ...(tab.id === activeTab?.id ? [labelActiveClass] : []),
+            { 'is-active': tab.id === activeTab?.id },
           ]"
           @click="handleTabChange(tab.id)"
         />
