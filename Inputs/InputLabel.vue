@@ -2,15 +2,18 @@
 // Types
 import type { InputLabelProps } from '~/components/Inputs/types/input-label-props.type'
 
-const props = defineProps<InputLabelProps>()
+const props = withDefaults(defineProps<InputLabelProps>(), {
+  required: undefined,
+})
 
 const labelLocalClass = computedEager(() => {
+  console.log(props.required)
   return [
     props.labelClass,
     `label--${props.size}`,
     {
       'is-inline': props.inline,
-      'is-required': props.required || !!props.validation?.required,
+      'is-required': props.required ?? !!props.validation?.required,
       'is-inside': props.labelInside,
       'is-floating':
         !props.inline &&

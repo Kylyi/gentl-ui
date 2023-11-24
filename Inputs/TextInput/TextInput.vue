@@ -16,6 +16,7 @@ const props = withDefaults(defineProps<ITextInputProps>(), {
   labelInside: undefined,
   inline: undefined,
   allowIncompleteMaskValue: false,
+  required: undefined,
 })
 defineEmits<{
   (e: 'update:model-value', val?: string | undefined | null): void

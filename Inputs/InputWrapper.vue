@@ -14,6 +14,7 @@ const props = withDefaults(defineProps<IInputWrapperProps>(), {
   stackLabel: config.inputs.stackLabel,
   labelInside: config.inputs.labelInside,
   inline: config.inputs.inline,
+  required: undefined,
 })
 
 // Utils
