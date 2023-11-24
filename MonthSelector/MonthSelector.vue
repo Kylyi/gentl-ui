@@ -55,11 +55,8 @@ function handleMonthSelect(month: Month, callback?: () => void) {
 <template>
   <div class="month-selector">
     <Btn
-      display="lt-xs:!none"
       size="auto"
-      w="8"
-      h="8"
-      p="3"
+      class="month-selector__previous"
       tabindex="-1"
       icon="majesticons:chevron-left"
       @click="$emit('previous')"
@@ -75,11 +72,8 @@ function handleMonthSelect(month: Month, callback?: () => void) {
       :label="formatDate(dateObj.valueOf(), 'month')"
     />
     <Btn
-      display="lt-xs:!none"
       size="auto"
-      w="8"
-      h="8"
-      p="3"
+      class="month-selector__next"
       tabindex="-1"
       icon="majesticons:chevron-right"
       @click="$emit('next')"
@@ -121,5 +115,11 @@ function handleMonthSelect(month: Month, callback?: () => void) {
 <style lang="scss" scoped>
 .month-selector {
   --apply: flex flex-gap-x-1 items-center;
+
+  &__previous,
+  &__next {
+    --apply: w-8 h-8 p-3;
+    --apply: '!lt-xs:hidden';
+  }
 }
 </style>

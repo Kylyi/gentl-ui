@@ -319,12 +319,7 @@ function handleFitColumns() {
       class="table-top__subbar"
     >
       <!-- Selection & Sorting -->
-      <div
-        grow
-        flex="~ gap-2"
-        items-center
-        display="lt-md:none"
-      >
+      <div class="table-top__selection">
         <template v-if="selectable && $slots['bulk-actions']">
           <!-- Selection actions -->
           <slot
@@ -334,9 +329,7 @@ function handleFitColumns() {
             <!-- Selection info -->
             <div
               v-if="selectable"
-              flex="~ gap-1 items-center"
-              leading="none"
-              text="caption xs"
+              class="table-top__selection-info"
             >
               <div fluent:select-all-on-20-regular />
               <span m="l-1">{{ $t('general.selected') }}:</span>
@@ -393,17 +386,10 @@ function handleFitColumns() {
       </div>
 
       <!-- Layout -->
-      <div
-        flex="~ gap-2"
-        items-center
-        grow
-        justify="end"
-      >
+      <div class="table-top__layout">
         <span
           v-if="!tableTopFunctionality?.noLayout"
-          text="caption xs"
-          font="bold"
-          display="lt-md:none"
+          class="table-top__layout-label"
         >
           {{ $t('table.layoutState') }}:
         </span>
@@ -455,6 +441,24 @@ function handleFitColumns() {
 
   &__subbar {
     --apply: flex gap-2 items-center justify-between p-x-2 p-y-1;
+  }
+
+  &__layout {
+    --apply: flex gap-2 items-center grow justify-end;
+
+    &-label {
+      --apply: text-caption text-xs font-bold;
+      --apply: '!lt-md:hidden';
+    }
+  }
+
+  &__selection {
+    --apply: flex grow gap-2 items-center;
+    --apply: '!lt-md:hidden';
+
+    &-info {
+      --apply: flex gap-1 items-center leading-none text-caption text-xs;
+    }
   }
 }
 </style>

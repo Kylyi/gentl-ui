@@ -573,10 +573,10 @@ defineExpose({
 
               <template v-if="multi">
                 <!-- CONFIRM BUTTON (for lt-sm displays) -->
-                <Separator display="sm:none" />
+                <Separator sm="hidden" />
 
                 <Btn
-                  display="!sm:none"
+                  sm="!hidden"
                   :label="$t('general.confirm')"
                   :rounded="false"
                   bg="primary"
