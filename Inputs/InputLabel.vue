@@ -7,7 +7,6 @@ const props = withDefaults(defineProps<InputLabelProps>(), {
 })
 
 const labelLocalClass = computedEager(() => {
-  console.log(props.required)
   return [
     props.labelClass,
     `label--${props.size}`,
