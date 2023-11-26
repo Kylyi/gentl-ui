@@ -13,12 +13,13 @@ const props = withDefaults(defineProps<ITextAreaInputProps>(), {
   debounce: 0,
   errorTakesSpace: true,
   errorVisible: true,
+  inline: undefined,
+  labelInside: undefined,
   mask: () => ({ mask: String }),
+  required: undefined,
   rounded: true,
   size: 'md',
   stackLabel: undefined,
-  labelInside: undefined,
-  inline: undefined,
 })
 
 defineEmits<{

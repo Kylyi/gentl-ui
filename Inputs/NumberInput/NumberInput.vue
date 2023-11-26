@@ -17,12 +17,13 @@ const props = withDefaults(defineProps<INumberInputProps>(), {
   errorTakesSpace: true,
   errorVisible: true,
   fractionDigits: 2,
-  mask: () => ({ mask: String }),
-  size: 'md',
-  step: 'auto',
-  stackLabel: undefined,
-  labelInside: undefined,
   inline: undefined,
+  labelInside: undefined,
+  mask: () => ({ mask: String }),
+  required: undefined,
+  size: 'md',
+  stackLabel: undefined,
+  step: 'auto',
 })
 
 defineEmits<{
