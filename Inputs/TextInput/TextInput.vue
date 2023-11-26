@@ -6,17 +6,17 @@ import { type ITextInputProps } from '~/components/Inputs/TextInput/types/text-i
 import { useInputUtils } from '~/components/Inputs/functions/useInputUtils'
 
 const props = withDefaults(defineProps<ITextInputProps>(), {
+  allowIncompleteMaskValue: false,
   debounce: 0,
   errorTakesSpace: true,
   errorVisible: true,
+  inline: undefined,
+  labelInside: undefined,
   mask: () => ({ mask: String }),
+  required: undefined,
   rounded: true,
   size: 'md',
   stackLabel: undefined,
-  labelInside: undefined,
-  inline: undefined,
-  allowIncompleteMaskValue: false,
-  required: undefined,
 })
 defineEmits<{
   (e: 'update:model-value', val?: string | undefined | null): void

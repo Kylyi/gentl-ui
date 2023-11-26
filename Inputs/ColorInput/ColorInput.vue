@@ -11,9 +11,10 @@ import Field from '~/components/Field/Field.vue'
 
 const props = withDefaults(defineProps<IColorProps>(), {
   icon: 'material-symbols:format-color-text-rounded',
-  stackLabel: undefined,
-  labelInside: undefined,
   inline: undefined,
+  labelInside: undefined,
+  required: undefined,
+  stackLabel: undefined,
 })
 const emits = defineEmits<{
   (e: 'update:modelValue', value: any): void

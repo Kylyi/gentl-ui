@@ -22,9 +22,10 @@ const props = withDefaults(defineProps<IDateInputProps>(), {
   errorTakesSpace: true,
   errorVisible: true,
   immediate: true,
-  stackLabel: undefined,
-  labelInside: undefined,
   inline: undefined,
+  labelInside: undefined,
+  required: undefined,
+  stackLabel: undefined,
 })
 
 defineEmits<{

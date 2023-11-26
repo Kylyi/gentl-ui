@@ -15,11 +15,12 @@ import Menu from '~/components/Menu/Menu.vue'
 import NumberInput from '~/components/Inputs/NumberInput/NumberInput.vue'
 
 const props = withDefaults(defineProps<IDurationInputProps>(), {
-  initialDurationUnit: 'hour',
   allowedUnits: () => ['minute', 'hour', 'day'],
-  stackLabel: undefined,
-  labelInside: undefined,
+  initialDurationUnit: 'hour',
   inline: undefined,
+  labelInside: undefined,
+  required: undefined,
+  stackLabel: undefined,
 })
 
 const emits = defineEmits<{
