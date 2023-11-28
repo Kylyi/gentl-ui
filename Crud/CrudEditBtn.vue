@@ -2,10 +2,21 @@
 // Injections
 import { formIsInEditModeKey } from '~/components/Form/provide/form.provide'
 
+// Constants
+import { BUTTON_PRESET } from '~/components/Button/constants/button-preset.constant'
+
 type IProps = {
   archived?: boolean
   disabled?: boolean
   isEditing?: boolean
+  label?: string
+  preset?: keyof typeof BUTTON_PRESET
+
+  /**
+   * Normally, the edit button interacts with the `Form` it is part of (~ makes it editable)
+   * If we want to prevent this, we can set this prop to `true`
+   */
+  noFormInteraction?: boolean
 }
 
 const props = defineProps<IProps>()
@@ -25,6 +36,14 @@ const transitionProps = computed(() => ({
   leaveActiveClass: 'animate-fade-out-up animate-duration-350',
 }))
 
+const btnProps = computed(() => {
+  const preset: keyof typeof BUTTON_PRESET =
+    props.preset ?? props.archived ? 'RESTORE' : 'EDIT'
+  const label = props.label ?? props.archived ? $t('restore') : $t('edit')
+
+  return { preset, label }
+})
+
 function handleClick() {
   if (props.archived) {
     emits('restore')
@@ -33,16 +52,21 @@ function handleClick() {
   }
 
   isEditing.value = true
-  isInEditMode.value = true
+
+  if (!props.noFormInteraction) {
+    isInEditMode.value = true
+  }
 }
 
-watch(isInEditMode, val => {
-  isEditing.value = !!val
-})
+if (!props.noFormInteraction) {
+  watch(isInEditMode, val => {
+    isEditing.value = !!val
+  })
 
-watch(isEditing, val => {
-  isInEditMode.value = !!val
-})
+  watch(isEditing, val => {
+    isInEditMode.value = !!val
+  })
+}
 </script>
 
 <template>
@@ -52,8 +76,7 @@ watch(isEditing, val => {
       class="crud-edit-btn-wrapper"
     >
       <Btn
-        :preset="archived ? 'RESTORE' : 'EDIT'"
-        :label="archived ? $t('restore') : $t('edit')"
+        v-bind="btnProps"
         no-dim
         :disabled="disabled"
         class="crud-edit-btn"
