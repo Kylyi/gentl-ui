@@ -103,8 +103,8 @@ header {
       bg-darker self-center p-x-2 rounded-full;
 
     .environment {
-      --apply: absolute left-50% -translate-x-1/2 p-y-1 p-x-2 color-white
-        rounded-custom border-2 border-white;
+      --apply: absolute left-50% -translate-x-1/2 p-y-1 p-x-2 color-white rounded-custom
+        border-2 border-white;
     }
   }
 }
