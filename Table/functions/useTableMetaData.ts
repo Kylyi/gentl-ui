@@ -147,6 +147,10 @@ export async function useTableMetaData(props: ITableProps) {
           layout.value.name = $t('table.layoutStateNoLayout')
         }
 
+        if (layout.value && props.initialLayoutSchema) {
+          layout.value.schema = props.initialLayoutSchema
+        }
+
         layouts.value = get(result, layoutsKey || config.table.layoutsKey) || []
 
         const apiColumns = get(result, columnsKey || config.table.columnsKey)

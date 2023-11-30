@@ -72,6 +72,12 @@ export interface ITableProps {
   infiniteScroll?: boolean
 
   /**
+   * The initial layout schema for the table
+   * When provided, the table will be initialized with this schema
+   */
+  initialLayoutSchema?: string
+
+  /**
    * Whether the table is in `loading` state
    */
   loading?: boolean
