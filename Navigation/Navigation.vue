@@ -111,7 +111,7 @@ header {
 
 .navigation {
   // Project specific
-  --apply: w-full flex flex-gap-2 p-x-1 min-h-52px h-full;
+  --apply: w-full flex flex-gap-2 p-x-1 min-h-52px h-$navHeight;
 
   &-wrapper {
     --apply: flex flex-col bg-$Navigation-bg;
