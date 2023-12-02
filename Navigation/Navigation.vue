@@ -1,6 +1,7 @@
 <script setup lang="ts">
 defineProps<{
   noAccountBtn?: boolean
+  noToolbar?: boolean
 }>()
 
 defineEmits<{
@@ -60,7 +61,10 @@ onMounted(() => {
       <slot name="before-actions" />
 
       <!-- Theme & Locale & Account -->
-      <div class="toolbar">
+      <div
+        v-if="!noToolbar"
+        class="toolbar"
+      >
         <slot name="prepend-actions" />
 
         <slot name="actions">
