@@ -32,7 +32,6 @@ const props = withDefaults(defineProps<ITableProps>(), {
   rowHeight: 40,
   rowKey: 'id',
   separator: 'cell',
-  sizeField: 'size',
   totalRows: 0,
   useServer: true,
   useChips: config.table.useChips,
@@ -54,12 +53,12 @@ defineSlots<{
   rowInside: { columns: any[]; row: any; index: number }
   dataRow: { columns: any[]; row: any; index: number }
   inner: { columns: any[]; row: any; index: number }
-  top: {}
-  topLeftPrepend: {}
-  topLeftAppend: {}
-  topRightPrepend: {}
-  topRightAppend: {}
-  subbarRight: {}
+  top: IItem
+  topLeftPrepend: IItem
+  topLeftAppend: IItem
+  topRightPrepend: IItem
+  topRightAppend: IItem
+  subbarRight: IItem
   topBulkActions: { selection: any[] }
   belowTop: { rows: any[] }
 }>()

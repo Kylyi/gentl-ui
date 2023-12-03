@@ -31,6 +31,7 @@ const props = defineProps<
     | 'nonSavableSettings'
     | 'minimumColumnWidth'
     | 'exportProps'
+    | 'useChips'
   > & {
     search: string
   }
@@ -307,6 +308,7 @@ function handleFitColumns() {
         v-else
         v-model:search="search"
         :columns="columns"
+        :use-chips="useChips"
         class="table-top__qb"
       />
 

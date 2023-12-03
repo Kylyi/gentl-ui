@@ -1,5 +1,6 @@
+import { klona } from 'klona'
+
 // Types
-import type { IQueryBuilderGroup } from '~/components/QueryBuilder/types/query-builder-group-props.type'
 import type { IQueryBuilderItem } from '~/components/QueryBuilder/types/query-builder-item-props.type'
 import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
 import type { ITableFilterRow } from '~/components/Table/types/table-query.type'
@@ -7,6 +8,8 @@ import type { ITableFilterRow } from '~/components/Table/types/table-query.type'
 // Models
 import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
 import { FilterItem } from '~/libs/App/data/models/filter-item'
+
+const { traverseChildren } = useTraversing()
 
 function possiblyTransformToID(value: any) {
   if (typeof value === 'string') {
@@ -152,50 +155,39 @@ function transformItemToPrismaCondition(
  */
 export function transformToPrismaWhere(options: {
   rows?: Array<ITableFilterRow | IQueryBuilderRow> | undefined
-  condition?: any
 }): any {
-  const { rows, condition = {} } = options || {}
+  const { rows } = options || {}
 
   if (!rows) {
     return {}
   }
 
-  rows.forEach(row => {
-    if (get(row, 'isGroup')) {
-      const group = row as IQueryBuilderGroup
-      const groupCondition = {}
+  const rowsClone = klona(rows)
+  const where: Record<string, any> = {}
 
-      // If the condition exists, we push to it. Otherwise, we create it.
-      if (condition[group.condition]) {
-        condition[group.condition].push(
-          transformToPrismaWhere({
-            rows: group.children,
-            condition: groupCondition,
-          })
-        )
+  traverseChildren(rowsClone, (parentNode, node) => {
+    if ('isGroup' in node) {
+      if (!parentNode) {
+        set(where, node.condition, [])
+        node.parentX = get(where, node.condition)
       } else {
-        condition[group.condition] = [
-          transformToPrismaWhere({
-            rows: group.children,
-            condition: groupCondition,
-          }),
-        ]
+        const idx = node.path.split('.').pop()
+        set(parentNode.parentX, idx, {
+          [node.condition]: [],
+        })
+        node.parentX = get(parentNode.parentX, `${idx}.${node.condition}`)
       }
     } else {
-      const item = row as IQueryBuilderItem | FilterItem<any>
-
-      // We skip the item if it has no Comparator
-      if (!item.comparator) {
-        return
-      }
-
-      const prismaCondition = transformItemToPrismaCondition(item)
-
-      for (const [key, value] of Object.entries(prismaCondition)) {
-        set(condition, key, value)
-      }
+      const idx = node.path.split('.').pop()
+      set(
+        parentNode!.parentX,
+        `${idx}`,
+        transformItemToPrismaCondition(
+          node as IQueryBuilderItem | FilterItem<any>
+        )
+      )
     }
   })
 
-  return condition
+  return where
 }

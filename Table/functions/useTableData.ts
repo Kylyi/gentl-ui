@@ -35,6 +35,7 @@ import {
 
 // Store
 import { useTableStore } from '~/components/Table/table.store'
+import { useAppStore } from '~/libs/App/app.store'
 
 export function useTableData(
   props: ITableProps,
@@ -74,6 +75,7 @@ export function useTableData(
   const storageKey = computed(() => getStorageKey())
 
   // Store
+  const { activeElement } = storeToRefs(useAppStore())
   const { getTableState, setTableState, resetTableState } = useTableStore()
   const tableState = getTableState(storageKey.value)
 
@@ -175,9 +177,7 @@ export function useTableData(
     const columns = toValue(internalColumnsRef)
 
     // TODO: Bad type
-    return columns
-      .filter(col => !!col.filterDbQuery)
-      .flatMap(col => col.filterDbQuery) as any[]
+    return columns.filter(Boolean).flatMap(col => col.filterDbQuery) as any[]
   })
 
   const dbQuery = computedWithControl(
@@ -400,6 +400,7 @@ export function useTableData(
         return
       }
 
+      // ANCHOR: We only refetch data if the query has changed or we forced the refetch
       if (
         !isForcedRefetch.value &&
         previousDbQuery.value?.fetchQueryParams.toString() ===
@@ -488,11 +489,16 @@ export function useTableData(
         queryBuilder: dbQuery.tableQuery.queryBuilder,
       })
 
-      // NOTE: Focus the table so we can use keyboard navigation (but only if no floating element is visible)
+      // NOTE: Focus the table so we can use keyboard navigation
+      // (but only if no floating element is visible - we don't want to close it by refocusing)
+      // also when user has search input focused, we don't want to refocus
       if (process.client) {
         const hasFloatingEl = !!document.querySelector('.floating-element')
+        const isSearchInputFocused =
+          activeElement.value?.tagName === 'INPUT' &&
+          activeElement.value?.getAttribute('name') === 'search'
 
-        if (!hasFloatingEl) {
+        if (!hasFloatingEl && !isSearchInputFocused) {
           scrollerEl.value?.focus()
         }
       }
@@ -511,7 +517,6 @@ export function useTableData(
     const { queryBuilder: schemaQueryBuilder } = parseUrlParams({
       columnsRef: internalColumnsRef,
       searchParams: layoutRef.value?.schema,
-      fromSchema: !!layoutRef.value?.schema,
     })
 
     const isUrlUsed =

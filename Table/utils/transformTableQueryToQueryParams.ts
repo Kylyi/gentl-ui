@@ -6,13 +6,9 @@ import {
   type ITableFilterItem,
   type ITableQuery,
 } from '~/components/Table/types/table-query.type'
-import { config } from '~/config'
-
-// Models
-import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
 
 /**
- * Serializes the table's `filter` into a `filter` query parameter.
+ * Serializes the table's `filter` into a `filter` query parameter
  */
 export function serializeFilterString(
   filters: ITableQuery['filters'] | ITableQuery['queryBuilder']
@@ -57,36 +53,20 @@ export function serializeFilterString(
 }
 
 /**
- * Serializes the table's `orderBy` into a `order` query parameter.
+ * Serializes the table's `orderBy`
  */
 export function serializeOrderByString(
-  orderBy: ITableQuery['orderBy'],
-  fetchMore?: ITableQuery['fetchMore']
+  orderBy: ITableQuery['orderBy']
 ): string {
   if (!orderBy) {
     return ''
   }
 
-  let orderByString = orderBy
+  const orderByString = orderBy
     .map(sort => {
-      if (fetchMore && sort.field === fetchMore.rowKey) {
-        return `${sort.field}.${sort.direction}.${fetchMore.$key}`
-      } else if (fetchMore) {
-        const fieldValue = get(fetchMore.lastRow, sort.field)
-        const val = fieldValue || (fieldValue === null ? '$null' : '$empty')
-
-        return `${sort.field}.${sort.direction}.${val}`
-      }
-
       return `${sort.field}.${sort.direction}`
     })
     .join(',')
-
-  if (!orderBy.length && fetchMore) {
-    orderByString += `${fetchMore.rowKey}.asc.${fetchMore.$key},$key.${fetchMore.$key}`
-  } else if (fetchMore) {
-    orderByString += `,$key.${fetchMore.$key}`
-  }
 
   return orderByString
 }
@@ -103,89 +83,49 @@ export function serializeSelectString(select: ITableQuery['select']): string {
 }
 
 export function serializeTableQueryToQueryParams(tableQuery: ITableQuery) {
-  const { orderBy, select, fetchMore, queryBuilder, columnFilters } = tableQuery
+  const { orderBy, select, queryBuilder, columnFilters, search, skip, take } =
+    tableQuery
 
   const urlParams = new URLSearchParams()
 
   // Query builder
-  if (queryBuilder?.length) {
-    // We remove empty groups
-    let _queryBuilderTrimmed = serializeFilterString(queryBuilder)
+  const qb = serializeFilterString(queryBuilder)
 
-    // Regular expression to match and() or or() substrings
-    const regex = /and\(\)|or\(\)/g
-
-    let prevResult: string
-    do {
-      prevResult = _queryBuilderTrimmed
-      // Replace matched substrings with an empty string
-      _queryBuilderTrimmed = _queryBuilderTrimmed.replace(regex, '')
-
-      // To also remove consecutive commas resulting from the removal, use another regex replacement
-      _queryBuilderTrimmed = _queryBuilderTrimmed.replace(/,+,/g, ',')
-
-      // Remove trailing commas within parentheses
-      _queryBuilderTrimmed = _queryBuilderTrimmed.replace(/,(?=\))/g, '')
-
-      // If comma starts or ends the string, remove it.
-      _queryBuilderTrimmed = _queryBuilderTrimmed.replace(/^,|,$/g, '')
-    } while (prevResult !== _queryBuilderTrimmed) // Continue as long as changes are being made
-
-    if (_queryBuilderTrimmed.length) {
-      const firstBracket = _queryBuilderTrimmed.indexOf('(')
-      const condition = _queryBuilderTrimmed.substring(0, firstBracket)
-      const content = _queryBuilderTrimmed.substring(
-        firstBracket + 1,
-        _queryBuilderTrimmed.length - 1
-      )
-
-      urlParams.append(condition, `(${content})`)
-    }
+  if (qb) {
+    urlParams.append('qb', qb)
   }
 
   // Column filters
-  if (columnFilters?.length) {
-    columnFilters.forEach(filter => {
-      // We don't need the value when using the ComparatorEnum.IS_EMPTY and ComparatorEnum.NOT_IS_EMPTY comparators
-      const EMPTY_COMPARATORS = [
-        ComparatorEnum.IS_EMPTY,
-        ComparatorEnum.NOT_IS_EMPTY,
-      ]
+  const filters = serializeFilterString(columnFilters)
 
-      if (EMPTY_COMPARATORS.includes(filter.comparator)) {
-        urlParams.append(filter.field, filter.comparator)
-
-        return
-      }
-
-      urlParams.append(filter.field, `${filter.comparator}.${filter.value}`)
-    })
+  if (filters) {
+    urlParams.append('filters', filters)
   }
 
   // Sorting
-  // Should consist of max. 3 items:
-  // 1. sort ~ (sort(field1.asc,field2.desc))
-  //    When fetching more data, sorting may also include some extra params ~ $key.001
-  //    It also transforms the sort in general... Why?? I don't know...
-  // 2. limit ~ limit.100
-  // 3. count ~ count.true
+  const order = serializeOrderByString(orderBy)
 
-  const paging: string[] = [
-    ...(orderBy?.length || fetchMore
-      ? [`sort(${serializeOrderByString(orderBy, fetchMore)})`]
-      : []),
-    ...(!config.table.infiniteScroll && !isNil(tableQuery.skip)
-      ? [`skip.${tableQuery.skip}`]
-      : []),
-    ...(tableQuery.take ? [`limit.${tableQuery.take}`] : []),
-    ...(tableQuery.count ? ['count.true'] : []),
-  ]
-  urlParams.append('paging', `(${paging.join(',')})`)
+  if (order) {
+    urlParams.append('order', order)
+  }
 
   // Visible columns + sorted columns
-  // We also check for the sorted columns because we need to know their values for `fetchMore`
   if (select?.length) {
     urlParams.append('select', serializeSelectString(select))
+  }
+
+  // Pagination
+  if (skip) {
+    urlParams.append('skip', skip.toString())
+  }
+
+  if (take) {
+    urlParams.append('take', take.toString())
+  }
+
+  // Search
+  if (search) {
+    urlParams.append('search', search)
   }
 
   return urlParams

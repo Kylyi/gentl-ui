@@ -283,11 +283,6 @@ export interface ITableProps {
   splitRow?: number
 
   /**
-   * Used in RecycleScroller
-   */
-  sizeField?: string
-
-  /**
    * The selected rows, can be either:
    * * Array<string | number> ~ use for `rowKey` selection
    * * Record<itemKey, item> ~ use for `item` selection

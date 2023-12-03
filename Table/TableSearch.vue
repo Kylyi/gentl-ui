@@ -15,7 +15,7 @@ type IProps = {
   noSearch?: boolean
   queryBuilder?: IQueryBuilderRow[]
   search: string
-  searchableColumnLabels?: string[]
+  useChips?: boolean
 }
 
 const props = defineProps<IProps>()
@@ -27,8 +27,12 @@ const emits = defineEmits<{
 const tableRefresh = injectStrict(tableRefreshKey)
 
 // Layout
-const useChips = config.table.useChips
+const useChips = props.useChips ?? config.table.useChips
 const search = useVModel(props, 'search', emits)
+
+const searchableColumnLabels = computed(() => {
+  return props.columns.filter(col => col.searchable).map(col => col.label)
+})
 
 const filterChips = computed(() => {
   return props.columns
@@ -56,7 +60,10 @@ function handleRemoveAllFilters() {
 </script>
 
 <template>
-  <div flex="~ !items-center">
+  <div
+    flex="~ !items-center"
+    :class="{ 'bg-ca': !useChips && !noSearch }"
+  >
     <!-- Chips - filter columns -->
     <HorizontalScroller
       v-if="useChips"
@@ -127,3 +134,10 @@ function handleRemoveAllFilters() {
     </Btn>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.non-searchable-info {
+  --apply: text-caption text-xs m-t-4 p-2 rounded-custom bg-ca text-justify
+    text-last-center;
+}
+</style>
