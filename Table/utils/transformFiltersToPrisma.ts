@@ -1,5 +1,3 @@
-import { klona } from 'klona'
-
 // Types
 import type { IQueryBuilderItem } from '~/components/QueryBuilder/types/query-builder-item-props.type'
 import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
@@ -162,14 +160,16 @@ export function transformToPrismaWhere(options: {
     return {}
   }
 
-  const rowsClone = klona(rows)
-  const where: Record<string, any> = {}
+  console.log('Log ~ rows:', rows)
+  // const rowsClone = klona(rows)
+  const whereQB: Record<string, any> = {}
+  const whereColumnFilters: Record<string, any> = { AND: [] }
 
-  traverseChildren(rowsClone, (parentNode, node) => {
+  traverseChildren(rows, (parentNode, node) => {
     if ('isGroup' in node) {
       if (!parentNode) {
-        set(where, node.condition, [])
-        node.parentX = get(where, node.condition)
+        set(whereQB, node.condition, [])
+        node.parentX = get(whereQB, node.condition)
       } else {
         const idx = node.path.split('.').pop()
         set(parentNode.parentX, idx, {
@@ -178,16 +178,27 @@ export function transformToPrismaWhere(options: {
         node.parentX = get(parentNode.parentX, `${idx}.${node.condition}`)
       }
     } else {
-      const idx = node.path.split('.').pop()
-      set(
-        parentNode!.parentX,
-        `${idx}`,
-        transformItemToPrismaCondition(
-          node as IQueryBuilderItem | FilterItem<any>
+      if ('path' in node) {
+        const idx = node.path.split('.').pop()
+
+        set(
+          parentNode!.parentX,
+          `${idx}`,
+          transformItemToPrismaCondition(
+            node as IQueryBuilderItem | FilterItem<any>
+          )
         )
-      )
+      } else {
+        whereColumnFilters.AND.push(
+          transformItemToPrismaCondition(
+            node as IQueryBuilderItem | FilterItem<any>
+          )
+        )
+      }
     }
   })
 
-  return where
+  return {
+    AND: [...whereColumnFilters.AND, ...(isEmpty(whereQB) ? [] : [whereQB])],
+  }
 }

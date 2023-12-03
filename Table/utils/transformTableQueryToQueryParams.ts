@@ -13,7 +13,7 @@ import {
 export function serializeFilterString(
   filters: ITableQuery['filters'] | ITableQuery['queryBuilder']
 ): string {
-  if (!filters) {
+  if (!filters?.length) {
     return ''
   }
 

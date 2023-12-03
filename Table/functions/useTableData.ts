@@ -36,6 +36,7 @@ import {
 // Store
 import { useTableStore } from '~/components/Table/table.store'
 import { useAppStore } from '~/libs/App/app.store'
+import type { FilterItem } from '~/libs/App/data/models/filter-item'
 
 export function useTableData(
   props: ITableProps,
@@ -176,8 +177,9 @@ export function useTableData(
   const columnFilters = computed(() => {
     const columns = toValue(internalColumnsRef)
 
-    // TODO: Bad type
-    return columns.filter(Boolean).flatMap(col => col.filterDbQuery) as any[]
+    return columns
+      .flatMap(col => col?.filterDbQuery)
+      .filter(Boolean) as FilterItem<IItem>[]
   })
 
   const dbQuery = computedWithControl(
@@ -190,6 +192,8 @@ export function useTableData(
         'isGroup' in queryBuilder.value[0] &&
         queryBuilder.value[0].children.length > 0
 
+      // TODO: Type
+      // @ts-expect-error wrong type
       const filters: ITableFilterRow[] = [
         ...(queryBuilder.value && hasQueryBuilder ? queryBuilder.value : []),
         ...columnFilters.value,
@@ -201,6 +205,8 @@ export function useTableData(
       const tableQuery: ITableQuery = {
         ...pagination.value,
         queryBuilder: queryBuilder.value,
+        // TODO: Type
+        // @ts-expect-error wrong type
         columnFilters: columnFilters.value,
         filters: hasFilters ? filters : undefined, // Query builder and column filters combined
         orderBy: orderBy.value,
