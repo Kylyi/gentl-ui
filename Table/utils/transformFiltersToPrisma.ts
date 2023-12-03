@@ -1,7 +1,6 @@
 // Types
 import type { IQueryBuilderItem } from '~/components/QueryBuilder/types/query-builder-item-props.type'
-import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
-import type { ITableFilterRow } from '~/components/Table/types/table-query.type'
+import type { ITableQuery } from '~/components/Table/types/table-query.type'
 
 // Models
 import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
@@ -152,7 +151,7 @@ function transformItemToPrismaCondition(
  * Transform rows to Prisma's where clause format.
  */
 export function transformToPrismaWhere(options: {
-  rows?: Array<ITableFilterRow | IQueryBuilderRow> | undefined
+  rows?: ITableQuery['filters']
 }): any {
   const { rows } = options || {}
 
@@ -160,8 +159,6 @@ export function transformToPrismaWhere(options: {
     return {}
   }
 
-  console.log('Log ~ rows:', rows)
-  // const rowsClone = klona(rows)
   const whereQB: Record<string, any> = {}
   const whereColumnFilters: Record<string, any> = { AND: [] }
 
