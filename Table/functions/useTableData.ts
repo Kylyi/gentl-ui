@@ -1,9 +1,10 @@
 import { config } from '~/config'
 
 // Types
-import { type IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
-import { type ITableLayout } from '~/components/Table/types/table-layout.type'
-import { type ITableProps } from '~/components/Table/types/table-props.type'
+import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
+import type { ITableLayout } from '~/components/Table/types/table-layout.type'
+import type { ITableProps } from '~/components/Table/types/table-props.type'
+import type { FilterItem } from '~/libs/App/data/models/filter-item'
 import type { IVirtualScrollEvent } from '~/components/VirtualScroller/types/virtual-scroll-event.type'
 import type {
   ITableDataFetchFncInput,
@@ -36,7 +37,6 @@ import {
 // Store
 import { useTableStore } from '~/components/Table/table.store'
 import { useAppStore } from '~/libs/App/app.store'
-import type { FilterItem } from '~/libs/App/data/models/filter-item'
 
 export function useTableData(
   props: ITableProps,
@@ -101,7 +101,7 @@ export function useTableData(
     currentPageSize,
   } = useOffsetPagination({
     ...tableState.value,
-    total: computed(() => totalRows.value || 0),
+    total: () => totalRows.value || Number.POSITIVE_INFINITY,
     onPageChange: page => {
       if (isInitialized.value) {
         tableState.value.page = page.currentPage
@@ -239,18 +239,11 @@ export function useTableData(
         ),
       }
 
-      let fetchInput: ITableDataFetchFncInput = {
+      const fetchInput: ITableDataFetchFncInput = {
         tableQuery,
         fetchTableQuery,
         queryParams: config.table.getQuery(tableQuery),
         fetchQueryParams: config.table.getQuery(fetchTableQuery),
-      }
-
-      if (
-        'extendTableFetchInput' in config.table &&
-        typeof config.table.extendTableFetchInput === 'function'
-      ) {
-        fetchInput = config.table.extendTableFetchInput(fetchInput)
       }
 
       return fetchInput
@@ -320,7 +313,7 @@ export function useTableData(
     isFetchMore?: boolean
   ) {
     try {
-      const options = toValue(optionsRef)
+      let options = toValue(optionsRef)
 
       // NOTE: We check whether the amount of data we already fetched is not
       // greater than the limit
@@ -329,6 +322,17 @@ export function useTableData(
         rows.value.length >= config.table.limitRows
       ) {
         return
+      }
+
+      if (
+        'extendTableFetchInput' in config.table &&
+        typeof config.table.extendTableFetchInput === 'function'
+      ) {
+        if (isFetchMore) {
+          options.fetchTableQuery.skip = rows.value.length
+        }
+
+        options = config.table.extendTableFetchInput(options)
       }
 
       // When fetching more data, we need to manually get the queryParams again as
@@ -469,7 +473,7 @@ export function useTableData(
               ...(filters && { filters }),
               ...(order && { order: `(${order})` }),
               ...(select && { select }),
-              ...(!config.table.infiniteScroll && {
+              ...(!props.infiniteScroll && {
                 skip: dbQuery.tableQuery.skip,
                 take: dbQuery.tableQuery.take,
               }),

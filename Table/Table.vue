@@ -24,20 +24,16 @@ import { useTableTopUtils } from '~/components/Table/functions/useTableTopUtils'
 const props = withDefaults(defineProps<ITableProps>(), {
   breakpoint: 'md',
   columns: () => [],
-  filters: () => [],
   groupExpandWidth: 36,
-  groups: () => [],
   minimumColumnWidth: 80,
   mobileRowHeight: 32,
   rowHeight: 40,
   rowKey: 'id',
   separator: 'cell',
   totalRows: 0,
-  useServer: true,
-  useChips: config.table.useChips,
   useUrl: true,
-  infiniteScroll: config.table.infiniteScroll,
-  useDynamicRowHeight: config.table.useDynamicRowHeight,
+  infiniteScroll: config.table.props.infiniteScroll,
+  noSearch: config.table.props.noSearch,
 })
 
 defineEmits<{
@@ -164,23 +160,38 @@ onMounted(() => {
         v-bind="tableTopProps"
         @update:columns-width="handleResize()"
       >
-        <template #left-prepend>
+        <template
+          v-if="$slots['top-left-prepend']"
+          #left-prepend
+        >
           <slot name="top-left-prepend" />
         </template>
 
-        <template #left-append>
+        <template
+          v-if="$slots['top-left-append']"
+          #left-append
+        >
           <slot name="top-left-append" />
         </template>
 
-        <template #right-prepend>
+        <template
+          v-if="$slots['top-right-prepend']"
+          #right-prepend
+        >
           <slot name="top-right-prepend" />
         </template>
 
-        <template #right-append>
+        <template
+          v-if="$slots['top-right-append']"
+          #right-append
+        >
           <slot name="top-right-append" />
         </template>
 
-        <template #subbar-right>
+        <template
+          v-if="$slots['subbar-right']"
+          #subbar-right
+        >
           <slot name="subbar-right" />
         </template>
 
@@ -210,8 +221,6 @@ onMounted(() => {
       class="lt-md:hidden"
       :columns="internalColumns"
       :rows="rows"
-      :use-server="useServer"
-      :use-chips="useChips"
       :minimum-column-width="minimumColumnWidth"
       :class="{ 'shadow-lg shadow-ca': isScrolled }"
       @scrolled="handleScrollLeft"
@@ -227,6 +236,7 @@ onMounted(() => {
       :rows="rows"
       :row-key="rowKey"
       :row-height="tableRowHeight"
+      :no-scroll-emit="!infiniteScroll"
       class="scroller"
       @virtual-scroll="handleInfiniteScroll"
     >

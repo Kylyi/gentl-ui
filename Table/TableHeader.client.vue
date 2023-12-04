@@ -18,8 +18,6 @@ type IProps = {
   columns: TableColumn<any>[]
   minimumColumnWidth?: number
   rows: any[]
-  useChips?: boolean
-  useServer?: boolean
 }
 
 const props = defineProps<IProps>()
@@ -163,8 +161,6 @@ defineExpose({
               :columns="columns"
               m="x-1"
               shrink-0
-              :use-server="useServer"
-              :use-chips="useChips"
             />
           </div>
         </slot>

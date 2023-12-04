@@ -7,8 +7,6 @@ import { tableRefreshKey } from '~/components/Table/provide/table.provide'
 
 type IProps = {
   column: TableColumn<any>
-  useChips?: boolean
-  useServer?: boolean
 }
 
 const props = defineProps<IProps>()

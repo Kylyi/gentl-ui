@@ -150,11 +150,7 @@ function transformItemToPrismaCondition(
 /**
  * Transform rows to Prisma's where clause format.
  */
-export function transformToPrismaWhere(options: {
-  rows?: ITableQuery['filters']
-}): any {
-  const { rows } = options || {}
-
+export function transformToPrismaWhere(rows?: ITableQuery['filters']): any {
   if (!rows) {
     return {}
   }

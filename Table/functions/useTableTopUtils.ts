@@ -9,7 +9,7 @@ export function useTableTopUtils() {
       'nonSavableSettings',
       'minimumColumnWidth',
       'exportProps',
-      'useChips',
+      'noSearch',
     ])
   }
 

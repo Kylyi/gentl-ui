@@ -1,4 +1,5 @@
 import { type CSSProperties } from 'vue'
+import type { IValidationErrorItem } from '~/libs/App/functions/useZod'
 
 export type InputLabelProps = {
   hasContent?: boolean
@@ -16,9 +17,8 @@ export type InputLabelProps = {
   size?: 'sm' | 'md' | 'lg'
   stackLabel?: boolean
 
-  // FIXME: Type
   /**
    * Validation object
    */
-  validation?: any
+  validation?: IValidationErrorItem
 }
