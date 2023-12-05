@@ -21,7 +21,7 @@ withDefaults(defineProps<IProps>(), {
     class="tr"
     :style="{ minHeight: `${rowHeight}px` }"
     :class="{ 'is-odd': index % 2, 'is-deleted': row.deleted }"
-    :to="to ? to(row) : undefined"
+    :to="to?.(row)"
   >
     <slot>
       <slot name="row-inside" />
