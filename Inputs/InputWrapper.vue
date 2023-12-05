@@ -14,6 +14,7 @@ const props = withDefaults(defineProps<IInputWrapperProps>(), {
   stackLabel: config.inputs.stackLabel,
   labelInside: config.inputs.labelInside,
   inline: config.inputs.inline,
+  required: undefined,
 })
 
 // Utils
@@ -35,7 +36,7 @@ const isModified = computed(() => {
 const labelProps = computedEager(() => {
   return {
     hasContent: props.hasContent,
-    hasError: !!props.errors?.length,
+    hasError: !!props.validation?.$errors.length,
     inline: props.inline,
     label: props.label,
     labelClass: props.labelClass,
@@ -45,6 +46,7 @@ const labelProps = computedEager(() => {
     required: props.required,
     size: props.size,
     stackLabel: props.stackLabel,
+    validation: props.validation,
   }
 })
 
@@ -64,7 +66,7 @@ const wrapperContentClass = computedEager(() => {
   return {
     'is-readonly': props.readonly,
     'is-disabled': props.disabled,
-    'has-error': props.errors?.length,
+    'has-error': props.validation?.$errors?.length,
     'has-label': !!props.label,
     'has-border': !props.noBorder,
     'is-modified': isModified.value,
@@ -164,13 +166,13 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
     <ErrorContainer
       v-if="errorVisible"
       :error-takes-space="errorTakesSpace"
-      :errors="errors"
+      :errors="validation?.$errors"
       class="wrapper-error"
       :style="{ paddingLeft: errorContainerPaddingLeft }"
     />
 
     <HintContainer
-      v-if="!errors?.length && hint"
+      v-if="!validation?.$errors.length && hint"
       :hint="hint"
       :style="{ paddingLeft: errorContainerPaddingLeft }"
     />

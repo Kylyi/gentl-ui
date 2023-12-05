@@ -21,15 +21,16 @@ const props = withDefaults(defineProps<ISelectorProps>(), {
   emptyValue: () => undefined,
   errorTakesSpace: true,
   errorVisible: true,
+  fuseExtendedSearchToken: config.selector.fuseExtendedSearchToken,
+  inline: undefined,
+  labelInside: undefined,
   maxChipsRows: 2,
   optionKey: 'id',
   optionLabel: 'label',
   options: () => [],
+  required: undefined,
   size: 'md',
   stackLabel: undefined,
-  inline: undefined,
-  labelInside: undefined,
-  fuseExtendedSearchToken: config.selector.fuseExtendedSearchToken,
 })
 
 const emits = defineEmits<{
@@ -406,7 +407,7 @@ defineExpose({
       class="control"
       box="content"
       tabindex="0"
-      :name="name || label || placeholder"
+      :name="name || validation?.$path || label || placeholder"
       :class="[innerClass, { 'is-multi': !!multi }]"
       :style="{ maxHeight: `${maxHeight}px` }"
       @focus="handleFocusOrClick"

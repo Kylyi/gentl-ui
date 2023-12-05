@@ -7,7 +7,6 @@ export function useInputWrapperUtils() {
       props,
       'contentClass',
       'disabled',
-      'errors',
       'errorTakesSpace',
       'errorVisible',
       'hint',
@@ -20,7 +19,8 @@ export function useInputWrapperUtils() {
       'readonly',
       'required',
       'size',
-      'stackLabel'
+      'stackLabel',
+      'validation'
     )
   }
 

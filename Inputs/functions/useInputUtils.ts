@@ -37,6 +37,7 @@ export function useInputUtils(options: IInputUtilsOptions) {
     elMask,
     hasJustChanged,
     refresh,
+    destroyMask,
     maskedValue,
     typedValue,
     lastValidValue,
@@ -45,6 +46,7 @@ export function useInputUtils(options: IInputUtilsOptions) {
     handleManualModelChange,
   } = useMask({
     modelValue,
+    allowIncompleteMaskValue: props.allowIncompleteMaskValue,
     maskOptions: maskRef,
     updateValueFnc: debouncedChange,
     emptyValue,
@@ -59,7 +61,6 @@ export function useInputUtils(options: IInputUtilsOptions) {
     'contentStyle',
     'disabled',
     'emptyValue',
-    'errors',
     'errorTakesSpace',
     'errorVisible',
     'hint',
@@ -78,7 +79,8 @@ export function useInputUtils(options: IInputUtilsOptions) {
     'stackLabel',
     'noBorder',
     'inputContainerClass',
-    'inputContainerStyle'
+    'inputContainerStyle',
+    'validation'
   )
 
   // Layout
@@ -238,6 +240,8 @@ export function useInputUtils(options: IInputUtilsOptions) {
       touch()
     }
   }, 300)
+
+  onBeforeUnmount(destroyMask)
 
   return {
     el,

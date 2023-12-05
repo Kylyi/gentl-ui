@@ -23,8 +23,8 @@ const breadcrumbs = computed(() => {
   <div class="breadcrumbs-wrapper">
     <div class="breadcrumbs">
       <template
-        v-for="breadcrumb in breadcrumbs"
-        :key="breadcrumb.to"
+        v-for="(breadcrumb, idx) in breadcrumbs"
+        :key="`${breadcrumb.to}-${idx}`"
       >
         <!-- Chevron -->
         <span

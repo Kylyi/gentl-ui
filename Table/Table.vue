@@ -81,6 +81,7 @@ defineExpose({
   adjustColumns: (fnc: (columns: TableColumn[]) => void) => {
     fnc(internalColumns.value)
   },
+  getDbQuery: () => dbQuery.value,
 })
 
 // Utils
@@ -129,6 +130,7 @@ const {
   rows,
   refreshData,
   search,
+  dbQuery,
 
   // Pagination
   currentPage,

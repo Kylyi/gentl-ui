@@ -14,7 +14,11 @@ const hasRows = computed(() => props.rows && props.rows?.length > 0)
     :class="{ 'is-absolute': hasRows }"
     data-cy="loading-table"
   >
-    <LoaderInline size="sm" />
+    <LoaderInline
+      size="sm"
+      min-w="70"
+      backdrop="blur-sm"
+    />
   </div>
 </template>
 

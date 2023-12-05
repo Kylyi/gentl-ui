@@ -7,6 +7,7 @@ import TextInput from '~/components/Inputs/TextInput/TextInput.vue'
 
 withDefaults(defineProps<ITextInputProps>(), {
   debounce: 0,
+  required: undefined,
 })
 defineEmits<{
   (e: 'update:model-value', val?: string | undefined | null): void

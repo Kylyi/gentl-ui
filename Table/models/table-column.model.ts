@@ -216,8 +216,21 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   totalsClasses?: ClassType
 
   // Helpers
-  isHelperCol = false // Helper cols are non-data columns like group actions
-  adjustedWidth = 1 // Is calculated, not set by user
+  /**
+   * Helper cols are non-data columns like group actions
+   */
+  isHelperCol = false
+
+  /**
+   * Is calculated, not set by user
+   */
+  adjustedWidth = 1
+
+  /**
+   * When `false`, the autofit width will be calculated based on all the rows,
+   * not just the longest in terms of text
+   */
+  autofitLongestText = true
 
   get _label() {
     return this.hideLabel ? '' : this.label
@@ -244,6 +257,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
       case 'datetime':
       case 'DateTime':
       case 'date':
+      case 'timestamp':
         this.comparator = defaultComparator ?? ComparatorEnum.EQUAL
 
         break
@@ -268,31 +282,49 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
 
     const { getCellWidth } = useRenderTemporaryTableCell()
 
-    // We get the row with the maximum content
-    const maxContentRow = (rows || [])
-      .slice(0, config.table.columnAutoFit.rowsLimit)
-      .reduce(
-        (agg, row) => {
-          const cellValue = get(row, this.field)
-          const cellFormattedValue = this.format?.(row, cellValue) || cellValue
+    let maxContentWidth = 0
 
-          const labelChars = String(cellFormattedValue || '').length
+    // We primarily use the row with the longest text to calculate the autofit width
+    if (this.autofitLongestText) {
+      // We get the row with the maximum content
+      const maxContentRow = (rows || [])
+        .slice(0, config.table.columnAutoFit.rowsLimit)
+        .reduce(
+          (agg, row) => {
+            const cellValue = get(row, this.field)
+            const cellFormattedValue =
+              this.format?.(row, cellValue) || cellValue
 
-          if (labelChars > agg.labelChars || !agg.labelChars) {
-            agg.labelChars = labelChars
-            agg.row = row
-          }
+            const labelChars = String(cellFormattedValue || '').length
 
-          return agg
-        },
-        { labelChars: 0, row: undefined } as Record<string, any>
+            if (labelChars > agg.labelChars || !agg.labelChars) {
+              agg.labelChars = labelChars
+              agg.row = row
+            }
+
+            return agg
+          },
+          { labelChars: 0, row: undefined } as Record<string, any>
+        )
+
+      maxContentWidth = await getCellWidth(
+        maxContentRow.row,
+        this,
+        slotRenderFnc
       )
+    }
 
-    const maxContentWidth = await getCellWidth(
-      maxContentRow.row,
-      this,
-      slotRenderFnc
-    )
+    // When necessary, we can put `autofitLongestText = false` to calculate the
+    // autofit width based on all the rows
+    else {
+      const _rows = (rows || []).slice(0, config.table.columnAutoFit.rowsLimit)
+
+      for await (const row of _rows) {
+        const width = await getCellWidth(row, this, slotRenderFnc)
+
+        maxContentWidth = Math.max(maxContentWidth, width)
+      }
+    }
 
     const labelChars = this._label.length
     const CELL_PADDING = 12
@@ -300,7 +332,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
       Math.max(
         tableMinColWidth,
         this.minWidth || 0,
-        config.table.columnAutoFit.considerHeader ? labelChars * 8 + 40 : 0, // These numbers are pretty arbitrary
+        config.table.columnAutoFit.considerHeader ? labelChars * 8 + 40 : 0, // These numbers are arbitrary
         maxContentWidth + CELL_PADDING
       ),
       config.table.columnAutoFit.maxColumnWidthChars * 6 + 20 // When autofitting, we don't want to go over some predefined value
@@ -382,6 +414,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     this.autofitAdjustment = col.autofitAdjustment ?? 0
     this.link = col.link
     this.noFreeze = col.noFreeze
+    this.autofitLongestText = col.autofitLongestText ?? true
 
     // We also hide the column when it's non-interactive
     if (col.nonInteractive) {

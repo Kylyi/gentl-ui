@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// eslint-disable-next-line import/named
 import { InputMask } from 'imask'
 import { type MaybeElementRef } from '@vueuse/core'
 
@@ -12,12 +13,13 @@ const props = withDefaults(defineProps<ITextAreaInputProps>(), {
   debounce: 0,
   errorTakesSpace: true,
   errorVisible: true,
+  inline: undefined,
+  labelInside: undefined,
   mask: () => ({ mask: String }),
+  required: undefined,
   rounded: true,
   size: 'md',
   stackLabel: undefined,
-  labelInside: undefined,
-  inline: undefined,
 })
 
 defineEmits<{
@@ -101,7 +103,7 @@ defineExpose({
       :disabled="disabled"
       autocomplete="off"
       :label="label || placeholder"
-      :name="name || label || placeholder"
+      :name="name || validation?.$path || label || placeholder"
       class="control"
       role="presentation"
       :rows="rows"

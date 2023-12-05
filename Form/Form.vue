@@ -166,7 +166,7 @@ const throttledSubmit = useThrottleFn(
     isSubmitted.value = true
   },
   500,
-  true,
+  false,
   true
 )
 

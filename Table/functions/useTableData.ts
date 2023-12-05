@@ -29,6 +29,7 @@ import {
   tableRefreshKey,
   tableRowsKey,
   tableStorageKey,
+  tableVersionKey,
 } from '~/components/Table/provide/table.provide'
 
 // Store
@@ -59,6 +60,7 @@ export function useTableData(
   // Layout
   const isInitialized = ref(false)
   const hasMore = ref(false)
+  const versionId = ref<number>()
   const dataHasBeenFetched = ref(false)
   const isForcedRefetch = ref(false)
   const search = ref('')
@@ -82,6 +84,7 @@ export function useTableData(
   provide(tableStorageKey, storageKey)
   provide(tableRowsKey, rows)
   provide(tableQueryBuilderKey, queryBuilder)
+  provide(tableVersionKey, versionId)
 
   // Pagination
   const {
@@ -211,6 +214,7 @@ export function useTableData(
 
       // When there are some columns with `alwaysSelected` attribute set to true,
       // we need to add them to the `select` array
+      // When `strict` is used, we ignore this behaviour
       // TODO: SSR version for this
       const isStrictMode = route.query.strict === 'true'
 
@@ -270,6 +274,12 @@ export function useTableData(
         const options = toValue(optionsRef)
 
         const result = await props.getData.fnc(options)
+
+        versionId.value = get(
+          result,
+          props.getData.versionKey || config.table.versionKey
+        )
+
         let data = get(
           result,
           props.getData.payloadKey || config.table.payloadKey
@@ -454,6 +464,10 @@ export function useTableData(
               ...(filters && { filters }),
               ...(order && { order: `(${order})` }),
               ...(select && { select }),
+              ...(!config.table.infiniteScroll && {
+                skip: dbQuery.tableQuery.skip,
+                take: dbQuery.tableQuery.take,
+              }),
               ...(dbQuery.tableQuery.search && {
                 search: dbQuery.tableQuery.search,
               }),

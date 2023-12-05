@@ -1,7 +1,8 @@
 <script setup lang="ts">
-// eslint-disable-next-line import/named
 import type { Dayjs } from 'dayjs'
-import { MaskedRange, type AnyMaskedOptions } from 'imask'
+
+// eslint-disable-next-line import/named
+import { type AnyMaskedOptions, MaskedRange } from 'imask'
 
 // Types
 import type { IDateInputProps } from '~/components/Inputs/DateInput/types/date-input-props.type'
@@ -21,9 +22,10 @@ const props = withDefaults(defineProps<IDateInputProps>(), {
   errorTakesSpace: true,
   errorVisible: true,
   immediate: true,
-  stackLabel: undefined,
-  labelInside: undefined,
   inline: undefined,
+  labelInside: undefined,
+  required: undefined,
+  stackLabel: undefined,
 })
 
 defineEmits<{
@@ -205,7 +207,7 @@ defineExpose({
       :readonly="readonly"
       :disabled="disabled"
       :label="label || placeholder"
-      :name="name || label || placeholder"
+      :name="name || validation?.$path || label || placeholder"
       class="control"
       :class="[inputClass]"
       v-bind="inputProps"

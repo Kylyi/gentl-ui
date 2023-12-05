@@ -1,8 +1,10 @@
 <script setup lang="ts">
-// TYPES
+// Types
 import type { InputLabelProps } from '~/components/Inputs/types/input-label-props.type'
 
-const props = defineProps<InputLabelProps>()
+const props = withDefaults(defineProps<InputLabelProps>(), {
+  required: undefined,
+})
 
 const labelLocalClass = computedEager(() => {
   return [
@@ -10,7 +12,7 @@ const labelLocalClass = computedEager(() => {
     `label--${props.size}`,
     {
       'is-inline': props.inline,
-      'is-required': props.required,
+      'is-required': props.required ?? !!props.validation?.required,
       'is-inside': props.labelInside,
       'is-floating':
         !props.inline &&

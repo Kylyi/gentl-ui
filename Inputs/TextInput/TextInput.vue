@@ -6,15 +6,17 @@ import { type ITextInputProps } from '~/components/Inputs/TextInput/types/text-i
 import { useInputUtils } from '~/components/Inputs/functions/useInputUtils'
 
 const props = withDefaults(defineProps<ITextInputProps>(), {
+  allowIncompleteMaskValue: false,
   debounce: 0,
   errorTakesSpace: true,
   errorVisible: true,
+  inline: undefined,
+  labelInside: undefined,
   mask: () => ({ mask: String }),
+  required: undefined,
   rounded: true,
   size: 'md',
   stackLabel: undefined,
-  labelInside: undefined,
-  inline: undefined,
 })
 defineEmits<{
   (e: 'update:model-value', val?: string | undefined | null): void
@@ -43,6 +45,7 @@ const {
 } = useInputUtils({
   props,
   maskRef: toRef(props, 'mask'),
+  maskEventHandlers: props.maskEventHandlers,
 })
 
 const hasCopyBtn = computedEager(() => {
@@ -89,11 +92,12 @@ defineExpose({
       :disabled="disabled"
       autocomplete="off"
       :label="label || placeholder"
-      :name="name || label || placeholder"
+      :name="name || validation?.$path || label || placeholder"
       class="control"
       role="presentation"
       :class="[inputClass, { 'custom-enter': !!customEnter }]"
       :style="inputStyle"
+      v-bind="inputProps"
       @focus="handleFocus"
       @blur="handleBlur"
       @keypress.enter="$emit('enter', $event)"
@@ -132,6 +136,8 @@ defineExpose({
       :fallback-placements="['bottom']"
       :reference-target="el"
       :no-arrow="false"
+      no-uplift
+      v-bind="tooltipProps"
     >
       <slot name="tooltip">
         {{ tooltip }}
