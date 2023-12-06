@@ -1,6 +1,8 @@
 <script setup lang="ts">
 defineProps<{
   noAccountBtn?: boolean
+  noToolbar?: boolean
+  noShadow?: boolean
 }>()
 
 defineEmits<{
@@ -13,6 +15,7 @@ const leftDrawer = inject('leftDrawer', ref(false))
 
 // Layout
 const isInitialized = ref(false)
+const navigationEl = ref<HTMLElement>()
 
 // Scroll utils
 const lastScrollDirection = ref<'up' | 'down'>('down')
@@ -31,8 +34,15 @@ watch(directions, ({ bottom, top }) => {
   }
 })
 
-const isNavigationHidden = computed(() => {
-  return y.value >= 52 && lastScrollDirection.value === 'down'
+const isNavigationHidden = computedEager(() => {
+  if (!navigationEl.value) {
+    return false
+  }
+
+  return (
+    y.value >= navigationEl.value?.offsetHeight &&
+    lastScrollDirection.value === 'down'
+  )
 })
 
 onMounted(() => {
@@ -46,13 +56,16 @@ onMounted(() => {
     class="navigation-wrapper"
     :class="[
       {
-        'is-scrolled': isScrolled,
+        'has-shadow': isScrolled && !noShadow,
         'is-hidden': isNavigationHidden && !rightDrawer && !leftDrawer,
         'is-initialized': isInitialized,
       },
     ]"
   >
-    <div class="navigation">
+    <div
+      ref="navigationEl"
+      class="navigation"
+    >
       <nav flex="~ 1 gap-x-2 gap-y-1 wrap">
         <slot name="left" />
       </nav>
@@ -60,7 +73,10 @@ onMounted(() => {
       <slot name="before-actions" />
 
       <!-- Theme & Locale & Account -->
-      <div class="toolbar">
+      <div
+        v-if="!noToolbar"
+        class="toolbar"
+      >
         <slot name="prepend-actions" />
 
         <slot name="actions">
@@ -87,14 +103,14 @@ header {
   // --apply: w-full max-w-screen-2xl m-x-auto;
 
   &.is-hidden {
-    --apply: -translate-y-52px;
+    --apply: -translate-y-100%;
   }
 
   &.is-initialized {
     --apply: fixed;
   }
 
-  &.is-scrolled:not(:has(~ main .has-breadcrumbs)) {
+  &.has-shadow:not(:has(~ main .has-breadcrumbs)) {
     --apply: shadow-consistent shadow-ca;
   }
 
@@ -103,8 +119,8 @@ header {
       bg-darker self-center p-x-2 rounded-full;
 
     .environment {
-      --apply: absolute left-50% -translate-x-1/2 p-y-1 p-x-2 color-white
-        rounded-custom border-2 border-white;
+      --apply: absolute left-50% -translate-x-1/2 p-y-1 p-x-2 color-white rounded-custom
+        border-2 border-white;
     }
   }
 }
