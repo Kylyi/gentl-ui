@@ -1,5 +1,7 @@
 import { type CSSProperties } from 'vue'
-import type { IValidationErrorItem } from '~/libs/App/functions/useZod'
+
+// Types
+import type { IZodValidationItem } from '~/utils/zod/types/zod-validation-item.type'
 
 export type InputLabelProps = {
   hasContent?: boolean
@@ -20,5 +22,5 @@ export type InputLabelProps = {
   /**
    * Validation object
    */
-  validation?: IValidationErrorItem
+  validation?: IZodValidationItem
 }
