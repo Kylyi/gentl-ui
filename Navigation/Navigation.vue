@@ -2,6 +2,7 @@
 defineProps<{
   noAccountBtn?: boolean
   noToolbar?: boolean
+  noShadow?: boolean
 }>()
 
 defineEmits<{
@@ -14,6 +15,7 @@ const leftDrawer = inject('leftDrawer', ref(false))
 
 // Layout
 const isInitialized = ref(false)
+const navigationEl = ref<HTMLElement>()
 
 // Scroll utils
 const lastScrollDirection = ref<'up' | 'down'>('down')
@@ -32,8 +34,15 @@ watch(directions, ({ bottom, top }) => {
   }
 })
 
-const isNavigationHidden = computed(() => {
-  return y.value >= 52 && lastScrollDirection.value === 'down'
+const isNavigationHidden = computedEager(() => {
+  if (!navigationEl.value) {
+    return false
+  }
+
+  return (
+    y.value >= navigationEl.value?.offsetHeight &&
+    lastScrollDirection.value === 'down'
+  )
 })
 
 onMounted(() => {
@@ -47,13 +56,16 @@ onMounted(() => {
     class="navigation-wrapper"
     :class="[
       {
-        'is-scrolled': isScrolled,
+        'is-scrolled': isScrolled && !noShadow,
         'is-hidden': isNavigationHidden && !rightDrawer && !leftDrawer,
         'is-initialized': isInitialized,
       },
     ]"
   >
-    <div class="navigation">
+    <div
+      ref="navigationEl"
+      class="navigation"
+    >
       <nav flex="~ 1 gap-x-2 gap-y-1 wrap">
         <slot name="left" />
       </nav>
@@ -91,7 +103,7 @@ header {
   // --apply: w-full max-w-screen-2xl m-x-auto;
 
   &.is-hidden {
-    --apply: -translate-y-52px;
+    --apply: -translate-y-100%;
   }
 
   &.is-initialized {
