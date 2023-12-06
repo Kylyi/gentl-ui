@@ -56,7 +56,7 @@ onMounted(() => {
     class="navigation-wrapper"
     :class="[
       {
-        'is-scrolled': isScrolled && !noShadow,
+        'has-shadow': isScrolled && !noShadow,
         'is-hidden': isNavigationHidden && !rightDrawer && !leftDrawer,
         'is-initialized': isInitialized,
       },
@@ -110,7 +110,7 @@ header {
     --apply: fixed;
   }
 
-  &.is-scrolled:not(:has(~ main .has-breadcrumbs)) {
+  &.has-shadow:not(:has(~ main .has-breadcrumbs)) {
     --apply: shadow-consistent shadow-ca;
   }
 
