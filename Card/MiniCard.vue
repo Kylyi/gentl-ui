@@ -9,12 +9,12 @@ const props = withDefaults(defineProps<IMiniCardProps>(), {
   originalValue: undefined,
 })
 
-// UTILS
+// Utils
 const { getValueFormatterProps } = useValueFormatterUtils()
 
 const valueFormatterProps = getValueFormatterProps(props)
 
-// LAYOUT
+// Layout
 function getShownValue(val: any) {
   if (isNil(val) || val === '' || (Array.isArray(val) && val.length === 0)) {
     return props.emptyValueString
