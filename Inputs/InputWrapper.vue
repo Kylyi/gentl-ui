@@ -36,7 +36,7 @@ const isModified = computed(() => {
 const labelProps = computedEager(() => {
   return {
     hasContent: props.hasContent,
-    hasError: !!props.validation?.$errors.length,
+    hasError: !!props.validation?.messages.length,
     inline: props.inline,
     label: props.label,
     labelClass: props.labelClass,
@@ -66,7 +66,7 @@ const wrapperContentClass = computedEager(() => {
   return {
     'is-readonly': props.readonly,
     'is-disabled': props.disabled,
-    'has-error': props.validation?.$errors?.length,
+    'has-error': props.validation?.messages?.length,
     'has-label': !!props.label,
     'has-border': !props.noBorder,
     'is-modified': isModified.value,
@@ -166,13 +166,13 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
     <ErrorContainer
       v-if="errorVisible"
       :error-takes-space="errorTakesSpace"
-      :errors="validation?.$errors"
+      :errors="validation?.messages"
       class="wrapper-error"
       :style="{ paddingLeft: errorContainerPaddingLeft }"
     />
 
     <HintContainer
-      v-if="!validation?.$errors.length && hint"
+      v-if="!validation?.messages.length && hint"
       :hint="hint"
       :style="{ paddingLeft: errorContainerPaddingLeft }"
     />

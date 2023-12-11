@@ -81,7 +81,6 @@ export function useTableColumns(
     const { columns: schemaVisibleColumns } = parseUrlParams({
       columnsRef: _columns,
       searchParams: layoutRef.value?.schema,
-      fromSchema: !!layoutRef.value?.schema,
     })
 
     let visibleColumns = urlVisibleColumns.length
@@ -132,19 +131,16 @@ export function useTableColumns(
    * Note: Mutates the columns
    */
   function handleColumnsData(_columns: TableColumn[]) {
-    const fromSchema = route.query.fromSchema === 'true'
-
     const {
       sort: urlSort,
       filters: urlFilters,
       columns: urlVisibleColumns,
       queryBuilder: urlQueryBuilder,
-    } = parseUrlParams({ columnsRef: _columns, fromSchema })
+    } = parseUrlParams({ columnsRef: _columns })
 
     const { schemaSort, filters: schemaFilters } = parseUrlParams({
       columnsRef: _columns,
       searchParams: layoutRef.value?.schema,
-      fromSchema: !!layoutRef.value?.schema,
     })
 
     const { columns: stateColumns } = tableState.value

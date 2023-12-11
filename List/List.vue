@@ -34,7 +34,10 @@ defineEmits<{
 
 // Layout
 const containerEl = ref<InstanceType<typeof ListVirtualContainer>>()
-const items = defineModel('items', { local: true, default: [] })
+const items =
+  props.items !== undefined
+    ? (useVModel(props, 'items') as Ref<any>)
+    : ref<any[]>([])
 
 const ContainerComponent = computed(() => {
   return props.virtual || items.value.length >= 1e3

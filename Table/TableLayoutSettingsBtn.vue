@@ -45,7 +45,7 @@ const saveableEntities = ref<Record<string, boolean>>({
 })
 
 const layout = ref({
-  name: currentLayout.value?.name,
+  name: currentLayout.value?.name || '',
   columns: false,
   sort: false,
   filters: false,
@@ -80,7 +80,7 @@ const isSaveable = computed(() => {
 function handleDialogBeforeShow() {
   layout.value.name =
     currentLayout.value?.name !== $t('table.layoutStateNoLayout')
-      ? currentLayout.value?.name
+      ? currentLayout.value?.name || ''
       : ''
   currentLayoutId.value = currentLayout.value?.id
 
@@ -152,13 +152,7 @@ const accessLevel = computed(() => {
 
 // Queries
 async function handleSaveLayout() {
-  const isValid = await $v.value.$validate()
-
-  if (!isValid) {
-    return
-  }
-
-  const res = await handleRequest<ITableLayout>(
+  const res = await handleRequest(
     () => {
       const mode = currentLayoutId.value ? 'update' : 'create'
       const toSave: Array<'columns' | 'filters' | 'sorting'> = []
@@ -180,7 +174,7 @@ async function handleSaveLayout() {
         { mode, tableQuery: tableQuery.value }
       )
     },
-    { notifySuccess: true, logging: { operationName: 'table.layoutSave' } }
+    { $z, notifySuccess: true, logging: { operationName: 'table.layoutSave' } }
   )
 
   // When we create a new layout, we add it to the layouts array
@@ -216,18 +210,17 @@ async function handleSaveLayout() {
 }
 
 async function handleDeleteLayoutState() {
-  const deletedFilterId = await handleRequest(
+  const { id } = await handleRequest(
     () => deleteLayout(currentLayoutId.value),
     {
       notifySuccess: true,
-      payloadKey: 'data.payload.id',
       logging: { operationName: 'table.layoutDelete' },
     }
   )
 
-  layouts.value = layouts.value.filter(l => l.id !== deletedFilterId)
+  layouts.value = layouts.value.filter(l => l.id !== id)
 
-  if (currentLayout.value?.id === deletedFilterId) {
+  if (currentLayout.value?.id === id) {
     currentLayout.value = undefined
   }
 
@@ -246,19 +239,17 @@ function reset() {
     default: false,
     public: false,
   }
-  $v.value.$reset()
+
+  $z.value.$reset()
 }
 
-const $v = useVuelidate(
+const $z = useZod(
   {
-    layout: {
-      name: {
-        required,
-      },
-    },
+    layout: z.object({
+      name: z.string(),
+    }),
   },
-  { layout },
-  { $scope: false }
+  { layout }
 )
 </script>
 
@@ -295,7 +286,7 @@ const $v = useVuelidate(
         <TextInput
           v-model="layout.name"
           :label="$t('table.layoutName')"
-          :validation="$v.layout.name"
+          :validation="$z.layout?.name"
         />
 
         <Separator spaced />

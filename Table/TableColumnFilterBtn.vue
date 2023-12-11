@@ -15,8 +15,6 @@ import TableColumnSorting from '~/components/Table/TableColumnOptions/TableColum
 type IProps = {
   column: TableColumn<any>
   columns: TableColumn<any>[]
-  useChips?: boolean
-  useServer?: boolean
   placement?: Placement
   offset?: number
   referenceTarget?: any

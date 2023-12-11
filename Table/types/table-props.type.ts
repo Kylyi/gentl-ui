@@ -283,11 +283,6 @@ export interface ITableProps {
   splitRow?: number
 
   /**
-   * Used in RecycleScroller
-   */
-  sizeField?: string
-
-  /**
    * The selected rows, can be either:
    * * Array<string | number> ~ use for `rowKey` selection
    * * Record<itemKey, item> ~ use for `item` selection
@@ -311,21 +306,6 @@ export interface ITableProps {
    * Link to the detail from page
    */
   to?: (row: any) => InstanceType<typeof NuxtLink>['to']
-
-  /**
-   * Whether to use chip-like filters
-   */
-  useChips?: boolean // default ~ true
-
-  /**
-   * Whether to use table component that supports dynamic row height
-   */
-  useDynamicRowHeight?: boolean // default ~ comes from config
-
-  /**
-   * Whether to use server-side pagination, filtering and sorting
-   */
-  useServer?: boolean // default ~ true
 
   /**
    * Whether to use the url to store the table state

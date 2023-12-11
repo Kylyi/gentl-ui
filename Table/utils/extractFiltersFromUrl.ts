@@ -24,13 +24,10 @@ function generatePath(parentPath: string, idx: number): string {
 
 /**
  * Extract the filter query parameter from URLSearchParams.
- * the `fromSchema` parameter should be used when we provide URLSearchParams
- * from the table layout schema, not from the actual URL
  */
 function extractFilterFromSearchParams(
   searchParams: URLSearchParams,
   key = 'filters',
-  fromSchema?: boolean,
   modifyFnc?: (queryString: string, key: string) => string
 ): string | null {
   let paramsString = searchParams.get(key)
@@ -40,12 +37,6 @@ function extractFilterFromSearchParams(
   }
 
   paramsString = modifyFnc?.(paramsString, key) || paramsString
-
-  if (fromSchema) {
-    if (paramsString.startsWith('(') && paramsString.endsWith(')')) {
-      return paramsString.slice(1, -1)
-    }
-  }
 
   return paramsString
 }
@@ -248,28 +239,19 @@ export function parseFilterString(
 }
 
 /**
- * Parses the filter query parameter from URLSearchParams into structured data.
- * the `fromSchema` parameter should be used when we provide URLSearchParams
- * from the table layout schema, not from the actual URL
+ * Parses the filter query parameter from URLSearchParams into structured data
  */
 export function parseFiltersFromUrl(options: {
   searchParams: URLSearchParams
   key?: string
   columns?: TableColumn<any>[]
-  fromSchema?: boolean
 
   /**
    * The function that will be called before the query string is parsed
    */
   modifyFnc?: (queryString: string, key: string) => string
 }): IQueryBuilderRow[] {
-  const {
-    searchParams,
-    key = 'filters',
-    columns = [],
-    fromSchema,
-    modifyFnc,
-  } = options
+  const { searchParams, key = 'filters', columns = [], modifyFnc } = options
 
   // We save the columns in a temporary variable
   columnsByField = columns.reduce((agg, col) => {
@@ -284,7 +266,6 @@ export function parseFiltersFromUrl(options: {
   const filterQuery = extractFilterFromSearchParams(
     searchParams,
     key,
-    fromSchema,
     modifyFnc
   )
 

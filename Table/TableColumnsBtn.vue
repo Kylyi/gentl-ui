@@ -170,11 +170,6 @@ async function handleApplyChanges() {
           >
             {{ $t('table.customizeColumns') }}
           </h6>
-          <!-- <span text="caption xs">
-            {{ nonHelperCols.length }}
-            {{ $t('columns').toLowerCase() }}
-            {{ $t('general.available').toLowerCase() }}
-          </span> -->
         </div>
 
         <DocumentationBtn

@@ -35,6 +35,7 @@ defineExpose({
     :input-class="inputClass"
     :content-class="contentClass"
     :input-style="inputStyle"
+    :input-props="inputProps"
     :placeholder="placeholder ?? $t('general.search')"
     @update:model-value="$emit('update:model-value', $event)"
   >

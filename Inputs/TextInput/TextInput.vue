@@ -92,7 +92,7 @@ defineExpose({
       :disabled="disabled"
       autocomplete="off"
       :label="label || placeholder"
-      :name="name || validation?.$path || label || placeholder"
+      :name="name || validation?.path || label || placeholder"
       class="control"
       role="presentation"
       :class="[inputClass, { 'custom-enter': !!customEnter }]"

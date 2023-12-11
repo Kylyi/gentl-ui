@@ -18,7 +18,7 @@ const { color, toggleDark } = useTheme()
       },
       checked: {
         bullet: 'bg-transparent',
-        icon: 'akar-icons:sun color-light text-sm',
+        icon: 'akar-icons:sun text-sm',
       },
     }"
     @update:model-value="toggleDark()"
