@@ -143,16 +143,8 @@ onKeyStroke(['e', 'E'], (ev: KeyboardEvent) => {
 
 // Functions
 const throttledSubmit = useThrottleFn(
-  async (isConfirmed?: boolean, payload?: any) => {
+  (isConfirmed?: boolean, payload?: any) => {
     if (!isConfirmed && formConfirmation.value) {
-      const isValid = await $v.value.$validate()
-
-      if (!isValid) {
-        notify($t('form.invalid'), 'negative')
-
-        return
-      }
-
       menuConfirmationEl.value?.show()
       menuConfirmationEl.value?.focusConfirmButton?.()
 
@@ -245,9 +237,6 @@ whenever(isEditing, () => {
 onMounted(() => {
   focusFirstInput()
 })
-
-// Validation
-const $v = useVuelidate()
 </script>
 
 <template>

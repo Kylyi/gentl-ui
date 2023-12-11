@@ -87,7 +87,7 @@ const $z = useZod({ scope: 'qb' })
       @before-hide="handleSync"
     >
       <Form
-        :label="$t('apply')"
+        :label="$t('general.apply')"
         :submit-confirmation="false"
         @submit="syncToParent"
       >

@@ -101,8 +101,6 @@ const {
   TableRowComponent,
   handleScrollLeft,
   handleRowClick,
-  // eslint-disable-next-line unused-imports/no-unused-vars
-  throttledHandleResize,
   recreateColumns,
   handleResize,
 } = useTableLayout(props, columns, layout)
