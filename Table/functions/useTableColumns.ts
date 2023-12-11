@@ -39,7 +39,6 @@ export function useTableColumns(
   layoutRef: Ref<ITableLayout | undefined>
 ) {
   // Utils
-  const route = useRoute()
   const { t, locale } = useI18n()
   const { scrollbarWidth, isOverflown } = useOverflow()
   const { parseUrlParams, hasVisibleCol, getStorageKey } = useTableUtils(props)
