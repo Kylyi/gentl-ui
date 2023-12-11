@@ -101,7 +101,7 @@ export function useTableData(
     currentPageSize,
   } = useOffsetPagination({
     ...tableState.value,
-    total: () => totalRows.value || Number.POSITIVE_INFINITY,
+    total: () => totalRows.value ?? Number.POSITIVE_INFINITY,
     onPageChange: page => {
       if (isInitialized.value) {
         tableState.value.page = page.currentPage

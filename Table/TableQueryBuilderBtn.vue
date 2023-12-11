@@ -33,8 +33,14 @@ const dialogEl = ref<InstanceType<typeof Dialog>>()
 const queryBuilder = useVModel(props, 'queryBuilder')
 const { sync, cloned } = useCloned(queryBuilder, { clone: klona })
 
+const queryBuilderHasChildren = computed(() => {
+  return queryBuilder.value.some(
+    item => 'children' in item && item.children?.length
+  )
+})
+
 async function syncToParent() {
-  const isValid = await $v.value.$validate()
+  const isValid = await $z.value.$validate()
 
   if (!isValid) {
     return
@@ -51,7 +57,7 @@ function handleSync() {
   tableRefresh()
 }
 
-const $v = useVuelidate({ $scope: 'qb' })
+const $z = useZod({ scope: 'qb' })
 </script>
 
 <template>
@@ -59,7 +65,7 @@ const $v = useVuelidate({ $scope: 'qb' })
     size="sm"
     no-uppercase
     outlined
-    color="ca"
+    :class="queryBuilderHasChildren ? 'color-primary' : 'color-ca'"
     icon="basil:filter-solid"
   >
     <Tooltip

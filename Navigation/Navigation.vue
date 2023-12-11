@@ -100,11 +100,11 @@ header {
 
   .toolbar {
     --apply: flex flex-gap-1.5 self-start h-$navigation items-center min-h-40px
-      bg-darker self-center p-x-2 rounded-full;
+      bg-white dark:bg-darker self-center p-x-2 rounded-full;
 
     .environment {
-      --apply: absolute left-50% -translate-x-1/2 p-y-1 p-x-2 color-white
-        rounded-custom border-2 border-white;
+      --apply: absolute left-50% -translate-x-1/2 p-y-1 p-x-2 color-white rounded-custom
+        border-2 border-white;
     }
   }
 }
