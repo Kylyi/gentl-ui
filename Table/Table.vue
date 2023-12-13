@@ -177,6 +177,7 @@ onMounted(() => {
         :class="{ 'is-clickable': rowClickable, 'odd': index % 2 !== 0 }"
         :row-height="rowHeight"
         :index="index"
+        :selectable="selectable"
         @click="handleRowClick(item, $event)"
       >
         <template #row-inside>
@@ -388,7 +389,16 @@ onMounted(() => {
 :global(
     .vue-recycle-scroller__item-wrapper
       .vue-recycle-scroller__item-view.hover
-      .cell
+      .tr
+      > .cell
+  ) {
+  --apply: '!md:bg-blue/10';
+}
+
+:global(
+    .vue-recycle-scroller__item-wrapper
+      .vue-recycle-scroller__item-view.hover
+      .tr__mobile
   ) {
   --apply: '!md:bg-blue/10';
 }

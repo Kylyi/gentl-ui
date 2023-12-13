@@ -4,7 +4,10 @@ import { NuxtLink } from '#components'
 // Models
 import { type ITableProps } from '~/components/Table/types/table-props.type'
 
-type IProps = Pick<ITableProps, 'columns' | 'rowHeight' | 'to'> & {
+type IProps = Pick<
+  ITableProps,
+  'columns' | 'rowHeight' | 'to' | 'selectable'
+> & {
   index?: number
   row: any
 }

@@ -4,7 +4,16 @@ import { NuxtLink } from '#components'
 // Types
 import { type ITableProps } from '~/components/Table/types/table-props.type'
 
-type IProps = Pick<ITableProps, 'columns' | 'rowHeight' | 'to'> & {
+// Injections
+import {
+  tableIsSelectedRowKey,
+  tableSelectRowKey,
+} from '~/components/Table/provide/table.provide'
+
+type IProps = Pick<
+  ITableProps,
+  'columns' | 'rowHeight' | 'to' | 'selectable'
+> & {
   index?: number
   row: any
 }
@@ -12,6 +21,10 @@ type IProps = Pick<ITableProps, 'columns' | 'rowHeight' | 'to'> & {
 withDefaults(defineProps<IProps>(), {
   index: 0,
 })
+
+// Injections
+const selectRow = injectStrict(tableSelectRowKey, () => {})
+const isSelectedRow = injectStrict(tableIsSelectedRowKey, () => false)
 </script>
 
 <template>
@@ -19,12 +32,17 @@ withDefaults(defineProps<IProps>(), {
     :is="to?.(row) ? NuxtLink : 'div'"
     class="tr__mobile-container"
     :style="{ minHeight: `${rowHeight}px` }"
-    :to="to ? to(row) : undefined"
+    :to="to?.(row)"
   >
     <slot>
       <div
         class="tr__mobile"
-        :class="{ 'is-deleted': row.deleted }"
+        :class="{
+          'is-deleted': row.deleted,
+          'is-selectable': selectable,
+          'is-selected': isSelectedRow(row),
+        }"
+        @click="selectable && selectRow(row)"
       >
         <slot name="row-inside" />
 
@@ -96,7 +114,7 @@ withDefaults(defineProps<IProps>(), {
 
 <style lang="scss" scoped>
 .tr__mobile {
-  --apply: relative grid p-3 rounded-custom overflow-auto hover:bg-primary/10 hover:dark:bg-primary/10
+  --apply: relative grid p-3 rounded-custom overflow-auto
   border-1 border-ca gap-x-3 hover:shadow-ca shadow-sm w-full dark:bg-darker bg-white;
 
   &-container {
@@ -108,6 +126,14 @@ withDefaults(defineProps<IProps>(), {
 
   &.is-deleted {
     --apply: line-through color-ca;
+  }
+
+  &.is-selectable {
+    --apply: cursor-pointer;
+  }
+
+  &.is-selected {
+    --apply: dark:bg-blue-900/10 bg-blue-100/10 border-primary;
   }
 }
 
