@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import {
-flip,
-offset,
-shift,
-type ClientRectObject,
-type VirtualElement,
-} from '@floating-ui/dom';
-import { useFloating, type MaybeElement } from '@floating-ui/vue';
+  type ClientRectObject,
+  type VirtualElement,
+  flip,
+  offset,
+  shift,
+} from '@floating-ui/dom'
+import { type MaybeElement, useFloating } from '@floating-ui/vue'
 
 // Types
-import type { IWysiwygMentionItem } from '~/components/Wysiwyg/types/wysiwyg-mention-item.type';
+import type { IWysiwygMentionItem } from '~/components/Wysiwyg/types/wysiwyg-mention-item.type'
 
 // Components
-import List from '~/components/List/List.vue';
+import List from '~/components/List/List.vue'
 
 type IProps = {
   items: IWysiwygMentionItem[]
@@ -35,6 +35,13 @@ const virtualEl = computed<MaybeElement<VirtualElement>>(() => {
     getBoundingClientRect: props.getRect,
   }
 })
+
+const groupBy = computedEager(() => {
+  return items.value.some(item => item.group)
+    ? [{ field: 'group', name: 'group' }]
+    : undefined
+})
+
 const { floatingStyles, placement } = useFloating(virtualEl, mentionEl, {
   strategy: 'fixed',
   placement: 'bottom-start',
@@ -60,7 +67,7 @@ defineExpose({
       ref="listEl"
       no-search
       :items="items"
-      :group-by="[{ field: 'group', name: 'group' }]"
+      :group-by="groupBy"
       @update:selected="selectFnc($event)"
     />
   </div>

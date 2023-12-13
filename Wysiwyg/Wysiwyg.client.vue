@@ -36,7 +36,7 @@ const emits = defineEmits<{
 // Utils
 const { resolveValues } = useWysiwygUtils()
 
-// LAYOUT
+// Layout
 const model = useVModel(props, 'modelValue', emits)
 const isFocused = ref(false)
 
@@ -47,7 +47,7 @@ const transitionProps = computed(() => ({
   leaveActiveClass: 'animate-fade-out animate-duration-150',
 }))
 
-// WRAPPER
+// Wrapper
 const wrapperProps = reactivePick(
   props,
   'contentClass',
@@ -196,7 +196,7 @@ const MentionExt = Mention.configure({
   },
 })
 
-// EDITOR
+// Editor
 const editor = useEditor({
   content: props.modelValue,
   extensions: [
@@ -221,7 +221,6 @@ const editor = useEditor({
   },
   onUpdate: ({ editor }) => {
     const text = editor.getText()
-
     if (text.length) {
       model.value = editor.getHTML()
     } else {

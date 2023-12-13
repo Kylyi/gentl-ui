@@ -1,5 +1,6 @@
 // Types
 import { type IInputProps } from '~/components/Inputs/types/input-props.type'
+import { type IMenuProps } from '~/components/Menu/types/menu-props.type'
 
 export type ITextInputProps = IInputProps & {
   /**
@@ -26,4 +27,9 @@ export type ITextInputProps = IInputProps & {
    * The props that should be passed to the input tag (<input>)
    */
   inputProps?: Record<string, any>
+
+  /**
+   * The props that should be passed to the tooltip
+   */
+  tooltipProps?: IMenuProps
 }

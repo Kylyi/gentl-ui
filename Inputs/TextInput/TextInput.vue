@@ -97,6 +97,7 @@ defineExpose({
       role="presentation"
       :class="[inputClass, { 'custom-enter': !!customEnter }]"
       :style="inputStyle"
+      v-bind="inputProps"
       @focus="handleFocus"
       @blur="handleBlur"
       @keypress.enter="$emit('enter', $event)"
@@ -135,6 +136,8 @@ defineExpose({
       :fallback-placements="['bottom']"
       :reference-target="el"
       :no-arrow="false"
+      no-uplift
+      v-bind="tooltipProps"
     >
       <slot name="tooltip">
         {{ tooltip }}

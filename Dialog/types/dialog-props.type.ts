@@ -3,7 +3,7 @@ import { type CSSProperties } from 'vue'
 
 export type DialogPosition = 'top' | 'bottom' | 'left' | 'right'
 
-export interface FloatingUIBaseProps {
+export type FloatingUIBaseProps = {
   boundary?: Boundary
   contentClass?: string
   contentStyle?: CSSProperties
@@ -62,7 +62,7 @@ export interface FloatingUIBaseProps {
   beforeHideFnc?: () => boolean | Promise<boolean>
 }
 
-export interface IDialogProps extends FloatingUIBaseProps {
+export type IDialogProps = FloatingUIBaseProps & {
   position?: DialogPosition
   seamless?: boolean
 

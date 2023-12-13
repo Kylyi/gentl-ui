@@ -69,6 +69,7 @@ defineExpose({
   adjustColumns: (fnc: (columns: TableColumn[]) => void) => {
     fnc(internalColumns.value)
   },
+  getDbQuery: () => dbQuery.value,
 })
 
 // Utils
@@ -110,6 +111,7 @@ const {
   rows,
   refreshData,
   search,
+  dbQuery,
 
   // Pagination
   currentPage,
@@ -247,6 +249,7 @@ onMounted(() => {
           :class="{ 'is-clickable': rowClickable, 'odd': index % 2 !== 0 }"
           :row-height="rowHeight"
           :index="index"
+          :selectable="selectable"
           @click="handleRowClick(row, $event)"
         >
           <template #row-inside>
@@ -350,14 +353,5 @@ onMounted(() => {
 .non-searchable-info {
   --apply: m-t-2 p-x-2 p-y-3 text-caption text-center border-ca border-2
     rounded-custom;
-}
-
-:global(
-    .vue-recycle-scroller__item-wrapper
-      .vue-recycle-scroller__item-view.hover
-      .cell.is-semi-frozen
-  ) {
-  --apply: '!bg-blue-100 color-blue-800';
-  --apply: 'dark:(!bg-blue-900 color-blue-200)';
 }
 </style>

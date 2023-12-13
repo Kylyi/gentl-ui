@@ -4,7 +4,10 @@ import { NuxtLink } from '#components'
 // Models
 import { type ITableProps } from '~/components/Table/types/table-props.type'
 
-type IProps = Pick<ITableProps, 'columns' | 'rowHeight' | 'to'> & {
+type IProps = Pick<
+  ITableProps,
+  'columns' | 'rowHeight' | 'to' | 'selectable'
+> & {
   index?: number
   row: any
 }
@@ -21,7 +24,7 @@ withDefaults(defineProps<IProps>(), {
     class="tr"
     :style="{ minHeight: `${rowHeight}px` }"
     :class="{ 'is-odd': index % 2, 'is-deleted': row.deleted }"
-    :to="to ? to(row) : undefined"
+    :to="to?.(row)"
   >
     <slot>
       <slot name="row-inside" />
