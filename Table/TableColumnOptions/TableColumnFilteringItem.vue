@@ -218,11 +218,16 @@ function handleComparatorChange(comparator: ComparatorEnum) {
   })
 }
 
-const tableRefreshDebounce = useDebounceFn(() => {
+const tableRefreshDebounced = useDebounceFn(() => {
   tableRefresh()
 }, inputDebounce.value || 0)
 
-function handleValueChange(val: any, set?: boolean) {
+function handleValueChange(
+  val: any,
+  options?: { set?: boolean; debounce?: boolean }
+) {
+  const { set, debounce } = options ?? {}
+
   if (set) {
     if (typeof val === 'string') {
       filter.value.value = val.trim()
@@ -231,7 +236,11 @@ function handleValueChange(val: any, set?: boolean) {
     }
   }
 
-  tableRefreshDebounce()
+  if (debounce) {
+    tableRefreshDebounced()
+  } else {
+    tableRefresh()
+  }
 }
 
 defineExpose({
@@ -312,7 +321,7 @@ defineExpose({
       option-label="_label"
       size="sm"
       :placeholder="`${$t('table.filterValue')}...`"
-      @update:model-value="handleValueChange"
+      @update:model-value="handleValueChange($event, { debounce: false })"
     />
 
     <!-- Ago value -->
@@ -340,7 +349,7 @@ defineExpose({
       v-model="filter.value"
       size="sm"
       :placeholder="`${$t('table.filterValue')}...`"
-      @update:model-value="handleValueChange($event, true)"
+      @update:model-value="handleValueChange($event, { set: true })"
     />
   </div>
 </template>
