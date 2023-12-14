@@ -63,6 +63,10 @@ const virtualScrollOptions = computed(() => {
 
     ...(!props.noScrollEmit && {
       onChange: (instance: any): void => {
+        if (!props.rows?.length) {
+          return
+        }
+
         const visibleStartItem = instance.getVirtualItemForOffset(
           instance.scrollOffset
         )
