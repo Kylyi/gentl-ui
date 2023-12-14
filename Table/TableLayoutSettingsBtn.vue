@@ -244,13 +244,16 @@ function reset() {
   $z.value.$reset()
 }
 
-const $z = useZod(
+const $z = useVuelidate(
   {
-    layout: z.object({
-      name: z.string(),
-    }),
+    layout: {
+      name: {
+        required,
+      },
+    },
   },
-  { layout }
+  { layout },
+  { $scope: false }
 )
 </script>
 

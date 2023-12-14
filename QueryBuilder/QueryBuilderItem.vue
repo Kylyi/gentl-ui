@@ -259,22 +259,18 @@ function handleValueChange(value: any) {
 }
 
 // Validation
-const $z = useZod(
+const $z = useVuelidate(
   {
-    item: z.object({
-      field: z.string(),
-      comparator: z.string(),
-      value: z.unknown().refine(val => {
-        if (isNonValueComparator.value) {
-          return isNil(val)
-        }
-
-        return !isNil(val)
-      }),
-    }),
+    item: {
+      field: { required },
+      comparator: { required },
+      value: {
+        requiredIf: requiredIf(() => !isNonValueComparator.value),
+      },
+    },
   },
   { item },
-  { scope: 'qb' }
+  { $scope: 'qb' }
 )
 </script>
 

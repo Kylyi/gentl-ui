@@ -124,7 +124,7 @@ async function handleItemEditMenuBeforeHide() {
   }
 }
 
-const $z = useZod({ scope: 'qb' })
+const $z = useVuelidate({ $scope: 'qb' })
 </script>
 
 <template>

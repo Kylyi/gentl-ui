@@ -57,7 +57,7 @@ function handleSync() {
   tableRefresh()
 }
 
-const $z = useZod({ scope: 'qb' })
+const $z = useVuelidate({ $scope: 'qb' })
 </script>
 
 <template>
