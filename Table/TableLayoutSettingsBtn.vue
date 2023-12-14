@@ -214,7 +214,7 @@ async function handleDeleteLayoutState() {
     () => deleteLayout(currentLayoutId.value),
     {
       notifySuccess: true,
-      payloadKey: 'id',
+      payloadKey: 'data.payload.id',
       logging: { operationName: 'table.layoutDelete' },
     }
   )
