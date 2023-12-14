@@ -272,7 +272,7 @@ defineExpose({
       :readonly="readonly"
       :disabled="disabled"
       :label="label || placeholder"
-      :name="name || validation?.path || label || placeholder"
+      :name="name || validation?.$path || label || placeholder"
       class="control"
       :class="[inputClass]"
       :style="inputStyle"
