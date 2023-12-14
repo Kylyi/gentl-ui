@@ -58,7 +58,7 @@ onMounted(() => {
           <h4
             text="h4"
             font-700
-            m="b-0"
+            m="$PageWrapper-title-margin"
           >
             {{ title }}
 
