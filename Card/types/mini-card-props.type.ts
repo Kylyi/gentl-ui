@@ -36,7 +36,7 @@ export type IMiniCardProps = IValueFormatter & {
   /**
    * The link we want to redirect to
    */
-  to?: RouteLocationRaw
+  to?: any
 
   /**
    * The link we want to redirect to orginal value

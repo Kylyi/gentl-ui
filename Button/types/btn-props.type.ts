@@ -1,6 +1,5 @@
 // Types
 import type { NavigateToOptions } from '~/shims'
-import type { RouteLocationRaw } from '#vue-router'
 
 // Constants
 import { BUTTON_PRESET } from '~/components/Button/constants/button-preset.constant'
@@ -11,7 +10,7 @@ export type INavigation = {
   exact?: boolean
   external?: boolean
   replace?: boolean
-  to?: RouteLocationRaw | undefined
+  to?: any
   navigateToOptions?: NavigateToOptions
 }
 
