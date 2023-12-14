@@ -129,7 +129,10 @@ defineExpose({
       :small-screen="smallScreen"
     >
       <template #selection>
-        <Checkbox v-model="selectionState" />
+        <Checkbox
+          v-model="selectionState"
+          :label="smallScreen ? $t('general.selection') : undefined"
+        />
       </template>
     </TableHeaderCell>
 

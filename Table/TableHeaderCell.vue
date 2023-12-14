@@ -83,7 +83,7 @@ const hasFrozenBtn = computed(() => {
 <style lang="scss" scoped>
 .th {
   --apply: flex shrink-0 items-center font-semibold text-xs tracking-wide
-    border-ca border-b-1 sm:w-$colWidth border-t-1;
+    border-ca border-b-1 border-t-1;
 
   &.has-data {
     --apply: border-l-1;
@@ -101,8 +101,12 @@ const hasFrozenBtn = computed(() => {
     }
   }
 
+  &:not(.is-small-screen) {
+    --apply: w-$colWidth;
+  }
+
   &.is-small-screen {
-    --apply: rounded-custom border-1;
+    --apply: rounded-custom border-1 max-w-40;
 
     &.is-filtered {
       --apply: border-t-1 border-l-1 border-t-primary border-l-primary;

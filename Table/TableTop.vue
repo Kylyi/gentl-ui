@@ -34,6 +34,7 @@ const props = defineProps<
     | 'noSearch'
   > & {
     search: string
+    smallScreen?: boolean
   }
 >()
 const emits = defineEmits<{
@@ -426,7 +427,7 @@ function handleFitColumns() {
 
         <!-- Autofit btn -->
         <Btn
-          v-if="!tableTopFunctionality?.noAutoFit"
+          v-if="!tableTopFunctionality?.noAutoFit && !smallScreen"
           size="sm"
           no-uppercase
           icon="material-symbols:fit-width"

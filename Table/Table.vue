@@ -159,6 +159,7 @@ onMounted(() => {
         v-model:query-builder="queryBuilder"
         v-model:search="search"
         v-bind="tableTopProps"
+        :small-screen="!isBreakpoint"
         @update:columns-width="handleResize()"
       >
         <template
