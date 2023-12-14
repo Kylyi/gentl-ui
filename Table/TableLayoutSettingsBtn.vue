@@ -174,7 +174,7 @@ async function handleSaveLayout() {
         { mode, tableQuery: tableQuery.value }
       )
     },
-    { $z, notifySuccess: true, logging: { operationName: 'table.layoutSave' } }
+    { $v, notifySuccess: true, logging: { operationName: 'table.layoutSave' } }
   )
 
   // When we create a new layout, we add it to the layouts array
@@ -241,10 +241,10 @@ function reset() {
     public: false,
   }
 
-  $z.value.$reset()
+  $v.value.$reset()
 }
 
-const $z = useVuelidate(
+const $v = useVuelidate(
   {
     layout: {
       name: {
@@ -290,7 +290,7 @@ const $z = useVuelidate(
         <TextInput
           v-model="layout.name"
           :label="$t('table.layoutName')"
-          :validation="$z.layout?.name"
+          :validation="$v.layout?.name"
         />
 
         <Separator spaced />

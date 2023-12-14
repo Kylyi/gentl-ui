@@ -1,5 +1,4 @@
 // Types
-import type { RouteLocationRaw } from '#vue-router'
 import type { IValueFormatter } from '~/components/ValueFormatter/types/value-formatter-props.type'
 
 export type IMiniCardProps = IValueFormatter & {
@@ -41,7 +40,7 @@ export type IMiniCardProps = IValueFormatter & {
   /**
    * The link we want to redirect to orginal value
    */
-  toOriginalValue?: RouteLocationRaw
+  toOriginalValue?: any
 
   /**
    * The orginal value of the field used to compare with current value

@@ -2,7 +2,6 @@
 import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
 import type { ITableDataFetchFncInput } from '~/components/Table/types/table-query.type'
 import type { ITableSelection } from '~/components/Table/types/table-selection.type'
-import type { RouteLocationRaw } from '#vue-router'
 
 // Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
@@ -310,7 +309,7 @@ export interface ITableProps {
   /**
    * Link to the detail from page
    */
-  to?: (row: any) => RouteLocationRaw
+  to?: (row: any) => any
 
   /**
    * Whether to use the url to store the table state
