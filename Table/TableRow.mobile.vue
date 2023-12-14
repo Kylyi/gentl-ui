@@ -36,7 +36,7 @@ const isSelectedRow = injectStrict(tableIsSelectedRowKey, () => false)
   >
     <slot>
       <div
-        class="tr__mobile"
+        class="tr tr__mobile"
         :class="{
           'is-deleted': row.deleted,
           'is-selectable': selectable,
