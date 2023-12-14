@@ -251,7 +251,7 @@ function handleMenuBeforeHide() {
 
   &-badge {
     --apply: flex flex-center absolute -bottom-.5 -right-.5 w-3 h-3 bg-white
-      color-primary text-10px rounded-full leading-none z-1;
+      bg-tertiary color-white text-10px rounded-full leading-none z-1;
   }
 }
 
@@ -264,7 +264,7 @@ function handleMenuBeforeHide() {
   }
 
   &.is-sorted::after {
-    --apply: absolute content-empty rotate-45 bg-primary -bottom-24.5px -right-24.5px
+    --apply: absolute content-empty rotate-45 bg-secondary -bottom-24.5px -right-24.5px
       w-1 h-3/2 w-3/2;
   }
 }

@@ -145,7 +145,7 @@ export function useTableLayout(
     }
 
     const visibleColumns = internalColumns.value.filter(
-      column => !column.hidden
+      column => !column.hidden && column.field !== '_selectable'
     )
 
     const MOBILE_ROW_Y_PADDING = 2 * (12 + 1) // + 1 is border
@@ -172,6 +172,7 @@ export function useTableLayout(
   return {
     isScrolled,
     isOverflown,
+    isBreakpoint,
     tableRowHeight,
     TableRowComponent,
     rowKey,

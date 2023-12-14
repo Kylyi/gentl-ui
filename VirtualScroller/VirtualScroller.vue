@@ -51,26 +51,30 @@ defineExpose({
 })
 
 // Utils
-const virtualScrollOptions = computed(() => ({
-  count: props.rows?.length ?? 0,
-  estimateSize: () => props.rowHeight,
-  getScrollElement: () => containerEl.value!,
-  getItemKey: () => props.rowKey,
-  overscan: props.overscan,
+const virtualScrollOptions = computed(() => {
+  const rowHeight = props.rowHeight
 
-  ...(!props.noScrollEmit && {
-    onChange: (instance: any): void => {
-      const visibleStartItem = instance.getVirtualItemForOffset(
-        instance.scrollOffset
-      )
-      const visibleEndItem = instance.getVirtualItemForOffset(
-        instance.scrollOffset + instance.scrollRect.height
-      )
+  return {
+    count: props.rows?.length ?? 0,
+    estimateSize: () => rowHeight,
+    getScrollElement: () => containerEl.value!,
+    getItemKey: () => props.rowKey,
+    overscan: props.overscan,
 
-      emits('virtual-scroll', { visibleStartItem, visibleEndItem })
-    },
-  }),
-}))
+    ...(!props.noScrollEmit && {
+      onChange: (instance: any): void => {
+        const visibleStartItem = instance.getVirtualItemForOffset(
+          instance.scrollOffset
+        )
+        const visibleEndItem = instance.getVirtualItemForOffset(
+          instance.scrollOffset + instance.scrollRect.height
+        )
+
+        emits('virtual-scroll', { visibleStartItem, visibleEndItem })
+      },
+    }),
+  }
+})
 
 // Layout
 const containerEl = ref<HTMLDivElement>()
@@ -78,6 +82,8 @@ const virtualScroll = useVirtualizer(virtualScrollOptions)
 
 const virtualRows = computed(() => virtualScroll.value.getVirtualItems())
 const totalSize = computed(() => virtualScroll.value.getTotalSize())
+
+watch(virtualScrollOptions, x => console.log(x))
 </script>
 
 <template>
@@ -119,7 +125,7 @@ const totalSize = computed(() => virtualScroll.value.getTotalSize())
     --apply: w-full relative;
 
     &-row {
-      --apply: absolute top-0 left-0;
+      --apply: flex w-full absolute top-0 left-0;
     }
   }
 }

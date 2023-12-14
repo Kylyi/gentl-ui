@@ -118,7 +118,7 @@ const isSelectedRow = injectStrict(tableIsSelectedRowKey, () => false)
   border-1 border-ca gap-x-3 hover:shadow-ca shadow-sm w-full dark:bg-darker bg-white;
 
   &-container {
-    --apply: relative block p-x-2 p-y-1;
+    --apply: relative w-full block p-x-2 p-y-1;
   }
 
   grid-template-columns: 1fr 2fr;
@@ -143,5 +143,9 @@ const isSelectedRow = injectStrict(tableIsSelectedRowKey, () => false)
   &-label {
     --apply: font-rem-14 font-bold;
   }
+}
+
+.tr__mobile:hover {
+  --apply: bg-blue-500/10;
 }
 </style>

@@ -18,6 +18,7 @@ type IProps = {
   columns: TableColumn<any>[]
   minimumColumnWidth?: number
   rows: any[]
+  smallScreen?: boolean
 }
 
 const props = defineProps<IProps>()
@@ -67,6 +68,17 @@ const visibleColumns = computed(() => {
   return columns.value.filter(col => !col.hidden)
 })
 
+const scrollerContentClass = computed(() => {
+  const classes: ClassType = ['relative']
+
+  if (props.smallScreen) {
+    classes.push('m-l-2')
+    classes.push('gap-1')
+  }
+
+  return classes
+})
+
 watch(
   () => visibleColumns.value.length,
   () => nextTick(() => headerEl.value?.updateArrows())
@@ -102,91 +114,50 @@ defineExpose({
   <HorizontalScroller
     ref="headerEl"
     class="thead"
-    content-class="relative"
+    :content-class="scrollerContentClass"
     :style="{ '--scrollbarWidth': `${scrollbarWidth}px` }"
     data-cy="table-header"
     @scrolled="handleScroll"
   >
     <!-- Columns -->
-    <template
+    <TableHeaderCell
       v-for="(col, idx) in visibleColumns"
       :key="idx"
+      :column="col"
+      :columns="columns"
+      :last="idx === visibleColumns.length - 1"
+      :small-screen="smallScreen"
     >
+      <template #selection>
+        <Checkbox v-model="selectionState" />
+      </template>
+    </TableHeaderCell>
+
+    <!-- Splitters -->
+    <template v-if="!smallScreen">
+      <!-- Active splitter -->
       <div
-        class="th"
-        :class="[
-          col.headerClasses,
-          `col-${col.name}`,
-          {
-            'has-data': !col.isHelperCol,
-            'is-frozen': col.frozen,
-            'is-semi-frozen': col.semiFrozen,
-            'is-last': idx === visibleColumns.length - 1,
-          },
-        ]"
-        :style="{ ...col.headerStyle, [`--colWidth`]: col.adjustedWidthPx }"
-      >
-        <slot :col="col">
-          <span
-            v-if="col._label"
-            :title="col._label"
-            class="th-label"
-            data-cy="table-header-item"
-          >
-            {{ col._label }}
-          </span>
-
-          <div v-if="col.name === '_selectable'">
-            <Checkbox v-model="selectionState" />
-          </div>
-
-          <div
-            flex="~ items-center"
-            relative
-          >
-            <TableColumnFreezeBtn
-              v-if="!col.isHelperCol && !col.noFreeze"
-              :column="col"
-              :columns="columns"
-              position="!absolute"
-              :class="[
-                !(col.noFilterSort || col.isHelperCol) ? 'left--7' : 'left--9',
-              ]"
-              backdrop-blur="sm"
-            />
-
-            <TableColumnFilterBtn
-              v-if="!(col.noFilterSort || col.isHelperCol)"
-              :column="col"
-              :columns="columns"
-              m="x-1"
-              shrink-0
-            />
-          </div>
-        </slot>
-      </div>
-    </template>
-
-    <!-- Active splitter -->
-    <div
-      v-if="activeSplitter"
-      class="splitter splitter-active"
-      :style="{
-        left: `${activeSplitter.left - 3}px`,
-        top: `${activeSplitter.top}px`,
-        height: `${activeSplitter.height}px`,
-      }"
-    />
-
-    <!-- Columns splitters -->
-    <template v-else>
-      <div
-        v-for="splitter in columnSplitters"
-        :key="splitter.field"
-        class="splitter"
-        :style="{ left: getSplitterLeft(splitter) }"
-        @pointerdown.stop.prevent="handleSplitterPointerDown(splitter, $event)"
+        v-if="activeSplitter"
+        class="splitter splitter-active"
+        :style="{
+          left: `${activeSplitter.left - 3}px`,
+          top: `${activeSplitter.top}px`,
+          height: `${activeSplitter.height}px`,
+        }"
       />
+
+      <!-- Columns splitters -->
+      <template v-else>
+        <div
+          v-for="splitter in columnSplitters"
+          :key="splitter.field"
+          class="splitter"
+          :style="{ left: getSplitterLeft(splitter) }"
+          @pointerdown.stop.prevent="
+            handleSplitterPointerDown(splitter, $event)
+          "
+        />
+      </template>
     </template>
   </HorizontalScroller>
 </template>
@@ -196,28 +167,6 @@ defineExpose({
   --apply: flex shrink-0 relative
     bg-white dark:bg-darker min-h-$headerHeight;
 }
-
-.th {
-  --apply: flex shrink-0 items-center font-semibold text-xs tracking-wide
-    border-ca border-b-1 sm:w-$colWidth border-t-1;
-
-  &.has-data {
-    --apply: border-l-1;
-  }
-
-  &.is-last {
-    --apply: border-r-1;
-  }
-
-  &-label {
-    --apply: grow p-l-2 p-r-1 line-clamp-2;
-
-    &::after {
-      content: '\00a0';
-    }
-  }
-}
-
 .splitter {
   --apply: absolute top-0 bottom-0 w-7px z-5;
 
@@ -229,22 +178,5 @@ defineExpose({
   &:hover {
     --apply: border-x-3px border-ca bg-black dark:bg-white cursor-col-resize;
   }
-}
-
-.th.is-semi-frozen {
-  --apply: z-6;
-
-  &::after {
-    --apply: content-empty absolute -right-px top-0 h-full w-px bg-primary;
-  }
-}
-
-.column-lock {
-  --apply: hidden;
-}
-
-.th:hover .column-lock,
-.th.is-frozen .column-lock {
-  --apply: flex;
 }
 </style>

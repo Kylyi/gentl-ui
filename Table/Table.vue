@@ -97,6 +97,7 @@ const {
 
   // General
   isScrolled,
+  isBreakpoint,
   tableRowHeight,
   rowKey,
   TableRowComponent,
@@ -222,6 +223,7 @@ onMounted(() => {
       :columns="internalColumns"
       :rows="rows"
       :minimum-column-width="minimumColumnWidth"
+      :small-screen="!isBreakpoint"
       :class="{ 'shadow-lg shadow-ca': isScrolled }"
       @scrolled="handleScrollLeft"
     >
