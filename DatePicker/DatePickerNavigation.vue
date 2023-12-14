@@ -18,7 +18,6 @@ function handleNavigation(val: number, unit: 'month' | 'year') {
 }
 
 function handleSetDate(payload: { idx: number }, unit: 'year' | 'month') {
-  // @ts-expect-error Some Dayjs type issue
   emits('update:model-value', $date(props.modelValue)[unit](payload.idx))
 }
 </script>

@@ -22,8 +22,6 @@ import { useTableUtils } from '~/components/Table/functions/useTableUtils'
 // Components
 import Selector from '~/components/Selector/Selector.vue'
 
-// Constants
-
 const props = defineProps<IQueryBuilderItemProps>()
 const emits = defineEmits<{
   (e: 'delete:row', item: IQueryBuilderItem): void
@@ -85,7 +83,7 @@ const isNonValueComparator = computedEager(() => {
 
 const component = computed(() => {
   return COMPONENTS_BY_DATATYPE_MAP[
-    colSelected.value?.dataType.replace('Simple', '')
+    colSelected.value?.dataType.replace('Simple', '') as DataType
   ]
 })
 
@@ -261,7 +259,7 @@ function handleValueChange(value: any) {
 }
 
 // Validation
-const $v = useVuelidate(
+const $z = useVuelidate(
   {
     item: {
       field: { required },
@@ -309,7 +307,7 @@ const $v = useVuelidate(
         option-key="field"
         preselect-first
         class="qb-item__content-field"
-        :validation="$v.item.field"
+        :validation="$z.item.field"
         data-cy="qb-item__content-field"
         @update:model-value="handleFieldChange"
       >
@@ -351,7 +349,7 @@ const $v = useVuelidate(
           emit-key
           size="sm"
           class="qb-item__content-comparator"
-          :validation="$v.item.comparator"
+          :validation="$z.item.comparator"
           data-cy="comparator"
           @update:model-value="handleComparatorChange"
         />
@@ -380,7 +378,7 @@ const $v = useVuelidate(
           size="sm"
           :placeholder="`${$t('table.filterValue')}...`"
           empty-value=""
-          :validation="$v.item.value"
+          :validation="$z.item.value"
         />
 
         <!-- Selector of distinct values -->
@@ -402,7 +400,7 @@ const $v = useVuelidate(
           size="sm"
           :placeholder="`${$t('table.filterValue')}...`"
           data-cy="qb-item__content-value"
-          :validation="$v.item.value"
+          :validation="$z.item.value"
         />
 
         <!-- Ago value -->
@@ -410,7 +408,7 @@ const $v = useVuelidate(
           v-else-if="isDateAgoComparator(item.comparator)"
           ref="valueInputEl"
           v-model:item="item"
-          :validation="$v.item.value"
+          :validation="$z.item.value"
         />
 
         <!-- $Empty/Boolean value -->
@@ -424,7 +422,7 @@ const $v = useVuelidate(
         <!-- Primitive value -->
         <Component
           :is="component.component"
-          v-else-if="component.component && !isNonValueComparator"
+          v-else-if="component?.component && !isNonValueComparator"
           ref="valueInputEl"
           :model-value="item.value"
           size="sm"
@@ -433,7 +431,7 @@ const $v = useVuelidate(
           }"
           v-bind="component.props"
           :placeholder="$t('queryBuilder.value')"
-          :validation="$v.item.value"
+          :validation="$z.item.value"
           data-cy="qb-item__content-value"
           @update:model-value="handleValueChange"
         />

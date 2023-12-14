@@ -11,8 +11,9 @@ const shortcut = computed(() => {
     return 'carbon:area-custom'
   }
 
-  return COMPONENTS_BY_DATATYPE_MAP[props.dataType.replace('Simple', '')]
-    ?.shortcutIcon
+  return COMPONENTS_BY_DATATYPE_MAP[
+    props.dataType.replace('Simple', '') as DataType
+  ]?.shortcutIcon
 })
 </script>
 

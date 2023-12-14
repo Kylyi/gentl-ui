@@ -95,16 +95,16 @@ defineExpose({ sync })
 
 <template>
   <div class="year-selector">
+    <!-- Previous btn -->
     <Btn
-      display="lt-xm:!none"
       size="auto"
-      w="8"
-      h="8"
-      p="3"
+      class="year-select__previous"
       tabindex="-1"
       icon="majesticons:chevron-left"
       @click="$emit('previous')"
     />
+
+    <!-- Year input -->
     <NumberInput
       ref="yearInputEl"
       :model-value="internalValue"
@@ -116,12 +116,11 @@ defineExpose({ sync })
       input-class="text-center"
       @update:model-value="handleManualYearInputChange"
     />
+
+    <!-- Next btn -->
     <Btn
-      display="lt-xm:!none"
       size="auto"
-      w="8"
-      h="8"
-      p="3"
+      class="year-select__next"
       tabindex="-1"
       icon="majesticons:chevron-right"
       @click="$emit('next')"
@@ -181,5 +180,11 @@ defineExpose({ sync })
 <style lang="scss" scoped>
 .year-selector {
   --apply: flex flex-gap-x-1 items-center;
+
+  &__previous,
+  &__next {
+    --apply: w-8 h-8 p-3;
+    --apply: '!lt-xm:hidden';
+  }
 }
 </style>

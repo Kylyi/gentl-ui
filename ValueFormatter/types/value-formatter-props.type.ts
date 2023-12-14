@@ -1,6 +1,7 @@
-import { PredictDataTypeOptions } from '~/libs/App/functions/misc'
+// Types
+import type { PredictDataTypeOptions } from '~/libs/App/functions/misc'
 
-export interface IValueFormatter {
+export type IValueFormatter = {
   value: any
   originalValue?: any
   dataType?: DataType

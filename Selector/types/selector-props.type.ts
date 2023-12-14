@@ -1,10 +1,9 @@
 import { type CSSProperties } from 'vue'
 
+// Types
 import { type FuseOptions } from '@vueuse/integrations/useFuse'
 import { type FloatingUIBaseProps } from '~/components/Dialog/types/dialog-props.type'
-import { NuxtLink } from '#components'
-
-// Types
+import type { RouteLocationRaw } from '#vue-router'
 import type { IInputProps } from '~/components/Inputs/types/input-props.type'
 
 // Models
@@ -91,7 +90,7 @@ export type ISelectorProps = IInputProps & {
   /**
    * When selected, the item can have a link attached to it
    */
-  optionTo?: (item: any) => InstanceType<typeof NuxtLink>['to']
+  optionTo?: (item: any) => RouteLocationRaw
 
   /**
    * When true (with combination of `alowAdd`), the component will not add the

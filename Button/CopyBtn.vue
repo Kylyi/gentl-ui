@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Types
-import { type IBtnProps } from '~/components/Button/types/btn-props.type';
+import { type IBtnProps } from '~/components/Button/types/btn-props.type'
 
 const props = defineProps<
   IBtnProps & {
@@ -23,6 +23,7 @@ const copyBtnSize = computed(() => {
     case 'lg':
       return 'md'
     case 'auto':
+    default:
       return 'auto'
   }
 })

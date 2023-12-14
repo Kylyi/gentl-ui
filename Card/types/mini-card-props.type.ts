@@ -1,8 +1,7 @@
 // Types
-import { type IBtnProps } from '~/components/Button/types/btn-props.type'
-import { type IValueFormatter } from '~/components/ValueFormatter/types/value-formatter-props.type'
+import type { IValueFormatter } from '~/components/ValueFormatter/types/value-formatter-props.type'
 
-export interface IMiniCardProps extends IValueFormatter {
+export type IMiniCardProps = IValueFormatter & {
   /**
    * The label of the card
    */
@@ -36,12 +35,12 @@ export interface IMiniCardProps extends IValueFormatter {
   /**
    * The link we want to redirect to
    */
-  to?: IBtnProps['to']
+  to?: any
 
   /**
    * The link we want to redirect to orginal value
    */
-  toOriginalValue?: IBtnProps['to']
+  toOriginalValue?: any
 
   /**
    * The orginal value of the field used to compare with current value

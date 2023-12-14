@@ -76,4 +76,10 @@ withDefaults(defineProps<IProps>(), {
     box-shadow: 8px 0 24px -2px var(--un-shadow-color);
   }
 }
+
+.tr:hover {
+  .cell {
+    --apply: bg-blue-500/10;
+  }
+}
 </style>

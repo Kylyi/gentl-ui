@@ -100,7 +100,7 @@ function handleRemoveCondition() {
 }
 
 async function applyChanges() {
-  const isValid = await $v.value.$validate()
+  const isValid = await $z.value.$validate()
 
   if (isValid) {
     itemEditMenuEl.value?.hide(true)
@@ -124,7 +124,7 @@ async function handleItemEditMenuBeforeHide() {
   }
 }
 
-const $v = useVuelidate({ $scope: 'qb' })
+const $z = useVuelidate({ $scope: 'qb' })
 </script>
 
 <template>

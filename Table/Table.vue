@@ -1,11 +1,4 @@
 <script setup lang="ts">
-// Virtual scroller
-import {
-  DynamicScroller,
-  DynamicScrollerItem,
-  RecycleScroller,
-  // @ts-expect-error - no types
-} from 'vue-virtual-scroller'
 import { klona } from 'klona'
 
 import { config } from '~/config'
@@ -31,21 +24,16 @@ import { useTableTopUtils } from '~/components/Table/functions/useTableTopUtils'
 const props = withDefaults(defineProps<ITableProps>(), {
   breakpoint: 'md',
   columns: () => [],
-  filters: () => [],
   groupExpandWidth: 36,
-  groups: () => [],
   minimumColumnWidth: 80,
   mobileRowHeight: 32,
   rowHeight: 40,
   rowKey: 'id',
   separator: 'cell',
-  sizeField: 'size',
   totalRows: 0,
-  useServer: true,
-  useChips: config.table.useChips,
   useUrl: true,
-  infiniteScroll: config.table.infiniteScroll,
-  useDynamicRowHeight: config.table.useDynamicRowHeight,
+  infiniteScroll: config.table.props.infiniteScroll,
+  noSearch: config.table.props.noSearch,
 })
 
 defineEmits<{
@@ -61,12 +49,12 @@ defineSlots<{
   rowInside: { columns: any[]; row: any; index: number }
   dataRow: { columns: any[]; row: any; index: number }
   inner: { columns: any[]; row: any; index: number }
-  top: {}
-  topLeftPrepend: {}
-  topLeftAppend: {}
-  topRightPrepend: {}
-  topRightAppend: {}
-  subbarRight: {}
+  top: IItem
+  topLeftPrepend: IItem
+  topLeftAppend: IItem
+  topRightPrepend: IItem
+  topRightAppend: IItem
+  subbarRight: IItem
   topBulkActions: { selection: any[] }
   belowTop: { rows: any[] }
 }>()
@@ -94,12 +82,6 @@ const { cloned: queryBuilder } = useCloned(queryBuilderOriginal, {
   clone: klona,
 })
 
-const [DefineTemplate, ReuseTemplate] = createReusableTemplate<{
-  item: any
-  index: number
-  active?: boolean
-}>()
-
 const { columns, layout, metadataRefetch } = await useTableMetaData(props)
 
 const {
@@ -115,12 +97,12 @@ const {
 
   // General
   isScrolled,
+  isBreakpoint,
   tableRowHeight,
   rowKey,
   TableRowComponent,
   handleScrollLeft,
   handleRowClick,
-  throttledHandleResize,
   recreateColumns,
   handleResize,
 } = useTableLayout(props, columns, layout)
@@ -159,7 +141,7 @@ useTableExporting(rows)
 useTableSelection(props)
 
 onMounted(() => {
-  scrollerEl.value.$el.focus()
+  scrollerEl.value?.focus()
 })
 </script>
 
@@ -168,60 +150,6 @@ onMounted(() => {
     ref="tableEl"
     class="table-container"
   >
-    <DefineTemplate v-slot="{ item, index }">
-      <Component
-        :is="TableRowComponent"
-        :row="item"
-        :columns="internalColumns"
-        :to="to"
-        :class="{ 'is-clickable': rowClickable, 'odd': index % 2 !== 0 }"
-        :row-height="rowHeight"
-        :index="index"
-        :selectable="selectable"
-        @click="handleRowClick(item, $event)"
-      >
-        <template #row-inside>
-          <slot
-            name="row-inside"
-            :columns="columns"
-            :row="item"
-            :index="index"
-          />
-        </template>
-
-        <template #default>
-          <slot
-            name="data-row"
-            :columns="columns"
-            :row="item"
-            :index="index"
-          />
-        </template>
-
-        <template #inner>
-          <slot
-            name="inner"
-            :columns="columns"
-            :row="item"
-            :index="index"
-          />
-        </template>
-
-        <template
-          v-for="col in columns"
-          :key="col.name"
-          #[col.name]
-        >
-          <slot
-            :name="col.name"
-            :row="item"
-            :index="index"
-            :refresh-data-fnc="refreshData"
-          />
-        </template>
-      </Component>
-    </DefineTemplate>
-
     <!-- Top -->
     <slot
       v-if="!noTop"
@@ -231,25 +159,41 @@ onMounted(() => {
         v-model:query-builder="queryBuilder"
         v-model:search="search"
         v-bind="tableTopProps"
+        :small-screen="!isBreakpoint"
         @update:columns-width="handleResize()"
       >
-        <template #left-prepend>
+        <template
+          v-if="$slots['top-left-prepend']"
+          #left-prepend
+        >
           <slot name="top-left-prepend" />
         </template>
 
-        <template #left-append>
+        <template
+          v-if="$slots['top-left-append']"
+          #left-append
+        >
           <slot name="top-left-append" />
         </template>
 
-        <template #right-prepend>
+        <template
+          v-if="$slots['top-right-prepend']"
+          #right-prepend
+        >
           <slot name="top-right-prepend" />
         </template>
 
-        <template #right-append>
+        <template
+          v-if="$slots['top-right-append']"
+          #right-append
+        >
           <slot name="top-right-append" />
         </template>
 
-        <template #subbar-right>
+        <template
+          v-if="$slots['subbar-right']"
+          #subbar-right
+        >
           <slot name="subbar-right" />
         </template>
 
@@ -276,12 +220,11 @@ onMounted(() => {
     <TableHeader
       v-if="!noHeader"
       ref="headerEl"
-      class="lt-md:display-none"
+      class="lt-md:hidden"
       :columns="internalColumns"
       :rows="rows"
-      :use-server="useServer"
-      :use-chips="useChips"
       :minimum-column-width="minimumColumnWidth"
+      :small-screen="!isBreakpoint"
       :class="{ 'shadow-lg shadow-ca': isScrolled }"
       @scrolled="handleScrollLeft"
     >
@@ -290,41 +233,70 @@ onMounted(() => {
       </template>
     </TableHeader>
 
-    <Component
-      :is="useDynamicRowHeight ? DynamicScroller : RecycleScroller"
+    <VirtualScroller
       v-show="hasVisibleColumn"
       ref="scrollerEl"
-      :items="rows"
-      :key-field="rowKey"
+      :rows="rows"
+      :row-key="rowKey"
+      :row-height="tableRowHeight"
+      :no-scroll-emit="!infiniteScroll"
       class="scroller"
-      tabindex="0"
-      :item-size="useDynamicRowHeight ? undefined : tableRowHeight"
-      :min-item-size="rowHeight"
-      :emit-update="infiniteScroll"
-      :buffer="1000"
-      @resize="autoResize && throttledHandleResize()"
-      @update="handleInfiniteScroll"
+      @virtual-scroll="handleInfiniteScroll"
     >
-      <template #default="{ item, index, active }">
-        <DynamicScrollerItem
-          v-if="useDynamicRowHeight"
-          :key="index"
-          :item="item"
-          :active="active"
-        >
-          <ReuseTemplate
-            :item="item"
-            :index="index"
-          />
-        </DynamicScrollerItem>
-
-        <ReuseTemplate
-          v-else
-          :item="item"
+      <template #default="{ row, index }">
+        <Component
+          :is="TableRowComponent"
+          :row="row"
+          :columns="internalColumns"
+          :to="to"
+          :class="{ 'is-clickable': rowClickable, 'odd': index % 2 !== 0 }"
+          :row-height="rowHeight"
           :index="index"
-        />
+          :selectable="selectable"
+          @click="handleRowClick(row, $event)"
+        >
+          <template #row-inside>
+            <slot
+              name="row-inside"
+              :columns="columns"
+              :row="row"
+              :index="index"
+            />
+          </template>
+
+          <template #default>
+            <slot
+              name="data-row"
+              :columns="columns"
+              :row="row"
+              :index="index"
+            />
+          </template>
+
+          <template #inner>
+            <slot
+              name="inner"
+              :columns="columns"
+              :row="row"
+              :index="index"
+            />
+          </template>
+
+          <template
+            v-for="col in columns"
+            :key="col.name"
+            #[col.name]
+          >
+            <slot
+              :name="col.name"
+              :row="row"
+              :index="index"
+              :refresh-data-fnc="refreshData"
+            />
+          </template>
+        </Component>
       </template>
-    </Component>
+    </VirtualScroller>
 
     <TableNoData
       :has-no-data="!rows.length && !isLoading"
@@ -377,7 +349,7 @@ onMounted(() => {
   }
 
   .scroller {
-    --apply: max-h-full bg-$Table-container-bg outline-none;
+    --apply: max-h-full bg-$Table-container-bg;
   }
 }
 
@@ -386,29 +358,7 @@ onMounted(() => {
     rounded-custom;
 }
 
-:global(
-    .vue-recycle-scroller__item-wrapper
-      .vue-recycle-scroller__item-view.hover
-      .tr
-      > .cell
-  ) {
-  --apply: '!md:bg-blue/10';
-}
-
-:global(
-    .vue-recycle-scroller__item-wrapper
-      .vue-recycle-scroller__item-view.hover
-      .tr__mobile
-  ) {
-  --apply: '!md:bg-blue/10';
-}
-
-:global(
-    .vue-recycle-scroller__item-wrapper
-      .vue-recycle-scroller__item-view.hover
-      .cell.is-semi-frozen
-  ) {
-  --apply: '!bg-blue-100 color-blue-800';
-  --apply: 'dark:(!bg-blue-900 color-blue-200)';
+:deep(.virtual-scroll__content) {
+  --apply: font-size-13px;
 }
 </style>

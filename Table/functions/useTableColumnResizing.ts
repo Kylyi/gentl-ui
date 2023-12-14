@@ -118,7 +118,7 @@ export function useTableColumnResizing(props: {
       headerDom.getBoundingClientRect()
     const { height: tableHeight } = (
       headerDom.parentElement!.querySelector(
-        '.vue-recycle-scroller'
+        '.virtual-scroll__content'
       ) as HTMLElement
     ).getBoundingClientRect()
 

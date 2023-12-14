@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { NuxtLink } from '#components'
-
 // Types
 import type { IChipProps } from '~/components/Chip/types/chip-props.type'
 

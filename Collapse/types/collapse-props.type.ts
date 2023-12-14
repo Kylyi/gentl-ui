@@ -1,3 +1,5 @@
+import type { CSSProperties } from 'vue'
+
 export interface ICollapseProps {
   /**
    * When true, the collapse content will be positioned absolutely
@@ -17,7 +19,7 @@ export interface ICollapseProps {
   /**
    * The CSS style for the header
    */
-  headerStyle?: ClassType
+  headerStyle?: CSSProperties
 
   /**
    * The initial state of the collapse

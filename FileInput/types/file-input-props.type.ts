@@ -1,11 +1,10 @@
 // Types
-import { type IFile } from '~/components/FileInput/types/file.type'
+import type { IFile } from '~/components/FileInput/types/file.type'
 
 export interface IFileInputProps {
   accept?: string
   disabled?: boolean
   downloadUrl?: string
-  errors?: Pick<ErrorObject, '$message'>[]
   errorTakesSpace?: boolean
   hint?: string
   loading?: boolean
@@ -24,4 +23,9 @@ export interface IFileInputProps {
    * Whether to hide the download button
    */
   noDownloadButton?: boolean
+
+  /**
+   * Validation object
+   */
+  validation?: any
 }

@@ -62,7 +62,6 @@ export function useFieldUtils(options?: {
       'disabled',
       'errorTakesSpace',
       'errorVisible',
-      'validation',
       'hint',
       'inline',
       'label',
@@ -76,6 +75,7 @@ export function useFieldUtils(options?: {
       'required',
       'size',
       'stackLabel',
+      'validation',
     ])
   }
 
