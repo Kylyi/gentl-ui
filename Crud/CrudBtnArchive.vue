@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// TYPES
+// Types
 import type { ICrudBtnProps } from '~/components/Crud/types/crud-btn-props.type'
 
 type IProps = ICrudBtnProps
