@@ -357,4 +357,8 @@ onMounted(() => {
   --apply: m-t-2 p-x-2 p-y-3 text-caption text-center border-ca border-2
     rounded-custom;
 }
+
+:deep(.virtual-scroll__content) {
+  --apply: font-size-13px;
+}
 </style>

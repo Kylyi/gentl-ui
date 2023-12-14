@@ -82,8 +82,6 @@ const virtualScroll = useVirtualizer(virtualScrollOptions)
 
 const virtualRows = computed(() => virtualScroll.value.getVirtualItems())
 const totalSize = computed(() => virtualScroll.value.getTotalSize())
-
-watch(virtualScrollOptions, x => console.log(x))
 </script>
 
 <template>
