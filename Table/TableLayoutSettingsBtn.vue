@@ -210,17 +210,18 @@ async function handleSaveLayout() {
 }
 
 async function handleDeleteLayoutState() {
-  const { id } = await handleRequest(
+  const deletedFilterId = await handleRequest(
     () => deleteLayout(currentLayoutId.value),
     {
       notifySuccess: true,
+      payloadKey: 'id',
       logging: { operationName: 'table.layoutDelete' },
     }
   )
 
-  layouts.value = layouts.value.filter(l => l.id !== id)
+  layouts.value = layouts.value.filter(l => l.id !== deletedFilterId)
 
-  if (currentLayout.value?.id === id) {
+  if (currentLayout.value?.id === deletedFilterId) {
     currentLayout.value = undefined
   }
 

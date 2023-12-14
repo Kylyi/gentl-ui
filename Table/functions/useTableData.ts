@@ -21,7 +21,7 @@ import { useTableUtils } from '~/components/Table/functions/useTableUtils'
 import {
   serializeFilterString,
   serializeOrderByString,
-} from '~/components/Table/utils/transformTableQueryToQueryParams'
+} from '~/libs/App/functions/table/transformTableQueryToQueryParams'
 
 // Injections
 import {
@@ -527,6 +527,7 @@ export function useTableData(
     const { queryBuilder: schemaQueryBuilder } = parseUrlParams({
       columnsRef: internalColumnsRef,
       searchParams: layoutRef.value?.schema,
+      fromSchema: !!layoutRef.value?.schema,
     })
 
     const isUrlUsed =

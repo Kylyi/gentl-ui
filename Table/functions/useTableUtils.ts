@@ -11,9 +11,9 @@ import { getTableStorageKey } from '~/components/Table/provide/table.provide'
 
 // Functions
 import { getComponentName } from '~/libs/App/functions/misc'
-import { parseFiltersFromUrl } from '~/components/Table/utils/extractFiltersFromUrl'
-import { parseSortingFromUrl } from '~/components/Table/utils/extractSortingFromUrl'
-import { parseVisibleColumnsFromUrl } from '~/components/Table/utils/extractVisibleColumnsFromUrl'
+import { parseSortingFromUrl } from '~/libs/App/functions/table/extractSortingFromUrl'
+import { parseFiltersFromUrl } from '~/libs/App/functions/table/extractFiltersFromUrl'
+import { parseVisibleColumnsFromUrl } from '~/libs/App/functions/table/extractVisibleColumnsFromUrl'
 
 // Constants
 import { COMPARATORS_BY_DATATYPE_MAP } from '~/libs/App/constants/input-map.constant'
@@ -185,11 +185,13 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
   function parseUrlParams(options: {
     columnsRef?: MaybeRefOrGetter<TableColumn[]>
     searchParams?: URLSearchParams | string
+    fromSchema?: boolean
     allowAnyNonStandardFilter?: boolean
   }) {
     const {
       columnsRef,
       searchParams,
+      fromSchema,
       allowAnyNonStandardFilter = false,
     } = options
     const customSearchParams = searchParams
@@ -205,14 +207,15 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
     // Not relevant for Infinite scrolling
 
     // Sorting
-    const sort = parseSortingFromUrl(params)
-    const schemaSort = parseSortingFromUrl(params)
+    const sort = parseSortingFromUrl(params, { fromSchema })
+    const schemaSort = parseSortingFromUrl(params, { fromSchema })
 
     // Column filters
     const filters = parseFiltersFromUrl({
       searchParams: params,
       key: 'filters',
       columns,
+      fromSchema,
     })
 
     // Query builder
@@ -220,6 +223,7 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
       searchParams: params,
       key: 'qb',
       columns,
+      fromSchema,
     })
 
     // Column selection
@@ -235,6 +239,7 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
           schemaSort,
           queryBuilder,
           allowAnyNonStandardFilter,
+          fromSchema,
           parseUrlFnc: parseUrlParams,
         })
       : {

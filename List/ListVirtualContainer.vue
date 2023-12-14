@@ -15,7 +15,8 @@ defineExpose({
 </script>
 
 <template>
-  <div ref="dynamicScrollerEl">x</div>
+  <!-- TODO -->
+  <div ref="dynamicScrollerEl">TODO</div>
   <!-- <DynamicScroller
     ref="dynamicScrollerEl"
     :items="items"
