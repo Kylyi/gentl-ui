@@ -121,7 +121,7 @@ const totalSize = computed(() => virtualScroll.value.getTotalSize())
 
 <style scoped lang="scss">
 .virtual-scroll {
-  --apply: overflow-auto grow rounded-custom outline-blue-500 outline-offset-4;
+  --apply: overflow-auto grow outline-blue-500 outline-offset-4;
 
   &__content {
     --apply: w-full relative;
