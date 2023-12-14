@@ -12,7 +12,7 @@ const labelLocalClass = computedEager(() => {
     `label--${props.size}`,
     {
       'is-inline': props.inline,
-      'is-required': props.required ?? !!props.validation?.isRequired,
+      'is-required': props.required ?? !!props.validation?.required,
       'is-inside': props.labelInside,
       'is-floating':
         !props.inline &&
