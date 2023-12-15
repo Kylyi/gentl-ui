@@ -133,7 +133,7 @@ onMounted(() => {
 }
 
 .page-title {
-  --apply: font-700 p-x-4 md:(p-y-4 p-x-2) max-w-screen-lg m-b-3;
+  --apply: font-700 p-x-4 md:(p-y-4 p-x-2) max-w-screen-lg m-b-2 p-b-1;
 
   box-shadow: 0 8px 8px -9px theme('colors.truegray.300');
 }
