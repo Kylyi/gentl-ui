@@ -70,6 +70,7 @@ defineExpose({
     fnc(internalColumns.value)
   },
   getDbQuery: () => dbQuery.value,
+  selectRow: (row: any, val?: boolean) => handleSelectRow(row, val),
 })
 
 // Utils
@@ -138,7 +139,7 @@ const {
 )
 
 useTableExporting(rows)
-useTableSelection(props)
+const { handleSelectRow } = useTableSelection(props)
 
 onMounted(() => {
   scrollerEl.value?.focus()
