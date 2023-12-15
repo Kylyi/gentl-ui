@@ -44,9 +44,15 @@ export function useTableSelection(props: ITableProps) {
     return !!selectionByKey.value?.[key]
   }
 
-  function handleSelectRow(row: any) {
+  function handleSelectRow(row: any, val?: boolean) {
     const key = get(row, rowKey.value)
     const _isSelected = isSelected(row)
+
+    if (val === true && _isSelected) {
+      return
+    } else if (val === false && !_isSelected) {
+      return
+    }
 
     if (_isSelected) {
       if (Array.isArray(selection.value)) {

@@ -9,7 +9,10 @@ import {
 } from '~/components/Table/functions/useTableColumnResizing'
 
 // Injections
-import { tableSelectionKey } from '~/components/Table/provide/table.provide'
+import {
+  tableSelectRowKey,
+  tableSelectionKey,
+} from '~/components/Table/provide/table.provide'
 
 // Components
 import HorizontalScroller from '~/components/Scroller/HorizontalScroller.vue'
@@ -33,34 +36,30 @@ const { headerEl, activeSplitter, columnSplitters, handleSplitterPointerDown } =
 
 // Injections
 const selection = injectStrict(tableSelectionKey)
+const handleSelectRow = injectStrict(tableSelectRowKey)
 
 // Layout
 const columns = toRef(props, 'columns')
 const scrollX = ref(0)
 
+const selectedCount = computed(() => {
+  return Object.values(selection.value || {}).filter(Boolean).length
+})
+
 const selectionState = computed({
   get() {
-    const selectedCount = Object.values(selection.value || {}).filter(
-      Boolean
-    ).length
     const totalCount = props.rows.length
 
-    return selectedCount === totalCount && selectedCount > 0
+    return selectedCount.value === totalCount && selectedCount.value > 0
       ? true // Everything is selected
-      : selectedCount > 0
+      : selectedCount.value > 0
       ? null // Something is selected
       : false // Nothing is selected
   },
   set(val: boolean | null) {
-    if (val === false) {
-      selection.value = {}
-    } else {
-      selection.value = props.rows.reduce((agg, row) => {
-        agg[row.id] = val
-
-        return agg
-      }, {} as Record<string, boolean>)
-    }
+    props.rows.forEach(row => {
+      handleSelectRow(row, !!val)
+    })
   },
 })
 
@@ -131,7 +130,7 @@ defineExpose({
       <template #selection>
         <Checkbox
           v-model="selectionState"
-          :label="smallScreen ? $t('general.selection') : undefined"
+          :label="smallScreen ? `(${selectedCount})` : undefined"
         />
       </template>
     </TableHeaderCell>
