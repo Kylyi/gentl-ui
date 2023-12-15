@@ -1,7 +1,7 @@
 <script setup lang="ts">
 type IProps = {
   errorTakesSpace?: boolean
-  errors?: string[]
+  errors?: Array<Pick<ErrorObject, '$message'> | string>
 }
 
 const props = withDefaults(defineProps<IProps>(), {
@@ -10,7 +10,9 @@ const props = withDefaults(defineProps<IProps>(), {
 
 // Validation
 const errorMessages = computed(() => {
-  return props.errors?.join('&nbsp; | &nbsp;')
+  return props.errors
+    ?.map(err => (typeof err === 'string' ? err : err.$message))
+    .join('&nbsp; | &nbsp;')
 })
 </script>
 
