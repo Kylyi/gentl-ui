@@ -38,16 +38,17 @@ const selection = injectStrict(tableSelectionKey)
 const columns = toRef(props, 'columns')
 const scrollX = ref(0)
 
+const selectedCount = computed(() => {
+  return Object.values(selection.value || {}).filter(Boolean).length
+})
+
 const selectionState = computed({
   get() {
-    const selectedCount = Object.values(selection.value || {}).filter(
-      Boolean
-    ).length
     const totalCount = props.rows.length
 
-    return selectedCount === totalCount && selectedCount > 0
+    return selectedCount.value === totalCount && selectedCount.value > 0
       ? true // Everything is selected
-      : selectedCount > 0
+      : selectedCount.value > 0
       ? null // Something is selected
       : false // Nothing is selected
   },
@@ -131,7 +132,7 @@ defineExpose({
       <template #selection>
         <Checkbox
           v-model="selectionState"
-          :label="smallScreen ? $t('general.selection') : undefined"
+          :label="smallScreen ? `(${selectedCount})` : undefined"
         />
       </template>
     </TableHeaderCell>
