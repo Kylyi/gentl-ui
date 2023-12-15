@@ -59,7 +59,8 @@ const breadcrumbs = computed(() => {
   --apply: flex grow flex-gap-x-1 items-center text-sm m-t-2 m-b-1;
 
   &-wrapper {
-    --apply: flex flex-gap-x-1 items-center md:p-x-3 p-y-2.5 md:bg-slate-100 md:dark:bg-slate-900;
+    --apply: flex flex-gap-x-1 items-center md:p-x-3;
+    --apply: bg-$Breadcrumbs-bg;
   }
 }
 

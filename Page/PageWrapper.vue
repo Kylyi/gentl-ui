@@ -89,8 +89,12 @@ onMounted(() => {
 .page-wrapper {
   --apply: ease-out overflow-auto grow z-$zPageWrapper p-$PageWrapper-padding;
 
+  @screen lt-md {
+    --apply: w-full;
+  }
+
   &.is-mounted {
-    --apply: transition-padding-250 transition-margin-250;
+    transition: padding 250ms ease-out, margin 250ms ease-out;
   }
 
   &:not(.is-scrollable) {
@@ -129,7 +133,7 @@ onMounted(() => {
 }
 
 .page-title {
-  --apply: font-700 p-x-2 p-y-4 max-w-screen-lg m-b-3;
+  --apply: font-700 p-x-4 md:(p-y-4 p-x-2) max-w-screen-lg m-b-3;
 
   box-shadow: 0 8px 8px -9px theme('colors.truegray.300');
 }
