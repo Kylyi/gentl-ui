@@ -220,7 +220,7 @@ onMounted(() => {
     <TableHeader
       v-if="!noHeader"
       ref="headerEl"
-      class="lt-md:hidden"
+      class="table-header"
       :columns="internalColumns"
       :rows="rows"
       :minimum-column-width="minimumColumnWidth"
@@ -312,6 +312,7 @@ onMounted(() => {
     <TableTotals
       v-if="!noTotals && !!getTotalsData"
       ref="totalsEl"
+      class="table-totals"
       :columns="internalColumns"
       :get-totals-data="getTotalsData"
       @scrolled="handleScrollLeft"
@@ -360,5 +361,11 @@ onMounted(() => {
 
 :deep(.virtual-scroll__content) {
   --apply: font-size-13px;
+}
+
+.table-header,
+.table-totals,
+.scroller {
+  --apply: p-$Table-content-padding;
 }
 </style>
