@@ -130,11 +130,8 @@ useResizeObserver(headerEl, entries => {
           <slot name="subtitle">
             <span
               v-if="subtitle"
-              font="rem-12"
-              italic
-              color="ca"
-              leading="tight"
-              p="t-2px"
+              text="subtitle"
+              p="t-0.5"
             >
               {{ subtitle }}
             </span>

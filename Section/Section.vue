@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// TYPES
+// Types
 import type { ISectionProps } from '~/components/Section/types/section-props.type'
 
 defineOptions({
@@ -26,7 +26,7 @@ const isTitleVisible = computedEager(() => {
       },
     ]"
   >
-    <!-- TITLE & SUBTITLE -->
+    <!-- Title & Subtitle -->
     <div
       v-if="isTitleVisible"
       flex="~ col"
@@ -34,7 +34,7 @@ const isTitleVisible = computedEager(() => {
       shrink-0
     >
       <slot name="title">
-        <!-- TITLE -->
+        <!-- Title -->
         <Heading
           v-if="title"
           :class="headerClass"
@@ -56,10 +56,11 @@ const isTitleVisible = computedEager(() => {
             <slot name="title-right" />
           </div>
 
-          <!-- SUBTITLE -->
+          <!-- Subtitle -->
           <div
             v-if="subtitle || $slots.subtitle"
             class="section-subtitle"
+            text="subtitle"
             :class="subtitleClass"
           >
             <slot name="subtitle">
@@ -85,7 +86,7 @@ const isTitleVisible = computedEager(() => {
   }
 
   &-subtitle {
-    --apply: italic color-true-gray-400 text-sm p-b-1 w-full;
+    --apply: w-full;
   }
 
   &--bordered {
