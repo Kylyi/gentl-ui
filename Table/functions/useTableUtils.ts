@@ -11,9 +11,9 @@ import { getTableStorageKey } from '~/components/Table/provide/table.provide'
 
 // Functions
 import { getComponentName } from '~/libs/App/functions/misc'
-import { parseFiltersFromUrl } from '~/components/Table/utils/extractFiltersFromUrl'
-import { parseSortingFromUrl } from '~/components/Table/utils/extractSortingFromUrl'
-import { parseVisibleColumnsFromUrl } from '~/components/Table/utils/extractVisibleColumnsFromUrl'
+import { parseSortingFromUrl } from '~/libs/App/functions/table/extractSortingFromUrl'
+import { parseFiltersFromUrl } from '~/libs/App/functions/table/extractFiltersFromUrl'
+import { parseVisibleColumnsFromUrl } from '~/libs/App/functions/table/extractVisibleColumnsFromUrl'
 
 // Constants
 import { COMPARATORS_BY_DATATYPE_MAP } from '~/libs/App/constants/input-map.constant'

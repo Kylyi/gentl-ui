@@ -48,21 +48,15 @@ onMounted(() => {
       <template #breadcrumbs-append>
         <slot name="breadcrumbs-append" />
       </template>
+    </Component>
 
-      <template #title-left>
-        <slot name="title-left" />
-      </template>
+    <!-- Content -->
+    <div class="page-wrapper__content">
+      <slot name="title-left" />
 
-      <template
-        v-if="title"
-        #title
-      >
+      <template v-if="title">
         <slot name="title">
-          <h4
-            text="h4"
-            font-700
-            m="b-0"
-          >
+          <h4 class="page-title">
             {{ title }}
 
             <slot name="title-append" />
@@ -70,16 +64,8 @@ onMounted(() => {
         </slot>
       </template>
 
-      <template #title-right>
-        <slot name="title-right" />
-      </template>
-    </Component>
+      <slot name="title-right" />
 
-    <!-- Content -->
-    <ScrollArea
-      class="page-wrapper__content"
-      p="s-2! md:s-5! e-2 md:e-0"
-    >
       <slot
         v-if="!loading"
         p="r-2!"
@@ -95,7 +81,7 @@ onMounted(() => {
           <Loader />
         </div>
       </slot>
-    </ScrollArea>
+    </div>
   </main>
 </template>
 
@@ -120,7 +106,7 @@ onMounted(() => {
   }
 
   &__content {
-    --apply: flex flex-col grow;
+    --apply: flex flex-col grow p-$PageWrapper-content-padding overflow-auto;
   }
 }
 
@@ -140,5 +126,15 @@ onMounted(() => {
 .page-drawer.is-open.page-drawer--right:not(.is-absolute):not(.is-mini)
   ~ .page-wrapper {
   padding-right: var(--drawerRightWidth);
+}
+
+.page-title {
+  --apply: font-700 p-x-2 p-y-4 max-w-screen-lg m-b-3;
+
+  box-shadow: 0 8px 8px -9px theme('colors.truegray.300');
+}
+
+.dark .page-title {
+  box-shadow: 0 8px 8px -9px theme('colors.truegray.700');
 }
 </style>

@@ -1,4 +1,5 @@
-import { ToggleState } from '~/components/Toggle/types/toggle-props.type'
+// Types
+import type { ToggleState } from '~/components/Toggle/types/toggle-props.type'
 
 export type CheckboxClass = Record<
   ToggleState,

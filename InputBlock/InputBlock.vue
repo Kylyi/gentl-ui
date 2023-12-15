@@ -9,12 +9,11 @@ defineOptions({
   inheritAttrs: false,
 })
 
-const props = withDefaults(
-  defineProps<IMiniCardProps & { editable?: boolean }>(),
-  {
-    emptyValueString: '-',
-  }
-)
+const props = withDefaults(defineProps<IInputBlockProps>(), {
+  emptyValueString: '-',
+})
+
+type IInputBlockProps = IMiniCardProps & { editable?: boolean }
 
 // UTILS
 const { getMiniCardProps } = useMiniCardUtils()

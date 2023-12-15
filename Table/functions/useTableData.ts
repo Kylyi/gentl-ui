@@ -1,9 +1,11 @@
 import { config } from '~/config'
 
 // Types
-import { type IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
-import { type ITableLayout } from '~/components/Table/types/table-layout.type'
-import { type ITableProps } from '~/components/Table/types/table-props.type'
+import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
+import type { ITableLayout } from '~/components/Table/types/table-layout.type'
+import type { ITableProps } from '~/components/Table/types/table-props.type'
+import type { FilterItem } from '~/libs/App/data/models/filter-item'
+import type { IVirtualScrollEvent } from '~/components/VirtualScroller/types/virtual-scroll-event.type'
 import type {
   ITableDataFetchFncInput,
   ITableFilterRow,
@@ -19,7 +21,7 @@ import { useTableUtils } from '~/components/Table/functions/useTableUtils'
 import {
   serializeFilterString,
   serializeOrderByString,
-} from '~/components/Table/utils/transformTableQueryToQueryParams'
+} from '~/libs/App/functions/table/transformTableQueryToQueryParams'
 
 // Injections
 import {
@@ -34,6 +36,7 @@ import {
 
 // Store
 import { useTableStore } from '~/components/Table/table.store'
+import { useAppStore } from '~/libs/App/app.store'
 
 export function useTableData(
   props: ITableProps,
@@ -73,6 +76,7 @@ export function useTableData(
   const storageKey = computed(() => getStorageKey())
 
   // Store
+  const { activeElement } = storeToRefs(useAppStore())
   const { getTableState, setTableState, resetTableState } = useTableStore()
   const tableState = getTableState(storageKey.value)
 
@@ -97,7 +101,7 @@ export function useTableData(
     currentPageSize,
   } = useOffsetPagination({
     ...tableState.value,
-    total: computed(() => totalRows.value || 0),
+    total: () => totalRows.value ?? Number.POSITIVE_INFINITY,
     onPageChange: page => {
       if (isInitialized.value) {
         tableState.value.page = page.currentPage
@@ -120,17 +124,14 @@ export function useTableData(
     return rows.value[rows.value.length - 1]
   })
 
-  function handleInfiniteScroll(
-    _startIndex: number,
-    _endIndex: number,
-    _visibleStartIndex: number,
-    visibleEndIndex: number
-  ) {
+  function handleInfiniteScroll(payload: IVirtualScrollEvent) {
+    const { visibleEndItem } = payload
+
     if (!totalRows.value || !rows.value) {
       return
     }
 
-    const isAtBottom = visibleEndIndex >= rows.value.length - 20
+    const isAtBottom = visibleEndItem.index >= rows.value.length - 20
 
     if (hasMore.value && isAtBottom && !fetchMore.value) {
       fetchMore.value = true
@@ -176,10 +177,9 @@ export function useTableData(
   const columnFilters = computed(() => {
     const columns = toValue(internalColumnsRef)
 
-    // TODO: Bad type
     return columns
-      .filter(col => !!col.filterDbQuery)
-      .flatMap(col => col.filterDbQuery) as any[]
+      .flatMap(col => col?.filterDbQuery)
+      .filter(Boolean) as FilterItem<IItem>[]
   })
 
   const dbQuery = computedWithControl(
@@ -192,6 +192,8 @@ export function useTableData(
         'isGroup' in queryBuilder.value[0] &&
         queryBuilder.value[0].children.length > 0
 
+      // TODO: Type
+      // @ts-expect-error wrong type
       const filters: ITableFilterRow[] = [
         ...(queryBuilder.value && hasQueryBuilder ? queryBuilder.value : []),
         ...columnFilters.value,
@@ -203,6 +205,8 @@ export function useTableData(
       const tableQuery: ITableQuery = {
         ...pagination.value,
         queryBuilder: queryBuilder.value,
+        // TODO: Type
+        // @ts-expect-error wrong type
         columnFilters: columnFilters.value,
         filters: hasFilters ? filters : undefined, // Query builder and column filters combined
         orderBy: orderBy.value,
@@ -235,18 +239,11 @@ export function useTableData(
         ),
       }
 
-      let fetchInput: ITableDataFetchFncInput = {
+      const fetchInput: ITableDataFetchFncInput = {
         tableQuery,
         fetchTableQuery,
         queryParams: config.table.getQuery(tableQuery),
         fetchQueryParams: config.table.getQuery(fetchTableQuery),
-      }
-
-      if (
-        'extendTableFetchInput' in config.table &&
-        typeof config.table.extendTableFetchInput === 'function'
-      ) {
-        fetchInput = config.table.extendTableFetchInput(fetchInput)
       }
 
       return fetchInput
@@ -316,7 +313,7 @@ export function useTableData(
     isFetchMore?: boolean
   ) {
     try {
-      const options = toValue(optionsRef)
+      let options = toValue(optionsRef)
 
       // NOTE: We check whether the amount of data we already fetched is not
       // greater than the limit
@@ -325,6 +322,17 @@ export function useTableData(
         rows.value.length >= config.table.limitRows
       ) {
         return
+      }
+
+      if (
+        'extendTableFetchInput' in config.table &&
+        typeof config.table.extendTableFetchInput === 'function'
+      ) {
+        if (isFetchMore) {
+          options.fetchTableQuery.skip = rows.value.length
+        }
+
+        options = config.table.extendTableFetchInput(options)
       }
 
       // When fetching more data, we need to manually get the queryParams again as
@@ -378,7 +386,7 @@ export function useTableData(
 
       // We scroll to top if we are not fetching more data
       if (!isFetchMore) {
-        scrollerEl.value?.scrollToItem?.(0)
+        scrollerEl.value?.scrollTo(0)
       }
 
       // We reset the `fetchMore`
@@ -402,6 +410,7 @@ export function useTableData(
         return
       }
 
+      // ANCHOR: We only refetch data if the query has changed or we forced the refetch
       if (
         !isForcedRefetch.value &&
         previousDbQuery.value?.fetchQueryParams.toString() ===
@@ -464,7 +473,7 @@ export function useTableData(
               ...(filters && { filters }),
               ...(order && { order: `(${order})` }),
               ...(select && { select }),
-              ...(!config.table.infiniteScroll && {
+              ...(!props.infiniteScroll && {
                 skip: dbQuery.tableQuery.skip,
                 take: dbQuery.tableQuery.take,
               }),
@@ -490,12 +499,17 @@ export function useTableData(
         queryBuilder: dbQuery.tableQuery.queryBuilder,
       })
 
-      // NOTE: Focus the table so we can use keyboard navigation (but only if no floating element is visible)
+      // NOTE: Focus the table so we can use keyboard navigation
+      // (but only if no floating element is visible - we don't want to close it by refocusing)
+      // also when user has search input focused, we don't want to refocus
       if (process.client) {
         const hasFloatingEl = !!document.querySelector('.floating-element')
+        const isSearchInputFocused =
+          activeElement.value?.tagName === 'INPUT' &&
+          activeElement.value?.getAttribute('name') === 'search'
 
-        if (!hasFloatingEl) {
-          scrollerEl.value?.$el.focus()
+        if (!hasFloatingEl && !isSearchInputFocused) {
+          scrollerEl.value?.focus()
         }
       }
     },

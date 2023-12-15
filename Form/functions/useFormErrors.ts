@@ -5,7 +5,7 @@ export type IErrorExtended = {
 }
 
 export function useFormErrors(
-  errorsRef: MaybeRefOrGetter<Array<string | ErrorObject>>,
+  errorsRef: MaybeRefOrGetter<string[]>,
   emits: any
 ) {
   const errorsExtended = computed(() => {
@@ -18,16 +18,14 @@ export function useFormErrors(
     const numberOfErrorsByErrorText: Record<string, any> = {}
 
     return errors.reduce<IErrorExtended[]>((agg, err, idx) => {
-      const errMessage = toValue(typeof err === 'object' ? err.$message : err)
+      if (numberOfErrorsByErrorText[err] === undefined) {
+        const errObj = { errorText: err, count: 1, idx }
 
-      if (numberOfErrorsByErrorText[errMessage] === undefined) {
-        const errObj = { errorText: errMessage, count: 1, idx }
-
-        numberOfErrorsByErrorText[errMessage] = errObj
+        numberOfErrorsByErrorText[err] = errObj
 
         agg.push(errObj)
       } else {
-        numberOfErrorsByErrorText[errMessage].count++
+        numberOfErrorsByErrorText[err].count++
       }
 
       return agg

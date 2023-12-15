@@ -47,6 +47,7 @@ const { getBtnProps } = useBtnUtils()
 // Layout
 const dialogEl = ref<InstanceType<typeof Dialog>>()
 const columns = useVModel(props, 'columns', emits)
+
 const { cloned: clonedColumns } = useCloned(columns, {
   clone: cols => cols.map((col: TableColumn) => new TableColumn(col)),
 })
@@ -169,11 +170,6 @@ async function handleApplyChanges() {
           >
             {{ $t('table.customizeColumns') }}
           </h6>
-          <!-- <span text="caption xs">
-            {{ nonHelperCols.length }}
-            {{ $t('columns').toLowerCase() }}
-            {{ $t('general.available').toLowerCase() }}
-          </span> -->
         </div>
 
         <DocumentationBtn
@@ -212,9 +208,7 @@ async function handleApplyChanges() {
           <List
             :items="nonHelperCols"
             row-tag="label"
-            :fuse-options="{
-              shouldSort: true,
-            }"
+            :fuse-options="{ shouldSort: true }"
           >
             <template #above="{ itemsFiltered }">
               <div

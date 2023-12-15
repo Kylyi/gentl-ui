@@ -81,7 +81,7 @@ const isLimitRowsReached = computedEager(() => {
       <div
         absolute
         left-2
-        :class="{ 'lt-md:display-none': !noPagination }"
+        :class="{ 'lt-md:hidden': !noPagination }"
         flex="~ gap-x-2 center"
       >
         <span
@@ -198,10 +198,7 @@ const isLimitRowsReached = computedEager(() => {
       <!-- Page size -->
       <div
         v-if="!noPagination"
-        absolute
-        right-2
-        display="!lt-md:none"
-        flex="~ gap-x-2 center"
+        class="table-pagination__page-size"
       >
         <span text="caption">
           {{ $t('table.rowsPerPage') }}
@@ -228,6 +225,11 @@ const isLimitRowsReached = computedEager(() => {
 
   .btn.is-active {
     --apply: bg-primary color-white;
+  }
+
+  &__page-size {
+    --apply: absolute right-2 flex flex-center flex-gap-x-2;
+    --apply: '!lt-md:hidden';
   }
 }
 </style>

@@ -45,7 +45,7 @@ const saveableEntities = ref<Record<string, boolean>>({
 })
 
 const layout = ref({
-  name: currentLayout.value?.name,
+  name: currentLayout.value?.name || '',
   columns: false,
   sort: false,
   filters: false,
@@ -80,7 +80,7 @@ const isSaveable = computed(() => {
 function handleDialogBeforeShow() {
   layout.value.name =
     currentLayout.value?.name !== $t('table.layoutStateNoLayout')
-      ? currentLayout.value?.name
+      ? currentLayout.value?.name || ''
       : ''
   currentLayoutId.value = currentLayout.value?.id
 
@@ -152,13 +152,7 @@ const accessLevel = computed(() => {
 
 // Queries
 async function handleSaveLayout() {
-  const isValid = await $v.value.$validate()
-
-  if (!isValid) {
-    return
-  }
-
-  const res = await handleRequest<ITableLayout>(
+  const res = await handleRequest(
     () => {
       const mode = currentLayoutId.value ? 'update' : 'create'
       const toSave: Array<'columns' | 'filters' | 'sorting'> = []
@@ -180,7 +174,7 @@ async function handleSaveLayout() {
         { mode, tableQuery: tableQuery.value }
       )
     },
-    { notifySuccess: true, logging: { operationName: 'table.layoutSave' } }
+    { $v, notifySuccess: true, logging: { operationName: 'table.layoutSave' } }
   )
 
   // When we create a new layout, we add it to the layouts array
@@ -246,6 +240,7 @@ function reset() {
     default: false,
     public: false,
   }
+
   $v.value.$reset()
 }
 
@@ -294,7 +289,7 @@ const $v = useVuelidate(
         <TextInput
           v-model="layout.name"
           :label="$t('table.layoutName')"
-          :validation="$v.layout.name"
+          :validation="$v.layout?.name"
         />
 
         <Separator spaced />

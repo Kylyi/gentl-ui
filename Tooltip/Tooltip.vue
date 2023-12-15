@@ -44,7 +44,7 @@ const instance = getCurrentInstance()
 
 // Layout
 const model = defineModel({ default: false, local: true })
-const tooltipEl = ref<HTMLElement | null>(null)
+const tooltipEl = ref<HTMLElement>()
 const referenceEl = ref<Element>() // Element that menu is attached to
 const arrowEl = ref<HTMLDivElement>()
 const middleware = ref([
@@ -90,27 +90,33 @@ onMounted(() => {
     referenceEl.value?.addEventListener('mouseenter', () => {
       referenceEl.value && referenceEl.value.classList.add('tooltip-hovered')
 
-      setTimeout(() => {
-        const isStillInside =
-          referenceEl.value?.classList.contains('tooltip-hovered')
+      setTimeout(
+        () => {
+          const isStillInside =
+            referenceEl.value?.classList.contains('tooltip-hovered')
 
-        if (isStillInside) {
-          model.value = true
-        }
-      }, props.delay?.[0] || 0)
+          if (isStillInside) {
+            model.value = true
+          }
+        },
+        props.delay?.[0] || 0
+      )
     })
 
     referenceEl.value?.addEventListener('mouseleave', () => {
       referenceEl.value && referenceEl.value.classList.remove('tooltip-hovered')
 
-      setTimeout(() => {
-        const isStillInside =
-          referenceEl.value?.classList.contains('tooltip-hovered')
+      setTimeout(
+        () => {
+          const isStillInside =
+            referenceEl.value?.classList.contains('tooltip-hovered')
 
-        if (!isStillInside) {
-          model.value = false
-        }
-      }, props.delay?.[1] || 0)
+          if (!isStillInside) {
+            model.value = false
+          }
+        },
+        props.delay?.[1] || 0
+      )
     })
   })
 })
@@ -146,7 +152,8 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .tooltip {
-  --apply: dark:bg-darker bg-white border-ca border-custom rounded-custom z-$zMenu;
+  --apply: dark:bg-darker bg-white border-ca border-custom rounded-custom
+    z-$zMenu;
 
   &.is-dense {
     --apply: p-0 leading-none;

@@ -51,7 +51,9 @@ const isNonValueComparator = computedEager(() => {
 })
 
 const component = computed(() => {
-  return COMPONENTS_BY_DATATYPE_MAP[column.value.dataType.replace('Simple', '')]
+  return COMPONENTS_BY_DATATYPE_MAP[
+    column.value.dataType.replace('Simple', '') as DataType
+  ]
 })
 
 const inputDebounce = computed(() => {
@@ -218,11 +220,16 @@ function handleComparatorChange(comparator: ComparatorEnum) {
   })
 }
 
-const tableRefreshDebounce = useDebounceFn(() => {
+const tableRefreshDebounced = useDebounceFn(() => {
   tableRefresh()
 }, inputDebounce.value || 0)
 
-function handleValueChange(val: any, set?: boolean) {
+function handleValueChange(
+  val: any,
+  options?: { set?: boolean; debounce?: boolean }
+) {
+  const { set, debounce } = options ?? {}
+
   if (set) {
     if (typeof val === 'string') {
       filter.value.value = val.trim()
@@ -231,7 +238,11 @@ function handleValueChange(val: any, set?: boolean) {
     }
   }
 
-  tableRefreshDebounce()
+  if (debounce) {
+    tableRefreshDebounced()
+  } else {
+    tableRefresh()
+  }
 }
 
 defineExpose({
@@ -312,7 +323,7 @@ defineExpose({
       option-label="_label"
       size="sm"
       :placeholder="`${$t('table.filterValue')}...`"
-      @update:model-value="handleValueChange"
+      @update:model-value="handleValueChange($event, { debounce: false })"
     />
 
     <!-- Ago value -->
@@ -334,13 +345,13 @@ defineExpose({
     <!-- Primitive value -->
     <Component
       :is="component.component"
-      v-else-if="component.component && !isNonValueComparator"
+      v-else-if="component?.component && !isNonValueComparator"
       v-bind="component.props"
       ref="valueInputEl"
       v-model="filter.value"
       size="sm"
       :placeholder="`${$t('table.filterValue')}...`"
-      @update:model-value="handleValueChange($event, true)"
+      @update:model-value="handleValueChange($event, { set: true })"
     />
   </div>
 </template>

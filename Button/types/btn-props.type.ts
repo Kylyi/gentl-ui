@@ -1,7 +1,5 @@
-import { NuxtLink } from '#components'
-
 // Types
-import { NavigateToOptions } from '~/shims'
+import type { NavigateToOptions } from '~/shims'
 
 // Constants
 import { BUTTON_PRESET } from '~/components/Button/constants/button-preset.constant'
@@ -12,16 +10,16 @@ export type INavigation = {
   exact?: boolean
   external?: boolean
   replace?: boolean
-  to?: InstanceType<typeof NuxtLink>['to']
+  to?: any
   navigateToOptions?: NavigateToOptions
 }
 
-export interface IBtnNavigationProps extends INavigation {
+export type IBtnNavigationProps = INavigation & {
   noActiveLink?: boolean
   type?: 'button' | 'submit' | 'reset'
 }
 
-export interface IBtnProps extends IBtnNavigationProps {
+export type IBtnProps = IBtnNavigationProps & {
   align?: 'left' | 'center' | 'right'
   disabled?: boolean
   disableStyle?: 'filled' | 'flat'
