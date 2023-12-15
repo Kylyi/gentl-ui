@@ -62,8 +62,9 @@ export const tableViewCodeKey: InjectionKey<Ref<string>> =
   Symbol('tableViewCode')
 
 // Selection
-export const tableSelectRowKey: InjectionKey<(row: any) => void> =
-  Symbol('tableSelectRow')
+export const tableSelectRowKey: InjectionKey<
+  (row: any, val?: boolean) => void
+> = Symbol('tableSelectRow')
 
 export const tableIsSelectedRowKey: InjectionKey<(row: any) => boolean> =
   Symbol('tableIsSelectedRow')

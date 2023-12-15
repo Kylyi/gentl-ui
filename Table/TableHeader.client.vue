@@ -9,7 +9,10 @@ import {
 } from '~/components/Table/functions/useTableColumnResizing'
 
 // Injections
-import { tableSelectionKey } from '~/components/Table/provide/table.provide'
+import {
+  tableSelectRowKey,
+  tableSelectionKey,
+} from '~/components/Table/provide/table.provide'
 
 // Components
 import HorizontalScroller from '~/components/Scroller/HorizontalScroller.vue'
@@ -33,6 +36,7 @@ const { headerEl, activeSplitter, columnSplitters, handleSplitterPointerDown } =
 
 // Injections
 const selection = injectStrict(tableSelectionKey)
+const handleSelectRow = injectStrict(tableSelectRowKey)
 
 // Layout
 const columns = toRef(props, 'columns')
@@ -53,15 +57,9 @@ const selectionState = computed({
       : false // Nothing is selected
   },
   set(val: boolean | null) {
-    if (val === false) {
-      selection.value = {}
-    } else {
-      selection.value = props.rows.reduce((agg, row) => {
-        agg[row.id] = val
-
-        return agg
-      }, {} as Record<string, boolean>)
-    }
+    props.rows.forEach(row => {
+      handleSelectRow(row, !!val)
+    })
   },
 })
 
