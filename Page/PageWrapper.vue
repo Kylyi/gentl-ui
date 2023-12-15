@@ -13,6 +13,8 @@ withDefaults(defineProps<IProps>(), {
   includeTopBar: true,
 })
 
+const { isMobile, isSidebarOpen } = useMobile()
+
 const mounted = ref(false)
 
 onMounted(() => {
@@ -27,6 +29,7 @@ onMounted(() => {
       'is-scrollable': $route.meta.isPageScrollable,
       'is-mounted': mounted,
       'is-padded': pad,
+      'is-mobile-and-sidebar-open': isMobile && isSidebarOpen,
     }"
   >
     <!-- TopBar -->
@@ -45,21 +48,15 @@ onMounted(() => {
       <template #breadcrumbs-append>
         <slot name="breadcrumbs-append" />
       </template>
+    </Component>
 
-      <template #title-left>
-        <slot name="title-left" />
-      </template>
+    <!-- Content -->
+    <div class="page-wrapper__content">
+      <slot name="title-left" />
 
-      <template
-        v-if="title"
-        #title
-      >
+      <template v-if="title">
         <slot name="title">
-          <h4
-            text="h4"
-            font-700
-            m="$PageWrapper-title-margin"
-          >
+          <h4 class="page-title">
             {{ title }}
 
             <slot name="title-append" />
@@ -67,29 +64,30 @@ onMounted(() => {
         </slot>
       </template>
 
-      <template #title-right>
-        <slot name="title-right" />
-      </template>
-    </Component>
-    <slot v-if="!loading" />
+      <slot name="title-right" />
 
-    <slot
-      v-else
-      name="loading"
-    >
-      <div
-        flex="~ center"
-        fit
+      <slot
+        v-if="!loading"
+        p="r-2!"
+      />
+      <slot
+        v-else
+        name="loading"
       >
-        <Loader />
-      </div>
-    </slot>
+        <div
+          flex="~ center"
+          fit
+        >
+          <Loader />
+        </div>
+      </slot>
+    </div>
   </main>
 </template>
 
 <style lang="scss" scoped>
 .page-wrapper {
-  --apply: ease-out overflow-auto grow p-$PageWrapper-padding;
+  --apply: ease-out overflow-auto grow z-$zPageWrapper p-$PageWrapper-padding;
 
   &.is-mounted {
     --apply: transition-padding-250 transition-margin-250;
@@ -101,6 +99,14 @@ onMounted(() => {
 
   &.is-padded {
     --apply: m-t-$navHeight;
+  }
+
+  &.is-mobile-and-sidebar-open {
+    --apply: overflow-x-hidden rounded-l-2 p-r-0;
+  }
+
+  &__content {
+    --apply: flex flex-col grow p-$PageWrapper-content-padding overflow-auto;
   }
 }
 
@@ -120,5 +126,15 @@ onMounted(() => {
 .page-drawer.is-open.page-drawer--right:not(.is-absolute):not(.is-mini)
   ~ .page-wrapper {
   padding-right: var(--drawerRightWidth);
+}
+
+.page-title {
+  --apply: font-700 p-x-2 p-y-4 max-w-screen-lg m-b-3;
+
+  box-shadow: 0 8px 8px -9px theme('colors.truegray.300');
+}
+
+.dark .page-title {
+  box-shadow: 0 8px 8px -9px theme('colors.truegray.700');
 }
 </style>

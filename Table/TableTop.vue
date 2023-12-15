@@ -31,16 +31,13 @@ const props = defineProps<
     | 'nonSavableSettings'
     | 'minimumColumnWidth'
     | 'exportProps'
-    | 'noSearch'
   > & {
     search: string
-    smallScreen?: boolean
   }
 >()
 const emits = defineEmits<{
   (e: 'update:columnsWidth'): void
 }>()
-const slots = useSlots()
 
 // Constants
 const MIN_VISIBLE_QUERY_BUILDER_ROWS = 1
@@ -49,6 +46,7 @@ const QUERY_BUILDER_INLINE_PADDING = 8
 
 // Store
 const { setTableState } = useTableStore()
+const { isMobile } = useMobile()
 
 // Injections
 const selection = injectStrict(tableSelectionKey)
@@ -63,15 +61,6 @@ const tableSlots = injectStrict(tableSlotsKey)
 const queryBuilder = useVModel(props, 'queryBuilder')
 const queryBuilderInlineEl = ref<InstanceType<typeof QueryBuilderInline>>()
 const search = useVModel(props, 'search')
-
-const hasActionBar = computedEager(() => {
-  return (
-    !!slots['left-prepend'] ||
-    !!slots['left-append'] ||
-    !!slots['right-prepend'] ||
-    !!slots['right-append']
-  )
-})
 
 const queryBuilderHeight = computed(() => {
   return {
@@ -142,11 +131,6 @@ function handleFilterClear(filters?: 'queryBuilder' | 'columns') {
       col.clearFilters()
     })
     queryBuilderInlineEl.value?.clearFilter()
-    search.value = ''
-
-    if (!queryBuilderInlineEl.value && !search.value) {
-      tableRefresh()
-    }
   }
 }
 
@@ -189,10 +173,7 @@ function handleFitColumns() {
 <template>
   <div class="table-top">
     <!-- Action bar -->
-    <div
-      v-if="hasActionBar"
-      class="table-top__actionbar"
-    >
+    <div class="table-top__actionbar">
       <!-- Query builder button -->
       <div
         flex="~ gap-1 items-center"
@@ -212,7 +193,11 @@ function handleFitColumns() {
     <template v-if="!tableTopFunctionality?.noToolbar">
       <Separator />
 
-      <div class="table-top__qb">
+      <!-- Query builder -->
+      <div
+        v-if="queryBuilder"
+        class="table-top__qb"
+      >
         <TableQueryBuilderBtn
           v-if="queryBuilder"
           v-model:query-builder="queryBuilder"
@@ -220,120 +205,104 @@ function handleFitColumns() {
           m="t-1"
         />
 
-        <slot name="left">
-          <!-- Search -->
-          <TableSearch
-            v-if="!noSearch"
-            v-model:search="search"
-            :columns="columns"
-          />
-
-          <!-- Query builder -->
-          <template v-else-if="queryBuilder">
-            <Separator
-              vertical
-              h="full"
-              m="l-1"
-            />
-
-            <VerticalScroller
-              grow
-              :style="queryBuilderHeight"
-            >
-              <div
-                p="1"
-                bg="white dark:darker"
-                rounded="custom"
-                min-h="10"
-              >
-                <QueryBuilderInline
-                  ref="queryBuilderInlineEl"
-                  v-model:items="queryBuilder"
-                  :columns="nonHelperColumns"
-                  editable
-                />
-              </div>
-            </VerticalScroller>
-          </template>
-
-          <!-- Chips -->
-          <TableTopChips
-            v-else
-            :columns="columns"
-            grow
-          />
-
-          <Separator
-            vertical
-            h="full"
-          />
-
-          <!-- Remove filters -->
-          <Btn
-            size="xs"
-            :label="$t('table.removeQueryBuilderFilters')"
-            no-uppercase
-            no-truncate
-            stacked
-            class="table-top__qb-remove-filters"
-            data-cy="remove-filters"
+        <VerticalScroller
+          grow
+          :style="queryBuilderHeight"
+          display="md:flex! none!"
+        >
+          <div
+            p="1"
+            bg="white dark:darker"
+            rounded="custom"
+            min-h="10"
           >
-            <Menu
-              placement="left"
-              hide-header
-              :no-arrow="false"
-              content-class="gap-1"
-            >
-              <!-- Remove query builder filters -->
-              <Btn
-                v-if="queryBuilder"
-                :label="$t('table.removeQueryBuilderFilter')"
-                size="sm"
-                no-uppercase
-                data-cy="remove-advanced-filter"
-                @click="handleFilterClear('queryBuilder')"
-              />
-
-              <!-- Remove columns filters -->
-              <Btn
-                :label="$t('table.removeColumnsFilter')"
-                size="sm"
-                no-uppercase
-                data-cy="remove-columns-filter"
-                @click="handleFilterClear('columns')"
-              />
-
-              <Separator />
-
-              <!-- Remove all filters -->
-              <Btn
-                :label="$t('table.removeAllFilters')"
-                size="sm"
-                no-uppercase
-                color="negative"
-                data-cy="remove-all-filters"
-                @click="handleFilterClear"
-              />
-            </Menu>
-          </Btn>
-
-          <Separator
-            vertical
-            h="full"
-            m="r-1"
-          />
-
-          <slot name="export">
-            <Component
-              :is="ExportBtn"
-              v-bind="exportProps"
-              shrink-0
-              self-start
-              m="t-1"
+            <QueryBuilderInline
+              ref="queryBuilderInlineEl"
+              v-model:items="queryBuilder"
+              :columns="nonHelperColumns"
+              editable
             />
-          </slot>
+          </div>
+        </VerticalScroller>
+        <div flex-grow />
+
+        <!-- Layout selector -->
+        <TableLayoutSelector
+          v-model:query-builder="queryBuilder"
+          m="t-1 auto"
+          display="md:none"
+        />
+
+        <!-- Remove filters -->
+        <Btn
+          no-upeprcase
+          shrink-0
+          size="xs"
+          :label="$t('table.removeQueryBuilderFilters')"
+          no-uppercase
+          w="20"
+          no-truncate
+          stacked
+          h="full"
+          p="!y-0"
+          display="none! md:flex!"
+          bg="dark:darker"
+          color="ca hover:negative"
+          border="2 transparent hover:negative"
+          data-cy="remove-filters"
+        >
+          <Menu
+            :placement="isMobile ? 'bottom' : 'left'"
+            hide-header
+            :no-arrow="false"
+            content-class="gap-1"
+          >
+            <Btn
+              :label="$t('table.removeQueryBuilderFilter')"
+              size="sm"
+              no-uppercase
+              data-cy="remove-advanced-filter"
+              @click="handleFilterClear('queryBuilder')"
+            />
+            <Btn
+              :label="$t('table.removeColumnsFilter')"
+              size="sm"
+              no-uppercase
+              data-cy="remove-columns-filter"
+              @click="handleFilterClear('columns')"
+            />
+
+            <Separator />
+
+            <Btn
+              :label="$t('table.removeAllFilters')"
+              size="sm"
+              no-uppercase
+              color="negative"
+              data-cy="remove-all-filters"
+              @click="handleFilterClear"
+            />
+          </Menu>
+        </Btn>
+
+        <slot name="export">
+          <Component
+            :is="ExportBtn"
+            v-bind="exportProps"
+            shrink-0
+            self-start
+            m="t-1"
+          />
         </slot>
       </div>
+
+      <!-- Chips - filter columns or search -->
+      <TableSearch
+        v-else
+        v-model:search="search"
+        :columns="columns"
+        class="table-top__qb"
+      />
 
       <Separator m="b-1" />
     </template>
@@ -344,7 +313,12 @@ function handleFitColumns() {
       class="table-top__subbar"
     >
       <!-- Selection & Sorting -->
-      <div class="table-top__selection">
+      <div
+        grow
+        flex="~ gap-2"
+        items-center
+        display="lt-md:none"
+      >
         <template v-if="selectable && $slots['bulk-actions']">
           <!-- Selection actions -->
           <slot
@@ -354,7 +328,9 @@ function handleFitColumns() {
             <!-- Selection info -->
             <div
               v-if="selectable"
-              class="table-top__selection-info"
+              flex="~ gap-1 items-center"
+              leading="none"
+              text="caption xs"
             >
               <div fluent:select-all-on-20-regular />
               <span m="l-1">{{ $t('general.selected') }}:</span>
@@ -410,44 +386,160 @@ function handleFitColumns() {
         </div>
       </div>
 
-      <!-- Layout -->
-      <div class="table-top__layout">
-        <span
-          v-if="!tableTopFunctionality?.noLayout"
-          class="table-top__layout-label"
-        >
-          {{ $t('table.layoutState') }}:
-        </span>
+      <!-- More actions btn (mobile) -->
+      <Btn
+        v-if="isMobile"
+        :label="$t('general.moreActions')"
+        icon="ri:more-2-fill color-white"
+        label-class="color-white lowercase first-letter:capitalize"
+        bg-blue-500
+        w-full
+      >
+        <Menu hide-header>
+          <span
+            v-if="!tableTopFunctionality?.noLayout"
+            text="caption xs"
+            font="bold"
+            display="lt-md:none"
+          >
+            {{ $t('table.layoutState') }}:
+          </span>
 
-        <!-- Columns btn -->
-        <TableColumnsBtn
-          v-if="!tableTopFunctionality?.noColumnSelection"
-          v-model:columns="columns"
-        />
+          <!-- Columns btn -->
+          <TableColumnsBtn
+            v-if="!tableTopFunctionality?.noColumnSelection"
+            v-model:columns="columns"
+          />
 
-        <!-- Autofit btn -->
-        <Btn
-          v-if="!tableTopFunctionality?.noAutoFit && !smallScreen"
-          size="sm"
-          no-uppercase
-          icon="material-symbols:fit-width"
-          color="ca"
-          :label="$t('table.fitColumns')"
-          @click="handleFitColumns"
-        />
+          <!-- Autofit btn -->
+          <Btn
+            v-if="!tableTopFunctionality?.noAutoFit"
+            size="sm"
+            no-uppercase
+            icon="material-symbols:fit-width"
+            color="ca"
+            :label="$t('table.fitColumns')"
+            @click="handleFitColumns"
+          />
 
-        <template
-          v-if="config.table.useServerState && !tableTopFunctionality?.noLayout"
-        >
-          <!-- Layout selector -->
-          <TableLayoutSelector v-model:query-builder="queryBuilder" />
+          <!-- Remove filters -->
+          <Btn
+            no-upeprcase
+            shrink-0
+            size="sm"
+            :label="$t('table.removeQueryBuilderFilters')"
+            no-uppercase
+            no-truncate
+            stacked
+            p="!y-0"
+            m="auto"
+            w="full"
+            h="8"
+            bg="dark:darker"
+            color="ca hover:negative"
+            border="2 transparent hover:negative"
+            data-cy="remove-filters"
+          >
+            <Menu
+              :placement="isMobile ? 'bottom' : 'left'"
+              hide-header
+              :no-arrow="false"
+              content-class="gap-1"
+            >
+              <Btn
+                :label="$t('table.removeQueryBuilderFilter')"
+                size="sm"
+                no-uppercase
+                data-cy="remove-advanced-filter"
+                @click="handleFilterClear('queryBuilder')"
+              />
+              <Btn
+                :label="$t('table.removeColumnsFilter')"
+                size="sm"
+                no-uppercase
+                data-cy="remove-columns-filter"
+                @click="handleFilterClear('columns')"
+              />
+
+              <Separator />
+
+              <Btn
+                :label="$t('table.removeAllFilters')"
+                size="sm"
+                no-uppercase
+                color="negative"
+                data-cy="remove-all-filters"
+                @click="handleFilterClear"
+              />
+            </Menu>
+          </Btn>
 
           <!-- Layout settings -->
-          <TableLayoutSettingsBtn :non-saveable-settings="nonSavableSettings" />
-        </template>
-      </div>
+          <TableLayoutSettingsBtn
+            v-if="
+              config.table.useServerState && !tableTopFunctionality?.noLayout
+            "
+            :non-saveable-settings="nonSavableSettings"
+          />
 
-      <slot name="subbar-right" />
+          <slot name="subbar-right" />
+        </Menu>
+      </Btn>
+      <!-- Layout -->
+      <div
+        v-else
+        flex="~ gap-2 md:row col"
+        items="md:center start"
+        grow
+        justify="end"
+      >
+        <div
+          flex
+          items-center
+        >
+          <span
+            v-if="!tableTopFunctionality?.noLayout"
+            text="caption xs"
+            font="bold"
+            display="lt-md:none"
+          >
+            {{ $t('table.layoutState') }}:
+          </span>
+
+          <!-- Columns btn -->
+          <TableColumnsBtn
+            v-if="!tableTopFunctionality?.noColumnSelection"
+            v-model:columns="columns"
+          />
+          <!-- Autofit btn -->
+          <Btn
+            v-if="!tableTopFunctionality?.noAutoFit"
+            size="sm"
+            no-uppercase
+            icon="material-symbols:fit-width"
+            color="ca"
+            :label="$t('table.fitColumns')"
+            @click="handleFitColumns"
+          />
+        </div>
+        <div flex="~ items-center">
+          <template
+            v-if="
+              config.table.useServerState && !tableTopFunctionality?.noLayout
+            "
+          >
+            <!-- Layout selector -->
+            <TableLayoutSelector v-model:query-builder="queryBuilder" />
+
+            <!-- Layout settings -->
+            <TableLayoutSettingsBtn
+              :non-saveable-settings="nonSavableSettings"
+            />
+          </template>
+
+          <slot name="subbar-right" />
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -457,40 +549,15 @@ function handleFitColumns() {
   --apply: flex flex-col;
 
   &__actionbar {
-    --apply: flex flex-wrap gap-2 items-center p-x-2 p-y-1;
+    --apply: flex flex-wrap gap-2 items-center p-x-2 md:p-t-5;
   }
 
   &__qb {
     --apply: flex gap-1 items-start p-x-2 p-y-1;
-
-    &-remove-filters {
-      --apply: shrink-0 w-20 h-full dark:bg-darker bg-white color-ca
-        border-2 border-transparent hover:border-negative;
-
-      --apply: "!hover:color-negative !p-y-0";
-    }
   }
 
   &__subbar {
     --apply: flex gap-2 items-center justify-between p-x-2 p-y-1;
-  }
-
-  &__layout {
-    --apply: flex gap-2 items-center grow justify-end;
-
-    &-label {
-      --apply: text-caption text-xs font-bold;
-      --apply: '!lt-md:hidden';
-    }
-  }
-
-  &__selection {
-    --apply: flex grow gap-2 items-center;
-    --apply: '!lt-md:hidden';
-
-    &-info {
-      --apply: flex gap-1 items-center leading-none text-caption text-xs;
-    }
   }
 }
 </style>
