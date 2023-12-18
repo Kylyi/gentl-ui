@@ -4,6 +4,9 @@ import { NuxtLink } from '#components'
 // Types
 import { type ITableProps } from '~/components/Table/types/table-props.type'
 
+// Models
+import { TableColumn } from '~/components/Table/models/table-column.model'
+
 // Injections
 import {
   tableIsSelectedRowKey,
@@ -18,13 +21,21 @@ type IProps = Pick<
   row: any
 }
 
-withDefaults(defineProps<IProps>(), {
+const props = withDefaults(defineProps<IProps>(), {
   index: 0,
 })
 
 // Injections
 const selectRow = injectStrict(tableSelectRowKey, () => {})
 const isSelectedRow = injectStrict(tableIsSelectedRowKey, () => false)
+
+// Layout
+const row = toRef(props, 'row')
+const isEditing = ref(false)
+
+function handleSetModelValue(value: any, col: TableColumn) {
+  set(row.value, col.field, value)
+}
 </script>
 
 <template>
@@ -63,8 +74,18 @@ const isSelectedRow = injectStrict(tableIsSelectedRowKey, () => false)
             <div
               class="cell cell-value"
               :class="{ 'col-span-2': col.hideLabel }"
+              @click.stop.prevent="isEditing = true"
             >
+              <Component
+                :is="col._editComponent.component"
+                v-if="isEditing"
+                :model-value="get(row, col.field)"
+                v-bind="col._editComponent.props"
+                @update:model-value="handleSetModelValue"
+              />
+
               <ValueFormatter
+                v-else
                 :value="get(row, col.field)"
                 :data-type="col.dataType"
               >
