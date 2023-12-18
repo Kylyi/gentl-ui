@@ -129,11 +129,11 @@ const isSelectedRow = injectStrict(tableIsSelectedRowKey, () => false)
   }
 
   &.is-selectable {
-    --apply: cursor-pointer;
+    --apply: cursor-pointer border-2;
   }
 
   &.is-selected {
-    --apply: dark:bg-blue-900/10 bg-blue-100/10 border-primary;
+    --apply: dark:bg-blue-900/30 bg-blue-100/30 border-blue-400 border-2 color-blue-400;
   }
 }
 

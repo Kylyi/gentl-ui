@@ -419,13 +419,13 @@ function handleFitColumns() {
           {{ $t('table.layoutState') }}:
         </span>
 
-        <!-- Columns btn -->
+        <!-- Columns -->
         <TableColumnsBtn
           v-if="!tableTopFunctionality?.noColumnSelection"
           v-model:columns="columns"
         />
 
-        <!-- Autofit btn -->
+        <!-- Autofit -->
         <Btn
           v-if="!tableTopFunctionality?.noAutoFit && !smallScreen"
           size="sm"
