@@ -1,4 +1,4 @@
-import { type AnyMaskedOptions } from 'imask'
+import type { MaskedOptions } from 'imask'
 import { type IMaskOptions } from '~/components/Inputs/types/mask-options.type'
 
 // Types
@@ -7,7 +7,7 @@ import { type IInputWrapperEventHandlers } from '~/components/Inputs/types/input
 
 export type IInputUtilsOptions = {
   props: Omit<IInputProps, 'mask' | 'name'>
-  maskRef: Ref<AnyMaskedOptions>
+  maskRef: Ref<MaskedOptions>
   menuElRef?: MaybeRefOrGetter
   preventFocusOnTouch?: boolean
 

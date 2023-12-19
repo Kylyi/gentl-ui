@@ -1,8 +1,7 @@
 <script setup lang="ts">
 // TODO: am/pm values are not reactive on language change (broken only for 13h for some reason...)
 
-// eslint-disable-next-line import/named
-import { type AnyMaskedOptions, MaskedRange } from 'imask'
+import { type MaskedOptions, MaskedRange } from 'imask'
 
 // Types
 import type { ITimeInputProps } from '~/components/Inputs/TimeInput/types/time-input-props.type'
@@ -103,7 +102,7 @@ const delocalizedTimeParts = computed(() => {
 })
 
 // Masks
-const maskFullTime = computed<AnyMaskedOptions>(() => {
+const maskFullTime = computed<MaskedOptions>(() => {
   return {
     mask: PATTERN,
     pattern: PATTERN,
@@ -136,7 +135,7 @@ const maskFullTime = computed<AnyMaskedOptions>(() => {
         return val
       }
 
-      return localizeTime(val)
+      return localizeTime(val) as string
     },
     parse: (val: string) => {
       if (!isTime(val)) {
@@ -215,6 +214,7 @@ const {
   maskedValue,
   wrapperProps,
   hasNoValue,
+  hasClearableBtn,
   handleManualModelChange,
   focus,
   select,
@@ -283,7 +283,7 @@ defineExpose({
 
     <template #append>
       <div
-        v-if="$slots.append || (!readonly && !disabled)"
+        v-if="$slots.append || hasClearableBtn || (!readonly && !disabled)"
         flex="~ gap-x-2 center"
         fit
         @click="handleFocusOrClick"
@@ -293,6 +293,24 @@ defineExpose({
           :clear="clear"
           :focus="focus"
         />
+
+        <Btn
+          v-if="hasClearableBtn"
+          icon="eva:close-fill h-6 w-6"
+          color="ca"
+          size="auto"
+          h="7"
+          w="7"
+          tabindex="-1"
+          @click.stop.prevent="!clearConfirmation && clear()"
+        >
+          <MenuConfirmation
+            v-if="clearConfirmation"
+            @ok="clear"
+          >
+            {{ clearConfirmation }}
+          </MenuConfirmation>
+        </Btn>
 
         <template v-if="!readonly && !disabled">
           <!-- AM / PM SWITCH -->

@@ -102,4 +102,9 @@ export interface IListProps extends IListBaseProps {
    * Debounce of the search in ms
    */
   searchDebounce?: number
+
+  /**
+   * The props that should be passed to the input tag (<input>)
+   */
+  inputProps?: Record<string, any>
 }

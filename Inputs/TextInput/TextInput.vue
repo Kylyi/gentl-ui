@@ -29,8 +29,9 @@ const {
   el,
   maskedValue,
   wrapperProps,
-  hasNoValue,
+  hasContent,
   isBlurred,
+  hasClearableBtn,
   handleFocus,
   handleBlur,
   handleClickWrapper,
@@ -49,7 +50,7 @@ const {
 })
 
 const hasCopyBtn = computedEager(() => {
-  return props.readonly && !props.disabled && !props.noCopy && !hasNoValue.value
+  return props.readonly && !props.disabled && !props.noCopy && hasContent.value
 })
 
 defineExpose({
@@ -67,7 +68,7 @@ defineExpose({
 <template>
   <InputWrapper
     v-bind="wrapperProps"
-    :has-content="hasContent || !hasNoValue"
+    :has-content="hasContent"
     @click="handleClickWrapper"
   >
     <template
@@ -104,19 +105,37 @@ defineExpose({
     />
 
     <template
-      v-if="$slots.append || hasCopyBtn"
+      v-if="$slots.append || hasCopyBtn || clearable"
       #append
     >
       <div
-        flex="~ gap-x-1"
+        flex="~ gap-1 items-center"
         fit
-        items-center
+        p="x-2"
       >
         <slot
           name="append"
           :clear="clear"
           :focus="focus"
         />
+
+        <Btn
+          v-if="hasClearableBtn"
+          icon="eva:close-fill h-6 w-6"
+          color="ca"
+          size="auto"
+          h="7"
+          w="7"
+          tabindex="-1"
+          @click.stop.prevent="!clearConfirmation && clear()"
+        >
+          <MenuConfirmation
+            v-if="clearConfirmation"
+            @ok="clear"
+          >
+            {{ clearConfirmation }}
+          </MenuConfirmation>
+        </Btn>
 
         <CopyBtn
           v-if="hasCopyBtn"

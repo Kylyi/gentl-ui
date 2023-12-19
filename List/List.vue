@@ -102,6 +102,7 @@ onMounted(() => {
           class="bg-white dark:bg-darker"
           :autofocus="!noAutofocus"
           data-cy="list-search"
+          v-bind="inputProps"
         />
 
         <slot name="after-search" />

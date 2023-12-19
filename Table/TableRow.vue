@@ -6,14 +6,19 @@ import { type ITableProps } from '~/components/Table/types/table-props.type'
 
 type IProps = Pick<
   ITableProps,
-  'columns' | 'rowHeight' | 'to' | 'selectable'
+  'columns' | 'rowHeight' | 'to' | 'selectable' | 'editable'
 > & {
   index?: number
   row: any
 }
 
-withDefaults(defineProps<IProps>(), {
+const props = withDefaults(defineProps<IProps>(), {
   index: 0,
+})
+
+// Layout
+const dataColumns = computed(() => {
+  return props.columns?.filter(col => !col.hidden) ?? []
 })
 </script>
 
@@ -27,20 +32,19 @@ withDefaults(defineProps<IProps>(), {
     :to="to?.(row)"
   >
     <slot>
-      <slot name="row-inside" />
+      <slot
+        name="row-inside"
+        mode="table"
+      />
 
-      <template
-        v-for="(col, idx) in columns"
-        :key="idx"
+      <TableCell
+        v-for="col in dataColumns"
+        :key="col.field"
+        :col="col"
+        :row="row"
       >
-        <TableCell
-          v-if="!col.hidden"
-          :col="col"
-          :row="row"
-        >
-          <slot :name="col.name" />
-        </TableCell>
-      </template>
+        <slot :name="col.name" />
+      </TableCell>
     </slot>
   </Component>
 </template>

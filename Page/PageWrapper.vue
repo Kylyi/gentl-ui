@@ -87,7 +87,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .page-wrapper {
-  --apply: ease-out overflow-auto grow z-$zPageWrapper p-$PageWrapper-padding;
+  --apply: ease-out overflow-auto grow p-$PageWrapper-padding;
 
   @screen lt-md {
     --apply: w-full;

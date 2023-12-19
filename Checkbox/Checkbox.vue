@@ -15,6 +15,13 @@ const emits = defineEmits<{
   (e: 'update:model-value', value: any): void
 }>()
 
+defineExpose({
+  focus: () => labelEl.value?.focus(),
+})
+
+// Layout
+const labelEl = ref<HTMLElement>()
+
 const toggleState = computed(() => {
   const isChecked =
     props.comparatorFn?.(props.modelValue, props.checkValue) ??
@@ -68,10 +75,26 @@ function handleStateChange() {
     )
   }
 }
+
+function handleKey(ev: KeyboardEvent) {
+  if (!props.editable) {
+    return
+  }
+
+  if (ev.key === ' ') {
+    ev.preventDefault?.()
+    ev.stopPropagation?.()
+
+    handleStateChange()
+  }
+
+  props.inputProps?.onKeydown?.(ev)
+}
 </script>
 
 <template>
   <label
+    ref="labelEl"
     tabindex="0"
     class="label"
     :class="[
@@ -82,6 +105,7 @@ function handleStateChange() {
         'is-readonly': !editable,
       },
     ]"
+    @keydown="handleKey"
     @click.stop.prevent="handleStateChange"
   >
     <input
@@ -140,6 +164,15 @@ function handleStateChange() {
 .label {
   --apply: flex items-start relative gap-2 cursor-pointer transition-all
     rounded-custom p-x-2 select-none;
+
+  --apply: '!outline-none';
+
+  &:focus-visible,
+  &:focus {
+    .checkbox {
+      --apply: ring-2 ring-primary/50 ring-offset-2;
+    }
+  }
 
   &.is-readonly {
     --apply: opacity-80;

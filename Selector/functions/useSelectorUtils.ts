@@ -58,8 +58,14 @@ export function useSelectorUtils(options: ISelectorUtilsOptions) {
       return
     }
 
-    focusedProgramatically.value = true
+    // When clicked self and menu is already open, don't do anything
+    const currentMenuDom = menuEl.value?.getFloatingEl()
 
+    if (currentMenuDom) {
+      return
+    }
+
+    focusedProgramatically.value = true
     blurAnyFocusedInput()
 
     const hasClickedInsideFloatingElement = !!(
@@ -92,6 +98,7 @@ export function useSelectorUtils(options: ISelectorUtilsOptions) {
     el,
     model,
     wrapperProps,
+    focusedProgramatically,
 
     handleFocusOrClick,
     handleClickWrapper,

@@ -133,4 +133,9 @@ export type ISelectorProps = IInputProps & {
    *     enough to show the whole text
    */
   noMenuMatchWidth?: boolean
+
+  /**
+   * The props that should be passed to the input tag (<input>)
+   */
+  inputProps?: Record<string, any>
 } & Pick<FloatingUIBaseProps, 'expectedHeight'>

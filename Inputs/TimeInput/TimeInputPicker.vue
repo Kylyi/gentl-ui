@@ -1,6 +1,5 @@
 <script setup lang="ts">
-// eslint-disable-next-line import/named
-import { MaskedRange, type AnyMaskedOptions } from 'imask'
+import { type MaskedOptions, MaskedRange } from 'imask'
 
 // Types
 import type { ITimeInputPickerProps } from '~/components/Inputs/TimeInput/types/time-input-picker-props.type'
@@ -32,7 +31,7 @@ const hourOptions = computed(() =>
 )
 
 // Masks
-const maskHours = computed<AnyMaskedOptions>(() => {
+const maskHours = computed<MaskedOptions>(() => {
   return {
     mask: 'HH',
     lazy: false,
@@ -49,7 +48,7 @@ const maskHours = computed<AnyMaskedOptions>(() => {
   }
 })
 
-const maskMinutes = computed<AnyMaskedOptions>(() => {
+const maskMinutes = computed<MaskedOptions>(() => {
   return {
     mask: 'mm',
     lazy: false,

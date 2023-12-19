@@ -14,9 +14,4 @@ export interface IDurationInputProps extends INumberInputProps {
    * @default ['minute', 'hour', 'day']
    */
   allowedUnits?: DurationUnit[]
-
-  /**
-   * The props that should be passed to the input tag (<input>)
-   */
-  inputProps?: Record<string, any>
 }

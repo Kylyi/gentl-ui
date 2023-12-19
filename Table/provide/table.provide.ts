@@ -4,6 +4,9 @@ import type { ITableDataFetchFncInput } from '~/components/Table/types/table-que
 import type { ITableLayout } from '~/components/Table/types/table-layout.type'
 import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
 
+// Functions
+import { useTableEditing } from '~/components/Table/functions/useTableEditing'
+
 // Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
 
@@ -45,6 +48,11 @@ export const tableColumnsRecreateKey: InjectionKey<() => void> = Symbol(
 export const tableRecreateQueryBuilderKey: InjectionKey<() => void> = Symbol(
   'tableRecreateQueryBuilder'
 )
+
+// Editing
+export const tableInlineEditKey: InjectionKey<
+  ReturnType<typeof useTableEditing>
+> = Symbol('tableInlineEdit')
 
 export const tableResizeKey: InjectionKey<() => void> = Symbol('tableResize')
 

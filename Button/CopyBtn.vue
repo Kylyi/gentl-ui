@@ -38,7 +38,6 @@ function handleCopy() {
     v-if="isSupported"
     :size="copyBtnSize"
     bg="white dark:darker"
-    m="x-2"
     no-dim
     no-hover-effect
     outline="1px"

@@ -1,9 +1,8 @@
-// eslint-disable-next-line import/named
-import { type AnyMaskedOptions } from 'imask'
+import type { MaskedOptions } from 'imask'
 
 export interface IMaskOptions {
   modelValue?: Ref<any>
-  maskOptions: Ref<AnyMaskedOptions>
+  maskOptions: Ref<MaskedOptions>
   immediateUpdateValueFnc?: (val: any) => void
   updateValueFnc?: (val: any) => void
   emptyValue?: MaybeRefOrGetter<any>

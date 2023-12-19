@@ -87,6 +87,15 @@ export function useInputUtils(options: IInputUtilsOptions) {
   const isBlurred = ref(true)
   const preventNextBlur = autoResetRef(false, 50)
   const menuEl = computed(() => toValue(menuElRef))
+  const hasContent = computedEager(() => {
+    return props.hasContent || !isEmpty.value
+  })
+
+  const hasClearableBtn = computedEager(() => {
+    return (
+      !props.readonly && !props.disabled && props.clearable && hasContent.value
+    )
+  })
 
   // Input methods
   const focus = (alignCursor?: boolean) => {
@@ -251,6 +260,8 @@ export function useInputUtils(options: IInputUtilsOptions) {
     isBlurred,
     wrapperProps,
     hasNoValue: isEmpty,
+    hasClearableBtn,
+    hasContent,
     handleMouseDown,
     handleBlur,
     handleFocus,

@@ -1,4 +1,4 @@
-import { type AnyMaskedOptions } from 'imask'
+import type { MaskedOptions } from 'imask'
 import { type CSSProperties } from 'vue'
 
 // Types
@@ -9,6 +9,17 @@ export type IInputProps = IInputWrapperProps & {
    * Whether the input should be autofocused
    */
   autofocus?: boolean
+
+  /**
+   * Whether the Selector can be cleared -> will emit `emptyValue`
+   */
+  clearable?: boolean
+  /**
+   * For cases when we want to warn user that he is about to clear the value
+   * Usecase: when there is a dependent variable based on currently selected
+   * option and by clearing the Selector, we need to also reset the dependent variable
+   */
+  clearConfirmation?: string
 
   /**
    * The debounce time in ms
@@ -48,7 +59,7 @@ export type IInputProps = IInputWrapperProps & {
   name?: string
 
   // Mask (https://imask.js.org/guide.html)
-  mask?: AnyMaskedOptions
+  mask?: MaskedOptions
 
   // Mask event handlers
   maskEventHandlers?: {
@@ -60,4 +71,9 @@ export type IInputProps = IInputWrapperProps & {
    * When set to true, blur state will not erase the value and will keep the last typed value with the mask
    */
   allowIncompleteMaskValue?: boolean
+
+  /**
+   * The props that should be passed to the input tag (<input>)
+   */
+  inputProps?: Record<string, any>
 }

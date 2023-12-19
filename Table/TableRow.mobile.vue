@@ -4,9 +4,6 @@ import { NuxtLink } from '#components'
 // Types
 import { type ITableProps } from '~/components/Table/types/table-props.type'
 
-// Models
-import { TableColumn } from '~/components/Table/models/table-column.model'
-
 // Injections
 import {
   tableIsSelectedRowKey,
@@ -15,7 +12,7 @@ import {
 
 type IProps = Pick<
   ITableProps,
-  'columns' | 'rowHeight' | 'to' | 'selectable'
+  'columns' | 'rowHeight' | 'to' | 'selectable' | 'editable'
 > & {
   index?: number
   row: any
@@ -30,11 +27,16 @@ const selectRow = injectStrict(tableSelectRowKey, () => {})
 const isSelectedRow = injectStrict(tableIsSelectedRowKey, () => false)
 
 // Layout
-const row = toRef(props, 'row')
-const isEditing = ref(false)
+const dataColumns = computed(() => {
+  return props.columns?.filter(col => !col.isHelperCol && !col.hidden) ?? []
+})
 
-function handleSetModelValue(value: any, col: TableColumn) {
-  set(row.value, col.field, value)
+function handleSelectRow(e: MouseEvent) {
+  const isControlKey = e.ctrlKey || e.metaKey
+
+  if (isControlKey) {
+    selectRow(props.row)
+  }
 }
 </script>
 
@@ -45,88 +47,32 @@ function handleSetModelValue(value: any, col: TableColumn) {
     :style="{ minHeight: `${rowHeight}px` }"
     :to="to?.(row)"
   >
-    <slot>
-      <div
-        class="tr tr__mobile"
-        :class="{
-          'is-deleted': row.deleted,
-          'is-selectable': selectable,
-          'is-selected': isSelectedRow(row),
-        }"
-        @click="selectable && selectRow(row)"
-      >
-        <slot name="row-inside" />
+    <div
+      class="tr tr__mobile"
+      :class="{
+        'is-deleted': row.deleted,
+        'is-selectable': selectable,
+        'is-selected': isSelectedRow(row),
+      }"
+      @click="selectable && handleSelectRow($event)"
+    >
+      <slot>
+        <slot
+          name="row-inside"
+          mode="grid"
+        />
 
-        <template
-          v-for="(col, idx) in columns"
-          :key="idx"
+        <TableCellMobile
+          v-for="col in dataColumns"
+          :key="col.field"
+          :column="col"
+          :row="row"
+          :editable="editable"
         >
-          <template v-if="!col.isHelperCol && !col.hidden">
-            <div
-              v-if="!col.hideLabel"
-              class="cell cell-label"
-            >
-              <span truncate>
-                {{ col._label }}
-              </span>
-            </div>
-
-            <div
-              class="cell cell-value"
-              :class="{ 'col-span-2': col.hideLabel }"
-              @click.stop.prevent="isEditing = true"
-            >
-              <Component
-                :is="col._editComponent.component"
-                v-if="isEditing"
-                :model-value="get(row, col.field)"
-                v-bind="col._editComponent.props"
-                @update:model-value="handleSetModelValue"
-              />
-
-              <ValueFormatter
-                v-else
-                :value="get(row, col.field)"
-                :data-type="col.dataType"
-              >
-                <template #default="{ val }">
-                  <slot
-                    :name="col.name"
-                    :value="val"
-                  >
-                    <!-- Boolean -->
-                    <Checkbox
-                      v-if="col.dataType === 'boolean'"
-                      :model-value="get(row, col.field)"
-                      :editable="false"
-                      :label="val"
-                      m="x-2"
-                    />
-
-                    <!-- Link -->
-                    <NuxtLink
-                      v-else-if="col.link?.(row)"
-                      class="link"
-                      :to="col.link(row) || ''"
-                      p="x-2"
-                    >
-                      {{ val }}
-                    </NuxtLink>
-
-                    <span
-                      v-else
-                      class="p-x-2 truncate"
-                    >
-                      {{ val }}
-                    </span>
-                  </slot>
-                </template>
-              </ValueFormatter>
-            </div>
-          </template>
-        </template>
-      </div>
-    </slot>
+          <slot :name="col.name" />
+        </TableCellMobile>
+      </slot>
+    </div>
 
     <!-- Used for absolutely position info/element -->
     <slot name="inner" />
@@ -135,7 +81,7 @@ function handleSetModelValue(value: any, col: TableColumn) {
 
 <style lang="scss" scoped>
 .tr__mobile {
-  --apply: relative grid p-3 rounded-custom overflow-auto
+  --apply: relative grid p-y-3 p-l-1 p-r-2 rounded-custom overflow-auto
   border-1 border-ca gap-x-3 hover:shadow-ca shadow-sm w-full dark:bg-darker bg-white;
 
   &-container {
@@ -154,15 +100,7 @@ function handleSetModelValue(value: any, col: TableColumn) {
   }
 
   &.is-selected {
-    --apply: dark:bg-blue-900/30 bg-blue-100/30 border-blue-400 border-2 color-blue-400;
-  }
-}
-
-.cell {
-  --apply: flex items-center leading-tight h-$mobileRowHeight truncate;
-
-  &-label {
-    --apply: font-rem-14 font-bold;
+    --apply: dark:bg-blue-900/30 bg-blue-100/30 border-primary dark:border-blue-600 border-2;
   }
 }
 

@@ -20,6 +20,7 @@ import { useTableSelection } from '~/components/Table/functions/useTableSelectio
 import { useTableMetaData } from '~/components/Table/functions/useTableMetaData'
 import { useTableExporting } from '~/components/Table/functions/useTableExporting'
 import { useTableTopUtils } from '~/components/Table/functions/useTableTopUtils'
+import { useTableEditing } from '~/components/Table/functions/useTableEditing'
 
 const props = withDefaults(defineProps<ITableProps>(), {
   breakpoint: 'md',
@@ -138,8 +139,9 @@ const {
   handleResize
 )
 
-useTableExporting(rows)
 const { handleSelectRow } = useTableSelection(props)
+useTableExporting(rows)
+useTableEditing(props)
 
 onMounted(() => {
   scrollerEl.value?.focus()
@@ -252,16 +254,18 @@ onMounted(() => {
           :to="to"
           :class="{ 'is-clickable': rowClickable, 'odd': index % 2 !== 0 }"
           :row-height="rowHeight"
+          :editable="editable"
           :index="index"
           :selectable="selectable"
           @click="handleRowClick(row, $event)"
         >
-          <template #row-inside>
+          <template #row-inside="{ mode }">
             <slot
               name="row-inside"
               :columns="columns"
               :row="row"
               :index="index"
+              :mode="mode"
             />
           </template>
 

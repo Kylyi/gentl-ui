@@ -48,13 +48,12 @@ const emits = defineEmits<{
 
 // Lifecycle
 onMounted(() => {
-  menuReferenceTarget.value =
-    currentInstance?.proxy?.$el.querySelector('.wrapper-body')
+  menuReferenceTarget.value = self?.proxy?.$el.querySelector('.wrapper-body')
 })
 
 // Utils
 const { handleRequest } = useRequest()
-const currentInstance = getCurrentInstance()
+const self = getCurrentInstance()
 
 const hasContent = computed(() => {
   return Array.isArray(model.value)
@@ -181,25 +180,26 @@ const options = toRef(props, 'options')
 const optionsInternal = ref<any[]>([])
 const listProps = reactivePick(props, [
   'allowAdd',
+  'allowSelectAllFiltered',
+  'clearable',
   'disabledFnc',
   'emitKey',
+  'fuseExtendedSearchToken',
   'fuseOptions',
-  'multi',
-  'itemHeight',
-  'sortBy',
   'groupBy',
-  'clearable',
-  'noSort',
+  'itemHeight',
+  'loadData',
   'loading',
+  'multi',
   'noFilter',
   'noHighlight',
-  'noSearch',
   'noLocalAdd',
-  'loadData',
-  'allowSelectAllFiltered',
-  'fuseExtendedSearchToken',
-  'searchDebounce',
+  'noSearch',
+  'noSort',
+  'inputProps',
   'search',
+  'searchDebounce',
+  'sortBy',
 ])
 
 const optionsExtended = computed(() => {
@@ -265,6 +265,7 @@ const pickerAnimationState = ref<'show' | 'hide'>('hide')
 function handleBeforeHide() {
   const optionsContainerDom = unrefElement(optionsContainerEl)
   optionsContainerDom?.focus()
+
   pickerAnimationState.value = 'hide'
   emits('picker-before-hide')
 }
@@ -281,6 +282,7 @@ function handleHide() {
   if (props.loadData?.onSearch) {
     listEl.value?.clearSearch()
   }
+
   emits('picker-hide')
 }
 
@@ -290,11 +292,17 @@ function handleShow() {
 }
 
 // Layout
-const { model, wrapperProps, handleClickWrapper, handleFocusOrClick, clear } =
-  useSelectorUtils({
-    props,
-    menuElRef: menuProxyEl,
-  })
+const {
+  model,
+  wrapperProps,
+  focusedProgramatically,
+  handleClickWrapper,
+  handleFocusOrClick,
+  clear,
+} = useSelectorUtils({
+  props,
+  menuElRef: menuProxyEl,
+})
 
 const menuReferenceTarget = ref<HTMLElement>()
 const optionsContainerEl = ref<any>()
@@ -363,6 +371,7 @@ defineExpose({
     isOptionsInternalLoaded.value = false
   },
   handleSelect,
+  clear,
 })
 </script>
 
@@ -410,6 +419,8 @@ defineExpose({
       :name="name || validation?.$path || label || placeholder"
       :class="[innerClass, { 'is-multi': !!multi }]"
       :style="{ maxHeight: `${maxHeight}px` }"
+      v-bind="inputProps"
+      @click="handleFocusOrClick"
       @focus="handleFocusOrClick"
     >
       <!-- Placeholder -->
@@ -573,7 +584,7 @@ defineExpose({
               <slot name="below-options" />
 
               <template v-if="multi">
-                <!-- CONFIRM BUTTON (for lt-sm displays) -->
+                <!-- Confirm button (for lt-sm displays) -->
                 <Separator sm="hidden" />
 
                 <Btn

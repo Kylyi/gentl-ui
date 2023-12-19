@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/named
 import IMask, { InputMask, createMask } from 'imask'
 
 // Types
@@ -19,7 +18,7 @@ export function useMask(options: IMaskOptions) {
 
   // Layout
   const el = ref<HTMLInputElement | HTMLTextAreaElement>()
-  const mask = createMask(unref(maskOptions))
+  const mask = createMask(unref(maskOptions) as any)
   const elMask = ref<InputMask<any> | null>()
   const hasBeenCleared = ref(false)
   const model = toRef(options, 'modelValue', ref(''))
@@ -32,7 +31,7 @@ export function useMask(options: IMaskOptions) {
    */
   const resolve = (value: any) => {
     if ('format' in unref(maskOptions) && 'format' in mask) {
-      return mask.format(value)
+      return mask?.format(value)
     }
 
     if (isNil(value) || value === unref(emptyValue)) {
@@ -48,7 +47,7 @@ export function useMask(options: IMaskOptions) {
   const refresh = () => {
     if (elMask.value && !hasBeenCleared.value && !allowIncompleteMaskValue) {
       if (lastValidValue.value === unref(emptyValue)) {
-        elMask.value.typedValue = unref(emptyValue)
+        elMask.value.value = ''
       } else {
         elMask.value.typedValue = lastValidValue.value
       }
@@ -60,7 +59,8 @@ export function useMask(options: IMaskOptions) {
    */
   const clear = () => {
     if (elMask.value) {
-      elMask.value.typedValue = unref(emptyValue)
+      // elMask.value.typedValue = unref(emptyValue)
+      elMask.value.value = ''
     }
 
     hasBeenCleared.value = true
@@ -135,7 +135,7 @@ export function useMask(options: IMaskOptions) {
   }
 
   // Initialize
-  maskedValue.value = resolve(unref(model))
+  maskedValue.value = resolve(unref(model)) as string
 
   // Watch for mask options change
   watch(
@@ -152,7 +152,7 @@ export function useMask(options: IMaskOptions) {
   watch(el, el => {
     if (el) {
       destroyMask()
-      elMask.value = IMask(el, unref(maskOptions))
+      elMask.value = IMask(el, toValue(maskOptions) as any)
       elMask.value.typedValue = model.value
 
       elMask.value.on('accept', handleAccept)
@@ -170,7 +170,7 @@ export function useMask(options: IMaskOptions) {
       lastValidValue.value = model
 
       if (lastValidValue.value === unref(emptyValue)) {
-        elMask.value.value = resolve(lastValidValue.value)
+        elMask.value.value = resolve(lastValidValue.value) as string
       } else {
         elMask.value.typedValue = model
       }

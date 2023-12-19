@@ -37,6 +37,11 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   searchable?: boolean
 
   /**
+   * When true, the column will be not editable
+   */
+  noEdit?: boolean
+
+  /**
    * When true, the column will be hidden in the table
    */
   hidden?: boolean
@@ -129,9 +134,6 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
       component: DynamicInput,
       props: {
         dataType: this.dataType,
-        size: 'sm',
-        borderless: true,
-        class: 'w-full',
       },
     }
   }
@@ -445,6 +447,9 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     this.link = col.link
     this.noFreeze = col.noFreeze
     this.autofitLongestText = col.autofitLongestText ?? true
+
+    // Editing
+    this.noEdit = col.noEdit
     this.editComponent = col.editComponent
 
     // We also hide the column when it's non-interactive
