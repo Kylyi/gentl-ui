@@ -127,6 +127,9 @@ function handleKeyDown(e: KeyboardEvent) {
         } as KeyboardEvent)
       })
 
+      e.preventDefault?.()
+      e.stopPropagation?.()
+
       break
 
     case 'ArrowDown':

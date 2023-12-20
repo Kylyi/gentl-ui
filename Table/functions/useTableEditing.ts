@@ -46,11 +46,13 @@ export function useTableEditing(props: ITableProps) {
     reset()
   }
 
-  function handleSaveRow() {
+  function handleSaveRow(noCancel?: boolean) {
     syncToParent()
 
-    isEditing.value = false
-    editRow.value = undefined
+    if (!noCancel) {
+      isEditing.value = false
+      editRow.value = undefined
+    }
   }
 
   provide(tableInlineEditKey, {

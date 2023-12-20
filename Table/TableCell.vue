@@ -29,8 +29,102 @@ const {
   handleSaveRow,
 } = injectStrict(tableInlineEditKey)
 
+// Utils
+const self = getCurrentInstance()
+
+function focusSiblingCellHorizontal(
+  direction: 'previous' | 'next',
+  e: KeyboardEvent
+) {
+  let siblingCell = self?.vnode?.el?.[`${direction}Sibling`] as
+    | HTMLElement
+    | null
+    | undefined
+  const isLastCell = !siblingCell || !siblingCell?.classList?.contains?.('cell')
+  const parentRowEl = self?.vnode.el?.closest(
+    '.virtual-scroll__content-row'
+  ) as HTMLElement
+
+  let parentRowElSibling: HTMLElement | null = null
+  if (isLastCell && !parentRowEl) {
+    return
+  } else if (isLastCell) {
+    parentRowElSibling = parentRowEl?.[`${direction}Sibling`] as HTMLElement
+  }
+
+  const isLastParentRow = !parentRowElSibling?.classList?.contains?.(
+    'virtual-scroll__content-row'
+  )
+  if (isLastCell && isLastParentRow) {
+    return
+  }
+
+  siblingCell = isLastCell
+    ? parentRowElSibling?.querySelector?.(
+        `.cell${direction === 'previous' ? ':last-child' : ''}`
+      )
+    : siblingCell
+
+  const isDataCol = siblingCell?.classList?.contains?.('has-data')
+
+  if (isDataCol) {
+    siblingCell?.click()
+  } else {
+    // handleKeyDown(e)
+  }
+
+  console.log('Log ~ focusSiblingCellHorizontal ~ siblingCell:', siblingCell)
+  return siblingCell
+}
+
+function focusSiblingCellVertical(
+  direction: 'previous' | 'next',
+  e: KeyboardEvent
+) {
+  const cellEl = self?.vnode.el?.closest('.cell') as HTMLElement
+
+  // Get index of current instance within the `cellEl`
+  const cellIndex = Array.from(cellEl?.parentElement?.children ?? []).indexOf(
+    cellEl
+  )
+
+  const parentRowEl = self?.vnode.el?.closest(
+    '.virtual-scroll__content-row'
+  ) as HTMLElement
+
+  let parentRowElSibling: HTMLElement | null = null
+  if (!parentRowEl) {
+    return
+  }
+
+  parentRowElSibling = parentRowEl?.[`${direction}Sibling`] as HTMLElement
+
+  const isLastParentRow = !parentRowElSibling?.classList?.contains?.(
+    'virtual-scroll__content-row'
+  )
+  if (isLastParentRow) {
+    return
+  }
+
+  const siblingCell = parentRowElSibling?.querySelector?.(
+    `.cell:nth-child(${cellIndex + 1})`
+  ) as HTMLElement | null
+
+  const isDataCol = siblingCell?.classList?.contains?.('has-data')
+
+  if (isDataCol) {
+    siblingCell?.click()
+  } else {
+    // handleKeyDown(e)
+  }
+
+  console.log('Log ~ focusSiblingCellHorizontal ~ siblingCell:', siblingCell)
+  return siblingCell
+}
+
 // Layout
 const inputEl = ref<any>()
+const siblingCell = ref<HTMLElement | null | undefined>()
 const col = toRef(props, 'column')
 
 const isEditingField = computedEager(() => {
@@ -42,7 +136,7 @@ const isEditingField = computedEager(() => {
 })
 
 function handleEditCell() {
-  if (!props.editable) {
+  if (!props.editable || isEditingField.value) {
     return
   }
 
@@ -60,52 +154,81 @@ function handleKeyDown(e: KeyboardEvent) {
   const isControlKey = e.ctrlKey || e.metaKey
 
   switch (e.key) {
-    // case 'Escape':
-    //   handleCancelEditRow()
-    //   break
+    case 'Escape':
+      handleCancelEditRow()
+      break
 
-    // case 'Enter':
-    //   setTimeout(() => {
-    //     handleSaveRow()
+    case 'Enter':
+      setTimeout(() => {
+        handleSaveRow()
 
-    //     if (isControlKey) {
-    //       return
-    //     }
+        if (isControlKey) {
+          return
+        }
 
-    //     handleKeyDown({
-    //       ...e,
-    //       key: 'ArrowDown',
-    //       ctrlKey: true,
-    //     } as KeyboardEvent)
-    //   })
+        handleKeyDown({
+          ...e,
+          key: 'ArrowRight',
+          ctrlKey: true,
+        } as KeyboardEvent)
+      })
 
-    //   break
+      e.preventDefault?.()
+      e.stopPropagation?.()
 
-    // case 'ArrowDown':
-    //   if (!isControlKey) {
-    //     return
-    //   }
+      break
 
-    //   e.preventDefault?.()
-    //   e.stopPropagation?.()
+    case 'ArrowRight':
+      if (!isControlKey) {
+        return
+      }
 
-    //   resume()
-    //   siblingCell.value = focusSiblingCell('next', e)
+      e.preventDefault?.()
+      e.stopPropagation?.()
 
-    //   break
+      // resume()
+      siblingCell.value = focusSiblingCellHorizontal('next', e)
 
-    // case 'ArrowUp':
-    //   if (!isControlKey) {
-    //     return
-    //   }
+      break
 
-    //   e.preventDefault?.()
-    //   e.stopPropagation?.()
+    case 'ArrowLeft':
+      if (!isControlKey) {
+        return
+      }
 
-    //   resume()
-    //   siblingCell.value = focusSiblingCell('previous', e)
+      e.preventDefault?.()
+      e.stopPropagation?.()
 
-    //   break
+      // resume()
+      siblingCell.value = focusSiblingCellHorizontal('previous', e)
+
+      break
+
+    case 'ArrowDown':
+      if (!isControlKey) {
+        return
+      }
+
+      e.preventDefault?.()
+      e.stopPropagation?.()
+
+      // resume()
+      siblingCell.value = focusSiblingCellVertical('next', e)
+
+      break
+
+    case 'ArrowUp':
+      if (!isControlKey) {
+        return
+      }
+
+      e.preventDefault?.()
+      e.stopPropagation?.()
+
+      // resume()
+      siblingCell.value = focusSiblingCellVertical('previous', e)
+
+      break
 
     default:
       break
@@ -149,31 +272,21 @@ function selectSelf(self: any) {
     </div>
 
     <!-- Edit mode -->
-    <div
+    <Component
+      :is="col._editComponent.component"
       v-else-if="isEditingField"
-      flex="~ gap-1"
-    >
-      <Component
-        :is="col._editComponent.component"
-        ref="inputEl"
-        :model-value="get(editValue, col.field)"
-        v-bind="col._editComponent.props"
-        grow
-        no-border
-        size="sm"
-        input-class="color-black dark:color-white !font-rem-13"
-        :input-props="{ onKeydown: handleKeyDown }"
-        @update:model-value="set(editValue, col.field, $event)"
-        @vue:mounted="selectSelf"
-      />
-
-      <!-- <Btn
-        size="sm"
-        preset="SAVE"
-        tabindex="-1"
-        @click.stop.prevent="handleSaveRow"
-      /> -->
-    </div>
+      ref="inputEl"
+      :model-value="get(editValue, col.field)"
+      v-bind="col._editComponent.props"
+      no-border
+      grow
+      size="sm"
+      input-class="color-black dark:color-white !font-rem-13"
+      :input-props="{ onKeydown: handleKeyDown }"
+      @update:model-value="set(editValue, col.field, $event)"
+      @vue:mounted="selectSelf"
+      @blur="handleSaveRow(true)"
+    />
 
     <!-- Regular field -->
     <ValueFormatter
