@@ -6,6 +6,7 @@ import { type ITableProps } from '~/components/Table/types/table-props.type'
 
 // Injections
 import {
+  tableClearSelectionKey,
   tableIsSelectedRowKey,
   tableSelectRowKey,
 } from '~/components/Table/provide/table.provide'
@@ -25,6 +26,7 @@ const props = withDefaults(defineProps<IProps>(), {
 // Injections
 const selectRow = injectStrict(tableSelectRowKey, () => {})
 const isSelectedRow = injectStrict(tableIsSelectedRowKey, () => false)
+const clearSelection = injectStrict(tableClearSelectionKey, () => {})
 
 // Layout
 const dataColumns = computed(() => {
@@ -36,6 +38,11 @@ function handleSelectRow(e: MouseEvent) {
 
   if (isControlKey) {
     selectRow(props.row)
+  } else {
+    clearSelection()
+    nextTick(() => {
+      selectRow(props.row)
+    })
   }
 }
 </script>

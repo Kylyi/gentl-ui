@@ -80,6 +80,10 @@ export const tableIsSelectedRowKey: InjectionKey<(row: any) => boolean> =
 export const tableSelectionKey: InjectionKey<Ref<ITableSelection | undefined>> =
   Symbol('tableSelection')
 
+export const tableClearSelectionKey: InjectionKey<() => void> = Symbol(
+  'tableClearSelection'
+)
+
 // Export
 export const tableExportKey: InjectionKey<
   (options?: {

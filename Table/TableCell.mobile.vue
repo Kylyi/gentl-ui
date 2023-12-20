@@ -168,14 +168,16 @@ function selectSelf(self: any) {
 <template>
   <div
     class="cell"
-    :class="{ 'is-editing': isEditingField }"
+    :class="{ 'is-editable': editable, 'is-editing': isEditingField }"
   >
     <!-- Label -->
     <div
       v-if="!column.hideLabel"
       class="cell-label"
     >
-      {{ column._label }}
+      <span truncate>
+        {{ column._label }}
+      </span>
 
       <Btn
         v-if="editable && !col.noEdit"
@@ -217,10 +219,14 @@ function selectSelf(self: any) {
         />
       </div>
 
+      <!-- Regular field -->
       <ValueFormatter
         v-else
         :value="get(row, col.field)"
         :data-type="col.dataType"
+        :row="row"
+        :format="col.format"
+        :empty-value="{}"
       >
         <template #default="{ val }">
           <slot :value="val">
@@ -257,11 +263,12 @@ function selectSelf(self: any) {
 
 <style lang="scss" scoped>
 .cell {
-  --apply: grid col-span-2 leading-tight h-$mobileRowHeight items-center p-l-2 p-r-1 rounded-custom;
+  --apply: grid col-span-2 leading-tight h-$mobileRowHeight items-center
+    p-l-2 p-r-1 rounded-custom;
 
   grid-template-columns: subgrid;
 
-  &:hover,
+  &.is-editable:hover,
   &.is-editing {
     --apply: shadow-consistent-xs shadow-primary bg-white dark:bg-darker;
   }

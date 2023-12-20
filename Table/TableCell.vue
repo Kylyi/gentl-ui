@@ -50,8 +50,8 @@ const isSelectedRow = injectStrict(tableIsSelectedRowKey, () => false)
       v-else
       :value="get(row, col.field)"
       :data-type="col.dataType"
-      :format="col.format"
       :row="row"
+      :format="col.format"
       :empty-value="{}"
     >
       <template #default="{ val }">

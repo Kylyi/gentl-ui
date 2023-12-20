@@ -83,7 +83,9 @@ const itemProps = reactivePick(props, ['noHoverEffect', 'tag'])
 const defaultClasses = computed<ToggleClass>(() => {
   return {
     unchecked: {
-      toggle: props.filled ? 'bg-negative/15 border-negative' : '',
+      toggle: props.filled
+        ? 'bg-negative/15 border-negative'
+        : 'bg-white dark:bg-darker',
       bullet:
         props.indeterminateValue !== undefined
           ? 'bg-negative color-negative'
@@ -91,12 +93,16 @@ const defaultClasses = computed<ToggleClass>(() => {
       icon: '',
     },
     indeterminate: {
-      toggle: props.filled ? 'bg-neutral/15 border-neutral' : '',
+      toggle: props.filled
+        ? 'bg-neutral/15 border-neutral'
+        : 'bg-white dark:bg-darker',
       bullet: 'bg-neutral',
       icon: '',
     },
     checked: {
-      toggle: props.filled ? 'bg-positive/15 border-positive' : '',
+      toggle: props.filled
+        ? 'bg-positive/15 border-positive'
+        : 'bg-white dark:bg-darker',
       bullet: 'bg-positive',
       icon: '',
     },

@@ -7,6 +7,7 @@ import { useTableUtils } from '~/components/Table/functions/useTableUtils'
 
 // Injections
 import {
+  tableClearSelectionKey,
   tableIsSelectedRowKey,
   tableSelectRowKey,
   tableSelectionKey,
@@ -67,14 +68,24 @@ export function useTableSelection(props: ITableProps) {
     }
   }
 
+  function clearSelection() {
+    if (Array.isArray(selection.value)) {
+      selection.value = []
+    } else {
+      selection.value = {}
+    }
+  }
+
   provide(tableSelectRowKey, handleSelectRow)
   provide(tableIsSelectedRowKey, isSelected)
   provide(tableSelectionKey, selection)
+  provide(tableClearSelectionKey, clearSelection)
 
   return {
     selection,
     rowKey,
     handleSelectRow,
     isSelected,
+    clearSelection,
   }
 }
