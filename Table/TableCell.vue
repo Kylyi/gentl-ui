@@ -42,6 +42,10 @@ const isEditingField = computedEager(() => {
 })
 
 function handleEditCell() {
+  if (!props.editable) {
+    return
+  }
+
   if (isEditingField.value) {
     handleCancelEditRow()
 
