@@ -27,7 +27,7 @@ const {
   handleEditRow,
   handleCancelEditRow,
   handleSaveRow,
-} = injectStrict(tableInlineEditKey)
+} = injectStrict(tableInlineEditKey, {} as any)
 
 // Utils
 const self = getCurrentInstance()
@@ -44,6 +44,8 @@ function focusSiblingCellHorizontal(
   const parentRowEl = self?.vnode.el?.closest(
     '.virtual-scroll__content-row'
   ) as HTMLElement
+
+  lastDirection.value = direction === 'next' ? 'right' : 'left'
 
   let parentRowElSibling: HTMLElement | null = null
   if (isLastCell && !parentRowEl) {
@@ -73,7 +75,6 @@ function focusSiblingCellHorizontal(
     // handleKeyDown(e)
   }
 
-  console.log('Log ~ focusSiblingCellHorizontal ~ siblingCell:', siblingCell)
   return siblingCell
 }
 
@@ -91,6 +92,8 @@ function focusSiblingCellVertical(
   const parentRowEl = self?.vnode.el?.closest(
     '.virtual-scroll__content-row'
   ) as HTMLElement
+
+  lastDirection.value = direction === 'next' ? 'down' : 'up'
 
   let parentRowElSibling: HTMLElement | null = null
   if (!parentRowEl) {
@@ -118,7 +121,6 @@ function focusSiblingCellVertical(
     // handleKeyDown(e)
   }
 
-  console.log('Log ~ focusSiblingCellHorizontal ~ siblingCell:', siblingCell)
   return siblingCell
 }
 
@@ -126,12 +128,40 @@ function focusSiblingCellVertical(
 const inputEl = ref<any>()
 const siblingCell = ref<HTMLElement | null | undefined>()
 const col = toRef(props, 'column')
+const lastDirection = ref<'up' | 'down' | 'left' | 'right'>()
+
+const { pause, resume } = useIntersectionObserver(
+  siblingCell,
+  entries => {
+    if (entries[0].intersectionRatio < 1) {
+      let scrollBlock = 'nearest'
+
+      switch (lastDirection.value) {
+        case 'down':
+          scrollBlock = 'start'
+          break
+
+        case 'up':
+          scrollBlock = 'end'
+          break
+
+        default:
+          break
+      }
+
+      siblingCell.value?.scrollIntoView({ block: scrollBlock })
+    }
+
+    pause()
+  },
+  { immediate: false }
+)
 
 const isEditingField = computedEager(() => {
   return (
-    isEditing.value &&
-    editRow.value?.row === props.row &&
-    (editRow.value?.column === col.value || !editRow.value?.column)
+    isEditing?.value &&
+    editRow?.value?.row === props.row &&
+    (editRow?.value?.column === col.value || !editRow?.value?.column)
   )
 })
 
@@ -150,7 +180,7 @@ function handleEditCell() {
 }
 
 // Keyboard shortcuts
-function handleKeyDown(e: KeyboardEvent) {
+async function handleKeyDown(e: KeyboardEvent) {
   const isControlKey = e.ctrlKey || e.metaKey
 
   switch (e.key) {
@@ -186,7 +216,7 @@ function handleKeyDown(e: KeyboardEvent) {
       e.preventDefault?.()
       e.stopPropagation?.()
 
-      // resume()
+      resume()
       siblingCell.value = focusSiblingCellHorizontal('next', e)
 
       break
@@ -199,7 +229,7 @@ function handleKeyDown(e: KeyboardEvent) {
       e.preventDefault?.()
       e.stopPropagation?.()
 
-      // resume()
+      resume()
       siblingCell.value = focusSiblingCellHorizontal('previous', e)
 
       break
@@ -212,7 +242,7 @@ function handleKeyDown(e: KeyboardEvent) {
       e.preventDefault?.()
       e.stopPropagation?.()
 
-      // resume()
+      resume()
       siblingCell.value = focusSiblingCellVertical('next', e)
 
       break
@@ -225,7 +255,7 @@ function handleKeyDown(e: KeyboardEvent) {
       e.preventDefault?.()
       e.stopPropagation?.()
 
-      // resume()
+      resume()
       siblingCell.value = focusSiblingCellVertical('previous', e)
 
       break

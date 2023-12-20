@@ -22,7 +22,7 @@ const {
   handleEditRow,
   handleCancelEditRow,
   handleSaveRow,
-} = injectStrict(tableInlineEditKey)
+} = injectStrict(tableInlineEditKey, {} as any)
 
 // Utils
 function focusSiblingCell(direction: 'previous' | 'next', e: KeyboardEvent) {
