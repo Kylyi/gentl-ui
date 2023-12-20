@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // TODO: am/pm values are not reactive on language change (broken only for 13h for some reason...)
 
-import { type MaskedOptions, MaskedRange } from 'imask'
+import { type AnyMaskedOptions, MaskedRange } from 'imask'
 
 // Types
 import type { ITimeInputProps } from '~/components/Inputs/TimeInput/types/time-input-props.type'
@@ -102,7 +102,7 @@ const delocalizedTimeParts = computed(() => {
 })
 
 // Masks
-const maskFullTime = computed<MaskedOptions>(() => {
+const maskFullTime = computed<AnyMaskedOptions>(() => {
   return {
     mask: PATTERN,
     pattern: PATTERN,

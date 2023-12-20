@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Dayjs } from 'dayjs'
 
-import { type MaskedOptions, MaskedRange } from 'imask'
+import { type AnyMaskedOptions, MaskedRange } from 'imask'
 
 // Types
 import type { IDateInputProps } from '~/components/Inputs/DateInput/types/date-input-props.type'
@@ -52,7 +52,7 @@ function isMaskString(val?: string) {
 // Mask
 const PATTERN = computed(() => getCurrentLocaleDateFormat())
 
-const mask = computed<MaskedOptions>(() => {
+const mask = computed<AnyMaskedOptions>(() => {
   return {
     mask: PATTERN.value,
     pattern: PATTERN.value,

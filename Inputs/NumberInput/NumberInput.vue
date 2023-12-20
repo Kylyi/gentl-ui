@@ -48,7 +48,8 @@ const mask = computed<MaskedNumber>(() => {
     mask: Number,
     min: props.min,
     max: props.max,
-    format: value => {
+    // @ts-expect-error imask type
+    format: (value: any) => {
       if (isNil(value)) {
         return ''
       }

@@ -1,8 +1,8 @@
-import type { MaskedOptions } from 'imask'
+import type { AnyMaskedOptions } from 'imask'
 
 export interface IMaskOptions {
   modelValue?: Ref<any>
-  maskOptions: Ref<MaskedOptions>
+  maskOptions: Ref<AnyMaskedOptions>
   immediateUpdateValueFnc?: (val: any) => void
   updateValueFnc?: (val: any) => void
   emptyValue?: MaybeRefOrGetter<any>

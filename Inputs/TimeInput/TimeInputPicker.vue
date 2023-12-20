@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type MaskedOptions, MaskedRange } from 'imask'
+import { type AnyMaskedOptions, MaskedRange } from 'imask'
 
 // Types
 import type { ITimeInputPickerProps } from '~/components/Inputs/TimeInput/types/time-input-picker-props.type'
@@ -31,7 +31,7 @@ const hourOptions = computed(() =>
 )
 
 // Masks
-const maskHours = computed<MaskedOptions>(() => {
+const maskHours = computed<AnyMaskedOptions>(() => {
   return {
     mask: 'HH',
     lazy: false,
@@ -48,7 +48,7 @@ const maskHours = computed<MaskedOptions>(() => {
   }
 })
 
-const maskMinutes = computed<MaskedOptions>(() => {
+const maskMinutes = computed<AnyMaskedOptions>(() => {
   return {
     mask: 'mm',
     lazy: false,
