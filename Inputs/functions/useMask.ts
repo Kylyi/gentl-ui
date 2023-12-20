@@ -167,12 +167,7 @@ export function useMask(options: IMaskOptions) {
       !hasJustChanged.value
     ) {
       lastValidValue.value = model
-
-      if (lastValidValue.value === unref(emptyValue)) {
-        elMask.value.value = resolve(lastValidValue.value)
-      } else {
-        elMask.value.typedValue = model
-      }
+      elMask.value.value = resolve(lastValidValue.value)
     }
   })
 
