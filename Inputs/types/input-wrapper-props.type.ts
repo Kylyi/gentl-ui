@@ -82,4 +82,11 @@ export type IInputWrapperProps = InputLabelProps & {
    * Note: Currently works only for TextInput
    */
   tooltip?: string
+
+  ui?: {
+    /**
+     * The border color of the input
+     */
+    borderColor?: string
+  }
 }

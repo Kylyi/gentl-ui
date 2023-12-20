@@ -31,6 +31,7 @@ export function useInputWrapperUtils() {
       '--padding': '',
       '--margin': '',
       '--bodyMargin': '',
+      '--border-color': props.ui?.borderColor || 'var(--color-primary)',
     }
 
     const isLabelInside = props.labelInside
