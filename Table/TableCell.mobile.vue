@@ -2,6 +2,8 @@
 <script setup lang="ts">
 // Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
+
+// Injections
 import { tableInlineEditKey } from '~/components/Table/provide/table.provide'
 
 type IProps = {
@@ -98,7 +100,7 @@ function handleEditCell() {
     return
   }
 
-  handleEditRow(props.row, col.value)
+  handleEditRow(props.row, props.column)
 }
 
 // Keyboard shortcuts
@@ -194,6 +196,7 @@ function selectSelf(self: any) {
       class="cell-value"
       :class="{ 'col-span-2': col.hideLabel }"
     >
+      <!-- Edit mode -->
       <div
         v-if="isEditingField"
         flex="~ gap-1"

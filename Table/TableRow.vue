@@ -40,8 +40,9 @@ const dataColumns = computed(() => {
       <TableCell
         v-for="col in dataColumns"
         :key="col.field"
-        :col="col"
+        :column="col"
         :row="row"
+        :editable="editable"
       >
         <slot :name="col.name" />
       </TableCell>

@@ -57,6 +57,10 @@ export function useInputWrapperUtils() {
       if (!isLabelInside && !isInline && hasLabel) {
         styleVariables['--bodyMargin'] = '14px 0 0 0'
       }
+
+      if (props.noBorder) {
+        styleVariables['--padding'] = '8px 8px'
+      }
     }
 
     // Size: md
@@ -78,6 +82,10 @@ export function useInputWrapperUtils() {
       if (!isLabelInside && !isInline && hasLabel) {
         styleVariables['--bodyMargin'] = '18px 0 0 0'
       }
+
+      if (props.noBorder) {
+        styleVariables['--padding'] = '8px 8px'
+      }
     }
 
     // Size: lg
@@ -98,6 +106,10 @@ export function useInputWrapperUtils() {
 
       if (!isLabelInside && !isInline && hasLabel) {
         styleVariables['--bodyMargin'] = '22px 0 0 0'
+      }
+
+      if (props.noBorder) {
+        styleVariables['--padding'] = '8px 8px'
       }
     }
 
