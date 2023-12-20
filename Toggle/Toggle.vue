@@ -146,6 +146,15 @@ const bulletClasses = computed(() => {
 const icon = computed(() => {
   return classes.value[internalValue.value]?.icon
 })
+
+// Keyboard navigation
+function handleKeyDown(e: KeyboardEvent) {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault?.()
+
+    handleStateChange()
+  }
+}
 </script>
 
 <script lang="ts">
@@ -169,6 +178,8 @@ export default {
       border="1 ca hover:true-gray-400"
       :class="toggleClasses"
       v-bind="$attrs"
+      tabindex="0"
+      @keydown="handleKeyDown"
     >
       <div
         class="bullet"

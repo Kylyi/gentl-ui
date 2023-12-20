@@ -32,6 +32,12 @@ export type ISelectorProps = IInputProps & {
   noItemsClear?: boolean
 
   /**
+   * When true, the menu will not be shown when the input is focused (via Tab for example),
+   * needs to be actualyl clicked
+   */
+  noAutoShowMenuOnFocus?: boolean
+
+  /**
    * For cases when we want to warn user that he is about to clear the value
    * Usecase: when there is a dependent variable based on currently selected
    * option and by clearing the Selector, we need to also reset the dependent variable

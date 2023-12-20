@@ -292,17 +292,11 @@ function handleShow() {
 }
 
 // Layout
-const {
-  model,
-  wrapperProps,
-  focusedProgramatically,
-  handleClickWrapper,
-  handleFocusOrClick,
-  clear,
-} = useSelectorUtils({
-  props,
-  menuElRef: menuProxyEl,
-})
+const { model, wrapperProps, handleClickWrapper, handleFocusOrClick, clear } =
+  useSelectorUtils({
+    props,
+    menuElRef: menuProxyEl,
+  })
 
 const menuReferenceTarget = ref<HTMLElement>()
 const optionsContainerEl = ref<any>()
@@ -320,6 +314,14 @@ function syncScrollArea() {
     optionsContainerEl.value?.update?.()
     optionsContainerEl.value?.scrollToBottom?.()
   }, 0)
+}
+
+function handleKeyDown(e: KeyboardEvent) {
+  if (e.key === 'ArrowDown') {
+    e.preventDefault()
+
+    menuProxyEl.value?.show()
+  }
 }
 
 // Fetch data immediately
@@ -422,6 +424,7 @@ defineExpose({
       v-bind="inputProps"
       @click="handleFocusOrClick"
       @focus="handleFocusOrClick"
+      @keydown="handleKeyDown"
     >
       <!-- Placeholder -->
       <span

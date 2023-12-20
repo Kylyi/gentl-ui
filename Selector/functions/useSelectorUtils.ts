@@ -58,6 +58,10 @@ export function useSelectorUtils(options: ISelectorUtilsOptions) {
       return
     }
 
+    if (ev instanceof FocusEvent && props.noAutoShowMenuOnFocus) {
+      return
+    }
+
     // When clicked self and menu is already open, don't do anything
     const currentMenuDom = menuEl.value?.getFloatingEl()
 
