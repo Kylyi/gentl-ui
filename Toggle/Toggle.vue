@@ -78,7 +78,12 @@ function handleStateChange() {
 }
 
 // Layout
+const toggleEl = ref<HTMLDivElement>()
 const itemProps = reactivePick(props, ['noHoverEffect', 'tag'])
+
+function handleFocus() {
+  toggleEl.value?.focus()
+}
 
 const defaultClasses = computed<ToggleClass>(() => {
   return {
@@ -169,11 +174,14 @@ export default {
     :class="containerClass"
     :readonly="readonly"
     :disabled="disabled"
+    class="wrapper"
+    .focus="handleFocus"
     @click="handleStateChange"
   >
     <slot name="prepend" />
 
     <div
+      ref="toggleEl"
       class="toggle"
       border="1 ca hover:true-gray-400"
       :class="toggleClasses"
