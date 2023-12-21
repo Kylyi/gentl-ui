@@ -551,7 +551,9 @@ function cleanComponent() {
   previousPlacement.value = undefined
 }
 
-onClickOutside(menuEl, handleClickOutside)
+onClickOutside(menuEl, handleClickOutside, {
+  ignore: props.ignoreClickOutside,
+})
 
 function handleClickOutside(ev: Event) {
   if (!internalValue.value) {

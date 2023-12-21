@@ -15,6 +15,11 @@ export type IMenuProps = FloatingUIBaseProps & {
   virtual?: boolean
 
   /**
+   * Selectors of the elements that should not trigger the hide event
+   */
+  ignoreClickOutside?: string[]
+
+  /**
    * Delay in milliseconds before the menu is [shown, hidden]
    */
   delay?: [number, number]
