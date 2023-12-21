@@ -40,7 +40,7 @@ function handleSort(sortValue?: 'asc' | 'desc', ev?: PointerEvent) {
   // Using single sort
   else {
     props.columns?.forEach(col => {
-      if (col !== column.value) {
+      if (col !== column.value || sortValue === undefined) {
         col.sort = undefined
         col.sortOrder = undefined
       } else {
