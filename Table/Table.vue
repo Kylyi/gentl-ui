@@ -58,6 +58,7 @@ defineSlots<{
   topRightAppend: IItem
   subbarRight: IItem
   topBulkActions: { selection: any[] }
+  topBulkActionsMenu: { selection: any[] }
   belowTop: { rows: any[] }
 }>()
 
@@ -215,6 +216,13 @@ onMounted(() => {
         >
           <slot
             name="top-bulk-actions"
+            :selection="selection"
+          />
+        </template>
+
+        <template #bulk-actions-menu="{ selection }">
+          <slot
+            name="top-bulk-actions-menu"
             :selection="selection"
           />
         </template>
