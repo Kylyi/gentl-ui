@@ -49,6 +49,9 @@ export const tableRecreateQueryBuilderKey: InjectionKey<() => void> = Symbol(
   'tableRecreateQueryBuilder'
 )
 
+export const tableCustomDataKey: InjectionKey<Ref<IItem>> =
+  Symbol('tableCustomData')
+
 // Editing
 export const tableInlineEditKey: InjectionKey<
   ReturnType<typeof useTableEditing>
