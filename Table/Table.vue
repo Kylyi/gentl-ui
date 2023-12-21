@@ -76,6 +76,11 @@ defineExpose({
     row: any,
     options?: { val?: boolean; clearSelection?: boolean }
   ) => handleSelectRow(row, options),
+  customFnc: (
+    fnc: (options: { columns: TableColumn[]; rows: any[] }) => void
+  ) => {
+    fnc({ columns: internalColumns.value, rows: rows.value })
+  },
 })
 
 // Utils
