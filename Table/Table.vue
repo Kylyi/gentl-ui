@@ -381,6 +381,6 @@ onMounted(() => {
 .table-header,
 .table-totals,
 .scroller {
-  --apply: p-$Table-content-padding;
+  --apply: m-$Table-content-margin;
 }
 </style>
