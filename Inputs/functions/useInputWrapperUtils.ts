@@ -58,7 +58,7 @@ export function useInputWrapperUtils() {
         styleVariables['--bodyMargin'] = '14px 0 0 0'
       }
 
-      if (props.noBorder) {
+      if (props.noBorder && !isLabelInside) {
         styleVariables['--padding'] = '8px 8px'
       }
     }
@@ -83,7 +83,7 @@ export function useInputWrapperUtils() {
         styleVariables['--bodyMargin'] = '18px 0 0 0'
       }
 
-      if (props.noBorder) {
+      if (props.noBorder && !isLabelInside) {
         styleVariables['--padding'] = '8px 8px'
       }
     }
@@ -108,7 +108,7 @@ export function useInputWrapperUtils() {
         styleVariables['--bodyMargin'] = '22px 0 0 0'
       }
 
-      if (props.noBorder) {
+      if (props.noBorder && !isLabelInside) {
         styleVariables['--padding'] = '8px 8px'
       }
     }

@@ -320,9 +320,23 @@ function handleFitColumns() {
           <Separator
             vertical
             h="full"
-            m="r-1"
           />
 
+          <!-- Subscriptions -->
+          <template v-if="config.subscriptionComponent">
+            <Component
+              :is="config.subscriptionComponent"
+              self-center
+            />
+
+            <Separator
+              vertical
+              h="full"
+              m="r-1"
+            />
+          </template>
+
+          <!-- Export -->
           <slot name="export">
             <Component
               :is="ExportBtn"
