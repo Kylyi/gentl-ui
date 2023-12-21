@@ -220,7 +220,10 @@ onMounted(() => {
           />
         </template>
 
-        <template #bulk-actions-menu="{ selection }">
+        <template
+          v-if="$slots['top-bulk-actions-menu']"
+          #bulk-actions-menu="{ selection }"
+        >
           <slot
             name="top-bulk-actions-menu"
             :selection="selection"
