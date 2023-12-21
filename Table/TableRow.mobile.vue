@@ -33,6 +33,10 @@ const dataColumns = computed(() => {
   return props.columns?.filter(col => !col.isHelperCol && !col.hidden) ?? []
 })
 
+const isEditable = computedEager(() => {
+  return props.editable === true || props.editable === 'cards'
+})
+
 function handleSelectRow(e: MouseEvent) {
   const isControlKey = e.ctrlKey || e.metaKey
 
@@ -74,7 +78,7 @@ function handleSelectRow(e: MouseEvent) {
           :key="col.field"
           :column="col"
           :row="row"
-          :editable="editable"
+          :editable="isEditable"
         >
           <slot :name="col.name" />
         </TableCellMobile>

@@ -41,8 +41,9 @@ defineEmits<{
   (e: 'update:rows', rows: any[]): void
   (e: 'update:totalRows', count: number): void
   (e: 'update:queryBuilder', rows: IQueryBuilderRow[]): void
-  (e: 'row-click', payload: { row: any; el: Element }): void
+  (e: 'row-click', payload: { row: any; el: Element; ev: PointerEvent }): void
   (e: 'update:loading', loading: boolean): void
+  (e: 'update:selected', selection: any): void
 }>()
 
 defineSlots<{
@@ -71,7 +72,10 @@ defineExpose({
     fnc(internalColumns.value)
   },
   getDbQuery: () => dbQuery.value,
-  selectRow: (row: any, val?: boolean) => handleSelectRow(row, val),
+  selectRow: (
+    row: any,
+    options?: { val?: boolean; clearSelection?: boolean }
+  ) => handleSelectRow(row, options),
 })
 
 // Utils
@@ -243,6 +247,7 @@ onMounted(() => {
       :row-key="rowKey"
       :row-height="tableRowHeight"
       :no-scroll-emit="!infiniteScroll"
+      :overscan="isBreakpoint ? 100 : 10"
       class="scroller"
       @virtual-scroll="handleInfiniteScroll"
     >

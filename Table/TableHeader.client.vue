@@ -58,7 +58,7 @@ const selectionState = computed({
   },
   set(val: boolean | null) {
     props.rows.forEach(row => {
-      handleSelectRow(row, !!val)
+      handleSelectRow(row, { val: !!val })
     })
   },
 })

@@ -18,7 +18,7 @@ type IProps = {
 const props = defineProps<IProps>()
 
 // Injections
-const selectRow = injectStrict(tableSelectRowKey, () => {})
+const handleSelectRow = injectStrict(tableSelectRowKey, () => {})
 const isSelectedRow = injectStrict(tableIsSelectedRowKey, () => false)
 const {
   isEditing,
@@ -36,7 +36,7 @@ function focusSiblingCellHorizontal(
   direction: 'previous' | 'next',
   e: KeyboardEvent
 ) {
-  let siblingCell = self?.vnode?.el?.[`${direction}Sibling`] as
+  let siblingCell = self?.vnode?.el?.[`${direction}ElementSibling`] as
     | HTMLElement
     | null
     | undefined
@@ -51,7 +51,9 @@ function focusSiblingCellHorizontal(
   if (isLastCell && !parentRowEl) {
     return
   } else if (isLastCell) {
-    parentRowElSibling = parentRowEl?.[`${direction}Sibling`] as HTMLElement
+    parentRowElSibling = parentRowEl?.[
+      `${direction}ElementSibling`
+    ] as HTMLElement
   }
 
   const isLastParentRow = !parentRowElSibling?.classList?.contains?.(
@@ -100,7 +102,9 @@ function focusSiblingCellVertical(
     return
   }
 
-  parentRowElSibling = parentRowEl?.[`${direction}Sibling`] as HTMLElement
+  parentRowElSibling = parentRowEl?.[
+    `${direction}ElementSibling`
+  ] as HTMLElement
 
   const isLastParentRow = !parentRowElSibling?.classList?.contains?.(
     'virtual-scroll__content-row'
@@ -134,7 +138,7 @@ const { pause, resume } = useIntersectionObserver(
   siblingCell,
   entries => {
     if (entries[0].intersectionRatio < 1) {
-      let scrollBlock = 'nearest'
+      let scrollBlock: ScrollLogicalPosition = 'nearest'
 
       switch (lastDirection.value) {
         case 'down':
@@ -297,7 +301,7 @@ function selectSelf(self: any) {
     >
       <Checkbox
         :model-value="isSelectedRow(row)"
-        @update:model-value="selectRow(row)"
+        @update:model-value="handleSelectRow(row)"
       />
     </div>
 

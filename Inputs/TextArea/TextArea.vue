@@ -81,6 +81,7 @@ defineExpose({
   <InputWrapper
     v-bind="wrapperProps"
     :has-content="hasContent"
+    .focus="focus"
     @click="handleClickWrapper"
   >
     <template

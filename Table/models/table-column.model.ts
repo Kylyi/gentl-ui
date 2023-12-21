@@ -131,7 +131,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     }
 
     return {
-      component: DynamicInput,
+      component: markRaw(DynamicInput),
       props: {
         dataType: this.dataType,
       },

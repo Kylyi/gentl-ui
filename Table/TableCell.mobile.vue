@@ -26,7 +26,7 @@ const {
 
 // Utils
 function focusSiblingCell(direction: 'previous' | 'next', e: KeyboardEvent) {
-  let siblingCell = self?.vnode?.el?.[`${direction}Sibling`] as
+  let siblingCell = self?.vnode?.el?.[`${direction}ElementSibling`] as
     | HTMLElement
     | null
     | undefined
@@ -39,7 +39,9 @@ function focusSiblingCell(direction: 'previous' | 'next', e: KeyboardEvent) {
   if (isLastCell && !parentRowEl) {
     return
   } else if (isLastCell) {
-    parentRowElSibling = parentRowEl?.[`${direction}Sibling`] as HTMLElement
+    parentRowElSibling = parentRowEl?.[
+      `${direction}ElementSibling`
+    ] as HTMLElement
   }
 
   const isLastParentRow = !parentRowElSibling?.classList?.contains?.(

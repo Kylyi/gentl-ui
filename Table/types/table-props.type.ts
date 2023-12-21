@@ -25,7 +25,7 @@ export interface ITableProps {
   /**
    * Whether the table should have inline editing
    */
-  editable?: boolean
+  editable?: boolean | 'cards' | 'table'
 
   /**
    * The export props - gets passed to the `ExportBtn` component (in TableTop.vue)

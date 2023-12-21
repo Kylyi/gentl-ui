@@ -5,6 +5,11 @@ import { type ITextInputProps } from '~/components/Inputs/TextInput/types/text-i
 // Functions
 import { useInputUtils } from '~/components/Inputs/functions/useInputUtils'
 
+defineOptions({
+  customOptions: {
+    test: 'a',
+  },
+})
 const props = withDefaults(defineProps<ITextInputProps>(), {
   allowIncompleteMaskValue: false,
   debounce: 0,
@@ -69,6 +74,7 @@ defineExpose({
   <InputWrapper
     v-bind="wrapperProps"
     :has-content="hasContent"
+    .focus="focus"
     @click="handleClickWrapper"
   >
     <template

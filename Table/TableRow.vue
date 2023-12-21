@@ -20,6 +20,10 @@ const props = withDefaults(defineProps<IProps>(), {
 const dataColumns = computed(() => {
   return props.columns?.filter(col => !col.hidden) ?? []
 })
+
+const isEditable = computedEager(() => {
+  return props.editable === true || props.editable === 'table'
+})
 </script>
 
 <template>
@@ -42,7 +46,7 @@ const dataColumns = computed(() => {
         :key="col.field"
         :column="col"
         :row="row"
-        :editable="editable"
+        :editable="isEditable"
       >
         <slot :name="col.name" />
       </TableCell>

@@ -71,7 +71,7 @@ export const tableViewCodeKey: InjectionKey<Ref<string>> =
 
 // Selection
 export const tableSelectRowKey: InjectionKey<
-  (row: any, val?: boolean) => void
+  (row: any, options?: { clearSelection?: boolean; val?: boolean }) => void
 > = Symbol('tableSelectRow')
 
 export const tableIsSelectedRowKey: InjectionKey<(row: any) => boolean> =

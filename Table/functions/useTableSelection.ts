@@ -45,7 +45,17 @@ export function useTableSelection(props: ITableProps) {
     return !!selectionByKey.value?.[key]
   }
 
-  function handleSelectRow(row: any, val?: boolean) {
+  async function handleSelectRow(
+    row: any,
+    options?: { val?: boolean; clearSelection?: boolean }
+  ) {
+    const { clearSelection: _clearSelection, val } = options ?? {}
+
+    if (_clearSelection) {
+      clearSelection()
+      await nextTick()
+    }
+
     const key = get(row, rowKey.value)
     const _isSelected = isSelected(row)
 

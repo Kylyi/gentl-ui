@@ -390,6 +390,7 @@ defineExpose({
         'is-menu-width-matched': !noMenuMatchWidth,
       },
     ]"
+    .focus="handleFocusOrClick"
     @click="handleClickWrapper"
   >
     <template
