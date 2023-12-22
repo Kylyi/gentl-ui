@@ -28,9 +28,4 @@ export type INumberInputProps = IInputProps & {
    * NOTE - use `null` to remove the step
    */
   step?: number | 'auto' | null
-
-  /**
-   * The props that should be passed to the input tag (<input>)
-   */
-  inputProps?: Record<string, any>
 }

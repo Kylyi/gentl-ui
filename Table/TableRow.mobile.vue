@@ -6,25 +6,49 @@ import { type ITableProps } from '~/components/Table/types/table-props.type'
 
 // Injections
 import {
+  tableClearSelectionKey,
   tableIsSelectedRowKey,
   tableSelectRowKey,
 } from '~/components/Table/provide/table.provide'
 
 type IProps = Pick<
   ITableProps,
-  'columns' | 'rowHeight' | 'to' | 'selectable'
+  'columns' | 'rowHeight' | 'to' | 'selectable' | 'editable'
 > & {
   index?: number
   row: any
 }
 
-withDefaults(defineProps<IProps>(), {
+const props = withDefaults(defineProps<IProps>(), {
   index: 0,
 })
 
 // Injections
 const selectRow = injectStrict(tableSelectRowKey, () => {})
 const isSelectedRow = injectStrict(tableIsSelectedRowKey, () => false)
+const clearSelection = injectStrict(tableClearSelectionKey, () => {})
+
+// Layout
+const dataColumns = computed(() => {
+  return props.columns?.filter(col => !col.isHelperCol && !col.hidden) ?? []
+})
+
+const isEditable = computedEager(() => {
+  return props.editable === true || props.editable === 'cards'
+})
+
+function handleSelectRow(e: MouseEvent) {
+  const isControlKey = e.ctrlKey || e.metaKey
+
+  if (isControlKey) {
+    selectRow(props.row)
+  } else {
+    clearSelection()
+    nextTick(() => {
+      selectRow(props.row)
+    })
+  }
+}
 </script>
 
 <template>
@@ -34,78 +58,32 @@ const isSelectedRow = injectStrict(tableIsSelectedRowKey, () => false)
     :style="{ minHeight: `${rowHeight}px` }"
     :to="to?.(row)"
   >
-    <slot>
-      <div
-        class="tr tr__mobile"
-        :class="{
-          'is-deleted': row.deleted,
-          'is-selectable': selectable,
-          'is-selected': isSelectedRow(row),
-        }"
-        @click="selectable && selectRow(row)"
-      >
-        <slot name="row-inside" />
+    <div
+      class="tr tr__mobile"
+      :class="{
+        'is-deleted': row.deleted,
+        'is-selectable': selectable,
+        'is-selected': isSelectedRow(row),
+      }"
+      @click="selectable && handleSelectRow($event)"
+    >
+      <slot>
+        <slot
+          name="row-inside"
+          mode="grid"
+        />
 
-        <template
-          v-for="(col, idx) in columns"
-          :key="idx"
+        <TableCellMobile
+          v-for="col in dataColumns"
+          :key="col.field"
+          :column="col"
+          :row="row"
+          :editable="isEditable"
         >
-          <template v-if="!col.isHelperCol && !col.hidden">
-            <div
-              v-if="!col.hideLabel"
-              class="cell cell-label"
-            >
-              <span truncate>
-                {{ col._label }}
-              </span>
-            </div>
-
-            <div
-              class="cell cell-value"
-              :class="{ 'col-span-2': col.hideLabel }"
-            >
-              <ValueFormatter
-                :value="get(row, col.field)"
-                :data-type="col.dataType"
-              >
-                <template #default="{ val }">
-                  <slot
-                    :name="col.name"
-                    :value="val"
-                  >
-                    <!-- Boolean -->
-                    <Checkbox
-                      v-if="col.dataType === 'boolean'"
-                      :model-value="get(row, col.field)"
-                      :editable="false"
-                      :label="val"
-                      m="x-2"
-                    />
-
-                    <!-- Link -->
-                    <NuxtLink
-                      v-else-if="col.link?.(row)"
-                      class="link"
-                      :to="col.link(row) || ''"
-                      p="x-2"
-                    >
-                      {{ val }}
-                    </NuxtLink>
-
-                    <span
-                      v-else
-                      class="p-x-2 truncate"
-                    >
-                      {{ val }}
-                    </span>
-                  </slot>
-                </template>
-              </ValueFormatter>
-            </div>
-          </template>
-        </template>
-      </div>
-    </slot>
+          <slot :name="col.name" />
+        </TableCellMobile>
+      </slot>
+    </div>
 
     <!-- Used for absolutely position info/element -->
     <slot name="inner" />
@@ -114,7 +92,7 @@ const isSelectedRow = injectStrict(tableIsSelectedRowKey, () => false)
 
 <style lang="scss" scoped>
 .tr__mobile {
-  --apply: relative grid p-3 rounded-custom overflow-auto
+  --apply: relative grid p-y-3 p-l-1 p-r-2 rounded-custom overflow-auto
   border-1 border-ca gap-x-3 hover:shadow-ca shadow-sm w-full dark:bg-darker bg-white;
 
   &-container {
@@ -129,20 +107,16 @@ const isSelectedRow = injectStrict(tableIsSelectedRowKey, () => false)
   }
 
   &.is-selectable {
-    --apply: cursor-pointer;
+    --apply: cursor-pointer border-2;
   }
 
   &.is-selected {
-    --apply: dark:bg-blue-900/10 bg-blue-100/10 border-primary;
+    --apply: dark:bg-blue-900/30 bg-blue-100/30 border-primary dark:border-blue-600 border-2;
   }
 }
 
-.cell {
-  --apply: flex items-center leading-tight h-$mobileRowHeight truncate;
-
-  &-label {
-    --apply: font-rem-14 font-bold;
-  }
+.tr__mobile:hover {
+  --apply: bg-blue-500/10;
 }
 
 .tr__mobile:hover {

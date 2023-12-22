@@ -53,11 +53,11 @@ export function useTableLayout(
 
   const rowKey = computedEager(() => getRowKey(props))
 
-  function handleRowClick(row: any, event: Event) {
+  function handleRowClick(row: any, event: PointerEvent) {
     const rowEl = event.target as HTMLElement
 
     if (props.rowClickable) {
-      instance?.emit('row-click', { row, el: rowEl.closest('.tr')! })
+      instance?.emit('row-click', { row, el: rowEl.closest('.tr')!, ev: event })
     }
   }
 
@@ -137,7 +137,9 @@ export function useTableLayout(
   )
 
   // Responsivity
-  const isBreakpoint = toRef($bp, props.breakpoint || 'md')
+  const isBreakpoint = computed(() =>
+    $bp.isGreaterOrEqual(props.breakpoint || 'md')
+  )
 
   const tableRowHeight = computed(() => {
     if (isBreakpoint.value) {

@@ -20,6 +20,7 @@ import { useTableSelection } from '~/components/Table/functions/useTableSelectio
 import { useTableMetaData } from '~/components/Table/functions/useTableMetaData'
 import { useTableExporting } from '~/components/Table/functions/useTableExporting'
 import { useTableTopUtils } from '~/components/Table/functions/useTableTopUtils'
+import { useTableEditing } from '~/components/Table/functions/useTableEditing'
 
 const props = withDefaults(defineProps<ITableProps>(), {
   breakpoint: 'md',
@@ -40,8 +41,9 @@ defineEmits<{
   (e: 'update:rows', rows: any[]): void
   (e: 'update:totalRows', count: number): void
   (e: 'update:queryBuilder', rows: IQueryBuilderRow[]): void
-  (e: 'row-click', payload: { row: any; el: Element }): void
+  (e: 'row-click', payload: { row: any; el: Element; ev: PointerEvent }): void
   (e: 'update:loading', loading: boolean): void
+  (e: 'update:selected', selection: any): void
 }>()
 
 defineSlots<{
@@ -56,6 +58,7 @@ defineSlots<{
   topRightAppend: IItem
   subbarRight: IItem
   topBulkActions: { selection: any[] }
+  topBulkActionsMenu: { selection: any[] }
   belowTop: { rows: any[] }
 }>()
 
@@ -70,7 +73,15 @@ defineExpose({
     fnc(internalColumns.value)
   },
   getDbQuery: () => dbQuery.value,
-  selectRow: (row: any, val?: boolean) => handleSelectRow(row, val),
+  selectRow: (
+    row: any,
+    options?: { val?: boolean; clearSelection?: boolean }
+  ) => handleSelectRow(row, options),
+  customFnc: (
+    fnc: (options: { columns: TableColumn[]; rows: any[] }) => void
+  ) => {
+    fnc({ columns: internalColumns.value, rows: rows.value })
+  },
 })
 
 // Utils
@@ -138,8 +149,9 @@ const {
   handleResize
 )
 
-useTableExporting(rows)
 const { handleSelectRow } = useTableSelection(props)
+useTableExporting(rows)
+useTableEditing(props)
 
 onMounted(() => {
   scrollerEl.value?.focus()
@@ -207,6 +219,16 @@ onMounted(() => {
             :selection="selection"
           />
         </template>
+
+        <template
+          v-if="$slots['top-bulk-actions-menu']"
+          #bulk-actions-menu="{ selection }"
+        >
+          <slot
+            name="top-bulk-actions-menu"
+            :selection="selection"
+          />
+        </template>
       </TableTop>
     </slot>
 
@@ -241,6 +263,7 @@ onMounted(() => {
       :row-key="rowKey"
       :row-height="tableRowHeight"
       :no-scroll-emit="!infiniteScroll"
+      :overscan="isBreakpoint ? 100 : 10"
       class="scroller"
       @virtual-scroll="handleInfiniteScroll"
     >
@@ -252,16 +275,18 @@ onMounted(() => {
           :to="to"
           :class="{ 'is-clickable': rowClickable, 'odd': index % 2 !== 0 }"
           :row-height="rowHeight"
+          :editable="editable"
           :index="index"
           :selectable="selectable"
           @click="handleRowClick(row, $event)"
         >
-          <template #row-inside>
+          <template #row-inside="{ mode }">
             <slot
               name="row-inside"
               :columns="columns"
               :row="row"
               :index="index"
+              :mode="mode"
             />
           </template>
 
@@ -367,6 +392,6 @@ onMounted(() => {
 .table-header,
 .table-totals,
 .scroller {
-  --apply: p-$Table-content-padding;
+  --apply: m-$Table-content-margin;
 }
 </style>

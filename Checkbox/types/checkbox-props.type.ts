@@ -32,4 +32,9 @@ export interface ICheckboxProps {
   size?: 'xs' | 'sm' | 'md' | 'lg'
   uncheckValue?: any
   visuals?: Partial<CheckboxClass>
+
+  /**
+   * The props that should be passed to the input tag (<input>)
+   */
+  inputProps?: Record<string, any>
 }

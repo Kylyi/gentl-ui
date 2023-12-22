@@ -78,12 +78,19 @@ function handleStateChange() {
 }
 
 // Layout
+const toggleEl = ref<HTMLDivElement>()
 const itemProps = reactivePick(props, ['noHoverEffect', 'tag'])
+
+function handleFocus() {
+  toggleEl.value?.focus()
+}
 
 const defaultClasses = computed<ToggleClass>(() => {
   return {
     unchecked: {
-      toggle: props.filled ? 'bg-negative/15 border-negative' : '',
+      toggle: props.filled
+        ? 'bg-negative/15 border-negative'
+        : 'bg-white dark:bg-darker',
       bullet:
         props.indeterminateValue !== undefined
           ? 'bg-negative color-negative'
@@ -91,12 +98,16 @@ const defaultClasses = computed<ToggleClass>(() => {
       icon: '',
     },
     indeterminate: {
-      toggle: props.filled ? 'bg-neutral/15 border-neutral' : '',
+      toggle: props.filled
+        ? 'bg-neutral/15 border-neutral'
+        : 'bg-white dark:bg-darker',
       bullet: 'bg-neutral',
       icon: '',
     },
     checked: {
-      toggle: props.filled ? 'bg-positive/15 border-positive' : '',
+      toggle: props.filled
+        ? 'bg-positive/15 border-positive'
+        : 'bg-white dark:bg-darker',
       bullet: 'bg-positive',
       icon: '',
     },
@@ -140,6 +151,15 @@ const bulletClasses = computed(() => {
 const icon = computed(() => {
   return classes.value[internalValue.value]?.icon
 })
+
+// Keyboard navigation
+function handleKeyDown(e: KeyboardEvent) {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault?.()
+
+    handleStateChange()
+  }
+}
 </script>
 
 <script lang="ts">
@@ -154,15 +174,20 @@ export default {
     :class="containerClass"
     :readonly="readonly"
     :disabled="disabled"
+    class="wrapper"
+    .focus="handleFocus"
     @click="handleStateChange"
   >
     <slot name="prepend" />
 
     <div
+      ref="toggleEl"
       class="toggle"
       border="1 ca hover:true-gray-400"
       :class="toggleClasses"
       v-bind="$attrs"
+      tabindex="0"
+      @keydown="handleKeyDown"
     >
       <div
         class="bullet"

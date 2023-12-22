@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Types
-import { type IBadgeProps } from '~/components/Badge/types/badge-props.type';
+import type { IBadgeProps } from '~/components/Badge/types/badge-props.type'
 
 defineProps<IBadgeProps>()
 </script>

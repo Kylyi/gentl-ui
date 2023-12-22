@@ -28,6 +28,7 @@ const btnProps = reactivePick(props, [
   'disabled',
   'download',
   'exact',
+  'navigateToOptions',
 ])
 
 // Layout

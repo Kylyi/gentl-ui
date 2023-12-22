@@ -236,7 +236,7 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
     }
 
     &:focus-within::after {
-      --apply: border-primary;
+      --apply: border-$border-color;
     }
 
     &.has-error::after {

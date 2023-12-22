@@ -1,6 +1,5 @@
 <script setup lang="ts">
-// eslint-disable-next-line import/named
-import { MaskedRange, type AnyMaskedOptions } from 'imask'
+import { type AnyMaskedOptions, MaskedRange } from 'imask'
 
 // Types
 import type { ITimeInputPickerProps } from '~/components/Inputs/TimeInput/types/time-input-picker-props.type'

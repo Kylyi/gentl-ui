@@ -25,6 +25,7 @@ import {
 
 // Injections
 import {
+  tableCustomDataKey,
   tableQueryBuilderKey,
   tableQueryKey,
   tableRecreateQueryBuilderKey,
@@ -67,6 +68,7 @@ export function useTableData(
   const dataHasBeenFetched = ref(false)
   const isForcedRefetch = ref(false)
   const search = ref('')
+  const customData = ref<IItem>({})
   const rows = (props.rows ? useVModel(props, 'rows') : ref([])) as Ref<any[]>
   const previousDbQuery = ref<ITableDataFetchFncInput>()
   const totalRows = props.totalRows
@@ -89,6 +91,7 @@ export function useTableData(
   provide(tableRowsKey, rows)
   provide(tableQueryBuilderKey, queryBuilder)
   provide(tableVersionKey, versionId)
+  provide(tableCustomDataKey, customData)
 
   // Pagination
   const {
@@ -299,6 +302,7 @@ export function useTableData(
             props.getData.countKey || config.table.countKey
           ),
           hash: get(result, props.getData.hashKey || config.table.hashKey),
+          res: result,
         }
       },
       { noResolve: true }
@@ -352,6 +356,13 @@ export function useTableData(
       }
 
       const res = await fetchData(options)
+
+      if (config.table.extractData) {
+        customData.value = Object.assign(
+          customData.value,
+          config.table.extractData(res)
+        )
+      }
 
       // When hash mismatches, we force metadata refetch and data refetch
       const currentHash = get(

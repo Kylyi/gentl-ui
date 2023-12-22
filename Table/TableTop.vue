@@ -320,9 +320,23 @@ function handleFitColumns() {
           <Separator
             vertical
             h="full"
-            m="r-1"
           />
 
+          <!-- Subscriptions -->
+          <template v-if="config.subscriptionComponent">
+            <Component
+              :is="config.subscriptionComponent"
+              self-center
+            />
+
+            <Separator
+              vertical
+              h="full"
+              m="r-1"
+            />
+          </template>
+
+          <!-- Export -->
           <slot name="export">
             <Component
               :is="ExportBtn"
@@ -345,27 +359,23 @@ function handleFitColumns() {
     >
       <!-- Selection & Sorting -->
       <div class="table-top__selection">
-        <template v-if="selectable && $slots['bulk-actions']">
+        <template
+          v-if="
+            selectable &&
+            ($slots['bulk-actions'] || $slots['bulk-actions-menu'])
+          "
+        >
           <!-- Selection actions -->
           <slot
             name="bulk-actions"
             :selection="selection"
           >
-            <!-- Selection info -->
-            <div
-              v-if="selectable"
-              class="table-top__selection-info"
-            >
-              <div fluent:select-all-on-20-regular />
-              <span m="l-1">{{ $t('general.selected') }}:</span>
-              <span font="bold">{{ selectionCount }}</span>
-            </div>
-
             <Btn
               size="sm"
               no-uppercase
-              :label="$t('table.groupEdit')"
-              icon="line-md:chevron-small-right rotate-90 order-2"
+              p="!r-0.5"
+              icon="fluent:select-all-on-20-regular !w-5 !h-5"
+              :label="`${$t('general.selected')}: ${selectionCount}`"
             >
               <MenuProxy
                 hide-header
@@ -378,6 +388,10 @@ function handleFitColumns() {
                   :selection="selection"
                 />
               </MenuProxy>
+
+              <div
+                class="line-md:chevron-small-right rotate-90 h-4 w-4 m-l--1"
+              />
             </Btn>
           </slot>
         </template>
@@ -419,13 +433,13 @@ function handleFitColumns() {
           {{ $t('table.layoutState') }}:
         </span>
 
-        <!-- Columns btn -->
+        <!-- Columns -->
         <TableColumnsBtn
           v-if="!tableTopFunctionality?.noColumnSelection"
           v-model:columns="columns"
         />
 
-        <!-- Autofit btn -->
+        <!-- Autofit -->
         <Btn
           v-if="!tableTopFunctionality?.noAutoFit && !smallScreen"
           size="sm"

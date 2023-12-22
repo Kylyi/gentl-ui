@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { Dayjs } from 'dayjs'
 
-// eslint-disable-next-line import/named
 import { type AnyMaskedOptions, MaskedRange } from 'imask'
 
 // Types
@@ -145,6 +144,7 @@ const {
   maskedValue,
   wrapperProps,
   hasNoValue,
+  hasClearableBtn,
   handleManualModelChange,
   handleFocusOrClick,
   handleClickWrapper,
@@ -185,6 +185,7 @@ defineExpose({
     ref="wrapperEl"
     v-bind="wrapperProps"
     :has-content="!hasNoValue"
+    .focus="focus"
     @click="handleClickWrapper"
   >
     <template
@@ -217,7 +218,7 @@ defineExpose({
     <template #append>
       <div
         v-if="$slots.append || (!readonly && !disabled)"
-        flex="~ gap-x-2 center"
+        flex="~ gap-1 center"
         fit
         @click="handleFocusOrClick"
       >
@@ -226,6 +227,24 @@ defineExpose({
           :clear="clear"
           :focus="focus"
         />
+
+        <Btn
+          v-if="hasClearableBtn"
+          icon="eva:close-fill h-6 w-6"
+          color="ca"
+          size="auto"
+          h="7"
+          w="7"
+          tabindex="-1"
+          @click.stop.prevent="!clearConfirmation && clear()"
+        >
+          <MenuConfirmation
+            v-if="clearConfirmation"
+            @ok="clear"
+          >
+            {{ clearConfirmation }}
+          </MenuConfirmation>
+        </Btn>
 
         <div
           system-uicons:calendar-date

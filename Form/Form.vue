@@ -354,7 +354,7 @@ onMounted(() => {
     --apply: contents;
 
     > .form-content {
-      --apply: flex-grow;
+      --apply: flex-grow p-$Form-content-padding;
     }
   }
 

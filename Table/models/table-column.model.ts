@@ -11,11 +11,14 @@ import type { ITableOrderBy } from '~/components/Table/types/table-query.type'
 import { FilterItem } from '~/libs/App/data/models/filter-item'
 import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
 
-// Constants
-import { DATE_TYPES } from '~/libs/App/types/datetime.type'
+// Functions
 import { useRenderTemporaryTableCell } from '~/components/Table/functions/useRenderTemporaryTableCell'
 
-// Store
+// Constants
+import { DATE_TYPES } from '~/libs/App/types/datetime.type'
+
+// Components
+import DynamicInput from '~/libs/App/components/DynamicInput.vue'
 
 export class TableColumn<T = IItem> implements IItemBase<T> {
   name: string | Extract<keyof T, string | number>
@@ -32,6 +35,11 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   resizable = true
   sortable = true
   searchable?: boolean
+
+  /**
+   * When true, the column will be not editable
+   */
+  noEdit?: boolean
 
   /**
    * When true, the column will be hidden in the table
@@ -103,6 +111,30 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     valueFormatter?: {
       getter: (value: any) => any
       setter: (value: any) => void
+    }
+  }
+
+  /**
+   * The component to use for editing the actual value in the table
+   */
+  editComponent?: {
+    component: any
+    props?: Record<string, any>
+  }
+
+  /**
+   * The default component used for editing
+   */
+  get _editComponent() {
+    if (this.editComponent) {
+      return this.editComponent
+    }
+
+    return {
+      component: markRaw(DynamicInput),
+      props: {
+        dataType: this.dataType,
+      },
     }
   }
 
@@ -415,6 +447,10 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     this.link = col.link
     this.noFreeze = col.noFreeze
     this.autofitLongestText = col.autofitLongestText ?? true
+
+    // Editing
+    this.noEdit = col.noEdit
+    this.editComponent = col.editComponent
 
     // We also hide the column when it's non-interactive
     if (col.nonInteractive) {

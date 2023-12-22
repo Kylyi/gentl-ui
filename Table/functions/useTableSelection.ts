@@ -7,6 +7,7 @@ import { useTableUtils } from '~/components/Table/functions/useTableUtils'
 
 // Injections
 import {
+  tableClearSelectionKey,
   tableIsSelectedRowKey,
   tableSelectRowKey,
   tableSelectionKey,
@@ -44,7 +45,17 @@ export function useTableSelection(props: ITableProps) {
     return !!selectionByKey.value?.[key]
   }
 
-  function handleSelectRow(row: any, val?: boolean) {
+  async function handleSelectRow(
+    row: any,
+    options?: { val?: boolean; clearSelection?: boolean }
+  ) {
+    const { clearSelection: _clearSelection, val } = options ?? {}
+
+    if (_clearSelection) {
+      clearSelection()
+      await nextTick()
+    }
+
     const key = get(row, rowKey.value)
     const _isSelected = isSelected(row)
 
@@ -67,14 +78,24 @@ export function useTableSelection(props: ITableProps) {
     }
   }
 
+  function clearSelection() {
+    if (Array.isArray(selection.value)) {
+      selection.value = []
+    } else {
+      selection.value = {}
+    }
+  }
+
   provide(tableSelectRowKey, handleSelectRow)
   provide(tableIsSelectedRowKey, isSelected)
   provide(tableSelectionKey, selection)
+  provide(tableClearSelectionKey, clearSelection)
 
   return {
     selection,
     rowKey,
     handleSelectRow,
     isSelected,
+    clearSelection,
   }
 }

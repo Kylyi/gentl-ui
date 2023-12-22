@@ -31,6 +31,7 @@ export function useInputWrapperUtils() {
       '--padding': '',
       '--margin': '',
       '--bodyMargin': '',
+      '--border-color': props.ui?.borderColor || 'var(--color-primary)',
     }
 
     const isLabelInside = props.labelInside
@@ -56,6 +57,10 @@ export function useInputWrapperUtils() {
       if (!isLabelInside && !isInline && hasLabel) {
         styleVariables['--bodyMargin'] = '14px 0 0 0'
       }
+
+      if (props.noBorder && !isLabelInside) {
+        styleVariables['--padding'] = '8px 8px'
+      }
     }
 
     // Size: md
@@ -77,6 +82,10 @@ export function useInputWrapperUtils() {
       if (!isLabelInside && !isInline && hasLabel) {
         styleVariables['--bodyMargin'] = '18px 0 0 0'
       }
+
+      if (props.noBorder && !isLabelInside) {
+        styleVariables['--padding'] = '8px 8px'
+      }
     }
 
     // Size: lg
@@ -97,6 +106,10 @@ export function useInputWrapperUtils() {
 
       if (!isLabelInside && !isInline && hasLabel) {
         styleVariables['--bodyMargin'] = '22px 0 0 0'
+      }
+
+      if (props.noBorder && !isLabelInside) {
+        styleVariables['--padding'] = '8px 8px'
       }
     }
 

@@ -17,9 +17,4 @@ export type ITextAreaInputProps = IInputProps & {
    * NOTE - Does not work with `autogrow`
    */
   rows?: number
-
-  /**
-   * The props that should be passed to the input tag (<textarea>)
-   */
-  inputProps?: Record<string, any>
 }

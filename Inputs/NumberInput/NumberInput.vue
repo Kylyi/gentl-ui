@@ -1,5 +1,4 @@
 <script setup lang="ts">
-// eslint-disable-next-line import/named
 import { MaskedNumber } from 'imask'
 
 // Types
@@ -24,6 +23,8 @@ const props = withDefaults(defineProps<INumberInputProps>(), {
   size: 'md',
   stackLabel: undefined,
   step: 'auto',
+  min: Number.NEGATIVE_INFINITY,
+  max: Number.POSITIVE_INFINITY,
 })
 
 defineEmits<{
@@ -35,21 +36,27 @@ defineEmits<{
 const { separators } = useNumber()
 
 // Mask
-// @ts-expect-error IMask type
 const mask = computed<MaskedNumber>(() => {
-  return {
+  return new MaskedNumber({
     thousandsSeparator: props.noGrouping
       ? ''
       : separators.value.thousandSeparator,
     radix: separators.value.decimalSeparator,
     mapToRadix: ['.', ','],
     scale: props.fractionDigits,
-    signed: true,
     ...(props.mask || {}),
     mask: Number,
     min: props.min,
     max: props.max,
-  }
+    // @ts-expect-error imask type
+    format: (value: any) => {
+      if (isNil(value)) {
+        return ''
+      }
+
+      return value.toString()
+    },
+  })
 })
 
 const {
@@ -58,6 +65,7 @@ const {
   typedValue,
   wrapperProps,
   hasNoValue,
+  hasClearableBtn,
   focus,
   select,
   blur,
@@ -155,6 +163,7 @@ defineExpose({
   <InputWrapper
     v-bind="wrapperProps"
     :has-content="!hasNoValue"
+    .focus="focus"
     @click="handleClickWrapper"
   >
     <template
@@ -188,11 +197,11 @@ defineExpose({
     />
 
     <template
-      v-if="$slots.append || (!readonly && !disabled)"
+      v-if="$slots.append || hasClearableBtn || (!readonly && !disabled)"
       #append
     >
       <div
-        v-if="step || $slots.append"
+        v-if="step || hasClearableBtn || $slots.append"
         class="number-input__step"
         @click="handleFocusOrClick"
       >
@@ -201,6 +210,24 @@ defineExpose({
           :clear="clear"
           :focus="focus"
         />
+
+        <Btn
+          v-if="hasClearableBtn"
+          icon="eva:close-fill h-6 w-6"
+          color="ca"
+          size="auto"
+          h="7"
+          w="7"
+          tabindex="-1"
+          @click.stop.prevent="!clearConfirmation && clear()"
+        >
+          <MenuConfirmation
+            v-if="clearConfirmation"
+            @ok="clear"
+          >
+            {{ clearConfirmation }}
+          </MenuConfirmation>
+        </Btn>
 
         <!-- Step -->
         <div

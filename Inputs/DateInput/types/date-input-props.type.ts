@@ -25,9 +25,4 @@ export type IDateInputProps = IInputProps & {
    * Date format that we expect the input to return
    */
   format?: string
-
-  /**
-   * The props that should be passed to the input tag (<input>)
-   */
-  inputProps?: Record<string, any>
 }

@@ -1,4 +1,4 @@
-import { type AnyMaskedOptions } from 'imask'
+import type { AnyMaskedOptions } from 'imask'
 import { type IMaskOptions } from '~/components/Inputs/types/mask-options.type'
 
 // Types

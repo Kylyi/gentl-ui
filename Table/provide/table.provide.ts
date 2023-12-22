@@ -4,6 +4,9 @@ import type { ITableDataFetchFncInput } from '~/components/Table/types/table-que
 import type { ITableLayout } from '~/components/Table/types/table-layout.type'
 import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
 
+// Functions
+import { useTableEditing } from '~/components/Table/functions/useTableEditing'
+
 // Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
 
@@ -46,6 +49,14 @@ export const tableRecreateQueryBuilderKey: InjectionKey<() => void> = Symbol(
   'tableRecreateQueryBuilder'
 )
 
+export const tableCustomDataKey: InjectionKey<Ref<IItem>> =
+  Symbol('tableCustomData')
+
+// Editing
+export const tableInlineEditKey: InjectionKey<
+  ReturnType<typeof useTableEditing>
+> = Symbol('tableInlineEdit')
+
 export const tableResizeKey: InjectionKey<() => void> = Symbol('tableResize')
 
 export const tableSlotsKey: InjectionKey<Record<string, any>> =
@@ -63,7 +74,7 @@ export const tableViewCodeKey: InjectionKey<Ref<string>> =
 
 // Selection
 export const tableSelectRowKey: InjectionKey<
-  (row: any, val?: boolean) => void
+  (row: any, options?: { clearSelection?: boolean; val?: boolean }) => void
 > = Symbol('tableSelectRow')
 
 export const tableIsSelectedRowKey: InjectionKey<(row: any) => boolean> =
@@ -71,6 +82,10 @@ export const tableIsSelectedRowKey: InjectionKey<(row: any) => boolean> =
 
 export const tableSelectionKey: InjectionKey<Ref<ITableSelection | undefined>> =
   Symbol('tableSelection')
+
+export const tableClearSelectionKey: InjectionKey<() => void> = Symbol(
+  'tableClearSelection'
+)
 
 // Export
 export const tableExportKey: InjectionKey<

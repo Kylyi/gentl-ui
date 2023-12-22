@@ -46,7 +46,7 @@ export function useRenderTemporaryTableCell() {
           return () =>
             h(TableCell, {
               row,
-              col,
+              column: col,
               style: { width: 'min-content !important', fontSize: '13px' },
             })
         },
