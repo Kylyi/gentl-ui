@@ -4,7 +4,7 @@ import type { PredictDataTypeOptions } from '~/libs/App/functions/misc'
 export type IValueFormatter = {
   value: any
   originalValue?: any
-  dataType?: DataType
+  dataType?: ExtendedDataType
 
   /**
    * A custom formatter function

@@ -33,7 +33,7 @@ export function useValueFormatterUtils() {
     value: any,
     row?: any,
     options: {
-      dataType?: DataType
+      dataType?: ExtendedDataType
       format?: (row: any, value: any) => any
       emptyValue?: any
       predictDataType?: IValueFormatter['predictDataType']

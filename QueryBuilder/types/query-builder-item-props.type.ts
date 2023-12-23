@@ -14,7 +14,7 @@ export type IQueryBuilderItem<T = IItem> = {
   value?: any
   isNotDraggable?: boolean
   isNotDragOverable?: boolean
-  dataType?: DataType
+  dataType?: ExtendedDataType
 
   /**
    * The original object (reference)

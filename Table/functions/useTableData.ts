@@ -208,8 +208,6 @@ export function useTableData(
       const tableQuery: ITableQuery = {
         ...pagination.value,
         queryBuilder: queryBuilder.value,
-        // TODO: Type
-        // @ts-expect-error wrong type
         columnFilters: columnFilters.value,
         filters: hasFilters ? filters : undefined, // Query builder and column filters combined
         orderBy: orderBy.value,

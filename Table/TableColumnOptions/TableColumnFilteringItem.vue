@@ -9,6 +9,7 @@ import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
 
 // Functions
 import { useTableUtils } from '~/components/Table/functions/useTableUtils'
+import { getInputByDataType } from '~/components/Inputs/DynamicInput/constants/input-by-datatype.map'
 
 // Injections
 import { tableRefreshKey } from '~/components/Table/provide/table.provide'
@@ -51,9 +52,7 @@ const isNonValueComparator = computedEager(() => {
 })
 
 const component = computed(() => {
-  return COMPONENTS_BY_DATATYPE_MAP[
-    column.value.dataType.replace('Simple', '') as DataType
-  ]
+  return getInputByDataType(column.value.dataType)
 })
 
 const inputDebounce = computed(() => {
