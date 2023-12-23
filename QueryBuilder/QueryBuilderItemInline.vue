@@ -60,7 +60,7 @@ const levelColor = computed(() => {
   return getColor(color)
 })
 
-function getDataType(): DataType {
+function getDataType(): ExtendedDataType {
   const col = colSelected.value
 
   if (!col) {

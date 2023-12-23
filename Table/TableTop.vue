@@ -323,7 +323,11 @@ function handleFitColumns() {
           />
 
           <!-- Subscriptions -->
-          <template v-if="config.subscriptionComponent">
+          <template
+            v-if="
+              'subscriptionComponent' in config && config.subscriptionComponent
+            "
+          >
             <Component
               :is="config.subscriptionComponent"
               self-center

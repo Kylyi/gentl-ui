@@ -86,7 +86,7 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
    * Gets the available comparators for a given data type
    */
   function getAvailableComparators(
-    dataType: DataType,
+    dataType: ExtendedDataType,
     options: {
       includeSelectorComparators?: boolean
       allowedComparators?: ComparatorEnum[]

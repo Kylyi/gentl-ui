@@ -1,6 +1,9 @@
 <script setup lang="ts">
+// Functions
+import { getInputByDataType } from '~/components/Inputs/DynamicInput/constants/input-by-datatype.map'
+
 type IProps = {
-  dataType: DataType
+  dataType: ExtendedDataType
   custom?: boolean
 }
 
@@ -11,9 +14,7 @@ const shortcut = computed(() => {
     return 'carbon:area-custom'
   }
 
-  return COMPONENTS_BY_DATATYPE_MAP[
-    props.dataType.replace('Simple', '') as DataType
-  ]?.shortcutIcon
+  return getInputByDataType(props.dataType)?.icon
 })
 </script>
 

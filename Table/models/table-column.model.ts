@@ -18,12 +18,12 @@ import { useRenderTemporaryTableCell } from '~/components/Table/functions/useRen
 import { DATE_TYPES } from '~/libs/App/types/datetime.type'
 
 // Components
-import DynamicInput from '~/libs/App/components/DynamicInput.vue'
+import DynamicInput from '~/components/Inputs/DynamicInput/DynamicInput.vue'
 
 export class TableColumn<T = IItem> implements IItemBase<T> {
   name: string | Extract<keyof T, string | number>
   format?: (row: T, value?: any) => any
-  dataType: DataType = 'string'
+  dataType: ExtendedDataType = 'string'
   label: string
   width: number | string = 1
   align: 'left' | 'center' | 'right' = 'left'
@@ -277,7 +277,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     this.adjustedWidth = width
   }
 
-  setDataType(dataType?: DataType, defaultComparator?: ComparatorEnum) {
+  setDataType(dataType?: ExtendedDataType, defaultComparator?: ComparatorEnum) {
     this.dataType = dataType || 'string'
     const _dataType = this.dataType?.replace('Simple', '')
 

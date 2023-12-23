@@ -8,6 +8,9 @@ import {
 // Models
 import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
 
+// Functions
+import { getInputByDataType } from '~/components/Inputs/DynamicInput/constants/input-by-datatype.map'
+
 // Injections
 import {
   qbColumnsKey,
@@ -82,9 +85,7 @@ const isNonValueComparator = computedEager(() => {
 })
 
 const component = computed(() => {
-  return COMPONENTS_BY_DATATYPE_MAP[
-    colSelected.value?.dataType.replace('Simple', '') as DataType
-  ]
+  return getInputByDataType(colSelected.value?.dataType || 'string')
 })
 
 /**
