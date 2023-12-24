@@ -326,17 +326,6 @@ export function useTableData(
         return
       }
 
-      if (
-        'extendTableFetchInput' in config.table &&
-        typeof config.table.extendTableFetchInput === 'function'
-      ) {
-        if (isFetchMore) {
-          options.fetchTableQuery.skip = rows.value.length
-        }
-
-        options = config.table.extendTableFetchInput(options)
-      }
-
       // When fetching more data, we need to manually get the queryParams again as
       // it is not triggered in the `dbQuery` computed
       if (isFetchMore) {
@@ -351,6 +340,18 @@ export function useTableData(
         })
 
         options.tableQuery.count = false
+        options.fetchTableQuery.count = false
+      }
+
+      if (
+        'extendTableFetchInput' in config.table &&
+        typeof config.table.extendTableFetchInput === 'function'
+      ) {
+        if (isFetchMore) {
+          options.fetchTableQuery.skip = rows.value.length
+        }
+
+        options = config.table.extendTableFetchInput(options)
       }
 
       const res = await fetchData(options)
