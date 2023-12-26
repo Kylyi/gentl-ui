@@ -144,8 +144,8 @@ export async function useTableMetaData(props: ITableProps) {
             : undefined
 
         // Project specific
-        if (layout.value?.viewCode) {
-          viewCode.value = layout.value.viewCode
+        if (_layout?.viewCode) {
+          viewCode.value = _layout.viewCode
         }
 
         // If using the default value, fake the name
