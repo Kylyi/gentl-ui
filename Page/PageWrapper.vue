@@ -91,10 +91,6 @@ onMounted(() => {
 .page-wrapper {
   --apply: ease-out overflow-auto grow p-$PageWrapper-padding;
 
-  @screen lt-md {
-    --apply: w-full;
-  }
-
   &.is-mounted {
     transition: padding 250ms ease-out, margin 250ms ease-out;
   }

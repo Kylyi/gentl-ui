@@ -137,9 +137,12 @@ export function useTableLayout(
   )
 
   // Responsivity
-  const isBreakpoint = computed(() =>
-    $bp.isGreaterOrEqual(props.breakpoint || 'md')
-  )
+  const isBreakpoint = computedEager(() => {
+    // This is a semi-hack to prevent warnings...
+    const currentBreakpoints = $bp.current().value
+
+    return currentBreakpoints.includes(props.breakpoint || 'md')
+  })
 
   const tableRowHeight = computed(() => {
     if (isBreakpoint.value) {
