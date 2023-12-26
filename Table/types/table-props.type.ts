@@ -207,6 +207,7 @@ export interface ITableProps {
     noColumnSelection?: boolean
     noAutoFit?: boolean
     noExport?: boolean
+    noSubscription?: boolean
   }
 
   /**

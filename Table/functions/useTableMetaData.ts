@@ -178,7 +178,12 @@ export async function useTableMetaData(props: ITableProps) {
         // extend the columns with the data from the API but only if we
         // set the `getMetadata.useAllColumns` to true
         else if (columns.value.length && apiColumns && useAllColumns) {
-          columns.value = apiColumns.map((col: any) => {
+          const uniqueColumns = uniqBy(
+            [...apiColumns, ...columns.value],
+            'name'
+          )
+
+          columns.value = uniqueColumns.map((col: any) => {
             const foundColumn = columns.value.find(
               (c: any) => c.field === col.name
             )

@@ -35,6 +35,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   resizable = true
   sortable = true
   searchable?: boolean
+  selectable?: boolean
 
   /**
    * When true, the column will be not editable
@@ -447,6 +448,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     this.link = col.link
     this.noFreeze = col.noFreeze
     this.autofitLongestText = col.autofitLongestText ?? true
+    this.selectable = col.selectable ?? true
 
     // Editing
     this.noEdit = col.noEdit

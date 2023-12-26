@@ -317,13 +317,18 @@ function handleFitColumns() {
             </Menu>
           </Btn>
 
-          <!-- Subscriptions -->
-          <Separator
-            vertical
-            h="full"
-          />
+          <template
+            v-if="
+              !tableTopFunctionality?.noSubscription &&
+              config.subscriptionComponent
+            "
+          >
+            <!-- Subscriptions -->
+            <Separator
+              vertical
+              h="full"
+            />
 
-          <template v-if="config.subscriptionComponent">
             <Component
               :is="config.subscriptionComponent"
               self-center
