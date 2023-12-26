@@ -133,9 +133,10 @@ export async function useTableMetaData(props: ITableProps) {
           defaultLayoutKey || config.table.defaultLayoutKey
         )
 
-        layout.value = _layout
-          ? { ..._layout, preventLayoutReset: true }
-          : undefined
+        layout.value =
+          _layout && !config.table.useLocalStorageForDefaultLayout
+            ? { ..._layout, preventLayoutReset: true }
+            : undefined
 
         // Project specific
         if (layout.value?.viewCode) {
