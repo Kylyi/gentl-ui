@@ -1,3 +1,6 @@
+// Types
+import type { BREAKPOINTS } from '~/libs/App/constants/breakpoints.constant'
+
 export interface IDrawerProps {
   /**
    * Whether the drawer should be absolute positioned

@@ -101,7 +101,7 @@ function handleSort(sortValue?: 'asc' | 'desc', ev?: PointerEvent) {
   </div>
 </template>
 
-<stlye lang="scss" scoped>
+<style lang="scss" scoped>
 .sorting-container {
   --apply: flex flex-col grow overflow-auto shrink-0 p-b-4;
 
@@ -113,4 +113,4 @@ function handleSort(sortValue?: 'asc' | 'desc', ev?: PointerEvent) {
     --apply: bg-primary color-white;
   }
 }
-</stlye>
+</style>

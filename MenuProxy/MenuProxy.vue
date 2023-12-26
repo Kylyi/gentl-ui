@@ -3,6 +3,12 @@
 import type { IMenuProps } from '~/components/Menu/types/menu-props.type'
 import type { IDialogProps } from '~/components/Dialog/types/dialog-props.type'
 
+// Constants
+import {
+  $bp,
+  type BREAKPOINTS,
+} from '~/libs/App/constants/breakpoints.constant'
+
 // Components
 import Dialog from '~/components/Dialog/Dialog.vue'
 import Menu from '~/components/Menu/Menu.vue'

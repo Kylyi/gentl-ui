@@ -1,14 +1,10 @@
 <script setup lang="ts">
 import { config } from '~/config'
 
-type IProps = {
-  pad?: boolean
-  loading?: boolean
-  title?: string
-  includeTopBar?: boolean
-}
+// Types
+import type { IPageWrapperProps } from '~/components/Page/types/page-wrapper-props.type'
 
-withDefaults(defineProps<IProps>(), {
+withDefaults(defineProps<IPageWrapperProps>(), {
   pad: true,
   includeTopBar: true,
 })
@@ -51,7 +47,10 @@ onMounted(() => {
     </Component>
 
     <!-- Content -->
-    <div class="page-wrapper__content">
+    <div
+      class="page-wrapper__content"
+      :class="contentClass"
+    >
       <slot name="title-left" />
 
       <slot name="title">
@@ -90,14 +89,6 @@ onMounted(() => {
 <style lang="scss" scoped>
 .page-wrapper {
   --apply: ease-out overflow-auto grow z-$zPageWrapper p-$PageWrapper-padding;
-
-  @screen lt-md {
-    --apply: w-full;
-  }
-
-  @screen lt-md {
-    --apply: w-full;
-  }
 
   &.is-mounted {
     transition: padding 250ms ease-out, margin 250ms ease-out;

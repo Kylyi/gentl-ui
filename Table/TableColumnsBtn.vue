@@ -54,7 +54,9 @@ const { cloned: clonedColumns } = useCloned(columns, {
 
 const nonHelperCols = computed({
   get() {
-    return clonedColumns.value.filter(col => !col.isHelperCol)
+    return clonedColumns.value.filter(
+      col => !col.isHelperCol && !!col.selectable
+    )
   },
   set(columns: TableColumn[]) {
     const helpersCols = clonedColumns.value.filter(col => col.isHelperCol)

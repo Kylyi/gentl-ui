@@ -133,13 +133,19 @@ export async function useTableMetaData(props: ITableProps) {
           defaultLayoutKey || config.table.defaultLayoutKey
         )
 
-        layout.value = _layout
-          ? { ..._layout, preventLayoutReset: true }
-          : undefined
+        const shouldUseLocalStorageLayout =
+          config.table.useLocalStorageForDefaultLayout
+        const localStorageLayoutSchema =
+          shouldUseLocalStorageLayout && stateMetaData.value.schema
+
+        layout.value =
+          _layout && !localStorageLayoutSchema
+            ? { ..._layout, preventLayoutReset: true }
+            : undefined
 
         // Project specific
-        if (layout.value?.viewCode) {
-          viewCode.value = layout.value.viewCode
+        if (_layout?.viewCode) {
+          viewCode.value = _layout.viewCode
         }
 
         // If using the default value, fake the name
@@ -178,7 +184,12 @@ export async function useTableMetaData(props: ITableProps) {
         // extend the columns with the data from the API but only if we
         // set the `getMetadata.useAllColumns` to true
         else if (columns.value.length && apiColumns && useAllColumns) {
-          columns.value = apiColumns.map((col: any) => {
+          const uniqueColumns = uniqBy(
+            [...apiColumns, ...columns.value],
+            'name'
+          )
+
+          columns.value = uniqueColumns.map((col: any) => {
             const foundColumn = columns.value.find(
               (c: any) => c.field === col.name
             )

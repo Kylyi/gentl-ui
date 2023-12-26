@@ -15,6 +15,9 @@ import {
 import { useTableColumns } from '~/components/Table/functions/useTableColumns'
 import { useTableUtils } from '~/components/Table/functions/useTableUtils'
 
+// Constants
+import { $bp } from '~/libs/App/constants/breakpoints.constant'
+
 // Components
 import TableRow from '~/components/Table/TableRow.vue'
 import TableRowMobile from '~/components/Table/TableRow.mobile.vue'
@@ -137,9 +140,12 @@ export function useTableLayout(
   )
 
   // Responsivity
-  const isBreakpoint = computed(() =>
-    $bp.isGreaterOrEqual(props.breakpoint || 'md')
-  )
+  const isBreakpoint = computedEager(() => {
+    // This is a semi-hack to prevent warnings...
+    const currentBreakpoints = $bp.current().value
+
+    return currentBreakpoints.includes(props.breakpoint || 'md')
+  })
 
   const tableRowHeight = computed(() => {
     if (isBreakpoint.value) {

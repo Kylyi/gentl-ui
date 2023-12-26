@@ -8,6 +8,9 @@ import { TableColumn } from '~/components/Table/models/table-column.model'
 // Injections
 import { tableFocusKey } from '~/components/Table/provide/table.provide'
 
+// Constants
+import { NON_VALUE_COMPARATORS } from '~/components/Table/constants/comparator-categories.const'
+
 // Components
 import MenuProxy from '~/components/MenuProxy/MenuProxy.vue'
 import TableColumnSorting from '~/components/Table/TableColumnOptions/TableColumnSorting.vue'

@@ -1,3 +1,6 @@
+// Types
+import type { BREAKPOINTS } from '~/libs/App/constants/breakpoints.constant'
+
 export interface IPageDrawerProps {
   /**
    * At which breakpoint the drawer becomes absolutely positioned

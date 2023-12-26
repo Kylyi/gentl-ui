@@ -2,6 +2,9 @@
 // Types
 import type { IPageDrawerProps } from '~/components/Page/types/page-drawer-props.type'
 
+// Constants
+import { $bp } from '~/libs/App/constants/breakpoints.constant'
+
 const props = withDefaults(defineProps<IPageDrawerProps>(), {
   absoluteBreakpoint: 'md',
   absoluteFullWidthBreakpoint: 'md',

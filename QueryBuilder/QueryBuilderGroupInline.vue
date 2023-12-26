@@ -16,6 +16,9 @@ import {
 } from '~/components/QueryBuilder/provide/query-builder.provide'
 import { tableRefreshKey } from '~/components/Table/provide/table.provide'
 
+// Constants
+import { COLORS } from '~/libs/App/constants/colors.constant'
+
 // Components
 import Menu from '~/components/Menu/Menu.vue'
 
