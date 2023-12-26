@@ -317,27 +317,30 @@ function handleFitColumns() {
             </Menu>
           </Btn>
 
+          <!-- Subscriptions -->
           <Separator
             vertical
             h="full"
           />
 
-          <!-- Subscriptions -->
           <template v-if="config.subscriptionComponent">
             <Component
               :is="config.subscriptionComponent"
               self-center
             />
+          </template>
 
+          <!-- Export -->
+          <slot
+            v-if="!tableTopFunctionality?.noExport"
+            name="export"
+          >
             <Separator
               vertical
               h="full"
               m="r-1"
             />
-          </template>
 
-          <!-- Export -->
-          <slot name="export">
             <Component
               :is="ExportBtn"
               v-bind="exportProps"
