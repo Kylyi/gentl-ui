@@ -319,10 +319,8 @@ export function useTableData(
 
       // NOTE: We check whether the amount of data we already fetched is not
       // greater than the limit
-      if (
-        config.table.limitRows &&
-        rows.value.length >= config.table.limitRows
-      ) {
+      const limitRows = props.getData?.limitRows || config.table.limitRows
+      if (limitRows && rows.value.length >= limitRows) {
         return
       }
 

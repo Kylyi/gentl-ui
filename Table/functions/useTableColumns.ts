@@ -223,7 +223,8 @@ export function useTableColumns(
         if (
           (!config.table.useServerState ||
             config.table.useLocalStorageForDefaultLayout) &&
-          !isUrlUsed
+          !isUrlUsed &&
+          !props.initialLayoutSchema
         ) {
           col.filters = stateColumn.filters.map(
             filter => new FilterItem(filter)

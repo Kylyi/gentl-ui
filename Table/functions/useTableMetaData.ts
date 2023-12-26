@@ -133,10 +133,9 @@ export async function useTableMetaData(props: ITableProps) {
           defaultLayoutKey || config.table.defaultLayoutKey
         )
 
-        const shouldUseLocalStorageLayout =
-          config.table.useLocalStorageForDefaultLayout
         const localStorageLayoutSchema =
-          shouldUseLocalStorageLayout && stateMetaData.value.schema
+          config.table.useLocalStorageForDefaultLayout &&
+          stateMetaData.value.schema
 
         layout.value =
           _layout && !localStorageLayoutSchema
@@ -153,7 +152,15 @@ export async function useTableMetaData(props: ITableProps) {
           layout.value.name = $t('table.layoutStateNoLayout')
         }
 
-        if (layout.value && props.initialLayoutSchema) {
+        if (props.initialLayoutSchema) {
+          if (!layout.value) {
+            layout.value = {
+              id: 0,
+              name: '',
+              schema: '',
+            }
+          }
+
           layout.value.schema = props.initialLayoutSchema
         }
 

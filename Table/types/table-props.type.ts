@@ -227,6 +227,7 @@ export interface ITableProps {
     versionKey?: string
     createIdentifier?: (row: any, idx: number) => string | number
     errorHandler?: (error: any) => void
+    limitRows?: number
   }
 
   getTotalsData?: {
