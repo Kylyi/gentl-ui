@@ -76,7 +76,7 @@ defineExpose({
 // When `noSearch` is used, we fake the focus on the container to allow
 // keyboard navigation
 onMounted(() => {
-  if (props.noSearch) {
+  if (props.noSearch && !props.noAutofocus) {
     setTimeout(() => {
       unrefElement(containerEl)?.focus()
     }, 150)
