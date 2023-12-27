@@ -6,6 +6,11 @@ import type { IVirtualScrollEvent } from '~/components/VirtualScroller/types/vir
 
 type IProps = {
   /**
+   * When true, each row may have a different height
+   */
+  dynamicRowHeight?: boolean
+
+  /**
    * When true, the component will NOT emit scroll events (performance)
    */
   noScrollEmit?: boolean
@@ -52,10 +57,11 @@ defineExpose({
 
 // Utils
 const virtualScrollOptions = computed(() => {
+  const rows = props.rows
   const rowHeight = props.rowHeight
 
   return {
-    count: props.rows?.length ?? 0,
+    count: rows?.length ?? 0,
     estimateSize: () => rowHeight,
     getScrollElement: () => containerEl.value!,
     getItemKey: () => props.rowKey,
@@ -81,11 +87,25 @@ const virtualScrollOptions = computed(() => {
 })
 
 // Layout
+const rows = toRef(props, 'rows')
 const containerEl = ref<HTMLDivElement>()
 const virtualScroll = useVirtualizer(virtualScrollOptions)
 
 const virtualRows = computed(() => virtualScroll.value.getVirtualItems())
 const totalSize = computed(() => virtualScroll.value.getTotalSize())
+
+// Measuring
+function measureElement(el: HTMLElement) {
+  if (!el) {
+    return undefined
+  }
+
+  virtualScroll.value.getTotalSize()
+
+  virtualScroll.value.measureElement(el)
+
+  return undefined
+}
 </script>
 
 <template>
@@ -94,7 +114,9 @@ const totalSize = computed(() => virtualScroll.value.getTotalSize())
     class="virtual-scroll"
     tabindex="0"
   >
+    <!-- Static row height -->
     <div
+      v-if="!dynamicRowHeight"
       class="virtual-scroll__content"
       :style="{ height: `${totalSize}px` }"
     >
@@ -116,6 +138,54 @@ const totalSize = computed(() => virtualScroll.value.getTotalSize())
         </slot>
       </div>
     </div>
+
+    <!-- Dynamic row height -->
+    <!-- <div
+      v-else
+      class="virtual-scroll__content"
+      :style="{ height: `${totalSize}px` }"
+    >
+      <div
+        class="virtual-scroll__content-dynamic"
+        :style="{
+          transform: `translateY(${virtualRows[0]?.start ?? 0}px)`,
+        }"
+      >
+        <div
+          v-for="virtualRow in virtualRows"
+          :key="virtualRow.index"
+          :ref="measureElement"
+          :data-index="virtualRow.index"
+          :class="virtualRow.index % 2 ? 'is-odd' : 'is-even'"
+        >
+          <slot
+            :row="rows?.[virtualRow.index]"
+            :index="virtualRow.index"
+          >
+            Row {{ virtualRow.index }}
+          </slot>
+        </div>
+      </div>
+    </div> -->
+
+    <div
+      v-else
+      class="virtual-scroll__content"
+    >
+      <div
+        v-for="(row, idx) in rows"
+        :key="row[rowKey]"
+        :class="idx % 2 ? 'is-odd' : 'is-even'"
+        class="w-full flex"
+      >
+        <slot
+          :row="row"
+          :index="idx"
+        >
+          Row {{ idx }}
+        </slot>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -128,6 +198,10 @@ const totalSize = computed(() => virtualScroll.value.getTotalSize())
 
     &-row {
       --apply: flex w-full absolute top-0 left-0;
+    }
+
+    &-dynamic {
+      --apply: w-full absolute top-0 left-0;
     }
   }
 }

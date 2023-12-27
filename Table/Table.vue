@@ -261,6 +261,7 @@ onMounted(() => {
       ref="scrollerEl"
       :rows="rows"
       :row-key="rowKey"
+      :dynamic-row-height="dynamicRowHeight"
       :row-height="tableRowHeight"
       :no-scroll-emit="!infiniteScroll"
       :overscan="isBreakpoint ? 100 : 10"
