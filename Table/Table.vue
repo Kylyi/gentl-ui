@@ -153,6 +153,12 @@ const { handleSelectRow } = useTableSelection(props)
 useTableExporting(rows)
 useTableEditing(props)
 
+const overscan = computed(() => {
+  return isBreakpoint.value
+    ? { top: 3200, bottom: 4000 }
+    : { top: 600, bottom: 600 }
+})
+
 onMounted(() => {
   scrollerEl.value?.focus()
 })
@@ -256,7 +262,7 @@ onMounted(() => {
       </template>
     </TableHeader>
 
-    <VirtualScroller
+    <VirtualScrollerOld
       v-show="hasVisibleColumn"
       ref="scrollerEl"
       :rows="rows"
@@ -264,7 +270,7 @@ onMounted(() => {
       :dynamic-row-height="dynamicRowHeight"
       :row-height="tableRowHeight"
       :no-scroll-emit="!infiniteScroll"
-      :overscan="isBreakpoint ? 100 : 10"
+      :overscan="overscan"
       class="scroller"
       @virtual-scroll="handleInfiniteScroll"
     >
@@ -323,7 +329,7 @@ onMounted(() => {
           </template>
         </Component>
       </template>
-    </VirtualScroller>
+    </VirtualScrollerOld>
 
     <TableNoData
       :has-no-data="!rows.length && !isLoading"

@@ -68,9 +68,9 @@ defineExpose({
 })
 
 // Utils
-const areRowsMounted = refAutoReset(true, 20)
 const { isDesktopOrTablet } = useDevice()
-let lastScrollEvent: Event
+const lastScrollEvent = ref<Event>()
+let lastScrollRow = 0
 
 function getRowKey(row: T) {
   return String(row[rowKey.value])
@@ -90,6 +90,7 @@ const virtualScrollEl = ref<HTMLDivElement>()
 const isMounted = ref(false)
 const rowHeight = toRef(props, 'rowHeight')
 const rowKey = toRef(props, 'rowKey') as Ref<keyof T>
+const virtualScrollerRect = ref<DOMRect>()
 
 const overscan = computedEager(() => {
   return {
@@ -102,7 +103,7 @@ const heights = ref<number[]>(
   Array.from({ length: props.rows?.length ?? 0 }, () => props.rowHeight)
 )
 
-const visibleRows = ref(
+const renderedRows = ref(
   getRenderedRows(0, INITIAL_ROWS_RENDER_COUNT)
 ) as Ref<IVisibleRows>
 
@@ -112,8 +113,18 @@ useScroll(virtualScrollEl, {
   onScroll(ev) {
     handleScrollEvent(ev)
 
-    lastScrollEvent = ev
+    lastScrollEvent.value = ev
   },
+})
+
+const heightsCumulated = computed(() => {
+  let height = 0
+
+  return heights.value.map(h => {
+    height += h
+
+    return height
+  })
 })
 
 const virtualScrollStyle = computed(() => {
@@ -129,8 +140,13 @@ const containerStyle = computed<CSSProperties>(() => {
 })
 
 const rowsInViewport = computed(() => {
+  const scrollTop =
+    (lastScrollEvent.value?.target as HTMLElement)?.scrollTop ?? 0
+
   const overscanBot = Math.max(
-    height.value + overscan.value.bottom,
+    height.value +
+      overscan.value.bottom +
+      Math.min(overscan.value.top, scrollTop),
     0
   ) as number
 
@@ -140,41 +156,58 @@ const rowsInViewport = computed(() => {
 function handleScrollEvent(ev?: Event) {
   const scrollY = ((ev?.target as any)?.scrollTop || 1) as number
 
-  // NOTE - We get the index of the first row that is visible
-  let totalSectionHeight = 0
-  let firstIdx = 0
+  const scrollRow = Math.floor(scrollY / rowHeight.value)
 
-  const overscanTop = Math.max(scrollY - overscan.value.top, 1)
-  while (totalSectionHeight < overscanTop) {
-    totalSectionHeight += heights.value[firstIdx]
-    firstIdx++
+  if (scrollRow && scrollRow === lastScrollRow) {
+    return
   }
 
-  firstIdx--
+  lastScrollRow = scrollRow
+
+  // NOTE - We get the index of the first row that is visible
+  const overscanTop = Math.max(scrollY - overscan.value.top, 1)
+  const firstIdx = heightsCumulated.value.findIndex(h => h >= overscanTop)
 
   const lastIdx = firstIdx + rowsInViewport.value
+  const totalSectionHeight = heightsCumulated.value[firstIdx]
   const firstIdxOffset = scrollY - totalSectionHeight
   const translateYBase = scrollY - firstIdxOffset - heights.value[firstIdx]
 
-  visibleRows.value = getRenderedRows(firstIdx, lastIdx, translateYBase)
+  renderedRows.value = getRenderedRows(firstIdx, lastIdx, translateYBase)
 
   if (!props.noScrollEmit) {
-    const { firstRow, lastRow } = visibleRows.value
+    const left = virtualScrollerRect.value?.left ?? 0
+    const top = virtualScrollerRect.value?.top ?? 0
+    const height = virtualScrollEl.value?.clientHeight ?? 0
 
-    if (!firstRow || !lastRow) {
+    const firstVisibleEl = document
+      .elementFromPoint(left + 1, top + 1)
+      ?.closest('.virtual-scroll__row') as HTMLElement
+
+    const lastVisibleEl = document
+      .elementFromPoint(left + 1, top + height - 1)
+      ?.closest('.virtual-scroll__row') as HTMLElement
+
+    if (!firstVisibleEl || !lastVisibleEl) {
       return
     }
 
+    const firstVisibleIdx = Number(firstVisibleEl?.dataset.idx)
+    const firstVisibleItem = props.rows![firstVisibleIdx]
+
+    const lastVisibleIdx = Number(lastVisibleEl?.dataset.idx)
+    const lastVisibleItem = props.rows![lastVisibleIdx]
+
     emits('virtual-scroll', {
       visibleStartItem: {
-        index: firstRow.idx,
-        key: getRowKey(firstRow.ref),
-        size: heights.value[firstRow.idx],
+        index: firstVisibleIdx,
+        key: getRowKey(firstVisibleItem),
+        size: heights.value[firstVisibleIdx],
       },
       visibleEndItem: {
-        index: lastRow.idx,
-        key: getRowKey(lastRow.ref),
-        size: heights.value[lastRow.idx],
+        index: lastVisibleIdx,
+        key: getRowKey(lastVisibleItem),
+        size: heights.value[lastVisibleIdx],
       },
     })
   }
@@ -198,9 +231,7 @@ function getRenderedRows(
 
   const _lastIdx = Math.min(lastIdx, props.rows.length - 1)
 
-  let preceedingRowsHeight = heights.value
-    .slice(firstIdx, firstIdx)
-    .reduce((agg, curr) => agg + curr, 0)
+  let preceedingRowsHeight = 0
 
   const rows: IRow[] = props.rows
     .slice(firstIdx, _lastIdx + 1)
@@ -247,13 +278,10 @@ function scrollTo(idx: number) {
 async function handleMountedRow(node: any) {
   const el = 'el' in node ? node.el : node
   const idx = el.dataset.idx
-  const clientHeight = el.clientHeight
 
-  if (heights.value[idx] !== clientHeight) {
-    heights.value[idx] = clientHeight
+  if (heights.value[idx] !== el.clientHeight) {
+    heights.value[idx] = el.clientHeight
   }
-
-  areRowsMounted.value = false
 }
 
 watchThrottled(
@@ -262,7 +290,7 @@ watchThrottled(
     const children = Array.from(containerEl.value?.children || [])
     children?.forEach(handleMountedRow)
 
-    handleScrollEvent(lastScrollEvent)
+    handleScrollEvent(lastScrollEvent.value)
   },
   { throttle: 150, leading: true, trailing: true }
 )
@@ -272,6 +300,8 @@ watchThrottled(
 watch(
   () => props.rows?.length,
   () => {
+    handleScrollEvent(lastScrollEvent.value)
+
     heights.value = Array.from(
       { length: props.rows?.length ?? 0 },
       () => props.rowHeight
@@ -280,9 +310,13 @@ watch(
 )
 
 // Lifecycle
-watchOnce(areRowsMounted, () => {
-  isMounted.value = true
-  visibleRows.value = getRenderedRows(0, INITIAL_ROWS_RENDER_COUNT)
+onMounted(() => {
+  nextTick(() => {
+    isMounted.value = true
+    renderedRows.value = getRenderedRows(0, INITIAL_ROWS_RENDER_COUNT)
+
+    virtualScrollerRect.value = virtualScrollEl.value?.getBoundingClientRect()
+  })
 })
 </script>
 
@@ -300,7 +334,7 @@ watchOnce(areRowsMounted, () => {
       :style="containerStyle"
     >
       <div
-        v-for="row in visibleRows.rows"
+        v-for="row in renderedRows.rows"
         :key="getRowKey(row.ref)"
         :data-idx="row.idx"
         class="virtual-scroll__row"
