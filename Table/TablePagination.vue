@@ -11,6 +11,7 @@ type IProps = {
   totalRows?: number
   currentRows?: number
   infiniteScroll?: boolean
+  limitRows?: number
 
   prev: () => void
   next: () => void
@@ -64,7 +65,7 @@ const pages = computedEager(() => {
 })
 
 const isLimitRowsReached = computedEager(() => {
-  const limitRows = config.table.limitRows
+  const limitRows = props.limitRows ?? config.table.limitRows
   const currentRows = props.currentRows || 0
   const totalRows = props.totalRows || 0
 

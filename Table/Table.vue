@@ -356,6 +356,7 @@ onMounted(() => {
       :infinite-scroll="infiniteScroll"
       :no-pagination="noPagination || infiniteScroll"
       :current-rows="rows.length"
+      :limit-rows="getData?.limitRows"
       :prev="prev"
       :next="next"
     />
