@@ -350,7 +350,9 @@ defineExpose({
       v-model="filter.value"
       size="sm"
       :placeholder="`${$t('table.filterValue')}...`"
-      @update:model-value="handleValueChange($event, { set: true })"
+      @update:model-value="
+        handleValueChange($event, { set: true, debounce: true })
+      "
     />
   </div>
 </template>

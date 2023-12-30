@@ -63,6 +63,7 @@ const emits = defineEmits<{
 }>()
 
 defineExpose({
+  scrollToTop: () => scrollTo(0),
   scrollTo,
   focus: () => virtualScrollEl.value?.focus(),
 })
@@ -360,8 +361,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .virtual-scroll {
-  --apply: relative overflow-auto grow rounded-custom outline-none
-    outline-offset-4;
+  --apply: relative overflow-auto grow outline-none;
 
   &__container {
     --apply: relative rounded-custom;
