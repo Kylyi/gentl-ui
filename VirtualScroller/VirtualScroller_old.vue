@@ -73,7 +73,7 @@ const lastScrollEvent = ref<Event>()
 let lastScrollRow = 0
 
 function getRowKey(row: T) {
-  return String(row[rowKey.value])
+  return String(row?.[rowKey.value] || '')
 }
 
 // Constants
@@ -299,13 +299,13 @@ watchThrottled(
 // efficient to only update the heights of the rows that have changed (~ added)
 watch(
   () => props.rows?.length,
-  () => {
-    handleScrollEvent(lastScrollEvent.value)
-
+  rowsLength => {
     heights.value = Array.from(
-      { length: props.rows?.length ?? 0 },
+      { length: rowsLength ?? 0 },
       () => props.rowHeight
     )
+
+    handleScrollEvent(lastScrollEvent.value)
   }
 )
 
@@ -368,7 +368,7 @@ onMounted(() => {
   }
 
   &__row {
-    --apply: min-h-$rowHeight w-full;
+    --apply: flex w-full min-h-$rowHeight;
 
     will-change: transform;
   }
