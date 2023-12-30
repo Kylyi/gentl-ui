@@ -262,7 +262,7 @@ onMounted(() => {
       </template>
     </TableHeader>
 
-    <VirtualScroller
+    <VirtualScrollerOld
       v-show="hasVisibleColumn"
       ref="scrollerEl"
       :rows="rows"
@@ -270,7 +270,7 @@ onMounted(() => {
       :dynamic-row-height="dynamicRowHeight"
       :row-height="tableRowHeight"
       :no-scroll-emit="!infiniteScroll"
-      :overscan="isBreakpoint ? 100 : 10"
+      :overscan="overscan"
       class="scroller"
       @virtual-scroll="handleInfiniteScroll"
     >
@@ -329,7 +329,7 @@ onMounted(() => {
           </template>
         </Component>
       </template>
-    </VirtualScroller>
+    </VirtualScrollerOld>
 
     <TableNoData
       :has-no-data="!rows.length && !isLoading"
