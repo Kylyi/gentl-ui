@@ -236,7 +236,7 @@ export function useTableColumns(
         }
 
         // We set the column data that we save in `localStorage`
-        col.width = stateColumn.width
+        col.setWidth(stateColumn.width)
 
         // TODO: This can be done better (without the arbitrary timeout...)
         setTimeout(() => {

@@ -25,14 +25,18 @@ const {
 } = injectStrict(tableInlineEditKey, {} as any)
 
 // Utils
-function focusSiblingCell(direction: 'previous' | 'next', e: KeyboardEvent) {
-  let siblingCell = self?.vnode?.el?.[`${direction}ElementSibling`] as
+function focusSiblingCell(
+  direction: 'previous' | 'next',
+  lastEl?: HTMLElement
+) {
+  const el = lastEl ?? self?.vnode?.el
+  let siblingCell = el?.[`${direction}ElementSibling`] as
     | HTMLElement
     | null
     | undefined
   const isLastCell = !siblingCell || !siblingCell?.classList?.contains?.('cell')
   const parentRowEl = self?.vnode.el?.closest(
-    '.virtual-scroll__content-row'
+    '.virtual-scroll__row'
   ) as HTMLElement
 
   let parentRowElSibling: HTMLElement | null = null
@@ -45,7 +49,7 @@ function focusSiblingCell(direction: 'previous' | 'next', e: KeyboardEvent) {
   }
 
   const isLastParentRow = !parentRowElSibling?.classList?.contains?.(
-    'virtual-scroll__content-row'
+    'virtual-scroll__row'
   )
   if (isLastCell && isLastParentRow) {
     return
@@ -62,8 +66,8 @@ function focusSiblingCell(direction: 'previous' | 'next', e: KeyboardEvent) {
 
   if (siblingCellEditBtn) {
     siblingCellEditBtn.click()
-  } else {
-    handleKeyDown(e)
+  } else if (siblingCell) {
+    return focusSiblingCell(direction, siblingCell)
   }
 
   return siblingCell
@@ -143,7 +147,7 @@ function handleKeyDown(e: KeyboardEvent) {
       e.stopPropagation?.()
 
       resume()
-      siblingCell.value = focusSiblingCell('next', e)
+      siblingCell.value = focusSiblingCell('next')
 
       break
 
@@ -156,7 +160,7 @@ function handleKeyDown(e: KeyboardEvent) {
       e.stopPropagation?.()
 
       resume()
-      siblingCell.value = focusSiblingCell('previous', e)
+      siblingCell.value = focusSiblingCell('previous')
 
       break
 

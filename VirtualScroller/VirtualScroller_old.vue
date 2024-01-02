@@ -11,6 +11,14 @@ type IProps = {
   initialRowsRenderCount?: number
 
   /**
+   * When adding more rows to the virtual scroller, this must be set to true
+   * to not override calculated heights
+   *
+   * Note: This is only relevant for dynamic row heights
+   */
+  fetchMore?: boolean
+
+  /**
    * When true, the component will NOT emit scroll events (performance)
    */
   noScrollEmit?: boolean
@@ -63,14 +71,19 @@ const emits = defineEmits<{
 }>()
 
 defineExpose({
-  scrollToTop: () => scrollTo(0),
+  scrollToTop: () => {
+    scrollTo(0)
+  },
   scrollTo,
   focus: () => virtualScrollEl.value?.focus(),
+  rerender: (noEmit?: boolean) => rerenderVisibleRows(noEmit),
+  renderOnlyVisible,
 })
 
 // Utils
 const { isDesktopOrTablet } = useDevice()
 const lastScrollEvent = ref<Event>()
+const preventNextScroll = autoResetRef(false, 50)
 let lastScrollRow = 0
 
 function getRowKey(row: T) {
@@ -86,12 +99,17 @@ const INITIAL_ROWS_RENDER_COUNT =
     : Math.ceil(1080 / props.rowHeight))
 
 // Layout
+const rows = toRef(props, 'rows')
 const containerEl = ref<HTMLDivElement>()
 const virtualScrollEl = ref<HTMLDivElement>()
 const isMounted = ref(false)
 const rowHeight = toRef(props, 'rowHeight')
 const rowKey = toRef(props, 'rowKey') as Ref<keyof T>
 const virtualScrollerRect = ref<DOMRect>()
+const visibleItemsIdx = ref({
+  first: 0,
+  last: 0,
+})
 
 const overscan = computedEager(() => {
   return {
@@ -154,12 +172,33 @@ const rowsInViewport = computed(() => {
   return Math.ceil(overscanBot / rowHeight.value)
 })
 
-function handleScrollEvent(ev?: Event) {
+function handleScrollEvent(
+  ev?: Event,
+  otpions?: {
+    /**
+     * Whether the `virtual-scroll` event should be emitted
+     */
+    noEmit?: boolean
+
+    /**
+     * Force the scrolling event to recalculate the visible rows
+     */
+    force?: boolean
+  }
+) {
+  if (preventNextScroll.value) {
+    preventNextScroll.value = false
+
+    return
+  }
+
+  const { noEmit, force } = otpions ?? {}
+  const _noEmit = props.noScrollEmit || noEmit
   const scrollY = ((ev?.target as any)?.scrollTop || 1) as number
 
   const scrollRow = Math.floor(scrollY / rowHeight.value)
 
-  if (scrollRow && scrollRow === lastScrollRow) {
+  if (!force && scrollRow && scrollRow === lastScrollRow) {
     return
   }
 
@@ -170,35 +209,34 @@ function handleScrollEvent(ev?: Event) {
   const firstIdx = heightsCumulated.value.findIndex(h => h >= overscanTop)
 
   const lastIdx = firstIdx + rowsInViewport.value
-  const totalSectionHeight = heightsCumulated.value[firstIdx]
-  const firstIdxOffset = scrollY - totalSectionHeight
-  const translateYBase = scrollY - firstIdxOffset - heights.value[firstIdx]
 
-  renderedRows.value = getRenderedRows(firstIdx, lastIdx, translateYBase)
+  renderedRows.value = getRenderedRows(firstIdx, lastIdx)
 
-  if (!props.noScrollEmit) {
-    const left = virtualScrollerRect.value?.left ?? 0
-    const top = virtualScrollerRect.value?.top ?? 0
-    const height = virtualScrollEl.value?.clientHeight ?? 0
+  const left = virtualScrollerRect.value?.left ?? 0
+  const top = virtualScrollerRect.value?.top ?? 0
+  const height = virtualScrollEl.value?.clientHeight ?? 0
 
-    const firstVisibleEl = document
-      .elementFromPoint(left + 1, top + 1)
-      ?.closest('.virtual-scroll__row') as HTMLElement
+  const firstVisibleEl = document
+    .elementFromPoint(left + 1, top + 1)
+    ?.closest('.virtual-scroll__row') as HTMLElement
+  const lastVisibleEl = document
+    .elementFromPoint(left + 1, top + height - 1)
+    ?.closest('.virtual-scroll__row') as HTMLElement
 
-    const lastVisibleEl = document
-      .elementFromPoint(left + 1, top + height - 1)
-      ?.closest('.virtual-scroll__row') as HTMLElement
+  if (!firstVisibleEl || !lastVisibleEl) {
+    return
+  }
 
-    if (!firstVisibleEl || !lastVisibleEl) {
-      return
-    }
+  const firstVisibleIdx = Number(firstVisibleEl?.dataset.idx)
+  const firstVisibleItem = props.rows![firstVisibleIdx]
 
-    const firstVisibleIdx = Number(firstVisibleEl?.dataset.idx)
-    const firstVisibleItem = props.rows![firstVisibleIdx]
+  const lastVisibleIdx = Number(lastVisibleEl?.dataset.idx)
+  const lastVisibleItem = props.rows![lastVisibleIdx]
 
-    const lastVisibleIdx = Number(lastVisibleEl?.dataset.idx)
-    const lastVisibleItem = props.rows![lastVisibleIdx]
+  visibleItemsIdx.value.first = firstVisibleIdx
+  visibleItemsIdx.value.last = lastVisibleIdx
 
+  if (!_noEmit) {
     emits('virtual-scroll', {
       visibleStartItem: {
         index: firstVisibleIdx,
@@ -217,11 +255,7 @@ function handleScrollEvent(ev?: Event) {
 /**
  * Gets the rows that should be rendered
  */
-function getRenderedRows(
-  firstIdx: number,
-  lastIdx: number,
-  translateYBase = 0
-): IVisibleRows {
+function getRenderedRows(firstIdx: number, lastIdx: number): IVisibleRows {
   if (!props.rows?.length) {
     return {
       rows: [] as IRow[],
@@ -230,6 +264,7 @@ function getRenderedRows(
     }
   }
 
+  const translateYBase = heightsCumulated.value[firstIdx - 1] ?? 0
   const _lastIdx = Math.min(lastIdx, props.rows.length - 1)
 
   let preceedingRowsHeight = 0
@@ -239,11 +274,7 @@ function getRenderedRows(
     .map((row, idx) => {
       const rowStyle: CSSProperties = {}
 
-      if (isMounted.value) {
-        rowStyle.transform = `translateY(${
-          preceedingRowsHeight + translateYBase
-        }px)`
-      }
+      rowStyle['--translateY'] = preceedingRowsHeight + translateYBase
 
       const rowObj = {
         ref: row,
@@ -276,49 +307,119 @@ function scrollTo(idx: number) {
 /**
  * When row is mounted, we update the specific height for that row
  */
-async function handleMountedRow(node: any) {
+async function handleMountedRow(node: any, row: IRow) {
   const el = 'el' in node ? node.el : node
-  const idx = el.dataset.idx
+  const idx = +el.dataset.idx
 
   if (heights.value[idx] !== el.clientHeight) {
     heights.value[idx] = el.clientHeight
+  }
+
+  nextTick(() => {
+    row.style['--translateY'] = heightsCumulated.value[idx - 1] ?? 0
+  })
+}
+
+function rerenderVisibleRows(noScrollEvent?: boolean) {
+  const renderedRowsByIdx = renderedRows.value.rows.reduce((agg, row) => {
+    agg[row.idx] = row
+    return agg
+  }, {} as Record<number, IRow>)
+  const children = Array.from(containerEl.value?.children || [])
+  children?.forEach(el => {
+    const idx = Number((el as HTMLElement).dataset.idx ?? 0)
+    const row = renderedRowsByIdx[idx]
+    handleMountedRow(el, row)
+  })
+
+  if (!noScrollEvent) {
+    handleScrollEvent(lastScrollEvent.value, { noEmit: true, force: true })
   }
 }
 
 watchThrottled(
   width,
   () => {
-    const children = Array.from(containerEl.value?.children || [])
-    children?.forEach(handleMountedRow)
-
-    handleScrollEvent(lastScrollEvent.value)
+    rerenderVisibleRows()
+    virtualScrollerRect.value = virtualScrollEl.value?.getBoundingClientRect()
   },
-  { throttle: 150, leading: true, trailing: true }
+  {
+    throttle: 150,
+    leading: true,
+    trailing: true,
+  }
 )
 
-// FIXME: Currently, we reset the heights on any rows change. It could be more
-// efficient to only update the heights of the rows that have changed (~ added)
-watch(
-  () => props.rows?.length,
-  rowsLength => {
-    heights.value = Array.from(
-      { length: rowsLength ?? 0 },
+watch(rows, (rows, rowsOld) => {
+  // When fetching more data, we just want to extend the heights array with
+  // the default heights -> they will be recalculated when the rows are mounted
+  if (props.fetchMore) {
+    const newRowsCount = (rows.length ?? 0) - (rowsOld.length ?? 0)
+    const newHeights = Array.from(
+      { length: newRowsCount },
       () => props.rowHeight
     )
 
-    handleScrollEvent(lastScrollEvent.value)
+    heights.value = [...heights.value, ...newHeights]
+
+    nextTick(() => {
+      rerenderVisibleRows()
+    })
   }
-)
+
+  // Otherwise we want to recalculate the heights - basically reinitialize the component
+  else {
+    heights.value = Array.from(
+      { length: rows.length ?? 0 },
+      () => props.rowHeight
+    )
+
+    renderedRows.value = getRenderedRows(0, INITIAL_ROWS_RENDER_COUNT)
+
+    nextTick(() => {
+      rerenderVisibleRows()
+    })
+  }
+})
 
 // Lifecycle
 onMounted(() => {
   nextTick(() => {
     isMounted.value = true
-    renderedRows.value = getRenderedRows(0, INITIAL_ROWS_RENDER_COUNT)
 
     virtualScrollerRect.value = virtualScrollEl.value?.getBoundingClientRect()
   })
 })
+
+function renderOnlyVisible(
+  alsoRerender?: boolean,
+  options?: {
+    firstIdx?: number
+    lastIdx?: number
+    rowHeight?: number
+  }
+) {
+  const { firstIdx, lastIdx, rowHeight } = options ?? {}
+  const { first, last } = visibleItemsIdx.value
+
+  const _first = firstIdx ?? first
+  let _last = lastIdx ?? last
+
+  if (rowHeight) {
+    const rowsInViewport = Math.ceil(
+      (virtualScrollerRect.value?.height || 0) / (rowHeight || props.rowHeight)
+    )
+
+    _last = _first + rowsInViewport
+  }
+
+  preventNextScroll.value = true
+  renderedRows.value = getRenderedRows(_first, _last)
+
+  if (alsoRerender) {
+    rerenderVisibleRows()
+  }
+}
 </script>
 
 <template>
@@ -336,11 +437,12 @@ onMounted(() => {
     >
       <div
         v-for="row in renderedRows.rows"
-        :key="getRowKey(row.ref)"
+        :key="get(row.ref, rowKey)"
         :data-idx="row.idx"
+        :data-key="get(row.ref, rowKey)"
         class="virtual-scroll__row"
         :style="row.style"
-        @vue:mounted="handleMountedRow"
+        @vue:mounted="handleMountedRow($event, row)"
       >
         <slot
           :row="row.ref"
@@ -377,6 +479,8 @@ onMounted(() => {
 .virtual-scroll.is-mounted {
   .virtual-scroll__row {
     --apply: absolute;
+
+    transform: translateY(calc(var(--translateY) * 1px));
   }
 }
 </style>

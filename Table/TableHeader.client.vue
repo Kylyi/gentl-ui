@@ -27,6 +27,7 @@ type IProps = {
 const props = defineProps<IProps>()
 const emits = defineEmits<{
   (e: 'scrolled', left: number): void
+  (e: 'resized', col: TableColumn): void
 }>()
 
 // Utils

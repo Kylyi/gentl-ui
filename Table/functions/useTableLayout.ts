@@ -20,7 +20,7 @@ import TableRow from '~/components/Table/TableRow.vue'
 import TableRowMobile from '~/components/Table/TableRow.mobile.vue'
 import TableHeader from '~/components/Table/TableHeader.client.vue'
 import TableTotals from '~/components/Table/TableTotals/TableTotals.vue'
-import VirtualScroller from '~/components/VirtualScroller/VirtualScroller.vue'
+import VirtualScroller from '~/components/VirtualScroller/VirtualScroller_old.vue'
 
 export function useTableLayout(
   props: ITableProps,
@@ -45,7 +45,7 @@ export function useTableLayout(
   provide(tableFocusKey, () => scrollerEl.value?.focus())
 
   // Layout
-  const scrollerEl = ref<InstanceType<typeof VirtualScroller>>()
+  const scrollerEl = ref<ComponentInstance<typeof VirtualScroller>>()
   const tableEl = ref<HTMLDivElement>()
   const headerEl = ref<InstanceType<typeof TableHeader>>()
   const totalsEl = ref<InstanceType<typeof TableTotals>>()
@@ -140,15 +140,10 @@ export function useTableLayout(
   const isBreakpoint = computedEager(() => {
     // This is a semi-hack to prevent warnings...
     const currentBreakpoints = $bp.current().value
-
     return currentBreakpoints.includes(props.breakpoint || 'md')
   })
 
   const tableRowHeight = computed(() => {
-    if (isBreakpoint.value) {
-      return props.rowHeight
-    }
-
     const visibleColumns = internalColumns.value.filter(
       column => !column.hidden && column.field !== '_selectable'
     )
@@ -159,7 +154,15 @@ export function useTableLayout(
       visibleColumns.length *
       (props.mobileRowHeight || props.mobileRowHeight || 40)
 
-    return columnsHeight + MOBILE_ROW_Y_PADDING + MOBILE_ROW_CONTAINER_Y_PADDING
+    const mobile =
+      columnsHeight + MOBILE_ROW_Y_PADDING + MOBILE_ROW_CONTAINER_Y_PADDING
+    const current = isBreakpoint.value ? props.rowHeight : mobile
+
+    return {
+      mobile,
+      desktop: props.rowHeight,
+      current,
+    }
   })
 
   const TableRowComponent = computed(() => {
