@@ -68,20 +68,32 @@ const slots = useSlots()
 provide(tableSlotsKey, slots)
 
 defineExpose({
+  rerender: (noEmit?: boolean) => scrollerEl.value?.rerender(noEmit),
   refreshData: () => refreshData(true),
   resizeColumns: (force?: boolean) => handleResize(force),
   adjustColumns: (fnc: (columns: TableColumn[]) => void) => {
     fnc(internalColumns.value)
   },
+  scrollToTop: () => scrollerEl.value?.scrollToTop(),
   getDbQuery: () => dbQuery.value,
   selectRow: (
     row: any,
     options?: { val?: boolean; clearSelection?: boolean }
   ) => handleSelectRow(row, options),
   customFnc: (
-    fnc: (options: { columns: TableColumn[]; rows: any[] }) => void
+    fnc: (options: {
+      columns: TableColumn[]
+      rows: any[]
+      tableRowHeight: typeof tableRowHeight.value
+      scrollerEl: typeof scrollerEl.value
+    }) => void
   ) => {
-    fnc({ columns: internalColumns.value, rows: rows.value })
+    fnc({
+      columns: internalColumns.value,
+      rows: rows.value,
+      tableRowHeight: tableRowHeight.value,
+      scrollerEl: scrollerEl.value,
+    })
   },
 })
 
@@ -158,7 +170,7 @@ useTableEditing(props)
 
 const overscan = computed(() => {
   return isBreakpoint.value
-    ? { top: 3200, bottom: 4000 }
+    ? { top: 2800, bottom: 3600 }
     : { top: 600, bottom: 600 }
 })
 
@@ -259,6 +271,7 @@ onMounted(() => {
       :small-screen="!isBreakpoint"
       :class="{ 'shadow-lg shadow-ca': isScrolled }"
       @scrolled="handleScrollLeft"
+      @resized="scrollerEl?.rerender"
     >
       <template #default="{ col }">
         <slot :name="`header-${col.name}`" />
@@ -271,7 +284,7 @@ onMounted(() => {
       :rows="rowsSplit"
       :row-key="rowKey"
       :dynamic-row-height="dynamicRowHeight"
-      :row-height="tableRowHeight"
+      :row-height="tableRowHeight.current"
       :no-scroll-emit="!infiniteScroll"
       :overscan="overscan"
       :fetch-more="fetchMore"
@@ -285,7 +298,7 @@ onMounted(() => {
           :columns="internalColumns"
           :to="to"
           :class="{ 'is-clickable': rowClickable, 'odd': index % 2 !== 0 }"
-          :row-height="rowHeight"
+          :row-height="tableRowHeight.current"
           :editable="editable"
           :index="index"
           :selectable="selectable"

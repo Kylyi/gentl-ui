@@ -37,6 +37,9 @@ export function useTableColumnResizing(props: {
   columns: TableColumn[]
   minimumColumnWidth?: number
 }) {
+  // Utils
+  const self = getCurrentInstance()
+
   // Injections
   const storageKey = injectStrict(tableStorageKey)
   const tableSlots = injectStrict(tableSlotsKey)
@@ -73,7 +76,7 @@ export function useTableColumnResizing(props: {
         }
 
         splitters.push({
-          field: col.field,
+          field: col.field as string,
           left: lastLeftPosition,
           column: col,
         })
@@ -107,6 +110,7 @@ export function useTableColumnResizing(props: {
       )
 
       setTableState(storageKey.value, { columns: props.columns })
+      self?.emit('resized', col)
 
       return
     }
@@ -165,6 +169,7 @@ export function useTableColumnResizing(props: {
   }
 
   function handleSplitterPointerUp() {
+    let column: TableColumn
     const diff =
       activeSplitter.value!.adjustedWidth -
       activeSplitter.value!.column.adjustedWidth
@@ -179,6 +184,7 @@ export function useTableColumnResizing(props: {
       const colIdx = props.columns.findIndex(
         col => col.field === activeSplitter.value!.column.field
       )
+      column = props.columns[colIdx]
       const lastSemiFrozenColIdx = props.columns
         .slice(colIdx)
         .findIndex(col => !col.semiFrozen)
@@ -219,6 +225,7 @@ export function useTableColumnResizing(props: {
       document.documentElement.style.userSelect = ''
 
       headerEl.value?.updateArrows()
+      self?.emit('resized', column)
     })
   }
 

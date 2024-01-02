@@ -274,9 +274,17 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     return `${this.adjustedWidth}px`
   }
 
-  setWidth(width: number) {
-    this.width = `${width}px`
-    this.adjustedWidth = width
+  /**
+   * @argument width only works for `px` values, either as number or string
+   */
+  setWidth(width: number | string) {
+    if (typeof width === 'number') {
+      this.width = `${width}px`
+      this.adjustedWidth = width
+    } else {
+      this.width = width
+      this.adjustedWidth = Number.parseInt(width.replace('px', ''))
+    }
   }
 
   setDataType(dataType?: ExtendedDataType, defaultComparator?: ComparatorEnum) {

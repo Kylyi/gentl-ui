@@ -27,6 +27,7 @@ type IProps = {
 const props = defineProps<IProps>()
 const emits = defineEmits<{
   (e: 'scrolled', left: number): void
+  (e: 'resized', col: TableColumn): void
 }>()
 
 // Utils
@@ -130,7 +131,6 @@ defineExpose({
       <template #selection>
         <Checkbox
           v-model="selectionState"
-          name="select-all-rows"
           :label="smallScreen ? `(${selectedCount})` : undefined"
         />
       </template>
