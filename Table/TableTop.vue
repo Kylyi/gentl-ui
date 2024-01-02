@@ -39,6 +39,7 @@ const props = defineProps<
 >()
 const emits = defineEmits<{
   (e: 'update:columnsWidth'): void
+  (e: 'update:search', search: string): void
 }>()
 const slots = useSlots()
 
@@ -361,117 +362,130 @@ function handleFitColumns() {
       <Separator m="b-1" />
     </template>
 
-    <!-- Subbar -->
-    <div
-      v-if="!tableTopFunctionality?.noSubbar"
-      class="table-top__subbar"
-    >
-      <!-- Selection & Sorting -->
-      <div class="table-top__selection">
-        <template
-          v-if="
-            selectable &&
-            ($slots['bulk-actions'] || $slots['bulk-actions-menu'])
-          "
-        >
-          <!-- Selection actions -->
-          <slot
-            name="bulk-actions"
-            :selection="selection"
+    <ClientOnly>
+      <!-- Subbar -->
+      <div
+        v-if="!tableTopFunctionality?.noSubbar"
+        class="table-top__subbar"
+      >
+        <!-- Selection & Sorting -->
+        <div class="table-top__selection">
+          <template
+            v-if="
+              selectable &&
+              ($slots['bulk-actions'] || $slots['bulk-actions-menu'])
+            "
           >
-            <Btn
-              size="sm"
-              no-uppercase
-              p="!r-0.5"
-              icon="fluent:select-all-on-20-regular !w-5 !h-5"
-              :label="`${$t('general.selected')}: ${selectionCount}`"
+            <!-- Selection actions -->
+            <slot
+              name="bulk-actions"
+              :selection="selection"
             >
-              <MenuProxy
-                hide-header
-                dense
-                p="1"
-                :no-arrow="false"
+              <Btn
+                size="sm"
+                no-uppercase
+                p="!r-0.5"
+                icon="fluent:select-all-on-20-regular !w-5 !h-5"
+                :label="`${$t('general.selected')}: ${selectionCount}`"
               >
-                <slot
-                  name="bulk-actions-menu"
-                  :selection="selection"
+                <MenuProxy
+                  hide-header
+                  dense
+                  p="1"
+                  :no-arrow="false"
+                >
+                  <slot
+                    name="bulk-actions-menu"
+                    :selection="selection"
+                  />
+                </MenuProxy>
+
+                <div
+                  class="line-md:chevron-small-right rotate-90 h-4 w-4 m-l--1"
                 />
-              </MenuProxy>
+              </Btn>
+            </slot>
+          </template>
 
-              <div
-                class="line-md:chevron-small-right rotate-90 h-4 w-4 m-l--1"
-              />
-            </Btn>
-          </slot>
-        </template>
-
-        <!-- Sorting -->
-        <div
-          v-if="tableSorting && !tableTopFunctionality?.noSort"
-          flex="~ gap-1"
-          items-center
-        >
-          <span
-            text="caption xs"
-            font="bold"
+          <!-- Sorting -->
+          <div
+            v-if="tableSorting && !tableTopFunctionality?.noSort"
+            flex="~ gap-1"
+            items-center
           >
-            {{ $t('table.sortBy') }}:
-          </span>
-          <span
-            text="caption"
-            data-cy="sort-active-fields"
-            v-html="tableSorting"
-          />
+            <span
+              text="caption xs"
+              font="bold"
+            >
+              {{ $t('table.sortBy') }}:
+            </span>
+            <span
+              text="caption"
+              data-cy="sort-active-fields"
+              v-html="tableSorting"
+            />
 
-          <Btn
-            preset="TRASH"
-            size="xs"
-            :label="$t('sorting.clear')"
-            data-cy="clear-sorting"
-            @click="handleClearSorting"
-          />
+            <Btn
+              preset="TRASH"
+              size="xs"
+              :label="$t('sorting.clear')"
+              data-cy="clear-sorting"
+              @click="handleClearSorting"
+            />
+          </div>
         </div>
+
+        <!-- Layout -->
+        <div class="table-top__layout">
+          <span
+            v-if="!tableTopFunctionality?.noLayout"
+            class="table-top__layout-label"
+          >
+            {{ $t('table.layoutState') }}:
+          </span>
+
+          <!-- Columns -->
+          <TableColumnsBtn
+            v-if="!tableTopFunctionality?.noColumnSelection"
+            v-model:columns="columns"
+          />
+
+          <!-- Autofit -->
+          <Btn
+            v-if="!tableTopFunctionality?.noAutoFit && !smallScreen"
+            size="sm"
+            no-uppercase
+            icon="material-symbols:fit-width"
+            color="ca"
+            :label="$t('table.fitColumns')"
+            @click="handleFitColumns"
+          />
+
+          <template
+            v-if="
+              config.table.useServerState && !tableTopFunctionality?.noLayout
+            "
+          >
+            <!-- Layout selector -->
+            <TableLayoutSelector v-model:query-builder="queryBuilder" />
+
+            <!-- Layout settings -->
+            <TableLayoutSettingsBtn
+              :non-saveable-settings="nonSavableSettings"
+            />
+          </template>
+        </div>
+
+        <slot name="subbar-right" />
       </div>
 
-      <!-- Layout -->
-      <div class="table-top__layout">
-        <span
-          v-if="!tableTopFunctionality?.noLayout"
-          class="table-top__layout-label"
-        >
-          {{ $t('table.layoutState') }}:
-        </span>
-
-        <!-- Columns -->
-        <TableColumnsBtn
-          v-if="!tableTopFunctionality?.noColumnSelection"
-          v-model:columns="columns"
+      <template #fallback>
+        <div
+          h="10"
+          w="full"
         />
-
-        <!-- Autofit -->
-        <Btn
-          v-if="!tableTopFunctionality?.noAutoFit && !smallScreen"
-          size="sm"
-          no-uppercase
-          icon="material-symbols:fit-width"
-          color="ca"
-          :label="$t('table.fitColumns')"
-          @click="handleFitColumns"
-        />
-
-        <template
-          v-if="config.table.useServerState && !tableTopFunctionality?.noLayout"
-        >
-          <!-- Layout selector -->
-          <TableLayoutSelector v-model:query-builder="queryBuilder" />
-
-          <!-- Layout settings -->
-          <TableLayoutSettingsBtn :non-saveable-settings="nonSavableSettings" />
-        </template>
-      </div>
-
-      <slot name="subbar-right" />
-    </div>
+      </template>
+    </ClientOnly>
   </div>
 </template>
 

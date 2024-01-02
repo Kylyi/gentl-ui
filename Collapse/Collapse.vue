@@ -18,15 +18,22 @@ const emits = defineEmits<{
 const headerEl = ref<HTMLDivElement>()
 const contentEl = ref<HTMLDivElement>()
 const model = toRef(props, 'modelValue')
+const isLoading = ref(false)
 const preventNextExpand = autoResetRef(false, 100)
 const internalValue = ref<boolean>(model.value || !!props.initialValue)
 
-function handleToggle() {
+async function handleToggle() {
   if (preventNextExpand.value) {
     return
   }
 
   preventNextExpand.value = true
+
+  if (props.beforeShowFnc) {
+    isLoading.value = true
+    await props.beforeShowFnc()
+    isLoading.value = false
+  }
 
   internalValue.value = !internalValue.value
   internalValue.value ? emits('before-show') : emits('before-hide')
@@ -113,7 +120,6 @@ useResizeObserver(headerEl, entries => {
         <div flex="~ col grow">
           <slot name="title">
             <h6
-              flex="1"
               text="h6"
               truncate
               leading="!tight"
@@ -142,7 +148,13 @@ useResizeObserver(headerEl, entries => {
       <slot
         name="right"
         :open="internalValue"
-      />
+        :loading="isLoading"
+      >
+        <LoaderBlock
+          v-if="isLoading"
+          size="xs"
+        />
+      </slot>
 
       <slot name="expand-icon">
         <div

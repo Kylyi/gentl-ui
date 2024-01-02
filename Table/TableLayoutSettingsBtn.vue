@@ -402,7 +402,7 @@ const $z = useZod(
 
             <!-- Default -->
             <Toggle
-              v-if="!config.table.useLocalStorageForDefaultLayout"
+              v-if="config.table.canSaveLayoutAsDefault"
               v-model="layout.default"
               container-class="bg-white dark:bg-darker"
               :label="$t('table.saveDefault')"

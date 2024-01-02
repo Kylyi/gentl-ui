@@ -22,7 +22,6 @@ export interface IListProps extends IListBaseProps {
   rowGroupHeight?: number
   fuseOptions?: FuseOptions<any>
   multi?: boolean
-  noAutofocus?: boolean
   noFilter?: boolean
   noHighlight?: boolean
   noSearch?: boolean
@@ -104,7 +103,12 @@ export interface IListProps extends IListBaseProps {
   searchDebounce?: number
 
   /**
-   * The props that should be passed to the input tag (<input>)
+   * The props that should be passed to the search input tag (<input>)
    */
   inputProps?: Record<string, any>
+
+  /**
+   * When true, the search/container will not be focused on mount
+   */
+  noAutofocus?: boolean
 }

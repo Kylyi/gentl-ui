@@ -31,12 +31,20 @@ const oldModel = ref(model.value)
 const instance = getCurrentInstance()
 
 const tabs = computed(() => {
-  return (instance?.slots.default?.() || [])
+  const defaultSlot = instance?.slots.default?.() || []
+  const vueInstances = defaultSlot.flatMap(t => {
+    const children = t.children || []
+
+    return [
+      ...(isVNode(t) ? [t] : []),
+      ...(Array.isArray(children) ? children.filter(isVNode) : []),
+    ]
+  })
+
+  return vueInstances
     .filter(
       t =>
-        isVNode(t) &&
-        typeof t.type === 'object' &&
-        (t.type as any).name?.startsWith('Tab_')
+        typeof t.type === 'object' && (t.type as any).name?.startsWith('Tab_')
     )
     .map((t: VNode) => {
       return {

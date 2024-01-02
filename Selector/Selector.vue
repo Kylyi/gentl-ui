@@ -643,7 +643,7 @@ defineExpose({
   }
 
   :deep(.wrapper-body:after) {
-    --apply: border-primary dark:border-primary;
+    --apply: border-primary/50 dark:border-primary/50;
   }
 }
 

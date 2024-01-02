@@ -9,7 +9,7 @@ type IProps = Pick<
   'columns' | 'rowHeight' | 'to' | 'selectable' | 'editable'
 > & {
   index?: number
-  row: any
+  rows: any[]
 }
 
 const props = withDefaults(defineProps<IProps>(), {
@@ -17,6 +17,8 @@ const props = withDefaults(defineProps<IProps>(), {
 })
 
 // Layout
+const row = computed(() => props.rows[0])
+
 const dataColumns = computed(() => {
   return props.columns?.filter(col => !col.hidden) ?? []
 })
@@ -35,10 +37,11 @@ const isEditable = computedEager(() => {
     :class="{ 'is-odd': index % 2, 'is-deleted': row.deleted }"
     :to="to?.(row)"
   >
-    <slot>
+    <slot :row="row">
       <slot
         name="row-inside"
         mode="table"
+        :row="row"
       />
 
       <TableCell

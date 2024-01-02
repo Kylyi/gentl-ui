@@ -24,6 +24,11 @@ export interface ITableProps {
   columns?: TableColumn<any>[]
 
   /**
+   * When true, each table row may have a different height
+   */
+  dynamicRowHeight?: boolean
+
+  /**
    * Whether the table should have inline editing
    */
   editable?: boolean | 'cards' | 'table'
@@ -226,6 +231,7 @@ export interface ITableProps {
     countKey?: string
     hashKey?: string
     versionKey?: string
+    limitRows?: number
     createIdentifier?: (row: any, idx: number) => string | number
     errorHandler?: (error: any) => void
   }
@@ -289,7 +295,6 @@ export interface ITableProps {
 
   /**
    * Will split the table row into multiple columns
-   * Usage: For mobile view
    * FIXME: Currently broken
    */
   splitRow?: number

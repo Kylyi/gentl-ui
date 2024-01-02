@@ -176,6 +176,7 @@ function selectSelf(self: any) {
   <div
     class="cell"
     :class="{ 'is-editable': editable, 'is-editing': isEditingField }"
+    :data-field="col.field"
   >
     <!-- Label -->
     <div

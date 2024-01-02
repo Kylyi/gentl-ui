@@ -12,7 +12,7 @@ import { useAppStore } from '~/libs/App/app.store'
 import MenuConfirmation from '~/components/MenuConfirmation/MenuConfirmation.vue'
 
 // Injections
-import { formIsInEditModeKey } from '~/components/Form/provide/form.provide'
+import { isFormEditingKey } from '~/components/Form/provide/form.provide'
 
 defineOptions({
   inheritAttrs: false,
@@ -24,7 +24,7 @@ const props = withDefaults(defineProps<IFormProps>(), {
   hasControls: undefined,
   submitConfirmation: undefined,
   focusFirstInput: false,
-  preventSubmitOnEnter: config.form.preventSubmitOnEnter,
+  preventSubmitOnEnter: config.form.props.preventSubmitOnEnter,
 })
 
 const emits = defineEmits<{
@@ -45,9 +45,10 @@ const { errorsExtended, handleDismissError } = useFormErrors(errors, emits)
 const formEl = ref<HTMLFormElement>()
 const menuConfirmationEl = ref<InstanceType<typeof MenuConfirmation>>()
 const isSubmitted = ref(false)
-const isEditing = defineModel('isEditing', { default: false, local: true })
+const isEditing = defineModel('isEditing', { default: false })
 const { isDesktop } = useDevice()
-provide(formIsInEditModeKey, isEditing)
+
+provide(isFormEditingKey, isEditing)
 
 function isElementInViewport(el: Element) {
   const rect = el.getBoundingClientRect()
@@ -90,6 +91,17 @@ const preventSubmitOnEnter = computed(() => {
   return !!props.preventSubmitOnEnter
 })
 
+const editControls = computed(() => {
+  if (props.noEditControls || !props.editControls) {
+    return
+  }
+
+  return {
+    cancel: props.editControls === true || props.editControls?.cancel,
+    edit: props.editControls === true || props.editControls?.edit,
+  }
+})
+
 const FormConfirmation = computed(() => {
   return config.form?.confirmation?.component ?? MenuConfirmation
 })
@@ -105,7 +117,7 @@ const formClass = computed(() => ({
 
 const controlsClass = computed(() => {
   const classes = [
-    'w-full border-ca !rounded-0 bg-white dark:bg-darker',
+    'w-full border-ca',
     'lt-lg:p-x-2 sticky bottom-0 inset-inline-0',
   ]
 
@@ -253,7 +265,7 @@ onMounted(() => {
 
     <div
       class="form-content"
-      rounded="custom"
+      rounded="t-custom"
       overflow="auto"
       :class="{ 'flex flex-col': !$attrs.grid }"
       v-bind="$attrs"
@@ -309,11 +321,20 @@ onMounted(() => {
         >
           <slot name="submit-before" />
 
+          <CrudBtnCancel
+            v-if="editControls?.cancel"
+            :class="{ invisible: !isEditing }"
+          />
+
           <Btn
             v-if="!noSubmit"
             bg="primary"
             color="white"
-            :class="ui?.submitClass"
+            w="40"
+            :class="[
+              ui?.submitClass,
+              { invisible: !isEditing && !!editControls },
+            ]"
             :disabled="submitDisabled"
             :loading="loading"
             :icon="icon"
@@ -330,12 +351,14 @@ onMounted(() => {
               @ok="throttledSubmit(true, $event)"
             >
               <template #append>
-                <slot name="confirmation"> </slot>
+                <slot name="confirmation" />
               </template>
             </Component>
 
             <slot name="submit-btn" />
           </Btn>
+
+          <CrudEditBtn v-if="editControls?.edit" />
 
           <slot name="submit-after" />
         </div>
@@ -347,7 +370,7 @@ onMounted(() => {
 <style lang="scss" scoped>
 .form {
   &-content {
-    --apply: flex-gap-2;
+    --apply: flex-gap-2 border-ca;
   }
 
   &.is-grown {
@@ -359,7 +382,13 @@ onMounted(() => {
   }
 
   &.is-bordered {
-    --apply: border-2 border-ca;
+    > .form-content {
+      --apply: border-x-2 border-t-2 border-ca;
+    }
+
+    > #form-controls {
+      --apply: border-x-2 border-b-2 border-ca rounded-b-custom;
+    }
   }
 
   &:not(.is-label-forced-visible) {

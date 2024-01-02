@@ -73,7 +73,7 @@ export function useTableColumnResizing(props: {
         }
 
         splitters.push({
-          field: col.field as string,
+          field: col.field,
           left: lastLeftPosition,
           column: col,
         })

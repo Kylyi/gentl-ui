@@ -166,7 +166,9 @@ export function useTableLayout(
   })
 
   const TableRowComponent = computed(() => {
-    return isBreakpoint.value ? TableRow : TableRowMobile
+    return isBreakpoint.value && props.splitRow === 1
+      ? TableRow
+      : TableRowMobile
   })
 
   onMounted(() => {

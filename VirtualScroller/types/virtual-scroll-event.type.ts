@@ -1,6 +1,6 @@
 import type { VirtualItem } from '@tanstack/vue-virtual'
 
 export type IVirtualScrollEvent = {
-  visibleStartItem: VirtualItem
-  visibleEndItem: VirtualItem
+  visibleStartItem: Pick<VirtualItem, 'index' | 'key' | 'size'>
+  visibleEndItem: Pick<VirtualItem, 'index' | 'key' | 'size'>
 }

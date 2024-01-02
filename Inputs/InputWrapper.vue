@@ -183,7 +183,7 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
 
 <style lang="scss" scoped>
 .wrapper {
-  --apply: relative flex flex-col rounded-b-custom;
+  --apply: relative flex flex-col rounded-custom;
 
   &::after {
     // --apply: absolute content-empty inset-0 pointer-events-none;
@@ -236,7 +236,7 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
     }
 
     &:focus-within::after {
-      --apply: border-$border-color;
+      --apply: border-$borderColor;
     }
 
     &.has-error::after {

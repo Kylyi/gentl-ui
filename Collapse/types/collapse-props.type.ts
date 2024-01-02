@@ -2,14 +2,21 @@ import type { CSSProperties } from 'vue'
 
 export interface ICollapseProps {
   /**
-   * When true, the collapse content will be positioned absolutely
+   * Functions that gets called before teh collapse is shown
+   *
+   * Usage: Fetching data to show in the collapse
    */
-  floating?: boolean
+  beforeShowFnc?: () => Promise<void> | void
 
   /**
    * The class to be applied to the content
    */
   contentClass?: ClassType
+
+  /**
+   * When true, the collapse content will be positioned absolutely
+   */
+  floating?: boolean
 
   /**
    * The class to be applied to the header

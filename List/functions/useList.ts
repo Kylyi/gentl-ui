@@ -601,6 +601,11 @@ export function useList(
 
         return
 
+      case 'Tab':
+        self.emit('update:selected', selected.value)
+
+        break
+
       default:
         return
     }
@@ -654,7 +659,7 @@ export function useList(
   // Initizalize the searched results
   isInitialized.value = true
 
-  onKeyStroke(['ArrowUp', 'ArrowDown', 'Enter'], handleKey)
+  onKeyStroke(['ArrowUp', 'ArrowDown', 'Enter', 'Tab'], handleKey)
 
   return {
     arr,

@@ -76,7 +76,7 @@ defineExpose({
 // When `noSearch` is used, we fake the focus on the container to allow
 // keyboard navigation
 onMounted(() => {
-  if (props.noSearch) {
+  if (props.noSearch && !props.noAutofocus) {
     setTimeout(() => {
       unrefElement(containerEl)?.focus()
     }, 150)
@@ -143,7 +143,7 @@ onMounted(() => {
       ref="containerEl"
       :items="arr"
       :class="contentClass"
-      tabindex="0"
+      :tabindex="noSearch ? 0 : undefined"
       data-cy="search-results"
     >
       <template #default="{ item, index }">

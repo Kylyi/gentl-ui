@@ -9,10 +9,10 @@ import { tableIsSelectedRowKey } from '~/components/Table/provide/table.provide'
 
 type IProps = Pick<
   ITableProps,
-  'columns' | 'rowHeight' | 'to' | 'selectable' | 'editable'
+  'columns' | 'rowHeight' | 'to' | 'selectable' | 'editable' | 'splitRow'
 > & {
   index?: number
-  row: any
+  rows: any[]
 }
 
 const props = withDefaults(defineProps<IProps>(), {
@@ -33,24 +33,27 @@ const isEditable = computedEager(() => {
 </script>
 
 <template>
-  <Component
-    :is="to?.(row) ? NuxtLink : 'div'"
+  <div
     class="tr__mobile-container"
-    :style="{ minHeight: `${rowHeight}px` }"
-    :to="to?.(row)"
+    :style="{ 'minHeight': `${rowHeight}px`, '--cols': splitRow }"
   >
-    <div
+    <Component
+      :is="to?.(row) ? NuxtLink : 'div'"
+      v-for="(row, idx) in rows"
+      :key="idx"
       class="tr tr__mobile"
       :class="{
         'is-deleted': row.deleted,
         'is-selectable': selectable,
         'is-selected': isSelectedRow(row),
       }"
+      :to="to?.(row)"
     >
-      <slot>
+      <slot :row="row">
         <slot
           name="row-inside"
           mode="grid"
+          :row="row"
         />
 
         <TableCellMobile
@@ -63,11 +66,8 @@ const isEditable = computedEager(() => {
           <slot :name="col.name" />
         </TableCellMobile>
       </slot>
-    </div>
-
-    <!-- Used for absolutely position info/element -->
-    <slot name="inner" />
-  </Component>
+    </Component>
+  </div>
 </template>
 
 <style lang="scss" scoped>
@@ -76,7 +76,9 @@ const isEditable = computedEager(() => {
   border-1 border-ca gap-x-3 hover:shadow-ca shadow-sm w-full dark:bg-darker bg-white;
 
   &-container {
-    --apply: relative w-full block p-x-2 p-y-1;
+    --apply: relative w-full grid p-x-2 p-y-1 gap-2;
+
+    grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
   }
 
   grid-template-columns: 1fr 2fr;
@@ -91,7 +93,7 @@ const isEditable = computedEager(() => {
   }
 
   &.is-selected {
-    --apply: dark:bg-blue-900/30 bg-blue-100/30 border-primary dark:border-blue-600 border-2;
+    --apply: bg-secondary/30 border-secondary;
   }
 }
 

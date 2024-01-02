@@ -33,6 +33,7 @@ const props = withDefaults(defineProps<ITableProps>(), {
   separator: 'cell',
   totalRows: 0,
   useUrl: true,
+  splitRow: 1,
   infiniteScroll: config.table.props.infiniteScroll,
   noSearch: config.table.props.noSearch,
 })
@@ -122,9 +123,11 @@ const {
 const {
   isLoading,
   rows,
+  rowsSplit,
   refreshData,
   search,
   dbQuery,
+  fetchMore,
 
   // Pagination
   currentPage,
@@ -152,6 +155,12 @@ const {
 const { handleSelectRow } = useTableSelection(props)
 useTableExporting(rows)
 useTableEditing(props)
+
+const overscan = computed(() => {
+  return isBreakpoint.value
+    ? { top: 3200, bottom: 4000 }
+    : { top: 600, bottom: 600 }
+})
 
 onMounted(() => {
   scrollerEl.value?.focus()
@@ -256,21 +265,23 @@ onMounted(() => {
       </template>
     </TableHeader>
 
-    <VirtualScroller
+    <VirtualScrollerOld
       v-show="hasVisibleColumn"
       ref="scrollerEl"
-      :rows="rows"
+      :rows="rowsSplit"
       :row-key="rowKey"
+      :dynamic-row-height="dynamicRowHeight"
       :row-height="tableRowHeight"
       :no-scroll-emit="!infiniteScroll"
-      :overscan="isBreakpoint ? 100 : 10"
+      :overscan="overscan"
+      :fetch-more="fetchMore"
       class="scroller"
       @virtual-scroll="handleInfiniteScroll"
     >
       <template #default="{ row, index }">
         <Component
           :is="TableRowComponent"
-          :row="row"
+          :rows="row.data"
           :columns="internalColumns"
           :to="to"
           :class="{ 'is-clickable': rowClickable, 'odd': index % 2 !== 0 }"
@@ -278,9 +289,10 @@ onMounted(() => {
           :editable="editable"
           :index="index"
           :selectable="selectable"
+          :split-row="splitRow"
           @click="handleRowClick(row, $event)"
         >
-          <template #row-inside="{ mode }">
+          <template #row-inside="{ mode, row }">
             <slot
               name="row-inside"
               :columns="columns"
@@ -290,18 +302,9 @@ onMounted(() => {
             />
           </template>
 
-          <template #default>
+          <template #default="{ row }">
             <slot
               name="data-row"
-              :columns="columns"
-              :row="row"
-              :index="index"
-            />
-          </template>
-
-          <template #inner>
-            <slot
-              name="inner"
               :columns="columns"
               :row="row"
               :index="index"
@@ -322,7 +325,7 @@ onMounted(() => {
           </template>
         </Component>
       </template>
-    </VirtualScroller>
+    </VirtualScrollerOld>
 
     <TableNoData
       :has-no-data="!rows.length && !isLoading"
@@ -355,6 +358,7 @@ onMounted(() => {
       :infinite-scroll="infiniteScroll"
       :no-pagination="noPagination || infiniteScroll"
       :current-rows="rows.length"
+      :limit-rows="getData?.limitRows"
       :prev="prev"
       :next="next"
     />

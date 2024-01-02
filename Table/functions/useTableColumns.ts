@@ -223,7 +223,8 @@ export function useTableColumns(
         if (
           (!config.table.useServerState ||
             config.table.useLocalStorageForDefaultLayout) &&
-          !isUrlUsed
+          !isUrlUsed &&
+          !props.initialLayoutSchema
         ) {
           col.filters = stateColumn.filters.map(
             filter => new FilterItem(filter)
@@ -280,7 +281,7 @@ export function useTableColumns(
       ...groups.map(
         (group, idx) =>
           new TableColumn({
-            field: `_group_${group.name}`,
+            field: `_group_${group.field}`,
             width: `${idx ? groupExpandWidth / 1.5 : groupExpandWidth}px`,
             hideLabel: true,
             isHelperCol: true,

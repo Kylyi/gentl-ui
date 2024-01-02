@@ -28,7 +28,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   label: string
   width: number | string = 1
   align: 'left' | 'center' | 'right' = 'left'
-  field: Extract<keyof T, string | number>
+  field: ObjectKey<T>
   hideLabel?: boolean
   noFilters?: boolean
   filterable = true
@@ -227,7 +227,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     }
 
     return {
-      field: this.field.toString(),
+      field: this.field,
       direction: this.sort,
       sortOrder: this.sortOrder,
     }
@@ -484,7 +484,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
 
     if (DATE_TYPES.includes(this.dataType) && !this.sortFormat) {
       this.sortFormat = (row: T) => {
-        return getDateSimpleValue(row[this.field as keyof T] as Datetime)
+        return getDateSimpleValue(get(row, this.field) as Datetime)
       }
     }
 

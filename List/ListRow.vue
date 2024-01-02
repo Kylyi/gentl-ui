@@ -96,8 +96,7 @@ const rowInfo = computed(() => {
 
 <style lang="scss" scoped>
 .item {
-  --apply: relative flex flex-gap-x-2 cursor-default select-none items-center
-    rounded-custom p-r-1;
+  --apply: relative flex gap-x-2 cursor-default select-none items-center p-r-1;
 
   &--group {
     --apply: uppercase color-true-gray text-sm items-end p-b-0.5;
@@ -109,8 +108,8 @@ const rowInfo = computed(() => {
 
   &--active {
     &::before {
-      --apply: absolute content-empty left-.5 inset-block-.5 w-1 bg-primary
-        rounded-custom;
+      --apply: absolute content-empty left-0 inset-block-.5 w-1 bg-primary
+        rounded-l-custom;
     }
   }
 

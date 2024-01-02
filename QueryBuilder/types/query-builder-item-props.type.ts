@@ -9,7 +9,7 @@ import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
 export type IQueryBuilderItem<T = IItem> = {
   id: string
   path: string
-  field: string
+  field: ObjectKey<T>
   comparator: ComparatorEnum
   value?: any
   isNotDraggable?: boolean
