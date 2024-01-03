@@ -31,6 +31,7 @@ const props = withDefaults(defineProps<ISelectorProps>(), {
   required: undefined,
   size: 'md',
   stackLabel: undefined,
+  noHighlight: config.list.noHighlight,
 })
 
 const emits = defineEmits<{
