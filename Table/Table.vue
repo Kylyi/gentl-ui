@@ -171,6 +171,14 @@ const overscan = computed(() => {
     : { top: 600, bottom: 600 }
 })
 
+function handleColumnsWidthChange() {
+  handleResize()
+
+  nextTick(() => {
+    scrollerEl.value?.rerender()
+  })
+}
+
 onMounted(() => {
   scrollerEl.value?.focus()
 })
@@ -191,7 +199,7 @@ onMounted(() => {
         v-model:search="search"
         v-bind="tableTopProps"
         :small-screen="!isBreakpoint"
-        @update:columns-width="handleResize()"
+        @update:columns-width="handleColumnsWidthChange"
       >
         <template
           v-if="$slots['top-left-prepend']"
