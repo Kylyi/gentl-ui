@@ -63,7 +63,10 @@ const isEditable = computedEager(() => {
           :row="row"
           :editable="isEditable"
         >
-          <slot :name="col.name" />
+          <slot
+            :row="row"
+            :name="col.name"
+          />
         </TableCellMobile>
       </slot>
     </Component>

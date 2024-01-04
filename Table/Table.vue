@@ -335,7 +335,7 @@ onMounted(() => {
           <template
             v-for="col in columns"
             :key="col.name"
-            #[col.name]
+            #[col.name]="{ row }"
           >
             <slot
               :name="col.name"
