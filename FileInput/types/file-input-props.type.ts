@@ -5,6 +5,7 @@ import type { IZodValidationItem } from '~/utils/zod/types/zod-validation-item.t
 export interface IFileInputProps {
   accept?: string
   contentClass?: ClassType
+  innerWrapperClass?: ClassType
   disabled?: boolean
   downloadUrl?: string
   errorTakesSpace?: boolean

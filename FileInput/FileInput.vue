@@ -90,7 +90,7 @@ onChange(handleAdd)
       class="file-input-wrapper"
       :class="[
         wrapperClass,
-        props.contentClass,
+        props.innerWrapperClass,
         {
           'no-border': props.noBorder,
         },
