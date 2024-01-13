@@ -36,6 +36,8 @@ const props = withDefaults(defineProps<ITableProps>(), {
   splitRow: 1,
   infiniteScroll: config.table.props.infiniteScroll,
   noSearch: config.table.props.noSearch,
+  numberOfRowsPerPageOptions: () =>
+    config.table.defaultPagination.rowsPerPageOptions || [10, 25, 50, 100],
 })
 
 defineEmits<{
@@ -378,6 +380,7 @@ onMounted(() => {
       :total-rows="totalRows"
       :infinite-scroll="infiniteScroll"
       :no-pagination="noPagination || infiniteScroll"
+      :number-of-rows-per-page-options="numberOfRowsPerPageOptions"
       :current-rows="rows.length"
       :limit-rows="getData?.limitRows"
       :prev="prev"

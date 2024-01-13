@@ -81,6 +81,11 @@ export interface ITableProps {
   infiniteScroll?: boolean
 
   /**
+   * Number of rows per page options when using pagination
+   */
+  numberOfRowsPerPageOptions: number[]
+
+  /**
    * The initial layout schema for the table
    * When provided, the table will be initialized with this schema
    */
