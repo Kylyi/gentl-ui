@@ -83,7 +83,7 @@ export interface ITableProps {
   /**
    * Number of rows per page options when using pagination
    */
-  numberOfRowsPerPageOptions: number[]
+  numberOfRowsPerPageOptions?: number[]
 
   /**
    * The initial layout schema for the table
