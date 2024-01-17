@@ -195,13 +195,15 @@ const isLimitRowsReached = computedEager(() => {
           @click="currentPage = pageCount"
         />
       </template>
-
       <!-- Page size -->
       <div
         v-if="!noPagination"
         class="table-pagination__page-size"
       >
-        <span text="caption">
+        <span
+          text="caption"
+          class="!lt-md:hidden"
+        >
           {{ $t('table.rowsPerPage') }}
         </span>
 
@@ -229,8 +231,8 @@ const isLimitRowsReached = computedEager(() => {
   }
 
   &__page-size {
-    --apply: absolute right-2 flex flex-center flex-gap-x-2;
-    --apply: '!lt-md:hidden';
+    --apply: right-2 flex flex-center flex-gap-x-2;
+    --apply: '!sm:absolute';
   }
 }
 </style>
