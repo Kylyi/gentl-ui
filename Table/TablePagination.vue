@@ -195,6 +195,7 @@ const isLimitRowsReached = computedEager(() => {
           @click="currentPage = pageCount"
         />
       </template>
+
       <!-- Page size -->
       <div
         v-if="!noPagination"
@@ -231,8 +232,8 @@ const isLimitRowsReached = computedEager(() => {
   }
 
   &__page-size {
-    --apply: right-2 flex flex-center flex-gap-x-2;
-    --apply: '!sm:absolute';
+    --apply: absolute right-2 flex flex-center flex-gap-x-2;
+    --apply: 'lt-sm:hidden';
   }
 }
 </style>
