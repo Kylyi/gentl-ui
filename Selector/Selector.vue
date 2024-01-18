@@ -9,6 +9,7 @@ import type { IItemToBeAdded } from '~/components/List/types/list-item-to-add.ty
 
 // Functions
 import { useSelectorUtils } from '~/components/Selector/functions/useSelectorUtils'
+import { useInputValidationUtils } from '~/components/Inputs/functions/useInputValidationUtils'
 
 // Components
 import List from '~/components/List/List.vue'
@@ -54,6 +55,7 @@ onMounted(() => {
 
 // Utils
 const { handleRequest } = useRequest()
+const { path } = useInputValidationUtils(props)
 const self = getCurrentInstance()
 
 const hasContent = computed(() => {
@@ -420,7 +422,7 @@ defineExpose({
       class="control"
       box="content"
       tabindex="0"
-      :name="name || validation?.$path || label || placeholder"
+      :name="name || path || label || placeholder"
       :class="[innerClass, { 'is-multi': !!multi }]"
       :style="{ maxHeight: `${maxHeight}px` }"
       v-bind="inputProps"

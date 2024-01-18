@@ -4,12 +4,8 @@ import { type ITextInputProps } from '~/components/Inputs/TextInput/types/text-i
 
 // Functions
 import { useInputUtils } from '~/components/Inputs/functions/useInputUtils'
+import { useInputValidationUtils } from '~/components/Inputs/functions/useInputValidationUtils'
 
-defineOptions({
-  customOptions: {
-    test: 'a',
-  },
-})
 const props = withDefaults(defineProps<ITextInputProps>(), {
   allowIncompleteMaskValue: false,
   debounce: 0,
@@ -53,6 +49,8 @@ const {
   maskRef: toRef(props, 'mask'),
   maskEventHandlers: props.maskEventHandlers,
 })
+
+const { path } = useInputValidationUtils(props)
 
 const hasCopyBtn = computedEager(() => {
   return props.readonly && !props.disabled && !props.noCopy && hasContent.value
@@ -99,7 +97,7 @@ defineExpose({
       :disabled="disabled"
       autocomplete="off"
       :label="label || placeholder"
-      :name="name || validation?.$path || label || placeholder"
+      :name="name || path || label || placeholder"
       class="control"
       role="presentation"
       :class="[inputClass, { 'custom-enter': !!customEnter }]"

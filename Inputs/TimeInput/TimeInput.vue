@@ -8,6 +8,7 @@ import type { ITimeInputProps } from '~/components/Inputs/TimeInput/types/time-i
 
 // Functions
 import { useInputUtils } from '~/components/Inputs/functions/useInputUtils'
+import { useInputValidationUtils } from '~/components/Inputs/functions/useInputValidationUtils'
 
 // Components
 import InputWrapper from '~/components/Inputs/InputWrapper.vue'
@@ -40,6 +41,7 @@ onMounted(() => {
 // Utils
 const currentInstance = getCurrentInstance()
 const { localeUses24HourTime } = useDateUtils()
+const { path } = useInputValidationUtils(props)
 
 const is12h = computed(() => !localeUses24HourTime())
 

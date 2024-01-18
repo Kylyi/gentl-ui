@@ -20,10 +20,13 @@ const emits = defineEmits<{
 
 // Utils
 const { getFieldProps } = useFieldUtils()
+const { files } = useFiles()
 
 // Layout
 const fileInputWrapperEl = ref<HTMLDivElement>()
-const model = useVModel(props, 'modelValue', emits)
+const model = defineModel<Array<File | IFile>>({
+  default: [],
+})
 const fieldProps = getFieldProps(props)
 
 const wrapperClass = computed(() => {
@@ -69,12 +72,13 @@ function handleRemove(idx: number) {
     return
   }
 
-  const removed = model.value.splice(idx, 1)
+  const removed = model.value.slice(idx, 1)
   emits('filesRemoved', removed)
-  emits('update:modelValue', [...model.value])
+  model.value = model.value.filter((_, i) => i !== idx)
 }
 
 onChange(handleAdd)
+syncRef(model, files, { direction: 'ltr' })
 </script>
 
 <template>
@@ -127,7 +131,7 @@ onChange(handleAdd)
   --apply: dark:border-true-gray-600/50 border-true-gray-300/80;
   --apply: dark:bg-darker bg-white;
 
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(140px, 320px));
 
   &.is-dragger-over,
   &:hover {
