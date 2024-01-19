@@ -313,6 +313,7 @@ onMounted(() => {
           :index="index"
           :selectable="selectable"
           :split-row="splitRow"
+          :row-class="rowClass"
           @click="handleRowClick(row, $event)"
         >
           <template #row-inside="{ mode, row }">

@@ -9,7 +9,13 @@ import { tableIsSelectedRowKey } from '~/components/Table/provide/table.provide'
 
 type IProps = Pick<
   ITableProps,
-  'columns' | 'rowHeight' | 'to' | 'selectable' | 'editable' | 'splitRow'
+  | 'columns'
+  | 'rowHeight'
+  | 'to'
+  | 'selectable'
+  | 'editable'
+  | 'splitRow'
+  | 'rowClass'
 > & {
   index?: number
   rows: any[]
@@ -42,11 +48,12 @@ const isEditable = computedEager(() => {
       v-for="(row, idx) in rows"
       :key="idx"
       class="tr tr__mobile"
-      :class="{
-        'is-deleted': row.deleted,
-        'is-selectable': selectable,
-        'is-selected': isSelectedRow(row),
-      }"
+      :class="[
+        { 'is-deleted': row.deleted },
+        { 'is-selectable': selectable },
+        { 'is-selected': isSelectedRow(row) },
+        rowClass?.(row),
+      ]"
       :to="to?.(row)"
     >
       <slot :row="row">
