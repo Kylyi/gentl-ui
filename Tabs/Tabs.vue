@@ -3,10 +3,14 @@
 // and `v-show` in parent for each tab. There must be a better way to do this.
 import { isVNode } from 'vue'
 
+import { config } from '~/config'
+
 // Types
 import type { ITabsProps } from '~/components/Tabs/types/tabs-props.type'
 
-const props = defineProps<ITabsProps>()
+const props = withDefaults(defineProps<ITabsProps>(), {
+  noAnimation: config.tabs.noAnimation,
+})
 const emits = defineEmits<{
   (e: 'update:modelValue', id: string | number): void
 }>()
