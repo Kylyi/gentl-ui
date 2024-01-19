@@ -166,7 +166,7 @@ export interface ITableProps {
   rows?: any[]
 
   /**
-   * The style of the row
+   * The class of the row
    */
   rowClass?: (row: any) => ClassType
 

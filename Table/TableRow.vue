@@ -6,11 +6,10 @@ import { type ITableProps } from '~/components/Table/types/table-props.type'
 
 type IProps = Pick<
   ITableProps,
-  'columns' | 'rowHeight' | 'to' | 'selectable' | 'editable'
+  'columns' | 'rowHeight' | 'to' | 'selectable' | 'editable' | 'rowClass'
 > & {
   index?: number
   rows: any[]
-  rowClass?: (row: any) => ClassType
 }
 
 const props = withDefaults(defineProps<IProps>(), {
@@ -38,7 +37,7 @@ const isEditable = computedEager(() => {
     :class="[
       { 'is-odd': index % 2 && !rowClass },
       { 'is-deleted': row.deleted },
-      rowClass ? rowClass(row) : '',
+      rowClass?.(row),
     ]"
     :to="to?.(row)"
   >

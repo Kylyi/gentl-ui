@@ -9,11 +9,16 @@ import { tableIsSelectedRowKey } from '~/components/Table/provide/table.provide'
 
 type IProps = Pick<
   ITableProps,
-  'columns' | 'rowHeight' | 'to' | 'selectable' | 'editable' | 'splitRow'
+  | 'columns'
+  | 'rowHeight'
+  | 'to'
+  | 'selectable'
+  | 'editable'
+  | 'splitRow'
+  | 'rowClass'
 > & {
   index?: number
   rows: any[]
-  rowClass?: (row: any) => ClassType
 }
 
 const props = withDefaults(defineProps<IProps>(), {
@@ -47,7 +52,7 @@ const isEditable = computedEager(() => {
         { 'is-deleted': row.deleted },
         { 'is-selectable': selectable },
         { 'is-selected': isSelectedRow(row) },
-        rowClass ? rowClass(row) : '',
+        rowClass?.(row),
       ]"
       :to="to?.(row)"
     >
