@@ -36,7 +36,7 @@ const isEditable = computedEager(() => {
     class="tr"
     :style="{ minHeight: `${rowHeight}px` }"
     :class="[
-      { 'is-odd': index % 2 },
+      { 'is-odd': index % 2 && !rowClass },
       { 'is-deleted': row.deleted },
       rowClass ? rowClass(row) : '',
     ]"
