@@ -166,6 +166,11 @@ export interface ITableProps {
   rows?: any[]
 
   /**
+   * The style of the row
+   */
+  rowClass?: (row: any) => ClassType
+
+  /**
    * The settings that are saveable whtin the table
    */
   nonSavableSettings?: Array<'columns' | 'filters' | 'sorting' | 'public'>

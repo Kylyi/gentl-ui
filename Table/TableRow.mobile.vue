@@ -13,6 +13,7 @@ type IProps = Pick<
 > & {
   index?: number
   rows: any[]
+  rowClass?: (row: any) => ClassType
 }
 
 const props = withDefaults(defineProps<IProps>(), {
@@ -42,11 +43,12 @@ const isEditable = computedEager(() => {
       v-for="(row, idx) in rows"
       :key="idx"
       class="tr tr__mobile"
-      :class="{
-        'is-deleted': row.deleted,
-        'is-selectable': selectable,
-        'is-selected': isSelectedRow(row),
-      }"
+      :class="[
+        { 'is-deleted': row.deleted },
+        { 'is-selectable': selectable },
+        { 'is-selected': isSelectedRow(row) },
+        rowClass ? rowClass(row) : '',
+      ]"
       :to="to?.(row)"
     >
       <slot :row="row">

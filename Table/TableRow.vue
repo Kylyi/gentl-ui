@@ -10,6 +10,7 @@ type IProps = Pick<
 > & {
   index?: number
   rows: any[]
+  rowClass?: (row: any) => ClassType
 }
 
 const props = withDefaults(defineProps<IProps>(), {
@@ -34,7 +35,11 @@ const isEditable = computedEager(() => {
     flex="~"
     class="tr"
     :style="{ minHeight: `${rowHeight}px` }"
-    :class="{ 'is-odd': index % 2, 'is-deleted': row.deleted }"
+    :class="[
+      { 'is-odd': index % 2 },
+      { 'is-deleted': row.deleted },
+      rowClass ? rowClass(row) : '',
+    ]"
     :to="to?.(row)"
   >
     <slot :row="row">
