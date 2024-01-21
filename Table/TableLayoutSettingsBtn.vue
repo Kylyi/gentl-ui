@@ -286,6 +286,7 @@ const $z = useZod(
         <TextInput
           v-model="layout.name"
           :label="$t('table.layoutName')"
+          :inline="false"
           :validation="$z.layout?.name"
         />
 

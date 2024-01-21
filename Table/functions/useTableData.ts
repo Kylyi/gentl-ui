@@ -546,7 +546,7 @@ export function useTableData(
         const hasFloatingEl = !!document.querySelector('.floating-element')
         const isSearchInputFocused =
           activeElement.value?.tagName === 'INPUT' &&
-          activeElement.value?.getAttribute('name') === 'search'
+          activeElement.value?.getAttribute('name') === '_search'
 
         if (!hasFloatingEl && !isSearchInputFocused) {
           scrollerEl.value?.focus()
