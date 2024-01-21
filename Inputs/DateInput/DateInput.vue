@@ -8,6 +8,7 @@ import type { IDateInputProps } from '~/components/Inputs/DateInput/types/date-i
 
 // Functions
 import { useInputUtils } from '~/components/Inputs/functions/useInputUtils'
+import { useInputValidationUtils } from '~/components/Inputs/functions/useInputValidationUtils'
 
 // Components
 import DatePicker from '~/components/DatePicker/DatePicker.vue'
@@ -169,6 +170,8 @@ const {
   preventFocusOnTouch: true,
 })
 
+const { path } = useInputValidationUtils(props)
+
 defineExpose({
   focus,
   select,
@@ -208,7 +211,7 @@ defineExpose({
       :readonly="readonly"
       :disabled="disabled"
       :label="label || placeholder"
-      :name="name || validation?.path || label || placeholder"
+      :name="name || path || label || placeholder"
       class="control"
       :class="[inputClass]"
       v-bind="inputProps"

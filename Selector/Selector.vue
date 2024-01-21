@@ -9,6 +9,7 @@ import type { IItemToBeAdded } from '~/components/List/types/list-item-to-add.ty
 
 // Functions
 import { useSelectorUtils } from '~/components/Selector/functions/useSelectorUtils'
+import { useInputValidationUtils } from '~/components/Inputs/functions/useInputValidationUtils'
 
 // Components
 import List from '~/components/List/List.vue'
@@ -22,15 +23,15 @@ const props = withDefaults(defineProps<ISelectorProps>(), {
   errorTakesSpace: true,
   errorVisible: true,
   fuseExtendedSearchToken: config.selector.fuseExtendedSearchToken,
-  inline: undefined,
-  labelInside: undefined,
+  inline: config.inputs.inline,
   maxChipsRows: 2,
   optionKey: 'id',
   optionLabel: 'label',
   options: () => [],
   required: undefined,
   size: 'md',
-  stackLabel: undefined,
+  stackLabel: config.inputs.stackLabel,
+  labelInside: config.inputs.labelInside,
 })
 
 const emits = defineEmits<{
@@ -53,6 +54,7 @@ onMounted(() => {
 
 // Utils
 const { handleRequest } = useRequest()
+const { path } = useInputValidationUtils(props)
 const self = getCurrentInstance()
 
 const hasContent = computed(() => {
@@ -419,7 +421,7 @@ defineExpose({
       class="control"
       box="content"
       tabindex="0"
-      :name="name || validation?.path || label || placeholder"
+      :name="name || path || label || placeholder"
       :class="[innerClass, { 'is-multi': !!multi }]"
       :style="{ maxHeight: `${maxHeight}px` }"
       v-bind="inputProps"
@@ -562,7 +564,10 @@ defineExpose({
             :item-label="optionLabel"
             v-bind="listProps"
             :class="listClass"
-            @search="isPickerActive && menuProxyEl?.recomputePosition()"
+            @search="
+              pickerAnimationState === 'show' &&
+                menuProxyEl?.recomputePosition()
+            "
             @update:selected="handleSelect"
             @added="handleSelectAdd"
             @selected-multiple="handleSelectedMultiple"

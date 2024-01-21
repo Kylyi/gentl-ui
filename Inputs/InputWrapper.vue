@@ -6,6 +6,7 @@ import type { IInputWrapperProps } from '~/components/Inputs/types/input-wrapper
 
 // Functions
 import { useInputWrapperUtils } from '~/components/Inputs/functions/useInputWrapperUtils'
+import { useInputValidationUtils } from '~/components/Inputs/functions/useInputValidationUtils'
 
 const props = withDefaults(defineProps<IInputWrapperProps>(), {
   cursor: 'cursor-text',
@@ -19,6 +20,7 @@ const props = withDefaults(defineProps<IInputWrapperProps>(), {
 
 // Utils
 const { getInputWrapperStyleVariables } = useInputWrapperUtils()
+const { issues } = useInputValidationUtils(props)
 
 // Layout
 const wrapperEl = ref<HTMLDivElement>()
@@ -36,7 +38,7 @@ const isModified = computed(() => {
 const labelProps = computedEager(() => {
   return {
     hasContent: props.hasContent,
-    hasError: !!props.validation?.messages.length,
+    hasError: !!issues.value.length,
     inline: props.inline,
     label: props.label,
     labelClass: props.labelClass,
@@ -66,7 +68,7 @@ const wrapperContentClass = computedEager(() => {
   return {
     'is-readonly': props.readonly,
     'is-disabled': props.disabled,
-    'has-error': props.validation?.messages?.length,
+    'has-error': !!issues.value.length,
     'has-label': !!props.label,
     'has-border': !props.noBorder,
     'is-modified': isModified.value,
@@ -166,13 +168,13 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
     <ErrorContainer
       v-if="errorVisible"
       :error-takes-space="errorTakesSpace"
-      :errors="validation?.messages"
+      :errors="issues"
       class="wrapper-error"
       :style="{ paddingLeft: errorContainerPaddingLeft }"
     />
 
     <HintContainer
-      v-if="!validation?.messages.length && hint"
+      v-if="!issues?.length && hint"
       :hint="hint"
       :style="{ paddingLeft: errorContainerPaddingLeft }"
     />

@@ -20,7 +20,8 @@ export function useInputWrapperUtils() {
       'required',
       'size',
       'stackLabel',
-      'validation'
+      'validation',
+      'ui'
     )
   }
 

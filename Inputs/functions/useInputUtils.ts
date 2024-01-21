@@ -80,7 +80,8 @@ export function useInputUtils(options: IInputUtilsOptions) {
     'noBorder',
     'inputContainerClass',
     'inputContainerStyle',
-    'validation'
+    'validation',
+    'ui'
   )
 
   // Layout

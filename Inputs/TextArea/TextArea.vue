@@ -7,6 +7,7 @@ import type { ITextAreaInputProps } from '~/components/Inputs/TextArea/types/tex
 
 // Functions
 import { useInputUtils } from '~/components/Inputs/functions/useInputUtils'
+import { useInputValidationUtils } from '~/components/Inputs/functions/useInputValidationUtils'
 
 const props = withDefaults(defineProps<ITextAreaInputProps>(), {
   debounce: 0,
@@ -57,6 +58,8 @@ if (props.autogrow) {
   })
 }
 
+const { path } = useInputValidationUtils(props)
+
 const resizeClass = computedEager(() => {
   return props.autogrow ? 'resize-none' : props.resize
 })
@@ -104,7 +107,7 @@ defineExpose({
       :disabled="disabled"
       autocomplete="off"
       :label="label || placeholder"
-      :name="name || validation?.path || label || placeholder"
+      :name="name || path || label || placeholder"
       class="control"
       role="presentation"
       :rows="rows"

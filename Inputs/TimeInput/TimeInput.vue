@@ -8,6 +8,7 @@ import type { ITimeInputProps } from '~/components/Inputs/TimeInput/types/time-i
 
 // Functions
 import { useInputUtils } from '~/components/Inputs/functions/useInputUtils'
+import { useInputValidationUtils } from '~/components/Inputs/functions/useInputValidationUtils'
 
 // Components
 import InputWrapper from '~/components/Inputs/InputWrapper.vue'
@@ -233,6 +234,8 @@ const {
   setModel: (val: string) => (model.value = val),
 })
 
+const { path } = useInputValidationUtils(props)
+
 defineExpose({
   focus,
   select,
@@ -273,7 +276,7 @@ defineExpose({
       :readonly="readonly"
       :disabled="disabled"
       :label="label || placeholder"
-      :name="name || validation?.path || label || placeholder"
+      :name="name || path || label || placeholder"
       class="control"
       :class="[inputClass]"
       :style="inputStyle"

@@ -458,7 +458,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     this.noFreeze = col.noFreeze
     this.autofitLongestText = col.autofitLongestText ?? true
     this.selectable = col.selectable ?? true
-    this.comparator = col.comparator || this.comparator
+
     // Editing
     this.noEdit = col.noEdit
     this.editComponent = col.editComponent
@@ -474,6 +474,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     this.filters = col.filters ? col.filters : []
     this.filterComponent = col.filterComponent
     this.comparators = col.comparators
+    this.comparator = col.comparator || this.comparator
     this.extraComparators = col.extraComparators
     this.noFilterSort = col.noFilterSort ?? false
     this.filterFormat = col.filterFormat

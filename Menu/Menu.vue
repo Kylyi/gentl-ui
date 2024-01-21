@@ -641,7 +641,7 @@ defineExpose({
     v-if="internalValue || motionInstance?.isAnimating"
     to="body"
   >
-    <!-- OVERLAY -->
+    <!-- Overlay -->
     <div
       v-if="isOverlayVisible"
       class="backdrop"
@@ -654,7 +654,7 @@ defineExpose({
       class="menu floating-element"
       v-bind="$attrs"
     >
-      <!-- ARROW -->
+      <!-- Arrow -->
       <div
         v-if="!noArrow"
         ref="arrowEl"
@@ -665,7 +665,7 @@ defineExpose({
         }"
       />
 
-      <!-- HEADER -->
+      <!-- Header -->
       <slot
         name="header"
         :hide="hide"

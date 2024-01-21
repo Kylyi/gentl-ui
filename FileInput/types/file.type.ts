@@ -1,8 +1,3 @@
-export type IFile = {
-  id: number
-  isPublic?: boolean
-  type: string
-  name: string
-  path: string
-  size: number
-}
+import { models } from '~z'
+
+export type IFile = $infer<(typeof models)['FileCreateSchema']>

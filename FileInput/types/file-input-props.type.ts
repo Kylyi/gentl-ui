@@ -28,5 +28,5 @@ export interface IFileInputProps {
   /**
    * Validation object
    */
-  validation?: IZodValidationItem
+  validation?: IZodValidationItem | Array<IZodValidationItem | undefined>
 }

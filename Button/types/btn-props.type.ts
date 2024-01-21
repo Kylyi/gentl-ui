@@ -1,6 +1,6 @@
 // Types
-import type { NavigateToOptions } from '~/shims'
 import type { RouteLocationRaw } from '#vue-router'
+import type { NavigateToOptions } from '~/shims'
 
 // Constants
 import { BUTTON_PRESET } from '~/components/Button/constants/button-preset.constant'

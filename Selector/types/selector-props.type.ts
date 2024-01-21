@@ -1,9 +1,9 @@
 import { type CSSProperties } from 'vue'
+import { type FuseOptions } from '@vueuse/integrations/useFuse'
+import type { RouteLocationRaw } from '#vue-router'
 
 // Types
-import { type FuseOptions } from '@vueuse/integrations/useFuse'
 import { type FloatingUIBaseProps } from '~/components/Dialog/types/dialog-props.type'
-import type { RouteLocationRaw } from '#vue-router'
 import type { IInputProps } from '~/components/Inputs/types/input-props.type'
 
 // Models

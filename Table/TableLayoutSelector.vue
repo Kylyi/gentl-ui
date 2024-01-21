@@ -224,6 +224,7 @@ function handleLayoutSelect(
     option-label="name"
     size="sm"
     w="50"
+    :inline="false"
     :placeholder="$t('table.layoutState')"
     data-cy="scheme-search"
     @update:model-value="handleLayoutSelect"

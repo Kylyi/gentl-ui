@@ -498,7 +498,7 @@ function handleFitColumns() {
   }
 
   &__qb {
-    --apply: flex gap-1 items-start p-x-2 p-y-1;
+    --apply: flex gap-1 items-center p-x-2 p-y-1;
 
     &-remove-filters {
       --apply: shrink-0 w-20 h-full dark:bg-darker bg-white color-ca

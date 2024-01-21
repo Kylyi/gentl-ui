@@ -20,10 +20,13 @@ const emits = defineEmits<{
 
 // Utils
 const { getFieldProps } = useFieldUtils()
+const { files } = useFiles()
 
 // Layout
 const fileInputWrapperEl = ref<HTMLDivElement>()
-const model = useVModel(props, 'modelValue', emits)
+const model = defineModel<Array<File | IFile>>({
+  default: [],
+})
 const fieldProps = getFieldProps(props)
 
 const wrapperClass = computed(() => {
@@ -69,12 +72,13 @@ function handleRemove(idx: number) {
     return
   }
 
-  const removed = model.value.splice(idx, 1)
+  const removed = model.value.slice(idx, 1)
   emits('filesRemoved', removed)
-  emits('update:modelValue', [...model.value])
+  model.value = model.value.filter((_, i) => i !== idx)
 }
 
 onChange(handleAdd)
+syncRef(model, files, { direction: 'ltr' })
 </script>
 
 <template>
@@ -101,8 +105,19 @@ onChange(handleAdd)
         @remove="handleRemove(idx)"
       />
 
+      <!-- Add file(s) -->
+      <Btn
+        v-if="model.length && !readonly && !disabled"
+        class="file-add"
+        icon="eva:plus-fill h-8 w-8"
+        size="auto"
+        stacked
+        color="primary"
+        :label="$t('file.add', 1)"
+      />
+
       <div
-        v-if="!model?.length"
+        v-else-if="!model.length"
         class="file-input-wrapper-hint"
       >
         <div
@@ -127,7 +142,7 @@ onChange(handleAdd)
   --apply: dark:border-true-gray-600/50 border-true-gray-300/80;
   --apply: dark:bg-darker bg-white;
 
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(140px, 320px));
 
   &.is-dragger-over,
   &:hover {
@@ -145,6 +160,17 @@ onChange(handleAdd)
 
   &:not(.is-readonly) {
     --apply: cursor-pointer;
+  }
+
+
+  .file-add {
+    --apply: fit flex-gap-4 border-2 border-dotted border-primary min-h-50;
+  }
+}
+
+.wrapper-body.has-error {
+  .file-input-wrapper {
+    --apply: border-negative;
   }
 }
 </style>

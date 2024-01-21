@@ -45,6 +45,7 @@ const imageUrl = computed(() => {
         self-center
         text="caption"
         line-clamp="2"
+        p="y-1"
       >
         {{ file?.name }}
       </span>
@@ -82,6 +83,7 @@ const imageUrl = computed(() => {
         v-if="'path' in file"
         w-full
         size="sm"
+        class="!rounded-t-0"
         :label="$t('file.download')"
         @click.stop.prevent="handleDownloadFile(file, downloadUrl)"
       />
@@ -90,6 +92,7 @@ const imageUrl = computed(() => {
         :label="$t('file.added')"
         size="sm"
         w-full
+        class="!rounded-t-0"
       />
     </div>
   </div>

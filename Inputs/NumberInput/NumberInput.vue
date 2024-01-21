@@ -7,6 +7,7 @@ import type { INumberInputProps } from '~/components/Inputs/NumberInput/types/nu
 // Functions
 import { useInputUtils } from '~/components/Inputs/functions/useInputUtils'
 import { useNumber } from '~/components/Inputs/NumberInput/functions/useNumber'
+import { useInputValidationUtils } from '~/components/Inputs/functions/useInputValidationUtils'
 
 // Components
 import Btn from '~/components/Button/Btn.vue'
@@ -81,6 +82,8 @@ const {
   props,
   maskRef: mask,
 })
+
+const { path } = useInputValidationUtils(props)
 
 // Step
 const increment = ref<InstanceType<typeof Btn>>()
@@ -186,7 +189,7 @@ defineExpose({
       :readonly="readonly"
       :disabled="disabled"
       :label="label || placeholder"
-      :name="name || validation?.path || label || placeholder"
+      :name="name || path || label || placeholder"
       class="control"
       role="presentation"
       :class="[inputClass]"

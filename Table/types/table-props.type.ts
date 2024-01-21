@@ -1,8 +1,9 @@
+import type { RouteLocationRaw } from '#vue-router'
+
 // Types
 import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
 import type { ITableDataFetchFncInput } from '~/components/Table/types/table-query.type'
 import type { ITableSelection } from '~/components/Table/types/table-selection.type'
-import type { RouteLocationRaw } from '#vue-router'
 
 // Models
 import { TableColumn } from '~/components/Table/models/table-column.model'

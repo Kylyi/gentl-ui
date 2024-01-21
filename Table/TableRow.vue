@@ -39,6 +39,7 @@ const isEditable = computedEager(() => {
       { 'is-deleted': row.deleted },
       rowClass?.(row),
     ]"
+    :data-split-row-idx="0"
     :to="to?.(row)"
   >
     <slot :row="row">
@@ -56,8 +57,8 @@ const isEditable = computedEager(() => {
         :editable="isEditable"
       >
         <slot
-          :row="row"
           :name="col.name"
+          :row="row"
         />
       </TableCell>
     </slot>

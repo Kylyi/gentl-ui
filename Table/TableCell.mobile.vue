@@ -203,7 +203,7 @@ function selectSelf(self: any) {
     <!-- Value -->
     <div
       class="cell-value"
-      :class="{ 'col-span-2': col.hideLabel }"
+      :class="[col.classes, { 'col-span-2': col.hideLabel }]"
     >
       <!-- Edit mode -->
       <div

@@ -1,5 +1,6 @@
-// Types
 import type { RouteLocationRaw } from '#vue-router'
+
+// Types
 import type { IValueFormatter } from '~/components/ValueFormatter/types/value-formatter-props.type'
 
 export type IMiniCardProps = IValueFormatter & {

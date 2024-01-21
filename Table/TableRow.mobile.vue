@@ -54,6 +54,7 @@ const isEditable = computedEager(() => {
         { 'is-selected': isSelectedRow(row) },
         rowClass?.(row),
       ]"
+      :data-split-row-idx="idx"
       :to="to?.(row)"
     >
       <slot :row="row">
@@ -71,8 +72,8 @@ const isEditable = computedEager(() => {
           :editable="isEditable"
         >
           <slot
-            :row="row"
             :name="col.name"
+            :row="row"
           />
         </TableCellMobile>
       </slot>

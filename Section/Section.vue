@@ -71,7 +71,11 @@ const isTitleVisible = computedEager(() => {
       </slot>
     </div>
 
-    <div v-bind="$attrs">
+    <div
+      p="t-2"
+      gap="$Section-content-gap"
+      v-bind="$attrs"
+    >
       <slot />
     </div>
   </section>
@@ -79,7 +83,7 @@ const isTitleVisible = computedEager(() => {
 
 <style lang="scss" scoped>
 .section {
-  --apply: flex flex-col rounded-custom;
+  --apply: flex flex-col rounded-custom max-w-$Section-max-w;
 
   &--dense {
     --apply: p-x-0 p-b-0;

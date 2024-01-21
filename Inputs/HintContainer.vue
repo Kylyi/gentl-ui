@@ -10,7 +10,7 @@ defineProps<IProps>()
   <span
     text="caption"
     color="ca"
-    p="x-2"
+    p="x-2 t-0.5 b-1"
     font="rem-12"
   >
     {{ hint }}

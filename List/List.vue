@@ -98,6 +98,7 @@ onMounted(() => {
           v-model="search"
           :class="{ 'm-2': !dense }"
           grow
+          :inline="false"
           :debounce="searchDebounce"
           class="bg-white dark:bg-darker"
           :autofocus="!noAutofocus"

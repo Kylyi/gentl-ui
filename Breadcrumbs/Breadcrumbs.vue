@@ -43,6 +43,7 @@ const breadcrumbs = computed(() => {
           :class="{
             'is-last': breadcrumb === breadcrumbs[breadcrumbs.length - 1],
           }"
+          :no-dim="breadcrumb === breadcrumbs[breadcrumbs.length - 1]"
           no-uppercase
         />
       </template>
@@ -62,6 +63,7 @@ const breadcrumbs = computed(() => {
     --apply: flex flex-gap-x-1 items-center md:p-x-3;
     --apply: bg-$Breadcrumbs-bg;
   }
+
 }
 
 @screen lt-lg {

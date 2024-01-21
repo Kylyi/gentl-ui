@@ -1,8 +1,8 @@
 <script setup lang="ts">
-// TYPES
+// Types
 import type { ITextInputProps } from '~/components/Inputs/TextInput/types/text-input-props.type'
 
-// COMPONENTS
+// Components
 import TextInput from '~/components/Inputs/TextInput/TextInput.vue'
 
 withDefaults(defineProps<ITextInputProps>(), {
@@ -28,10 +28,11 @@ defineExpose({
     :debounce="debounce"
     class="control"
     :autofocus="autofocus"
-    name="_search"
+    name="search"
     immediate
     empty-value=""
     :hint="hint"
+    :inline="inline"
     :input-class="inputClass"
     :content-class="contentClass"
     :input-style="inputStyle"

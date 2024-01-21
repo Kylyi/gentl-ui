@@ -1,14 +1,13 @@
 <script setup lang="ts">
 // Types
-import { type ITabProps } from '~/components/Tabs/types/tab-props.type';
-
-defineProps<ITabProps>()
-
-const TAB_NAME = 'Tab_1'
+import { type ITabProps } from '~/components/Tabs/types/tab-props.type'
 
 defineOptions({
-  name: TAB_NAME,
+  // eslint-disable-next-line vue/component-definition-name-casing
+  name: 'Tab_1',
 })
+
+defineProps<ITabProps>()
 </script>
 
 <template>

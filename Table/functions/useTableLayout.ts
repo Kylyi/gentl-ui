@@ -56,11 +56,15 @@ export function useTableLayout(
 
   const rowKey = computedEager(() => getRowKey(props))
 
-  function handleRowClick(row: any, event: PointerEvent) {
+  function handleRowClick(rows: any[], event: PointerEvent) {
     const rowEl = event.target as HTMLElement
+    const el = rowEl.closest('.tr') as HTMLElement
+
+    const idx = Number(el.dataset.splitRowIdx as string)
+    const row = rows[idx]
 
     if (props.rowClickable) {
-      instance?.emit('row-click', { row, el: rowEl.closest('.tr')!, ev: event })
+      instance?.emit('row-click', { row, el, ev: event })
     }
   }
 
