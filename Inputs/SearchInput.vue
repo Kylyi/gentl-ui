@@ -28,7 +28,7 @@ defineExpose({
     :debounce="debounce"
     class="control"
     :autofocus="autofocus"
-    name="search"
+    name="_search"
     immediate
     empty-value=""
     :hint="hint"
