@@ -311,7 +311,6 @@ function handleAnimation(placement: Placement) {
   menuEl.value?.classList.add(transformOrigin)
 
   if (!motionInstance.value) {
-    // @ts-expect-error vue-motion type
     motionInstance.value = useMotion(menuEl, {
       initial: {
         y:

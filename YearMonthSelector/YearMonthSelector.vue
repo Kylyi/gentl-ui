@@ -1,14 +1,14 @@
 <script setup lang="ts">
 // TODO: MIN & MAX
 // Types
-import { type IYearMonthSelectorProps } from '~/components/YearMonthSelector/types/year-month-selector-props.type';
+import { type IYearMonthSelectorProps } from '~/components/YearMonthSelector/types/year-month-selector-props.type'
 
 // Functions
-import { useFieldUtils } from '~/components/Field/functions/useFieldUtils';
+import { useFieldUtils } from '~/components/Field/functions/useFieldUtils'
 
 // Components
-import Field from '~/components/Field/Field.vue';
-import MenuProxy from '~/components/MenuProxy/MenuProxy.vue';
+import Field from '~/components/Field/Field.vue'
+import MenuProxy from '~/components/MenuProxy/MenuProxy.vue'
 
 const props = withDefaults(defineProps<IYearMonthSelectorProps>(), {
   contentClass: 'cursor-pointer',

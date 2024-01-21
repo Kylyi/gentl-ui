@@ -183,7 +183,6 @@ async function handleAnimation() {
 
   dialogEl.value?.classList.add(transformOrigin)
 
-  // @ts-expect-error vue-motion type
   motionInstance.value = useMotion(dialogEl.value, {
     initial,
     enter: {

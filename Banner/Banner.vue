@@ -2,7 +2,7 @@
 // Parent component should handle `dismiss` event and remove Banner from the DOM
 
 // Types
-import { type IBannerProps } from '~/components/Banner/types/banner-props.type';
+import { type IBannerProps } from '~/components/Banner/types/banner-props.type'
 
 const props = withDefaults(defineProps<IBannerProps>(), {
   modelValue: true,

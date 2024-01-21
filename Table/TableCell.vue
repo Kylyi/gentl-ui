@@ -35,7 +35,7 @@ const self = getCurrentInstance()
 
 function focusSiblingCellHorizontal(
   direction: 'previous' | 'next',
-  e: KeyboardEvent
+  _e: KeyboardEvent
 ) {
   let siblingCell = self?.vnode?.el?.[`${direction}ElementSibling`] as
     | HTMLElement

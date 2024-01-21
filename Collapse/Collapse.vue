@@ -168,8 +168,8 @@ useResizeObserver(headerEl, entries => {
 
     <!-- Content -->
     <Transition
-      :enter-active-class="`${transitionClass} transition-all duration-0.25s ease-linear overflow-hidden will-change-height`"
-      :leave-active-class="`${transitionClass} transition-all duration-0.25s ease-linear overflow-hidden will-change-height`"
+      :enter-active-class="`${transitionClass} transition-active`"
+      :leave-active-class="`${transitionClass} transition-active`"
       @after-enter="handleEnter"
       @after-leave="handleLeave"
     >
@@ -187,6 +187,11 @@ useResizeObserver(headerEl, entries => {
 </template>
 
 <style lang="scss" scoped>
+.transition-active {
+  --apply: transition-all duration-0.25s ease-linear overflow-hidden
+    will-change-height;
+}
+
 .collapse {
   --apply: relative flex flex-col rounded-b-custom;
 

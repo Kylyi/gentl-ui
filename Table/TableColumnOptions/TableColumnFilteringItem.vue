@@ -169,7 +169,8 @@ function handleRemoveFilter() {
     filter => filter.comparator !== props.filter.comparator
   )
 
-  // Refresh the table if the filter actually had a value OR the comparator was one of the `Comparator.IS_EMPTY` or `Comparator.NOT_IS_EMPTY`
+  // Refresh the table if the filter actually had a value OR the comparator was
+  // one of the `Comparator.IS_EMPTY` or `Comparator.NOT_IS_EMPTY`
   const _isEmptyComparator = isEmptyComparator(props.filter.comparator)
 
   if (!isNil(props.filter.value) || _isEmptyComparator) {
