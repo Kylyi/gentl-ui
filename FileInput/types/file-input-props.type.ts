@@ -1,5 +1,4 @@
 // Types
-import type { IFile } from '~/components/FileInput/types/file.type'
 import type { IZodValidationItem } from '~/utils/zod/types/zod-validation-item.type'
 
 export interface IFileInputProps {

@@ -1,7 +1,4 @@
 <script setup lang="ts">
-// Types
-import type { IFile } from '~/components/FileInput/types/file.type'
-
 // Constants
 import { ICON_BY_FILE_EXTENSION } from '~/components/FileInput/constants/iconsByFileExtension'
 

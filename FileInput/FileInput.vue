@@ -2,7 +2,6 @@
 import { config } from '~/config'
 
 // Types
-import type { IFile } from '~/components/FileInput/types/file.type'
 import type { IFileInputProps } from '~/components/FileInput/types/file-input-props.type'
 
 // Functions

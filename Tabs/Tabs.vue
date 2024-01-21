@@ -9,7 +9,7 @@ import { config } from '~/config'
 import type { ITabsProps } from '~/components/Tabs/types/tabs-props.type'
 
 const props = withDefaults(defineProps<ITabsProps>(), {
-  noAnimation: config.tabs.noAnimation,
+  noAnimation: config.tabs.props.noAnimation,
 })
 const emits = defineEmits<{
   (e: 'update:modelValue', id: string | number): void
