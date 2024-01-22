@@ -403,6 +403,8 @@ onMounted(() => {
   --apply: relative flex flex-col overflow-auto max-h-full max-w-full
     rounded-custom;
 
+  --apply: m-$Table-content-margin;
+
   &__top {
     --apply: flex flex-col shrink-0 gap-1 border-b-1 border-ca p-2 p-l-1
       overflow-auto;
@@ -424,11 +426,5 @@ onMounted(() => {
 
 :deep(.virtual-scroll__content) {
   --apply: font-size-13px;
-}
-
-.table-header,
-.table-totals,
-.scroller {
-  --apply: m-$Table-content-margin;
 }
 </style>

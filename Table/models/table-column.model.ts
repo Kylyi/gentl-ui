@@ -274,16 +274,11 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   }
 
   /**
-   * @argument width only works for `px` values, either as number or string
+   * @param width The width in px (must be a string, e.g. '100px')
    */
-  setWidth(width: number | string) {
-    if (typeof width === 'number') {
-      this.width = `${width}px`
-      this.adjustedWidth = width
-    } else {
-      this.width = width
-      this.adjustedWidth = Number.parseInt(width.replace('px', ''))
-    }
+  setWidth(width: string) {
+    this.width = width
+    this.adjustedWidth = Number.parseInt(width.replace('px', ''))
   }
 
   setDataType(dataType?: ExtendedDataType, defaultComparator?: ComparatorEnum) {
@@ -379,7 +374,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
       config.table.columnAutoFit.maxColumnWidthChars * 6 + 20 // When autofitting, we don't want to go over some predefined value
     )
 
-    this.setWidth(colMinWidth)
+    this.setWidth(`${colMinWidth}px`)
   }
 
   freeze(columns: TableColumn[]) {
@@ -409,7 +404,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
 
       let left = 0
       columns.slice(0, colIdx + 1).forEach(col => {
-        col.setWidth(col.adjustedWidth)
+        col.setWidth(`${col.adjustedWidth}px`)
 
         col.semiFrozen = true
         col.headerStyle = {
