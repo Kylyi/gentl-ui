@@ -380,6 +380,7 @@ const $z = useVuelidate(
           :placeholder="`${$t('table.filterValue')}...`"
           empty-value=""
           :validation="$z.item.value"
+          data-cy="qb-item__content-value"
         />
 
         <!-- Selector of distinct values -->
