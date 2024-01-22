@@ -55,9 +55,9 @@ export function useTableColumns(
   const internalColumns = ref<TableColumn[]>([])
   createInternalColumns()
 
-  const nonHelpersColumns = computed(() =>
-    internalColumns.value.filter(col => !col.isHelperCol)
-  )
+  const nonHelpersColumns = computed(() => {
+    return internalColumns.value.filter(col => !col.isHelperCol)
+  })
 
   // Provide
   provide(tableColumnsKey, internalColumns)
@@ -236,7 +236,9 @@ export function useTableColumns(
         }
 
         // We set the column data that we save in `localStorage`
-        col.setWidth(stateColumn.width)
+        if (typeof stateColumn.width === 'string') {
+          col.setWidth(stateColumn.width)
+        }
 
         // TODO: This can be done better (without the arbitrary timeout...)
         setTimeout(() => {
@@ -353,7 +355,7 @@ export function useTableColumns(
     )
 
     // We check if we need to adjust the columns
-    // Adjusting the columbs mean that we stretch the columns that have relative width
+    // Adjusting the columns mean that we stretch the columns that have relative width
     const shouldAdjustCols =
       !!colsTotalWidth.relative &&
       colsTotalWidth.relative + colsTotalWidth.fixed < contentWidth

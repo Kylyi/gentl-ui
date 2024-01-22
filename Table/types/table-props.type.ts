@@ -178,6 +178,11 @@ export interface ITableProps {
   rowClass?: (row: any) => ClassType
 
   /**
+   * When true, the table will not save the state in the local storage
+   */
+  noStateSave?: boolean
+
+  /**
    * The settings that are saveable whtin the table
    */
   nonSavableSettings?: Array<'columns' | 'filters' | 'sorting' | 'public'>
