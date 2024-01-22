@@ -35,15 +35,15 @@ defineExpose({
   focusInput: (input: 'field' | 'comparator' | 'value' = 'value') => {
     switch (input) {
       case 'field':
-        fieldInputEl.value?.focus()
+        fieldInputEl.value?.focus?.()
         break
 
       case 'comparator':
-        comparatorInputEl.value?.focus()
+        comparatorInputEl.value?.focus?.()
         break
 
       case 'value':
-        valueInputEl.value?.focus()
+        valueInputEl.value?.focus?.()
         break
     }
   },

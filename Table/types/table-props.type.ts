@@ -86,6 +86,12 @@ export interface ITableProps {
   initialLayoutSchema?: string
 
   /**
+   * The layout schema that will be included in every request but will not be
+   * visible to the user
+   */
+  appendedLayoutSchema?: string
+
+  /**
    * Whether the table is in `loading` state
    */
   loading?: boolean
@@ -318,6 +324,11 @@ export interface ITableProps {
    * use `null` to disable this functionality
    */
   storageKey?: string | null
+
+  /**
+   * When true, the table will not save the state in the local storage
+   */
+  noStateSave?: boolean
 
   /**
    * Link to the detail from page
