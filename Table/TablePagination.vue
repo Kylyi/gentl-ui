@@ -12,7 +12,7 @@ type IProps = {
   currentRows?: number
   infiniteScroll?: boolean
   limitRows?: number
-  numberOfRowsPerPageOptions?: number[]
+  rowsPerPageOptions?: number[]
   prev: () => void
   next: () => void
 }
@@ -210,7 +210,7 @@ const isLimitRowsReached = computedEager(() => {
 
         <Selector
           v-model="currentPageSize"
-          :options="numberOfRowsPerPageOptions"
+          :options="rowsPerPageOptions"
           emit-key
           size="sm"
           no-search
