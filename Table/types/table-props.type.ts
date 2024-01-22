@@ -93,6 +93,12 @@ export interface ITableProps {
   initialLayoutSchema?: string
 
   /**
+   * The layout schema that will be included in every request but will not be
+   * visible to the user
+   */
+  appendedLayoutSchema?: string
+
+  /**
    * Whether the table is in `loading` state
    */
   loading?: boolean

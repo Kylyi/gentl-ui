@@ -194,7 +194,6 @@ function handleFitColumns() {
       v-if="hasActionBar"
       class="table-top__actionbar"
     >
-      <!-- Query builder button -->
       <div
         flex="~ gap-1 items-center"
         grow
@@ -220,6 +219,8 @@ function handleFitColumns() {
           self-start
           m="t-1"
         />
+
+        <slot name="middle-start" />
 
         <slot name="left">
           <!-- Search -->

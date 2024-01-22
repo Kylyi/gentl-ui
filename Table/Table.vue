@@ -61,6 +61,7 @@ defineSlots<{
   topBulkActions: { selection: any[] }
   topBulkActionsMenu: { selection: any[] }
   belowTop: { rows: any[] }
+  topBarMiddleStart: IItem
 }>()
 
 const slots = useSlots()
@@ -237,6 +238,13 @@ onMounted(() => {
           #subbar-right
         >
           <slot name="subbar-right" />
+        </template>
+
+        <template
+          v-if="$slots['topbar-middle-start']"
+          #middle-start
+        >
+          <slot name="topbar-middle-start" />
         </template>
 
         <template

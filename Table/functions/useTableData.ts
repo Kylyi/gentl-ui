@@ -243,6 +243,7 @@ export function useTableData(
         search: search.value,
         select: select.value,
         includeDeleted: tableState.value.includeDeleted,
+        appendedLayoutSchema: props.appendedLayoutSchema,
         count: true,
       }
 
@@ -530,14 +531,16 @@ export function useTableData(
       }
 
       // NOTE: Save `TableState`
-      setTableState(storageKey.value, {
-        page: dbQuery.tableQuery.skip! / dbQuery.tableQuery.take! + 1,
-        pageSize: dbQuery.tableQuery.take!,
-        includeDeleted: dbQuery.tableQuery.includeDeleted,
-        schema: dbQuery.queryParams.toString(),
-        columns: internalColumnsRef.value,
-        queryBuilder: dbQuery.tableQuery.queryBuilder,
-      })
+      if (!props.noStateSave) {
+        setTableState(storageKey.value, {
+          page: dbQuery.tableQuery.skip! / dbQuery.tableQuery.take! + 1,
+          pageSize: dbQuery.tableQuery.take!,
+          includeDeleted: dbQuery.tableQuery.includeDeleted,
+          schema: dbQuery.queryParams.toString(),
+          columns: internalColumnsRef.value,
+          queryBuilder: dbQuery.tableQuery.queryBuilder,
+        })
+      }
 
       // NOTE: Focus the table so we can use keyboard navigation
       // (but only if no floating element is visible - we don't want to close it by refocusing)
