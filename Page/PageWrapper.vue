@@ -131,7 +131,7 @@ onMounted(() => {
 }
 
 .page-title {
-  --apply: flex gap-2 p-x-4 md:(p-y-4 p-x-2) max-w-screen-lg m-b-2 p-b-1;
+  --apply: flex gap-2 p-x-4 md:(p-t-4 p-b-2 p-l-4 p-r-2) max-w-screen-lg m-b-1 p-b-1;
 
   &__text {
     --apply: grow font-700;
