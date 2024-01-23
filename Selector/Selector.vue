@@ -406,6 +406,7 @@ defineExpose({
     <span
       v-if="$slots.selection"
       class="control"
+      :class="controlClass"
       @click="handleFocusOrClick"
     >
       <slot

@@ -27,6 +27,11 @@ export type ISelectorProps = IInputProps & {
   clearable?: boolean
 
   /**
+   * The class applied to the `control` element
+   */
+  controlClass?: ClassType
+
+  /**
    * Whether to hide clear buttons for selected items
    */
   noItemsClear?: boolean
