@@ -324,6 +324,7 @@ onMounted(() => {
           <CrudBtnCancel
             v-if="editControls?.cancel"
             :class="{ invisible: !isEditing }"
+            :reset="reset"
           />
 
           <Btn

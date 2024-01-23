@@ -12,6 +12,11 @@ type IProps = {
    * If we want to prevent this, we can set this prop to `true`
    */
   noFormInteraction?: boolean
+
+  /**
+   * Function to call when the cancellation happens
+   */
+  reset?: () => void
 }
 
 const props = defineProps<IProps>()
@@ -33,6 +38,10 @@ const isEditing = computed({
   set(val) {
     isEditingProp.value = !!val
     isFormEditing.value = !!val
+
+    if (!val) {
+      props.reset?.()
+    }
   },
 })
 </script>

@@ -112,6 +112,11 @@ export interface IFormProps {
   preventSubmitOnEnter?: boolean
 
   /**
+   * A function that resets the model on form editing cancel
+   */
+  reset?: () => void
+
+  /**
    * If true, the form submit will need to be confirmed in a confirmation menu.
    */
   submitConfirmation?: boolean
