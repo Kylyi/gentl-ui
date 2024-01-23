@@ -16,7 +16,10 @@ export type ITableColumnState = Pick<
   | 'dataType'
   | 'originalWidth'
 > & {
-  filters: Pick<TableColumn['filters'][0], 'field' | 'comparator' | 'value'>[]
+  filters: Pick<
+    TableColumn['filters'][0],
+    'field' | 'comparator' | 'value' | 'nonInteractive'
+  >[]
 }
 
 export type ITableState = {
