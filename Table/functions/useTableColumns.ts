@@ -220,15 +220,20 @@ export function useTableColumns(
       if (col) {
         // We set the `filters`, `sorting`, `visibility` only in case we don't use
         // server state management and we didn't provide anything in the URL
-        if (
-          (!config.table.useServerState ||
-            config.table.useLocalStorageForDefaultLayout) &&
-          !isUrlUsed &&
-          !props.initialLayoutSchema
-        ) {
-          col.filters = stateColumn.filters.map(
-            filter => new FilterItem(filter)
-          )
+        const shouldUseState =
+          !config.table.useServerState ||
+          config.table.useLocalStorageForDefaultLayout
+
+        if (shouldUseState && !isUrlUsed && !props.initialLayoutSchema) {
+          const nonInteractiveFilters = col.filters.filter(filter => {
+            return filter.nonInteractive
+          })
+          col.filters = [
+            ...nonInteractiveFilters,
+            ...stateColumn.filters
+              .filter(filter => !filter.nonInteractive)
+              .map(filter => new FilterItem(filter)),
+          ]
           col.sort = stateColumn.sort
           col.sortOrder = stateColumn.sortOrder
           col.hidden = stateColumn.hidden
