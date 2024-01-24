@@ -1,2 +1,2 @@
-export const formIsInEditModeKey: InjectionKey<Ref<boolean>> =
+export const isFormEditingKey: InjectionKey<Ref<boolean>> =
   Symbol('isInEditMode')

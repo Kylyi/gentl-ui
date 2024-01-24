@@ -45,5 +45,5 @@ export type IMiniCardProps = IValueFormatter & {
   /**
    * The orginal value of the field used to compare with current value
    */
-  originalValue?: string
+  originalValue?: any
 }
