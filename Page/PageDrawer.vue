@@ -97,6 +97,8 @@ header.is-hidden ~ .page-drawer {
   --apply: h-100% fixed flex flex-col z-$zLayoutDrawer pointer-events-none
     ease-out;
 
+  --apply: print:hidden;
+
   transition:
     width 250ms,
     transform 250ms;

@@ -112,14 +112,17 @@ onMounted(() => {
   }
 }
 
-.page-drawer.is-open.page-drawer--left ~ .page-wrapper {
-  margin-left: calc(var(--drawerLeftMiniWidth));
+@media not print {
+  .page-drawer.is-open.page-drawer--left ~ .page-wrapper {
+    margin-left: calc(var(--drawerLeftMiniWidth));
+  }
+
+  .page-drawer.is-open.page-drawer--left:not(.is-absolute):not(.is-mini)
+    ~ .page-wrapper {
+    margin-left: calc(var(--drawerLeftWidth));
+  }
 }
 
-.page-drawer.is-open.page-drawer--left:not(.is-absolute):not(.is-mini)
-  ~ .page-wrapper {
-  margin-left: calc(var(--drawerLeftWidth));
-}
 
 .page-drawer.is-open.page-drawer--right ~ .page-wrapper {
   padding-right: var(--drawerRightMiniWidth);
