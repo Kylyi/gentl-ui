@@ -84,7 +84,7 @@ defineExpose({
 const { isDesktopOrTablet } = useDevice()
 const lastScrollEvent = ref<Event>()
 const preventNextScroll = autoResetRef(false, 50)
-let lastScrollRow = 0
+let lastScrollTop = 0
 
 function getRowKey(row: T) {
   return String(row?.[rowKey.value] || '')
@@ -106,10 +106,7 @@ const isMounted = ref(false)
 const rowHeight = toRef(props, 'rowHeight')
 const rowKey = toRef(props, 'rowKey') as Ref<keyof T>
 const virtualScrollerRect = ref<DOMRect>()
-const visibleItemsIdx = ref({
-  first: 0,
-  last: 0,
-})
+const visibleItemsIdx = ref({ first: 0, last: 0 })
 
 const overscan = computedEager(() => {
   return {
@@ -174,7 +171,7 @@ const rowsInViewport = computed(() => {
 
 function handleScrollEvent(
   ev?: Event,
-  otpions?: {
+  options?: {
     /**
      * Whether the `virtual-scroll` event should be emitted
      */
@@ -192,45 +189,33 @@ function handleScrollEvent(
     return
   }
 
-  const { noEmit, force } = otpions ?? {}
+  const { noEmit, force } = options ?? {}
   const _noEmit = props.noScrollEmit || noEmit
   const scrollY = ((ev?.target as any)?.scrollTop || 1) as number
 
-  const scrollRow = Math.floor(scrollY / rowHeight.value)
-
-  if (!force && scrollRow && scrollRow === lastScrollRow) {
+  if (!force && lastScrollTop === scrollY) {
     return
   }
 
-  lastScrollRow = scrollRow
+  lastScrollTop = scrollY
 
-  // NOTE - We get the index of the first row that is visible
+  // Rendered rows
   const overscanTop = Math.max(scrollY - overscan.value.top, 1)
   const firstIdx = heightsCumulated.value.findIndex(h => h >= overscanTop)
-
   const lastIdx = firstIdx + rowsInViewport.value
 
   renderedRows.value = getRenderedRows(firstIdx, lastIdx)
 
-  const left = virtualScrollerRect.value?.left ?? 0
-  const top = virtualScrollerRect.value?.top ?? 0
-  const height = virtualScrollEl.value?.clientHeight ?? 0
+  // Visible rows
+  const firstVisibleIdx = heightsCumulated.value.findIndex(h => h >= scrollY)
+  let lastVisibleIdx = heightsCumulated.value.findIndex(
+    h => h >= scrollY + (virtualScrollerRect.value?.height || 0)
+  )
 
-  const firstVisibleEl = document
-    .elementFromPoint(left + 1, top + 1)
-    ?.closest('.virtual-scroll__row') as HTMLElement
-  const lastVisibleEl = document
-    .elementFromPoint(left + 1, top + height - 1)
-    ?.closest('.virtual-scroll__row') as HTMLElement
+  lastVisibleIdx =
+    lastVisibleIdx === -1 ? rows.value?.length - 1 : lastVisibleIdx
 
-  if (!firstVisibleEl || !lastVisibleEl) {
-    return
-  }
-
-  const firstVisibleIdx = Number(firstVisibleEl?.dataset.idx)
   const firstVisibleItem = props.rows![firstVisibleIdx]
-
-  const lastVisibleIdx = Number(lastVisibleEl?.dataset.idx)
   const lastVisibleItem = props.rows![lastVisibleIdx]
 
   visibleItemsIdx.value.first = firstVisibleIdx
