@@ -160,7 +160,7 @@ defineExpose({
     >
       <Btn
         size="sm"
-        :label="$t('today')"
+        :label="$t('general.today')"
         @click="handleSelectToday"
       />
     </div>

@@ -194,7 +194,7 @@ function handleMenuBeforeHide() {
               :data-type="column.dataType"
               :empty-value="emptyValue"
               :format="column.format"
-              :empty-value-string="$t('empty')"
+              :empty-value-string="$t('general.empty')"
               text="sm"
             />
 
@@ -204,12 +204,12 @@ function handleMenuBeforeHide() {
               border="t-1 ca"
               leading="6"
             >
-              {{ $t('filter.nonInteractiveExplain') }}
+              {{ $t('table.nonInteractiveFilter') }}
             </span>
           </div>
         </template>
-      </div>
     </Tooltip>
+      </div>
 
     <MenuProxy
       ref="menuEl"
@@ -238,7 +238,7 @@ function handleMenuBeforeHide() {
       />
       <Banner
         v-else-if="column.filters?.length"
-        :label="$t('filter.nonInteractiveExplain')"
+        :label="$t('table.nonInteractiveFilter')"
         icon-center
         type="info"
         outlined

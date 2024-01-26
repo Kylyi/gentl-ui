@@ -144,7 +144,7 @@ async function handleApplyChanges() {
     data-cy="columns-button"
   >
     <span text="xs">
-      {{ $t('columns') }}
+      {{ $t('general.column', 2) }}
     </span>
 
     <span font="rem-10">
@@ -220,7 +220,7 @@ async function handleApplyChanges() {
               >
                 <span text="caption xs">
                   {{ itemsFiltered.length }}
-                  {{ $t('columns').toLowerCase() }}
+                  {{ $t('general.column', 2).toLowerCase() }}
                 </span>
 
                 <div flex="~ gap-1">

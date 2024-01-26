@@ -260,7 +260,7 @@ const $z = useZod(
     size="sm"
     color="ca"
     no-uppercase
-    :label="$t('settings')"
+    :label="$t('general.settings')"
     data-cy="settings"
   >
     <Dialog
@@ -275,7 +275,7 @@ const $z = useZod(
     >
       <Form
         p="2"
-        :label="$t('save')"
+        :label="$t('general.save')"
         :submit-disabled="!isSaveable || !hasLayoutChanged"
         :ui="{ submitClass: 'w-40' }"
         :loading="isLoading"

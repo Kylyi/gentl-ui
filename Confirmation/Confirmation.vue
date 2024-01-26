@@ -58,7 +58,7 @@ function handleClose() {
       >
         <slot name="actions" />
         <Btn
-          :label="$t('close')"
+          :label="$t('general.close')"
           @click="handleClose"
         />
       </div>

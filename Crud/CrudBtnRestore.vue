@@ -16,10 +16,10 @@ withDefaults(defineProps<IProps>(), {
 <template>
   <Btn
     preset="RESTORE"
-    :label="labels && $t('forms.restore')"
+    :label="labels && $t('general.restore')"
     :loader-type="loaderType"
     :loading="loading"
     :to="to"
-    no-dim
   />
+  no-dim
 </template>

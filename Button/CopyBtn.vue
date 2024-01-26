@@ -63,7 +63,7 @@ function handleCopy() {
     <BtnConfirmation
       :model-value="copied"
       :position="position"
-      :label="$t('copied')"
+      :label="$t('general.copied')"
     />
   </Btn>
 </template>

@@ -55,7 +55,7 @@ const negativeBtnClass = computed(() => {
       grow
       border="l-4"
       :class="positiveBtnClass"
-      :label="$t('yes')"
+      :label="$t('general.yes')"
       @click="model = true"
     />
     <Btn
@@ -64,7 +64,7 @@ const negativeBtnClass = computed(() => {
       grow
       border="r-4"
       :class="negativeBtnClass"
-      :label="$t('no')"
+      :label="$t('general.no')"
       @click="model = false"
     />
 

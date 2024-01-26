@@ -341,7 +341,7 @@ onMounted(() => {
             :icon="icon"
             type="submit"
             data-cy="save-button"
-            :label="label ?? $t('submit')"
+            :label="label ?? $t('general.submit')"
           >
             <Component
               :is="FormConfirmation"

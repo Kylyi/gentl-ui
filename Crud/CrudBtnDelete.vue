@@ -11,7 +11,7 @@ defineEmits<{
 <template>
   <Btn
     preset="TRASH"
-    :label="labels && (label || $t('delete'))"
+    :label="labels && (label || $t('general.delete'))"
     :loader-type="loaderType"
     :loading="loading"
     no-dim
@@ -24,7 +24,7 @@ defineEmits<{
     <MenuConfirmation
       v-if="!noConfirm"
       placement="bottom-end"
-      :title="$t('delete')"
+      :title="$t('general.delete')"
       :confirmation-text="confirmationText"
       @ok="$emit('delete')"
     >

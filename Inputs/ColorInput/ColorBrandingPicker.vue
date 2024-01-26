@@ -68,7 +68,7 @@ function handleSelectColor(color?: string) {
 
 <template>
   <div flex="~ col gap-y-3">
-    <!-- THEME COLORS -->
+    <!-- Theme colors -->
     <div flex="~ gap-y-px wrap">
       <div
         w="full"
@@ -99,7 +99,7 @@ function handleSelectColor(color?: string) {
       </div>
     </div>
 
-    <!-- STANDARD COLORS -->
+    <!-- Standard colors -->
     <div flex="~ col">
       <div
         w="full"

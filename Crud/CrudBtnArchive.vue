@@ -15,14 +15,14 @@ defineEmits<{
 <template>
   <Btn
     preset="ARCHIVE"
-    :label="labels && $t('archive')"
+    :label="labels && $t('general.archive')"
     :loader-type="loaderType"
     :loading="loading"
     no-dim
   >
     <MenuConfirmation
       placement="bottom"
-      :title="$t('archive')"
+      :title="$t('general.archive')"
       @ok="$emit('archive')"
     >
       <slot name="confirmation" />

@@ -137,7 +137,7 @@ export function useValueFormatterUtils() {
       case 'bool':
       case 'booleanSimple':
       case 'boolSimple':
-        return JSON.parse(value) ? $t('yes') : $t('no')
+        return JSON.parse(value) ? $t('general.yes') : $t('general.no')
 
       case 'string':
       case 'stringSimple':

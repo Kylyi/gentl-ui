@@ -65,7 +65,7 @@ defineExpose({
     v-bind="menuProps"
     min-w="60"
     position="top"
-    :title="menuProps.title ?? $t('confirmAction')"
+    :title="menuProps.title ?? $t('general.confirmAction')"
     @hide="handleMenuHide"
   >
     <slot name="prepend" />
@@ -80,7 +80,7 @@ defineExpose({
         p="2"
         text="center"
       >
-        {{ confirmationText || $t('confirmAction') }}
+        {{ confirmationText || $t('general.confirmAction') }}
       </div>
     </slot>
 
@@ -89,7 +89,7 @@ defineExpose({
     <Btn
       v-if="!isConfirmation && !noConfirmBtn"
       ref="confirmBtnEl"
-      :label="$t('confirm')"
+      :label="$t('general.confirm')"
       bg="primary"
       color="white"
       data-cy="confirm-delete"
