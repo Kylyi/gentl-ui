@@ -51,6 +51,7 @@ defineEmits<{
 
 defineSlots<{
   [key: string]: any
+  default: IItem
   rowInside: { columns: any[]; row: any; index: number }
   dataRow: { columns: any[]; row: any; index: number }
   inner: { columns: any[]; row: any; index: number }
@@ -72,7 +73,9 @@ provide(tableSlotsKey, slots)
 
 defineExpose({
   rerender: (noEmit?: boolean) => scrollerEl.value?.rerender(noEmit),
-  refreshData: () => refreshData(true),
+  refreshData: () => {
+    refreshData(true)
+  },
   resizeColumns: (force?: boolean) => handleResize(force),
   adjustColumns: (fnc: (columns: TableColumn[]) => void) => {
     fnc(internalColumns.value)
@@ -395,6 +398,8 @@ onMounted(() => {
       :prev="prev"
       :next="next"
     />
+
+    <slot />
   </div>
 </template>
 
