@@ -1,8 +1,16 @@
 <script setup lang="ts">
-// TYPES
-import type { InputLabelProps } from '~~/components/Inputs/types/input-label-props.type'
+// Types
+import { useInputValidationUtils } from '~/components/Inputs/functions/useInputValidationUtils'
 
-const props = defineProps<InputLabelProps>()
+// Functions
+import type { InputLabelProps } from '~/components/Inputs/types/input-label-props.type'
+
+const props = withDefaults(defineProps<InputLabelProps>(), {
+  required: undefined,
+})
+
+// Utils
+const { isRequired } = useInputValidationUtils(props)
 
 const labelLocalClass = computedEager(() => {
   return [
@@ -10,7 +18,7 @@ const labelLocalClass = computedEager(() => {
     `label--${props.size}`,
     {
       'is-inline': props.inline,
-      'is-required': props.required,
+      'is-required': props.required ?? !!isRequired.value,
       'is-inside': props.labelInside,
       'is-floating':
         !props.inline &&

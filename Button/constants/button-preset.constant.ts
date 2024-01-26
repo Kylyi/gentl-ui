@@ -2,7 +2,7 @@
 
 export const BUTTON_PRESET = {
   CLOSE: {
-    icon: 'eva:close-fill',
+    icon: 'ion:close',
     color: 'color-negative',
   },
   ADD: {
@@ -22,7 +22,7 @@ export const BUTTON_PRESET = {
     color: 'bg-primary color-white',
   },
   TRASH: {
-    icon: 'bxs:trash-alt',
+    icon: 'iconamoon:trash',
     color: 'color-negative',
   },
   EDIT: {

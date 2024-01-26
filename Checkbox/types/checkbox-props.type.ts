@@ -1,3 +1,13 @@
+// Types
+import type { ToggleState } from '~/components/Toggle/types/toggle-props.type'
+
+export type CheckboxClass = Record<
+  ToggleState,
+  {
+    checkbox?: ClassType
+    label?: ClassType
+  }
+>
 export interface ICheckboxProps {
   checkValue?: any
   color?:
@@ -21,4 +31,10 @@ export interface ICheckboxProps {
   name?: string
   size?: 'xs' | 'sm' | 'md' | 'lg'
   uncheckValue?: any
+  visuals?: Partial<CheckboxClass>
+
+  /**
+   * The props that should be passed to the input tag (<input>)
+   */
+  inputProps?: Record<string, any>
 }

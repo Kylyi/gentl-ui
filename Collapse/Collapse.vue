@@ -1,6 +1,6 @@
 <script setup lang="ts">
-// TYPES
-import type { ICollapseProps } from '~~/components/Collapse/types/collapse-props.type'
+// Types
+import type { ICollapseProps } from '~/components/Collapse/types/collapse-props.type'
 
 const props = withDefaults(defineProps<ICollapseProps>(), {
   padded: true,
@@ -14,18 +14,26 @@ const emits = defineEmits<{
   (e: 'hide'): void
 }>()
 
+// Layout
 const headerEl = ref<HTMLDivElement>()
 const contentEl = ref<HTMLDivElement>()
 const model = toRef(props, 'modelValue')
+const isLoading = ref(false)
 const preventNextExpand = autoResetRef(false, 100)
 const internalValue = ref<boolean>(model.value || !!props.initialValue)
 
-function handleToggle() {
+async function handleToggle() {
   if (preventNextExpand.value) {
     return
   }
 
   preventNextExpand.value = true
+
+  if (props.beforeShowFnc) {
+    isLoading.value = true
+    await props.beforeShowFnc()
+    isLoading.value = false
+  }
 
   internalValue.value = !internalValue.value
   internalValue.value ? emits('before-show') : emits('before-hide')
@@ -91,7 +99,7 @@ useResizeObserver(headerEl, entries => {
       'is-padded': internalValue && padded,
     }"
   >
-    <!-- HEADER -->
+    <!-- Header -->
     <div
       v-if="!noHeader"
       ref="headerEl"
@@ -99,8 +107,10 @@ useResizeObserver(headerEl, entries => {
       :class="[
         { 'is-expanded': internalValue },
         { 'has-subtitle': subtitle },
+        { 'no-separator': !!noSeparator },
         headerClass,
       ]"
+      :style="headerStyle"
       @click="handleToggle"
     >
       <slot
@@ -108,28 +118,26 @@ useResizeObserver(headerEl, entries => {
         :toggle="handleToggle"
       >
         <div flex="~ col grow">
-          <h6
-            flex="1"
-            text="h6"
-            truncate
-            leading="!tight"
-          >
-            <span
-              tracking="wide"
-              color="ca"
+          <slot name="title">
+            <h6
+              text="h6"
+              truncate
+              leading="!tight"
             >
-              {{ title }}
-            </span>
-          </h6>
+              <span
+                tracking="wide"
+                color="$Collapse-header-title-color"
+              >
+                {{ title }}
+              </span>
+            </h6>
+          </slot>
 
           <slot name="subtitle">
             <span
               v-if="subtitle"
-              font="rem-12"
-              italic
-              color="ca"
-              leading="tight"
-              p="t-2px"
+              text="subtitle"
+              p="t-0.5"
             >
               {{ subtitle }}
             </span>
@@ -140,19 +148,28 @@ useResizeObserver(headerEl, entries => {
       <slot
         name="right"
         :open="internalValue"
-      />
+        :loading="isLoading"
+      >
+        <LoaderBlock
+          v-if="isLoading"
+          size="xs"
+        />
+      </slot>
 
       <slot name="expand-icon">
         <div
           majesticons:chevron-right
           transition="duration-150"
+          color="$Collapse-dropdown-icon-color"
           :class="{ 'rotate-90deg': internalValue }"
         />
       </slot>
     </div>
 
-    <!-- CONTENT -->
+    <!-- Content -->
     <Transition
+      :enter-active-class="`${transitionClass} transition-active`"
+      :leave-active-class="`${transitionClass} transition-active`"
       @after-enter="handleEnter"
       @after-leave="handleLeave"
     >
@@ -161,7 +178,7 @@ useResizeObserver(headerEl, entries => {
         ref="contentEl"
         class="content"
         w="full"
-        :class="{ 'absolute left-0 z-$zMenu': floating }"
+        :class="[contentClass, { 'absolute left-0 z-$zMenu': floating }]"
       >
         <slot />
       </div>
@@ -170,8 +187,13 @@ useResizeObserver(headerEl, entries => {
 </template>
 
 <style lang="scss" scoped>
+.transition-active {
+  --apply: transition-all duration-0.25s ease-linear overflow-hidden
+    will-change-height;
+}
+
 .collapse {
-  --apply: relative flex flex-col transition-padding rounded-b-custom;
+  --apply: relative flex flex-col rounded-b-custom;
 
   &.is-padded {
     --apply: p-t-2 p-b-4 p-x-2;
@@ -182,13 +204,17 @@ useResizeObserver(headerEl, entries => {
   // }
 }
 
-
 .header {
-  --apply: flex min-h-12 flex-gap-x-2 items-center p-x-4 items-center rounded-custom
-    cursor-pointer hover:bg-ca transition-border-radius duration-100;
+  --apply: flex min-h-12 flex-gap-x-2 items-center p-x-4 items-center
+    rounded-custom cursor-pointer transition-border-radius duration-100;
+  --apply: bg-$Collapse-header-bg;
 
   &.is-expanded {
-    --apply: bg-ca rounded-b-0 border-b-1 border-ca;
+    --apply: rounded-b-0;
+  }
+
+  &.is-expanded:not(.no-separator) {
+    --apply: border-b-1 border-ca;
   }
 
   &.has-subtitle {
@@ -204,14 +230,7 @@ useResizeObserver(headerEl, entries => {
   --apply: rounded-b-custom;
 }
 
-// TRANSITION
-.v-enter-active,
-.v-leave-active {
-  transition: all 0.25s linear;
-  overflow: hidden;
-  will-change: height;
-}
-
+// Transition
 .v-enter-from,
 .v-leave-to {
   --apply: opacity-0;

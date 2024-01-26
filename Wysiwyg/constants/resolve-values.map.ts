@@ -1,7 +1,7 @@
 import { LOCALE_DEFAULT, messages } from '~/utils/i18n'
 
 // Types
-import { IWysiwygMentionItem } from '~/components/Wysiwyg/types/wysiwyg-mention-item.type'
+import { type IWysiwygMentionItem } from '~/components/Wysiwyg/types/wysiwyg-mention-item.type'
 
 const locale = LOCALE_DEFAULT
 
@@ -107,29 +107,21 @@ export const grantMentionItems: IWysiwygMentionItem[] = [
     dataType: 'number',
   },
 
-  // Application deadline - From
+  // Application deadline
   {
-    id: 'grant.applicationDeadlineFrom',
-    label: t('grant.applicationDeadlineFrom'),
-    group: t('grant.self', 1),
-    dataType: 'date',
-  },
-
-  // Application deadline - To
-  {
-    id: 'grant.applicationDeadlineTo',
-    label: t('grant.applicationDeadlineTo'),
+    id: 'grant.applicationDeadline',
+    label: t('grant.applicationDeadline'),
     group: t('grant.self', 1),
     dataType: 'date',
   },
 
   // Fund usage deadline
-  {
-    id: 'grant.fundUsageDeadline',
-    label: t('grant.fundUsageDeadline'),
-    group: t('grant.self', 1),
-    dataType: 'date',
-  },
+  // {
+  //   id: 'grant.fundUsageDeadline',
+  //   label: t('grant.fundUsageDeadline'),
+  //   group: t('grant.self', 1),
+  //   dataType: 'date',
+  // },
 
   // Territory dimensions
   {
@@ -145,6 +137,9 @@ export const grantMentionItems: IWysiwygMentionItem[] = [
     id: 'grant.entityTypes',
     label: t('grant.entityTypes'),
     group: t('grant.self', 1),
+    format: (row: any) => {
+      return row.grant.entityTypes?.map((item: any) => item.value).join(', ')
+    },
   },
 
   // Workgroup
@@ -189,13 +184,6 @@ export const grantRequestMentionItems: IWysiwygMentionItem[] = [
   {
     id: 'grantRequest.totalAmount',
     label: t('grantRequest.totalAmount'),
-    group: t('grantRequest.self', 1),
-  },
-
-  // Costs character
-  {
-    id: 'grantRequest.costsCharacter.value',
-    label: t('grantRequest.costsCharacter'),
     group: t('grantRequest.self', 1),
   },
 

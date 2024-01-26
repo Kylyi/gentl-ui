@@ -1,13 +1,10 @@
 <script setup lang="ts">
-// MODELS
+// Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
 import { FilterItem } from '~/libs/App/data/models/filter-item'
 
-// INJECTION KEYS
-import {
-  refreshTableDataKey,
-  updateTableStateKey,
-} from '~/components/Table/provide/table.provide'
+// Injections
+import { tableRefreshKey } from '~/components/Table/provide/table.provide'
 
 type IProps = {
   columns: TableColumn<any>[]
@@ -16,80 +13,46 @@ type IProps = {
 
 const props = defineProps<IProps>()
 
-// INJECTIONS
-const refreshData = injectStrict(refreshTableDataKey)
-const updateTableState = injectStrict(updateTableStateKey)
-
-// LAYOUT
+// Layout
 const filter = toRef(props, 'filter')
+
+// Injections
+const tableRefresh = injectStrict(tableRefreshKey)
 
 const column = computed(() => {
   return props.columns.find(column => column.field === filter.value.field)!
 })
 
-function removeChip(skipRefreshData = false) {
+function removeChip() {
   column.value.filters = column.value.filters.filter(
     filterItem => filterItem.comparator !== filter.value.comparator
   )
 
-  if (!skipRefreshData && filter.value.compareValue) {
-    refreshData()
-  }
-
-  updateTableState({}, state => {
-    const foundStateColumn = state.columns.find(
-      _column => _column.field === column.value.field
-    )!
-
-    foundStateColumn.filters = foundStateColumn.filters.filter(
-      filterItem => filterItem.comparator !== filter.value.comparator
-    )
-    return state
-  })
-}
-
-/**
- * When we hide the menu and the filter `compareValue` is `undefined`, we remove the filter
- */
-function handleFilteringItemHide() {
-  const isArray = Array.isArray(filter.value.compareValue)
-
-  if (
-    filter.value.compareValue === undefined ||
-    (isArray && !filter.value.compareValue.length)
-  ) {
-    removeChip(true)
-  }
-}
-
-function getLabel(_: any, value: any) {
-  if (Array.isArray(value)) {
-    return value.map(val => val._label).join(', ')
-  }
+  tableRefresh()
 }
 </script>
 
 <template>
   <div class="table-filter-chip">
-    <!-- COLUMN LABEL -->
+    <!-- Column label -->
     <span class="filter-field">
       {{ column.label }}
     </span>
 
-    <!-- COMPARATOR -->
+    <!-- Comparator -->
     <span
       text="caption"
       whitespace="nowrap"
       lowercase
     >
-      {{ $t(`comparator.${filter.comparator}`) }}
+      {{ $t(`comparator.${filter.comparator.replaceAll('.', '|')}`) }}
     </span>
 
-    <!-- COMPARE VALUE -->
+    <!-- Compare value -->
     <ValueFormatter
-      :data-type="filter.dataType === 'datetime' ? 'date' : filter.dataType"
-      :value="filter.compareValue"
-      :format="Array.isArray(filter.compareValue) ? getLabel : undefined"
+      :data-type="filter.dataType"
+      :value="filter.value"
+      :format="filter.format ?? column.format"
     >
       <template #default="{ val }">
         <span class="filter-value">
@@ -103,12 +66,14 @@ function getLabel(_: any, value: any) {
       size="xs"
       preset="CLOSE"
       m="l-1"
-      @click.stop.prevent="removeChip(false)"
+      @click.stop.prevent="removeChip"
     />
 
     <Menu
       hide-header
-      @before-hide="handleFilteringItemHide"
+      :no-arrow="false"
+      dense
+      p="1"
     >
       <TableColumnFilteringItem
         :filter="filter"

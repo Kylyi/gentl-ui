@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // TYPES
-import type { IScrollerProps } from '~~/components/Scroller/types/scroller-props.type'
+import type { IScrollerProps } from '~/components/Scroller/types/scroller-props.type'
 
 const props = withDefaults(defineProps<IScrollerProps>(), {
   arrows: 'inside',
@@ -118,7 +118,10 @@ defineExpose({
 <template>
   <div
     class="scroller-horizontal"
-    :class="[arrows === 'inside' ? 'arrows-inside' : 'arrows-outside']"
+    :class="[
+      arrows === 'inside' ? 'arrows-inside' : 'arrows-outside',
+      { 'is-overflown': hasArrows },
+    ]"
   >
     <!-- LEFT ARROW -->
     <div

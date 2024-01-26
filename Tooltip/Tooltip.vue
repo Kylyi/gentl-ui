@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import { arrow, flip, offset, shift, useFloating } from '@floating-ui/vue'
 
-// TYPES
-import { IMenuProps } from '~/components/Menu/types/menu-props.type'
+// Types
+import { type IMenuProps } from '~/components/Menu/types/menu-props.type'
+
+defineOptions({
+  inheritAttrs: false,
+})
 
 const props = withDefaults(
   defineProps<IMenuProps & { noInheritFontStyle?: boolean }>(),
@@ -14,17 +18,17 @@ function getTargetElement(target: any): any {
     return
   }
 
-  // TARGET IS AN ELEMENT
+  // Target is an element
   if (target instanceof Element) {
     return target as Element
   }
 
-  // TARGET IS A SELECTOR
+  // Target is a selector
   else if (typeof target === 'string') {
     return document?.querySelector(target) || document?.body || undefined
   }
 
-  // TARGET IS VUE COMPONENT
+  // Target is Vue component
   else if (target) {
     const el = unrefElement(target)
 
@@ -38,9 +42,9 @@ function getTargetElement(target: any): any {
 
 const instance = getCurrentInstance()
 
-// LAYOUT
-const model = ref(false)
-const tooltipEl = ref<HTMLElement | null>(null)
+// Layout
+const model = defineModel({ default: false })
+const tooltipEl = ref<HTMLElement>()
 const referenceEl = ref<Element>() // Element that menu is attached to
 const arrowEl = ref<HTMLDivElement>()
 const middleware = ref([
@@ -84,11 +88,29 @@ onMounted(() => {
     referenceEl.value && referenceEl.value.classList.add('has-tooltip')
 
     referenceEl.value?.addEventListener('mouseenter', () => {
-      model.value = true
+      referenceEl.value && referenceEl.value.classList.add('tooltip-hovered')
+
+      setTimeout(() => {
+        const isStillInside =
+          referenceEl.value?.classList.contains('tooltip-hovered')
+
+        if (isStillInside) {
+          model.value = true
+        }
+      }, props.delay?.[0] || 0)
     })
 
     referenceEl.value?.addEventListener('mouseleave', () => {
-      model.value = false
+      referenceEl.value && referenceEl.value.classList.remove('tooltip-hovered')
+
+      setTimeout(() => {
+        const isStillInside =
+          referenceEl.value?.classList.contains('tooltip-hovered')
+
+        if (!isStillInside) {
+          model.value = false
+        }
+      }, props.delay?.[1] || 0)
     })
   })
 })
@@ -104,8 +126,9 @@ onMounted(() => {
       p="x-2 y-1"
       :class="tooltipClass"
       :placement="placement"
+      v-bind="$attrs"
     >
-      <!-- ARROW -->
+      <!-- Arrow -->
       <div
         v-if="!noArrow"
         ref="arrowEl"
@@ -123,10 +146,11 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .tooltip {
-  --apply: dark:bg-darker bg-white border-ca border-custom rounded-custom z-$zMenu;
+  --apply: dark:bg-darker bg-white border-ca border-custom rounded-custom
+    z-$zMenu;
 
   &.is-dense {
-    --apply: p-0;
+    --apply: p-0 leading-none;
   }
 }
 

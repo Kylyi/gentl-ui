@@ -1,5 +1,5 @@
 // TYPES
-import type { ITreeNode } from '~~/components/Tree/types/tree-node.type'
+import type { ITreeNode } from '~/components/Tree/types/tree-node.type'
 
 export type ITreeNodeRowProps = {
   fetchChildren?: { fnc: Function; mapKey: string }

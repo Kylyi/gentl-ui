@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // TYPES
-import type { ISeparatorProps } from '~~/components/Separator/types/separator-props.type'
+import type { ISeparatorProps } from '~/components/Separator/types/separator-props.type'
 
 defineProps<ISeparatorProps>()
 </script>
@@ -22,7 +22,7 @@ defineProps<ISeparatorProps>()
 
 <style lang="scss" scoped>
 .separator {
-  --apply: flex border-true-gray/40;
+  --apply: flex border-true-gray/40 rounded-full;
 
   &-horizontal {
     --apply: w-full border-b-1;

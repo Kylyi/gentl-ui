@@ -1,15 +1,78 @@
 <script setup lang="ts">
+// Store
 import { useNotificationStore } from '~/components/Notification/notification.store'
 
+type IProps = {
+  placement?:
+    | 'top-left'
+    | 'top'
+    | 'top-right'
+    | 'left'
+    | 'right'
+    | 'bottom-left'
+    | 'bottom'
+    | 'bottom-right'
+}
+
+const props = withDefaults(defineProps<IProps>(), {
+  placement: 'top-right',
+})
+
+// Store
 const notificationStore = useNotificationStore()
 const { notifications } = storeToRefs(notificationStore)
+
+// Layout
+const notificationsEl = ref<HTMLDivElement>()
+const notificationsClass = computed(() => {
+  switch (props.placement) {
+    case 'top-left':
+      return 'top-20 left-5'
+
+    case 'top':
+      return 'top-20 left-50% translate-x--50%'
+
+    case 'top-right':
+      return 'top-20 right-20'
+
+    case 'left':
+      return 'top-50% left-5 translate-y--50%'
+
+    case 'right':
+      return 'top-50% right-5 translate-y--50%'
+
+    case 'bottom-left':
+      return 'bottom-5 left-5'
+
+    case 'bottom':
+      return 'bottom-5 left-50% translate-x--50%'
+
+    case 'bottom-right':
+      return 'bottom-5 right-5'
+  }
+})
+
+useMutationObserver(
+  notificationsEl,
+  () => {
+    const notificationsElDom = unrefElement(notificationsEl)
+
+    if (notificationsElDom?.hasAttribute('hide-trigger')) {
+      notificationStore.removeAllNotifications()
+      notificationsElDom?.removeAttribute('hide-trigger')
+    }
+  },
+  { attributeFilter: ['hide-trigger'] }
+)
 </script>
 
 <template>
   <TransitionGroup
+    ref="notificationsEl"
     name="list"
     tag="div"
     class="notifications"
+    :class="notificationsClass"
   >
     <NotificationRow
       v-for="notification in notifications"
@@ -25,7 +88,7 @@ const { notifications } = storeToRefs(notificationStore)
   --apply: flex flex-col gap-y-1 transition-transform fixed z-$zMax origin-center
     min-w-240px max-w-320px lt-xm:max-w-280px flex-center;
 
-  --apply: top-20 left-50% translate-x--50%;
+  // --apply: top-20 left-50% translate-x--50%;
 }
 
 .list-move, /* apply transition to moving elements */

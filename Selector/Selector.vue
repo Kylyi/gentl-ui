@@ -1,30 +1,37 @@
 <script setup lang="ts">
 // TODO: I'm using `props.optionLabel` for adding new items on the fly
 // but it will not work when optionLabel is a function
+import { config } from '~/config'
 
-// TYPES
-import type { ISelectorProps } from '~~/components/Selector/types/selector-props.type'
+// Types
+import type { ISelectorProps } from '~/components/Selector/types/selector-props.type'
+import type { IItemToBeAdded } from '~/components/List/types/list-item-to-add.type'
 
-// COMPOSITION FUNCTIONS
-import { useSelectorUtils } from '~~/components/Selector/functions/useSelectorUtils'
+// Functions
+import { useSelectorUtils } from '~/components/Selector/functions/useSelectorUtils'
+import { useInputValidationUtils } from '~/components/Inputs/functions/useInputValidationUtils'
 
-// COMPONENTS
-import List from '@/components/List/List.vue'
-import MenuProxy from '@/components/MenuProxy/MenuProxy.vue'
-import InputWrapper from '@/components/Inputs/InputWrapper.vue'
-import ScrollArea from '@/components/ScrollArea/ScrollArea.vue'
-import { IItemToBeAdded } from '~/components/List/types/list-item-to-add.type'
+// Components
+import List from '~/components/List/List.vue'
+import MenuProxy from '~/components/MenuProxy/MenuProxy.vue'
+import InputWrapper from '~/components/Inputs/InputWrapper.vue'
+import ScrollArea from '~/components/ScrollArea/ScrollArea.vue'
 
 const props = withDefaults(defineProps<ISelectorProps>(), {
-  debounce: 500,
+  debounce: 0,
   emptyValue: () => undefined,
   errorTakesSpace: true,
   errorVisible: true,
+  fuseExtendedSearchToken: config.selector.fuseExtendedSearchToken,
+  inline: config.inputs.inline,
   maxChipsRows: 2,
   optionKey: 'id',
   optionLabel: 'label',
   options: () => [],
+  required: undefined,
   size: 'md',
+  stackLabel: config.inputs.stackLabel,
+  labelInside: config.inputs.labelInside,
 })
 
 const emits = defineEmits<{
@@ -40,14 +47,15 @@ const emits = defineEmits<{
   (e: 'blur'): void
 }>()
 
-// LIFECYCLE
+// Lifecycle
 onMounted(() => {
-  menuReferenceTarget.value =
-    currentInstance?.proxy?.$el.querySelector('.wrapper-body')
+  menuReferenceTarget.value = self?.proxy?.$el.querySelector('.wrapper-body')
 })
 
-// UTILS
-const currentInstance = getCurrentInstance()
+// Utils
+const { handleRequest } = useRequest()
+const { path } = useInputValidationUtils(props)
+const self = getCurrentInstance()
 
 const hasContent = computed(() => {
   return Array.isArray(model.value)
@@ -55,7 +63,7 @@ const hasContent = computed(() => {
     : !isNil(model.value) && model.value !== ''
 })
 
-// SELECTION
+// Selection
 const maxHeight = computedEager(() => {
   return props.maxChipsRows * 26
 })
@@ -71,7 +79,7 @@ function getLabel(option: any) {
 
   if (typeof props.optionLabel === 'function') {
     return typeof option !== 'object'
-      ? props.optionLabel(optionsByKey.value[option])
+      ? props.optionLabel(optionsByKey.value[option]) || option
       : props.optionLabel(option)
   }
 
@@ -167,28 +175,33 @@ function handleSelectRemove(data: any) {
   syncScrollArea()
 }
 
-// LIST
+// List
 const isOptionsInternalLoaded = ref(false)
 const listEl = ref<InstanceType<typeof List>>()
 const options = toRef(props, 'options')
 const optionsInternal = ref<any[]>([])
 const listProps = reactivePick(props, [
   'allowAdd',
+  'allowSelectAllFiltered',
+  'clearable',
   'disabledFnc',
   'emitKey',
+  'fuseExtendedSearchToken',
   'fuseOptions',
-  'multi',
-  'itemHeight',
-  'sortBy',
   'groupBy',
-  'clearable',
-  'noSort',
+  'itemHeight',
+  'loadData',
   'loading',
-  'noSearch',
+  'multi',
+  'noFilter',
   'noHighlight',
   'noLocalAdd',
-  'loadData',
-  'allowSelectAllFiltered',
+  'noSearch',
+  'noSort',
+  'inputProps',
+  'search',
+  'searchDebounce',
+  'sortBy',
 ])
 
 const optionsExtended = computed(() => {
@@ -245,24 +258,18 @@ const optionsByKey = computed(() => {
   }, {})
 })
 
-// We recalculate the menu position on `listOptions` change
-watch(listOptions, () => {
-  menuProxyEl.value?.recomputePosition()
-})
-
-// PICKER
+// Picker
 const menuProxyEl = ref<InstanceType<typeof MenuProxy>>()
 const menuPlacement = ref('bottom')
 const isPickerActive = ref(false)
 const pickerAnimationState = ref<'show' | 'hide'>('hide')
 
 function handleBeforeHide() {
+  const optionsContainerDom = unrefElement(optionsContainerEl)
+  optionsContainerDom?.focus()
+
   pickerAnimationState.value = 'hide'
   emits('picker-before-hide')
-
-  if (props.loadData?.onSearch) {
-    listEl.value?.clearSearch()
-  }
 }
 
 function handleBeforeShow() {
@@ -273,6 +280,11 @@ function handleBeforeShow() {
 function handleHide() {
   isPickerActive.value = false
   pickerAnimationState.value = 'hide'
+
+  if (props.loadData?.onSearch) {
+    listEl.value?.clearSearch()
+  }
+
   emits('picker-hide')
 }
 
@@ -281,7 +293,7 @@ function handleShow() {
   emits('picker-show')
 }
 
-// LAYOUT
+// Layout
 const { model, wrapperProps, handleClickWrapper, handleFocusOrClick, clear } =
   useSelectorUtils({
     props,
@@ -306,7 +318,20 @@ function syncScrollArea() {
   }, 0)
 }
 
-// PRESELECT ON INIT
+function handleKeyDown(e: KeyboardEvent) {
+  if (e.key === 'ArrowDown') {
+    e.preventDefault()
+
+    menuProxyEl.value?.show()
+  }
+}
+
+// Fetch data immediately
+if (props.loadData?.immediate) {
+  getData()
+}
+
+// Preselect on init
 if (
   props.preselectFirst &&
   (props.modelValue === props.emptyValue || isNil(props.modelValue)) &&
@@ -319,6 +344,28 @@ if (
   }
 }
 
+// Data fetching
+function getData() {
+  handleRequest(async () => {
+    if (props.loadData) {
+      const mapKey = props.loadData.mapKey ?? config.selector.mapKey
+
+      const res = await props.loadData.fnc({ search: undefined })
+
+      if (props.loadData.local) {
+        optionsInternal.value = res
+      } else {
+        optionsInternal.value = get(res, mapKey)
+      }
+    }
+  })
+}
+
+// // We recalculate the menu position on `listOptions` change and `model` changes
+// watch([listOptions, model], () => {
+//   menuProxyEl.value?.recomputePosition()
+// })
+
 defineExpose({
   focus: () => menuProxyEl.value?.show(),
   blur: () => menuProxyEl.value?.hide(),
@@ -328,6 +375,7 @@ defineExpose({
     isOptionsInternalLoaded.value = false
   },
   handleSelect,
+  clear,
 })
 </script>
 
@@ -336,7 +384,7 @@ defineExpose({
     v-bind="wrapperProps"
     :loading="isLoading"
     :has-content="hasContent"
-    :content-class="contentClass"
+    :content-class="[contentClass, 'selector-wrapper']"
     :class="[
       menuPlacement === 'bottom' ? 'has-menu-bottom' : 'has-menu-top',
       {
@@ -344,6 +392,7 @@ defineExpose({
         'is-menu-width-matched': !noMenuMatchWidth,
       },
     ]"
+    .focus="handleFocusOrClick"
     @click="handleClickWrapper"
   >
     <template
@@ -356,6 +405,7 @@ defineExpose({
     <span
       v-if="$slots.selection"
       class="control"
+      @click="handleFocusOrClick"
     >
       <slot
         name="selection"
@@ -371,17 +421,25 @@ defineExpose({
       class="control"
       box="content"
       tabindex="0"
+      :name="name || path || label || placeholder"
       :class="[innerClass, { 'is-multi': !!multi }]"
       :style="{ maxHeight: `${maxHeight}px` }"
+      v-bind="inputProps"
+      @click="handleFocusOrClick"
       @focus="handleFocusOrClick"
+      @keydown="handleKeyDown"
     >
+      <!-- Placeholder -->
       <span
         v-if="placeholder && !hasContent"
         class="placeholder"
+        :class="placeholderClass"
+        :style="placeholderStyle"
       >
         {{ placeholder }}
       </span>
 
+      <!-- Multi & scroller -->
       <HorizontalScroller
         v-if="multi && scroller"
         content-class="flex-gap-x-2"
@@ -391,6 +449,8 @@ defineExpose({
           v-for="(chip, idx) in modelValue"
           :key="idx"
           :label="getLabel(chip)"
+          :to="optionTo?.(chip)"
+          :navigate-to-options="{ open: { target: '_blank' } }"
           min-w="20"
           p="!y-1px"
           :has-remove="!(readonly || disabled)"
@@ -398,11 +458,14 @@ defineExpose({
         />
       </HorizontalScroller>
 
+      <!-- Multi -->
       <template v-else-if="multi && model">
         <Chip
           v-for="(chip, idx) in modelValue"
           :key="idx"
           :label="getLabel(chip)"
+          :to="optionTo?.(chip)"
+          :navigate-to-options="{ open: { target: '_blank' } }"
           :has-remove="!(readonly || disabled) && !noItemsClear"
           min-w="20"
           p="!y-1px"
@@ -410,8 +473,9 @@ defineExpose({
         />
       </template>
 
+      <!-- Single selection -->
       <span
-        v-else-if="model"
+        v-else-if="hasContent"
         self-center
         style="width: calc(100% - 12px)"
         :class="{ truncate: !noTruncate }"
@@ -431,7 +495,7 @@ defineExpose({
         @click="handleFocusOrClick"
       >
         <Btn
-          v-if="clearable && modelValue && !multi && !disabled && !readonly"
+          v-if="clearable && hasContent && !disabled && !readonly"
           icon="eva:close-fill h-6 w-6"
           color="ca"
           size="auto"
@@ -483,6 +547,7 @@ defineExpose({
         :fit="false"
         no-uplift
         max-height="50%"
+        data-cy="drop-down-list"
         @placement="menuPlacement = $event"
         @before-hide="handleBeforeHide"
         @hide="handleHide"
@@ -498,6 +563,11 @@ defineExpose({
             :item-key="optionKey"
             :item-label="optionLabel"
             v-bind="listProps"
+            :class="listClass"
+            @search="
+              pickerAnimationState === 'show' &&
+                menuProxyEl?.recomputePosition()
+            "
             @update:selected="handleSelect"
             @added="handleSelectAdd"
             @selected-multiple="handleSelectedMultiple"
@@ -515,15 +585,19 @@ defineExpose({
               />
             </template>
 
+            <template #above>
+              <slot name="above-options" />
+            </template>
+
             <template #below>
               <slot name="below-options" />
 
               <template v-if="multi">
-                <!-- CONFIRM BUTTON (for lt-sm displays) -->
-                <Separator display="sm:none" />
+                <!-- Confirm button (for lt-sm displays) -->
+                <Separator sm="hidden" />
 
                 <Btn
-                  display="!sm:none"
+                  sm="!hidden"
                   :label="$t('general.confirm')"
                   :rounded="false"
                   bg="primary"
@@ -548,6 +622,7 @@ defineExpose({
 
 <style lang="scss" scoped>
 .placeholder {
+  --apply: truncate max-w-9/10%;
   color: #9ca3af;
 }
 
@@ -573,7 +648,7 @@ defineExpose({
   }
 
   :deep(.wrapper-body:after) {
-    --apply: border-primary dark:border-primary;
+    --apply: border-primary/50 dark:border-primary/50;
   }
 }
 

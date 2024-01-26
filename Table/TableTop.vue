@@ -1,0 +1,534 @@
+<script setup lang="ts">
+import { config } from '~/config'
+
+// Types
+import type { ITableProps } from '~/components/Table/types/table-props.type'
+
+// Injections
+import {
+  tableColumnsKey,
+  tableNonHelpersColumnsKey,
+  tableRefreshKey,
+  tableRowsKey,
+  tableSelectionKey,
+  tableSlotsKey,
+  tableStorageKey,
+} from '~/components/Table/provide/table.provide'
+
+// Store
+import { useTableStore } from '~/components/Table/table.store'
+
+// Components
+import QueryBuilderInline from '~/components/QueryBuilder/QueryBuilderInline.vue'
+import TableExportBtn from '~/components/Table/TableExportBtn.vue'
+
+const props = defineProps<
+  Pick<
+    ITableProps,
+    | 'tableTopFunctionality'
+    | 'queryBuilder'
+    | 'selectable'
+    | 'nonSavableSettings'
+    | 'minimumColumnWidth'
+    | 'exportProps'
+    | 'noSearch'
+  > & {
+    search: string
+    smallScreen?: boolean
+  }
+>()
+const emits = defineEmits<{
+  (e: 'update:columnsWidth'): void
+  (e: 'update:search', search: string): void
+}>()
+const slots = useSlots()
+
+// Constants
+const MIN_VISIBLE_QUERY_BUILDER_ROWS = 1
+const MAX_VISIBLE_QUERY_BUILDER_ROWS = 3
+const QUERY_BUILDER_INLINE_PADDING = 8
+
+// Store
+const { setTableState } = useTableStore()
+
+// Injections
+const selection = injectStrict(tableSelectionKey)
+const columns = injectStrict(tableColumnsKey)
+const nonHelperColumns = injectStrict(tableNonHelpersColumnsKey)
+const storageKey = injectStrict(tableStorageKey)
+const tableRows = injectStrict(tableRowsKey)
+const tableRefresh = injectStrict(tableRefreshKey)
+const tableSlots = injectStrict(tableSlotsKey)
+
+// Layout
+const queryBuilder = useVModel(props, 'queryBuilder')
+const queryBuilderInlineEl = ref<InstanceType<typeof QueryBuilderInline>>()
+const search = useVModel(props, 'search')
+
+const hasActionBar = computedEager(() => {
+  return (
+    !!slots['left-prepend'] ||
+    !!slots['left-append'] ||
+    !!slots['right-prepend'] ||
+    !!slots['right-append']
+  )
+})
+
+const queryBuilderHeight = computed(() => {
+  return {
+    minHeight: `${
+      MIN_VISIBLE_QUERY_BUILDER_ROWS * 32 + QUERY_BUILDER_INLINE_PADDING
+    }px`,
+    maxHeight: `${
+      MAX_VISIBLE_QUERY_BUILDER_ROWS * 32 + QUERY_BUILDER_INLINE_PADDING
+    }px`,
+  }
+})
+
+const ExportBtn = computed(() => {
+  if ('exportComponent' in config.table && config.table.exportComponent) {
+    return config.table.exportComponent
+  }
+
+  return TableExportBtn
+})
+
+const selectionCount = computed(() => {
+  if (!selection.value) {
+    return 0
+  }
+
+  return Array.isArray(selection.value)
+    ? selection.value.length
+    : Object.keys(selection.value).length
+})
+
+/**
+ * Creates readable sorting string
+ */
+const tableSorting = computed(() => {
+  return columns.value
+    .filter(col => col.sort)
+    .map(col => {
+      return {
+        label: col.label,
+        field: col.field,
+        direction: col.sort,
+        sortOrder: col.sortOrder,
+      }
+    })
+    .sort((a, b) => {
+      return (a!.sortOrder || 0) - (b!.sortOrder || 0)
+    })
+    .map(
+      col =>
+        `${col.label} (<span>${
+          col.direction === 'asc' ? '&#8593;' : '&#8595;'
+        }</span>)`
+    )
+    .join(', ')
+})
+
+function handleFilterClear(filters?: 'queryBuilder' | 'columns') {
+  if (filters === 'columns') {
+    columns.value.forEach(col => {
+      col.clearFilters()
+    })
+
+    tableRefresh()
+  } else if (filters === 'queryBuilder') {
+    queryBuilderInlineEl.value?.clearFilter()
+  } else {
+    columns.value.forEach(col => {
+      col.clearFilters()
+    })
+    queryBuilderInlineEl.value?.clearFilter()
+    search.value = ''
+
+    if (!queryBuilderInlineEl.value && !search.value) {
+      tableRefresh()
+    }
+  }
+}
+
+function handleClearSorting() {
+  columns.value.forEach(col => {
+    col.sort = undefined
+    col.sortOrder = undefined
+  })
+}
+
+function handleFitColumns() {
+  const fittableColumns = columns.value.filter(
+    col => col.resizable && !col.hidden && !col.isHelperCol
+  )
+
+  // We unfreeze any frozen column
+  const frozenColumn = fittableColumns.find(col => col.frozen)
+  frozenColumn?.freeze(fittableColumns)
+
+  setTimeout(async () => {
+    // We autofit the columns
+    for await (const col of fittableColumns) {
+      const slotRenderFnc = tableSlots[col.field]
+      await col.autoFit(
+        tableRows.value,
+        slotRenderFnc,
+        props.minimumColumnWidth
+      )
+    }
+
+    // We freeze the column again
+    frozenColumn?.freeze(fittableColumns)
+
+    setTableState(storageKey.value, { columns: columns.value })
+    emits('update:columnsWidth')
+  }, 0)
+}
+</script>
+
+<template>
+  <div class="table-top">
+    <!-- Action bar -->
+    <div
+      v-if="hasActionBar"
+      class="table-top__actionbar"
+    >
+      <div
+        flex="~ gap-1 items-center"
+        grow
+      >
+        <slot name="left-prepend" />
+
+        <slot name="left-append" />
+      </div>
+
+      <slot name="right-prepend" />
+
+      <slot name="right-append" />
+    </div>
+
+    <!-- Toolbar -->
+    <template v-if="!tableTopFunctionality?.noToolbar">
+      <Separator />
+
+      <div class="table-top__qb">
+        <TableQueryBuilderBtn
+          v-if="queryBuilder"
+          v-model:query-builder="queryBuilder"
+          self-start
+          m="t-1"
+        />
+
+        <slot name="middle-start" />
+
+        <slot name="left">
+          <!-- Search -->
+          <TableSearch
+            v-if="!noSearch"
+            v-model:search="search"
+            :columns="columns"
+          />
+
+          <!-- Query builder -->
+          <template v-else-if="queryBuilder">
+            <Separator
+              vertical
+              h="full"
+              m="l-1"
+            />
+
+            <VerticalScroller
+              grow
+              :style="queryBuilderHeight"
+            >
+              <div
+                p="1"
+                bg="white dark:darker"
+                rounded="custom"
+                min-h="10"
+              >
+                <QueryBuilderInline
+                  ref="queryBuilderInlineEl"
+                  v-model:items="queryBuilder"
+                  :columns="nonHelperColumns"
+                  editable
+                />
+              </div>
+            </VerticalScroller>
+          </template>
+
+          <!-- Chips -->
+          <TableTopChips
+            v-else
+            :columns="columns"
+            grow
+          />
+
+          <Separator
+            vertical
+            h="full"
+          />
+
+          <!-- Remove filters -->
+          <Btn
+            size="xs"
+            :label="$t('table.removeQueryBuilderFilters')"
+            no-uppercase
+            no-truncate
+            stacked
+            class="table-top__qb-remove-filters"
+            data-cy="remove-filters"
+          >
+            <Menu
+              placement="left"
+              hide-header
+              :no-arrow="false"
+              content-class="gap-1"
+            >
+              <!-- Remove query builder filters -->
+              <Btn
+                v-if="queryBuilder"
+                :label="$t('table.removeQueryBuilderFilter')"
+                size="sm"
+                no-uppercase
+                data-cy="remove-advanced-filter"
+                @click="handleFilterClear('queryBuilder')"
+              />
+
+              <!-- Remove columns filters -->
+              <Btn
+                :label="$t('table.removeColumnsFilter')"
+                size="sm"
+                no-uppercase
+                data-cy="remove-columns-filter"
+                @click="handleFilterClear('columns')"
+              />
+
+              <Separator />
+
+              <!-- Remove all filters -->
+              <Btn
+                :label="$t('table.removeAllFilters')"
+                size="sm"
+                no-uppercase
+                color="negative"
+                data-cy="remove-all-filters"
+                @click="handleFilterClear"
+              />
+            </Menu>
+          </Btn>
+
+          <!-- Subscriptions -->
+          <template
+            v-if="
+              tableTopFunctionality?.noSubscription &&
+              'subscriptionComponent' in config &&
+              config.subscriptionComponent
+            "
+          >
+            <Separator
+              vertical
+              h="full"
+            />
+
+            <Component
+              :is="config.subscriptionComponent"
+              self-center
+            />
+          </template>
+
+          <!-- Export -->
+          <slot
+            v-if="!tableTopFunctionality?.noExport"
+            name="export"
+          >
+            <Separator
+              vertical
+              h="full"
+              m="r-1"
+            />
+
+            <Component
+              :is="ExportBtn"
+              v-bind="exportProps"
+              shrink-0
+              self-start
+              m="t-1"
+            />
+          </slot>
+        </slot>
+      </div>
+
+      <Separator m="b-1" />
+    </template>
+
+    <ClientOnly>
+      <!-- Subbar -->
+      <div
+        v-if="!tableTopFunctionality?.noSubbar"
+        class="table-top__subbar"
+      >
+        <!-- Selection & Sorting -->
+        <div class="table-top__selection">
+          <template
+            v-if="
+              selectable &&
+              ($slots['bulk-actions'] || $slots['bulk-actions-menu'])
+            "
+          >
+            <!-- Selection actions -->
+            <slot
+              name="bulk-actions"
+              :selection="selection"
+            >
+              <Btn
+                size="sm"
+                no-uppercase
+                p="!r-0.5"
+                icon="fluent:select-all-on-20-regular !w-5 !h-5"
+                :label="`${$t('general.selected')}: ${selectionCount}`"
+              >
+                <MenuProxy
+                  hide-header
+                  dense
+                  p="1"
+                  :no-arrow="false"
+                >
+                  <slot
+                    name="bulk-actions-menu"
+                    :selection="selection"
+                  />
+                </MenuProxy>
+
+                <div
+                  class="line-md:chevron-small-right rotate-90 h-4 w-4 m-l--1"
+                />
+              </Btn>
+            </slot>
+          </template>
+
+          <!-- Sorting -->
+          <div
+            v-if="tableSorting && !tableTopFunctionality?.noSort"
+            flex="~ gap-1"
+            items-center
+          >
+            <span
+              text="caption xs"
+              font="bold"
+            >
+              {{ $t('table.sortBy') }}:
+            </span>
+            <span
+              text="caption"
+              data-cy="sort-active-fields"
+              v-html="tableSorting"
+            />
+
+            <Btn
+              preset="TRASH"
+              size="xs"
+              :label="$t('sorting.clear')"
+              data-cy="clear-sorting"
+              @click="handleClearSorting"
+            />
+          </div>
+        </div>
+
+        <!-- Layout -->
+        <div class="table-top__layout">
+          <span
+            v-if="!tableTopFunctionality?.noLayout"
+            class="table-top__layout-label"
+          >
+            {{ $t('table.layoutState') }}:
+          </span>
+
+          <!-- Columns -->
+          <TableColumnsBtn
+            v-if="!tableTopFunctionality?.noColumnSelection"
+            v-model:columns="columns"
+          />
+
+          <!-- Autofit -->
+          <Btn
+            v-if="!tableTopFunctionality?.noAutoFit && !smallScreen"
+            size="sm"
+            no-uppercase
+            icon="material-symbols:fit-width"
+            color="ca"
+            :label="$t('table.fitColumns')"
+            @click="handleFitColumns"
+          />
+
+          <template
+            v-if="
+              config.table.useServerState && !tableTopFunctionality?.noLayout
+            "
+          >
+            <!-- Layout selector -->
+            <TableLayoutSelector v-model:query-builder="queryBuilder" />
+
+            <!-- Layout settings -->
+            <TableLayoutSettingsBtn
+              :non-saveable-settings="nonSavableSettings"
+            />
+          </template>
+        </div>
+
+        <slot name="subbar-right" />
+      </div>
+
+      <template #fallback>
+        <div
+          h="10"
+          w="full"
+        />
+      </template>
+    </ClientOnly>
+  </div>
+</template>
+
+<style scoped lang="scss">
+.table-top {
+  --apply: flex flex-col;
+
+  &__actionbar {
+    --apply: flex flex-wrap gap-2 items-center p-x-2 p-y-1;
+  }
+
+  &__qb {
+    --apply: flex gap-1 items-center p-x-2 p-y-1;
+
+    &-remove-filters {
+      --apply: shrink-0 w-20 h-full dark:bg-darker bg-white color-ca
+        border-2 border-transparent hover:border-negative;
+
+      --apply: "!hover:color-negative !p-y-0";
+    }
+  }
+
+  &__subbar {
+    --apply: flex gap-2 items-center justify-between p-x-2 p-y-1;
+  }
+
+  &__layout {
+    --apply: flex gap-2 items-center grow justify-end;
+
+    &-label {
+      --apply: text-caption text-xs font-bold;
+      --apply: '!lt-md:hidden';
+    }
+  }
+
+  &__selection {
+    --apply: flex grow gap-2 items-center;
+    --apply: '!lt-md:hidden';
+
+    &-info {
+      --apply: flex gap-1 items-center leading-none text-caption text-xs;
+    }
+  }
+}
+</style>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-// TYPES
-import type { IDatePickerDaySeparatorsProps } from '~~/components/DatePicker/types/datepicker-day-separators-props.type'
+// Types
+import type { IDatePickerDaySeparatorsProps } from '~/components/DatePicker/types/datepicker-day-separators-props.type'
 
 withDefaults(defineProps<IDatePickerDaySeparatorsProps>(), {
   weekCount: 6,

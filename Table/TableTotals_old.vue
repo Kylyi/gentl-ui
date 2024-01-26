@@ -5,10 +5,7 @@ import { TableColumn } from '~/components/Table/models/table-column.model'
 
 // Components
 import HorizontalScroller from '~/components/Scroller/HorizontalScroller.vue'
-import { ITableProps } from '~/components/Table/types/table-props.type'
-
-// Injections
-import { tableGetTableQueryKey } from '~/components/Table/provide/table.provide'
+import { type ITableProps } from '~/components/Table/types/table-props.type'
 
 type IProps = {
   columns: TableColumn<any>[]
@@ -20,26 +17,16 @@ defineEmits<{
   (e: 'scrolled', left: number): void
 }>()
 
-// Injections
-const getTableQuery = injectStrict(tableGetTableQueryKey)
-
-// Utils
-const { handleGqlErrors } = useGqlErrors()
-
 // Layout
 const totalsEl = ref<InstanceType<typeof HorizontalScroller>>()
 const calculateAllRows = ref(false)
 
-async function handleGetTotals() {
-  if (!props.getTotalsData) {
-    return
-  }
-
+function handleGetTotals() {
   try {
-    const { totals } = await props.getTotalsData.fnc(getTableQuery())
-    console.log('Log ~ handleTotals ~ totals:', totals)
+    // const { totals } = await props.getTotalsData.fnc(getTableQuery())
+    // console.log('Log ~ handleTotals ~ totals:', totals)
   } catch (error) {
-    handleGqlErrors(error, true)
+    // handleGqlErrors(error, true)
   }
 }
 </script>
@@ -52,7 +39,7 @@ async function handleGetTotals() {
     border="y-1 ca"
     @scrolled="$emit('scrolled', $event)"
   >
-    <!-- COLUMNS -->
+    <!-- Columns -->
     <template
       v-for="(col, idx) in columns"
       :key="idx"

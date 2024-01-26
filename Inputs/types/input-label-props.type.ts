@@ -1,7 +1,9 @@
-import { CSSProperties } from 'vue'
+import { type CSSProperties } from 'vue'
 
-export interface InputLabelProps {
-  errors?: Pick<ErrorObject, '$message'>[]
+// Types
+import type { IZodValidationItem } from '~/utils/zod/types/zod-validation-item.type'
+
+export type InputLabelProps = {
   hasContent?: boolean
   inline?: boolean
   label?: string
@@ -16,4 +18,9 @@ export interface InputLabelProps {
   required?: boolean
   size?: 'sm' | 'md' | 'lg'
   stackLabel?: boolean
+
+  /**
+   * Validation object
+   */
+  validation?: IZodValidationItem | Array<IZodValidationItem | undefined>
 }

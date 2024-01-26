@@ -1,12 +1,16 @@
 <script setup lang="ts">
 // TYPES
-import type { DayEvent } from '@/components/DatePicker/types/DayEvent.type'
-import type { IDatePickerDayProps } from '~~/components/DatePicker/types/datepicker-day-props.type'
+import type { DayEvent } from '~/components/DatePicker/types/DayEvent.type'
+import type { IDatePickerDayProps } from '~/components/DatePicker/types/datepicker-day-props.type'
 
 const props = withDefaults(defineProps<IDatePickerDayProps>(), {
   edge: true,
 })
 
+// Utils
+const { formatDate } = useDateUtils()
+
+// Layout
 const day = toRef(props, 'day')
 
 const classes = computed(() => {
@@ -37,22 +41,22 @@ const eventsAdjusted = computed<Pick<DayEvent, 'color' | 'icon'>[]>(() => {
     class="dp-day"
     :class="classes"
   >
-    <!-- EDGE -->
+    <!-- Edge -->
     <div
       v-if="edge && (day.isEdge.start.month || day.isEdge.end.month)"
       class="edge"
     >
-      {{ $d(day.dateValue, 'monthShort') }}
+      {{ formatDate(day.dateValue, 'monthShort') }}
     </div>
 
-    <!-- TOP -->
+    <!-- Top -->
     <div flex="~">
       <div class="dayNo">
         {{ day.dayOfMonth }}
       </div>
     </div>
 
-    <!-- EVENTS -->
+    <!-- Events -->
     <div
       v-if="eventsAdjusted.length"
       flex="~ 1 wrap gap-1 center"

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-// TYPES
-import type { IDrawerProps } from '~~/components/Drawer/types/drawer-props.type'
+// Types
+import type { IDrawerProps } from '~/components/Drawer/types/drawer-props.type'
 
 const props = withDefaults(defineProps<IDrawerProps>(), {
   side: 'right',
@@ -16,7 +16,7 @@ const emits = defineEmits<{
   (e: 'before-show'): void
 }>()
 
-// LAYOUT
+// Layout
 const model = useVModel(props, 'modelValue', emits)
 
 function handleAnimationStart() {
@@ -51,10 +51,11 @@ function handleAnimationEnd() {
     @animationstart="handleAnimationStart"
     @animationend="handleAnimationEnd"
   >
-    <!-- TITLE -->
+    <!-- Title -->
     <div
       v-if="!noTitle"
       class="drawer-simple__title"
+      :class="titleClass"
     >
       <h6 class="drawer-simple__title-text">
         <span

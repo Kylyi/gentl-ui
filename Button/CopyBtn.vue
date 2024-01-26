@@ -1,11 +1,16 @@
 <script setup lang="ts">
-// TYPES
-import { IBtnProps } from '~/components/Button/types/btn-props.type'
+// Types
+import { type IBtnProps } from '~/components/Button/types/btn-props.type'
 
-const props = defineProps<IBtnProps & { modelValue?: any }>()
+const props = defineProps<
+  IBtnProps & {
+    modelValue?: any
+    position?: 'left' | 'right' | 'top' | 'bottom'
+  }
+>()
 
 // COPY
-const { copy, copied } = useClipboard({ copiedDuring: 2000 })
+const { copy, copied, isSupported } = useClipboard({ copiedDuring: 2000 })
 
 const copyBtnSize = computed(() => {
   switch (props.size) {
@@ -18,7 +23,8 @@ const copyBtnSize = computed(() => {
     case 'lg':
       return 'md'
     case 'auto':
-      return 'sm'
+    default:
+      return 'auto'
   }
 })
 
@@ -29,9 +35,9 @@ function handleCopy() {
 
 <template>
   <Btn
+    v-if="isSupported"
     :size="copyBtnSize"
     bg="white dark:darker"
-    m="x-2"
     no-dim
     no-hover-effect
     outline="1px"
@@ -40,8 +46,7 @@ function handleCopy() {
         ? '!outline-positive !outline-solid'
         : '!outline-dotted !outline-ca',
     ]"
-    @click.stop.prevent="handleCopy"
-    @mousedown.stop.prevent
+    @click="handleCopy"
   >
     <template #icon>
       <div
@@ -57,7 +62,8 @@ function handleCopy() {
 
     <BtnConfirmation
       :model-value="copied"
-      :label="$t('copied')"
+      :position="position"
+      :label="$t('general.copied')"
     />
   </Btn>
 </template>

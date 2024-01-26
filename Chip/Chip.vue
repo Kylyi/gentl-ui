@@ -1,19 +1,19 @@
 <script setup lang="ts">
-// TYPES
-import type { IChipProps } from '~~/components/Chip/types/chip-props.type'
+// Types
+import type { IChipProps } from '~/components/Chip/types/chip-props.type'
 
-// DIRECTIVES
-import { vRipple } from '~~/libs/App/directives/ripple'
+// Directives
+import { vRipple } from '~/libs/App/directives/ripple.directive'
 
 const props = defineProps<IChipProps>()
 defineEmits<{
   (e: 'remove'): void
 }>()
 
-// UTILS
+// Utils
 function handleClick() {
   if (props.to) {
-    $nav(props.to)
+    $nav(props.to, undefined, props.navigateToOptions)
   }
 }
 </script>
@@ -22,25 +22,57 @@ function handleClick() {
   <div
     v-ripple="ripple"
     class="chip"
-    border="darker dark:white"
+    border="ca"
     h="5"
     :class="[
       hasRemove ? 'p-r-1' : 'p-r-2',
-      { 'cursor-pointer': !!to || !!ripple },
+      {
+        'cursor-pointer': !!to || !!ripple,
+        '!overflow-visible': hasCopy,
+      },
     ]"
-    @click="handleClick"
   >
     <div
       v-if="icon"
       :class="icon"
     />
 
+    <CopyBtn
+      v-if="hasCopy"
+      :model-value="label"
+      size="auto"
+      color="ca"
+      h="4"
+      w="4"
+      m="x-1"
+      position="bottom"
+    />
+
     <div
       class="chip-label"
-      :class="{ 'justify-center': center }"
+      :class="[labelClass, { 'justify-center': center }]"
     >
       <slot>
-        <span truncate>
+        <NuxtLink
+          v-if="to"
+          :to="to"
+        >
+          <template #default="{ route }">
+            <a
+              :href="route.path"
+              class="link"
+              truncate
+              @click.stop.prevent="handleClick"
+            >
+              {{ label }}
+            </a>
+          </template>
+        </NuxtLink>
+
+        <span
+          v-else
+          truncate
+        >
           {{ label }}
         </span>
       </slot>
@@ -64,8 +96,8 @@ function handleClick() {
 
 <style lang="scss" scoped>
 .chip {
-  --apply: flex flex-gap-1 p-y-3px p-l-2 border-px border-ca rounded truncate
-    select-none relative leading-tight items-center self-center;
+  --apply: flex flex-gap-1 p-y-3px p-l-2 border-px rounded truncate relative
+    leading-tight items-center self-center;
 
   &-label {
     --apply: flex flex-gap-x-2 flex-1 truncate font-rem-14;

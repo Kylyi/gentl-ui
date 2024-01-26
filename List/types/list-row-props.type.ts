@@ -1,5 +1,5 @@
 // TYPES
-import type { IListBaseProps } from '~~/components/List/types/list-base-props.type'
+import type { IListBaseProps } from '~/components/List/types/list-base-props.type'
 
 export interface IListRowProps extends IListBaseProps {
   item: any
@@ -7,4 +7,5 @@ export interface IListRowProps extends IListBaseProps {
   isSelected?: boolean
   isHovered?: boolean
   rowHeight?: number
+  tag?: string
 }

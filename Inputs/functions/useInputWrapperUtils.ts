@@ -1,4 +1,4 @@
-// TYPES
+// Types
 import type { IInputWrapperProps } from '~/components/Inputs/types/input-wrapper-props.type'
 
 export function useInputWrapperUtils() {
@@ -7,7 +7,6 @@ export function useInputWrapperUtils() {
       props,
       'contentClass',
       'disabled',
-      'errors',
       'errorTakesSpace',
       'errorVisible',
       'hint',
@@ -20,7 +19,9 @@ export function useInputWrapperUtils() {
       'readonly',
       'required',
       'size',
-      'stackLabel'
+      'stackLabel',
+      'validation',
+      'ui'
     )
   }
 
@@ -31,13 +32,14 @@ export function useInputWrapperUtils() {
       '--padding': '',
       '--margin': '',
       '--bodyMargin': '',
+      '--borderColor': props.ui?.borderColor || 'var(--color-primary)',
     }
 
     const isLabelInside = props.labelInside
     const isInline = props.inline
     const hasLabel = !!props.label
 
-    // SIZE: sm
+    // Size: sm
     if (props.size === 'sm') {
       styleVariables['--fontSize'] = '14px'
       styleVariables['--lineHeight'] = '16px'
@@ -56,9 +58,13 @@ export function useInputWrapperUtils() {
       if (!isLabelInside && !isInline && hasLabel) {
         styleVariables['--bodyMargin'] = '14px 0 0 0'
       }
+
+      if (props.noBorder && !isLabelInside) {
+        styleVariables['--padding'] = '8px 8px'
+      }
     }
 
-    // SIZE: md
+    // Size: md
     else if (props.size === 'md') {
       styleVariables['--fontSize'] = '16px'
       styleVariables['--lineHeight'] = '24px'
@@ -77,9 +83,13 @@ export function useInputWrapperUtils() {
       if (!isLabelInside && !isInline && hasLabel) {
         styleVariables['--bodyMargin'] = '18px 0 0 0'
       }
+
+      if (props.noBorder && !isLabelInside) {
+        styleVariables['--padding'] = '8px 8px'
+      }
     }
 
-    // SIZE: lg
+    // Size: lg
     else if (props.size === 'lg') {
       styleVariables['--fontSize'] = '18px'
       styleVariables['--lineHeight'] = '28px'
@@ -97,6 +107,10 @@ export function useInputWrapperUtils() {
 
       if (!isLabelInside && !isInline && hasLabel) {
         styleVariables['--bodyMargin'] = '22px 0 0 0'
+      }
+
+      if (props.noBorder && !isLabelInside) {
+        styleVariables['--padding'] = '8px 8px'
       }
     }
 

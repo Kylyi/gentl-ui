@@ -1,26 +1,29 @@
 <script setup lang="ts">
 // ENHANCEMENT: For now, the only way to use <KeepAlive /> is to use default slot
 // and `v-show` in parent for each tab. There must be a better way to do this.
-
-// TYPES
 import { isVNode } from 'vue'
-import type { ITabsProps } from '~~/components/Tabs/types/tabs-props.type'
 
-// COMPONENTS
+import { config } from '~/config'
 
-const props = defineProps<ITabsProps>()
+// Types
+import type { ITabsProps } from '~/components/Tabs/types/tabs-props.type'
+
+const props = withDefaults(defineProps<ITabsProps>(), {
+  noAnimation: config.tabs.props.noAnimation,
+})
 const emits = defineEmits<{
   (e: 'update:modelValue', id: string | number): void
 }>()
 
-// LAYOUT
+// Layout
 const keepAliveTabs = ref<string[]>([])
 const model = useVModel(props, 'modelValue', emits)
+const isAnimationOngoing = ref(false)
 
 const transitionProps = computed(() => ({
-  enterActiveClass: `${transitionEnter.value} h-min overflow-visible ease-linear animate-duration-320 absolute inset-0`,
+  enterActiveClass: `${transitionEnter.value} h-min overflow-hidden ease-linear animate-duration-320 inset-0`,
   leaveActiveClass: !props.noLeaveTransition
-    ? `${transitionLeave.value} h-min overflow-visible ease-linear animate-duration-320`
+    ? `${transitionLeave.value} h-min overflow-hidden ease-linear animate-duration-320 absolute`
     : undefined,
 }))
 
@@ -32,18 +35,27 @@ const oldModel = ref(model.value)
 const instance = getCurrentInstance()
 
 const tabs = computed(() => {
-  return (instance?.slots.default?.() || [])
+  const defaultSlot = instance?.slots.default?.() || []
+  const vueInstances = defaultSlot.flatMap(t => {
+    const children = t.children || []
+
+    return [
+      ...(isVNode(t) ? [t] : []),
+      ...(Array.isArray(children) ? children.filter(isVNode) : []),
+    ]
+  })
+
+  return vueInstances
     .filter(
       t =>
-        isVNode(t) &&
-        typeof t.type === 'object' &&
-        (t.type as any).name?.startsWith('Tab_')
+        typeof t.type === 'object' && (t.type as any).name?.startsWith('Tab_')
     )
     .map((t: VNode) => {
       return {
         id: t.props!.name,
         label: t.props!.label || t.props!.name,
         icon: t.props!.icon,
+        size: t.props!.size,
         component: t,
         componentName: (t.type as any).name,
       }
@@ -64,7 +76,7 @@ watch(
   { immediate: true }
 )
 
-// HANDLING TAB CHANGES
+// Handling tab changes
 const preventTabChange = autoResetRef(false, 300)
 const transitionEnter = ref('')
 const transitionLeave = ref('')
@@ -98,10 +110,10 @@ watch(model, model => {
     flex="~ col"
     overflow="auto"
   >
-    <!-- LABELS -->
+    <!-- Labels -->
     <HorizontalScroller
       v-if="!noNav"
-      content-class="flex gap-x-1 p-x-2 items-center"
+      :content-class="['flex gap-x-1 p-x-2 items-center', navContentClass]"
       rounded-1
       shrink-0
       p="y-1"
@@ -120,29 +132,31 @@ watch(model, model => {
           :icon="tab.icon"
           no-uppercase
           class="tab-label"
-          size="lg"
+          :size="tab.size || 'lg'"
           :class="[
             labelClass,
-            {
-              'is-active': tab.id === activeTab?.id,
-              [labelActiveClass]: tab.id === activeTab?.id,
-            },
+            ...(tab.id === activeTab?.id ? [labelActiveClass] : []),
+            { 'is-active': tab.id === activeTab?.id },
           ]"
           @click="handleTabChange(tab.id)"
         />
       </slot>
     </HorizontalScroller>
 
-    <!-- CONTENT -->
+    <slot name="above" />
+
+    <!-- Content -->
     <div
       v-if="activeTab"
       relative
-      overflow="x-hidden"
-      :class="contentClass"
+      class="tab-content"
+      :class="[contentClass, { 'is-animating': isAnimationOngoing }]"
     >
       <Transition
         v-bind="transitionProps"
         :css="!noAnimation"
+        @before-enter="isAnimationOngoing = true"
+        @after-leave="isAnimationOngoing = false"
       >
         <KeepAlive :include="keepAliveTabs">
           <Component
@@ -163,6 +177,10 @@ watch(model, model => {
 
 <style lang="scss" scoped>
 .tab {
+  &-content {
+    --apply: overflow-x-hidden;
+  }
+
   &-label {
     --apply: min-w-min;
     --apply: '!lt-lg:p-x-4';

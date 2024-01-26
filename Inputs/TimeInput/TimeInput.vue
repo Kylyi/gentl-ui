@@ -1,19 +1,17 @@
 <script setup lang="ts">
 // TODO: am/pm values are not reactive on language change (broken only for 13h for some reason...)
 
-// eslint-disable-next-line import/named
-import { AnyMaskedOptions, MaskedRange } from 'imask'
+import { type AnyMaskedOptions, MaskedRange } from 'imask'
 
-// TYPES
+// Types
 import type { ITimeInputProps } from '~/components/Inputs/TimeInput/types/time-input-props.type'
 
-// COMPOSITION FUNCTIONS
-import { useInputUtils } from '@/components/Inputs/functions/useInputUtils'
+// Functions
+import { useInputUtils } from '~/components/Inputs/functions/useInputUtils'
+import { useInputValidationUtils } from '~/components/Inputs/functions/useInputValidationUtils'
 
-// STORE
-
-// COMPONENTS
-import InputWrapper from '@/components/Inputs/InputWrapper.vue'
+// Components
+import InputWrapper from '~/components/Inputs/InputWrapper.vue'
 import TimeInputPicker from '~/components/Inputs/TimeInput/TimeInputPicker.vue'
 
 const props = withDefaults(defineProps<ITimeInputProps>(), {
@@ -22,15 +20,26 @@ const props = withDefaults(defineProps<ITimeInputProps>(), {
   errorTakesSpace: true,
   errorVisible: true,
   immediate: true,
+  inline: undefined,
+  labelInside: undefined,
+  required: undefined,
+  stackLabel: undefined,
 })
 
-const emits = defineEmits<{
+defineEmits<{
   (e: 'update:model-value', val?: Datetime): void
   (e: 'validation-reset', val?: string | undefined | null): void
   (e: 'blur'): void
 }>()
 
-// UTILS
+// Lifecycle
+onMounted(() => {
+  menuReferenceTarget.value =
+    currentInstance?.proxy?.$el.querySelector('.wrapper-body')
+})
+
+// Utils
+const currentInstance = getCurrentInstance()
 const { localeUses24HourTime } = useDateUtils()
 
 const is12h = computed(() => !localeUses24HourTime())
@@ -77,14 +86,15 @@ function delocalizeTime(time?: string | undefined) {
   return time
 }
 
-// CONSTANTS
+// Constants
 const PATTERN = 'HH:mm'
 
-// LAYOUT
+// Layout
+const model = defineModel<string>()
 const preventNextIsAmChange = autoResetRef(false, 50)
 
 const delocalizedTimeParts = computed(() => {
-  const time = props.modelValue || '12:00'
+  const time = model.value || '12:00'
 
   return {
     hh: time.split(':')[0],
@@ -92,7 +102,7 @@ const delocalizedTimeParts = computed(() => {
   }
 })
 
-// MASKS
+// Masks
 const maskFullTime = computed<AnyMaskedOptions>(() => {
   return {
     mask: PATTERN,
@@ -126,7 +136,7 @@ const maskFullTime = computed<AnyMaskedOptions>(() => {
         return val
       }
 
-      return localizeTime(val)
+      return localizeTime(val) as string
     },
     parse: (val: string) => {
       if (!isTime(val)) {
@@ -142,11 +152,12 @@ const maskFullTime = computed<AnyMaskedOptions>(() => {
   }
 })
 
-// LAYOUT
+// Layout
+const menuReferenceTarget = ref<HTMLElement>()
 const wrapperEl = ref<InstanceType<typeof InputWrapper>>()
 const isAm = ref(+delocalizedTimeParts.value.hh < 12)
 
-const modelValueLocalized = computed(() => localizeTime(props.modelValue!))
+const modelValueLocalized = computed(() => localizeTime(model.value))
 
 const propsExtended = reactiveComputed(() => ({
   ...props,
@@ -171,42 +182,40 @@ function handleInput(ev: Event) {
   }, 100)
 }
 
-// PICKER
+// Picker
 const timeInputPickerEl = ref<InstanceType<typeof TimeInputPicker>>()
 
-// WATCH `isAm` changes
+// Watch `isAm` changes
 watch(isAm, isAm => {
   if (preventNextIsAmChange.value || !is12h.value) {
     return
   }
 
-  if (isTime(props.modelValue)) {
+  if (isTime(model.value)) {
     const { hh, mm } = delocalizedTimeParts.value
 
     if (isAm && +hh >= 12) {
-      emits('update:model-value', `${padStart(String(+hh % 12), 2, '0')}:${mm}`)
+      model.value = `${padStart(String(+hh % 12), 2, '0')}:${mm}`
     } else if (!isAm && +hh < 12) {
-      emits('update:model-value', `${+hh + 12}:${mm}`)
+      model.value = `${+hh + 12}:${mm}`
     }
   } else {
     handleManualModelChange(isAm ? '00:00' : '12:00', true)
   }
 })
 
-// WATCH `modelValue` changes
-watch(
-  () => props.modelValue,
-  () => {
-    preventNextIsAmChange.value = true
-    isAm.value = +delocalizedTimeParts.value.hh < 12
-  }
-)
+// Watch `modelValue` changes
+watch(model, () => {
+  preventNextIsAmChange.value = true
+  isAm.value = +delocalizedTimeParts.value.hh < 12
+})
 
 const {
   el,
   maskedValue,
   wrapperProps,
   hasNoValue,
+  hasClearableBtn,
   handleManualModelChange,
   focus,
   select,
@@ -222,7 +231,10 @@ const {
   maskRef: maskFullTime,
   preventFocusOnTouch: true,
   menuElRef: () => timeInputPickerEl.value?.getMenuEl(),
+  setModel: (val: string) => (model.value = val),
 })
+
+const { path } = useInputValidationUtils(props)
 
 defineExpose({
   focus,
@@ -240,6 +252,7 @@ defineExpose({
     ref="wrapperEl"
     v-bind="wrapperProps"
     :has-content="!hasNoValue"
+    .focus="focus"
     @click="handleClickWrapper"
   >
     <template
@@ -263,17 +276,18 @@ defineExpose({
       :readonly="readonly"
       :disabled="disabled"
       :label="label || placeholder"
-      :name="name || label || placeholder"
+      :name="name || path || label || placeholder"
       class="control"
       :class="[inputClass]"
       :style="inputStyle"
+      v-bind="inputProps"
       @focus="handleFocusOrClick"
       @input="handleInput"
     />
 
     <template #append>
       <div
-        v-if="$slots.append || (!readonly && !disabled)"
+        v-if="$slots.append || hasClearableBtn || (!readonly && !disabled)"
         flex="~ gap-x-2 center"
         fit
         @click="handleFocusOrClick"
@@ -283,6 +297,24 @@ defineExpose({
           :clear="clear"
           :focus="focus"
         />
+
+        <Btn
+          v-if="hasClearableBtn"
+          icon="eva:close-fill h-6 w-6"
+          color="ca"
+          size="auto"
+          h="7"
+          w="7"
+          tabindex="-1"
+          @click.stop.prevent="!clearConfirmation && clear()"
+        >
+          <MenuConfirmation
+            v-if="clearConfirmation"
+            @ok="clear"
+          >
+            {{ clearConfirmation }}
+          </MenuConfirmation>
+        </Btn>
 
         <template v-if="!readonly && !disabled">
           <!-- AM / PM SWITCH -->
@@ -311,8 +343,11 @@ defineExpose({
         ref="timeInputPickerEl"
         v-model:is-am="isAm"
         v-model:prevent-next-is-am-change="preventNextIsAmChange"
-        :reference-target="el"
+        :reference-target="menuReferenceTarget"
         :is12h="is12h"
+        :class="{
+          'md:m-l-200px': inline,
+        }"
         :model-value-localized="modelValueLocalized"
         :handle-manual-model-change="handleManualModelChange"
         :shortcuts="shortcuts"

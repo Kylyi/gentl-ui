@@ -1,23 +1,20 @@
 <script setup lang="ts">
 type IProps = {
   errorTakesSpace?: boolean
-  errors?: Array<Pick<ErrorObject, '$message'> | string>
+  errors?: string[]
 }
 
 const props = withDefaults(defineProps<IProps>(), {
   errorTakesSpace: true,
 })
 
-// VALIDATION
+// Validation
 const errorMessages = computed(() => {
-  return props.errors
-    ?.map(err => (typeof err === 'string' ? err : err.$message))
-    .join('&nbsp; | &nbsp;')
+  return props.errors?.join('&nbsp; | &nbsp;')
 })
 </script>
 
 <template>
-  <!-- ERROR -->
   <Collapse
     :model-value="!!errors?.length"
     no-header

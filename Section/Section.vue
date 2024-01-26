@@ -1,6 +1,6 @@
 <script setup lang="ts">
-// TYPES
-import type { ISectionProps } from '~~/components/Section/types/section-props.type'
+// Types
+import type { ISectionProps } from '~/components/Section/types/section-props.type'
 
 defineOptions({
   inheritAttrs: false,
@@ -26,7 +26,7 @@ const isTitleVisible = computedEager(() => {
       },
     ]"
   >
-    <!-- TITLE & SUBTITLE -->
+    <!-- Title & Subtitle -->
     <div
       v-if="isTitleVisible"
       flex="~ col"
@@ -34,7 +34,7 @@ const isTitleVisible = computedEager(() => {
       shrink-0
     >
       <slot name="title">
-        <!-- TITLE -->
+        <!-- Title -->
         <Heading
           v-if="title"
           :class="headerClass"
@@ -56,10 +56,11 @@ const isTitleVisible = computedEager(() => {
             <slot name="title-right" />
           </div>
 
-          <!-- SUBTITLE -->
+          <!-- Subtitle -->
           <div
             v-if="subtitle || $slots.subtitle"
             class="section-subtitle"
+            text="subtitle"
             :class="subtitleClass"
           >
             <slot name="subtitle">
@@ -70,7 +71,11 @@ const isTitleVisible = computedEager(() => {
       </slot>
     </div>
 
-    <div v-bind="$attrs">
+    <div
+      p="t-2"
+      gap="$Section-content-gap"
+      v-bind="$attrs"
+    >
       <slot />
     </div>
   </section>
@@ -78,14 +83,14 @@ const isTitleVisible = computedEager(() => {
 
 <style lang="scss" scoped>
 .section {
-  --apply: flex flex-col rounded-custom;
+  --apply: flex flex-col rounded-custom max-w-$Section-max-w;
 
   &--dense {
     --apply: p-x-0 p-b-0;
   }
 
   &-subtitle {
-    --apply: italic color-true-gray-400 text-sm p-b-1 w-full;
+    --apply: w-full;
   }
 
   &--bordered {

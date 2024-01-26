@@ -1,6 +1,6 @@
 <script setup lang="ts">
-// TYPES
-import type { ICrudBtnProps } from '~~/components/Crud/types/crud-btn-props.type'
+// Types
+import type { ICrudBtnProps } from '~/components/Crud/types/crud-btn-props.type'
 
 type IProps = ICrudBtnProps
 
@@ -15,14 +15,14 @@ defineEmits<{
 <template>
   <Btn
     preset="ARCHIVE"
-    :label="labels && $t('archive')"
+    :label="labels && $t('general.archive')"
     :loader-type="loaderType"
     :loading="loading"
     no-dim
   >
     <MenuConfirmation
-      placement="bottom-end"
-      :title="$t('archive')"
+      placement="bottom"
+      :title="$t('general.archive')"
       @ok="$emit('archive')"
     >
       <slot name="confirmation" />

@@ -1,20 +1,28 @@
 import { klona } from 'klona'
 
-// MODELS
+// Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
 
-// COMPOSITION FUNCTIONS
-import { useTableUtils } from '~/components/Table/functions/useTableUtils'
+// Models
+import { useTableStore } from '~/components/Table/table.store'
 
-// COMPONENTS
-import HorizontalScroller from '@/components/Scroller/HorizontalScroller.vue'
+// Functions
+import { stringToFloat } from '~/libs/App/data/regex/string-to-float.regex'
 
-// INJECTION KEYS
-import { updateTableStateKey } from '~/components/Table/provide/table.provide'
+// Injections
+import {
+  tableRowsKey,
+  tableSlotsKey,
+  tableStorageKey,
+} from '~/components/Table/provide/table.provide'
 
-type ISplitter = {
+// Components
+import HorizontalScroller from '~/components/Scroller/HorizontalScroller.vue'
+
+export type ISplitter = {
   field: TableColumn['field']
   left: number
+  column: TableColumn
 }
 
 type IActiveSplitter = ISplitter & {
@@ -26,28 +34,40 @@ type IActiveSplitter = ISplitter & {
 }
 
 export function useTableColumnResizing(props: {
-  columns: TableColumn<any>[]
+  columns: TableColumn[]
   minimumColumnWidth?: number
 }) {
-  // INJECTIONS
-  const updateTableState = injectStrict(updateTableStateKey)
+  // Utils
+  const self = getCurrentInstance()
 
-  // UTILS
-  const { extractColumnsStateData } = useTableUtils()
+  // Injections
+  const storageKey = injectStrict(tableStorageKey)
+  const tableSlots = injectStrict(tableSlotsKey)
+  const tableRows = injectStrict(tableRowsKey)
 
+  // Store
+  const { setTableState } = useTableStore()
+
+  // Layout
+  const splitterJustClicked = refAutoReset(false, 500)
   const headerEl = ref<InstanceType<typeof HorizontalScroller>>()
 
-  // SPLITTERS (for resizing columns)
+  // Splitters (for resizing columns)
   let pageX = 0
 
   const activeSplitter = ref<IActiveSplitter>()
 
   const columnSplitters = computed(() => {
     const splitters: ISplitter[] = []
+
+    if (!props.columns.length) {
+      return splitters
+    }
+
     let lastLeftPosition = 0
 
     props.columns
-      .filter(col => !col.hidden)
+      .filter(col => !col.hidden && col.resizable)
       .forEach(col => {
         lastLeftPosition += col.adjustedWidth
 
@@ -58,6 +78,7 @@ export function useTableColumnResizing(props: {
         splitters.push({
           field: col.field as string,
           left: lastLeftPosition,
+          column: col,
         })
       })
 
@@ -65,23 +86,43 @@ export function useTableColumnResizing(props: {
     // But only in case the last column is actually resizable
     const lastCol = props.columns[props.columns.length - 1]
 
-    if (lastCol.resizable) {
+    if (lastCol.resizable && splitters.length) {
       splitters[splitters.length - 1].left -= 4
     }
 
     return splitters
   })
 
-  function handleSplitterPointerDown(splitter: ISplitter, ev: PointerEvent) {
+  async function handleSplitterPointerDown(
+    splitter: ISplitter,
+    ev: PointerEvent
+  ) {
     const col = props.columns.find(c => c.field === splitter.field)
-    const splitterCopy = klona(splitter)
+
+    // Handle double-click ~ resize to fit
+    if (col && splitterJustClicked.value) {
+      const slotRenderFnc = tableSlots[col.field]
+
+      await col.autoFit(
+        tableRows.value,
+        slotRenderFnc,
+        props.minimumColumnWidth
+      )
+
+      setTableState(storageKey.value, { columns: props.columns })
+      self?.emit('resized', col)
+
+      return
+    }
+
+    const splitterCopy = klona(omit(splitter, ['column']))
     // @ts-expect-error some weird type
     const headerDom = unrefElement(headerEl)!
     const { y: headerY, height: headerHeight } =
       headerDom.getBoundingClientRect()
     const { height: tableHeight } = (
       headerDom.parentElement!.querySelector(
-        '.vue-recycle-scroller'
+        '.virtual-scroll__content'
       ) as HTMLElement
     ).getBoundingClientRect()
 
@@ -109,6 +150,8 @@ export function useTableColumnResizing(props: {
       'pointerup',
       handleSplitterPointerUp
     )
+
+    splitterJustClicked.value = true
   }
 
   function handleSplitterPointerMove(ev: PointerEvent) {
@@ -126,12 +169,44 @@ export function useTableColumnResizing(props: {
   }
 
   function handleSplitterPointerUp() {
-    // Once we start changing the width of a column, we need to set width of the
-    // other columns to a fixed value so it doesn't jump around
-    props.columns.forEach(col => col.setWidth(col.adjustedWidth))
+    let column: TableColumn
+    const diff =
+      activeSplitter.value!.adjustedWidth -
+      activeSplitter.value!.column.adjustedWidth
+
+    // If the currently resized column is `semiFrozen` but not `frozen`,
+    // we need to adjust the widths of all the `semiFrozen` columns that come
+    // after it
+    if (
+      activeSplitter.value!.column.semiFrozen &&
+      !activeSplitter.value!.column.frozen
+    ) {
+      const colIdx = props.columns.findIndex(
+        col => col.field === activeSplitter.value!.column.field
+      )
+      column = props.columns[colIdx]
+      const lastSemiFrozenColIdx = props.columns
+        .slice(colIdx)
+        .findIndex(col => !col.semiFrozen)
+
+      const semiFrozenColumns = props.columns.slice(
+        colIdx + 1,
+        colIdx + lastSemiFrozenColIdx
+      )
+
+      semiFrozenColumns.forEach(col => {
+        if (typeof col.headerStyle.left === 'string') {
+          const left = Number(stringToFloat(col.headerStyle.left) || 0)
+
+          col.headerStyle.left = `${left + diff}px`
+        }
+      })
+    }
 
     // Set the width of the column we're resizing to the new width
-    activeSplitter.value!.column.setWidth(activeSplitter.value!.adjustedWidth)
+    activeSplitter.value!.column.setWidth(
+      `${activeSplitter.value!.adjustedWidth}px`
+    )
 
     // Reset the active splitter
     activeSplitter.value = undefined
@@ -145,14 +220,14 @@ export function useTableColumnResizing(props: {
       handleSplitterPointerUp
     )
 
+    setTableState(storageKey.value, { columns: props.columns })
+
     nextTick(() => {
       document.documentElement.style.cursor = ''
       document.documentElement.style.userSelect = ''
 
-      updateTableState({
-        columns: extractColumnsStateData(props.columns),
-      })
       headerEl.value?.updateArrows()
+      self?.emit('resized', column)
     })
   }
 

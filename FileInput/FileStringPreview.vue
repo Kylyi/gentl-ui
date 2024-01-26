@@ -1,7 +1,4 @@
 <script setup lang="ts">
-// Types
-import type { IFile } from '~/components/FileInput/types/file.type'
-
 // Constants
 import { ICON_BY_FILE_EXTENSION } from '~/components/FileInput/constants/iconsByFileExtension'
 
@@ -12,6 +9,7 @@ type IProps = {
     download?: boolean
     remove?: boolean
   }
+  downloadUrl?: string
   editable?: boolean
   file: IFile
 }
@@ -21,11 +19,11 @@ defineEmits<{
   (e: 'remove'): void
 }>()
 
-// UTILS
+// Utils
 const rC = useRuntimeConfig()
 const { getLocalImageUrl } = useImages()
 
-// ACTIONS
+// Actions
 const actionsDefault = ref({
   download: true,
   remove: true,
@@ -36,7 +34,7 @@ const actions = computed(() => ({
   ...props.actions,
 }))
 
-// LAYOUT
+// Layout
 const fileUrl = `${rC.public.FILES_HOST}/files${props.file.path}`
 
 const icon = computed(() => {
@@ -62,7 +60,7 @@ const imageUrl = computed(() => {
 
 <template>
   <div class="file-preview">
-    <!-- HEADER -->
+    <!-- Header -->
     <div class="file-preview--header">
       <span
         self-center
@@ -73,7 +71,7 @@ const imageUrl = computed(() => {
       </span>
 
       <div flex="~">
-        <!-- REMOVE -->
+        <!-- Remove -->
         <Btn
           v-if="editable && actions.remove"
           size="xs"
@@ -88,7 +86,7 @@ const imageUrl = computed(() => {
       </div>
     </div>
 
-    <!-- BODY -->
+    <!-- Body -->
     <div
       class="file-preview--image"
       external
@@ -118,15 +116,15 @@ const imageUrl = computed(() => {
       icon="material-symbols:download"
       self-start
       :label="$t('file.download')"
-      @click="handleDownloadFile(file)"
+      @click.stop.prevent="handleDownloadFile(file, downloadUrl)"
     />
   </div>
 </template>
 
 <style lang="scss" scoped>
 .file-preview {
-  --apply: flex flex-col gap-4 fit items-center w-full
-      border-1 border-dotted rounded-3 border-ca color-ca;
+  --apply: flex flex-col gap-4 fit items-center w-full border-1 border-dotted
+    rounded-3 border-ca color-ca;
   --apply: dark:bg-darker bg-white;
 
   &--header {

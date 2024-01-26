@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { Dayjs } from 'dayjs'
+import dayjs from 'dayjs'
 
 // TYPES
-import type { IDatePickerNavigationProps } from '~~/components/DatePicker/types/datepicker-navigation-props.type'
+import type { IDatePickerNavigationProps } from '~/components/DatePicker/types/datepicker-navigation-props.type'
 
 const props = defineProps<IDatePickerNavigationProps>()
 
 const emits = defineEmits<{
-  (e: 'update:model-value', val: Dayjs): void
+  (e: 'update:model-value', val: dayjs.Dayjs): void
 }>()
 
 const navigationEl = ref<HTMLDivElement>()
@@ -18,8 +18,10 @@ function handleNavigation(val: number, unit: 'month' | 'year') {
 }
 
 function handleSetDate(payload: { idx: number }, unit: 'year' | 'month') {
-  // @ts-expect-error Some Dayjs type issue
-  emits('update:model-value', $date(props.modelValue)[unit](payload.idx))
+  emits(
+    'update:model-value',
+    $date(props.modelValue)[unit](payload.idx) as dayjs.Dayjs
+  )
 }
 </script>
 

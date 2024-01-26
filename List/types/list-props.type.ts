@@ -1,16 +1,17 @@
-import { FuseOptions } from '@vueuse/integrations/useFuse'
-import { IItemToBeAdded } from '~/components/List/types/list-item-to-add.type'
+import { type FuseOptions } from '@vueuse/integrations/useFuse'
 
-// TYPES
-import type { IListBaseProps } from '~~/components/List/types/list-base-props.type'
+// Types
+import type { IListBaseProps } from '~/components/List/types/list-base-props.type'
+import type { IItemToBeAdded } from '~/components/List/types/list-item-to-add.type'
 
-// MODELS
-import { SortItem } from '~~/libs/App/data/models/sort-item.model'
+// Models
+import { SortItem } from '~/libs/App/data/models/sort-item.model'
 
 export interface IListProps extends IListBaseProps {
   bordered?: boolean
   clearable?: boolean
   contentClass?: ClassType
+  dense?: boolean
   disabledFnc?: (item: any) => boolean
   emitKey?: boolean
   emptyValue?: any
@@ -21,7 +22,7 @@ export interface IListProps extends IListBaseProps {
   rowGroupHeight?: number
   fuseOptions?: FuseOptions<any>
   multi?: boolean
-  noAutofocus?: boolean
+  noFilter?: boolean
   noHighlight?: boolean
   noSearch?: boolean
   noSort?: boolean
@@ -35,6 +36,12 @@ export interface IListProps extends IListBaseProps {
    * When using `multi` mode, whether to allow selecting all filtered options
    */
   allowSelectAllFiltered?: boolean
+
+  /**
+   * The extended search token for fuse.js library
+   * https://www.fusejs.io/examples.html#extended-search
+   */
+  fuseExtendedSearchToken?: "'" | '=' | '!' | '^' | '!^' | '$' | '!$'
 
   /**
    * Can be either
@@ -51,7 +58,7 @@ export interface IListProps extends IListBaseProps {
      * But some queries dont have the search so to prevent TS from complaining, just use any
      */
     fnc: (payload: any) => Promise<any> | any
-    mapKey: string
+    mapKey?: string
     immediate?: boolean
 
     /**
@@ -84,4 +91,24 @@ export interface IListProps extends IListBaseProps {
    * new item locally, will only emit the option to the parent component.
    */
   noLocalAdd?: boolean
+
+  /**
+   * The tag to use for the row
+   */
+  rowTag?: string
+
+  /**
+   * Debounce of the search in ms
+   */
+  searchDebounce?: number
+
+  /**
+   * The props that should be passed to the search input tag (<input>)
+   */
+  inputProps?: Record<string, any>
+
+  /**
+   * When true, the search/container will not be focused on mount
+   */
+  noAutofocus?: boolean
 }

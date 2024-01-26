@@ -1,6 +1,6 @@
 <script setup lang="ts">
-// TYPES
-import { IMonthSelectorProps } from '~~/components/MonthSelector/types/month-selector-props.type'
+// Types
+import { type IMonthSelectorProps } from '~/components/MonthSelector/types/month-selector-props.type'
 
 type Month = {
   idx: number
@@ -14,6 +14,10 @@ const emits = defineEmits<{
   (e: 'next'): void
 }>()
 
+// Utils
+const { formatDate } = useDateUtils()
+
+// Layout
 const now = useNow({ interval: $duration(15, 'minute').as('ms') })
 const nowMonth = eagerComputed(() => {
   const dateObj = $date(now.value)
@@ -51,11 +55,8 @@ function handleMonthSelect(month: Month, callback?: () => void) {
 <template>
   <div class="month-selector">
     <Btn
-      display="lt-xs:!none"
       size="auto"
-      w="8"
-      h="8"
-      p="3"
+      class="month-selector__previous"
       tabindex="-1"
       icon="majesticons:chevron-left"
       @click="$emit('previous')"
@@ -68,14 +69,11 @@ function handleMonthSelect(month: Month, callback?: () => void) {
       flex="1"
       h="8"
       tabindex="-1"
-      :label="$d(dateObj.valueOf(), 'month')"
+      :label="formatDate(dateObj.valueOf(), 'month')"
     />
     <Btn
-      display="lt-xs:!none"
       size="auto"
-      w="8"
-      h="8"
-      p="3"
+      class="month-selector__next"
       tabindex="-1"
       icon="majesticons:chevron-right"
       @click="$emit('next')"
@@ -96,7 +94,7 @@ function handleMonthSelect(month: Month, callback?: () => void) {
           <Btn
             v-for="m in months"
             :key="m.idx"
-            :label="$d(m.date, 'month')"
+            :label="formatDate(m.date, 'month')"
             capitalize
             tabindex="-1"
             size="sm"
@@ -117,5 +115,11 @@ function handleMonthSelect(month: Month, callback?: () => void) {
 <style lang="scss" scoped>
 .month-selector {
   --apply: flex flex-gap-x-1 items-center;
+
+  &__previous,
+  &__next {
+    --apply: w-8 h-8 p-3;
+    --apply: '!lt-xs:hidden';
+  }
 }
 </style>

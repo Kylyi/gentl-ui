@@ -1,77 +1,95 @@
 <script setup lang="ts">
-// MODELS
-import { TableColumn } from '~/components/Table/models/table-column.model'
+import { NuxtLink } from '#components'
 
-type IProps = {
-  row: any
-  columns: TableColumn<any>[]
-  rowHeight: number
+// Types
+import { type ITableProps } from '~/components/Table/types/table-props.type'
+
+// Injections
+import { tableIsSelectedRowKey } from '~/components/Table/provide/table.provide'
+
+type IProps = Pick<
+  ITableProps,
+  | 'columns'
+  | 'rowHeight'
+  | 'to'
+  | 'selectable'
+  | 'editable'
+  | 'splitRow'
+  | 'rowClass'
+> & {
+  index?: number
+  rows: any[]
 }
 
-defineProps<IProps>()
+const props = withDefaults(defineProps<IProps>(), {
+  index: 0,
+})
+
+// Injections
+const isSelectedRow = injectStrict(tableIsSelectedRowKey, () => false)
+
+// Layout
+const dataColumns = computed(() => {
+  return props.columns?.filter(col => !col.isHelperCol && !col.hidden) ?? []
+})
+
+const isEditable = computedEager(() => {
+  return props.editable === true || props.editable === 'cards'
+})
 </script>
 
 <template>
   <div
     class="tr__mobile-container"
-    :style="{ minHeight: `${rowHeight}px` }"
+    :style="{ 'minHeight': `${rowHeight}px`, '--cols': splitRow }"
   >
-    <slot>
-      <div
-        class="tr__mobile"
-        :class="{ 'is-deleted': row.deleted }"
-      >
-        <template
-          v-for="(col, idx) in columns"
-          :key="idx"
+    <Component
+      :is="to?.(row) ? NuxtLink : 'div'"
+      v-for="(row, idx) in rows"
+      :key="idx"
+      class="tr tr__mobile"
+      :class="[
+        { 'is-deleted': row.deleted },
+        { 'is-selectable': selectable },
+        { 'is-selected': isSelectedRow(row) },
+        rowClass?.(row),
+      ]"
+      :data-split-row-idx="idx"
+      :to="to?.(row)"
+    >
+      <slot :row="row">
+        <slot
+          name="row-inside"
+          mode="grid"
+          :row="row"
+        />
+
+        <TableCellMobile
+          v-for="col in dataColumns"
+          :key="col.field"
+          :column="col"
+          :row="row"
+          :editable="isEditable"
         >
-          <template v-if="!col.isHelperCol && !col.hidden">
-            <div
-              v-if="!col.hideLabel"
-              class="cell cell-label"
-            >
-              <span truncate>
-                {{ col._label }}
-              </span>
-            </div>
-
-            <div
-              class="cell cell-value"
-              :class="{ 'col-span-2': col.hideLabel }"
-            >
-              <ValueFormatter
-                :value="get(row, col.field)"
-                :data-type="col.dataType"
-              >
-                <template #default="{ val }">
-                  <slot
-                    :name="col.name"
-                    :value="val"
-                  >
-                    <span class="p-x-2 truncate">
-                      {{ val }}
-                    </span>
-                  </slot>
-                </template>
-              </ValueFormatter>
-            </div>
-          </template>
-        </template>
-      </div>
-    </slot>
-
-    <!-- Used for absolutelty position info/element -->
-    <slot name="inner" />
+          <slot
+            :name="col.name"
+            :row="row"
+          />
+        </TableCellMobile>
+      </slot>
+    </Component>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .tr__mobile {
-  --apply: grid p-3 rounded-custom overflow-auto hover:bg-primary/30 hover:dark:bg-primary/50
-  border-1 border-ca gap-x-3 hover:shadow-ca shadow-sm w-full;
+  --apply: relative grid p-y-3 p-l-1 p-r-2 rounded-custom overflow-auto
+  border-1 border-ca gap-x-3 hover:shadow-ca shadow-sm w-full dark:bg-darker bg-white;
 
   &-container {
-    --apply: relative p-x-2 p-y-1;
+    --apply: relative w-full grid p-x-2 p-y-1 gap-2;
+
+    grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
   }
 
   grid-template-columns: 1fr 2fr;
@@ -80,13 +98,21 @@ defineProps<IProps>()
   &.is-deleted {
     --apply: line-through color-ca;
   }
+
+  &.is-selectable {
+    --apply: cursor-pointer border-2;
+  }
+
+  &.is-selected {
+    --apply: bg-secondary/30 border-secondary;
+  }
 }
 
-.cell {
-  --apply: flex items-center leading-tight h-$mobileRowHeight truncate;
+.tr__mobile:hover {
+  --apply: bg-blue-500/10;
+}
 
-  &-label {
-    --apply: font-rem-14 font-bold;
-  }
+.tr__mobile:hover {
+  --apply: bg-blue-500/10;
 }
 </style>

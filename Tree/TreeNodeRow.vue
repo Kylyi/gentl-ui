@@ -1,8 +1,8 @@
 <script setup lang="ts">
 // @ts-nocheck
 // Types
-import type { ITreeNodeRowProps } from '~~/components/Tree/types/tree-node-row-props.type'
-import type { ITreeNode } from '~~/components/Tree/types/tree-node.type'
+import type { ITreeNodeRowProps } from '~/components/Tree/types/tree-node-row-props.type'
+import type { ITreeNode } from '~/components/Tree/types/tree-node.type'
 
 // Injections
 import {
@@ -20,12 +20,12 @@ const isCollapseVisible = computedEager(() => {
 
   return (
     (!!props.node.children?.length || hasChildren) &&
-    props.level < (props.maxLevel ?? Infinity)
+    props.level < (props.maxLevel ?? Number.POSITIVE_INFINITY)
   )
 })
 
 async function handleCollapseInternal(node: ITreeNode) {
-  if (props.level >= (props.maxLevel || Infinity)) {
+  if (props.level >= (props.maxLevel || Number.POSITIVE_INFINITY)) {
     return
   }
 

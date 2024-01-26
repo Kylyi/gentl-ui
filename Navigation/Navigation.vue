@@ -1,20 +1,23 @@
 <script setup lang="ts">
 defineProps<{
   noAccountBtn?: boolean
+  noToolbar?: boolean
+  noShadow?: boolean
 }>()
 
 defineEmits<{
   (e: 'toggle-drawer'): void
 }>()
 
-// INJECTIONS
+// Injections
 const rightDrawer = inject('rightDrawer', ref(false))
 const leftDrawer = inject('leftDrawer', ref(false))
 
-// LAYOUT
+// Layout
 const isInitialized = ref(false)
+const navigationEl = ref<HTMLElement>()
 
-// SCROLL UTILS
+// Scroll utils
 const lastScrollDirection = ref<'up' | 'down'>('down')
 const { arrivedState, y, directions } = useScroll(
   () => (process.client ? window : null),
@@ -31,8 +34,15 @@ watch(directions, ({ bottom, top }) => {
   }
 })
 
-const isNavigationHidden = computed(() => {
-  return y.value >= 52 && lastScrollDirection.value === 'down'
+const isNavigationHidden = computedEager(() => {
+  if (!navigationEl.value) {
+    return false
+  }
+
+  return (
+    y.value >= navigationEl.value?.offsetHeight &&
+    lastScrollDirection.value === 'down'
+  )
 })
 
 onMounted(() => {
@@ -44,21 +54,29 @@ onMounted(() => {
   <header
     z="$zNavigation"
     class="navigation-wrapper"
-    :class="{
-      'is-scrolled': isScrolled,
-      'is-hidden': isNavigationHidden && !rightDrawer && !leftDrawer,
-      'is-initialized': isInitialized,
-    }"
+    :class="[
+      {
+        'has-shadow': isScrolled && !noShadow,
+        'is-hidden': isNavigationHidden && !rightDrawer && !leftDrawer,
+        'is-initialized': isInitialized,
+      },
+    ]"
   >
-    <div class="navigation">
+    <div
+      ref="navigationEl"
+      class="navigation"
+    >
       <nav flex="~ 1 gap-x-2 gap-y-1 wrap">
         <slot name="left" />
       </nav>
 
       <slot name="before-actions" />
 
-      <!-- THEME & LOCALE & ACCOUNT -->
-      <div class="toolbar">
+      <!-- Theme & Locale & Account -->
+      <div
+        v-if="!noToolbar"
+        class="toolbar"
+      >
         <slot name="prepend-actions" />
 
         <slot name="actions">
@@ -79,27 +97,31 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 header {
-  --apply: relative top-0 inset-inline-0 transition-transform ease-linear
-    bg-dark;
+  --apply: relative top-0 inset-inline-0 transition-transform ease-linear;
 
   // Project specific
   // --apply: w-full max-w-screen-2xl m-x-auto;
 
   &.is-hidden {
-    --apply: -translate-y-52px;
+    --apply: -translate-y-100%;
   }
 
   &.is-initialized {
     --apply: fixed;
   }
 
-  &.is-scrolled:not(:has(~ main .has-breadcrumbs)) {
+  &.has-shadow:not(:has(~ main .has-breadcrumbs)) {
     --apply: shadow-consistent shadow-ca;
   }
 
   .toolbar {
     --apply: flex flex-gap-1.5 self-start h-$navigation items-center min-h-40px
-      dark:bg-darker bg-light self-center p-x-2 rounded-full;
+      bg-white dark:bg-darker self-center p-x-2 rounded-full;
+
+    .environment {
+      --apply: absolute left-50% -translate-x-1/2 p-y-1 p-x-2 color-white rounded-custom
+        border-2 border-white;
+    }
   }
 }
 
@@ -108,7 +130,7 @@ header {
   --apply: w-full flex flex-gap-2 p-x-1 min-h-52px;
 
   &-wrapper {
-    --apply: flex flex-col;
+    --apply: flex flex-col bg-$Navigation-bg;
   }
 }
 </style>

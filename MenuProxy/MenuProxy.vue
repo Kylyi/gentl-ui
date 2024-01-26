@@ -1,9 +1,15 @@
 <script setup lang="ts">
-// TYPES
+// Types
 import type { IMenuProps } from '~/components/Menu/types/menu-props.type'
 import type { IDialogProps } from '~/components/Dialog/types/dialog-props.type'
 
-// COMPONENTS
+// Constants
+import {
+  $bp,
+  type BREAKPOINTS,
+} from '~/libs/App/constants/breakpoints.constant'
+
+// Components
 import Dialog from '~/components/Dialog/Dialog.vue'
 import Menu from '~/components/Menu/Menu.vue'
 
@@ -37,7 +43,8 @@ const internalValue = ref(model.value)
 
 const isMenu = computedEager(() => $bp[props.breakpoint].value)
 
-function propagateModelValue(val: boolean) {
+// The `val` is actually boolean, but Vue can't infer that because the component is dynamic
+function propagateModelValue(val: any) {
   internalValue.value = val
   emits('update:modelValue', val)
 }
@@ -82,6 +89,18 @@ defineExpose({
     @before-hide="emits('before-hide')"
     @before-show="emits('before-show')"
   >
+    <template #title>
+      <slot name="title" />
+    </template>
+
+    <template #header-right-prepend>
+      <slot name="header-right-prepend" />
+    </template>
+
+    <template #header-right-append>
+      <slot name="header-right-append" />
+    </template>
+
     <template #header="{ hide }">
       <slot
         name="header"

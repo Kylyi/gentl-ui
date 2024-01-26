@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // TYPES
-import type { ISkeletonProps } from '~~/components/Skeleton/types/skeleton-props.type'
+import type { ISkeletonProps } from '~/components/Skeleton/types/skeleton-props.type'
 
 withDefaults(defineProps<ISkeletonProps>(), {
   type: 'wave',

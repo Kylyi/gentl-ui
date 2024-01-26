@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Types
-import type { YearSelectorProps } from '~~/components/YearSelector/types/year-selector-props.type'
+import type { YearSelectorProps } from '~/components/YearSelector/types/year-selector-props.type'
 
 // Components
 import NumberInput from '~/components/Inputs/NumberInput/NumberInput.vue'
@@ -27,14 +27,14 @@ const yearOptions = computed(() => {
   })
 })
 
-// INCREMENT / DECREMENT
+// Increment / Decrement
 const modifier = ref<-1 | 1>(1)
 const { pause, resume } = useIntervalFn(() => handleRangeChange(), 120, {
   immediate: false,
   immediateCallback: true,
 })
 
-function handleManualYearInputChange(year?: number | null) {
+function handleManualYearInputChange(year?: number | null | undefined) {
   if (isRangeChanged.value) {
     return
   }
@@ -71,6 +71,8 @@ function handleYearSelect(year: number) {
 }
 
 function handleMouseWheel(ev: WheelEvent) {
+  isRangeChanged.value = true
+
   if (ev.deltaY > 0) {
     internalValue.value++
   } else {
@@ -93,16 +95,16 @@ defineExpose({ sync })
 
 <template>
   <div class="year-selector">
+    <!-- Previous btn -->
     <Btn
-      display="lt-xm:!none"
       size="auto"
-      w="8"
-      h="8"
-      p="3"
+      class="year-select__previous"
       tabindex="-1"
       icon="majesticons:chevron-left"
       @click="$emit('previous')"
     />
+
+    <!-- Year input -->
     <NumberInput
       ref="yearInputEl"
       :model-value="internalValue"
@@ -114,12 +116,11 @@ defineExpose({ sync })
       input-class="text-center"
       @update:model-value="handleManualYearInputChange"
     />
+
+    <!-- Next btn -->
     <Btn
-      display="lt-xm:!none"
       size="auto"
-      w="8"
-      h="8"
-      p="3"
+      class="year-select__next"
       tabindex="-1"
       icon="majesticons:chevron-right"
       @click="$emit('next')"
@@ -144,6 +145,7 @@ defineExpose({ sync })
         icon="bi:caret-up-fill"
         color="ca"
         name="increment"
+        :ripple="false"
         @pointerdown="startChange($event, false)"
         @mousedown.stop.prevent
       />
@@ -167,6 +169,7 @@ defineExpose({ sync })
         icon="bi:caret-up-fill rotate-180"
         color="ca"
         name="decrement"
+        :ripple="false"
         @pointerdown="startChange($event, true)"
         @mousedown.stop.prevent
       />
@@ -177,5 +180,11 @@ defineExpose({ sync })
 <style lang="scss" scoped>
 .year-selector {
   --apply: flex flex-gap-x-1 items-center;
+
+  &__previous,
+  &__next {
+    --apply: w-8 h-8 p-3;
+    --apply: '!lt-xm:hidden';
+  }
 }
 </style>

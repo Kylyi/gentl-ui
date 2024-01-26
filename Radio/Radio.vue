@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // TYPES
-import type { RadioProps } from '~~/components/Radio/types/radio-props.type'
+import type { RadioProps } from '~/components/Radio/types/radio-props.type'
 
 const props = withDefaults(defineProps<RadioProps>(), {
   color: 'primary',

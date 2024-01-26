@@ -1,18 +1,30 @@
 // COMPOSITION FUNCTIONS
 
 import {
-  INumberOptions,
+  type INumberOptions,
   useNumber,
 } from '~/components/Inputs/NumberInput/functions/useNumber'
 
-export type DurationUnit = 'second' | 'minute' | 'hour' | 'day'
+export type DurationUnit =
+  | 'millisecond'
+  | 'second'
+  | 'minute'
+  | 'hour'
+  | 'day'
+  | 'week'
+  | 'month'
+  | 'year'
 export type IDurationOptions = INumberOptions & { unit?: DurationUnit }
 
 export const MODIFIER_BY_UNIT: Record<DurationUnit, number> = {
+  millisecond: 1,
   second: $duration(1, 'second').as('ms'),
   minute: $duration(1, 'minute').as('ms'),
   hour: $duration(1, 'hour').as('ms'),
   day: $duration(1, 'day').as('ms'),
+  week: $duration(1, 'week').as('ms'),
+  month: $duration(1, 'month').as('ms'),
+  year: $duration(1, 'year').as('ms'),
 }
 
 export function useDuration() {
@@ -44,7 +56,9 @@ export function useDuration() {
     unit?: IDurationOptions['unit']
   ): { val: number; unit: IDurationOptions['unit']; formatted: string } => {
     if (!unit) {
-      if ($duration(value).as('second') <= 30) {
+      if ($duration(value).as('second') <= 1) {
+        unit = 'millisecond'
+      } else if ($duration(value).as('second') <= 30) {
         unit = 'second'
       } else if ($duration(value).as('minute') <= 30) {
         unit = 'minute'

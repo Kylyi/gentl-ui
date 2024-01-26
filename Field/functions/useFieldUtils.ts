@@ -1,5 +1,5 @@
-// TYPE
-import type { IFieldProps } from '~~/components/Field/types/field-props.type'
+// Types
+import type { IFieldProps } from '~/components/Field/types/field-props.type'
 
 export function useFieldUtils(options?: {
   props?: IFieldProps
@@ -8,7 +8,7 @@ export function useFieldUtils(options?: {
   const currentInstance = getCurrentInstance()
   const { props, menuElRef } = options || {}
 
-  // LAYOUT
+  // Layout
   const menuEl = computed(() => toValue(menuElRef))
 
   // Click & focus handler
@@ -62,7 +62,6 @@ export function useFieldUtils(options?: {
       'disabled',
       'errorTakesSpace',
       'errorVisible',
-      'errors',
       'hint',
       'inline',
       'label',
@@ -76,6 +75,7 @@ export function useFieldUtils(options?: {
       'required',
       'size',
       'stackLabel',
+      'validation',
     ])
   }
 

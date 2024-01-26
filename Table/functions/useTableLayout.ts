@@ -1,61 +1,74 @@
-// VIRTUAL SCROLLER
-// @ts-expect-error - no types
-import { RecycleScroller } from 'vue-virtual-scroller'
-
-// TYPES
+// Types
 import type { ITableProps } from '~/components/Table/types/table-props.type'
-import type { ITableState } from '~/components/Table/types/table-state.type'
+import type { ITableLayout } from '~/components/Table/types/table-layout.type'
 
-// MODELS
+// Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
 
-// COMPOSITION FUNCTIONS
+// Injections
+import {
+  tableFocusKey,
+  tableResizeKey,
+} from '~/components/Table/provide/table.provide'
+
+// Functions
 import { useTableColumns } from '~/components/Table/functions/useTableColumns'
 import { useTableUtils } from '~/components/Table/functions/useTableUtils'
 
-// COMPONENTS
-import TableRow from '@/components/Table/TableRow.vue'
-import TableRowMobile from '@/components/Table/TableRow.mobile.vue'
-import TableHeader from '~/components/Table/TableHeader.client.vue'
+// Constants
+import { $bp } from '~/libs/App/constants/breakpoints.constant'
 
-// INJECTION KEYS
-import { recalculateTableColumnsKey } from '~/components/Table/provide/table.provide'
+// Components
+import TableRow from '~/components/Table/TableRow.vue'
+import TableRowMobile from '~/components/Table/TableRow.mobile.vue'
+import TableHeader from '~/components/Table/TableHeader.client.vue'
+import TableTotals from '~/components/Table/TableTotals/TableTotals.vue'
+import VirtualScroller from '~/components/VirtualScroller/VirtualScroller_old.vue'
 
 export function useTableLayout(
   props: ITableProps,
-  tableStateRef: Ref<ITableState>
+  columnsRef: Ref<TableColumn[]>,
+  layoutRef: Ref<ITableLayout | undefined>
 ) {
   const instance = getCurrentInstance()
 
-  // UTILS
-  const { locale } = useI18n()
+  // Utils
   const { onOverflow } = useOverflow()
-  const { resizeColumns, extendColumns } = useTableColumns(props, tableStateRef)
-  const { getRowKey, hasVisibleCol } = useTableUtils()
+  const { getRowKey } = useTableUtils()
+  const {
+    hasVisibleColumn,
+    internalColumns,
+    searchableColumnLabels,
+    resizeColumns,
+    recreateColumns,
+  } = useTableColumns(props, columnsRef, layoutRef)
 
-  // LAYOUT
-  const scrollerEl = ref<InstanceType<typeof RecycleScroller>>()
+  // Provides
+  provide(tableResizeKey, () => handleResize(true))
+  provide(tableFocusKey, () => scrollerEl.value?.focus())
+
+  // Layout
+  const scrollerEl = ref<ComponentInstance<typeof VirtualScroller>>()
   const tableEl = ref<HTMLDivElement>()
   const headerEl = ref<InstanceType<typeof TableHeader>>()
+  const totalsEl = ref<InstanceType<typeof TableTotals>>()
   const containerEl = ref<HTMLDivElement>()
 
   const rowKey = computedEager(() => getRowKey(props))
 
-  const hasVisibleColumn = computed(() => hasVisibleCol(internalColumns.value))
-
-  const searchableColumnLabels = computed(() => {
-    return props.columns.filter(col => col.searchable).map(col => col._label)
-  })
-
-  function handleRowClick(row: any, event: Event) {
+  function handleRowClick(rows: any[], event: PointerEvent) {
     const rowEl = event.target as HTMLElement
+    const el = rowEl.closest('.tr') as HTMLElement
+
+    const idx = Number(el.dataset.splitRowIdx as string)
+    const row = rows[idx]
 
     if (props.rowClickable) {
-      instance?.emit('row-click', { row, el: rowEl.closest('.tr')! })
+      instance?.emit('row-click', { row, el, ev: event })
     }
   }
 
-  // CSS VARS
+  // CSS variables
   const rowHeight = useCssVar('--rowHeight', tableEl)
   const mobileRowHeight = useCssVar('--mobileRowHeight', tableEl)
   const rowHeaderHeight = useCssVar('--headerHeight', tableEl)
@@ -66,31 +79,15 @@ export function useTableLayout(
     rowHeaderHeight.value = `${props.headerHeight || props.rowHeight}px`
   })
 
-  // COLUMNS
-  const columns = toRef(props, 'columns')
-  const internalColumns = ref<TableColumn[]>(extendColumns(props.columns))
-  // const internalColumns = ref<TableColumn[]>(
-  //   extendColumns(props.columns.map(col => new TableColumn(col)))
-  // )
-
-  // When locale is changed, we need to sync the labels of the columns
-  function syncColumnLabels() {
-    props.columns.forEach(col => {
-      const internalCol = internalColumns.value.find(c => c.field === col.field)
-      if (internalCol) {
-        internalCol.label = col.label
-        internalCol.format = col.format
-      }
-    })
-  }
-
-  // RESIZE & SCROLLING
+  // Resize & scrolling
   const isScrolled = ref(false)
   const isOverflown = ref(false)
   let containerWidth = 0
 
   function handleResize(force?: boolean) {
-    const { width } = scrollerEl.value.$el.getBoundingClientRect()
+    const { width } = unrefElement(
+      scrollerEl.value as any
+    ).getBoundingClientRect()
 
     if (
       scrollerEl.value &&
@@ -110,8 +107,13 @@ export function useTableLayout(
       )
       containerWidth = width
     }
+
+    headerEl.value?.updateArrows()
+    totalsEl.value?.updateArrows()
   }
 
+  // Detect overflow
+  // On overflow, we recaulculate the columns
   onOverflow(
     containerEl,
     _isOverflown => {
@@ -122,10 +124,12 @@ export function useTableLayout(
     { direction: 'vertical' }
   )
 
+  // Sync scrolling between header and body
   const { x: scrollLeft } = useScroll(containerEl, {
     onScroll: ev => {
       const el = ev.target as HTMLDivElement
       headerEl.value?.syncScroll(el.scrollLeft)
+      totalsEl.value?.syncScroll(el.scrollLeft)
       isScrolled.value = el.scrollTop !== 0
     },
   })
@@ -139,56 +143,75 @@ export function useTableLayout(
     false
   )
 
-  // RESPONSIVITY
-  const isBreakpoint = toRef($bp, props.breakpoint || 'md')
+  // Responsivity
+  const isBreakpoint = computedEager(() => {
+    // This is a semi-hack to prevent warnings...
+    const currentBreakpoints = $bp.current().value
 
-  const TableRowComponent = computed(() => {
-    return isBreakpoint.value ? TableRow : TableRowMobile
+    return currentBreakpoints.includes(props.breakpoint || 'md')
   })
 
-  // TODO: Row splitting
-  // ROW SPLITTING ~ Multiple column rows
-  // const splitRows = ref<Array<IGroupRow | IItem<any>[]>>([])
+  const tableRowHeight = computed(() => {
+    const visibleColumns = internalColumns.value.filter(
+      column => !column.hidden && column.field !== '_selectable'
+    )
 
-  // function splitRows() {
+    const MOBILE_ROW_Y_PADDING = 2 * (12 + 1) // + 1 is border
+    const MOBILE_ROW_CONTAINER_Y_PADDING = 2 * 4
+    const columnsHeight =
+      visibleColumns.length *
+      (props.mobileRowHeight || props.mobileRowHeight || 40)
 
-  // }
+    const mobile =
+      columnsHeight + MOBILE_ROW_Y_PADDING + MOBILE_ROW_CONTAINER_Y_PADDING
+    const current = isBreakpoint.value ? props.rowHeight : mobile
 
-  provide(recalculateTableColumnsKey, throttledHandleResize)
+    return {
+      mobile,
+      desktop: props.rowHeight,
+      current,
+    }
+  })
+
+  const TableRowComponent = computed(() => {
+    return isBreakpoint.value && props.splitRow === 1
+      ? TableRow
+      : TableRowMobile
+  })
 
   onMounted(() => {
     const selfDom = instance?.vnode.el as HTMLElement
 
     containerEl.value = selfDom.querySelector(
-      '.vue-recycle-scroller'
+      '.virtual-scroll'
     ) as HTMLDivElement
   })
 
-  watch(locale, () => {
-    nextTick(() => syncColumnLabels())
-  })
-
   return {
-    columns,
     isScrolled,
     isOverflown,
+    isBreakpoint,
+    tableRowHeight,
     TableRowComponent,
     rowKey,
     handleScrollLeft: (left: number) => (scrollLeft.value = left),
 
-    // ELEMENT REFS
+    // Element refs
     scrollerEl,
     tableEl,
     headerEl,
+    totalsEl,
     containerEl,
 
-    // COLUMNS
+    // Columns
     internalColumns,
     searchableColumnLabels,
     hasVisibleColumn,
 
-    // FUNCTIONS
+    // Functions
     handleRowClick,
     throttledHandleResize,
+    recreateColumns,
+    handleResize,
   }
 }

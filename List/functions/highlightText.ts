@@ -1,7 +1,7 @@
-import Fuse from 'fuse.js'
+import * as Fuse from 'fuse.js'
 
-// TYPES
-import type { IItem } from '~~/libs/App/types/item.type'
+// Types
+import type { IItem } from '~/libs/App/types/item.type'
 
 /**
  *
@@ -13,33 +13,58 @@ import type { IItem } from '~~/libs/App/types/item.type'
  */
 export function highlight<T = IItem>(
   fuseSearchResult: Array<Fuse.FuseResult<T>>,
-  keys: Fuse.FuseOptionKey<any>[],
-  highlightClassName = 'fuse-highlighted'
+  options?: {
+    keys?: Fuse.FuseOptionKey<any>[]
+    highlightClassName?: string
+    searchValue?: string
+
+    /**
+     * When `displayKey` is provided, the highlightted text will be combined with
+     * value from the `displayKey` property of the item.
+     *
+     * So basically, let's say we have an item:
+     * { name: 'John Doe', nameLocalized: 'Джон До' }
+     * we set `displayKey` to 'nameLocalized'
+     * and we search for 'Джон', then the highlighted text will be 'Джон Doe'
+     */
+    displayKeys?: string[]
+  }
 ) {
+  const {
+    keys = [],
+    highlightClassName = 'fuse-highlighted',
+    displayKeys,
+  } = options || {}
   let hasExactMatch = false
 
   const generateHighlightedText = (
     highlighted: string,
     inputText = '',
-    regions: readonly Fuse.RangeTuple[]
+    regions: readonly Fuse.RangeTuple[],
+    displayText?: string
   ) => {
     let content = ''
     let nextUnhighlightedRegionStartingIndex = 0
+    const text = displayText ?? inputText
 
     regions.forEach(region => {
-      const lastRegionNextIndex = region[1] + 1
+      const startIndex = region[0]
+      const lastRegionNextIndex = region[1] + 1 // We add +1 to include the last character of the region
 
       content += [
-        inputText.substring(nextUnhighlightedRegionStartingIndex, region[0]),
+        // We add the unhighlighted part
+        text.substring(nextUnhighlightedRegionStartingIndex, startIndex),
+
+        // We higlight the matched part
         `<span class="${highlightClassName}">`,
-        inputText.substring(region[0], lastRegionNextIndex),
+        text.substring(startIndex, lastRegionNextIndex),
         '</span>',
       ].join('')
 
       nextUnhighlightedRegionStartingIndex = lastRegionNextIndex
     })
 
-    content += inputText.substring(nextUnhighlightedRegionStartingIndex)
+    content += text.substring(nextUnhighlightedRegionStartingIndex)
 
     return `${highlighted.trim()} ${content}`
   }
@@ -49,12 +74,19 @@ export function highlight<T = IItem>(
     .map(({ item, matches, score }) => {
       let highlighted = ''
 
-      keys.forEach(key => {
+      keys.forEach((key, idx) => {
         const match = matches?.find(match => match.key === key)
+        const displayKey = displayKeys?.[idx]
+        const displayText = displayKey ? get(item, displayKey) : undefined
 
         highlighted = match
-          ? generateHighlightedText(highlighted, match.value, match.indices)
-          : `${highlighted} ${get(item, key as string)}`
+          ? generateHighlightedText(
+              highlighted,
+              match.value,
+              match.indices,
+              displayText
+            )
+          : `${highlighted} ${get(item, displayKey ?? (key as string))}`
       })
 
       hasExactMatch = hasExactMatch || score! <= Number.EPSILON

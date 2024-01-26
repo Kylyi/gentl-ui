@@ -1,27 +1,29 @@
-import { MaybeElementRef } from '@vueuse/core'
-import { UseFuseOptions, useFuse } from '@vueuse/integrations/useFuse'
+import { type UseFuseOptions, useFuse } from '@vueuse/integrations/useFuse'
 import { klona } from 'klona'
-import { Required } from 'utility-types'
+import { type Required } from 'utility-types'
+import { type MaybeElementRef } from '@vueuse/core'
+import { config } from '~/config'
 
-// TYPES
-import { IListProps } from '~/components/List/types/list-props.type'
-import { IGroupRow, useGrouping } from '~/libs/App/data/functions/useGrouping'
+// Types
+import type { IListProps } from '~/components/List/types/list-props.type'
+import {
+  type IGroupRow,
+  useGrouping,
+} from '~/libs/App/data/functions/useGrouping'
 
-// MODELS
+// Models
 import { GroupItem } from '~/libs/App/data/models/group-item.model'
 import { SortItem } from '~/libs/App/data/models/sort-item.model'
 
-// COMPOSITION FUNCTIONS
+// Functions
 import { highlight } from '~/components/List/functions/highlightText'
 import { useSorting } from '~/libs/App/data/functions/useSorting'
 import { useListUtils } from '~/components/List/functions/useListUtils'
 import { useItemAdding } from '~/components/List/functions/useItemAdding'
 
-// COMPONENTS
-import ListVirtualContainer from '~~/components/List/ListVirtualContainer.vue'
-import SearchInput from '~~/components/Inputs/SearchInput.vue'
-
-// COMPONENTS
+// Components
+import ListVirtualContainer from '~/components/List/ListVirtualContainer.vue'
+import SearchInput from '~/components/Inputs/SearchInput.vue'
 
 type IItem = {
   ref: any
@@ -44,7 +46,8 @@ export function useList(
   const self = getCurrentInstance()!
   const isInitialized = ref(false)
 
-  // UTILS
+  // Utils
+  const { normalizeText } = useText()
   const { sortData } = useSorting()
   const { groupData } = useGrouping()
   const { getListProps } = useListUtils()
@@ -71,12 +74,49 @@ export function useList(
     },
   }
 
-  // LIST
+  const fuseOptions: UseFuseOptions<any> = {
+    matchAllWhenSearchEmpty: true,
+    fuseOptions: {
+      minMatchCharLength: 1,
+      threshold: 0.4,
+      isCaseSensitive: false,
+      includeMatches: true,
+      includeScore: true,
+      keys: [props.itemLabel],
+      findAllMatches: true,
+      useExtendedSearch: true,
+
+      ...props.fuseOptions,
+    },
+  }
+
+  // List
   const isLoading = ref(false)
   const listRowProps = computed(() => getListProps(props))
 
   const itemsExtended = computed(() => {
-    return [...items.value, ...addedItems.value]
+    const keys = fuseOptions.fuseOptions!.keys
+    const itemsCloned = [...items.value, ...addedItems.value]
+
+    return itemsCloned.map(item => {
+      const itemPartial: Record<string, any> = {
+        _ref: item,
+      }
+
+      keys?.forEach((key: string) => {
+        const val = get(item, key as string)
+
+        set(
+          itemPartial,
+          key as string,
+          config.list.useToBoldLatin
+            ? $toBoldLatin(val?.toString())
+            : normalizeText(val?.toString())
+        )
+      })
+
+      return itemPartial
+    })
   })
 
   const scrollTo = (index: number) => {
@@ -89,11 +129,11 @@ export function useList(
     search.value = ''
   }
 
-  // HELPERS
+  // Helpers
   const defaultSortBy = [
     new SortItem<any>({
       name: '_label',
-      sort: 1,
+      sort: 'asc',
       format: row =>
         typeof props.itemLabel === 'function'
           ? props.itemLabel(row)
@@ -106,9 +146,9 @@ export function useList(
       ...itemsExtended.value,
       ...(preAddedItem.value ? [preAddedItem.value] : []),
     ].reduce((agg, item) => {
-      const key = getKey(item)
+      const key = getKey(item._ref ?? item)
 
-      agg[key] = item
+      agg[key] = item._ref
 
       return agg
     }, {})
@@ -119,7 +159,7 @@ export function useList(
       return {}
     }
 
-    // MULTI ~ SELECTED IS AN ARRAY
+    // Multi ~ `selected` is an Array
     if (Array.isArray(selected.value)) {
       return selected.value.reduce<Record<string, any>>((agg, sel) => {
         const key = getKey(sel)
@@ -131,7 +171,7 @@ export function useList(
       }, {})
     }
 
-    // MUTLI ~ SELECTED IS AN OBJECT
+    // Multi ~ `selected` is an Object
     else if (
       props.multi &&
       typeof selected.value === 'object' &&
@@ -148,7 +188,7 @@ export function useList(
       )
     }
 
-    // SINGLE ~ SELECTED IS STRING | NUMBER | OBJECT
+    // Single ~ `selected` is String | Number | Object
     else {
       const key = getKey(selected.value)
       const option = getOption(selected.value)
@@ -157,7 +197,7 @@ export function useList(
     }
   })
 
-  // DATA HANDLING
+  // Data handling
   const selected = toRef(props, 'selected')
 
   function handleSelectFiltered() {
@@ -279,61 +319,102 @@ export function useList(
     }
   }
 
-  // SEARCHING
+  // Searching
   const searchEl = ref<InstanceType<typeof SearchInput>>()
   const search = ref(props.search || '')
   const hasExactMatch = ref(false)
   const arr = ref<Array<IGroupRow | IItem>>([])
   const isPreventFetchData = refAutoReset(false, 150)
 
-  const fuseOptions: UseFuseOptions<any> = {
-    matchAllWhenSearchEmpty: true,
-    fuseOptions: {
-      minMatchCharLength: 1,
-      threshold: 0.4,
-      isCaseSensitive: false,
-      includeMatches: true,
-      includeScore: true,
-      keys: [props.itemLabel],
-      findAllMatches: true,
+  // Extended search
+  const extendedSearch = computed(() => {
+    if (!search.value) {
+      return search.value
+    }
 
-      ...props.fuseOptions,
-    },
-  }
-  const { results } = useFuse(search, itemsExtended, fuseOptions)
+    const searchBoldLatin = config.list.useToBoldLatin
+      ? $toBoldLatin(search.value)
+      : search.value
+
+    if (!props.fuseExtendedSearchToken) {
+      return searchBoldLatin
+    }
+
+    switch (props.fuseExtendedSearchToken) {
+      case "'":
+        return `'${searchBoldLatin}`
+
+      case '=':
+        return `=${searchBoldLatin}`
+
+      case '!':
+        return `!${searchBoldLatin}`
+
+      case '^':
+        return `^${searchBoldLatin}`
+
+      case '!^':
+        return `!^${searchBoldLatin}`
+
+      case '$':
+        return `${searchBoldLatin}$`
+
+      case '!$':
+        return `!${searchBoldLatin}$`
+
+      default:
+        return searchBoldLatin
+    }
+  })
+
+  const { results } = useFuse(extendedSearch, itemsExtended, fuseOptions)
   const useWorker = computed(() => props.useWorker || items.value.length > 5e3)
 
   async function handleSearchedResults(res: typeof results.value) {
-    let _hasExactMatch = false
+    const _hasExactMatch = itemsExtended.value.some(
+      item => getLabel(item._ref) === search.value
+    )
     let highlightedItems: { ref: any; id: string; _highlighted?: string }[] = []
 
-    // FOUND > 100 ITEMS - do not create highlighted text (performance)
-    if (!search.value || res.length > 100 || props.noHighlight) {
-      highlightedItems = res.map(({ item, score }) => {
-        _hasExactMatch = _hasExactMatch || score! <= Number.EPSILON
-
+    // When we're not using FE filtering
+    if (props.noFilter) {
+      highlightedItems = itemsExtended.value.map(item => {
         return {
-          ref: item,
-          id: getKey(item),
-          _highlighted: getLabel(item),
+          ref: item._ref,
+          id: getKey(item._ref),
+          _highlighted: getLabel(item._ref),
+        }
+      })
+    }
+
+    // Found > 100 ITEMS - do not create highlighted text (performance)
+    else if (!search.value || res.length > 100 || props.noHighlight) {
+      highlightedItems = res.map(({ item, score }) => {
+        return {
+          ref: item._ref,
+          id: getKey(item._ref),
+          _highlighted: getLabel(item._ref),
           score,
         }
       })
     }
 
-    // CREATE HIGHLIGHTED text
+    // Create highlighted text
     else {
-      const { highlightedResult, hasExactMatch: HEM } = highlight(
-        res,
-        fuseOptions?.fuseOptions?.keys || []
-      )
-      _hasExactMatch = HEM
+      const { highlightedResult } = highlight(res, {
+        keys: fuseOptions?.fuseOptions?.keys || [],
+        searchValue: search.value,
+      })
 
-      highlightedItems = highlightedResult.map(({ item, highlighted }) => ({
-        ref: item,
-        id: getKey(item),
-        _highlighted: highlighted,
-      }))
+      highlightedItems = highlightedResult.map(({ item, highlighted }) => {
+        return {
+          ref: item._ref,
+          id: getKey(item._ref),
+          _highlighted: config.list.useToBoldLatin
+            ? getLabel(item._ref)
+            : highlighted,
+        }
+      })
     }
 
     const groupBy = props.groupBy.map(g => {
@@ -343,7 +424,12 @@ export function useList(
       })
     })
 
-    const resultsSorted = props.noSort
+    const shouldNotSort =
+      props.noSort ||
+      (fuseOptions.fuseOptions?.shouldSort &&
+        highlightedItems.length !== items.value.length)
+
+    const resultsSorted = shouldNotSort
       ? highlightedItems
       : await sortData(
           highlightedItems,
@@ -387,6 +473,8 @@ export function useList(
   // Data fetching
   async function fetchAndSetData(search?: string) {
     if (props.loadData) {
+      const mapKey = props.loadData.mapKey ?? config.selector.mapKey
+
       try {
         isLoading.value = true
 
@@ -395,10 +483,18 @@ export function useList(
         if (props.loadData.local) {
           items.value = res
         } else {
-          items.value = get(res, props.loadData.mapKey)
+          items.value = get(res, mapKey)
         }
 
         isPreventFetchData.value = true
+
+        await nextTick()
+
+        await handleSearchedResults(results.value)
+        await nextTick()
+
+        self.emit('search', { hasExactMatch: hasExactMatch.value, search })
+
         isLoading.value = false
       } catch (error) {
         isLoading.value = false
@@ -440,11 +536,11 @@ export function useList(
     }
   })
 
-  // KEYBOARD NAVIGATION
+  // Keyboard navigation
   const listEl = ref<HTMLDivElement>()
   const { focused: isFocused } = useFocusWithin(listEl)
   const preventNextHoverEventRef = autoResetRef(false, 50)
-  const hoveredEl = ref<HTMLDivElement | null | undefined>(null)
+  const hoveredEl = ref<HTMLDivElement>()
   const hoveredIdx = ref(-1)
   const groupsJumped = ref(1) // How many groups we jumped over while using keyboard
   const modifier = ref<-1 | 0 | 1>(0) // negative ~ above, positive ~ below
@@ -505,6 +601,11 @@ export function useList(
 
         return
 
+      case 'Tab':
+        self.emit('update:selected', selected.value)
+
+        break
+
       default:
         return
     }
@@ -528,14 +629,14 @@ export function useList(
       handleKey(ev)
     }
 
-    // GOT TO A GROUP
+    // Got to a group
     else if ('isGroup' in itemSelected) {
       groupsJumped.value += 1
 
       handleKey(ev)
     }
 
-    // GOT TO FIRST NON-GROUP ITEM
+    // Got to first non-group item
     else if (
       hoveredIdx.value === firstNonGroupItemIndex.value &&
       modifier.value === -1
@@ -543,11 +644,13 @@ export function useList(
       scrollTo(0)
     }
 
-    // REGULAR ITEM
+    // Regular item
     else {
-      nextTick(
-        () => (hoveredEl.value = listEl.value?.querySelector('.item--hovered'))
-      )
+      nextTick(() => {
+        hoveredEl.value = listEl.value?.querySelector(
+          '.item--hovered'
+        ) as HTMLDivElement
+      })
     }
 
     preventNextHoverEventRef.value = true
@@ -556,13 +659,14 @@ export function useList(
   // Initizalize the searched results
   isInitialized.value = true
 
-  onKeyStroke(['ArrowUp', 'ArrowDown', 'Enter'], handleKey)
+  onKeyStroke(['ArrowUp', 'ArrowDown', 'Enter', 'Tab'], handleKey)
 
   return {
     arr,
     hoveredIdx,
     listEl,
     searchEl,
+    isLoading,
     listRowProps,
     search,
     selectedByKey,

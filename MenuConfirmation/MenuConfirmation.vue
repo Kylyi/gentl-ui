@@ -1,12 +1,12 @@
 <script setup lang="ts">
-// TYPES
-import type { IMenuConfirmationProps } from '~~/components/MenuConfirmation/types/menu-confirmation-props.type'
+// Types
+import type { IMenuConfirmationProps } from '~/components/MenuConfirmation/types/menu-confirmation-props.type'
 
-// COMPOSITION FUNCTIONS
+// Functions
 import { useMenuUtils } from '~/components/Menu/functions/useMenuUtils'
 
-// COMPONENTS
-import Menu from '@/components/Menu/Menu.vue'
+// Components
+import Menu from '~/components/Menu/Menu.vue'
 import Btn from '~/components/Button/Btn.vue'
 
 const props = withDefaults(defineProps<IMenuConfirmationProps>(), {
@@ -18,10 +18,10 @@ const emits = defineEmits<{
   (e: 'hide'): void
 }>()
 
-// UTILS
+// Utils
 const { getMenuProps } = useMenuUtils()
 
-// LAYOUT
+// Layout
 const confirmBtnEl = ref<InstanceType<typeof Btn>>()
 const isConfirmation = ref(false)
 
@@ -39,7 +39,7 @@ function handleConfirm() {
   }
 }
 
-// MENU
+// Menu
 const menuEl = ref<InstanceType<typeof Menu>>()
 const menuProps = getMenuProps(props)
 
@@ -54,15 +54,18 @@ defineExpose({
     confirmBtnDom?.focus()
   },
   recomputeMenuPosition: () => menuEl.value?.recomputePosition(),
+  hide: () => menuEl.value?.hide(),
+  show: () => menuEl.value?.show(),
 })
 </script>
 
 <template>
-  <Menu
+  <MenuProxy
     ref="menuEl"
     v-bind="menuProps"
     min-w="60"
-    :title="menuProps.title ?? $t('confirmAction')"
+    position="top"
+    :title="menuProps.title ?? $t('general.confirmAction')"
     @hide="handleMenuHide"
   >
     <slot name="prepend" />
@@ -77,19 +80,20 @@ defineExpose({
         p="2"
         text="center"
       >
-        {{ confirmationText || $t('confirmAction') }}
+        {{ confirmationText || $t('general.confirmAction') }}
       </div>
     </slot>
 
     <slot name="append" />
 
     <Btn
-      v-if="!isConfirmation"
+      v-if="!isConfirmation && !noConfirmBtn"
       ref="confirmBtnEl"
-      :label="$t('confirm')"
+      :label="$t('general.confirm')"
       bg="primary"
       color="white"
+      data-cy="confirm-delete"
       @click="handleConfirm"
     />
-  </Menu>
+  </MenuProxy>
 </template>

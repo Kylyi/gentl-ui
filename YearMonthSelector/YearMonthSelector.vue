@@ -1,14 +1,14 @@
 <script setup lang="ts">
 // TODO: MIN & MAX
-// TYPES
-import { IYearMonthSelectorProps } from '~~/components/YearMonthSelector/types/year-month-selector-props.type'
+// Types
+import { type IYearMonthSelectorProps } from '~/components/YearMonthSelector/types/year-month-selector-props.type'
 
-// COMPOSITION FUNCTIONS
-import { useFieldUtils } from '~~/components/Field/functions/useFieldUtils'
+// Functions
+import { useFieldUtils } from '~/components/Field/functions/useFieldUtils'
 
-// COMPONENTS
-import Field from '~~/components/Field/Field.vue'
-import MenuProxy from '~~/components/MenuProxy/MenuProxy.vue'
+// Components
+import Field from '~/components/Field/Field.vue'
+import MenuProxy from '~/components/MenuProxy/MenuProxy.vue'
 
 const props = withDefaults(defineProps<IYearMonthSelectorProps>(), {
   contentClass: 'cursor-pointer',
@@ -18,10 +18,10 @@ const emits = defineEmits<{
   (e: 'previous'): void
 }>()
 
-// UTILS
+// Utils
 const { d } = useI18n()
 
-// LAYOUT
+// Layout
 const fieldEl = ref<InstanceType<typeof Field>>()
 const model = useVModel(props, 'modelValue', emits)
 
@@ -33,7 +33,7 @@ const modelFormatted = computed(() => {
   return capitalize(d($date(model.value).valueOf(), 'yearMonth'))
 })
 
-// PICKER
+// Picker
 const referenceEl = ref<HTMLDivElement>()
 const menuProxyEl = ref<InstanceType<typeof MenuProxy>>()
 const isPickerActive = ref(false)
@@ -58,7 +58,7 @@ function handleYearPrevious() {
   model.value = $date(props.modelValue).subtract(1, 'year').valueOf()
 }
 
-// FIELD
+// Field
 const { getFieldProps, handleClickWrapper, handleFocusOrClick } = useFieldUtils(
   {
     props,

@@ -1,9 +1,9 @@
-import { Boundary } from '@floating-ui/dom'
-import { CSSProperties } from 'vue'
+import { type Boundary } from '@floating-ui/dom'
+import { type CSSProperties } from 'vue'
 
 export type DialogPosition = 'top' | 'bottom' | 'left' | 'right'
 
-export interface FloatingUIBaseProps {
+export type FloatingUIBaseProps = {
   boundary?: Boundary
   contentClass?: string
   contentStyle?: CSSProperties
@@ -18,6 +18,11 @@ export interface FloatingUIBaseProps {
   title?: string
   transitionDuration?: number
   trigger?: 'click' | 'contextmenu'
+
+  /**
+   * The backdrop class
+   */
+  backdropClass?: ClassType
 
   /**
    * When we're using async data in the Menu, the height is not known before the data is fetched.
@@ -39,14 +44,25 @@ export interface FloatingUIBaseProps {
   referenceTarget?: any
 
   /**
+   * When true, the `CLOSE` button will not be shown
+   */
+  noClose?: boolean
+
+  /**
    * Used only in <Menu /> to prevent the menu to automatically `uplift` (~ high zIndex)
    * the `referenceTarget`
    * CANNOT BE USED WITH OVERLAY!
    */
   noUplift?: boolean
+
+  /**
+   * Function we can inject before the hide event
+   * Should return whether the hide event should go through or not (Boolean)
+   */
+  beforeHideFnc?: () => boolean | Promise<boolean>
 }
 
-export interface IDialogProps extends FloatingUIBaseProps {
+export type IDialogProps = FloatingUIBaseProps & {
   position?: DialogPosition
   seamless?: boolean
 

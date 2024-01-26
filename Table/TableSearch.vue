@@ -1,22 +1,15 @@
 <script setup lang="ts">
-// TYPES
-import { FilterItem } from '~/libs/App/data/models/filter-item'
+// Types
+import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
 
-// MODELS
+// Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
-
-// INJECTION KEYS
-import {
-  refreshTableDataKey,
-  updateTableStateKey,
-} from '~/components/Table/provide/table.provide'
 
 type IProps = {
   columns: TableColumn[]
   noSearch?: boolean
+  queryBuilder?: IQueryBuilderRow[]
   search: string
-  searchableColumnLabels?: string[]
-  useChips?: boolean
 }
 
 const props = defineProps<IProps>()
@@ -24,57 +17,17 @@ const emits = defineEmits<{
   (e: 'update:search', search: string): void
 }>()
 
-// INJECTIONS
-const refreshData = injectStrict(refreshTableDataKey)
-const updateTableState = injectStrict(updateTableStateKey)
-
-// LAYOUT
+// Layout
 const search = useVModel(props, 'search', emits)
 
-const filterChips = computed(() => {
-  return props.columns.reduce((agg, col) => {
-    col.filters.forEach(filter => {
-      agg.push(filter)
-    })
-
-    return agg
-  }, [] as FilterItem[])
+const searchableColumnLabels = computed(() => {
+  return props.columns.filter(col => col.searchable).map(col => col.label)
 })
-
-function handleRemoveAllFilters() {
-  props.columns.forEach(column => {
-    column.filters = []
-  })
-
-  refreshData()
-  updateTableState({}, state => {
-    state.columns.forEach(column => {
-      column.filters = []
-    })
-
-    return state
-  })
-}
 </script>
 
 <template>
-  <!-- CHIPS -->
-  <HorizontalScroller
-    v-if="useChips"
-    grow
-    content-class="flex-gap-x-1"
-  >
-    <TableFilterChip
-      v-for="(filter, idx) in filterChips"
-      :key="idx"
-      :filter="filter"
-      :columns="columns"
-    />
-  </HorizontalScroller>
-
-  <!-- SEARCH -->
+  <!-- Search -->
   <SearchInput
-    v-else-if="!noSearch"
     v-model="search"
     grow
     size="sm"
@@ -93,27 +46,11 @@ function handleRemoveAllFilters() {
       </HelpBtn>
     </template>
   </SearchInput>
-
-  <!-- FILLER -->
-  <div
-    v-else
-    grow
-  />
-
-  <!-- CLEAR ALL FILTERS -->
-  <Btn
-    v-if="filterChips.length > 0"
-    :label="$t('table.removeAllFilters')"
-    no-uppercase
-    size="sm"
-    no-truncate
-    color="ca"
-    shrink-0
-    label-class="whitespace-nowrap"
-  >
-    <MenuConfirmation
-      hide-header
-      @ok="handleRemoveAllFilters"
-    />
-  </Btn>
 </template>
+
+<style lang="scss" scoped>
+.non-searchable-info {
+  --apply: text-caption text-xs m-t-4 p-2 rounded-custom bg-ca text-justify
+    text-last-center;
+}
+</style>

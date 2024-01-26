@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // TYPES
-import type { ICheckboxProps } from '~~/components/Checkbox/types/checkbox-props.type'
+import type { ICheckboxProps } from '~/components/Checkbox/types/checkbox-props.type'
 
 const props = withDefaults(defineProps<ICheckboxProps>(), {
   color: 'primary',
@@ -15,6 +15,13 @@ const emits = defineEmits<{
   (e: 'update:model-value', value: any): void
 }>()
 
+defineExpose({
+  focus: () => labelEl.value?.focus(),
+})
+
+// Layout
+const labelEl = ref<HTMLElement>()
+
 const toggleState = computed(() => {
   const isChecked =
     props.comparatorFn?.(props.modelValue, props.checkValue) ??
@@ -24,9 +31,31 @@ const toggleState = computed(() => {
     props.comparatorFn?.(props.modelValue, props.indeterminateValue) ??
     props.modelValue === props.indeterminateValue
 
+  // Checkbox class
+  let checkboxClass: ClassType | undefined = props.visuals?.unchecked?.checkbox
+
+  if (isChecked) {
+    checkboxClass = props.visuals?.checked?.checkbox
+  } else if (isIndeterminate) {
+    checkboxClass = props.visuals?.indeterminate?.checkbox
+  }
+
+  // Label class
+  let labelClassVisuals: ClassType | undefined = props.visuals?.unchecked?.label
+
+  if (isChecked) {
+    labelClassVisuals = props.visuals?.checked?.label
+  } else if (isIndeterminate) {
+    labelClassVisuals = props.visuals?.indeterminate?.label
+  }
+
+  const labelClass = [props.labelClass, labelClassVisuals]
+
   return {
     checked: !isIndeterminate ? isChecked : undefined,
     indeterminate: isIndeterminate || undefined,
+    checkboxClass,
+    labelClass,
   }
 })
 
@@ -46,10 +75,26 @@ function handleStateChange() {
     )
   }
 }
+
+function handleKey(ev: KeyboardEvent) {
+  if (!props.editable) {
+    return
+  }
+
+  if (ev.key === ' ') {
+    ev.preventDefault?.()
+    ev.stopPropagation?.()
+
+    handleStateChange()
+  }
+
+  props.inputProps?.onKeydown?.(ev)
+}
 </script>
 
 <template>
   <label
+    ref="labelEl"
     tabindex="0"
     class="label"
     :class="[
@@ -60,6 +105,7 @@ function handleStateChange() {
         'is-readonly': !editable,
       },
     ]"
+    @keydown="handleKey"
     @click.stop.prevent="handleStateChange"
   >
     <input
@@ -72,7 +118,11 @@ function handleStateChange() {
 
     <div
       class="checkbox"
-      :class="[`is-${color}`, { 'is-readonly': !editable }]"
+      :class="[
+        `is-${color}`,
+        { 'is-readonly': !editable },
+        toggleState.checkboxClass,
+      ]"
     >
       <Checkmark
         :class="{ hidden: !toggleState.checked }"
@@ -95,7 +145,7 @@ function handleStateChange() {
       <span
         v-if="label"
         class="checkbox-label"
-        :class="labelClass"
+        :class="toggleState.labelClass"
       >
         {{ label }}
       </span>
@@ -103,17 +153,26 @@ function handleStateChange() {
 
     <slot name="append" />
 
-    <span
+    <!-- <span
       v-if="!noHoverEffect"
       class="focus-helper"
-    />
+    /> -->
   </label>
 </template>
 
 <style lang="scss" scoped>
 .label {
-  --apply: flex items-center relative gap-2 cursor-pointer transition-all
+  --apply: flex items-start relative gap-2 cursor-pointer transition-all
     rounded-custom p-x-2 select-none;
+
+  --apply: '!outline-none';
+
+  &:focus-visible,
+  &:focus {
+    .checkbox {
+      --apply: ring-2 ring-primary/50 ring-offset-2;
+    }
+  }
 
   &.is-readonly {
     --apply: opacity-80;
@@ -145,7 +204,7 @@ function handleStateChange() {
     }
 
     .checkbox-label {
-      --apply: font-rem-14 p-y-6px;
+      --apply: font-rem-14 p-t-7px p-b-6px;
     }
   }
 
@@ -175,10 +234,11 @@ function handleStateChange() {
 }
 
 .checkbox {
-  --apply: flex flex-center rounded-2 border-primary border-2 shrink-0 self-start;
+  --apply: flex flex-center rounded-2 border-primary border-2 shrink-0
+    self-start;
 
   &-label {
-    --apply: leading-none;
+    --apply: leading-tight;
   }
 
   &.is-primary {
@@ -234,8 +294,13 @@ function handleStateChange() {
   }
 }
 
-.focus-helper {
-  --apply: absolute inset-0 z-3 hover:bg-current hover:opacity-10 cursor-pointer
-    rounded-inherit;
+// .focus-helper {
+//   --apply: content-empty absolute inset-0 hover:bg-current hover:opacity-10 cursor-pointer
+//     rounded-inherit;
+// }
+
+.label:hover::before {
+  --apply: content-empty absolute inset-0 bg-current opacity-10 cursor-pointer
+    rounded-inherit pointer-events-none;
 }
 </style>

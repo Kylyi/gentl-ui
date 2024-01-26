@@ -1,7 +1,9 @@
 <script setup lang="ts">
+// Types
+import { type IFieldWithFormatterProps } from '~/components/Field/types/field-with-formatter.type'
+
 // Functions
 import { useFieldUtils } from '~/components/Field/functions/useFieldUtils'
-import { IFieldWithFormatterProps } from '~/components/Field/types/field-with-formatter.type'
 
 const props = defineProps<IFieldWithFormatterProps>()
 
@@ -23,6 +25,13 @@ const fieldProps = getFieldProps(props)
         <template v-if="!val">&nbsp;</template>
       </template>
     </ValueFormatter>
+
+    <template
+      v-if="$slots.append"
+      #append
+    >
+      <slot name="append" />
+    </template>
   </Field>
 </template>
 

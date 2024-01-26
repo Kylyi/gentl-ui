@@ -1,8 +1,8 @@
 <script setup lang="ts">
 // Types
 import {
-  IQueryBuilderGroup,
-  IQueryBuilderGroupProps,
+  type IQueryBuilderGroup,
+  type IQueryBuilderGroupProps,
 } from '~/components/QueryBuilder/types/query-builder-group-props.type'
 
 // Models
@@ -35,7 +35,7 @@ function handleAddCondition() {
   group.value.children = [
     ...group.value.children,
     {
-      id: new Date().getTime().toString(),
+      id: generateUUID(),
       field: undefined as unknown as string,
       comparator: undefined as unknown as ComparatorEnum,
       value: undefined as unknown as string,
@@ -48,7 +48,7 @@ function handleAddGroup() {
   group.value.children = [
     ...group.value.children,
     {
-      id: new Date().getTime().toString(),
+      id: generateUUID(),
       isGroup: true,
       children: [],
       condition: 'AND',
@@ -90,13 +90,16 @@ const collapseProps = computed(() => {
       'is-hovered': hoveredRow === item,
       'is-base': !level,
       'is-last-child': isLastChild,
+      'no-drag': item.isNotDraggable,
+      'no-dragover': item.isNotDragOverable,
     }"
+    :data-path="item.path"
     @mouseover.stop="hoveredRow = item"
     @mouseleave="hoveredRow = undefined"
   >
     <!-- Group row -->
     <div class="qb-group-row">
-      <QueryBuilderMoveHandler v-if="level" />
+      <QueryBuilderMoveHandler v-if="level && !item.isNotDraggable" />
 
       <!-- Condition -->
       <div class="qb-group-condition">
@@ -110,6 +113,7 @@ const collapseProps = computed(() => {
 
         <!-- Or -->
         <Btn
+          v-if="!noConditionChange"
           :class="{ 'is-active': item.condition === 'OR' }"
           :label="$t('queryBuilder.or')"
           size="xs"
@@ -119,11 +123,12 @@ const collapseProps = computed(() => {
 
       <!-- Actions -->
       <div class="qb-group-actions">
+        <!-- Collapse -->
         <Btn
           size="xs"
           no-uppercase
           v-bind="collapseProps"
-          w="20"
+          w="22"
           align="right"
           border="1 ca"
           @click="collapsed[item.id] = !collapsed[item.id]"
@@ -149,12 +154,17 @@ const collapseProps = computed(() => {
         :key="child.path"
         :item="child"
         :parent="item"
+        :remove-fnc="removeFnc"
         :level="level + 1"
+        :editable="editable"
         :is-last-child="idx === item.children.length - 1"
       />
 
       <!-- Controls -->
-      <div class="qb-group-controls">
+      <div
+        v-if="!noAdd"
+        class="qb-group-controls"
+      >
         <!-- Add row -->
         <Btn
           :label="$t('queryBuilder.addCondition')"
@@ -185,7 +195,12 @@ const collapseProps = computed(() => {
 
 <style scoped lang="scss">
 .qb-group {
-  --apply: relative flex flex-col rounded-custom p-r-0 p-l-2 m-l-5 border-1 border-transparent;
+  --apply: relative flex flex-col rounded-custom p-r-0 p-l-2 m-l-5
+    border-1 border-transparent;
+
+  transition:
+    background-color 0.3s ease-in-out,
+  shadow 0.3s ease-in-out;
 
   &.is-hovered {
     --apply: bg-white dark:bg-darker shadow-consistent shadow-ca;

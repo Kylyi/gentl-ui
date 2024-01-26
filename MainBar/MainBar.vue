@@ -1,9 +1,9 @@
 <script setup lang="ts">
-// TYPES
-import type { IMainBarProps } from '~~/components/MainBar/types/main-bar-props.type'
+// Types
+import type { IMainBarProps } from '~/components/MainBar/types/main-bar-props.type'
 
-// COMPONENTS
-import CrudBtns from '@/components/Crud/CrudBtns.vue'
+// Components
+import CrudBtns from '~/components/Crud/CrudBtns.vue'
 
 defineProps<IMainBarProps>()
 defineEmits<{
@@ -13,7 +13,9 @@ defineEmits<{
 
 defineSlots<{
   'subtitle'?: (payload: {}) => void
+  'title-append'?: (payload: {}) => void
   'right'?: (payload: {}) => void
+  'left'?: (payload: {}) => void
   'inner'?: (payload: {}) => void
   'right-bottom'?: (payload: {}) => void
   'actions-prepend'?: (payload: {
@@ -48,14 +50,18 @@ defineExpose({
     </Breadcrumbs>
 
     <div class="main-bar-content">
-      <!-- TITLE & SUBTITLE -->
+      <slot name="left" />
+
+      <!-- Title & Subtitle -->
       <div class="main-bar-title">
-        <!-- TITLE -->
+        <!-- Title -->
         <Heading filled>
           {{ title }}
+
+          <slot name="title-append" />
         </Heading>
 
-        <!-- SUBTITLE -->
+        <!-- Subtitle -->
         <slot name="subtitle">
           <span
             v-if="subtitle"
@@ -113,12 +119,12 @@ defineExpose({
   transition: padding 250ms cubic-bezier(0, 0, 0.2, 1);
 
   &-content {
-    --apply: flex flex-gap-x-4 grow items-center rounded-custom
-      bg-ca;
+    --apply: flex flex-gap-x-4 grow items-center rounded-custom;
+    --apply: bg-$MainBar-bg;
   }
 
   &-title {
-    --apply: flex flex-col grow overflow-auto relative bg-ca rounded-custom;
+    --apply: flex flex-col grow overflow-auto relative rounded-custom;
   }
 
   &-subtitle {

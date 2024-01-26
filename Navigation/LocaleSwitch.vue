@@ -1,30 +1,22 @@
 <script setup lang="ts">
-import { LocaleObject } from '@nuxtjs/i18n/dist/runtime/composables'
+import { type LocaleObject } from '#i18n'
 
-// UTILS
-const i18n = useI18n()
+// Utils
+const { localesByCode } = useLocale()
+const { locale, locales } = useI18n()
 const switchLocalePath = useSwitchLocalePath()
 
 const localeCookie = useCookie('lang', { path: '/', sameSite: 'lax' })
-const currentLocale = computed(() => i18n.locale.value)
-const locales = computed(() => i18n.locales.value as LocaleObject[])
 
-const mappedLocale = computed(() => {
-  return (
-    locales.value.find(l => currentLocale.value === l.code) || locales.value[0]
-  )
-})
+const _locales = computed(() => locales.value as LocaleObject[])
 
-function handleSetLocale(locale: LocaleObject, callback?: () => void) {
-  const localePath = switchLocalePath(locale.code)
+function handleSetLocale(_locale: LocaleObject, callback?: () => void) {
+  const localePath = switchLocalePath(_locale.code)
   history.replaceState(null, '', localePath)
-  i18n.locale.value = locale.code
-  localeCookie.value = locale.code
+  locale.value = _locale.code
+  localeCookie.value = _locale.code
 
-  useHead({
-    htmlAttrs: { lang: locale.code },
-  })
-
+  // useHead({ htmlAttrs: { lang: locale.code } })
   callback?.()
 }
 </script>
@@ -32,7 +24,7 @@ function handleSetLocale(locale: LocaleObject, callback?: () => void) {
 <template>
   <Btn
     id="lang-dropdown"
-    :icon="`${mappedLocale?.icon} w-6 h-6`"
+    :icon="`${localesByCode[localeCookie || locale]?.icon} w-6 h-6`"
     round
     no-hover-effect
     size="auto"
@@ -47,7 +39,7 @@ function handleSetLocale(locale: LocaleObject, callback?: () => void) {
     >
       <template #default="{ hide }">
         <Btn
-          v-for="(_locale, idx) in locales"
+          v-for="(_locale, idx) in _locales"
           :key="idx"
           :icon="`${_locale.icon} w-8 h-8`"
           size="auto"

@@ -3,9 +3,10 @@ import type {
   IToggleProps,
   ToggleClass,
   ToggleState,
-} from '~~/components/Toggle/types/toggle-props.type'
+} from '~/components/Toggle/types/toggle-props.type'
 
 const props = withDefaults(defineProps<IToggleProps>(), {
+  allowString: true,
   size: 'xs',
   modelValue: null,
   checkValue: true,
@@ -18,10 +19,20 @@ const emits = defineEmits<{
   (e: 'update:modelValue', val?: boolean | null): void
 }>()
 
-// STATE
+// State
 const model = useVModel(props, 'modelValue', emits)
 
 const internalValue = computed<ToggleState>(() => {
+  if (props.allowString) {
+    const val = model.value === null ? 'null' : model.value.toString()
+
+    return val === props.checkValue?.toString()
+      ? 'checked'
+      : val === props.uncheckValue?.toString()
+      ? 'unchecked'
+      : 'indeterminate'
+  }
+
   return model.value === props.checkValue
     ? 'checked'
     : model.value === props.uncheckValue
@@ -38,35 +49,65 @@ function handleStateChange() {
     props.uncheckValue,
     props.indeterminateValue,
     props.checkValue,
+    ...(props.allowString
+      ? [
+          props.uncheckValue?.toString(),
+          props.indeterminateValue?.toString(),
+          props.checkValue?.toString(),
+        ]
+      : []),
   ].filter(state => state !== undefined)
 
   const currentStateIdx = states.indexOf(model.value)
 
   if (currentStateIdx > -1) {
-    model.value = states[(currentStateIdx + 1) % states.length]
+    let val = states[(currentStateIdx + 1) % states.length]
+
+    if (val === 'true') {
+      val = true
+    } else if (val === 'false') {
+      val = false
+    } else if (val === 'null') {
+      val = null
+    }
+
+    model.value = val
   } else {
     model.value = props.checkValue
   }
 }
 
-// LAYOUT
+// Layout
+const toggleEl = ref<HTMLDivElement>()
 const itemProps = reactivePick(props, ['noHoverEffect', 'tag'])
+
+function handleFocus() {
+  toggleEl.value?.focus()
+}
 
 const defaultClasses = computed<ToggleClass>(() => {
   return {
     unchecked: {
-      toggle: props.filled ? 'bg-negative/15 border-negative' : '',
+      toggle: props.filled
+        ? 'bg-negative/15 border-negative'
+        : 'bg-white dark:bg-darker',
       bullet:
-        props.indeterminateValue !== undefined ? 'bg-negative' : 'bg-neutral',
+        props.indeterminateValue !== undefined
+          ? 'bg-negative color-negative'
+          : 'bg-neutral',
       icon: '',
     },
     indeterminate: {
-      toggle: props.filled ? 'bg-neutral/15 border-neutral' : '',
+      toggle: props.filled
+        ? 'bg-neutral/15 border-neutral'
+        : 'bg-white dark:bg-darker',
       bullet: 'bg-neutral',
       icon: '',
     },
     checked: {
-      toggle: props.filled ? 'bg-positive/15 border-positive' : '',
+      toggle: props.filled
+        ? 'bg-positive/15 border-positive'
+        : 'bg-white dark:bg-darker',
       bullet: 'bg-positive',
       icon: '',
     },
@@ -110,6 +151,15 @@ const bulletClasses = computed(() => {
 const icon = computed(() => {
   return classes.value[internalValue.value]?.icon
 })
+
+// Keyboard navigation
+function handleKeyDown(e: KeyboardEvent) {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault?.()
+
+    handleStateChange()
+  }
+}
 </script>
 
 <script lang="ts">
@@ -124,15 +174,20 @@ export default {
     :class="containerClass"
     :readonly="readonly"
     :disabled="disabled"
+    class="wrapper"
+    .focus="handleFocus"
     @click="handleStateChange"
   >
     <slot name="prepend" />
 
     <div
+      ref="toggleEl"
       class="toggle"
       border="1 ca hover:true-gray-400"
       :class="toggleClasses"
       v-bind="$attrs"
+      tabindex="0"
+      @keydown="handleKeyDown"
     >
       <div
         class="bullet"
@@ -148,7 +203,11 @@ export default {
     </div>
 
     <slot v-if="label">
-      <div p="r-3">
+      <div
+        class="toggle-label"
+        p="r-3"
+        :class="[labelClass, `toggle-label--${size}`]"
+      >
         {{ label }}
       </div>
     </slot>
@@ -164,6 +223,19 @@ export default {
 
   &.is-readonly {
     --apply: border-dotted cursor-default;
+
+    &.is-checked .bullet {
+      --apply: bg-positive/50 border-2 border-dotted border-positive;
+    }
+
+    &.is-unchecked .bullet {
+      --apply: bg-neutral/50 border-2 border-dotted border-neutral;
+    }
+  }
+
+  &-label--xs,
+  &-label--sm {
+    --apply: text-sm;
   }
 
   &.is-disabled {

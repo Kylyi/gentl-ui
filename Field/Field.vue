@@ -1,22 +1,22 @@
 <script setup lang="ts">
-// TYPES
-import type { IFieldProps } from '~~/components/Field/types/field-props.type'
+// Types
+import type { IFieldProps } from '~/components/Field/types/field-props.type'
 
 const props = defineProps<IFieldProps>()
 defineEmits<{
   (e: 'focus', ev: FocusEvent | MouseEvent): void
 }>()
 
-// LAYOUT
+// Layout
 const controlEl = ref<HTMLDivElement>()
 
-// WRAPPER
+// Wrapper
 const wrapperProps = reactivePick(
   props,
   'contentClass',
   'contentStyle',
   'disabled',
-  'errors',
+  'validation',
   'errorTakesSpace',
   'errorVisible',
   'hint',
@@ -56,12 +56,16 @@ defineExpose({
     <span
       ref="controlEl"
       class="control w-full"
-      :class="[controlClass, inputClass]"
+      :class="[
+        controlClass,
+        inputClass,
+        { 'is-placeholder': !modelValue && placeholder },
+      ]"
       :style="inputStyle"
       tabindex="0"
       @focus="$emit('focus', $event)"
     >
-      <slot> {{ modelValue || '&nbsp;' }} </slot>
+      <slot> {{ modelValue || placeholder || '&nbsp;' }} </slot>
     </span>
 
     <template
@@ -78,3 +82,9 @@ defineExpose({
     </template>
   </InputWrapper>
 </template>
+
+<style scoped lang="scss">
+.is-placeholder {
+  --apply: color-[#9ca3af];
+}
+</style>

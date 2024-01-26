@@ -1,6 +1,6 @@
 // REGEX
-import { SummaryEnum } from '~~/libs/App/data/enums/summary.enum'
-import { stringToFloat } from '~~/libs/App/data/regex/string-to-float.regex'
+import { SummaryEnum } from '~/libs/App/data/enums/summary.enum'
+import { stringToFloat } from '~/libs/App/data/regex/string-to-float.regex'
 
 export type INumberOptions = {
   localeIso?: string
@@ -15,6 +15,20 @@ const defaultIntlOptions: Intl.NumberFormatOptions = {
 export function useNumber(localeRef?: MaybeRefOrGetter<string>) {
   const { currentLocaleIso } = useLocale()
   const { t } = useI18n()
+
+  const separators = computed(() => getSeparators(localeRef))
+
+  const summaryMetricOptions = computed(() => {
+    return [
+      { id: SummaryEnum.SUM, label: t(`summaryEnum.${SummaryEnum.SUM}`) },
+      {
+        id: SummaryEnum.AVERAGE,
+        label: t(`summaryEnum.${SummaryEnum.AVERAGE}`),
+      },
+      { id: SummaryEnum.MEDIAN, label: t(`summaryEnum.${SummaryEnum.MEDIAN}`) },
+      { id: SummaryEnum.COUNT, label: t(`summaryEnum.${SummaryEnum.COUNT}`) },
+    ]
+  })
 
   /**
    * Parses a number from a string
@@ -72,10 +86,10 @@ export function useNumber(localeRef?: MaybeRefOrGetter<string>) {
     return `${formatNumber(bytes / k ** i)} ${sizes[i]}`
   }
 
-  const separators = computed(() => {
-    const usedLocale = toValue(localeRef) || currentLocaleIso.value
+  function getSeparators(localeRef?: MaybeRefOrGetter<string>) {
+    const locale = toValue(localeRef) || currentLocaleIso.value
 
-    const helperVal = Intl.NumberFormat(usedLocale).formatToParts(1111.1)
+    const helperVal = Intl.NumberFormat(locale).formatToParts(1111.1)
     const thousandSeparator = helperVal[1].value
     const decimalSeparator = helperVal[3].value
 
@@ -83,23 +97,12 @@ export function useNumber(localeRef?: MaybeRefOrGetter<string>) {
       thousandSeparator,
       decimalSeparator,
     }
-  })
-
-  const summaryMetricOptions = computed(() => {
-    return [
-      { id: SummaryEnum.SUM, label: t(`summaryEnum.${SummaryEnum.SUM}`) },
-      {
-        id: SummaryEnum.AVERAGE,
-        label: t(`summaryEnum.${SummaryEnum.AVERAGE}`),
-      },
-      { id: SummaryEnum.MEDIAN, label: t(`summaryEnum.${SummaryEnum.MEDIAN}`) },
-      { id: SummaryEnum.COUNT, label: t(`summaryEnum.${SummaryEnum.COUNT}`) },
-    ]
-  })
+  }
 
   return {
     separators,
     summaryMetricOptions,
+    getSeparators,
     parseNumber,
     formatNumber,
     formatBytes,

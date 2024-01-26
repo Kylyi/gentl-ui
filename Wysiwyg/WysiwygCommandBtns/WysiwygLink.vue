@@ -77,6 +77,7 @@ function handleSubmit() {
       <Form
         p="2"
         label-forced-visibility
+        :submit-confirmation="false"
         @submit="handleSubmit"
       >
         <template #submit-start>
@@ -91,7 +92,7 @@ function handleSubmit() {
         <!-- Text -->
         <TextInput
           v-model="link.text"
-          :label="$t('name')"
+          :label="$t('general.title')"
           label-inside
           placeholder="Google"
           autofocus
@@ -100,7 +101,7 @@ function handleSubmit() {
         <!-- Url -->
         <TextInput
           v-model="link.url"
-          :label="$t('wysiwyg.link')"
+          :label="$t('general.link')"
           placeholder="https://google.com"
           label-inside
         />

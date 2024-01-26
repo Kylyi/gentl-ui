@@ -1,14 +1,13 @@
 <script setup lang="ts">
-// eslint-disable-next-line import/named
-import { AnyMaskedOptions, MaskedRange } from 'imask'
+import { type AnyMaskedOptions, MaskedRange } from 'imask'
 
-// TYPES
+// Types
 import type { ITimeInputPickerProps } from '~/components/Inputs/TimeInput/types/time-input-picker-props.type'
 
-// COMPONENTS
-import VerticalScrollPicker from '~/components/ScrollPicker/VerticalScrollPicker.vue'
-import MenuProxy from '~/components/MenuProxy/MenuProxy.vue'
+// Components
 import TextInput from '~/components/Inputs/TextInput/TextInput.vue'
+import MenuProxy from '~/components/MenuProxy/MenuProxy.vue'
+import VerticalScrollPicker from '~/components/ScrollPicker/VerticalScrollPicker.vue'
 import { useAppStore } from '~/libs/App/app.store'
 
 const props = defineProps<ITimeInputPickerProps>()
@@ -18,10 +17,10 @@ const emits = defineEmits<{
   (e: 'update:update:prevent-next-is-am-change', val: boolean): void
 }>()
 
-// UTILS
+// Utils
 const { lastPointerDownEvent } = storeToRefs(useAppStore())
 
-// OPTIONS
+// Options
 const minuteOptions = computed(() =>
   [...Array(60).keys()].map(val => padStart(String(val), 2, '0'))
 )
@@ -31,7 +30,7 @@ const hourOptions = computed(() =>
     : [...Array(24).keys()].map(val => padStart(String(val), 2, '0'))
 )
 
-// MASKS
+// Masks
 const maskHours = computed<AnyMaskedOptions>(() => {
   return {
     mask: 'HH',
@@ -66,7 +65,7 @@ const maskMinutes = computed<AnyMaskedOptions>(() => {
   }
 })
 
-// LAYOUT
+// Layout
 const menuProxyEl = ref<InstanceType<typeof MenuProxy>>()
 const hInput = ref<InstanceType<typeof TextInput>>()
 const mInput = ref<InstanceType<typeof TextInput>>()
@@ -81,7 +80,7 @@ const preventNextIsAmChange = useVModel(props, 'preventNextIsAmChange', emits, {
 })
 
 const usedTouch = computed(() => {
-  return lastPointerDownEvent.value?.type !== 'mouse'
+  return lastPointerDownEvent.value?.pointerType !== 'mouse'
 })
 
 const localizedTimeParts = computed(() => {
@@ -167,13 +166,13 @@ defineExpose({
     max-w="!80"
     w-80
     position="top"
+    placement="bottom-start"
     :reference-target="referenceTarget"
     h="!auto"
     no-uplift
     @hide="handlePickerHide"
-    @mousedown.stop.prevent=""
   >
-    <!-- HEADER -->
+    <!-- Header -->
     <template
       v-if="usedTouch"
       #header
@@ -208,8 +207,11 @@ defineExpose({
       </div>
     </template>
 
-    <!-- SCROLLERS -->
-    <div flex="~ gap-x-2 center">
+    <!-- Scrollers -->
+    <div
+      flex="~ gap-x-2 center"
+      @mousedown.stop.prevent
+    >
       <VerticalScrollPicker
         ref="hourEl"
         :model-value="localizedTimeParts.hh"
@@ -267,7 +269,7 @@ defineExpose({
       </div>
     </div>
 
-    <!-- SHORTCUTS -->
+    <!-- Shortcuts -->
     <Field
       v-if="shortcuts"
       :label="$t('general.shortcuts')"

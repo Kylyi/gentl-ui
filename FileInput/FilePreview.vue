@@ -1,13 +1,11 @@
 <script setup lang="ts">
-// Types
-import type { IFile } from '~/components/FileInput/types/file.type'
-
 // Constants
-import { ICON_BY_FILE_TYPE } from '~~/components/FileInput/constants/iconByFileType'
+import { ICON_BY_FILE_TYPE } from '~/components/FileInput/constants/iconByFileType'
 
 type IProps = {
-  file: File | IFile
+  downloadUrl?: string
   editable?: boolean
+  file: File | IFile
   noDownloadButton?: boolean
 }
 
@@ -27,9 +25,9 @@ const icon = computed(() => {
 })
 
 const imageUrl = computed(() => {
-  if ('path' in props.file && props.file.type.startsWith('image/')) {
+  if ('path' in props.file && props.file.type?.startsWith('image/')) {
     return getLocalImageUrl(props.file.path)
-  } else if (!('path' in props.file) && props.file.type.startsWith('image/')) {
+  } else if (!('path' in props.file) && props.file.type?.startsWith('image/')) {
     return URL.createObjectURL(props.file)
   }
 
@@ -44,8 +42,9 @@ const imageUrl = computed(() => {
         self-center
         text="caption"
         line-clamp="2"
+        p="y-1"
       >
-        {{ file.name }}
+        {{ file?.name }}
       </span>
 
       <Btn
@@ -81,14 +80,16 @@ const imageUrl = computed(() => {
         v-if="'path' in file"
         w-full
         size="sm"
+        class="!rounded-t-0"
         :label="$t('file.download')"
-        @click="handleDownloadFile(file)"
+        @click.stop.prevent="handleDownloadFile(file, downloadUrl)"
       />
       <Btn
         v-else
         :label="$t('file.added')"
         size="sm"
         w-full
+        class="!rounded-t-0"
       />
     </div>
   </div>
@@ -96,8 +97,8 @@ const imageUrl = computed(() => {
 
 <style lang="scss" scoped>
 .file-preview {
-  --apply: grid gap-4 fit items-center
-      border-1 border-dotted rounded-3 border-ca color-ca;
+  --apply: grid gap-4 fit items-center border-1 border-dotted rounded-3
+    border-ca color-ca;
 
   grid-template-rows: auto 1fr auto;
 
@@ -114,7 +115,7 @@ const imageUrl = computed(() => {
   }
 
   &:hover {
-    --apply: bg-ca color-dark dark:color-light;
+    --apply: shadow-consistent-xs shadow-ca color-dark dark:color-light;
   }
 }
 </style>

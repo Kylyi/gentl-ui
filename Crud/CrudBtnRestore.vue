@@ -1,10 +1,11 @@
 <script setup lang="ts">
-// TYPES
-import type { IBtnProps } from '~~/components/Button/types/btn-props.type'
-import type { ICrudBtnProps } from '~~/components/Crud/types/crud-btn-props.type'
+import type { RouteLocationRaw } from '#vue-router'
+
+// Types
+import type { ICrudBtnProps } from '~/components/Crud/types/crud-btn-props.type'
 
 type IProps = ICrudBtnProps & {
-  to?: IBtnProps['to']
+  to?: RouteLocationRaw
 }
 
 withDefaults(defineProps<IProps>(), {
@@ -15,10 +16,10 @@ withDefaults(defineProps<IProps>(), {
 <template>
   <Btn
     preset="RESTORE"
-    :label="labels && $t('forms.restore')"
+    :label="labels && $t('general.restore')"
     :loader-type="loaderType"
     :loading="loading"
     :to="to"
-    no-dim
   />
+  no-dim
 </template>

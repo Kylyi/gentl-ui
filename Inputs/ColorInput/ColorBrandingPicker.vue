@@ -50,7 +50,7 @@ const standardColorsByColumn = computedEager(() => {
   const _colors = pick(colors, relevantColors)
 
   return Object.entries(_colors).reduce((agg, [key, value]) => {
-    const colorShades = new Set(Object.values(value))
+    const colorShades = new Set(Object.values(value as any))
 
     agg[key] = Array.from(colorShades)
     if (agg[key]) {
@@ -68,7 +68,7 @@ function handleSelectColor(color?: string) {
 
 <template>
   <div flex="~ col gap-y-3">
-    <!-- THEME COLORS -->
+    <!-- Theme colors -->
     <div flex="~ gap-y-px wrap">
       <div
         w="full"
@@ -99,7 +99,7 @@ function handleSelectColor(color?: string) {
       </div>
     </div>
 
-    <!-- STANDARD COLORS -->
+    <!-- Standard colors -->
     <div flex="~ col">
       <div
         w="full"

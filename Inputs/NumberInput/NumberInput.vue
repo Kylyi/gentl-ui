@@ -1,52 +1,63 @@
 <script setup lang="ts">
-// eslint-disable-next-line import/named
 import { MaskedNumber } from 'imask'
 
-// TYPES
+// Types
 import type { INumberInputProps } from '~/components/Inputs/NumberInput/types/number-input-props.type'
 
-// COMPOSITION FUNCTIONS
-import { useInputUtils } from '@/components/Inputs/functions/useInputUtils'
+// Functions
+import { useInputUtils } from '~/components/Inputs/functions/useInputUtils'
 import { useNumber } from '~/components/Inputs/NumberInput/functions/useNumber'
+import { useInputValidationUtils } from '~/components/Inputs/functions/useInputValidationUtils'
 
-// COMPONENTS
-import Btn from '~~/components/Button/Btn.vue'
+// Components
+import Btn from '~/components/Button/Btn.vue'
 
 const props = withDefaults(defineProps<INumberInputProps>(), {
-  debounce: 150,
+  debounce: 0,
   errorTakesSpace: true,
   errorVisible: true,
   fractionDigits: 2,
+  inline: undefined,
+  labelInside: undefined,
   mask: () => ({ mask: String }),
-  rounded: true,
+  required: undefined,
   size: 'md',
+  stackLabel: undefined,
   step: 'auto',
+  min: Number.NEGATIVE_INFINITY,
+  max: Number.POSITIVE_INFINITY,
 })
 
 defineEmits<{
-  (e: 'update:model-value', val?: string | undefined | null): void
+  (e: 'update:model-value', val?: number | undefined | null): void
   (e: 'blur'): void
 }>()
 
-// UTILS
+// Utils
 const { separators } = useNumber()
 
-// MASK
-// @ts-expect-error IMask type
+// Mask
 const mask = computed<MaskedNumber>(() => {
-  return {
+  return new MaskedNumber({
     thousandsSeparator: props.noGrouping
       ? ''
       : separators.value.thousandSeparator,
     radix: separators.value.decimalSeparator,
     mapToRadix: ['.', ','],
     scale: props.fractionDigits,
-    signed: true,
     ...(props.mask || {}),
     mask: Number,
     min: props.min,
     max: props.max,
-  }
+    // @ts-expect-error imask type
+    format: (value: any) => {
+      if (isNil(value)) {
+        return ''
+      }
+
+      return value.toString()
+    },
+  })
 })
 
 const {
@@ -55,6 +66,7 @@ const {
   typedValue,
   wrapperProps,
   hasNoValue,
+  hasClearableBtn,
   focus,
   select,
   blur,
@@ -71,7 +83,9 @@ const {
   maskRef: mask,
 })
 
-// STEP
+const { path } = useInputValidationUtils(props)
+
+// Step
 const increment = ref<InstanceType<typeof Btn>>()
 const decrement = ref<InstanceType<typeof Btn>>()
 const modifier = ref<-1 | 1>(1)
@@ -94,7 +108,7 @@ const stepAdjusted = computed(() => {
   }
 })
 
-const { pause, resume } = useIntervalFn(() => handleStep(), 80, {
+const { pause, resume } = useIntervalFn(() => handleStep(), 120, {
   immediate: false,
   immediateCallback: true,
 })
@@ -110,8 +124,8 @@ function handleStep() {
     currentValue = 0
   }
 
-  const nextValue = +currentValue + stepAdjusted.value * modifier.value
-  handleManualModelChange(nextValue, true)
+  const nextValue = +currentValue! + stepAdjusted.value * modifier.value
+  handleManualModelChange(nextValue, false)
 }
 
 function startStep(_: PointerEvent, increment = true) {
@@ -152,7 +166,8 @@ defineExpose({
   <InputWrapper
     v-bind="wrapperProps"
     :has-content="!hasNoValue"
-    @click.stop.prevent="handleClickWrapper"
+    .focus="focus"
+    @click="handleClickWrapper"
   >
     <template
       v-if="$slots.prepend"
@@ -174,21 +189,22 @@ defineExpose({
       :readonly="readonly"
       :disabled="disabled"
       :label="label || placeholder"
-      :name="name || label || placeholder"
+      :name="name || path || label || placeholder"
       class="control"
       role="presentation"
       :class="[inputClass]"
       :style="inputStyle"
+      v-bind="inputProps"
       @focus="handleFocusOrClick"
       @blur="handleBlur"
     />
 
     <template
-      v-if="$slots.append || (!readonly && !disabled)"
+      v-if="$slots.append || hasClearableBtn || (!readonly && !disabled)"
       #append
     >
       <div
-        v-if="step || $slots.append"
+        v-if="step || hasClearableBtn || $slots.append"
         class="number-input__step"
         @click="handleFocusOrClick"
       >
@@ -198,7 +214,25 @@ defineExpose({
           :focus="focus"
         />
 
-        <!-- STEP -->
+        <Btn
+          v-if="hasClearableBtn"
+          icon="eva:close-fill h-6 w-6"
+          color="ca"
+          size="auto"
+          h="7"
+          w="7"
+          tabindex="-1"
+          @click.stop.prevent="!clearConfirmation && clear()"
+        >
+          <MenuConfirmation
+            v-if="clearConfirmation"
+            @ok="clear"
+          >
+            {{ clearConfirmation }}
+          </MenuConfirmation>
+        </Btn>
+
+        <!-- Step -->
         <div
           v-if="step && !readonly && !disabled"
           flex="~ col shrink"

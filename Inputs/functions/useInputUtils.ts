@@ -1,11 +1,11 @@
-// COMPOSITION FUNCTIONS
-import { useMask } from '@/components/Inputs/functions/useMask'
+// Types
+import type { IInputUtilsOptions } from '~/components/Inputs/types/input-utils-options.type'
 
-// TYPES
-import type { IInputUtilsOptions } from '~~/components/Inputs/types/input-utils-options.type'
+// Functions
+import { useMask } from '~/components/Inputs/functions/useMask'
 
-// STORE
-import { useAppStore } from '~~/libs/App/app.store'
+// Store
+import { useAppStore } from '~/libs/App/app.store'
 
 export function useInputUtils(options: IInputUtilsOptions) {
   const {
@@ -15,6 +15,7 @@ export function useInputUtils(options: IInputUtilsOptions) {
     maskEventHandlers,
     menuElRef,
     preventFocusOnTouch,
+    setModel,
   } = options
 
   const { lastPointerDownEvent } = storeToRefs(useAppStore())
@@ -24,18 +25,19 @@ export function useInputUtils(options: IInputUtilsOptions) {
 
   const debouncedChange = useDebounceFn((val: any) => {
     if (!props.emitOnBlur) {
-      instance?.emit('update:model-value', val)
+      setModel?.(val) ?? instance?.emit('update:model-value', val)
       touch()
     }
   }, props.debounce)
 
-  // MASK
+  // Mask
   const { modelValue, emptyValue } = toRefs(props)
   const {
     el,
     elMask,
     hasJustChanged,
     refresh,
+    destroyMask,
     maskedValue,
     typedValue,
     lastValidValue,
@@ -44,20 +46,21 @@ export function useInputUtils(options: IInputUtilsOptions) {
     handleManualModelChange,
   } = useMask({
     modelValue,
+    allowIncompleteMaskValue: props.allowIncompleteMaskValue,
     maskOptions: maskRef,
     updateValueFnc: debouncedChange,
     emptyValue,
     eventHandlers: maskEventHandlers,
+    setModel,
   })
 
-  // WRAPPER
+  // Wrapper
   const wrapperProps = reactivePick(
     props,
     'contentClass',
     'contentStyle',
     'disabled',
     'emptyValue',
-    'errors',
     'errorTakesSpace',
     'errorVisible',
     'hint',
@@ -67,23 +70,39 @@ export function useInputUtils(options: IInputUtilsOptions) {
     'labelClass',
     'labelInside',
     'loading',
+    'modelValue',
+    'originalValue',
     'placeholder',
     'readonly',
     'required',
     'size',
-    'stackLabel'
+    'stackLabel',
+    'noBorder',
+    'inputContainerClass',
+    'inputContainerStyle',
+    'validation',
+    'ui'
   )
 
-  // LAYOUT
+  // Layout
   const isBlurred = ref(true)
   const preventNextBlur = autoResetRef(false, 50)
   const menuEl = computed(() => toValue(menuElRef))
+  const hasContent = computedEager(() => {
+    return props.hasContent || !isEmpty.value
+  })
 
-  // INPUT METHODS
+  const hasClearableBtn = computedEager(() => {
+    return (
+      !props.readonly && !props.disabled && props.clearable && hasContent.value
+    )
+  })
+
+  // Input methods
   const focus = (alignCursor?: boolean) => {
     unrefElement(el)?.focus()
 
-    if (alignCursor) {
+    if (alignCursor === true) {
       setTimeout(() => elMask.value?.updateCursor(elMask.value.value.length), 0)
     }
   }
@@ -157,7 +176,8 @@ export function useInputUtils(options: IInputUtilsOptions) {
 
       if (props.emitOnBlur) {
         hasJustChanged.value = true
-        instance?.emit('update:model-value', lastValidValue.value)
+        setModel?.(lastValidValue.value) ??
+          instance?.emit('update:model-value', lastValidValue.value)
         touch()
       }
 
@@ -184,7 +204,7 @@ export function useInputUtils(options: IInputUtilsOptions) {
 
     focusedProgramatically.value = true
 
-    blurAnyFocusedInput()
+    // blurAnyFocusedInput()
 
     if (
       !preventFocusOnTouch ||
@@ -229,7 +249,9 @@ export function useInputUtils(options: IInputUtilsOptions) {
     if (!isEmptyValue) {
       touch()
     }
-  })
+  }, 300)
+
+  onBeforeUnmount(destroyMask)
 
   return {
     el,
@@ -239,6 +261,8 @@ export function useInputUtils(options: IInputUtilsOptions) {
     isBlurred,
     wrapperProps,
     hasNoValue: isEmpty,
+    hasClearableBtn,
+    hasContent,
     handleMouseDown,
     handleBlur,
     handleFocus,
@@ -252,5 +276,6 @@ export function useInputUtils(options: IInputUtilsOptions) {
     handleManualModelChange,
     handleFocusOrClick,
     handleClickWrapper,
+    elMask,
   }
 }

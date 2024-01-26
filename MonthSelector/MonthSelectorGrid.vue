@@ -1,13 +1,16 @@
 <script setup lang="ts">
-// TYPES
-import type { IMonthSelectorGridProps } from '~~/components/MonthSelector/types/month-selector-grid-props'
+// Types
+import type { IMonthSelectorGridProps } from '~/components/MonthSelector/types/month-selector-grid-props'
 
 const props = defineProps<IMonthSelectorGridProps>()
 defineEmits<{
   (e: 'month', month: number): void
 }>()
 
-// LAYOUT
+// Utils
+const { formatDate } = useDateUtils()
+
+// Layout
 const now = useNow({ interval: $duration(15, 'minute').as('ms') })
 const nowMonth = eagerComputed(() => {
   const dateObj = $date(now.value)
@@ -38,7 +41,7 @@ const months = computed(() => {
     <Btn
       v-for="m in months"
       :key="m.idx"
-      :label="$d(m.date, 'month')"
+      :label="formatDate(m.date, 'month')"
       tabindex="-1"
       size="sm"
       :class="{

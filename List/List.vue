@@ -1,14 +1,16 @@
 <script setup lang="ts">
-// TYPES
-import { IListProps } from '~~/components/List/types/list-props.type'
+import { config } from '~/config'
 
-// COMPOSITION FUNCTIONS
-import { useList } from '@/components/List/functions/useList'
+// Types
+import type { IListProps } from '~/components/List/types/list-props.type'
+import type { IItemToBeAdded } from '~/components/List/types/list-item-to-add.type'
 
-// COMPONENTS
-import ListVirtualContainer from '~~/components/List/ListVirtualContainer.vue'
-import ListContainer from '~~/components/List/ListContainer.vue'
-import { IItemToBeAdded } from '~/components/List/types/list-item-to-add.type'
+// Functions
+import { useList } from '~/components/List/functions/useList'
+
+// Components
+import ListVirtualContainer from '~/components/List/ListVirtualContainer.vue'
+import ListContainer from '~/components/List/ListContainer.vue'
 
 const props = withDefaults(defineProps<IListProps>(), {
   clearable: true,
@@ -17,6 +19,7 @@ const props = withDefaults(defineProps<IListProps>(), {
   groupBy: () => [],
   itemKey: 'id',
   itemLabel: 'label',
+  fuseExtendedSearchToken: config.selector.fuseExtendedSearchToken,
 })
 
 defineEmits<{
@@ -31,9 +34,10 @@ defineEmits<{
 
 // Layout
 const containerEl = ref<InstanceType<typeof ListVirtualContainer>>()
-const items = props.items
-  ? (useVModel(props, 'items') as Ref<any>)
-  : ref<any[]>([])
+const items =
+  props.items !== undefined
+    ? (useVModel(props, 'items') as Ref<any>)
+    : ref<any[]>([])
 
 const ContainerComponent = computed(() => {
   return props.virtual || items.value.length >= 1e3
@@ -43,6 +47,7 @@ const ContainerComponent = computed(() => {
 
 const {
   arr,
+  isLoading,
   hoveredIdx,
   listEl,
   listRowProps,
@@ -71,7 +76,7 @@ defineExpose({
 // When `noSearch` is used, we fake the focus on the container to allow
 // keyboard navigation
 onMounted(() => {
-  if (props.noSearch) {
+  if (props.noSearch && !props.noAutofocus) {
     setTimeout(() => {
       unrefElement(containerEl)?.focus()
     }, 150)
@@ -91,22 +96,29 @@ onMounted(() => {
         <SearchInput
           ref="searchEl"
           v-model="search"
-          m="2"
+          :class="{ 'm-2': !dense }"
           grow
+          :inline="false"
+          :debounce="searchDebounce"
           class="bg-white dark:bg-darker"
           :autofocus="!noAutofocus"
+          data-cy="list-search"
+          v-bind="inputProps"
         />
 
         <slot name="after-search" />
       </div>
 
       <!-- Separator -->
-      <div class="separator" />
+      <div
+        v-if="!dense"
+        class="separator"
+      />
     </template>
 
-    <!-- LOADING -->
+    <!-- Loading -->
     <div
-      v-if="loading"
+      v-if="loading || isLoading"
       flex="~ center"
     >
       <LoaderInline />
@@ -114,11 +126,16 @@ onMounted(() => {
 
     <Btn
       v-if="allowSelectAllFiltered && search"
-      :label="$t('selectFiltered')"
+      :label="$t('general.selectFiltered')"
       no-uppercase
       m="x-1 y-2"
       :disabled="loading"
       @click="handleSelectFiltered"
+    />
+
+    <slot
+      name="above"
+      :items-filtered="arr"
     />
 
     <Component
@@ -127,11 +144,13 @@ onMounted(() => {
       ref="containerEl"
       :items="arr"
       :class="contentClass"
-      tabindex="0"
+      :tabindex="noSearch ? 0 : undefined"
+      data-cy="search-results"
     >
       <template #default="{ item, index }">
         <ListRow
           :item="item"
+          :tag="rowTag"
           :is-selected="!('isGroup' in item) && !!selectedByKey[item.id]"
           :is-hovered="hoveredIdx === index"
           :is-disabled="disabledFnc(item)"

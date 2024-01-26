@@ -1,12 +1,17 @@
 <script setup lang="ts">
-// CONSTANTS
+import { config } from '~/config'
+
+// Constants
 import { BUTTON_PRESET } from '~/components/Button/constants/button-preset.constant'
 
 const breadcrumbsInjected = injectStrict(breadcrumbsKey, ref([]))
 
 const breadcrumbs = computed(() => {
   return [
-    { icon: 'material-symbols:home-rounded', to: $p('/') },
+    {
+      icon: 'lucide:home',
+      to: $p(config.breadcrumbs.homePath || '/'),
+    },
     ...breadcrumbsInjected.value,
   ]
     .flatMap(breadcrumb => [breadcrumb, 'splitter'])
@@ -18,13 +23,14 @@ const breadcrumbs = computed(() => {
   <div class="breadcrumbs-wrapper">
     <div class="breadcrumbs">
       <template
-        v-for="breadcrumb in breadcrumbs"
-        :key="breadcrumb.to"
+        v-for="(breadcrumb, idx) in breadcrumbs"
+        :key="`${breadcrumb.to}-${idx}`"
       >
-        <!-- CHEVRON -->
+        <!-- Chevron -->
         <span
           v-if="typeof breadcrumb === 'string'"
           :class="BUTTON_PRESET.CHEVRON_RIGHT.icon"
+          class="breadcrumb-item"
         />
 
         <Btn
@@ -33,9 +39,16 @@ const breadcrumbs = computed(() => {
           no-active-link
           color="!dark !dark:light"
           size="sm"
+          class="breadcrumb-item"
+          :class="{
+            'is-last': breadcrumb === breadcrumbs[breadcrumbs.length - 1],
+          }"
+          :no-dim="breadcrumb === breadcrumbs[breadcrumbs.length - 1]"
           no-uppercase
         />
       </template>
+
+      <slot name="append" />
     </div>
 
     <slot name="right" />
@@ -47,7 +60,19 @@ const breadcrumbs = computed(() => {
   --apply: flex grow flex-gap-x-1 items-center text-sm m-t-2 m-b-1;
 
   &-wrapper {
-    --apply: flex flex-gap-x-1 items-center;
+    --apply: flex flex-gap-x-1 items-center md:p-x-3;
+    --apply: bg-$Breadcrumbs-bg;
+  }
+
+}
+
+@screen lt-lg {
+  .breadcrumbs > .breadcrumb-item {
+    --apply: hidden;
+
+    &.is-last {
+      --apply: flex;
+    }
   }
 }
 

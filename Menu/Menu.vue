@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { MotionInstance } from '@vueuse/motion'
+import { type MotionInstance } from '@vueuse/motion'
 import {
-  Placement,
+  type Placement,
   arrow,
   computePosition,
   flip,
@@ -9,16 +9,17 @@ import {
   shift,
   size,
 } from '@floating-ui/dom'
+import { config } from '~/config'
 
-// TYPES
+// Types
 import type { IMenuProps } from '~/components/Menu/types/menu-props.type'
 
-// FLOATING UI MIDDLEWARE
+// Floating UI middleware
 import { fitWidth } from '~/utils/floatingMiddleware/fitWidth'
 import { matchWidth } from '~/utils/floatingMiddleware/matchWidth'
 import { cover } from '~/utils/floatingMiddleware/cover'
 
-// STORE
+// Store
 import { useAppStore } from '~/libs/App/app.store'
 
 defineOptions({
@@ -44,7 +45,7 @@ const emits = defineEmits<{
   (e: 'before-show'): void
 }>()
 
-// LIFECYCLE
+// Lifecycle
 const hasBeenShown = ref(false)
 
 onMounted(() => {
@@ -66,10 +67,10 @@ onBeforeUnmount(() => {
   triggerEl.value?.removeEventListener(props.trigger, toggle)
 })
 
-// STORE
+// Store
 const appStore = useAppStore()
 
-// HELPERS
+// Helpers
 const { color } = useTheme()
 
 async function createFloatInstance(options?: { skipFlip?: boolean }) {
@@ -90,7 +91,7 @@ async function createFloatInstance(options?: { skipFlip?: boolean }) {
     menuEl.value!.style.height = `${props.expectedHeight}px`
   }
 
-  // VIRTUAL ELEMENT ~ will create the menu in the last pointer down event position
+  // Virtual element ~ will create the menu in the last pointer down event position
   let virtualEl: any
 
   if (props.virtual && appStore.lastPointerDownEvent) {
@@ -118,11 +119,15 @@ async function createFloatInstance(options?: { skipFlip?: boolean }) {
     return
   }
 
+  let idx = Number(!!skipFlip)
   const { x, y, middlewareData, placement } = await computePosition(
     referenceElement,
     menuEl.value,
     {
       middleware: [
+        ...(props.fit ? [fitWidth] : []),
+        ...(props.matchWidth ? [matchWidth] : []),
+        ...(props.cover ? [cover] : []),
         offset(props.offset),
         shift(),
         ...(skipFlip
@@ -130,21 +135,21 @@ async function createFloatInstance(options?: { skipFlip?: boolean }) {
           : [flip({ fallbackPlacements: props.fallbackPlacements })]),
         size({
           apply({ availableWidth, availableHeight, elements }) {
-            Object.assign(elements.floating.style, {
-              maxWidth: `${availableWidth}px`,
-              maxHeight:
-                typeof props.maxHeight === 'number'
-                  ? `${Math.min(availableHeight, props.maxHeight)}px`
-                  : `min(${availableHeight}px, ${props.maxHeight})`,
-            })
+            if (idx > 0) {
+              Object.assign(elements.floating.style, {
+                maxWidth: `${availableWidth}px`,
+                maxHeight:
+                  typeof props.maxHeight === 'number'
+                    ? `${Math.min(availableHeight, props.maxHeight)}px`
+                    : `min(${availableHeight}px, ${props.maxHeight})`,
+              })
+            }
+
+            idx++
           },
           padding: 8,
           boundary: props.boundary,
         }),
-
-        ...(props.fit ? [fitWidth] : []),
-        ...(props.matchWidth ? [matchWidth] : []),
-        ...(props.cover ? [cover] : []),
 
         ...(!props.noArrow && !props.cover
           ? [arrow({ element: arrowEl.value!, padding: 4 })]
@@ -189,17 +194,17 @@ function getTargetElement(target: any): any {
     return
   }
 
-  // TARGET IS AN ELEMENT
+  // Target is an element
   if (target instanceof Element) {
     return target as Element
   }
 
-  // TARGET IS A SELECTOR
+  // Target is a selector
   else if (typeof target === 'string') {
     return document?.querySelector(target) || document?.body || undefined
   }
 
-  // TARGET IS VUE COMPONENT
+  // Target is a component
   else if (target) {
     const el = unrefElement(target)
 
@@ -211,17 +216,29 @@ function getTargetElement(target: any): any {
   return instance?.vnode.el?.parentNode
 }
 
-// LAYOUT
+// Layout
 const instance = getCurrentInstance()
 const menuEl = ref<HTMLDivElement>()
 const arrowEl = ref<HTMLDivElement>()
 const triggerEl = ref<HTMLDivElement>() // Element that triggers the menu
-const referenceEl = ref<Element>() // Element that menu is attached to
+const referenceEl = ref<HTMLDivElement>() // Element that menu is attached to
 const backdropBg = ref('bg-transparent')
 const isReferenceElTransparent = ref(false)
 const referenceElOldZIndex = ref<string>()
 const isFirstFloatingEl = ref<boolean>()
 const previousPlacement = ref<Placement>()
+
+const { y: pageY } = useElementBounding(referenceEl, { windowResize: true })
+
+watchThrottled(
+  pageY,
+  () => {
+    if (menuEl.value) {
+      createFloatInstance({ skipFlip: true })
+    }
+  },
+  { trailing: true, throttle: 100 }
+)
 
 const isOverlayVisible = computedEager(() => {
   return !props.noOverlay && isFirstFloatingEl.value
@@ -234,7 +251,7 @@ const innerClasses = computedEager(() => {
   }
 })
 
-// ANIMATIONS
+// Animations
 const animationTimestamp = ref<{ show: number; hide: number }>({
   show: 0,
   hide: 0,
@@ -245,17 +262,17 @@ const animationTimeCorrection = 50
 function handleAnimation(placement: Placement) {
   setTimeout(() => (backdropBg.value = 'bg-darker/80'))
 
-  // RESET TRANSFORM ORIGIN
+  // Reset transform origin
   menuEl.value?.classList.forEach(
     c => c.startsWith('origin-') && menuEl.value?.classList.remove(c)
   )
 
-  // DEFAULT INITIAL STATE
+  // Default initial state
   const opacity = 0.4
   let scaleY = 0.4
   let scaleX = props.cover ? 0.4 : 1
 
-  // SET TRANSFORM ORIGIN
+  // Set transform origin
   let transformOrigin: string
   let originModifier = 0
 
@@ -294,7 +311,6 @@ function handleAnimation(placement: Placement) {
   menuEl.value?.classList.add(transformOrigin)
 
   if (!motionInstance.value) {
-    // @ts-expect-error vue-motion type
     motionInstance.value = useMotion(menuEl, {
       initial: {
         y:
@@ -349,14 +365,18 @@ async function bounce() {
   await motionInstance.value?.apply('enter')
 }
 
-// INTERACTIONS
+// Interactions
 const preventInteractions = refAutoReset(false, 75)
 const preventMotion = refAutoReset(false, 25)
 const model = toRef(props, 'modelValue')
 const internalValue = ref(props.modelValue)
 
 function show(force?: boolean) {
-  if (preventInteractions.value || (internalValue.value && !force)) {
+  if (
+    preventInteractions.value ||
+    (internalValue.value && !force) ||
+    !referenceEl.value
+  ) {
     return
   }
 
@@ -371,14 +391,21 @@ function show(force?: boolean) {
   // TODO: Overlay zIndex -> this doesnt work properly when dealing with zIndexes,
   // probably create a copy of the button and temporarily show that instead?
   if (!props.cover && !props.noUplift) {
-    ;(referenceEl.value as any).style.zIndex = '3001'
+    ;(referenceEl.value as any).style.zIndex = '3000'
   }
 
   isReferenceElTransparent.value =
     referenceElStyle.backgroundColor === 'rgba(0, 0, 0, 0)'
+
   if (isReferenceElTransparent.value && color.value === 'light') {
-    ;(referenceEl.value as any).classList.add('bg-white')
+    ;(referenceEl.value as any).style.backgroundColor = 'white'
+  } else if (isReferenceElTransparent.value) {
+    ;(referenceEl.value as any).style.backgroundColor = 'black'
   }
+
+  ;(referenceEl.value as any).classList.add('shadow-consistent-xs')
+  ;(referenceEl.value as any).classList.add('shadow-ca')
+  ;(referenceEl.value as any).classList.add('transition-all')
 
   preventInteractions.value = true
 
@@ -411,7 +438,11 @@ function show(force?: boolean) {
   }
 }
 
-function hide(force = false, skipAnimation = false, hideAncestors?: boolean) {
+async function hide(
+  force = false,
+  skipAnimation = false,
+  hideAncestors?: boolean
+) {
   if (preventInteractions.value || !internalValue.value) {
     return
   }
@@ -439,7 +470,9 @@ function hide(force = false, skipAnimation = false, hideAncestors?: boolean) {
     })
   }
 
-  if (force || !props.persistent) {
+  const shouldHide = (await props.beforeHideFnc?.()) || true
+
+  if (force || (!props.persistent && shouldHide)) {
     backdropBg.value = 'bg-transparent'
     emits('before-hide')
 
@@ -499,10 +532,16 @@ function cleanComponent() {
   if (referenceEl.value) {
     ;(referenceEl.value as any).style.zIndex = referenceElOldZIndex.value
     referenceElOldZIndex.value = undefined
+    ;(referenceEl.value as any).classList.remove('shadow-consistent-xs')
+    ;(referenceEl.value as any).classList.remove('shadow-ca')
 
     if (isReferenceElTransparent.value) {
-      ;(referenceEl.value as any).classList.remove('bg-white')
+      ;(referenceEl.value as any).style.backgroundColor = 'transparent'
     }
+
+    setTimeout(() => {
+      ;(referenceEl.value as any).classList.remove('transition-all')
+    }, 150)
   }
 
   menuEl.value?.classList.remove('is-hiding')
@@ -511,7 +550,9 @@ function cleanComponent() {
   previousPlacement.value = undefined
 }
 
-onClickOutside(menuEl, handleClickOutside)
+onClickOutside(menuEl, handleClickOutside, {
+  ignore: props.ignoreClickOutside,
+})
 
 function handleClickOutside(ev: Event) {
   if (!internalValue.value) {
@@ -527,11 +568,13 @@ function handleClickOutside(ev: Event) {
   const lastFloatingElement = document.querySelector(
     '.floating-element:last-child'
   )
+  const isNotifications = !!targetEl.closest('.notifications')
 
   if (
     !isTargetBody &&
     !isPartOfFloatingUI &&
     !isPartOfReferenceEl &&
+    !isNotifications &&
     lastFloatingElement === menuEl.value
   ) {
     hide()
@@ -554,7 +597,7 @@ watch(model, val => {
   val ? show() : hide(true)
 })
 
-// WATCHERS FOR ELEMENTS
+// Watchers for target and referenceTarget
 const referenceTarget = toRef(props, 'referenceTarget')
 const target = toRef(props, 'target')
 
@@ -587,7 +630,7 @@ defineExpose({
       menuDom.style.maxHeight = ''
     }
 
-    createFloatInstance({ skipFlip: true })
+    createFloatInstance({ skipFlip: config.selector.shouldFlipOnSearch })
   },
 })
 </script>
@@ -597,7 +640,7 @@ defineExpose({
     v-if="internalValue || motionInstance?.isAnimating"
     to="body"
   >
-    <!-- OVERLAY -->
+    <!-- Overlay -->
     <div
       v-if="isOverlayVisible"
       class="backdrop"
@@ -610,7 +653,7 @@ defineExpose({
       class="menu floating-element"
       v-bind="$attrs"
     >
-      <!-- ARROW -->
+      <!-- Arrow -->
       <div
         v-if="!noArrow"
         ref="arrowEl"
@@ -621,7 +664,7 @@ defineExpose({
         }"
       />
 
-      <!-- HEADER -->
+      <!-- Header -->
       <slot
         name="header"
         :hide="hide"
@@ -637,22 +680,30 @@ defineExpose({
           rounded="t-inherit"
           :class="[innerClasses.headerClass, headerClass]"
         >
-          <h6
-            flex="1"
-            text="h6"
-            p="r-2"
-            truncate
-          >
-            <span>
-              {{ title }}
-            </span>
-          </h6>
+          <slot name="title">
+            <h6
+              flex="1"
+              text="h6"
+              p="r-2"
+              truncate
+            >
+              <span>
+                {{ title }}
+              </span>
+            </h6>
+          </slot>
 
-          <Btn
-            preset="CLOSE"
-            size="sm"
-            @click="hide(true, undefined, true)"
-          />
+          <div flex="~ gap-1">
+            <slot name="header-right-prepend" />
+
+            <Btn
+              preset="CLOSE"
+              size="sm"
+              @click="hide(true, undefined, true)"
+            />
+
+            <slot name="header-right-append" />
+          </div>
         </div>
       </slot>
 
@@ -680,7 +731,7 @@ defineExpose({
 }
 
 .arrow {
-  --apply: absolute w-2 h-2 rotate-45 dark:bg-darker bg-white;
+  --apply: absolute w-2 h-2 rotate-45 bg-white dark:bg-darker;
 
   &.has-header {
     --apply: bg-ca dark:bg-dark;

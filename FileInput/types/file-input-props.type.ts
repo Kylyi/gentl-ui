@@ -1,10 +1,10 @@
 // Types
-import { IFile } from '~/components/FileInput/types/file.type'
+import type { IZodValidationItem } from '~/utils/zod/types/zod-validation-item.type'
 
 export interface IFileInputProps {
   accept?: string
   disabled?: boolean
-  errors?: Pick<ErrorObject, '$message'>[]
+  downloadUrl?: string
   errorTakesSpace?: boolean
   hint?: string
   loading?: boolean
@@ -23,4 +23,9 @@ export interface IFileInputProps {
    * Whether to hide the download button
    */
   noDownloadButton?: boolean
+
+  /**
+   * Validation object
+   */
+  validation?: IZodValidationItem | Array<IZodValidationItem | undefined>
 }

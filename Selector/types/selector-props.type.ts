@@ -1,12 +1,14 @@
-import { FuseOptions } from '@vueuse/integrations/useFuse'
-import { FloatingUIBaseProps } from '~/components/Dialog/types/dialog-props.type'
+import { type CSSProperties } from 'vue'
+import { type FuseOptions } from '@vueuse/integrations/useFuse'
+import type { RouteLocationRaw } from '#vue-router'
 
-// TYPES
-import type { IInputProps } from '~~/components/Inputs/types/input-props.type'
+// Types
+import { type FloatingUIBaseProps } from '~/components/Dialog/types/dialog-props.type'
+import type { IInputProps } from '~/components/Inputs/types/input-props.type'
 
-// MODELS
-import { GroupItem } from '~~/libs/App/data/models/group-item.model'
-import { SortItem } from '~~/libs/App/data/models/sort-item.model'
+// Models
+import { GroupItem } from '~/libs/App/data/models/group-item.model'
+import { SortItem } from '~/libs/App/data/models/sort-item.model'
 
 export type ISelectorProps = IInputProps & {
   /**
@@ -30,6 +32,12 @@ export type ISelectorProps = IInputProps & {
   noItemsClear?: boolean
 
   /**
+   * When true, the menu will not be shown when the input is focused (via Tab for example),
+   * needs to be actualyl clicked
+   */
+  noAutoShowMenuOnFocus?: boolean
+
+  /**
    * For cases when we want to warn user that he is about to clear the value
    * Usecase: when there is a dependent variable based on currently selected
    * option and by clearing the Selector, we need to also reset the dependent variable
@@ -46,7 +54,7 @@ export type ISelectorProps = IInputProps & {
      * But some queries dont have the search so to prevent TS from complaining, just use any
      */
     fnc: (payload: any) => Promise<any> | any
-    mapKey: string
+    mapKey?: string
     immediate?: boolean
 
     /**
@@ -82,6 +90,13 @@ export type ISelectorProps = IInputProps & {
   options?: any[]
   scroller?: boolean
   innerClass?: ClassType
+  placeholderClass?: ClassType
+  placeholderStyle?: CSSProperties
+
+  /**
+   * When selected, the item can have a link attached to it
+   */
+  optionTo?: (item: any) => RouteLocationRaw
 
   /**
    * When true (with combination of `alowAdd`), the component will not add the
@@ -95,9 +110,19 @@ export type ISelectorProps = IInputProps & {
   itemHeight?: number
   multi?: boolean
   maxChipsRows?: number
+  noFilter?: boolean
   noHighlight?: boolean
   noSort?: boolean
   noSearch?: boolean
+  searchDebounce?: number
+  listClass?: ClassType
+  search?: string
+
+  /**
+   * The extended search token for fuse.js library
+   * https://www.fusejs.io/examples.html#extended-search
+   */
+  fuseExtendedSearchToken?: "'" | '=' | '!' | '^' | '!^' | '$' | '!$'
 
   /**
    * When using `multi` mode, whether to allow selecting all filtered options
@@ -114,4 +139,9 @@ export type ISelectorProps = IInputProps & {
    *     enough to show the whole text
    */
   noMenuMatchWidth?: boolean
+
+  /**
+   * The props that should be passed to the input tag (<input>)
+   */
+  inputProps?: Record<string, any>
 } & Pick<FloatingUIBaseProps, 'expectedHeight'>

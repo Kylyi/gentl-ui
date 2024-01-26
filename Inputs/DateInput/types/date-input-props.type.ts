@@ -1,10 +1,28 @@
-import { Dayjs } from 'dayjs'
+import dayjs from 'dayjs'
 
-// TYPES
-import type { IInputProps } from '~~/components/Inputs/types/input-props.type'
+// Types
+import type { IInputProps } from '~/components/Inputs/types/input-props.type'
 
-export interface IDateInputProps extends IInputProps {
-  allowedDays?: Array<Dayjs> | ((date: Dayjs) => boolean)
+export type IDateInputProps = IInputProps & {
+  /**
+   * An array or method that determines which days are allowed to be selected
+   */
+  allowedDays?: Array<dayjs.Dayjs> | ((date: dayjs.Dayjs) => boolean)
+
+  /**
+   * Whether the calendar should automatically close when a date is selected
+   *
+   * @default true
+   */
   autoClose?: boolean
-  disabledDays?: Array<Dayjs> | ((date: Dayjs) => boolean)
+
+  /**
+   * An array or method that determines which days are disabled
+   */
+  disabledDays?: Array<dayjs.Dayjs> | ((date: dayjs.Dayjs) => boolean)
+
+  /**
+   * Date format that we expect the input to return
+   */
+  format?: string
 }

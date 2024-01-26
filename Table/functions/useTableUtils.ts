@@ -1,73 +1,49 @@
-// TYPES
-import type { IItem } from '~/libs/App/types/item.type'
+// Types
 import type { DistinctData } from '~/components/Table/types/distinct-data.type'
-import type { ITableQuery } from '~/components/Table/types/table-query.type'
-import type { ITableState } from '~/components/Table/types/table-state.type'
 import type { ITableProps } from '~/components/Table/types/table-props.type'
 
-// MODELS
+// Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
-import { TableColumnState } from '~/components/Table/models/table-column-state.model'
 import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
-import { FilterItem } from '~/libs/App/data/models/filter-item'
 
-// FUNCTIONS
+// Injections
+import { getTableStorageKey } from '~/components/Table/provide/table.provide'
+
+// Functions
 import { getComponentName } from '~/libs/App/functions/misc'
-import { getTableStateDefault } from '~/components/Table/constants/table-state.default'
+import { parseSortingFromUrl } from '~/libs/App/functions/table/extractSortingFromUrl'
+import { parseFiltersFromUrl } from '~/libs/App/functions/table/extractFiltersFromUrl'
+import { parseVisibleColumnsFromUrl } from '~/libs/App/functions/table/extractVisibleColumnsFromUrl'
+import { COMPARATORS_BY_DATATYPE_MAP } from '~/components/Table/constants/comparators-by-datatype-map.const'
 
-// COMPONENTS
-import NumberInput from '~/components/Inputs/NumberInput/NumberInput.vue'
-import DateInput from '~/components/Inputs/DateInput/DateInput.vue'
-import Checkbox from '~/components/Checkbox/Checkbox.vue'
-import TextInput from '~/components/Inputs/TextInput/TextInput.vue'
-import YearMonthSelector from '~/components/YearMonthSelector/YearMonthSelector.vue'
-import { config } from '~/config'
-
-const SELECTOR_COMPARATORS = [ComparatorEnum.IN, ComparatorEnum.NOT_IN]
+// Constants
+import {
+  BOOLEANISH_COMPARATORS,
+  SELECTOR_COMPARATORS,
+} from '~/components/Table/constants/comparator-categories.const'
 
 export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
   // Utils
   const { t } = useI18n()
-  const currentUser = useCurrentUserState()
+  const { extendParseUrlParams } = useTableSpecifics()
 
   const instance = getCurrentInstance()
 
+  function getRowKey(tableProps: ITableProps) {
+    if (tableProps.getData?.createIdentifier) {
+      return '_uuid'
+    }
+
+    return tableProps.rowKey || 'id'
+  }
+
   function getStorageKey() {
-    if (props?.storageKey === null) {
-      return undefined
-    }
-
-    return props?.storageKey || getComponentName(instance?.parent)
+    return (
+      props?.storageKey || getComponentName(instance?.parent) || generateUUID()
+    )
   }
 
-  async function getTableState(): Promise<Ref<ITableState> | null> {
-    const storageKey = getStorageKey()
-
-    if (!storageKey) {
-      return ref(getTableStateDefault())
-    }
-
-    if (config.table.useServerState) {
-      try {
-        const { getTableStateViaQuery } = await GqlGetTableStateViaQuery({
-          where: {
-            [config.table.tableStateKeyField]:
-              currentUser.value!.userOptions.id,
-            tableName: storageKey,
-            stateName: 'default',
-          },
-        })
-
-        if (getTableStateViaQuery[0]) {
-          return ref(getTableStateViaQuery[0].state)
-        } else {
-          return ref(getTableStateDefault())
-        }
-      } catch (error) {}
-    }
-
-    return null
-  }
+  provide(getTableStorageKey, getStorageKey)
 
   async function getDistinctDataForField<T>(
     col: TableColumn<T>,
@@ -100,7 +76,7 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
 
     return data.map((item: any) => {
       const label = col.format?.(item) ?? get(item, distinctField[0])
-      const _label = label !== '' ? label : `(${t('empty')})`
+      const _label = label !== '' ? label : `(${t('general.empty')})`
 
       return {
         ...item,
@@ -110,113 +86,63 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
     })
   }
 
-  function getRowKey(tableProps: ITableProps) {
-    if (tableProps.getData?.createIdentifier) {
-      return '_uuid'
-    }
-
-    return tableProps.rowKey || 'id'
-  }
-
-  /**
-   * Will extract data from the table columns and return it in a format that can be used to
-   * save the state of the columns
-   */
-  function extractColumnsStateData(columns: TableColumn[]) {
-    return columns.map(col => new TableColumnState(col))
-  }
-
   /**
    * Gets the available comparators for a given data type
    */
   function getAvailableComparators(
-    dataType: DataType,
+    dataType: ExtendedDataType,
     options: {
       includeSelectorComparators?: boolean
       allowedComparators?: ComparatorEnum[]
+      extraComparators?: ComparatorEnum[]
     } = {}
-  ) {
-    const { includeSelectorComparators, allowedComparators } = options
-    let comparators: ComparatorEnum[] = []
-
-    switch (dataType) {
-      case 'number':
-      case 'percent':
-        comparators = [
-          ComparatorEnum.EQUAL,
-          ComparatorEnum.NOT_EQUAL,
-          ComparatorEnum.GREATER_THAN,
-          ComparatorEnum.GREATER_THAN_OR_EQUAL,
-          ComparatorEnum.LESS_THAN,
-          ComparatorEnum.LESS_THAN_OR_EQUAL,
-          ...(includeSelectorComparators ? SELECTOR_COMPARATORS : []),
-        ]
-
-        break
-
-      case 'date':
-      case 'yearMonth':
-        comparators = [
-          ComparatorEnum.EQUAL,
-          ComparatorEnum.NOT_EQUAL,
-          ComparatorEnum.GREATER_THAN_OR_EQUAL,
-          ComparatorEnum.LESS_THAN_OR_EQUAL,
-          ...(includeSelectorComparators ? SELECTOR_COMPARATORS : []),
-        ]
-
-        break
-
-      case 'boolean':
-        comparators = [ComparatorEnum.EQUAL]
-
-        break
-
-      case 'string':
-      default:
-        comparators = [
-          ComparatorEnum.EQUAL,
-          ComparatorEnum.NOT_EQUAL,
-          ComparatorEnum.STARTS_WITH,
-          ComparatorEnum.ENDS_WITH,
-          ComparatorEnum.CONTAINS,
-          ...(includeSelectorComparators ? SELECTOR_COMPARATORS : []),
-        ]
-
-        break
-    }
+  ): ComparatorEnum[] {
+    const {
+      includeSelectorComparators,
+      allowedComparators,
+      extraComparators = [],
+    } = options
+    const comparators: ComparatorEnum[] = [
+      ...COMPARATORS_BY_DATATYPE_MAP[dataType],
+      ...SELECTOR_COMPARATORS,
+    ]
 
     if (allowedComparators) {
-      return comparators.filter(comparator =>
-        allowedComparators.includes(comparator)
+      return uniq(
+        comparators.filter(comparator =>
+          allowedComparators.includes(comparator)
+        )
       )
+    } else if (!includeSelectorComparators) {
+      return uniq([
+        ...comparators.filter(comparator => {
+          return !SELECTOR_COMPARATORS.includes(comparator)
+        }),
+        ...COMPARATORS_BY_DATATYPE_MAP[dataType],
+        ...extraComparators,
+      ])
     }
 
-    return comparators
+    return uniq([...comparators, ...extraComparators])
   }
 
   /**
-   * Gets the input component for a given data type
+   * Checks if a comparator CAN be used with a `Selector` (IN, NOT_IN, EQUAL, NOT_EQUAL)
+   * to choose the filter data
    */
-  function getInputByDataType(dataType: DataType) {
-    switch (dataType) {
-      case 'number':
-      case 'percent':
-        return NumberInput
+  function canUseSelectorComparator(
+    comparator: ComparatorEnum,
+    col: TableColumn
+  ) {
+    const comparators = col.getDistinctData
+      ? [
+          ...SELECTOR_COMPARATORS,
+          ComparatorEnum.EQUAL,
+          ComparatorEnum.NOT_EQUAL,
+        ]
+      : SELECTOR_COMPARATORS
 
-      case 'date':
-      case 'datetime':
-        return DateInput
-
-      case 'yearMonth':
-        return YearMonthSelector
-
-      case 'boolean':
-        return Checkbox
-
-      case 'string':
-      default:
-        return TextInput
-    }
+    return comparators.includes(comparator)
   }
 
   /**
@@ -227,203 +153,121 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
   }
 
   /**
-   * Parses the value of a filter param based on the comparator and data type
+   * Checks if a comparator is of type `empty`
    */
-  function parseParamValue(
-    value: string,
-    comparator: ComparatorEnum,
-    dataType: DataType
-  ) {
-    switch (comparator) {
-      case ComparatorEnum.IN:
-      case ComparatorEnum.NOT_IN:
-        return value.split(',').map(val => JSON.parse(val))
-
-      case ComparatorEnum.CONTAINS:
-      case ComparatorEnum.STARTS_WITH:
-      case ComparatorEnum.ENDS_WITH:
-        return value
-
-      case ComparatorEnum.EQUAL:
-      case ComparatorEnum.NOT_EQUAL:
-        if (dataType === 'string') {
-          return value
-        } else {
-          return JSON.parse(value)
-        }
-
-      default:
-        return JSON.parse(value)
-    }
+  function isEmptyComparator(comparator: ComparatorEnum) {
+    return (
+      comparator === ComparatorEnum.IS_EMPTY ||
+      comparator === ComparatorEnum.NOT_IS_EMPTY
+    )
   }
 
   /**
-   * Transforms the URL search params into a `ITableQuery` object
+   * Checks if a comparator is of type `ago` (AGO, NOT_AGO, UNTIL, NOT_UNTIL)
    */
-  function transformUrlSearchParams(columns: TableColumn[]) {
-    let isUrlUsedForFiltering = false
-    const url = useRequestURL()
-    const params = url.searchParams
-    const tableQueryWhere: ITableQuery['where'] = {}
-    const tableQueryOptions: Partial<ITableQuery['options']> = {}
-    const urlUsedFor: Array<'pagination' | 'filter' | 'sort'> = []
-
-    // Pagination
-    const page = params.get('page')
-    const perPage = params.get('perPage')
-
-    if (page !== null && perPage !== null) {
-      Object.assign(tableQueryOptions, {
-        skip: (+page - 1) * +perPage,
-        take: +perPage,
-      })
-
-      urlUsedFor.push('pagination')
-    }
-
-    // Sorting & filtering
-    if (params.getAll('sort').length) {
-      urlUsedFor.push('sort')
-    }
-
-    columns.forEach(col => {
-      // Sorting
-      const sort = params.getAll('sort')
-      const sortField = sort.find(s => s.startsWith(String(col.field)))
-
-      if (sortField) {
-        const parts = sortField.split('.')
-        const direction = parts.pop() as 'asc' | 'desc'
-        const path = parts.join('.')
-
-        set(tableQueryOptions, `orderBy.${path}`, direction)
-      }
-
-      // Filtering
-      const filterObj: IItem = {}
-      set(filterObj, col.field, {})
-      const filters = params.getAll(String(col.field))
-      isUrlUsedForFiltering = isUrlUsedForFiltering || filters.length > 0
-
-      filters.forEach(filter => {
-        const [comparator, value] = filter.split('.')
-
-        if (comparator === 'mode' && value === 'insensitive') {
-          return
-        }
-
-        const currentFilterValue = get(filterObj, col.field)
-
-        merge(currentFilterValue, {
-          [comparator]: parseParamValue(
-            value,
-            comparator as ComparatorEnum,
-            col
-          ),
-        })
-      })
-
-      if (!isEmpty(get(filterObj, col.field))) {
-        merge(tableQueryWhere, filterObj)
-      }
-    })
-
-    if (isUrlUsedForFiltering) {
-      urlUsedFor.push('filter')
-    }
-
-    // Searching
-    const search = params.get('search')
-
-    if (search) {
-      Object.assign(tableQueryOptions, { search })
-    }
-
-    return {
-      options: tableQueryOptions,
-      where: tableQueryWhere,
-      usedFor: urlUsedFor,
-    }
+  function isDateAgoComparator(comparator: ComparatorEnum) {
+    return (
+      comparator === ComparatorEnum.AGO ||
+      comparator === ComparatorEnum.NOT_AGO ||
+      comparator === ComparatorEnum.UNTIL ||
+      comparator === ComparatorEnum.NOT_UNTIL
+    )
   }
 
   /**
-   * Modifies the columns based on the search params
-   *
-   * Note: Mutates the inputs!
+   * Checks if a comparator is of type `booleanish` (IS, NOT_IS)
    */
-  function modifyWithSearchParams(
-    columnsRef: MaybeRefOrGetter<TableColumn[]>,
-    tableState: Ref<ITableState>,
-    currentPageRef: Ref<number>,
-    currentPageSizeRef: Ref<number>
-  ) {
-    const columns = toValue(columnsRef)
-    const tableQuery = transformUrlSearchParams(columns)
-    const tableStateDefault = getTableStateDefault()
-
-    if (!tableQuery.usedFor.length) {
-      return
-    }
-
-    const { skip, take } = tableQuery.options
-
-    // Pagination
-    if (tableQuery.usedFor.includes('pagination')) {
-      const page =
-        (skip ?? tableStateDefault.page) /
-          (take ?? tableStateDefault.pageSize) +
-        1
-
-      currentPageRef.value = Math.floor(page)
-      currentPageSizeRef.value = take || tableStateDefault.pageSize
-    }
-
-    if (
-      tableQuery.usedFor.includes('sort') ||
-      tableQuery.usedFor.includes('filter')
-    ) {
-      columns.forEach(col => {
-        // Sorting
-        const sort = get(tableQuery.options.orderBy || {}, col.field)
-        col.sort =
-          typeof sort === 'string' ? (sort === 'asc' ? 1 : -1) : undefined
-
-        // Filtering
-        col.filters = []
-        const filter = get(tableQuery.where, col.field)
-
-        if (filter) {
-          Object.entries(filter).forEach(([comparator, value]) => {
-            col.filters!.push(
-              new FilterItem({
-                field: col.field,
-                comparator: comparator as ComparatorEnum,
-                compareValue: value,
-              })
-            )
-          })
-        }
-      })
-    }
-
-    tableState.value.columns = extractColumnsStateData(columns)
+  function isBooleanishComparator(comparator: ComparatorEnum) {
+    return BOOLEANISH_COMPARATORS.includes(comparator)
   }
 
   function hasVisibleCol(columns: TableColumn[]) {
     return columns.some(col => !col.hidden)
   }
 
+  /**
+   * Extracts the relevant data from URL
+   */
+  function parseUrlParams(options: {
+    columnsRef?: MaybeRefOrGetter<TableColumn[]>
+    searchParams?: URLSearchParams | string
+    fromSchema?: boolean
+    allowAnyNonStandardFilter?: boolean
+  }) {
+    const {
+      columnsRef,
+      searchParams,
+      fromSchema,
+      allowAnyNonStandardFilter = false,
+    } = options
+    const customSearchParams = searchParams
+      ? new URLSearchParams(searchParams)
+      : undefined
+
+    const url = useRequestURL()
+    const params = customSearchParams || url.searchParams
+    const columns = toValue(columnsRef)
+
+    // Pagination
+    // TODO: Pagination for non-infinite scrolling cases
+    // Not relevant for Infinite scrolling
+
+    // Sorting
+    const sort = parseSortingFromUrl(params, { fromSchema })
+    const schemaSort = parseSortingFromUrl(params, { fromSchema })
+
+    // Column filters
+    const filters = parseFiltersFromUrl({
+      searchParams: params,
+      key: 'filters',
+      columns,
+      fromSchema,
+    })
+
+    // Query builder
+    const queryBuilder = parseFiltersFromUrl({
+      searchParams: params,
+      key: 'qb',
+      columns,
+      fromSchema,
+    })
+
+    // Column selection
+    const visibleColumns = parseVisibleColumnsFromUrl(params)
+
+    return extendParseUrlParams
+      ? extendParseUrlParams({
+          searchParams: params,
+          tableColumns: columns,
+          columns: visibleColumns,
+          filters,
+          sort,
+          schemaSort,
+          queryBuilder,
+          allowAnyNonStandardFilter,
+          fromSchema,
+          parseUrlFnc: parseUrlParams,
+        })
+      : {
+          sort,
+          schemaSort,
+          filters,
+          queryBuilder,
+          columns: visibleColumns,
+        }
+  }
+
   return {
     getStorageKey,
-    getTableState,
     hasVisibleCol,
     getRowKey,
     getDistinctDataForField,
-    extractColumnsStateData,
     getAvailableComparators,
-    getInputByDataType,
+    canUseSelectorComparator,
     isSelectorComparator,
-    transformUrlSearchParams,
-    modifyWithSearchParams,
+    isDateAgoComparator,
+    isEmptyComparator,
+    isBooleanishComparator,
+    parseUrlParams,
   }
 }

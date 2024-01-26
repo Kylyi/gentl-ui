@@ -11,6 +11,11 @@ const GROUP_ROW_CONTROLS_HEIGHT = -38
 export function useQueryBuilderDragAndDrop() {
   const queryBuilderEl = ref<HTMLDivElement>()
   const draggedItem = ref<IQueryBuilderDraggedItem>()
+  const queryBuilderElRect = ref<DOMRect>()
+
+  // const queryBuilderElRect = computed(() =>
+  //   queryBuilderEl.value?.getBoundingClientRect()
+  // )
 
   provide(qbDraggedItemKey, draggedItem)
 
@@ -40,6 +45,7 @@ export function useQueryBuilderDragAndDrop() {
     // We also do nothing when we're dragging over descendants of the dragged item
     if (
       !qbRow ||
+      qbRow.classList.contains('no-dragover') ||
       qbRowPath === draggedItem.value?.row.path ||
       qbRowPath?.startsWith(draggedItem.value?.row.path || '')
     ) {
@@ -69,8 +75,8 @@ export function useQueryBuilderDragAndDrop() {
       }
 
       draggedItem.value!.dropIndicatorPos = {
-        x: rowX + offset.x - queryBuilderEl.value!.offsetLeft,
-        y: rowY + offset.y + scrollY.value - queryBuilderEl.value!.offsetTop,
+        x: rowX + offset.x - (queryBuilderElRect.value?.x ?? 0),
+        y: rowY + offset.y + scrollY.value - (queryBuilderElRect.value?.y ?? 0),
         width: rowWidth,
       }
 
@@ -86,13 +92,13 @@ export function useQueryBuilderDragAndDrop() {
       }
 
       draggedItem.value!.dropIndicatorPos = {
-        x: rowX + offset.x - queryBuilderEl.value!.offsetLeft,
+        x: rowX + offset.x - (queryBuilderElRect.value?.x ?? 0),
         y:
           rowY +
           offset.y +
           scrollY.value +
           rowHeight -
-          queryBuilderEl.value!.offsetTop,
+          (queryBuilderElRect.value?.y ?? 0),
         width: rowWidth,
       }
 
@@ -111,5 +117,6 @@ export function useQueryBuilderDragAndDrop() {
   return {
     queryBuilderEl,
     draggedItem,
+    queryBuilderElRect,
   }
 }

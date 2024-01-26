@@ -11,10 +11,10 @@ import { Color } from '@tiptap/extension-color'
 import { Mention } from '@tiptap/extension-mention'
 import { Image } from '@tiptap/extension-image'
 import { Link } from '@tiptap/extension-link'
-import { ClientRectObject } from '@floating-ui/vue'
+import { type ClientRectObject } from '@floating-ui/vue'
 
 // Types
-import type { IWysiwygProps } from '~~/components/Wysiwyg/types/wysiwyg-props.type'
+import type { IWysiwygProps } from '~/components/Wysiwyg/types/wysiwyg-props.type'
 import type { IWysiwygMentionItem } from '~/components/Wysiwyg/types/wysiwyg-mention-item.type'
 
 // Functions
@@ -36,7 +36,7 @@ const emits = defineEmits<{
 // Utils
 const { resolveValues } = useWysiwygUtils()
 
-// LAYOUT
+// Layout
 const model = useVModel(props, 'modelValue', emits)
 const isFocused = ref(false)
 
@@ -47,14 +47,14 @@ const transitionProps = computed(() => ({
   leaveActiveClass: 'animate-fade-out animate-duration-150',
 }))
 
-// WRAPPER
+// Wrapper
 const wrapperProps = reactivePick(
   props,
   'contentClass',
   'contentStyle',
   'disabled',
   'emptyValue',
-  'errors',
+  'validation',
   'errorTakesSpace',
   'errorVisible',
   'hint',
@@ -196,7 +196,7 @@ const MentionExt = Mention.configure({
   },
 })
 
-// EDITOR
+// Editor
 const editor = useEditor({
   content: props.modelValue,
   extensions: [
@@ -221,7 +221,6 @@ const editor = useEditor({
   },
   onUpdate: ({ editor }) => {
     const text = editor.getText()
-
     if (text.length) {
       model.value = editor.getHTML()
     } else {
@@ -275,7 +274,7 @@ function handleToggleNumberedList() {
   editor.value?.chain().focus().toggleOrderedList().run()
 }
 
-function handleSetColor(color?: string) {
+function handleSetColor(color?: string | null) {
   color
     ? editor.value?.chain().focus().setColor(color).run()
     : editor.value?.chain().focus().unsetColor().run()

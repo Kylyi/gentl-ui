@@ -1,11 +1,14 @@
 <script setup lang="ts">
-// TYPES
+// Types
 import type { ITextInputProps } from '~/components/Inputs/TextInput/types/text-input-props.type'
 
-// COMPONENTS
+// Components
 import TextInput from '~/components/Inputs/TextInput/TextInput.vue'
 
-defineProps<ITextInputProps>()
+withDefaults(defineProps<ITextInputProps>(), {
+  debounce: 0,
+  required: undefined,
+})
 defineEmits<{
   (e: 'update:model-value', val?: string | undefined | null): void
 }>()
@@ -25,18 +28,22 @@ defineExpose({
     :debounce="debounce"
     class="control"
     :autofocus="autofocus"
-    name="search"
+    name="_search"
     immediate
     empty-value=""
     :hint="hint"
+    :inline="inline"
     :input-class="inputClass"
     :content-class="contentClass"
     :input-style="inputStyle"
-    :placeholder="$t('general.search')"
+    :input-props="inputProps"
+    :placeholder="placeholder ?? $t('general.search')"
     @update:model-value="$emit('update:model-value', $event)"
   >
     <template #prepend>
+      <slot name="prepend" />
       <div
+        v-if="!$slots.prepend"
         carbon:search
         color="ca"
         m="l-2"
@@ -57,6 +64,7 @@ defineExpose({
           h="8"
           icon="carbon:close text-2xl"
           color="ca"
+          data-cy="clear-search"
           @click="clear()"
         />
 

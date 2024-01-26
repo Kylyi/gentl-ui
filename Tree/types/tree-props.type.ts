@@ -1,8 +1,8 @@
-import { FuseOptions } from '@vueuse/integrations/useFuse'
-import { ITreeNodeProps } from '~~/components/Tree/types/tree-node-props.type'
+import { type FuseOptions } from '@vueuse/integrations/useFuse'
+import { type ITreeNodeProps } from '~/components/Tree/types/tree-node-props.type'
 
 // TYPES
-import type { ITreeNode } from '~~/components/Tree/types/tree-node.type'
+import type { ITreeNode } from '~/components/Tree/types/tree-node.type'
 
 export type ITreeProps = Omit<ITreeNodeProps, 'level'> & {
   collapsedOnInit?: boolean | 'first'

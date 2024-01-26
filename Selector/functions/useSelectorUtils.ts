@@ -1,26 +1,26 @@
-import { ISelectorUtilsOptions } from '~~/components/Selector/types/selector-utils-options.type'
+import { type ISelectorUtilsOptions } from '~/components/Selector/types/selector-utils-options.type'
 
 export function useSelectorUtils(options: ISelectorUtilsOptions) {
   const { props, menuElRef } = options
   const instance = getCurrentInstance()
 
-  // LAYOUT
+  // Layout
   const el = ref<any>()
   const model = useVModel(props, 'modelValue')
   const menuEl = computed(() => toValue(menuElRef))
 
-  // INPUT METHODS
+  // Input methods
   const clear = () => {
     instance?.emit('update:modelValue', props.emptyValue)
   }
 
-  // WRAPPER
+  // Wrapper
   const wrapperProps = reactivePick(
     props,
     'contentClass',
     'disabled',
     'emptyValue',
-    'errors',
+    'validation',
     'errorTakesSpace',
     'errorVisible',
     'hint',
@@ -28,12 +28,17 @@ export function useSelectorUtils(options: ISelectorUtilsOptions) {
     'label',
     'labelClass',
     'labelInside',
+    'modelValue',
     'loading',
+    'originalValue',
     'placeholder',
     'readonly',
     'required',
     'size',
-    'stackLabel'
+    'stackLabel',
+    'noBorder',
+    'inputContainerClass',
+    'inputContainerStyle'
   )
 
   // Click & focus handler
@@ -48,20 +53,30 @@ export function useSelectorUtils(options: ISelectorUtilsOptions) {
     }
   }
 
-  function handleFocusOrClick(ev: MouseEvent | FocusEvent) {
+  function handleFocusOrClick(ev?: MouseEvent | FocusEvent, noHide?: boolean) {
     if (focusedProgramatically.value) {
       return
     }
 
-    focusedProgramatically.value = true
+    if (ev instanceof FocusEvent && props.noAutoShowMenuOnFocus) {
+      return
+    }
 
+    // When clicked self and menu is already open, don't do anything
+    const currentMenuDom = menuEl.value?.getFloatingEl()
+
+    if (currentMenuDom) {
+      return
+    }
+
+    focusedProgramatically.value = true
     blurAnyFocusedInput()
 
     const hasClickedInsideFloatingElement = !!(
-      ev.target as HTMLElement
-    ).closest('.floating-element')
+      ev?.target as HTMLElement
+    )?.closest('.floating-element')
 
-    if (!hasClickedInsideFloatingElement) {
+    if (!hasClickedInsideFloatingElement && !noHide) {
       document.querySelectorAll('.floating-element').forEach(el => {
         const currentMenuDom = menuEl.value?.getFloatingEl()
 
@@ -76,10 +91,18 @@ export function useSelectorUtils(options: ISelectorUtilsOptions) {
     }
   }
 
+  // Autofocus on init
+  setTimeout(() => {
+    if (props.autofocus) {
+      handleFocusOrClick(undefined, true)
+    }
+  }, 300)
+
   return {
     el,
     model,
     wrapperProps,
+    focusedProgramatically,
 
     handleFocusOrClick,
     handleClickWrapper,

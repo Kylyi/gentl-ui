@@ -30,7 +30,7 @@ function handleClose() {
       v-if="visible"
       class="confirmation"
     >
-      <!-- CHECKMARK -->
+      <!-- Checkmark -->
       <div class="confirmation-checkmark">
         <Checkmark
           :delay="delay"
@@ -51,14 +51,14 @@ function handleClose() {
         </slot>
       </div>
 
-      <!-- ACTIONS -->
+      <!-- Actions -->
       <div
         v-if="!noActions"
         class="actions"
       >
         <slot name="actions" />
         <Btn
-          :label="$t('close')"
+          :label="$t('general.close')"
           @click="handleClose"
         />
       </div>
@@ -68,8 +68,7 @@ function handleClose() {
 
 <style lang="scss" scoped>
 .confirmation {
-  --apply: flex flex-col inset-0 absolute bg-ca dark:bg-dark
-    rounded-inherit z-10;
+  --apply: flex flex-col inset-0 absolute bg-white dark:bg-dark rounded-custom z-10;
 
   &-checkmark {
     --apply: flex flex-col flex-center grow;
@@ -77,6 +76,6 @@ function handleClose() {
 }
 
 .actions {
-  --apply: flex items-center p-3 shrink-0 justify-end flex-gap-x-3;
+  --apply: flex items-center p-3 shrink-0 justify-end flex-gap-x-3 bg-ca;
 }
 </style>

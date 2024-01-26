@@ -1,8 +1,12 @@
 <script setup lang="ts">
-// MODELS
-import { useTableUtils } from '~/components/Table/functions/useTableUtils'
+// Models
+import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
 import { TableColumn } from '~/components/Table/models/table-column.model'
 import { FilterItem } from '~/libs/App/data/models/filter-item'
+import { config } from '~/config'
+
+// Functions
+import { useTableUtils } from '~/components/Table/functions/useTableUtils'
 
 type IProps = {
   column: TableColumn
@@ -10,27 +14,51 @@ type IProps = {
 
 const props = defineProps<IProps>()
 
-// UTILS
+// Utils
 const { getAvailableComparators } = useTableUtils()
 
-// LAYOUT
+// Constants
+const BOOLEANISH_COMPARATORS = [ComparatorEnum.IS, ComparatorEnum.NOT_IS]
+
+// Layout
 const isFocusPrevented = refAutoReset(true, 50)
 const column = toRef(props, 'column')
+const filterItemsRef = ref<Array<HTMLElement>>([])
+
+const interactiveColumns = computed(() => {
+  return column.value.filters.filter(filter => !filter.nonInteractive)
+})
 
 const hasUnusedComparator = computed(() => {
   const availableComparators =
     column.value.comparators ||
     getAvailableComparators(column.value.dataType, {
       includeSelectorComparators: !!column.value.getDistinctData,
+      extraComparators: column.value.extraComparators,
     })
-  const columnComparators = column.value.filters.map(
-    filter => filter.comparator
-  )
+
+  const columnComparators = column.value.filters.flatMap(filter => {
+    const isBooleanishComparator = BOOLEANISH_COMPARATORS.includes(
+      filter.comparator
+    )
+
+    return isBooleanishComparator ? BOOLEANISH_COMPARATORS : [filter.comparator]
+  })
 
   return availableComparators.some(
     comparator => !columnComparators.includes(comparator)
   )
 })
+
+function focusOnSpecificFilterInput(filterIndex: number) {
+  if (config?.table?.focusOnFilterInput) {
+    nextTick(() => {
+      setTimeout(() => {
+        filterItemsRef?.value[filterIndex]?.focus()
+      }, 200)
+    })
+  }
+}
 
 function handleAddFilter() {
   isFocusPrevented.value = false
@@ -44,6 +72,7 @@ function handleAddFilter() {
       column.value.comparators ||
       getAvailableComparators(column.value.dataType, {
         includeSelectorComparators: !!column.value.getDistinctData,
+        extraComparators: column.value.extraComparators,
       })
     const columnComparators = column.value.filters.map(
       filter => filter.comparator
@@ -61,18 +90,26 @@ function handleAddFilter() {
           comparator: firstNonUsedComparator,
         }),
       ]
+
+      // Focus on the new added filter input
+      focusOnSpecificFilterInput(column.value.filters.length - 1)
     }
   } else {
     column.value.filters = [
       ...column.value.filters,
       new FilterItem(column.value),
     ]
+
+    // Focus on the first generated input filter
+    focusOnSpecificFilterInput(0)
   }
 }
 
 onMounted(() => {
   if (column.value.filters.length === 0) {
     handleAddFilter()
+  } else if (column.value.filters.length === 1) {
+    focusOnSpecificFilterInput(0)
   }
 })
 </script>
@@ -83,7 +120,8 @@ onMounted(() => {
     class="table-column-filtering-chips"
   >
     <TableColumnFilteringItem
-      v-for="(filter, idx) in column.filters"
+      v-for="(filter, idx) in interactiveColumns"
+      ref="filterItemsRef"
       :key="idx"
       :filter="filter"
       :column="column"

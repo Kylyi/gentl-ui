@@ -10,14 +10,21 @@ import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
 
 // Injections
 import {
+  qbColumnsKey,
   qbContainerKey,
   qbItemsKey,
 } from '~/components/QueryBuilder/provide/query-builder.provide'
+import { tableRefreshKey } from '~/components/Table/provide/table.provide'
+
+// Constants
+import { COLORS } from '~/libs/App/constants/colors.constant'
 
 // Components
 import Menu from '~/components/Menu/Menu.vue'
 
-const props = defineProps<IQueryBuilderGroupProps>()
+const props = withDefaults(defineProps<IQueryBuilderGroupProps>(), {
+  noAdd: undefined,
+})
 const emits = defineEmits<{
   (e: 'delete:row', item: IQueryBuilderGroup): void
 }>()
@@ -25,6 +32,8 @@ const emits = defineEmits<{
 // Injections
 const container = injectStrict(qbContainerKey)
 const items = injectStrict(qbItemsKey)
+const tableRefresh = injectStrict(tableRefreshKey, () => {})
+const columns = injectStrict(qbColumnsKey)
 
 // Layout
 const item = toRef(props, 'item')
@@ -40,6 +49,8 @@ const levelColor = computed(() => {
 function handleSetCondition(val: 'AND' | 'OR') {
   item.value.condition = val
   conditionMenuEl.value?.hide()
+
+  tableRefresh()
 }
 
 function handleAddCondition(useParent?: boolean) {
@@ -50,13 +61,14 @@ function handleAddCondition(useParent?: boolean) {
   }
 
   const newPath = `${parent.path}.children.${parent.children.length}`
+  const firstColumn = toValue(columns)[0]
 
   parent.children = [
     ...parent.children,
     {
-      id: new Date().getTime().toString(),
-      field: undefined as unknown as string,
-      comparator: undefined as unknown as ComparatorEnum,
+      id: generateUUID(),
+      field: firstColumn?.field as string,
+      comparator: firstColumn?.comparator as ComparatorEnum,
       value: undefined as unknown as string,
       path: newPath,
     },
@@ -93,13 +105,29 @@ function handleRemoveGroup() {
       item.condition === 'AND' ? $t('queryBuilder.and') : $t('queryBuilder.or')
     "
     size="xs"
-    class="condition-btn bg-primary color-white self-center"
-    :class="{ 'is-first-child': isFirstChild }"
+    class="condition-btn color-blue-500 self-center"
+    :class="{
+      'is-first-child': isFirstChild,
+      '!color-blue-500': noConditionChange || !editable,
+    }"
     :style="{ '--bracketColor': levelColor }"
     no-dim
+    :data-path="item.path"
+    :disabled="noConditionChange || !editable"
     @mouseenter="isHovered = true"
     @mouseleave="isHovered = false"
   >
+    <Tooltip
+      v-if="noConditionChange"
+      w="70"
+      :offset="12"
+      text="center"
+    >
+      <span text="caption center">
+        {{ $t('table.columnFiltersHint') }}
+      </span>
+    </Tooltip>
+
     <Menu
       ref="conditionMenuEl"
       :no-arrow="false"
@@ -110,20 +138,26 @@ function handleRemoveGroup() {
       <Btn
         size="xs"
         :label="$t('queryBuilder.and')"
+        :class="{ 'color-blue-500': item.condition === 'AND' }"
         @click="handleSetCondition('AND')"
       />
       <Btn
         size="xs"
         :label="$t('queryBuilder.or')"
+        :class="{ 'color-blue-500': item.condition === 'OR' }"
         @click="handleSetCondition('OR')"
       />
 
-      <Separator spaced />
+      <Separator
+        v-if="level"
+        spaced
+      />
 
       <!-- Delete btn -->
       <Btn
+        v-if="level"
         size="xs"
-        :label="$t('queryBuilder.removeGroup')"
+        :label="$t('general.remove')"
         preset="TRASH"
         @click="handleRemoveGroup"
       />
@@ -139,17 +173,20 @@ function handleRemoveGroup() {
     :parent="item"
     :is-last-child="idx === item.children.length - 1"
     :is-first-child="idx === 0"
+    :no-add="noAdd"
+    :remove-fnc="removeFnc"
+    :editable="editable"
     :style="{
       ...(isHovered && {
-        backgroundColor: 'var(--bracketColor)',
-        color: 'white',
+        borderColor: 'var(--bracketColor)',
+        borderStyle: 'solid',
       }),
     }"
     @add:row="handleAddCondition()"
   />
 
   <Btn
-    v-if="isLastChild"
+    v-if="isLastChild && !noAdd && editable"
     size="xs"
     preset="ADD"
     self-center
@@ -158,8 +195,18 @@ function handleRemoveGroup() {
       'color': levelColor,
     }"
     class="last-child-bracket"
-    @click="handleAddCondition"
+    @click="handleAddCondition(true)"
   />
+
+  <!-- Close bracket (When no add buttom is present) -->
+  <div
+    v-else-if="isLastChild"
+    class="last-child-bracket"
+    :class="{ 'is-last-child': isLastChild }"
+    :style="{ '--bracketColor': levelColor, 'color': levelColor }"
+  >
+    &ZeroWidthSpace;
+  </div>
 </template>
 
 <style scoped lang="scss">
@@ -170,7 +217,7 @@ function handleRemoveGroup() {
     --apply: m-l-2;
 
     &::before {
-      --apply: absolute -top-7px -left-2 text-8 leading-none font-normal;
+      --apply: absolute -top-1.5 -left-2.5 text-7.5 leading-none font-normal;
       content: '[';
       color: var(--bracketColor);
     }
@@ -181,7 +228,7 @@ function handleRemoveGroup() {
   --apply: relative self-center m-t-1 m-r-2;
 
   &::after {
-    --apply: absolute -top-7px -right-2 text-8 leading-none font-normal;
+    --apply: absolute -top-1.5 -right-2 text-7.5 leading-none font-normal;
     content: ']';
     color: var(--bracketColor);
   }

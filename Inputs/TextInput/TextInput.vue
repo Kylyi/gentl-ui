@@ -1,33 +1,46 @@
 <script setup lang="ts">
-// TYPES
-import { ITextInputProps } from '~/components/Inputs/TextInput/types/text-input-props.type'
+// Types
+import { type ITextInputProps } from '~/components/Inputs/TextInput/types/text-input-props.type'
 
-// COMPOSITION FUNCTIONS
-import { useInputUtils } from '@/components/Inputs/functions/useInputUtils'
+// Functions
+import { useInputUtils } from '~/components/Inputs/functions/useInputUtils'
+import { useInputValidationUtils } from '~/components/Inputs/functions/useInputValidationUtils'
 
+defineOptions({
+  customOptions: {
+    test: 'a',
+  },
+})
 const props = withDefaults(defineProps<ITextInputProps>(), {
-  debounce: 150,
+  allowIncompleteMaskValue: false,
+  debounce: 0,
   errorTakesSpace: true,
   errorVisible: true,
+  inline: undefined,
+  labelInside: undefined,
   mask: () => ({ mask: String }),
+  required: undefined,
   rounded: true,
   size: 'md',
+  stackLabel: undefined,
 })
 defineEmits<{
   (e: 'update:model-value', val?: string | undefined | null): void
   (e: 'validation-reset', val?: string | undefined | null): void
   (e: 'blur'): void
+  (e: 'enter', event: KeyboardEvent): void
 }>()
 
 const {
   el,
   maskedValue,
   wrapperProps,
-  hasNoValue,
+  hasContent,
   isBlurred,
+  hasClearableBtn,
   handleFocus,
   handleBlur,
-  handleMouseDown,
+  handleClickWrapper,
   focus,
   select,
   blur,
@@ -39,10 +52,13 @@ const {
 } = useInputUtils({
   props,
   maskRef: toRef(props, 'mask'),
+  maskEventHandlers: props.maskEventHandlers,
 })
 
+const { path } = useInputValidationUtils(props)
+
 const hasCopyBtn = computedEager(() => {
-  return props.readonly && !props.disabled && !props.noCopy && !hasNoValue.value
+  return props.readonly && !props.disabled && !props.noCopy && hasContent.value
 })
 
 defineExpose({
@@ -60,8 +76,9 @@ defineExpose({
 <template>
   <InputWrapper
     v-bind="wrapperProps"
-    :has-content="hasContent || !hasNoValue"
-    @mousedown="handleMouseDown"
+    :has-content="hasContent"
+    .focus="focus"
+    @click="handleClickWrapper"
   >
     <template
       v-if="$slots.prepend"
@@ -85,29 +102,49 @@ defineExpose({
       :disabled="disabled"
       autocomplete="off"
       :label="label || placeholder"
-      :name="name || label || placeholder"
+      :name="name || path || label || placeholder"
       class="control"
       role="presentation"
-      :class="[inputClass]"
+      :class="[inputClass, { 'custom-enter': !!customEnter }]"
       :style="inputStyle"
+      v-bind="inputProps"
       @focus="handleFocus"
       @blur="handleBlur"
+      @keypress.enter="$emit('enter', $event)"
     />
 
     <template
-      v-if="$slots.append || hasCopyBtn"
+      v-if="$slots.append || hasCopyBtn || clearable"
       #append
     >
       <div
-        flex="~ gap-x-1"
+        flex="~ gap-1 items-center"
         fit
-        items-center
+        p="x-2"
       >
         <slot
           name="append"
           :clear="clear"
           :focus="focus"
         />
+
+        <Btn
+          v-if="hasClearableBtn"
+          icon="eva:close-fill h-6 w-6"
+          color="ca"
+          size="auto"
+          h="7"
+          w="7"
+          tabindex="-1"
+          @click.stop.prevent="!clearConfirmation && clear()"
+        >
+          <MenuConfirmation
+            v-if="clearConfirmation"
+            @ok="clear"
+          >
+            {{ clearConfirmation }}
+          </MenuConfirmation>
+        </Btn>
 
         <CopyBtn
           v-if="hasCopyBtn"
@@ -117,7 +154,7 @@ defineExpose({
       </div>
     </template>
 
-    <!-- TOOLTIP -->
+    <!-- Tooltip -->
     <Menu
       v-if="tooltip || !!$slots.tooltip"
       :model-value="!isBlurred"
@@ -127,6 +164,8 @@ defineExpose({
       :fallback-placements="['bottom']"
       :reference-target="el"
       :no-arrow="false"
+      no-uplift
+      v-bind="tooltipProps"
     >
       <slot name="tooltip">
         {{ tooltip }}

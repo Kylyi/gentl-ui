@@ -1,15 +1,15 @@
 <script setup lang="ts">
-// TYPES
+// Types
 import type { IBtnProps } from '~/components/Button/types/btn-props.type'
 
-// COMPONENTS
+// Components
 import BtnOrNuxtLinkResolver from '~/components/Button/BtnOrNuxtLinkResolver.vue'
 
-// CONSTANTS
+// Constants
 import { BUTTON_PRESET } from '~/components/Button/constants/button-preset.constant'
 
-// DIRECTIVES
-import { vRipple } from '~~/libs/App/directives/ripple'
+// Directives
+import { vRipple } from '~/libs/App/directives/ripple.directive'
 
 const props = withDefaults(defineProps<IBtnProps>(), {
   align: 'center',
@@ -28,9 +28,10 @@ const btnProps = reactivePick(props, [
   'disabled',
   'download',
   'exact',
+  'navigateToOptions',
 ])
 
-// LAYOUT
+// Layout
 const slots = useSlots()
 const component = ref<InstanceType<typeof BtnOrNuxtLinkResolver>>()
 const preset = computed(() =>
@@ -98,12 +99,13 @@ defineExpose({
       @click.stop.prevent
     >
       <Loader
-        :type="loaderType || (label ? 'inline' : 'block')"
+        :type="loaderType || 'block'"
         :color="loadingColor"
+        class="loading__loader"
       />
     </div>
 
-    <!-- HOVER FOCUS HELPER -->
+    <!-- Hover focus helper -->
     <span
       v-if="!noHoverEffect"
       class="focus-helper"
@@ -153,7 +155,7 @@ defineExpose({
   }
 
   &.is-stacked {
-    --apply: flex-col flex-center p-t-2;
+    --apply: flex-col flex-center p-y-1;
   }
 
   .icon {
@@ -201,7 +203,7 @@ defineExpose({
   }
 
   &--xs {
-    --apply: min-h-6 min-w-6 flex-gap-1 p-x-2;
+    --apply: min-h-6 min-w-6 flex-gap-x-0.5 flex-gap-x-1 p-x-2;
 
     .icon {
       --apply: h-3.5 w-3.5;
@@ -213,6 +215,10 @@ defineExpose({
 
     .btn-label {
       --apply: font-rem-10 p-y-1;
+    }
+
+    .loading__loader {
+      --apply: h-3.5;
     }
   }
 
@@ -226,6 +232,10 @@ defineExpose({
     .btn-label {
       --apply: font-rem-12 p-y-1.5;
     }
+
+    .loading__loader {
+      --apply: h-4.5;
+    }
   }
 
   &--md {
@@ -238,6 +248,10 @@ defineExpose({
     .btn-label {
       --apply: font-rem-14 p-y-2;
     }
+
+    .loading__loader {
+      --apply: h-5.5;
+    }
   }
 
   &--lg {
@@ -249,6 +263,10 @@ defineExpose({
 
     .btn-label {
       --apply: font-rem-16 p-y-2.5;
+    }
+
+    .loading__loader {
+      --apply: h-6.5;
     }
   }
 

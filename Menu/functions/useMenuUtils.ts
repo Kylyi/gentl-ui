@@ -16,6 +16,8 @@ export function useMenuUtils() {
       'maxHeight',
       'modelValue',
       'noArrow',
+      'noOverlay',
+      'noUplift',
       'offset',
       'persistent',
       'placement',

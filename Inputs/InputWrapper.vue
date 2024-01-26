@@ -1,28 +1,44 @@
 <script setup lang="ts">
-// TYPES
-import type { IInputWrapperProps } from '~~/components/Inputs/types/input-wrapper-props.type'
+import { config } from '~/config'
 
-// COMPOSITION FUNCTIONS
+// Types
+import type { IInputWrapperProps } from '~/components/Inputs/types/input-wrapper-props.type'
+
+// Functions
 import { useInputWrapperUtils } from '~/components/Inputs/functions/useInputWrapperUtils'
+import { useInputValidationUtils } from '~/components/Inputs/functions/useInputValidationUtils'
 
 const props = withDefaults(defineProps<IInputWrapperProps>(), {
   cursor: 'cursor-text',
   errorVisible: true,
   size: 'md',
+  stackLabel: config.inputs.stackLabel,
+  labelInside: config.inputs.labelInside,
+  inline: config.inputs.inline,
+  required: undefined,
 })
 
-// UTILS
+// Utils
 const { getInputWrapperStyleVariables } = useInputWrapperUtils()
+const { issues } = useInputValidationUtils(props)
 
-// LAYOUT
+// Layout
 const wrapperEl = ref<HTMLDivElement>()
 const errorContainerPaddingLeft = ref('8px')
 const currentInstance = getCurrentInstance()
 
+const isModified = computed(() => {
+  if (!props.originalValue) {
+    return false
+  }
+
+  return !isEqual(props.originalValue, props.modelValue)
+})
+
 const labelProps = computedEager(() => {
   return {
     hasContent: props.hasContent,
-    hasError: !!props.errors?.length,
+    hasError: !!issues.value.length,
     inline: props.inline,
     label: props.label,
     labelClass: props.labelClass,
@@ -32,6 +48,7 @@ const labelProps = computedEager(() => {
     required: props.required,
     size: props.size,
     stackLabel: props.stackLabel,
+    validation: props.validation,
   }
 })
 
@@ -51,9 +68,10 @@ const wrapperContentClass = computedEager(() => {
   return {
     'is-readonly': props.readonly,
     'is-disabled': props.disabled,
-    'has-error': props.errors?.length,
+    'has-error': !!issues.value.length,
     'has-label': !!props.label,
     'has-border': !props.noBorder,
+    'is-modified': isModified.value,
   }
 })
 
@@ -98,7 +116,32 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
         <slot name="prepend" />
       </span>
 
-      <span class="wrapper-body__input">
+      <span
+        class="wrapper-body__input"
+        :class="inputContainerClass"
+        :style="inputContainerStyle"
+        data-cy="input-field"
+      >
+        <div
+          v-if="isModified"
+          class="wrapper-body__input-modified"
+        >
+          <div class="eos-icons:diff-modified-outlined w-3 h-3 color-warning" />
+
+          <Tooltip
+            :offset="4"
+            placement="left"
+            dense
+          >
+            <span
+              color="warning"
+              text="xs"
+              p="x-1 y-0.5"
+              >{{ $t('general.modified') }}</span
+            >
+          </Tooltip>
+        </div>
+
         <slot />
       </span>
 
@@ -125,13 +168,13 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
     <ErrorContainer
       v-if="errorVisible"
       :error-takes-space="errorTakesSpace"
-      :errors="errors"
+      :errors="issues"
       class="wrapper-error"
       :style="{ paddingLeft: errorContainerPaddingLeft }"
     />
 
     <HintContainer
-      v-if="!errors?.length && hint"
+      v-if="!issues?.length && hint"
       :hint="hint"
       :style="{ paddingLeft: errorContainerPaddingLeft }"
     />
@@ -142,7 +185,12 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
 
 <style lang="scss" scoped>
 .wrapper {
-  --apply: flex flex-col;
+  --apply: relative flex flex-col rounded-custom;
+
+  &::after {
+    // --apply: absolute content-empty inset-0 pointer-events-none;
+    // --apply: outline-2 outline-dashed outline-red outline-offset-2 rounded-custom;
+  }
 
   .wrapper-body {
     --apply: dark:bg-darker bg-white;
@@ -168,6 +216,10 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
       grid-area: input;
     }
 
+    .wrapper-body__input-modified {
+      --apply: flex gap-1 items-center absolute top-1 right-1 text-xs z-1;
+    }
+
     .label {
       grid-area: label;
     }
@@ -186,7 +238,7 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
     }
 
     &:focus-within::after {
-      --apply: border-primary;
+      --apply: border-$borderColor;
     }
 
     &.has-error::after {
@@ -241,6 +293,7 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
       margin: var(--margin);
     }
   }
+
 
   &.is-inline {
       .wrapper-body::after {

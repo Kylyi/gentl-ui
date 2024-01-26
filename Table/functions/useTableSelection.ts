@@ -1,23 +1,25 @@
-// TYPES
+// Types
 import type { ITableProps } from '~/components/Table/types/table-props.type'
+import type { ITableSelection } from '~/components/Table/types/table-selection.type'
 
-// COMPOSITION FUNCTIONS
+// Functions
 import { useTableUtils } from '~/components/Table/functions/useTableUtils'
 
-// INJECTION KEYS
+// Injections
 import {
+  tableClearSelectionKey,
   tableIsSelectedRowKey,
   tableSelectRowKey,
+  tableSelectionKey,
 } from '~/components/Table/provide/table.provide'
-import { ITableSelection } from '~/components/Table/types/table-selection.type'
 
 export function useTableSelection(props: ITableProps) {
-  // UTILS
+  // Utils
   const { getRowKey } = useTableUtils()
 
   const selection = props.selected
     ? useVModel(props, 'selected')
-    : ref<ITableSelection>()
+    : ref<ITableSelection>({})
 
   const rowKey = computedEager(() => props.selectionKey ?? getRowKey(props))
 
@@ -43,9 +45,25 @@ export function useTableSelection(props: ITableProps) {
     return !!selectionByKey.value?.[key]
   }
 
-  function handleSelectRow(row: any) {
+  async function handleSelectRow(
+    row: any,
+    options?: { val?: boolean; clearSelection?: boolean }
+  ) {
+    const { clearSelection: _clearSelection, val } = options ?? {}
+
+    if (_clearSelection) {
+      clearSelection()
+      await nextTick()
+    }
+
     const key = get(row, rowKey.value)
     const _isSelected = isSelected(row)
+
+    if (val === true && _isSelected) {
+      return
+    } else if (val === false && !_isSelected) {
+      return
+    }
 
     if (_isSelected) {
       if (Array.isArray(selection.value)) {
@@ -55,18 +73,29 @@ export function useTableSelection(props: ITableProps) {
       }
     } else if (Array.isArray(selection.value)) {
       selection.value = [...(selection.value || []), key]
+    } else if (selection.value) {
+      selection.value[key] = row
+    }
+  }
+
+  function clearSelection() {
+    if (Array.isArray(selection.value)) {
+      selection.value = []
     } else {
-      Object.assign(selection.value || {}, { [key]: row })
+      selection.value = {}
     }
   }
 
   provide(tableSelectRowKey, handleSelectRow)
   provide(tableIsSelectedRowKey, isSelected)
+  provide(tableSelectionKey, selection)
+  provide(tableClearSelectionKey, clearSelection)
 
   return {
     selection,
     rowKey,
     handleSelectRow,
     isSelected,
+    clearSelection,
   }
 }

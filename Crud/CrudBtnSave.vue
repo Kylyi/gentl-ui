@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ICrudBtnProps } from '~~/components/Crud/types/crud-btn-props.type'
+// Types
+import { type ICrudBtnProps } from '~/components/Crud/types/crud-btn-props.type'
 
 defineProps<ICrudBtnProps>()
 defineEmits<{
@@ -10,7 +11,7 @@ defineEmits<{
 <template>
   <Btn
     preset="SAVE"
-    :label="labels && $t('save')"
+    :label="labels && $t('general.save')"
     :loader-type="loaderType"
     :loading="loading"
     no-dim

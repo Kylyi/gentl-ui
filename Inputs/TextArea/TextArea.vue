@@ -1,19 +1,25 @@
 <script setup lang="ts">
-import { MaybeElementRef } from '@vueuse/core'
+import { InputMask } from 'imask'
+import { type MaybeElementRef } from '@vueuse/core'
 
-// TYPES
+// Types
 import type { ITextAreaInputProps } from '~/components/Inputs/TextArea/types/text-area-props.type'
 
-// COMPOSITION FUNCTIONS
-import { useInputUtils } from '@/components/Inputs/functions/useInputUtils'
+// Functions
+import { useInputUtils } from '~/components/Inputs/functions/useInputUtils'
+import { useInputValidationUtils } from '~/components/Inputs/functions/useInputValidationUtils'
 
 const props = withDefaults(defineProps<ITextAreaInputProps>(), {
-  debounce: 150,
+  debounce: 0,
   errorTakesSpace: true,
   errorVisible: true,
+  inline: undefined,
+  labelInside: undefined,
   mask: () => ({ mask: String }),
+  required: undefined,
   rounded: true,
   size: 'md',
+  stackLabel: undefined,
 })
 
 defineEmits<{
@@ -26,7 +32,8 @@ const {
   el,
   maskedValue,
   wrapperProps,
-  hasNoValue,
+  hasClearableBtn,
+  hasContent,
   focus,
   select,
   blur,
@@ -34,9 +41,11 @@ const {
   touch,
   clear,
   getInputElement,
+  handleBlur,
   handleManualModelChange,
   handleClickWrapper,
   handleFocusOrClick,
+  elMask,
 } = useInputUtils({
   props,
   maskRef: toRef(props, 'mask'),
@@ -48,6 +57,8 @@ if (props.autogrow) {
     input: maskedValue,
   })
 }
+
+const { path } = useInputValidationUtils(props)
 
 const resizeClass = computedEager(() => {
   return props.autogrow ? 'resize-none' : props.resize
@@ -62,13 +73,18 @@ defineExpose({
   clear,
   getInputElement,
   sync: () => handleManualModelChange(props.modelValue),
+  updateMask: (fnc: (mask: InputMask<any>) => void) => {
+    fnc(elMask.value as InputMask<any>)
+  },
+  handleManualModelChange,
 })
 </script>
 
 <template>
   <InputWrapper
     v-bind="wrapperProps"
-    :has-content="!hasNoValue"
+    :has-content="hasContent"
+    .focus="focus"
     @click="handleClickWrapper"
   >
     <template
@@ -91,24 +107,44 @@ defineExpose({
       :disabled="disabled"
       autocomplete="off"
       :label="label || placeholder"
-      :name="name || label || placeholder"
+      :name="name || path || label || placeholder"
       class="control"
       role="presentation"
       :rows="rows"
       :class="[inputClass, resizeClass]"
       :style="inputStyle"
+      v-bind="inputProps"
       @focus="handleFocusOrClick"
+      @blur="handleBlur"
     />
 
     <template
-      v-if="$slots.append"
+      v-if="$slots.append || hasClearableBtn"
       #append
     >
       <div
-        flex="~ center"
+        flex="~ center gap-1"
         fit
         @click="handleFocusOrClick"
       >
+        <Btn
+          v-if="hasClearableBtn"
+          icon="eva:close-fill h-6 w-6"
+          color="ca"
+          size="auto"
+          h="7"
+          w="7"
+          tabindex="-1"
+          @click.stop.prevent="!clearConfirmation && clear()"
+        >
+          <MenuConfirmation
+            v-if="clearConfirmation"
+            @ok="clear"
+          >
+            {{ clearConfirmation }}
+          </MenuConfirmation>
+        </Btn>
+
         <slot
           name="append"
           :clear="clear"

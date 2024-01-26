@@ -26,7 +26,7 @@ const menuProps = getMenuProps(props)
   >
     <Menu
       v-bind="menuProps"
-      :title="menuProps.title ?? $t('help')"
+      :title="menuProps.title ?? $t('general.help')"
       :class="menuClass"
       w="70"
     >

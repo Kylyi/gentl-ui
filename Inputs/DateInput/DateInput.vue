@@ -1,20 +1,19 @@
 <script setup lang="ts">
-// eslint-disable-next-line import/named
-import { AnyMaskedOptions, MaskedRange } from 'imask'
 import type { Dayjs } from 'dayjs'
 
-// TYPES
+import { type AnyMaskedOptions, MaskedRange } from 'imask'
+
+// Types
 import type { IDateInputProps } from '~/components/Inputs/DateInput/types/date-input-props.type'
 
-// COMPOSITION FUNCTIONS
-import { useInputUtils } from '@/components/Inputs/functions/useInputUtils'
+// Functions
+import { useInputUtils } from '~/components/Inputs/functions/useInputUtils'
+import { useInputValidationUtils } from '~/components/Inputs/functions/useInputValidationUtils'
 
-// STORE
-
-// COMPONENTS
-import InputWrapper from '@/components/Inputs/InputWrapper.vue'
-import DatePicker from '@/components/DatePicker/DatePicker.vue'
-import MenuProxy from '@/components/MenuProxy/MenuProxy.vue'
+// Components
+import DatePicker from '~/components/DatePicker/DatePicker.vue'
+import InputWrapper from '~/components/Inputs/InputWrapper.vue'
+import MenuProxy from '~/components/MenuProxy/MenuProxy.vue'
 
 const props = withDefaults(defineProps<IDateInputProps>(), {
   autoClose: true,
@@ -23,6 +22,10 @@ const props = withDefaults(defineProps<IDateInputProps>(), {
   errorTakesSpace: true,
   errorVisible: true,
   immediate: true,
+  inline: undefined,
+  labelInside: undefined,
+  required: undefined,
+  stackLabel: undefined,
 })
 
 defineEmits<{
@@ -31,7 +34,7 @@ defineEmits<{
   (e: 'blur'): void
 }>()
 
-// UTILS
+// Utils
 const { getCurrentLocaleDateFormat } = useLocale()
 const { formatDate, parseDate } = useDateUtils()
 
@@ -47,7 +50,7 @@ function isMaskString(val?: string) {
   return val === PATTERN.value
 }
 
-// MASK
+// Mask
 const PATTERN = computed(() => getCurrentLocaleDateFormat())
 
 const mask = computed<AnyMaskedOptions>(() => {
@@ -99,12 +102,14 @@ const mask = computed<AnyMaskedOptions>(() => {
         return val
       }
 
-      return parseDate(val, { isLocalString: true })
+      return props.format
+        ? parseDate(val, { isLocalString: true }).format(props.format)
+        : parseDate(val, { isLocalString: true })
     },
   }
 })
 
-// LAYOUT
+// Layout
 const preventSync = autoResetRef(false, 50)
 const wrapperEl = ref<InstanceType<typeof InputWrapper>>()
 const usedTouch = ref(false)
@@ -112,14 +117,19 @@ const usedTouch = ref(false)
 function handleDateSelect(val: Dayjs) {
   preventSync.value = true
   touch()
-  handleManualModelChange(val)
+
+  if (props.format) {
+    handleManualModelChange(val.format(props.format))
+  } else {
+    handleManualModelChange(val)
+  }
 
   if (props.autoClose) {
     menuProxyEl.value?.hide()
   }
 }
 
-// PICKER
+// Picker
 const menuProxyEl = ref<InstanceType<typeof MenuProxy>>()
 const datePickerEl = ref<InstanceType<typeof DatePicker>>()
 const isPickerActive = ref(false)
@@ -135,6 +145,7 @@ const {
   maskedValue,
   wrapperProps,
   hasNoValue,
+  hasClearableBtn,
   handleManualModelChange,
   handleFocusOrClick,
   handleClickWrapper,
@@ -159,6 +170,8 @@ const {
   preventFocusOnTouch: true,
 })
 
+const { path } = useInputValidationUtils(props)
+
 defineExpose({
   focus,
   select,
@@ -175,6 +188,7 @@ defineExpose({
     ref="wrapperEl"
     v-bind="wrapperProps"
     :has-content="!hasNoValue"
+    .focus="focus"
     @click="handleClickWrapper"
   >
     <template
@@ -197,16 +211,17 @@ defineExpose({
       :readonly="readonly"
       :disabled="disabled"
       :label="label || placeholder"
-      :name="name || label || placeholder"
+      :name="name || path || label || placeholder"
       class="control"
       :class="[inputClass]"
+      v-bind="inputProps"
       @focus.stop.prevent="handleFocusOrClick"
     />
 
     <template #append>
       <div
         v-if="$slots.append || (!readonly && !disabled)"
-        flex="~ gap-x-2 center"
+        flex="~ gap-1 center"
         fit
         @click="handleFocusOrClick"
       >
@@ -215,6 +230,24 @@ defineExpose({
           :clear="clear"
           :focus="focus"
         />
+
+        <Btn
+          v-if="hasClearableBtn"
+          icon="eva:close-fill h-6 w-6"
+          color="ca"
+          size="auto"
+          h="7"
+          w="7"
+          tabindex="-1"
+          @click.stop.prevent="!clearConfirmation && clear()"
+        >
+          <MenuConfirmation
+            v-if="clearConfirmation"
+            @ok="clear"
+          >
+            {{ clearConfirmation }}
+          </MenuConfirmation>
+        </Btn>
 
         <div
           system-uicons:calendar-date

@@ -1,6 +1,8 @@
-import { NuxtLink } from '#components'
+// Types
+import type { RouteLocationRaw } from '#vue-router'
+import type { NavigateToOptions } from '~/shims'
 
-// CONSTANTS
+// Constants
 import { BUTTON_PRESET } from '~/components/Button/constants/button-preset.constant'
 
 export type INavigation = {
@@ -9,15 +11,16 @@ export type INavigation = {
   exact?: boolean
   external?: boolean
   replace?: boolean
-  to?: InstanceType<typeof NuxtLink>['to']
+  to?: RouteLocationRaw | undefined
+  navigateToOptions?: NavigateToOptions
 }
 
-export interface IBtnNavigationProps extends INavigation {
+export type IBtnNavigationProps = INavigation & {
   noActiveLink?: boolean
   type?: 'button' | 'submit' | 'reset'
 }
 
-export interface IBtnProps extends IBtnNavigationProps {
+export type IBtnProps = IBtnNavigationProps & {
   align?: 'left' | 'center' | 'right'
   disabled?: boolean
   disableStyle?: 'filled' | 'flat'

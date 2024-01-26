@@ -1,15 +1,14 @@
 <script setup lang="ts">
-// TYPES
-import type { IListRowProps } from '~~/components/List/types/list-row-props.type'
+// Types
+import type { IListRowProps } from '~/components/List/types/list-row-props.type'
 
-// MODELS
-
-// CONSTANTS
-import { BUTTON_PRESET } from '@/components/Button/constants/button-preset.constant'
+// Constants
+import { BUTTON_PRESET } from '~/components/Button/constants/button-preset.constant'
 
 const props = withDefaults(defineProps<IListRowProps>(), {
   basePadding: 12,
   paddingByLevel: 8,
+  tag: 'div',
 })
 
 const DEFAULT_ROW_HEIGHT = 40
@@ -37,9 +36,11 @@ const rowInfo = computed(() => {
 </script>
 
 <template>
-  <div
+  <Component
+    :is="tag"
     :style="rowInfo._style"
     class="item"
+    data-cy="item-selectable"
     :class="[
       rowClass,
       {
@@ -68,10 +69,11 @@ const rowInfo = computed(() => {
       <div
         flex="~ 1 col"
         w="full"
-        p="y-2 r-3"
+        p="y-0.5 r-3"
       >
         <span
           :class="{ truncate }"
+          p="y-1.5"
           v-html="rowInfo.isGroup ? item.label : item._highlighted"
         />
 
@@ -89,13 +91,12 @@ const rowInfo = computed(() => {
         </span>
       </div>
     </slot>
-  </div>
+  </Component>
 </template>
 
 <style lang="scss" scoped>
 .item {
-  --apply: relative flex flex-gap-x-2 cursor-default select-none items-center
-    rounded-custom;
+  --apply: relative flex gap-x-2 cursor-default select-none items-center p-r-1;
 
   &--group {
     --apply: uppercase color-true-gray text-sm items-end p-b-0.5;
@@ -107,8 +108,8 @@ const rowInfo = computed(() => {
 
   &--active {
     &::before {
-      --apply: absolute content-empty left-.5 inset-block-.5 w-1 bg-primary
-        rounded-custom;
+      --apply: absolute content-empty left-0 inset-block-.5 w-1 bg-primary
+        rounded-l-custom;
     }
   }
 

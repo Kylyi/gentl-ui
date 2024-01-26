@@ -1,105 +1,87 @@
 <script setup lang="ts">
-// MODELS
-import { TableColumn } from '~/components/Table/models/table-column.model'
+import { NuxtLink } from '#components'
 
-// INJECTION KEYS
-import {
-  tableIsSelectedRowKey,
-  tableSelectRowKey,
-} from '~/components/Table/provide/table.provide'
+// Models
+import { type ITableProps } from '~/components/Table/types/table-props.type'
 
-type IProps = {
-  columns: TableColumn<any>[]
-  row: any
-  rowHeight: number
+type IProps = Pick<
+  ITableProps,
+  'columns' | 'rowHeight' | 'to' | 'selectable' | 'editable' | 'rowClass'
+> & {
+  index?: number
+  rows: any[]
 }
 
-defineProps<IProps>()
+const props = withDefaults(defineProps<IProps>(), {
+  index: 0,
+})
 
-// INJECTIONS
-const selectRow = injectStrict(tableSelectRowKey)
-const isSelectedRow = injectStrict(tableIsSelectedRowKey)
+// Layout
+const row = computed(() => props.rows[0])
+
+const dataColumns = computed(() => {
+  return props.columns?.filter(col => !col.hidden) ?? []
+})
+
+const isEditable = computedEager(() => {
+  return props.editable === true || props.editable === 'table'
+})
 </script>
 
 <template>
-  <div
+  <Component
+    :is="to?.(row) ? NuxtLink : 'div'"
     flex="~"
     class="tr"
-    :class="{ 'is-deleted': row.deleted }"
     :style="{ minHeight: `${rowHeight}px` }"
+    :class="[
+      { 'is-odd': index % 2 && !rowClass },
+      { 'is-deleted': row.deleted },
+      rowClass?.(row),
+    ]"
+    :data-split-row-idx="0"
+    :to="to?.(row)"
   >
-    <slot>
-      <template
-        v-for="(col, idx) in columns"
-        :key="idx"
+    <slot :row="row">
+      <slot
+        name="row-inside"
+        mode="table"
+        :row="row"
+      />
+
+      <TableCell
+        v-for="col in dataColumns"
+        :key="col.field"
+        :column="col"
+        :row="row"
+        :editable="isEditable"
       >
-        <div
-          v-if="!col.hidden"
-          class="cell"
-          :class="[
-            `col-${col.name}`,
-            col.classes,
-            { 'has-data': !col.isHelperCol },
-          ]"
-          :style="{ width: col.adjustedWidthPx }"
-        >
-          <div
-            v-if="col.field === '_selectable'"
-            flex="~ center"
-            w="full"
-            @click.stop.prevent
-          >
-            <Checkbox
-              :model-value="isSelectedRow(row)"
-              @update:model-value="selectRow(row)"
-            />
-          </div>
-
-          <ValueFormatter
-            v-else
-            :value="get(row, col.field)"
-            :data-type="col.dataType"
-            :format="col.format"
-            :row="row"
-          >
-            <template #default="{ val }">
-              <slot
-                :name="col.name"
-                :value="val"
-              >
-                <span
-                  v-if="col.dataType !== 'boolean'"
-                  class="p-x-2 truncate"
-                >
-                  {{ val }}
-                </span>
-
-                <Checkbox
-                  v-else
-                  :model-value="get(row, col.field)"
-                  :editable="false"
-                  :label="val"
-                  m="x-2"
-                />
-              </slot>
-            </template>
-          </ValueFormatter>
-        </div>
-      </template>
+        <slot
+          :name="col.name"
+          :row="row"
+        />
+      </TableCell>
     </slot>
-  </div>
+  </Component>
 </template>
 
 <style lang="scss" scoped>
 .tr {
+  --apply: relative;
+
   &.is-deleted {
     --apply: line-through color-ca;
+  }
+
+  &.is-odd {
+    .cell {
+      --apply: bg-$Table-alternate-row-bg;
+    }
   }
 }
 
 .cell {
-  --apply: min-h-inherit flex shrink-0 items-center border-b-1 border-ca
-    overflow-auto;
+  --apply: min-h-inherit flex shrink-0 items-center border-b-1 border-ca;
 
   &.has-data {
     --apply: border-l-1;
@@ -107,6 +89,17 @@ const isSelectedRow = injectStrict(tableIsSelectedRowKey)
 
   &:last-of-type {
     --apply: border-r-1;
+  }
+
+  &.is-frozen {
+    --apply: dark:shadow-black/30 shadow-black/10;
+    box-shadow: 8px 0 24px -2px var(--un-shadow-color);
+  }
+}
+
+.tr:hover {
+  .cell {
+    --apply: bg-blue-500/10;
   }
 }
 </style>

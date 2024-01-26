@@ -1,25 +1,26 @@
 <script setup lang="ts">
-import { Dayjs } from 'dayjs'
+import dayjs from 'dayjs'
 
-// TYPES
-import type { DayEvent } from '~~/components/DatePicker/types/DayEvent.type'
-import type { IDatePickerProps } from '~~/components/DatePicker/types/datepicker-props.type'
+// Types
+import type { DayEvent } from '~/components/DatePicker/types/DayEvent.type'
+import type { IDatePickerProps } from '~/components/DatePicker/types/datepicker-props.type'
 
-// MODELS
-import { Day } from '~~/libs/App/data/models/day.model'
+// Models
+import { Day } from '~/libs/App/data/models/day.model'
 
 const props = withDefaults(defineProps<IDatePickerProps>(), {
   excludedDays: () => [],
 })
 
 const emits = defineEmits<{
-  (e: 'update:model-value', val: Dayjs): void
+  (e: 'update:model-value', val: dayjs.Dayjs): void
 }>()
 
-// UTILS
-const { getPeriod, getExtendedPeriod, getDaysInPeriod } = useDateUtils()
+// Utils
+const { formatDate, getPeriod, getExtendedPeriod, getDaysInPeriod } =
+  useDateUtils()
 
-// LAYOUT
+// Layout
 const daysCount = computedEager(() => 7 - props.excludedDays.length)
 const daysInPeriod = computed(() =>
   getDaysInPeriod(extendedPeriod, {
@@ -65,9 +66,15 @@ function handleSelectToday() {
   emits('update:model-value', $date().startOf('d'))
 }
 
-// DATA
-const model = toRef(props, 'modelValue')
-const internalValue = ref<Datetime>(props.modelValue) as Ref<Datetime>
+// Data
+const model = computed(() => {
+  if (isNil(props.modelValue) || props.modelValue === '') {
+    return null
+  }
+
+  return $date(props.modelValue)
+})
+const internalValue = ref<Datetime>(model.value) as Ref<Datetime>
 const excludedDays = toRef(props, 'excludedDays')
 const period = computed(() =>
   getPeriod({ dateRef: internalValue, unit: 'month' })
@@ -78,7 +85,7 @@ const extendedPeriod = computed(() =>
 const internalValueObj = computed(() => $date(internalValue.value))
 
 const hasValue = computed(() => {
-  return !(isNil(model.value) || model.value === '')
+  return !isNil(model.value)
 })
 
 function handleDaySelect(day: Day) {
@@ -96,7 +103,7 @@ defineExpose({
 
 <template>
   <div class="date-picker">
-    <!-- SHORTCUTS -->
+    <!-- Shortcuts -->
     <slot
       v-if="shortcuts || $slots.shortcuts"
       name="shortcuts"
@@ -111,7 +118,7 @@ defineExpose({
         @update:model-value="internalValue = $event"
       />
 
-      <!-- DAYS -->
+      <!-- Days -->
       <div
         flex="~"
         p="t-2"
@@ -125,7 +132,7 @@ defineExpose({
           font="bold rem-13"
           h="8"
         >
-          {{ $d(day.dateValue, 'dayShort') }}
+          {{ formatDate(day.dateValue, 'dayShort') }}
         </div>
       </div>
 
@@ -137,7 +144,7 @@ defineExpose({
           v-for="(day, idx) in daysInPeriod"
           :key="idx"
           :day="day"
-          :is-selected="hasValue && day.dateObj.isSame(modelValue, 'd')"
+          :is-selected="hasValue && day.dateObj.isSame(model, 'd')"
           :disabled="isDayDisabled(day)"
           :events="eventsByDay?.[day.dateString]"
           @click="handleDaySelect(day)"
@@ -153,7 +160,7 @@ defineExpose({
     >
       <Btn
         size="sm"
-        :label="$t('today')"
+        :label="$t('general.today')"
         @click="handleSelectToday"
       />
     </div>

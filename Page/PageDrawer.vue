@@ -1,12 +1,13 @@
 <script setup lang="ts">
-// TYPES
-import type { IPageDrawerProps } from '~~/components/Page/types/page-drawer-props.type'
+// Types
+import type { IPageDrawerProps } from '~/components/Page/types/page-drawer-props.type'
 
-// COMPOSITION FUNCTIONS
-import { usePageWidth } from '~/layouts/functions/usePageWidth'
+// Constants
+import { $bp } from '~/libs/App/constants/breakpoints.constant'
 
 const props = withDefaults(defineProps<IPageDrawerProps>(), {
-  breakpoint: 'sm',
+  absoluteBreakpoint: 'md',
+  absoluteFullWidthBreakpoint: 'md',
   side: 'left',
   width: 280,
   miniWidth: 64,
@@ -16,32 +17,30 @@ const emits = defineEmits<{
   (e: 'update:mini', val: boolean): void
 }>()
 
-// UTILS
-const { isPageWidth } = usePageWidth()
+// Mini mode
+const miniOriginal = useVModel(props, 'mini', emits)
+const miniLocal = ref(!!miniOriginal.value)
 
-// MINI
-const miniLocal = ref(props.mini)
-const mini = useVModel(props, 'mini', emits)
-
-const isMini = computedEager(() => miniLocal.value && isPageWidth.value)
+const isMini = computedEager(() => miniLocal.value)
 
 function toggleMini() {
-  emits('update:mini', !miniLocal.value)
   miniLocal.value = !miniLocal.value
+  miniOriginal.value = miniLocal.value
 }
 
-watch(mini, mini => (miniLocal.value = mini))
+watch(miniOriginal, mini => (miniLocal.value = mini))
 
-// LAYOUT
+// Layout
 const pageDrawerClasses = computedEager(() => {
   return [
-    'lt-md:w-full',
     `page-drawer--${props.side}`,
     `${isMini.value ? 'w-$drawerMiniWidth' : 'w-$drawerWidth'}`,
     {
       'is-mini': isMini.value,
       'is-open': props.modelValue,
-      'is-absolute': $bp.isSmaller('lg'),
+      'is-absolute': !$bp[props.absoluteBreakpoint].value,
+      'is-absolute-full-width':
+        !isMini.value && !$bp[props.absoluteFullWidthBreakpoint].value,
     },
   ]
 })
@@ -56,21 +55,36 @@ const pageDrawerClasses = computedEager(() => {
       [`--drawerMiniWidth`]: `${miniWidth}px`,
     }"
   >
-    <div class="page-drawer-filler" />
+    <div
+      v-if="!fullHeight"
+      class="page-drawer-filler"
+    />
 
-    <div class="page-drawer-content">
+    <div
+      class="page-drawer-content"
+      :class="contentClass"
+    >
       <slot :mini="isMini" />
     </div>
 
-    <div class="page-drawer-bottom">
-      <Btn
-        preset="CHEVRON_RIGHT"
-        :ripple="false"
-        w="!full"
-        class="!color-black !dark:color-white"
-        :class="{ 'rotate-180': !isMini }"
-        @click="toggleMini"
-      />
+    <div
+      class="page-drawer-bottom"
+      :class="bottomClass"
+    >
+      <slot
+        name="bottom"
+        :is-mini="isMini"
+        :toggle-mini="toggleMini"
+      >
+        <Btn
+          preset="CHEVRON_RIGHT"
+          :ripple="false"
+          w="!full"
+          class="!color-black !dark:color-white"
+          :class="{ 'rotate-180': !isMini }"
+          @click="toggleMini"
+        />
+      </slot>
     </div>
   </aside>
 </template>
@@ -102,16 +116,20 @@ header.is-hidden ~ .page-drawer {
     }
   }
 
+  &.is-absolute-full-width {
+    --apply: w-full;
+  }
+
   &-content {
-    --apply: flex flex-col flex-grow overflow-auto pointer-events-auto bg-ca;
+    --apply: flex flex-col flex-grow overflow-auto pointer-events-auto;
   }
 
   &-bottom {
-    --apply: flex flex-shrink-0 pointer-events-auto flex-center p-2 w-full bg-ca
-      border-t-1 border-ca lt-page:display-none;
+    --apply: flex flex-shrink-0 pointer-events-auto flex-center p-2 w-full
+      border-t-1 border-ca;
 
     // Project specific
-    --apply: '!display-none';
+    // --apply: '!hidden';
   }
 
   &--left {

@@ -1,12 +1,18 @@
 <script setup lang="ts">
+import { config } from '~/config'
+
 type IProps = {
   currentPage: number
   currentPageSize: number
   isFirstPage: boolean
   isLastPage: boolean
+  noPagination?: boolean
   pageCount: number
-  totalRows: number
-
+  totalRows?: number
+  currentRows?: number
+  infiniteScroll?: boolean
+  limitRows?: number
+  rowsPerPageOptions?: number[]
   prev: () => void
   next: () => void
 }
@@ -17,7 +23,7 @@ const emits = defineEmits<{
   (e: 'update:currentPageSize', page: number): void
 }>()
 
-// LAYOUT
+// Layout
 const currentPage = useVModel(props, 'currentPage', emits)
 const currentPageSize = useVModel(props, 'currentPageSize', emits)
 
@@ -57,26 +63,89 @@ const pages = computedEager(() => {
     ]
   }
 })
+
+const isLimitRowsReached = computedEager(() => {
+  const limitRows = props.limitRows ?? config.table.limitRows
+  const currentRows = props.currentRows || 0
+  const totalRows = props.totalRows || 0
+
+  return (
+    config.table.limitRows && currentRows >= limitRows && totalRows > limitRows
+  )
+})
 </script>
 
 <template>
   <ClientOnly>
-    <div class="table-navigation">
+    <div class="table-pagination">
       <!-- Total rows -->
       <div
         absolute
         left-2
-        display="!lt-md:none"
+        :class="{ 'lt-md:hidden': !noPagination }"
         flex="~ gap-x-2 center"
       >
-        <span text="caption">
+        <span
+          v-if="currentRows"
+          text="caption"
+        >
+          <template v-if="infiniteScroll">
+            <span
+              font="bold"
+              data-cy="current-rows"
+              >{{ currentRows }}</span
+            >
+            {{ $t('general.outOf') }}
+            <span
+              font="bold"
+              data-cy="total-rows"
+              >{{ totalRows }}</span
+            >
+            {{ $t('general.row', totalRows || 0) }}
+          </template>
+
+          <template v-else-if="!noPagination">
+            <span font="bold">
+              {{ (currentPage - 1) * currentPageSize }} -
+              {{ (currentPage - 1) * currentPageSize + currentRows }}
+            </span>
+            {{ $t('general.outOf') }}
+            <span font="bold">{{ totalRows }}</span>
+            {{ $t('general.row', totalRows || 0) }}
+          </template>
+        </span>
+
+        <span
+          v-else
+          text="caption"
+        >
           {{ $t('table.totalRows') }}:
           {{ totalRows }}
         </span>
       </div>
 
-      <template v-if="pages.length > 1">
-        <!-- FIRST BTN -->
+      <!-- Limit amount of rows reached -->
+      <template v-if="isLimitRowsReached">
+        <div
+          flex="~ gap-2 items-center"
+          text="caption"
+        >
+          <div class="color-blue-500 bi:info-lg" />
+          <span>{{ $t('table.limitRowsReached') }}</span>
+
+          <Tooltip
+            placement="top"
+            w="120"
+            :offset="8"
+            text="center"
+          >
+            {{ $t('table.limitRowsReachedTooltip') }}
+          </Tooltip>
+        </div>
+      </template>
+
+      <template v-else-if="pages.length > 1 && !noPagination">
+        <!-- First page -->
         <Btn
           :disabled="isFirstPage"
           size="sm"
@@ -85,7 +154,7 @@ const pages = computedEager(() => {
           @click="currentPage = 1"
         />
 
-        <!-- PREVIOUS BTN -->
+        <!-- Previous page -->
         <Btn
           :disabled="isFirstPage"
           size="sm"
@@ -94,7 +163,7 @@ const pages = computedEager(() => {
           @click="prev"
         />
 
-        <!-- PAGES -->
+        <!-- Pages -->
         <template
           v-for="(page, idx) in pages"
           :key="idx"
@@ -109,7 +178,7 @@ const pages = computedEager(() => {
           <div v-else>...</div>
         </template>
 
-        <!-- NEXT BTN -->
+        <!-- Next page -->
         <Btn
           :disabled="isLastPage"
           size="sm"
@@ -117,7 +186,7 @@ const pages = computedEager(() => {
           @click="next"
         />
 
-        <!-- LAST BTN -->
+        <!-- Last page -->
         <Btn
           :disabled="isLastPage"
           size="sm"
@@ -129,18 +198,19 @@ const pages = computedEager(() => {
 
       <!-- Page size -->
       <div
-        absolute
-        right-2
-        display="!lt-md:none"
-        flex="~ gap-x-2 center"
+        v-if="!noPagination"
+        class="table-pagination__page-size"
       >
-        <span text="caption">
+        <span
+          text="caption"
+          class="!lt-md:hidden"
+        >
           {{ $t('table.rowsPerPage') }}
         </span>
 
         <Selector
           v-model="currentPageSize"
-          :options="[5, 10, 25, 50, 100]"
+          :options="rowsPerPageOptions"
           emit-key
           size="sm"
           no-search
@@ -154,11 +224,16 @@ const pages = computedEager(() => {
 </template>
 
 <style scoped lang="scss">
-.table-navigation {
+.table-pagination {
   --apply: relative flex flex-center flex-gap-x-1 p-y-1 min-h-10;
 
   .btn.is-active {
     --apply: bg-primary color-white;
+  }
+
+  &__page-size {
+    --apply: absolute right-2 flex flex-center flex-gap-x-2;
+    --apply: 'lt-sm:hidden';
   }
 }
 </style>

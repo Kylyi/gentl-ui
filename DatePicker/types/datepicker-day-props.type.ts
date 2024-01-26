@@ -1,5 +1,8 @@
-import { DayEvent } from '~~/components/DatePicker/types/DayEvent.type'
-import { Day } from '~~/libs/App/data/models/day.model'
+// Types
+import { type DayEvent } from '~/components/DatePicker/types/DayEvent.type'
+
+// Models
+import { Day } from '~/libs/App/data/models/day.model'
 
 export interface IDatePickerDayProps {
   day: Day
