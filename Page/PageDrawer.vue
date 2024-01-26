@@ -73,7 +73,7 @@ const pageDrawerClasses = computedEager(() => {
     >
       <slot
         name="bottom"
-        :is-mini="isMini"
+        :mini="isMini"
         :toggle-mini="toggleMini"
       >
         <Btn

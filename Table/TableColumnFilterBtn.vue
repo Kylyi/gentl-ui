@@ -208,8 +208,8 @@ function handleMenuBeforeHide() {
             </span>
           </div>
         </template>
-    </Tooltip>
       </div>
+    </Tooltip>
 
     <MenuProxy
       ref="menuEl"
