@@ -1,7 +1,4 @@
 <script setup lang="ts">
-// Types
-import { useInputValidationUtils } from '~/components/Inputs/functions/useInputValidationUtils'
-
 // Functions
 import type { InputLabelProps } from '~/components/Inputs/types/input-label-props.type'
 
@@ -9,16 +6,13 @@ const props = withDefaults(defineProps<InputLabelProps>(), {
   required: undefined,
 })
 
-// Utils
-const { isRequired } = useInputValidationUtils(props)
-
 const labelLocalClass = computedEager(() => {
   return [
     props.labelClass,
     `label--${props.size}`,
     {
       'is-inline': props.inline,
-      'is-required': props.required ?? !!isRequired.value,
+      'is-required': props.required,
       'is-inside': props.labelInside,
       'is-floating':
         !props.inline &&
@@ -113,7 +107,7 @@ span.label {
     --apply: translate-y--180% w-125% max-w-125% scale-80;
 
     &.is-inside {
-      --apply: translate-y--65%;
+      --apply: translate-y--50%;
     }
   }
 
@@ -123,7 +117,7 @@ span.label {
   }
 }
 
-.wrapper-body:focus-within {
+.wrapper-body:not(.selector-wrapper):focus-within {
   > .label {
     --apply: color-primary;
 
@@ -131,7 +125,7 @@ span.label {
       --apply: translate-y--180% w-125% max-w-125% scale-80;
 
       &.is-inside {
-        --apply: translate-y--65% rounded-tl;
+        --apply: translate-y--50% rounded-tl;
       }
     }
   }

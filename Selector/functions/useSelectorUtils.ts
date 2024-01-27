@@ -1,8 +1,15 @@
+// Types
 import { type ISelectorUtilsOptions } from '~/components/Selector/types/selector-utils-options.type'
+
+// Functions
+import { useInputWrapperUtils } from '~/components/Inputs/functions/useInputWrapperUtils'
 
 export function useSelectorUtils(options: ISelectorUtilsOptions) {
   const { props, menuElRef } = options
   const instance = getCurrentInstance()
+
+  // Utils
+  const { getInputWrapperProps } = useInputWrapperUtils()
 
   // Layout
   const el = ref<any>()
@@ -15,31 +22,7 @@ export function useSelectorUtils(options: ISelectorUtilsOptions) {
   }
 
   // Wrapper
-  const wrapperProps = reactivePick(
-    props,
-    'contentClass',
-    'disabled',
-    'emptyValue',
-    'validation',
-    'errorTakesSpace',
-    'errorVisible',
-    'hint',
-    'inline',
-    'label',
-    'labelClass',
-    'labelInside',
-    'modelValue',
-    'loading',
-    'originalValue',
-    'placeholder',
-    'readonly',
-    'required',
-    'size',
-    'stackLabel',
-    'noBorder',
-    'inputContainerClass',
-    'inputContainerStyle'
-  )
+  const wrapperProps = getInputWrapperProps(props)
 
   // Click & focus handler
   const focusedProgramatically = refAutoReset(false, 50)

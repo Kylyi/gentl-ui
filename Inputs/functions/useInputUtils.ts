@@ -81,7 +81,8 @@ export function useInputUtils(options: IInputUtilsOptions) {
     'inputContainerClass',
     'inputContainerStyle',
     'validation',
-    'ui'
+    'ui',
+    'zod'
   )
 
   // Layout

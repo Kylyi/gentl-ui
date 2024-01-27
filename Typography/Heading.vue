@@ -9,6 +9,7 @@ defineProps<IProps>()
 <template>
   <h6
     class="heading"
+    min-h="12"
     :class="{ 'is-filled': filled }"
   >
     <slot />
@@ -17,7 +18,7 @@ defineProps<IProps>()
 
 <style lang="scss" scoped>
 .heading {
-  --apply: flex min-h-12 items-center p-x-2 rounded-custom relative;
+  --apply: flex items-center p-x-2 rounded-custom relative;
 
   &::before {
     --apply: bottom-0 w-9/10 h-1 left-0 bg-primary content-empty absolute

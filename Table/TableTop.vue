@@ -436,7 +436,7 @@ function handleFitColumns() {
           </div>
         </div>
 
-        <!-- Layout -->
+        <!-- Layout & Columns -->
         <div class="table-top__layout">
           <span
             v-if="!tableTopFunctionality?.noLayout"

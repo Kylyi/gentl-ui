@@ -20,7 +20,7 @@ const props = withDefaults(defineProps<IInputWrapperProps>(), {
 
 // Utils
 const { getInputWrapperStyleVariables } = useInputWrapperUtils()
-const { issues } = useInputValidationUtils(props)
+const { issues, isRequired } = useInputValidationUtils(props)
 
 // Layout
 const wrapperEl = ref<HTMLDivElement>()
@@ -137,8 +137,9 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
               color="warning"
               text="xs"
               p="x-1 y-0.5"
-              >{{ $t('general.modified') }}</span
             >
+              {{ $t('general.modified') }}
+            </span>
           </Tooltip>
         </div>
 
@@ -148,6 +149,7 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
       <InputLabel
         v-if="label"
         v-bind="labelProps"
+        :required="isRequired"
       />
 
       <span

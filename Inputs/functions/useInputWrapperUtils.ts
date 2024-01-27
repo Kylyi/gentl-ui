@@ -3,25 +3,33 @@ import type { IInputWrapperProps } from '~/components/Inputs/types/input-wrapper
 
 export function useInputWrapperUtils() {
   function getInputWrapperProps(props: IInputWrapperProps) {
-    reactivePick(
+    return reactivePick(
       props,
       'contentClass',
+      'contentStyle',
       'disabled',
       'errorTakesSpace',
       'errorVisible',
       'hint',
       'inline',
       'label',
+      'labelStyle',
       'labelClass',
       'labelInside',
       'loading',
+      'modelValue',
+      'originalValue',
       'placeholder',
       'readonly',
       'required',
       'size',
       'stackLabel',
+      'noBorder',
+      'inputContainerClass',
+      'inputContainerStyle',
       'validation',
-      'ui'
+      'ui',
+      'zod'
     )
   }
 
@@ -73,7 +81,7 @@ export function useInputWrapperUtils() {
 
       if (isLabelInside) {
         styleVariables['--padding'] = '0 12px'
-        styleVariables['--margin'] = '17px 0 3px 0'
+        styleVariables['--margin'] = '18px 0 2px 0'
 
         if (!hasLabel) {
           styleVariables['--margin'] = '12px 0'

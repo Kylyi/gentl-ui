@@ -83,7 +83,7 @@ const isTitleVisible = computedEager(() => {
 
 <style lang="scss" scoped>
 .section {
-  --apply: flex flex-col rounded-custom max-w-$Section-max-w;
+  --apply: relative flex flex-col rounded-custom max-w-$Section-max-w;
 
   &--dense {
     --apply: p-x-0 p-b-0;
@@ -108,5 +108,9 @@ const isTitleVisible = computedEager(() => {
   .section-subtitle {
     --apply: p-b-3;
   }
+}
+
+.heading.is-filled::before {
+  --apply: absolute content-empty top-0 left-0 w-1 h-full bg-primary;
 }
 </style>

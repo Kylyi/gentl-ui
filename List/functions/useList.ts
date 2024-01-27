@@ -478,7 +478,10 @@ export function useList(
       try {
         isLoading.value = true
 
-        const res = await props.loadData.fnc({ search })
+        const res = await props.loadData.fnc({
+          search,
+          select: props.loadData?.select,
+        })
 
         if (props.loadData.local) {
           items.value = res

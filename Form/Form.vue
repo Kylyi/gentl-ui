@@ -312,7 +312,10 @@ onMounted(() => {
         </slot>
 
         <!-- Spacer -->
-        <div grow />
+        <div
+          v-if="!ui?.noSpacer"
+          grow
+        />
 
         <div
           relative

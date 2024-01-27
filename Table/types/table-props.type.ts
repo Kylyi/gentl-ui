@@ -317,7 +317,6 @@ export interface ITableProps {
 
   /**
    * Will split the table row into multiple columns
-   * FIXME: Currently broken
    */
   splitRow?: number
 

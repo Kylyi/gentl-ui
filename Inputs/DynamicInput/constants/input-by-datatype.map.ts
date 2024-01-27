@@ -29,7 +29,9 @@ const NUMBER_INPUT = {
 
 const DATE_INPUT = {
   component: DateInput,
-  props: {} as ComponentProps<typeof DateInput>,
+  props: {
+    format: 'YYYY-MM-DD',
+  } as ComponentProps<typeof DateInput>,
   icon: 'system-uicons:calendar-date',
 }
 

@@ -2,37 +2,22 @@
 // Types
 import type { IFieldProps } from '~/components/Field/types/field-props.type'
 
+// Functions
+import { useInputWrapperUtils } from '~/components/Inputs/functions/useInputWrapperUtils'
+
 const props = defineProps<IFieldProps>()
 defineEmits<{
   (e: 'focus', ev: FocusEvent | MouseEvent): void
 }>()
 
+// Utils
+const { getInputWrapperProps } = useInputWrapperUtils()
+
 // Layout
 const controlEl = ref<HTMLDivElement>()
 
 // Wrapper
-const wrapperProps = reactivePick(
-  props,
-  'contentClass',
-  'contentStyle',
-  'disabled',
-  'validation',
-  'errorTakesSpace',
-  'errorVisible',
-  'hint',
-  'inline',
-  'label',
-  'labelClass',
-  'labelStyle',
-  'labelInside',
-  'loading',
-  'noBorder',
-  'placeholder',
-  'readonly',
-  'required',
-  'size',
-  'stackLabel'
-)
+const wrapperProps = getInputWrapperProps(props)
 
 defineExpose({
   focus: () => controlEl.value?.focus(),
@@ -46,6 +31,7 @@ defineExpose({
     error-visible
     :has-content="!noContent"
   >
+    {{ wrapperProps.zod }}
     <template
       v-if="$slots.prepend"
       #prepend

@@ -54,7 +54,7 @@ export interface IListProps extends IListBaseProps {
   loadData?: {
     /**
      * The payload can actually be typed as follows:
-     * payload: { search?: string }
+     * payload: { search?: string, select?: string[] }
      * But some queries dont have the search so to prevent TS from complaining, just use any
      */
     fnc: (payload: any) => Promise<any> | any
@@ -71,6 +71,11 @@ export interface IListProps extends IListBaseProps {
      * When true, the `loadData` fnc will be called on every search
      */
     onSearch?: boolean
+
+    /**
+     * The fields to select from the query
+     */
+    select?: string[]
   }
 
   /**
