@@ -191,6 +191,8 @@ export const COMPARATORS_BY_DATATYPE_MAP: Record<
 
   custom: [],
 
+  array: [ComparatorEnum.HAS_SOME],
+
   // SECTION - Simple version of the above ~ usable for client-side filtering for example
   // String
   stringSimple: [
@@ -364,4 +366,5 @@ export const COMPARATORS_BY_DATATYPE_MAP: Record<
     ComparatorEnum.NOT_IS_EMPTY,
   ],
   customSimple: [],
+  arraySimple: [ComparatorEnum.HAS_SOME],
 }

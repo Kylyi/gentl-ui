@@ -8,4 +8,8 @@ export const NON_VALUE_COMPARATORS = [
 
 export const BOOLEANISH_COMPARATORS = [ComparatorEnum.IS, ComparatorEnum.NOT_IS]
 
-export const SELECTOR_COMPARATORS = [ComparatorEnum.IN, ComparatorEnum.NOT_IN]
+export const SELECTOR_COMPARATORS = [
+  ComparatorEnum.IN,
+  ComparatorEnum.NOT_IN,
+  ComparatorEnum.HAS_SOME,
+]

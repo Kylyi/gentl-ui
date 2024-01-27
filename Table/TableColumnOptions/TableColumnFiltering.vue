@@ -28,7 +28,7 @@ function handleClearFilter() {
     <!-- Title -->
     <div class="flex flex-gap-x-2 p-x-3 items-center">
       <span class="filter-container-title">
-        {{ $t('filtering.self') }}
+        {{ $t('filtering.self', 2) }}
       </span>
 
       <Btn
