@@ -12,7 +12,7 @@ const props = withDefaults(defineProps<ICheckboxProps>(), {
 })
 
 const emits = defineEmits<{
-  (e: 'update:model-value', value: any): void
+  (e: 'update:modelValue', value: any): void
 }>()
 
 defineExpose({
@@ -20,40 +20,58 @@ defineExpose({
 })
 
 // Layout
+const model = defineModel()
 const labelEl = ref<HTMLElement>()
 
+const isChecked = computed(() => {
+  // When custom function is provided, use it
+  if (props.comparatorFn) {
+    return props.comparatorFn(props.modelValue, props.checkValue)
+  }
+
+  // When using array, we check if the value is inside the array
+  if (Array.isArray(props.modelValue)) {
+    return props.modelValue.includes(props.checkValue)
+  }
+
+  // Otherwise, we just compare the values
+  return props.modelValue === props.checkValue
+})
+
+const isIndeterminate = computed(() => {
+  // When custom function is provided, use it
+  if (props.comparatorFn) {
+    return props.comparatorFn(props.modelValue, props.indeterminateValue)
+  }
+
+  // Otherwise, we just compare the values
+  return props.modelValue === props.indeterminateValue
+})
+
 const toggleState = computed(() => {
-  const isChecked =
-    props.comparatorFn?.(props.modelValue, props.checkValue) ??
-    props.modelValue === props.checkValue
-
-  const isIndeterminate =
-    props.comparatorFn?.(props.modelValue, props.indeterminateValue) ??
-    props.modelValue === props.indeterminateValue
-
   // Checkbox class
   let checkboxClass: ClassType | undefined = props.visuals?.unchecked?.checkbox
 
-  if (isChecked) {
+  if (isChecked.value) {
     checkboxClass = props.visuals?.checked?.checkbox
-  } else if (isIndeterminate) {
+  } else if (isIndeterminate.value) {
     checkboxClass = props.visuals?.indeterminate?.checkbox
   }
 
   // Label class
   let labelClassVisuals: ClassType | undefined = props.visuals?.unchecked?.label
 
-  if (isChecked) {
+  if (isChecked.value) {
     labelClassVisuals = props.visuals?.checked?.label
-  } else if (isIndeterminate) {
+  } else if (isIndeterminate.value) {
     labelClassVisuals = props.visuals?.indeterminate?.label
   }
 
   const labelClass = [props.labelClass, labelClassVisuals]
 
   return {
-    checked: !isIndeterminate ? isChecked : undefined,
-    indeterminate: isIndeterminate || undefined,
+    checked: !isIndeterminate.value ? isChecked.value : undefined,
+    indeterminate: isIndeterminate.value || undefined,
     checkboxClass,
     labelClass,
   }
@@ -64,15 +82,32 @@ function handleStateChange() {
     return
   }
 
-  if (toggleState.value.checked) {
-    emits('update:model-value', props.uncheckValue)
-  } else if (toggleState.value.indeterminate) {
-    emits('update:model-value', props.checkValue)
-  } else {
-    emits(
-      'update:model-value',
-      props.indeterminate ? props.indeterminateValue : props.checkValue
-    )
+  // When using array, we need to toggle the value inside the array
+  if (Array.isArray(model.value)) {
+    const index = model.value.indexOf(props.checkValue)
+
+    if (index === -1) {
+      emits('update:modelValue', [...model.value, props.checkValue])
+    } else {
+      emits(
+        'update:modelValue',
+        model.value.filter(value => value !== props.checkValue)
+      )
+    }
+  }
+
+  // Otherwise, we just set the value
+  else {
+    if (toggleState.value.checked) {
+      emits('update:modelValue', props.uncheckValue)
+    } else if (toggleState.value.indeterminate) {
+      emits('update:modelValue', props.checkValue)
+    } else {
+      emits(
+        'update:modelValue',
+        props.indeterminate ? props.indeterminateValue : props.checkValue
+      )
+    }
   }
 }
 

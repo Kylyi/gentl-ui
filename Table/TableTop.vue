@@ -411,12 +411,12 @@ function handleFitColumns() {
           <!-- Sorting -->
           <div
             v-if="tableSorting && !tableTopFunctionality?.noSort"
-            flex="~ gap-1"
-            items-center
+            flex="~ gap-1 items-center"
           >
             <span
               text="caption xs"
               font="bold"
+              m="t-0.5"
             >
               {{ $t('table.sortBy') }}:
             </span>

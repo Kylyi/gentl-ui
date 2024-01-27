@@ -46,7 +46,7 @@ function handleCopy() {
         ? '!outline-positive !outline-solid'
         : '!outline-dotted !outline-ca',
     ]"
-    @click="handleCopy"
+    @click.stop.prevent="handleCopy"
   >
     <template #icon>
       <div
@@ -63,7 +63,7 @@ function handleCopy() {
     <BtnConfirmation
       :model-value="copied"
       :position="position"
-      :label="$t('copied')"
+      :label="$t('general.copied')"
     />
   </Btn>
 </template>
