@@ -1,7 +1,10 @@
 <script setup lang="ts">
-// TYPES
+// Types
 import type { CrudAction } from '~/components/Crud/types/crud-action.type'
 import type { ICrudBtnProps } from '~/components/Crud/types/crud-btn-props.type'
+
+// Constants
+import { $bp } from '~/libs/App/constants/breakpoints.constant'
 
 type IProps = {
   actions?: Partial<Record<CrudAction, boolean>> | true
@@ -31,15 +34,16 @@ defineSlots<{
   }) => void
   'delete-confirmation'?: (payload: {}) => void
 }>()
-// STATE
+
+// State
 const isSaved = autoResetRef(false, 2000)
 const isDeleted = autoResetRef(false, 2000)
 // const isRestored = autoResetRef(false, 2000)
 // const isArchived = autoResetRef(false, 2000)
 
-// LAYOUT
+// Layout
 const loaderType = computedEager(() => {
-  return $bp.isGreaterOrEqual('lg') && props.labels ? 'inline' : 'block'
+  return $bp.lg.value && props.labels ? 'inline' : 'block'
 })
 
 const crudBtnProps = computedEager<ICrudBtnProps>(() => ({
@@ -49,7 +53,7 @@ const crudBtnProps = computedEager<ICrudBtnProps>(() => ({
   loading: props.loading,
 }))
 
-// ACTIONS
+// Actions
 const actionsDefault = ref<Record<CrudAction, boolean>>({
   add: false,
   archive: false,

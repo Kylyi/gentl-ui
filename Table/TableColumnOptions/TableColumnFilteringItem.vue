@@ -14,6 +14,12 @@ import { getInputByDataType } from '~/components/Inputs/DynamicInput/constants/i
 // Injections
 import { tableRefreshKey } from '~/components/Table/provide/table.provide'
 
+// Constants
+import {
+  BOOLEANISH_COMPARATORS,
+  NON_VALUE_COMPARATORS,
+} from '~/components/Table/constants/comparator-categories.const'
+
 // Components
 import { TableColumn } from '~/components/Table/models/table-column.model'
 

@@ -14,9 +14,13 @@ import { getComponentName } from '~/libs/App/functions/misc'
 import { parseSortingFromUrl } from '~/libs/App/functions/table/extractSortingFromUrl'
 import { parseFiltersFromUrl } from '~/libs/App/functions/table/extractFiltersFromUrl'
 import { parseVisibleColumnsFromUrl } from '~/libs/App/functions/table/extractVisibleColumnsFromUrl'
+import { COMPARATORS_BY_DATATYPE_MAP } from '~/components/Table/constants/comparators-by-datatype-map.const'
 
 // Constants
-import { COMPARATORS_BY_DATATYPE_MAP } from '~/libs/App/constants/input-map.constant'
+import {
+  BOOLEANISH_COMPARATORS,
+  SELECTOR_COMPARATORS,
+} from '~/components/Table/constants/comparator-categories.const'
 
 export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
   // Utils
@@ -98,8 +102,10 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
       allowedComparators,
       extraComparators = [],
     } = options
-    const comparators: ComparatorEnum[] =
-      [...COMPARATORS_BY_DATATYPE_MAP[dataType], ...SELECTOR_COMPARATORS] ?? []
+    const comparators: ComparatorEnum[] = [
+      ...COMPARATORS_BY_DATATYPE_MAP[dataType],
+      ...SELECTOR_COMPARATORS,
+    ]
 
     if (allowedComparators) {
       return uniq(

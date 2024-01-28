@@ -1,6 +1,7 @@
 // Types
 import type { ITableProps } from '~/components/Table/types/table-props.type'
 import type { ITableLayout } from '~/components/Table/types/table-layout.type'
+import type { ComponentInstance } from '~/libs/App/types/component.type'
 
 // Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
@@ -14,6 +15,9 @@ import {
 // Functions
 import { useTableColumns } from '~/components/Table/functions/useTableColumns'
 import { useTableUtils } from '~/components/Table/functions/useTableUtils'
+
+// Constants
+import { $bp } from '~/libs/App/constants/breakpoints.constant'
 
 // Components
 import TableRow from '~/components/Table/TableRow.vue'

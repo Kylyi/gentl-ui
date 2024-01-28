@@ -89,7 +89,7 @@ function delocalizeTime(time?: string | undefined) {
 const PATTERN = 'HH:mm'
 
 // Layout
-const model = defineModel<string>({ local: true })
+const model = defineModel<string>()
 const preventNextIsAmChange = autoResetRef(false, 50)
 
 const delocalizedTimeParts = computed(() => {

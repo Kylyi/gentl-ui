@@ -6,6 +6,7 @@ import { config } from '~/config'
 import type { DistinctData } from '~/components/Table/types/distinct-data.type'
 import type { IItem, IItemBase } from '~/libs/App/types/item.type'
 import type { ITableOrderBy } from '~/components/Table/types/table-query.type'
+import type { ObjectKey } from '~/libs/App/types/object-key.type'
 
 // Models
 import { FilterItem } from '~/libs/App/data/models/filter-item'
@@ -16,6 +17,7 @@ import { useRenderTemporaryTableCell } from '~/components/Table/functions/useRen
 
 // Constants
 import { DATE_TYPES } from '~/libs/App/types/datetime.type'
+import { NON_VALUE_COMPARATORS } from '~/components/Table/constants/comparator-categories.const'
 
 // Components
 import DynamicInput from '~/components/Inputs/DynamicInput/DynamicInput.vue'
@@ -27,7 +29,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   label: string
   width: number | string = 1
   align: 'left' | 'center' | 'right' = 'left'
-  field: Extract<keyof T, string | number>
+  field: ObjectKey<T>
   hideLabel?: boolean
   noFilters?: boolean
   filterable = true
@@ -226,7 +228,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     }
 
     return {
-      field: this.field.toString(),
+      field: this.field,
       direction: this.sort,
       sortOrder: this.sortOrder,
     }
@@ -491,7 +493,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
 
     if (DATE_TYPES.includes(this.dataType) && !this.sortFormat) {
       this.sortFormat = (row: T) => {
-        return getDateSimpleValue(row[this.field as keyof T] as Datetime)
+        return getDateSimpleValue(get(row, this.field) as Datetime)
       }
     }
 

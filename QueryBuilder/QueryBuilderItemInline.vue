@@ -16,6 +16,10 @@ import {
 } from '~/components/QueryBuilder/provide/query-builder.provide'
 import { tableRefreshKey } from '~/components/Table/provide/table.provide'
 
+// Constants
+import { COLORS } from '~/libs/App/constants/colors.constant'
+import { NON_VALUE_COMPARATORS } from '~/components/Table/constants/comparator-categories.const'
+
 // Components
 import Menu from '~/components/Menu/Menu.vue'
 import QueryBuilderItem from '~/components/QueryBuilder/QueryBuilderItem.vue'
@@ -100,7 +104,7 @@ function handleRemoveCondition() {
 }
 
 async function applyChanges() {
-  const isValid = await $z.value.$validate()
+  const isValid = await $v.value.$validate()
 
   if (isValid) {
     itemEditMenuEl.value?.hide(true)
@@ -124,7 +128,7 @@ async function handleItemEditMenuBeforeHide() {
   }
 }
 
-const $z = useVuelidate({ $scope: 'qb' })
+const $v = useVuelidate({ $scope: 'qb' })
 </script>
 
 <template>

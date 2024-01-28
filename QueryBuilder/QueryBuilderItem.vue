@@ -10,6 +10,7 @@ import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
 
 // Functions
 import { getInputByDataType } from '~/components/Inputs/DynamicInput/constants/input-by-datatype.map'
+import { useTableUtils } from '~/components/Table/functions/useTableUtils'
 
 // Injections
 import {
@@ -19,8 +20,11 @@ import {
   qbItemsKey,
 } from '~/components/QueryBuilder/provide/query-builder.provide'
 
-// Functions
-import { useTableUtils } from '~/components/Table/functions/useTableUtils'
+// Constants
+import {
+  BOOLEANISH_COMPARATORS,
+  NON_VALUE_COMPARATORS,
+} from '~/components/Table/constants/comparator-categories.const'
 
 // Components
 import Selector from '~/components/Selector/Selector.vue'

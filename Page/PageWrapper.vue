@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { config } from '~/config'
-
 type IProps = {
   pad?: boolean
   loading?: boolean
@@ -32,24 +30,6 @@ onMounted(() => {
       'is-mobile-and-sidebar-open': isMobile && isSidebarOpen,
     }"
   >
-    <!-- TopBar -->
-    <Component
-      :is="config.pageWrapper.topBar"
-      v-if="includeTopBar && config.pageWrapper.topBar"
-    >
-      <template #breadcrumbs-above>
-        <slot name="breadcrumbs-above" />
-      </template>
-
-      <template #breadcrumbs-below>
-        <slot name="breadcrumbs-below" />
-      </template>
-
-      <template #breadcrumbs-append>
-        <slot name="breadcrumbs-append" />
-      </template>
-    </Component>
-
     <!-- Content -->
     <div class="page-wrapper__content">
       <slot name="title-left" />
