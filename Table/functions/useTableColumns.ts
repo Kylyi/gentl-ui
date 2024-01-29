@@ -33,6 +33,15 @@ type Options = {
   isSelectableRef?: MaybeRefOrGetter<boolean>
 }
 
+// Helpers
+function calculateColWidth(
+  colWidth: number,
+  colsTotalWidth: number,
+  componentWidth: number
+) {
+  return (componentWidth / colsTotalWidth) * colWidth
+}
+
 export function useTableColumns(
   props: ITableProps,
   columnsRef: Ref<TableColumn[]>,
@@ -313,10 +322,7 @@ export function useTableColumns(
     return _columns
   }
 
-  /**
-   * Recalculates the columns
-   */
-  function resizeColumns(
+  function getColumnSizes(
     containerElRef: MaybeRefOrGetter<Element>,
     wrapperElRef: MaybeRefOrGetter<Element>,
     internalColumnsRef: MaybeRefOrGetter<TableColumn[]>,
@@ -325,13 +331,15 @@ export function useTableColumns(
     const container = toValue(containerElRef)
     const wrapper = toValue(wrapperElRef)
     const containerWidth = container.clientWidth
-    const isWrapperOverflown = isOverflown(wrapper, { direction: 'vertical' })
+    const isWrapperOverflownVertically = isOverflown(wrapper, {
+      direction: 'vertical',
+    })
 
     const { minColWidthRef = 64 } = options
     const minColWidth = toValue(minColWidthRef)
 
     const contentWidth =
-      containerWidth - Number(isWrapperOverflown) * scrollbarWidth - 1
+      containerWidth - Number(isWrapperOverflownVertically) * scrollbarWidth - 1
 
     const cols = toValue(internalColumnsRef)
 
@@ -359,11 +367,48 @@ export function useTableColumns(
       { relative: 0, fixed: 0 }
     )
 
+    // We can stretch the columns if the total width of the columns is smaller
+    // than the width of the table
+    const canStretchCols =
+      colsTotalWidth.fixed + colsTotalWidth.relative < contentWidth
+
     // We check if we need to adjust the columns
     // Adjusting the columns mean that we stretch the columns that have relative width
-    const shouldAdjustCols =
-      !!colsTotalWidth.relative &&
-      colsTotalWidth.relative + colsTotalWidth.fixed < contentWidth
+    const shouldAdjustCols = !!colsTotalWidth.relative && canStretchCols
+
+    return {
+      minColWidth,
+      colsTotalWidth,
+      shouldAdjustCols,
+      cols,
+      contentWidth,
+      isWrapperOverflownVertically,
+      canStretchCols,
+    }
+  }
+
+  /**
+   * Recalculates the columns widths
+   */
+  function resizeColumns(
+    containerElRef: MaybeRefOrGetter<Element>,
+    wrapperElRef: MaybeRefOrGetter<Element>,
+    internalColumnsRef: MaybeRefOrGetter<TableColumn[]>,
+    options: Options = {}
+  ) {
+    const {
+      cols,
+      colsTotalWidth,
+      contentWidth,
+      isWrapperOverflownVertically,
+      minColWidth,
+      shouldAdjustCols,
+    } = getColumnSizes(
+      containerElRef,
+      wrapperElRef,
+      internalColumnsRef,
+      options
+    )
 
     // When stretching the columns, we use some rounding. This rounding may add
     // up to some extra pixels that we need to distribute to the columns relative columns
@@ -377,17 +422,9 @@ export function useTableColumns(
           : col.width
     ) as TableColumn[]
 
-    function calculateColWidth(
-      colWidth: number,
-      colsTotalWidth: number,
-      componentWidth: number
-    ) {
-      return (componentWidth / colsTotalWidth) * colWidth
-    }
-
     let wExtra = 0
     colsSortedByWidth.forEach(col => {
-      // NOTE - We reset the `headerStyle`, specifically the `marginRight` there
+      // NOTE - We reset the `headerStyle`, specifically the `marginRight`.
       // `marginRight` is added to the last column in the table when the table
       // is horizontally overflown. We need to reset it here because we recalculate
       // it below
@@ -430,12 +467,17 @@ export function useTableColumns(
       }
     })
 
+    // We add the extra width to the smallest columns
     for (let idx = 0; idx < Math.floor(wExtra); idx++) {
       const col = colsSortedByWidth[idx]
       col.adjustedWidth++
     }
 
-    if (!colsTotalWidth.relative && isWrapperOverflown && !shouldAdjustCols) {
+    if (
+      !colsTotalWidth.relative &&
+      isWrapperOverflownVertically &&
+      !shouldAdjustCols
+    ) {
       const nonHelperColsSortedDesc = [...colsSortedByWidth]
         .reverse()
         .filter(col => !col.isHelperCol)
@@ -469,7 +511,7 @@ export function useTableColumns(
     const isWrapperOverflownHorizontally =
       totalVisibleColumnsWidth > contentWidth
 
-    if (isWrapperOverflownHorizontally && isWrapperOverflown) {
+    if (isWrapperOverflownHorizontally && isWrapperOverflownVertically) {
       const lastVisibleNonHelperCol = cols
         .filter(col => !col.isHelperCol)
         .reverse()
@@ -482,6 +524,63 @@ export function useTableColumns(
           marginRight: `${scrollbarWidth}px`,
         }
       }
+    }
+
+    return cols
+  }
+
+  /**
+   * Stretches the columns to fit the table width
+   */
+  function stretchColumns(
+    containerElRef: MaybeRefOrGetter<Element>,
+    wrapperElRef: MaybeRefOrGetter<Element>,
+    internalColumnsRef: MaybeRefOrGetter<TableColumn[]>,
+    options: Options = {}
+  ) {
+    const {
+      canStretchCols,
+      cols,
+      colsTotalWidth,
+      contentWidth,
+      isWrapperOverflownVertically,
+    } = getColumnSizes(
+      containerElRef,
+      wrapperElRef,
+      internalColumnsRef,
+      options
+    )
+
+    const _contentWidth =
+      contentWidth + Number(isWrapperOverflownVertically) * scrollbarWidth - 1
+
+    if (canStretchCols) {
+      // When stretching the columns, we use some rounding. This rounding may add
+      // up to some extra pixels that we need to distribute to the columns relative columns
+      // so we sort the `relative` columns by its width and later stretch them
+      // from the smallest to the biggest
+      const colsSortedByWidth = sortBy(
+        cols.filter(col => !col.hidden),
+        (col: TableColumn) =>
+          col.isHelperCol ? 9999 * col.adjustedWidth || 0 : col.width
+      ) as TableColumn[]
+
+      let wExtra = 0
+      colsSortedByWidth.forEach(col => {
+        const _colsTotalWidth = colsTotalWidth.relative + colsTotalWidth.fixed
+        const widthN = (_contentWidth / _colsTotalWidth) * col.adjustedWidth
+        wExtra += widthN - Math.floor(widthN)
+
+        col.adjustedWidth = Math.floor(widthN)
+      })
+
+      // We add the extra width to the smallest columns
+      for (let idx = 0; idx < Math.floor(wExtra); idx++) {
+        const col = colsSortedByWidth[idx]
+        col.adjustedWidth++
+      }
+
+      cols.forEach(col => col.setWidth(`${col.adjustedWidth}px`))
     }
 
     return cols
@@ -520,6 +619,7 @@ export function useTableColumns(
     hasVisibleColumn,
     searchableColumnLabels,
     resizeColumns,
+    stretchColumns,
     extendColumns,
     recreateColumns: createInternalColumns,
   }
