@@ -369,8 +369,9 @@ export function useTableColumns(
 
     // We can stretch the columns if the total width of the columns is smaller
     // than the width of the table
+    const totalWidth = colsTotalWidth.fixed + colsTotalWidth.relative
     const canStretchCols =
-      colsTotalWidth.fixed + colsTotalWidth.relative < contentWidth
+      totalWidth < contentWidth && Math.abs(totalWidth - contentWidth) > 1
 
     // We check if we need to adjust the columns
     // Adjusting the columns mean that we stretch the columns that have relative width
@@ -551,9 +552,6 @@ export function useTableColumns(
       options
     )
 
-    const _contentWidth =
-      contentWidth + Number(isWrapperOverflownVertically) * scrollbarWidth - 1
-
     if (canStretchCols) {
       // When stretching the columns, we use some rounding. This rounding may add
       // up to some extra pixels that we need to distribute to the columns relative columns
@@ -561,17 +559,40 @@ export function useTableColumns(
       // from the smallest to the biggest
       const colsSortedByWidth = sortBy(
         cols.filter(col => !col.hidden),
-        (col: TableColumn) =>
-          col.isHelperCol ? 9999 * col.adjustedWidth || 0 : col.width
+        (col: TableColumn) => {
+          const w = col.isHelperCol
+            ? 9999 * col.adjustedWidth || 0
+            : col.adjustedWidth
+
+          return w
+        }
       ) as TableColumn[]
+
+      const helperColsWidth = colsSortedByWidth.reduce((agg, col) => {
+        if (col.isHelperCol) {
+          agg += col.adjustedWidth
+        }
+
+        return agg
+      }, 0)
+
+      const _scrollbarWidth =
+        Number(isWrapperOverflownVertically) * scrollbarWidth
+
+      const _contentWidth = contentWidth + _scrollbarWidth - 1 - helperColsWidth
+
+      const _colsTotalWidth =
+        colsTotalWidth.relative + colsTotalWidth.fixed - helperColsWidth
 
       let wExtra = 0
       colsSortedByWidth.forEach(col => {
-        const _colsTotalWidth = colsTotalWidth.relative + colsTotalWidth.fixed
-        const widthN = (_contentWidth / _colsTotalWidth) * col.adjustedWidth
-        wExtra += widthN - Math.floor(widthN)
+        if (!col.isHelperCol) {
+          const widthN = (_contentWidth / _colsTotalWidth) * col.adjustedWidth
 
-        col.adjustedWidth = Math.floor(widthN)
+          wExtra += widthN - Math.floor(widthN)
+
+          col.adjustedWidth = Math.floor(widthN)
+        }
       })
 
       // We add the extra width to the smallest columns
