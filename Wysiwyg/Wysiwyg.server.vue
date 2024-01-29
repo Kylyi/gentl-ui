@@ -5,6 +5,7 @@ import type { IItem } from '~/libs/App/types/item.type'
 
 // Functions
 import { useValueFormatterUtils } from '~/components/ValueFormatter/functions/useValueForamtterUtils'
+import { useInputWrapperUtils } from '~/components/Inputs/functions/useInputWrapperUtils'
 
 import { mentionEntityKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
 
@@ -18,6 +19,7 @@ const self = getCurrentInstance()
 
 // Utils
 const { formatValue } = useValueFormatterUtils()
+const { getInputWrapperProps } = useInputWrapperUtils()
 
 // Layout
 const model = toRef(props, 'modelValue')
@@ -27,29 +29,8 @@ const mentionEntity = injectStrict(
   toRef(props, 'mentionEntity')
 )
 
-// WRAPPER
-const wrapperProps = reactivePick(
-  props,
-  'contentClass',
-  'contentStyle',
-  'disabled',
-  'emptyValue',
-  'validation',
-  'errorTakesSpace',
-  'errorVisible',
-  'hint',
-  'inline',
-  'label',
-  'labelClass',
-  'labelInside',
-  'labelStyle',
-  'loading',
-  'placeholder',
-  'readonly',
-  'required',
-  'size',
-  'stackLabel'
-)
+// Wrapper
+const wrapperProps = getInputWrapperProps(props)
 
 // This only happens when we explicity use the `Wysiwyg.server.vue` component
 // because normally, on server side, we don't have the `onMounted` hook

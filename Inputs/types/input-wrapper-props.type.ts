@@ -2,6 +2,8 @@ import { type CSSProperties } from 'vue'
 
 // Types
 import type { InputLabelProps } from '~/components/Inputs/types/input-label-props.type'
+import type { IZodValidationItem } from '~/utils/zod/types/zod-validation-item.type'
+import type { IZodValidationOptions } from '~/utils/zod/types/zod-validation-options.type'
 
 export type IInputWrapperProps = InputLabelProps & {
   /**
@@ -83,10 +85,30 @@ export type IInputWrapperProps = InputLabelProps & {
    */
   tooltip?: string
 
+  /**
+   * Prop to handle the visuals of the component
+   */
   ui?: {
     /**
      * The border color of the input
      */
     borderColor?: string
   }
+
+  /**
+   * Validation object
+   */
+  validation?: IZodValidationItem | Array<IZodValidationItem | undefined>
+
+  /**
+   * Validation key
+   *
+   * When provided, the validation
+   */
+  zod?:
+    | string
+    | {
+        key: string
+        options?: IZodValidationOptions
+      }
 }

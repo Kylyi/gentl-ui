@@ -126,7 +126,7 @@ onMounted(() => {
 
     <Btn
       v-if="allowSelectAllFiltered && search"
-      :label="$t('selectFiltered')"
+      :label="$t('general.selectFiltered')"
       no-uppercase
       m="x-1 y-2"
       :disabled="loading"

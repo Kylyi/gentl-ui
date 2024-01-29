@@ -13,6 +13,7 @@ import {
   tableSelectionKey,
   tableSlotsKey,
   tableStorageKey,
+  tableStretchColumnsKey,
 } from '~/components/Table/provide/table.provide'
 
 // Store
@@ -59,6 +60,7 @@ const storageKey = injectStrict(tableStorageKey)
 const tableRows = injectStrict(tableRowsKey)
 const tableRefresh = injectStrict(tableRefreshKey)
 const tableSlots = injectStrict(tableSlotsKey)
+const tableStretchColumns = injectStrict(tableStretchColumnsKey)
 
 // Layout
 const queryBuilder = useVModel(props, 'queryBuilder')
@@ -158,7 +160,9 @@ function handleClearSorting() {
   })
 }
 
-function handleFitColumns() {
+function handleFitColumns(ev?: MouseEvent) {
+  const isShiftKey = !!ev?.shiftKey
+
   const fittableColumns = columns.value.filter(
     col => col.resizable && !col.hidden && !col.isHelperCol
   )
@@ -176,6 +180,11 @@ function handleFitColumns() {
         slotRenderFnc,
         props.minimumColumnWidth
       )
+    }
+
+    // We stretch the columns
+    if (isShiftKey) {
+      tableStretchColumns()
     }
 
     // We freeze the column again
@@ -436,7 +445,7 @@ function handleFitColumns() {
           </div>
         </div>
 
-        <!-- Layout -->
+        <!-- Layout & Columns -->
         <div class="table-top__layout">
           <span
             v-if="!tableTopFunctionality?.noLayout"

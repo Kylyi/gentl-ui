@@ -194,7 +194,7 @@ function handleMenuBeforeHide() {
               :data-type="column.dataType"
               :empty-value="emptyValue"
               :format="column.format"
-              :empty-value-string="$t('empty')"
+              :empty-value-string="$t('general.empty')"
               text="sm"
             />
 
@@ -204,7 +204,7 @@ function handleMenuBeforeHide() {
               border="t-1 ca"
               leading="6"
             >
-              {{ $t('filter.nonInteractiveExplain') }}
+              {{ $t('table.nonInteractiveFilter') }}
             </span>
           </div>
         </template>
@@ -238,7 +238,7 @@ function handleMenuBeforeHide() {
       />
       <Banner
         v-else-if="column.filters?.length"
-        :label="$t('filter.nonInteractiveExplain')"
+        :label="$t('table.nonInteractiveFilter')"
         icon-center
         type="info"
         outlined
@@ -254,7 +254,7 @@ function handleMenuBeforeHide() {
 
   &-badge {
     --apply: flex flex-center absolute -bottom-.5 -right-.5 w-3 h-3 bg-white
-      bg-tertiary color-white text-10px rounded-full leading-none z-1;
+      color-black text-9px rounded-full leading-none z-1;
   }
 }
 

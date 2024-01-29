@@ -128,7 +128,7 @@ syncRef(model, files, { direction: 'ltr' })
           text="center"
           p="x-3"
         >
-          {{ $t('filesUpload') }}
+          {{ $t('file.uploadOrDnD') }}
         </div>
       </div>
     </div>

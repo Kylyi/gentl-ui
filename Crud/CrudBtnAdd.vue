@@ -18,7 +18,7 @@ withDefaults(defineProps<IProps>(), {
     preset="ADD"
     bg="primary"
     color="!white"
-    :label="labels && (label || $t('new2'))"
+    :label="labels && (label || $t('general.add'))"
     :loader-type="loaderType"
     :loading="loading"
     :to="to"

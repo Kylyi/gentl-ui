@@ -157,7 +157,7 @@ function handleRemoveGroup() {
       <Btn
         v-if="level"
         size="xs"
-        :label="$t('remove')"
+        :label="$t('general.remove')"
         preset="TRASH"
         @click="handleRemoveGroup"
       />

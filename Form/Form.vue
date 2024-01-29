@@ -312,7 +312,10 @@ onMounted(() => {
         </slot>
 
         <!-- Spacer -->
-        <div grow />
+        <div
+          v-if="!ui?.noSpacer"
+          grow
+        />
 
         <div
           relative
@@ -341,7 +344,7 @@ onMounted(() => {
             :icon="icon"
             type="submit"
             data-cy="save-button"
-            :label="label ?? $t('submit')"
+            :label="label ?? $t('general.submit')"
           >
             <Component
               :is="FormConfirmation"

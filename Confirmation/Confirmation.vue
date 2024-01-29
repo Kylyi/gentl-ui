@@ -58,7 +58,7 @@ function handleClose() {
       >
         <slot name="actions" />
         <Btn
-          :label="$t('close')"
+          :label="$t('general.close')"
           @click="handleClose"
         />
       </div>
@@ -68,7 +68,7 @@ function handleClose() {
 
 <style lang="scss" scoped>
 .confirmation {
-  --apply: flex flex-col inset-0 absolute bg-white dark:bg-dark rounded-custom z-10;
+  --apply: flex flex-col inset-0 absolute bg-white dark:bg-darker rounded-custom z-10;
 
   &-checkmark {
     --apply: flex flex-col flex-center grow;

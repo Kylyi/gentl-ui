@@ -23,9 +23,6 @@ export const tableRowsKey: InjectionKey<Ref<any[]>> = Symbol('tableRows')
 export const tableRefreshKey: InjectionKey<(force?: boolean) => void> =
   Symbol('refreshTableData')
 
-export const tableColumnsKey: InjectionKey<Ref<TableColumn[]>> =
-  Symbol('tableColumns')
-
 export const tableQueryBuilderKey: InjectionKey<
   Ref<IQueryBuilderRow[] | undefined>
 > = Symbol('tableQueryBuilder')
@@ -42,10 +39,6 @@ export const tableStorageKey: InjectionKey<Ref<string>> =
 export const tableVersionKey: InjectionKey<Ref<number | undefined>> =
   Symbol('tableVersion')
 
-export const tableColumnsRecreateKey: InjectionKey<() => void> = Symbol(
-  'tableColumnsRecreate'
-)
-
 export const tableRecreateQueryBuilderKey: InjectionKey<() => void> = Symbol(
   'tableRecreateQueryBuilder'
 )
@@ -53,6 +46,18 @@ export const tableRecreateQueryBuilderKey: InjectionKey<() => void> = Symbol(
 export const tableCustomDataKey: InjectionKey<
   Ref<ReturnType<typeof config.table.extractData>>
 > = Symbol('tableCustomData')
+
+// Columns
+export const tableColumnsKey: InjectionKey<Ref<TableColumn[]>> =
+  Symbol('tableColumns')
+
+export const tableColumnsRecreateKey: InjectionKey<() => void> = Symbol(
+  'tableColumnsRecreate'
+)
+
+export const tableStretchColumnsKey: InjectionKey<() => void> = Symbol(
+  'tableStretchColumns'
+)
 
 // Editing
 export const tableInlineEditKey: InjectionKey<

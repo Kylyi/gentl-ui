@@ -36,6 +36,9 @@ const props = withDefaults(defineProps<ITableProps>(), {
   splitRow: 1,
   infiniteScroll: config.table.props.infiniteScroll,
   noSearch: config.table.props.noSearch,
+  tableTopFunctionality: () => ({
+    ...config.table.props.tableTopFunctionality,
+  }),
   rowsPerPageOptions: () =>
     config.table.props.rowsPerPageOptions || [10, 25, 50, 100],
 })

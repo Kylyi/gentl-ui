@@ -146,5 +146,12 @@ export interface IFormProps {
      *  Class for the wrapper around the submit button
      */
     submitWrapperClass?: ClassType
+
+    /**
+     * When true, the controls part of the `Form` will not have a spacer
+     *
+     * Useful when we want to put submit class over the entire width of the form
+     */
+    noSpacer?: boolean
   }
 }

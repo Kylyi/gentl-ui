@@ -76,7 +76,7 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
 
     return data.map((item: any) => {
       const label = col.format?.(item) ?? get(item, distinctField[0])
-      const _label = label !== '' ? label : `(${t('empty')})`
+      const _label = label !== '' ? label : `(${t('general.empty')})`
 
       return {
         ...item,
