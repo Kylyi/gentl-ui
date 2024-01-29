@@ -40,6 +40,13 @@ export type ITableQuery = {
   select?: string[]
   includeDeleted?: boolean
   count?: boolean // Whether to also fetch the total count of items
+
+  /**
+   * The layout schema that will be included in every request but will not be
+   * visible to the user
+   */
+  appendedLayoutSchema?: string
+
   fetchMore?: {
     rowKey: string
     $key: number | string

@@ -254,7 +254,7 @@ function handleMenuBeforeHide() {
 
   &-badge {
     --apply: flex flex-center absolute -bottom-.5 -right-.5 w-3 h-3 bg-white
-      bg-tertiary color-white text-10px rounded-full leading-none z-1;
+      color-black text-9px rounded-full leading-none z-1;
   }
 }
 

@@ -33,8 +33,14 @@ const props = withDefaults(defineProps<ITableProps>(), {
   separator: 'cell',
   totalRows: 0,
   useUrl: true,
+  splitRow: 1,
   infiniteScroll: config.table.props.infiniteScroll,
   noSearch: config.table.props.noSearch,
+  tableTopFunctionality: () => ({
+    ...config.table.props.tableTopFunctionality,
+  }),
+  rowsPerPageOptions: () =>
+    config.table.props.rowsPerPageOptions || [10, 25, 50, 100],
 })
 
 defineEmits<{
@@ -48,6 +54,7 @@ defineEmits<{
 
 defineSlots<{
   [key: string]: any
+  default: IItem
   rowInside: { columns: any[]; row: any; index: number }
   dataRow: { columns: any[]; row: any; index: number }
   inner: { columns: any[]; row: any; index: number }
@@ -60,6 +67,7 @@ defineSlots<{
   topBulkActions: { selection: any[] }
   topBulkActionsMenu: { selection: any[] }
   belowTop: { rows: any[] }
+  topBarMiddleStart: IItem
 }>()
 
 const slots = useSlots()
@@ -68,7 +76,9 @@ provide(tableSlotsKey, slots)
 
 defineExpose({
   rerender: (noEmit?: boolean) => scrollerEl.value?.rerender(noEmit),
-  refreshData: () => refreshData(true),
+  refreshData: () => {
+    refreshData(true)
+  },
   resizeColumns: (force?: boolean) => handleResize(force),
   adjustColumns: (fnc: (columns: TableColumn[]) => void) => {
     fnc(internalColumns.value)
@@ -134,9 +144,11 @@ const {
 const {
   isLoading,
   rows,
+  rowsSplit,
   refreshData,
   search,
   dbQuery,
+  fetchMore,
 
   // Pagination
   currentPage,
@@ -237,6 +249,13 @@ onMounted(() => {
         </template>
 
         <template
+          v-if="$slots['topbar-middle-start']"
+          #middle-start
+        >
+          <slot name="topbar-middle-start" />
+        </template>
+
+        <template
           v-if="$slots['top-bulk-actions']"
           #bulk-actions="{ selection }"
         >
@@ -286,19 +305,19 @@ onMounted(() => {
     <VirtualScrollerOld
       v-show="hasVisibleColumn"
       ref="scrollerEl"
-      :rows="rows"
+      :rows="rowsSplit"
       :row-key="rowKey"
-      :dynamic-row-height="dynamicRowHeight"
       :row-height="tableRowHeight.current"
       :no-scroll-emit="!infiniteScroll"
       :overscan="overscan"
+      :fetch-more="fetchMore"
       class="scroller"
       @virtual-scroll="handleInfiniteScroll"
     >
       <template #default="{ row, index }">
         <Component
           :is="TableRowComponent"
-          :row="row"
+          :rows="row.data"
           :columns="internalColumns"
           :to="to"
           :class="{ 'is-clickable': rowClickable, 'odd': index % 2 !== 0 }"
@@ -306,9 +325,11 @@ onMounted(() => {
           :editable="editable"
           :index="index"
           :selectable="selectable"
-          @click="handleRowClick(row, $event)"
+          :split-row="splitRow"
+          :row-class="rowClass"
+          @click="handleRowClick(row.data, $event)"
         >
-          <template #row-inside="{ mode }">
+          <template #row-inside="{ mode, row }">
             <slot
               name="row-inside"
               :columns="columns"
@@ -318,18 +339,9 @@ onMounted(() => {
             />
           </template>
 
-          <template #default>
+          <template #default="{ row }">
             <slot
               name="data-row"
-              :columns="columns"
-              :row="row"
-              :index="index"
-            />
-          </template>
-
-          <template #inner>
-            <slot
-              name="inner"
               :columns="columns"
               :row="row"
               :index="index"
@@ -339,7 +351,7 @@ onMounted(() => {
           <template
             v-for="col in columns"
             :key="col.name"
-            #[col.name]
+            #[col.name]="{ row }"
           >
             <slot
               :name="col.name"
@@ -382,11 +394,14 @@ onMounted(() => {
       :total-rows="totalRows"
       :infinite-scroll="infiniteScroll"
       :no-pagination="noPagination || infiniteScroll"
+      :rows-per-page-options="rowsPerPageOptions"
       :current-rows="rows.length"
       :limit-rows="getData?.limitRows"
       :prev="prev"
       :next="next"
     />
+
+    <slot />
   </div>
 </template>
 
@@ -394,6 +409,8 @@ onMounted(() => {
 .table-container {
   --apply: relative flex flex-col overflow-auto max-h-full max-w-full
     rounded-custom;
+
+  --apply: m-$Table-content-margin;
 
   &__top {
     --apply: flex flex-col shrink-0 gap-1 border-b-1 border-ca p-2 p-l-1
@@ -416,11 +433,5 @@ onMounted(() => {
 
 :deep(.virtual-scroll__content) {
   --apply: font-size-13px;
-}
-
-.table-header,
-.table-totals,
-.scroller {
-  --apply: m-$Table-content-margin;
 }
 </style>

@@ -1,3 +1,5 @@
+import type { RouteLocationRaw } from '#vue-router'
+
 // Types
 import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
 import type { ITableDataFetchFncInput } from '~/components/Table/types/table-query.type'
@@ -21,11 +23,6 @@ export interface ITableProps {
    * Definition of the table columns
    */
   columns?: TableColumn<any>[]
-
-  /**
-   * When true, each table row may have a different height
-   */
-  dynamicRowHeight?: boolean
 
   /**
    * Whether the table should have inline editing
@@ -80,10 +77,21 @@ export interface ITableProps {
   infiniteScroll?: boolean
 
   /**
+   * Number of rows per page options when using pagination
+   */
+  rowsPerPageOptions?: number[]
+
+  /**
    * The initial layout schema for the table
    * When provided, the table will be initialized with this schema
    */
   initialLayoutSchema?: string
+
+  /**
+   * The layout schema that will be included in every request but will not be
+   * visible to the user
+   */
+  appendedLayoutSchema?: string
 
   /**
    * Whether the table is in `loading` state
@@ -160,6 +168,16 @@ export interface ITableProps {
   rows?: any[]
 
   /**
+   * The class of the row
+   */
+  rowClass?: (row: any) => ClassType
+
+  /**
+   * When true, the table will not save the state in the local storage
+   */
+  noStateSave?: boolean
+
+  /**
    * The settings that are saveable whtin the table
    */
   nonSavableSettings?: Array<'columns' | 'filters' | 'sorting' | 'public'>
@@ -230,9 +248,9 @@ export interface ITableProps {
     countKey?: string
     hashKey?: string
     versionKey?: string
+    limitRows?: number
     createIdentifier?: (row: any, idx: number) => string | number
     errorHandler?: (error: any) => void
-    limitRows?: number
   }
 
   getTotalsData?: {
@@ -294,8 +312,6 @@ export interface ITableProps {
 
   /**
    * Will split the table row into multiple columns
-   * Usage: For mobile view
-   * FIXME: Currently broken
    */
   splitRow?: number
 
@@ -322,7 +338,7 @@ export interface ITableProps {
   /**
    * Link to the detail from page
    */
-  to?: (row: any) => any
+  to?: (row: any) => RouteLocationRaw
 
   /**
    * Whether to use the url to store the table state

@@ -55,9 +55,9 @@ export function useTableColumns(
   const internalColumns = ref<TableColumn[]>([])
   createInternalColumns()
 
-  const nonHelpersColumns = computed(() =>
-    internalColumns.value.filter(col => !col.isHelperCol)
-  )
+  const nonHelpersColumns = computed(() => {
+    return internalColumns.value.filter(col => !col.isHelperCol)
+  })
 
   // Provide
   provide(tableColumnsKey, internalColumns)
@@ -220,15 +220,20 @@ export function useTableColumns(
       if (col) {
         // We set the `filters`, `sorting`, `visibility` only in case we don't use
         // server state management and we didn't provide anything in the URL
-        if (
-          (!config.table.useServerState ||
-            config.table.useLocalStorageForDefaultLayout) &&
-          !isUrlUsed &&
-          !props.initialLayoutSchema
-        ) {
-          col.filters = stateColumn.filters.map(
-            filter => new FilterItem(filter)
-          )
+        const shouldUseState =
+          !config.table.useServerState ||
+          config.table.useLocalStorageForDefaultLayout
+
+        if (shouldUseState && !isUrlUsed && !props.initialLayoutSchema) {
+          const nonInteractiveFilters = col.filters.filter(filter => {
+            return filter.nonInteractive
+          })
+          col.filters = [
+            ...nonInteractiveFilters,
+            ...stateColumn.filters
+              .filter(filter => !filter.nonInteractive)
+              .map(filter => new FilterItem(filter)),
+          ]
           col.sort = stateColumn.sort
           col.sortOrder = stateColumn.sortOrder
           col.hidden = stateColumn.hidden
@@ -236,7 +241,9 @@ export function useTableColumns(
         }
 
         // We set the column data that we save in `localStorage`
-        col.setWidth(stateColumn.width)
+        if (typeof stateColumn.width === 'string') {
+          col.setWidth(stateColumn.width)
+        }
 
         // TODO: This can be done better (without the arbitrary timeout...)
         setTimeout(() => {
@@ -353,7 +360,7 @@ export function useTableColumns(
     )
 
     // We check if we need to adjust the columns
-    // Adjusting the columbs mean that we stretch the columns that have relative width
+    // Adjusting the columns mean that we stretch the columns that have relative width
     const shouldAdjustCols =
       !!colsTotalWidth.relative &&
       colsTotalWidth.relative + colsTotalWidth.fixed < contentWidth

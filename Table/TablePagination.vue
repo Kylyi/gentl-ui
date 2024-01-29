@@ -12,7 +12,7 @@ type IProps = {
   currentRows?: number
   infiniteScroll?: boolean
   limitRows?: number
-
+  rowsPerPageOptions?: number[]
   prev: () => void
   next: () => void
 }
@@ -77,7 +77,10 @@ const isLimitRowsReached = computedEager(() => {
 
 <template>
   <ClientOnly>
-    <div class="table-pagination">
+    <div
+      v-if="pageCount !== Number.POSITIVE_INFINITY"
+      class="table-pagination"
+    >
       <!-- Total rows -->
       <div
         absolute
@@ -201,13 +204,16 @@ const isLimitRowsReached = computedEager(() => {
         v-if="!noPagination"
         class="table-pagination__page-size"
       >
-        <span text="caption">
+        <span
+          text="caption"
+          class="!lt-md:hidden"
+        >
           {{ $t('table.rowsPerPage') }}
         </span>
 
         <Selector
           v-model="currentPageSize"
-          :options="[5, 10, 25, 50, 100]"
+          :options="rowsPerPageOptions"
           emit-key
           size="sm"
           no-search
@@ -230,7 +236,7 @@ const isLimitRowsReached = computedEager(() => {
 
   &__page-size {
     --apply: absolute right-2 flex flex-center flex-gap-x-2;
-    --apply: '!lt-md:hidden';
+    --apply: 'lt-sm:hidden';
   }
 }
 </style>

@@ -169,7 +169,8 @@ function handleRemoveFilter() {
     filter => filter.comparator !== props.filter.comparator
   )
 
-  // Refresh the table if the filter actually had a value OR the comparator was one of the `Comparator.IS_EMPTY` or `Comparator.NOT_IS_EMPTY`
+  // Refresh the table if the filter actually had a value OR the comparator was
+  // one of the `Comparator.IS_EMPTY` or `Comparator.NOT_IS_EMPTY`
   const _isEmptyComparator = isEmptyComparator(props.filter.comparator)
 
   if (!isNil(props.filter.value) || _isEmptyComparator) {
@@ -271,6 +272,7 @@ defineExpose({
         :hidden-options="hiddenComparators"
         hide-self
         size="sm"
+        :inline="false"
         @update:model-value="handleComparatorChange"
       />
 
@@ -308,6 +310,7 @@ defineExpose({
       :debounce="500"
       :placeholder="`${$t('table.filterValue')}...`"
       empty-value=""
+      :inline="false"
       @update:model-value="handleValueChange"
     />
 
@@ -327,6 +330,7 @@ defineExpose({
       option-key="_value"
       option-label="_label"
       size="sm"
+      :inline="false"
       :placeholder="`${$t('table.filterValue')}...`"
       @update:model-value="handleValueChange($event, { debounce: false })"
     />
@@ -355,6 +359,7 @@ defineExpose({
       ref="valueInputEl"
       v-model="filter.value"
       size="sm"
+      :inline="false"
       :placeholder="`${$t('table.filterValue')}...`"
       @update:model-value="
         handleValueChange($event, { set: true, debounce: true })

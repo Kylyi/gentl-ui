@@ -164,7 +164,7 @@ async function handleApplyChanges() {
         <div
           flex="~ col gap-1"
           grow
-          p="y-2"
+          p="t-2 b-1"
         >
           <h6
             p="r-2"
@@ -196,7 +196,10 @@ async function handleApplyChanges() {
           p="r-2"
           border="r-1 ca"
         >
-          <div flex="~ col">
+          <div
+            flex="~ col"
+            p="t-2"
+          >
             <div flex="~ gap-2 items-center">
               <h6 font="bold">{{ $t('table.availableMetrics') }}</h6>
               <span text="caption">({{ nonHelperCols.length }})</span>
@@ -269,7 +272,10 @@ async function handleApplyChanges() {
           overflow="auto"
           p="l-2"
         >
-          <div flex="~ col">
+          <div
+            flex="~ col"
+            p="t-2"
+          >
             <div flex="~ gap-2 items-center">
               <h6 font="bold">{{ $t('table.columnsSelected') }}</h6>
               <span text="caption">({{ filteredCols.length }})</span>

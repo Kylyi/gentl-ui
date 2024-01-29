@@ -1,4 +1,8 @@
-import type { VirtualItem } from '@tanstack/vue-virtual'
+type VirtualItem = {
+  index: number
+  key: string
+  size: number
+}
 
 export type IVirtualScrollEvent = {
   visibleStartItem: Pick<VirtualItem, 'index' | 'key' | 'size'>

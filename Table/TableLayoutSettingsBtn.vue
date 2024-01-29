@@ -289,6 +289,7 @@ const $v = useVuelidate(
         <TextInput
           v-model="layout.name"
           :label="$t('table.layoutName')"
+          :inline="false"
           :validation="$v.layout?.name"
         />
 

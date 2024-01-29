@@ -38,13 +38,15 @@ export const useTableStore = defineStore('table', () => {
     // Pick only the relevant data from columns when provided
     if (state?.columns) {
       state.columns = state.columns.map(col => {
-        const filters = col.filters.map(filter => {
-          return {
-            field: filter.field,
-            comparator: filter.comparator,
-            value: filter.value,
-          }
-        })
+        const filters = col.filters
+          .filter(filter => !filter.nonInteractive)
+          .map(filter => {
+            return {
+              field: filter.field,
+              comparator: filter.comparator,
+              value: filter.value,
+            }
+          })
 
         return {
           field: col.field,

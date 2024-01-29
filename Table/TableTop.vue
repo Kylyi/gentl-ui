@@ -39,6 +39,7 @@ const props = defineProps<
 >()
 const emits = defineEmits<{
   (e: 'update:columnsWidth'): void
+  (e: 'update:search', search: string): void
 }>()
 const slots = useSlots()
 
@@ -193,7 +194,6 @@ function handleFitColumns() {
       v-if="hasActionBar"
       class="table-top__actionbar"
     >
-      <!-- Query builder button -->
       <div
         flex="~ gap-1 items-center"
         grow
@@ -219,6 +219,8 @@ function handleFitColumns() {
           self-start
           m="t-1"
         />
+
+        <slot name="middle-start" />
 
         <slot name="left">
           <!-- Search -->
@@ -320,7 +322,7 @@ function handleFitColumns() {
           <!-- Subscriptions -->
           <template
             v-if="
-              !tableTopFunctionality?.noSubscription &&
+              tableTopFunctionality?.noSubscription &&
               'subscriptionComponent' in config &&
               config.subscriptionComponent
             "
@@ -409,12 +411,12 @@ function handleFitColumns() {
           <!-- Sorting -->
           <div
             v-if="tableSorting && !tableTopFunctionality?.noSort"
-            flex="~ gap-1"
-            items-center
+            flex="~ gap-1 items-center"
           >
             <span
               text="caption xs"
               font="bold"
+              m="t-0.5"
             >
               {{ $t('table.sortBy') }}:
             </span>
@@ -434,7 +436,7 @@ function handleFitColumns() {
           </div>
         </div>
 
-        <!-- Layout -->
+        <!-- Layout & Columns -->
         <div class="table-top__layout">
           <span
             v-if="!tableTopFunctionality?.noLayout"
@@ -497,7 +499,7 @@ function handleFitColumns() {
   }
 
   &__qb {
-    --apply: flex gap-1 items-start p-x-2 p-y-1;
+    --apply: flex gap-1 items-center p-x-2 p-y-1;
 
     &-remove-filters {
       --apply: shrink-0 w-20 h-full dark:bg-darker bg-white color-ca

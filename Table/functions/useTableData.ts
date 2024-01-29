@@ -54,7 +54,6 @@ export function useTableData(
 ) {
   // Utils
   const route = useRoute()
-  // const request = useRequestEvent()
   const instance = getCurrentInstance()
   const { getStorageKey, parseUrlParams, getRowKey } = useTableUtils(props)
   const { isLoading, handleRequest } = useRequest({
@@ -76,6 +75,33 @@ export function useTableData(
     : ref<number>()
 
   const storageKey = computed(() => getStorageKey())
+
+  const rowKey = computed(() => getRowKey(props))
+
+  const rowsSplit = computed<any[]>(() => {
+    if (!props.splitRow) {
+      return rows.value.map(row => ({
+        [rowKey.value]: row[rowKey.value],
+        data: [row],
+      }))
+    }
+
+    return rows.value.reduce((agg, row, idx) => {
+      const mod = idx % props.splitRow!
+
+      if (mod === 0) {
+        agg.push({
+          [rowKey.value]: '',
+          data: [],
+        })
+      }
+
+      agg[agg.length - 1][rowKey.value] += `_${row[rowKey.value]}`
+      agg[agg.length - 1].data.push(row)
+
+      return agg
+    }, [] as any[])
+  })
 
   // Store
   const { activeElement } = storeToRefs(useAppStore())
@@ -134,7 +160,10 @@ export function useTableData(
       return
     }
 
-    const isAtBottom = visibleEndItem.index >= rows.value.length - 20
+    // When using split rows, we need to adjust the `visibleEndItem` index
+    const modifier = props.splitRow ?? 1
+
+    const isAtBottom = visibleEndItem.index * modifier >= rows.value.length - 20
 
     if (hasMore.value && isAtBottom && !fetchMore.value) {
       fetchMore.value = true
@@ -214,6 +243,7 @@ export function useTableData(
         search: search.value,
         select: select.value,
         includeDeleted: tableState.value.includeDeleted,
+        appendedLayoutSchema: props.appendedLayoutSchema,
         count: true,
       }
 
@@ -320,8 +350,26 @@ export function useTableData(
       // NOTE: We check whether the amount of data we already fetched is not
       // greater than the limit
       const limitRows = props.getData?.limitRows || config.table.limitRows
+
       if (limitRows && rows.value.length >= limitRows) {
         return
+      }
+
+      // When fetching more data, we need to manually get the queryParams again as
+      // it is not triggered in the `dbQuery` computed
+      if (isFetchMore) {
+        options.fetchQueryParams = config.table.getQuery({
+          ...options.fetchTableQuery,
+          count: false,
+          fetchMore: {
+            $key: get(lastRow.value, rowKey.value),
+            rowKey: rowKey.value,
+            lastRow: lastRow.value,
+          },
+        })
+
+        options.tableQuery.count = false
+        options.fetchTableQuery.count = false
       }
 
       if (
@@ -333,22 +381,6 @@ export function useTableData(
         }
 
         options = config.table.extendTableFetchInput(options)
-      }
-
-      // When fetching more data, we need to manually get the queryParams again as
-      // it is not triggered in the `dbQuery` computed
-      if (isFetchMore) {
-        options.fetchQueryParams = config.table.getQuery({
-          ...options.fetchTableQuery,
-          count: false,
-          fetchMore: {
-            $key: get(lastRow.value, getRowKey(props)),
-            rowKey: getRowKey(props),
-            lastRow: lastRow.value,
-          },
-        })
-
-        options.tableQuery.count = false
       }
 
       const res = await fetchData(options)
@@ -397,7 +429,9 @@ export function useTableData(
       }
 
       // We reset the `fetchMore`
-      fetchMore.value = false
+      nextTick(() => {
+        fetchMore.value = false
+      })
 
       // We set the `dataHasBeenFetched` to true
       dataHasBeenFetched.value = true
@@ -497,14 +531,16 @@ export function useTableData(
       }
 
       // NOTE: Save `TableState`
-      setTableState(storageKey.value, {
-        page: dbQuery.tableQuery.skip! / dbQuery.tableQuery.take! + 1,
-        pageSize: dbQuery.tableQuery.take!,
-        includeDeleted: dbQuery.tableQuery.includeDeleted,
-        schema: dbQuery.queryParams.toString(),
-        columns: internalColumnsRef.value,
-        queryBuilder: dbQuery.tableQuery.queryBuilder,
-      })
+      if (!props.noStateSave) {
+        setTableState(storageKey.value, {
+          page: dbQuery.tableQuery.skip! / dbQuery.tableQuery.take! + 1,
+          pageSize: dbQuery.tableQuery.take!,
+          includeDeleted: dbQuery.tableQuery.includeDeleted,
+          schema: dbQuery.queryParams.toString(),
+          columns: internalColumnsRef.value,
+          queryBuilder: dbQuery.tableQuery.queryBuilder,
+        })
+      }
 
       // NOTE: Focus the table so we can use keyboard navigation
       // (but only if no floating element is visible - we don't want to close it by refocusing)
@@ -513,7 +549,7 @@ export function useTableData(
         const hasFloatingEl = !!document.querySelector('.floating-element')
         const isSearchInputFocused =
           activeElement.value?.tagName === 'INPUT' &&
-          activeElement.value?.getAttribute('name') === 'search'
+          activeElement.value?.getAttribute('name') === '_search'
 
         if (!hasFloatingEl && !isSearchInputFocused) {
           scrollerEl.value?.focus()
@@ -579,6 +615,8 @@ export function useTableData(
   return {
     isLoading,
     rows,
+    rowsSplit,
+    fetchMore,
     dbQuery,
     search,
     totalRows,

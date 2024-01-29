@@ -1,7 +1,6 @@
 // Types
 import type { ITableProps } from '~/components/Table/types/table-props.type'
 import type { ITableLayout } from '~/components/Table/types/table-layout.type'
-import type { ComponentInstance } from '~/libs/App/types/component.type'
 
 // Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
@@ -57,11 +56,19 @@ export function useTableLayout(
 
   const rowKey = computedEager(() => getRowKey(props))
 
-  function handleRowClick(row: any, event: PointerEvent) {
+  function handleRowClick(rows: any[], event: PointerEvent) {
     const rowEl = event.target as HTMLElement
+    const el = rowEl.closest('.tr') as HTMLElement
+
+    if (!el) {
+      return
+    }
+
+    const idx = Number(el.dataset.splitRowIdx as string)
+    const row = rows[idx]
 
     if (props.rowClickable) {
-      instance?.emit('row-click', { row, el: rowEl.closest('.tr')!, ev: event })
+      instance?.emit('row-click', { row, el, ev: event })
     }
   }
 
@@ -144,6 +151,7 @@ export function useTableLayout(
   const isBreakpoint = computedEager(() => {
     // This is a semi-hack to prevent warnings...
     const currentBreakpoints = $bp.current().value
+
     return currentBreakpoints.includes(props.breakpoint || 'md')
   })
 
@@ -170,7 +178,9 @@ export function useTableLayout(
   })
 
   const TableRowComponent = computed(() => {
-    return isBreakpoint.value ? TableRow : TableRowMobile
+    return isBreakpoint.value && props.splitRow === 1
+      ? TableRow
+      : TableRowMobile
   })
 
   onMounted(() => {

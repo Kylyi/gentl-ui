@@ -73,6 +73,23 @@ function focusSiblingCell(
   return siblingCell
 }
 
+function focusFieldInNextRow(field?: string) {
+  handleSaveRow(true)
+
+  const _field = field ?? props.column.field
+
+  const parentRowEl = self?.vnode.el?.closest(
+    '.virtual-scroll__row'
+  ) as HTMLElement
+  const nextRowEditBtnEl = (parentRowEl?.nextElementSibling as HTMLElement)
+    ?.querySelector(`.cell[data-field="${_field}"]`)
+    ?.querySelector('.cell-edit-btn') as HTMLButtonElement
+
+  if (nextRowEditBtnEl) {
+    nextRowEditBtnEl.click()
+  }
+}
+
 // Layout
 const self = getCurrentInstance()
 const inputEl = ref<any>()
@@ -180,6 +197,7 @@ function selectSelf(self: any) {
   <div
     class="cell"
     :class="{ 'is-editable': editable, 'is-editing': isEditingField }"
+    :data-field="col.field"
   >
     <!-- Label -->
     <div
@@ -227,7 +245,7 @@ function selectSelf(self: any) {
           size="sm"
           preset="SAVE"
           tabindex="-1"
-          @click.stop.prevent="handleSaveRow"
+          @click.stop.prevent="focusFieldInNextRow()"
         />
       </div>
 

@@ -22,6 +22,7 @@ const handleSelectRow = injectStrict(tableSelectRowKey, () => {})
 const isSelectedRow = injectStrict(tableIsSelectedRowKey, () => false)
 const {
   isEditing,
+  editRowHeight,
   editValue,
   editRow,
   handleEditRow,
@@ -34,7 +35,7 @@ const self = getCurrentInstance()
 
 function focusSiblingCellHorizontal(
   direction: 'previous' | 'next',
-  e: KeyboardEvent
+  _e: KeyboardEvent
 ) {
   let siblingCell = self?.vnode?.el?.[`${direction}ElementSibling`] as
     | HTMLElement
@@ -42,7 +43,7 @@ function focusSiblingCellHorizontal(
     | undefined
   const isLastCell = !siblingCell || !siblingCell?.classList?.contains?.('cell')
   const parentRowEl = self?.vnode.el?.closest(
-    '.virtual-scroll__content-row'
+    '.virtual-scroll__row'
   ) as HTMLElement
 
   lastDirection.value = direction === 'next' ? 'right' : 'left'
@@ -57,7 +58,7 @@ function focusSiblingCellHorizontal(
   }
 
   const isLastParentRow = !parentRowElSibling?.classList?.contains?.(
-    'virtual-scroll__content-row'
+    'virtual-scroll__row'
   )
   if (isLastCell && isLastParentRow) {
     return
@@ -92,7 +93,7 @@ function focusSiblingCellVertical(
   )
 
   const parentRowEl = self?.vnode.el?.closest(
-    '.virtual-scroll__content-row'
+    '.virtual-scroll__row'
   ) as HTMLElement
 
   lastDirection.value = direction === 'next' ? 'down' : 'up'
@@ -107,7 +108,7 @@ function focusSiblingCellVertical(
   ] as HTMLElement
 
   const isLastParentRow = !parentRowElSibling?.classList?.contains?.(
-    'virtual-scroll__content-row'
+    'virtual-scroll__row'
   )
   if (isLastParentRow) {
     return
@@ -289,6 +290,7 @@ function selectSelf(self: any) {
         'is-editing': isEditingField,
       },
     ]"
+    :data-field="col.field"
     :style="{ ...col.style, width: col.adjustedWidthPx }"
     @click="handleEditCell"
   >
@@ -301,6 +303,7 @@ function selectSelf(self: any) {
     >
       <Checkbox
         :model-value="isSelectedRow(row)"
+        name="select-row"
         @update:model-value="handleSelectRow(row)"
       />
     </div>
@@ -316,6 +319,9 @@ function selectSelf(self: any) {
       grow
       size="sm"
       input-class="color-black dark:color-white !font-rem-13"
+      :style="{
+        height: `${editRowHeight}px`,
+      }"
       :input-props="{ onKeydown: handleKeyDown }"
       @update:model-value="set(editValue, col.field, $event)"
       @vue:mounted="selectSelf"

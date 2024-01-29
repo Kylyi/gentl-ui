@@ -9,6 +9,7 @@ import { useTableEditing } from '~/components/Table/functions/useTableEditing'
 
 // Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
+import type { config } from '~/config'
 
 export const getTableStorageKey: InjectionKey<() => string> =
   Symbol('getTableStorageKey')
@@ -49,8 +50,9 @@ export const tableRecreateQueryBuilderKey: InjectionKey<() => void> = Symbol(
   'tableRecreateQueryBuilder'
 )
 
-export const tableCustomDataKey: InjectionKey<Ref<IItem>> =
-  Symbol('tableCustomData')
+export const tableCustomDataKey: InjectionKey<
+  Ref<ReturnType<typeof config.table.extractData>>
+> = Symbol('tableCustomData')
 
 // Editing
 export const tableInlineEditKey: InjectionKey<
