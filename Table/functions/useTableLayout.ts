@@ -60,6 +60,10 @@ export function useTableLayout(
     const rowEl = event.target as HTMLElement
     const el = rowEl.closest('.tr') as HTMLElement
 
+    if (!el) {
+      return
+    }
+
     const idx = Number(el.dataset.splitRowIdx as string)
     const row = rows[idx]
 

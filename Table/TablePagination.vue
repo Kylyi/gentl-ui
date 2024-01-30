@@ -77,7 +77,10 @@ const isLimitRowsReached = computedEager(() => {
 
 <template>
   <ClientOnly>
-    <div class="table-pagination">
+    <div
+      v-if="pageCount !== Number.POSITIVE_INFINITY"
+      class="table-pagination"
+    >
       <!-- Total rows -->
       <div
         absolute

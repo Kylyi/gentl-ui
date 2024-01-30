@@ -25,11 +25,6 @@ export interface ITableProps {
   columns?: TableColumn<any>[]
 
   /**
-   * When true, each table row may have a different height
-   */
-  dynamicRowHeight?: boolean
-
-  /**
    * Whether the table should have inline editing
    */
   editable?: boolean | 'cards' | 'table'

@@ -57,7 +57,7 @@ defineExpose({
         <!-- Title -->
         <Heading
           filled
-          :class="headingClass"
+          :class="[headingClass, { '!min-h-9': !!subtitle || $slots.subtitle }]"
         >
           {{ title }}
 
