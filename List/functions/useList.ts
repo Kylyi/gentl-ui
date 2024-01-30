@@ -496,9 +496,7 @@ export function useList(
         await handleSearchedResults(results.value)
         await nextTick()
 
-        if (search) {
-          self.emit('search', { hasExactMatch: hasExactMatch.value, search })
-        }
+        self.emit('search', { hasExactMatch: hasExactMatch.value, search })
 
         isLoading.value = false
       } catch (error) {
@@ -520,7 +518,7 @@ export function useList(
       await handleSearchedResults(results.value)
       await nextTick()
 
-      self.emit('search', { hasExactMatch: hasExactMatch.value, search })
+      // self.emit('search', { hasExactMatch: hasExactMatch.value, search })
     },
     { immediate: true }
   )
@@ -661,7 +659,7 @@ export function useList(
     preventNextHoverEventRef.value = true
   }
 
-  // Initizalize the searched results
+  // Initialize the searched results
   isInitialized.value = true
 
   onKeyStroke(['ArrowUp', 'ArrowDown', 'Enter', 'Tab'], handleKey)
