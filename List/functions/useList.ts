@@ -496,7 +496,9 @@ export function useList(
         await handleSearchedResults(results.value)
         await nextTick()
 
-        self.emit('search', { hasExactMatch: hasExactMatch.value, search })
+        if (search) {
+          self.emit('search', { hasExactMatch: hasExactMatch.value, search })
+        }
 
         isLoading.value = false
       } catch (error) {
