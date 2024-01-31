@@ -87,6 +87,38 @@ const queryBuilderHeight = computed(() => {
   }
 })
 
+const qbControlsClasses = computedEager(() => {
+  const hasQueryBuilder = !!queryBuilder.value
+
+  // Search is used
+  if (!props.noSearch) {
+    return {
+      removeFiltersBtn: 'self-center',
+      exportBtn: 'self-center',
+      separator: 'self-center',
+      queryBuilderBtn: 'self-start m-t-1',
+    }
+  }
+
+  // Chips are used
+  else if (!hasQueryBuilder) {
+    return {
+      removeFiltersBtn: 'self-start',
+      exportBtn: 'm-t-0.5',
+      separator: 'm-t-1.5',
+      queryBuilderBtn: '',
+    }
+  }
+
+  // Query builder is used
+  return {
+    removeFiltersBtn: 'self-start',
+    exportBtn: 'm-t-1',
+    separator: 'm-t-2',
+    queryBuilderBtn: '',
+  }
+})
+
 const ExportBtn = computed(() => {
   if ('exportComponent' in config.table && config.table.exportComponent) {
     return config.table.exportComponent
@@ -225,8 +257,8 @@ function handleFitColumns(ev?: MouseEvent) {
         <TableQueryBuilderBtn
           v-if="queryBuilder"
           v-model:query-builder="queryBuilder"
+          :class="qbControlsClasses.queryBuilderBtn"
           self-start
-          m="t-1"
         />
 
         <slot name="middle-start" />
@@ -243,8 +275,8 @@ function handleFitColumns(ev?: MouseEvent) {
           <template v-else-if="queryBuilder">
             <Separator
               vertical
-              h="full"
               m="l-1"
+              :class="qbControlsClasses.separator"
             />
 
             <VerticalScroller
@@ -276,7 +308,7 @@ function handleFitColumns(ev?: MouseEvent) {
 
           <Separator
             vertical
-            h="full"
+            :class="qbControlsClasses.separator"
           />
 
           <!-- Remove filters -->
@@ -288,6 +320,7 @@ function handleFitColumns(ev?: MouseEvent) {
             stacked
             class="table-top__qb-remove-filters"
             data-cy="remove-filters"
+            :class="qbControlsClasses.removeFiltersBtn"
           >
             <Menu
               placement="left"
@@ -338,7 +371,8 @@ function handleFitColumns(ev?: MouseEvent) {
           >
             <Separator
               vertical
-              h="full"
+              m="r-1"
+              :class="qbControlsClasses.separator"
             />
 
             <Component
@@ -354,16 +388,15 @@ function handleFitColumns(ev?: MouseEvent) {
           >
             <Separator
               vertical
-              h="full"
               m="r-1"
+              :class="qbControlsClasses.separator"
             />
 
             <Component
               :is="ExportBtn"
               v-bind="exportProps"
               shrink-0
-              self-start
-              m="t-1"
+              :class="qbControlsClasses.exportBtn"
             />
           </slot>
         </slot>
@@ -508,7 +541,7 @@ function handleFitColumns(ev?: MouseEvent) {
   }
 
   &__qb {
-    --apply: flex gap-1 items-center p-x-2 p-y-1;
+    --apply: flex gap-1 items-start p-x-2 p-y-1;
 
     &-remove-filters {
       --apply: shrink-0 w-20 h-full dark:bg-darker bg-white color-ca

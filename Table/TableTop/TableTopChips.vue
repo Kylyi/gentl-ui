@@ -29,26 +29,24 @@ const filterChips = computed(() => {
 </script>
 
 <template>
-  <div flex="~ items-center">
-    <!-- Chips - filter columns -->
-    <HorizontalScroller
-      grow
-      content-class="flex-gap-x-1"
-    >
-      <TableFilterChip
-        v-for="(filter, idx) in filterChips"
-        :key="idx"
-        :filter="filter"
-        :columns="columns"
-      />
+  <!-- Chips - filter columns -->
+  <HorizontalScroller
+    grow
+    content-class="flex-wrap gap-1"
+  >
+    <TableFilterChip
+      v-for="(filter, idx) in filterChips"
+      :key="idx"
+      :filter="filter"
+      :columns="columns"
+    />
 
-      <p
-        v-if="!filterChips.length"
-        text="caption xs"
-        leading="37px"
-      >
-        {{ $t('table.noFilters') }}
-      </p>
-    </HorizontalScroller>
-  </div>
+    <p
+      v-if="!filterChips.length"
+      text="caption xs"
+      leading="37px"
+    >
+      {{ $t('table.noFilters') }}
+    </p>
+  </HorizontalScroller>
 </template>
