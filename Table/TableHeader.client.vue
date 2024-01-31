@@ -131,6 +131,7 @@ defineExpose({
       <template #selection>
         <Checkbox
           v-model="selectionState"
+          data-cy="select-all-accounts"
           :label="smallScreen ? `(${selectedCount})` : undefined"
         />
       </template>
