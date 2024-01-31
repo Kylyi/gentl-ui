@@ -40,6 +40,7 @@ const props = defineProps<
 >()
 const emits = defineEmits<{
   (e: 'update:columnsWidth'): void
+  (e: 'update:search', search: string): void
 }>()
 const slots = useSlots()
 
@@ -83,6 +84,38 @@ const queryBuilderHeight = computed(() => {
     maxHeight: `${
       MAX_VISIBLE_QUERY_BUILDER_ROWS * 32 + QUERY_BUILDER_INLINE_PADDING
     }px`,
+  }
+})
+
+const qbControlsClasses = computedEager(() => {
+  const hasQueryBuilder = !!queryBuilder.value
+
+  // Search is used
+  if (!props.noSearch) {
+    return {
+      removeFiltersBtn: 'self-center',
+      exportBtn: 'self-center',
+      separator: 'self-center',
+      queryBuilderBtn: 'self-start m-t-1',
+    }
+  }
+
+  // Chips are used
+  else if (!hasQueryBuilder) {
+    return {
+      removeFiltersBtn: 'self-start',
+      exportBtn: 'm-t-0.5',
+      separator: 'm-t-1.5',
+      queryBuilderBtn: '',
+    }
+  }
+
+  // Query builder is used
+  return {
+    removeFiltersBtn: 'self-start',
+    exportBtn: 'm-t-1',
+    separator: 'm-t-2',
+    queryBuilderBtn: 'self-start m-t-1',
   }
 })
 
@@ -224,8 +257,8 @@ function handleFitColumns(ev?: MouseEvent) {
         <TableQueryBuilderBtn
           v-if="queryBuilder"
           v-model:query-builder="queryBuilder"
+          :class="qbControlsClasses.queryBuilderBtn"
           self-start
-          m="t-1"
         />
 
         <slot name="middle-start" />
@@ -242,8 +275,8 @@ function handleFitColumns(ev?: MouseEvent) {
           <template v-else-if="queryBuilder">
             <Separator
               vertical
-              h="full"
               m="l-1"
+              :class="qbControlsClasses.separator"
             />
 
             <VerticalScroller
@@ -275,7 +308,7 @@ function handleFitColumns(ev?: MouseEvent) {
 
           <Separator
             vertical
-            h="full"
+            :class="qbControlsClasses.separator"
           />
 
           <!-- Remove filters -->
@@ -287,6 +320,7 @@ function handleFitColumns(ev?: MouseEvent) {
             stacked
             class="table-top__qb-remove-filters"
             data-cy="remove-filters"
+            :class="qbControlsClasses.removeFiltersBtn"
           >
             <Menu
               placement="left"
@@ -330,14 +364,15 @@ function handleFitColumns(ev?: MouseEvent) {
           <!-- Subscriptions -->
           <template
             v-if="
-              !tableTopFunctionality?.noSubscription &&
+              tableTopFunctionality?.noSubscription &&
               'subscriptionComponent' in config &&
               config.subscriptionComponent
             "
           >
             <Separator
               vertical
-              h="full"
+              m="r-1"
+              :class="qbControlsClasses.separator"
             />
 
             <Component
@@ -353,16 +388,15 @@ function handleFitColumns(ev?: MouseEvent) {
           >
             <Separator
               vertical
-              h="full"
               m="r-1"
+              :class="qbControlsClasses.separator"
             />
 
             <Component
               :is="ExportBtn"
               v-bind="exportProps"
               shrink-0
-              self-start
-              m="t-1"
+              :class="qbControlsClasses.exportBtn"
             />
           </slot>
         </slot>
@@ -419,12 +453,12 @@ function handleFitColumns(ev?: MouseEvent) {
           <!-- Sorting -->
           <div
             v-if="tableSorting && !tableTopFunctionality?.noSort"
-            flex="~ gap-1"
-            items-center
+            flex="~ gap-1 items-center"
           >
             <span
               text="caption xs"
               font="bold"
+              m="t-0.5"
             >
               {{ $t('table.sortBy') }}:
             </span>
@@ -444,7 +478,7 @@ function handleFitColumns(ev?: MouseEvent) {
           </div>
         </div>
 
-        <!-- Layout -->
+        <!-- Layout & Columns -->
         <div class="table-top__layout">
           <span
             v-if="!tableTopFunctionality?.noLayout"
@@ -507,7 +541,7 @@ function handleFitColumns(ev?: MouseEvent) {
   }
 
   &__qb {
-    --apply: flex gap-1 items-center p-x-2 p-y-1;
+    --apply: flex gap-1 items-start p-x-2 p-y-1;
 
     &-remove-filters {
       --apply: shrink-0 w-20 h-full dark:bg-darker bg-white color-ca
