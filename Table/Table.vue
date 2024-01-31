@@ -192,7 +192,9 @@ function handleColumnsWidthChange() {
 }
 
 onMounted(() => {
-  scrollerEl.value?.focus()
+  if (!props.noFocusOnInit) {
+    scrollerEl.value?.focus()
+  }
 })
 </script>
 

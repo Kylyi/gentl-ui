@@ -173,6 +173,13 @@ export interface ITableProps {
   rowClass?: (row: any) => ClassType
 
   /**
+   * When true, table will not get focused on initialization
+   *
+   * Note: We focus the table to enable keyboard navigation
+   */
+  noFocusOnInit?: boolean
+
+  /**
    * When true, the table will not save the state in the local storage
    */
   noStateSave?: boolean
