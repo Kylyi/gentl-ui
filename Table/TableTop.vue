@@ -364,7 +364,7 @@ function handleFitColumns(ev?: MouseEvent) {
           <!-- Subscriptions -->
           <template
             v-if="
-              tableTopFunctionality?.noSubscription &&
+              !tableTopFunctionality?.noSubscription &&
               'subscriptionComponent' in config &&
               config.subscriptionComponent
             "
