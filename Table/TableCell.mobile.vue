@@ -8,6 +8,7 @@ import { tableInlineEditKey } from '~/components/Table/provide/table.provide'
 
 type IProps = {
   column: TableColumn
+  columnIndex: number
   editable?: boolean
   row: any
 }
@@ -227,6 +228,7 @@ function selectSelf(self: any) {
       <div
         v-if="isEditingField"
         flex="~ gap-1"
+        :class="{ 'm-r-18': columnIndex === 0 }"
       >
         <Component
           :is="col._editComponent.component"

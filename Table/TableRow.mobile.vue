@@ -54,11 +54,12 @@ const isEditable = computedEager(() => {
         />
 
         <TableCellMobile
-          v-for="col in dataColumns"
+          v-for="(col, idx) in dataColumns"
           :key="col.field"
           :column="col"
           :row="row"
           :editable="isEditable"
+          :column-index="idx"
         >
           <slot :name="col.name" />
         </TableCellMobile>
