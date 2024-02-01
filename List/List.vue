@@ -40,9 +40,11 @@ const items =
     : ref<any[]>([])
 
 const ContainerComponent = computed(() => {
-  return props.virtual || items.value.length >= 1e3
-    ? ListVirtualContainer
-    : ListContainer
+  return ListContainer
+
+  // return props.virtual || items.value.length >= 1e3
+  //   ? ListVirtualContainer
+  //   : ListContainer
 })
 
 const {
@@ -60,6 +62,7 @@ const {
   handleSelectItem,
   loadData,
   refresh,
+  reset,
 } = useList(items, props, containerEl)
 
 defineExpose({
@@ -69,8 +72,9 @@ defineExpose({
     search.value = ''
   },
   loadData,
-  refresh,
   handleKey,
+  refresh,
+  reset,
 })
 
 // When `noSearch` is used, we fake the focus on the container to allow
@@ -144,7 +148,9 @@ onMounted(() => {
       :items="arr"
       :class="contentClass"
       tabindex="0"
+      has-infinite-scroll
       data-cy="search-results"
+      @infinite-scroll="loadData(search, { fetchMore: true })"
     >
       <template #default="{ item, index }">
         <ListRow

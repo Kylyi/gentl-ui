@@ -24,6 +24,7 @@ import { useItemAdding } from '~/components/List/functions/useItemAdding'
 // Components
 import ListVirtualContainer from '~/components/List/ListVirtualContainer.vue'
 import SearchInput from '~/components/Inputs/SearchInput.vue'
+import type { IListFetchOptions } from '~/components/List/types/list-fetch.type'
 
 type IItem = {
   ref: any
@@ -141,7 +142,7 @@ export function useList(
     }),
   ]
 
-  const itemsByKey = computedEager(() => {
+  const itemsByKey = computed(() => {
     return [
       ...itemsExtended.value,
       ...(preAddedItem.value ? [preAddedItem.value] : []),
@@ -197,7 +198,14 @@ export function useList(
     }
   })
 
+  function reset() {
+    hasMore.value = true
+    totalRows.value = 0
+  }
+
   // Data handling
+  const hasMore = ref(true)
+  const totalRows = ref(0)
   const selected = toRef(props, 'selected')
 
   function handleSelectFiltered() {
@@ -471,22 +479,50 @@ export function useList(
   }
 
   // Data fetching
-  async function fetchAndSetData(search?: string) {
+  async function fetchAndSetData(search?: string, options?: IListFetchOptions) {
+    if (isLoading.value) {
+      return
+    }
+
     if (props.loadData) {
       const mapKey = props.loadData.mapKey ?? config.selector.mapKey
 
       try {
-        isLoading.value = true
+        options = options ?? {}
+        options.currentRowsCount = items.value.length
+        options.hasMore = hasMore.value
+        options.lastRow = items.value[items.value.length - 1]
 
-        const res = await props.loadData.fnc({ search })
-
-        if (props.loadData.local) {
-          items.value = res
-        } else {
-          items.value = get(res, mapKey)
+        if (options.fetchMore && !hasMore.value) {
+          return
         }
 
+        isLoading.value = true
+
+        const res = await props.loadData.fnc({ search, options })
+        const resRows = get(
+          res,
+          props.loadData.countKey || config.selector.countKey
+        )
+
+        if (props.loadData.local) {
+          items.value = options.fetchMore ? [...items.value, ...res] : res
+        } else {
+          items.value = options.fetchMore
+            ? [...items.value, ...get(res, mapKey)]
+            : get(res, mapKey)
+        }
+
+        // For some goddamn fucking reason, the assignment above `items.value = ...`
+        // needs `nextTick` to properly get the `.length` of the items... What the actual fuck
+        await nextTick()
+
         isPreventFetchData.value = true
+        totalRows.value = options.fetchMore
+          ? totalRows.value + (resRows || 0)
+          : resRows || 0
+
+        hasMore.value = totalRows.value > items.value.length
 
         await nextTick()
 
@@ -674,5 +710,6 @@ export function useList(
       addedItems.value = props.addedItems || addedItems.value
       handleSearchedResults(results.value)
     },
+    reset,
   }
 }
