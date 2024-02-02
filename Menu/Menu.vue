@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type MotionInstance } from '@vueuse/motion'
+import type { MotionInstance } from '@vueuse/motion'
 import {
   type Placement,
   arrow,

@@ -11,9 +11,9 @@ import { Color } from '@tiptap/extension-color'
 import { Mention } from '@tiptap/extension-mention'
 import { Image } from '@tiptap/extension-image'
 import { Link } from '@tiptap/extension-link'
-import { type ClientRectObject } from '@floating-ui/vue'
 
 // Types
+import type { ClientRectObject } from '@floating-ui/vue'
 import type { IWysiwygProps } from '~/components/Wysiwyg/types/wysiwyg-props.type'
 import type { IWysiwygMentionItem } from '~/components/Wysiwyg/types/wysiwyg-mention-item.type'
 
@@ -30,7 +30,7 @@ import { mentionItemsKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
 const props = withDefaults(defineProps<IWysiwygProps>(), {
   errorVisible: true,
 })
-const emits = defineEmits<{
+defineEmits<{
   (e: 'update:modelValue', value: string): void
 }>()
 
@@ -39,7 +39,7 @@ const { resolveValues } = useWysiwygUtils()
 const { getInputWrapperProps } = useInputWrapperUtils()
 
 // Layout
-const model = useVModel(props, 'modelValue', emits)
+const model = defineModel()
 const isFocused = ref(false)
 
 const mentionItems = injectStrict(mentionItemsKey, toRef(props, 'mentionItems'))
@@ -181,9 +181,7 @@ const editor = useEditor({
   content: props.modelValue,
   extensions: [
     // Extensions
-    StarterKit.configure({
-      heading: { levels: [4, 5, 6] },
-    }),
+    StarterKit,
     PlaceholderExt,
     TextAlignExt,
     Underline,

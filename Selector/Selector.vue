@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// TODO: I'm using `props.optionLabel` for adding new items on the fly
+// ENHANCMENT: I'm using `props.optionLabel` for adding new items on the fly
 // but it will not work when optionLabel is a function
 import { config } from '~/config'
 
