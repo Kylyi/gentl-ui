@@ -3,7 +3,7 @@
 import {
   tableExportKey,
   tableIsExportingKey,
-  tableNonHelpersColumnsKey,
+  tableNonHelperColumnsKey,
 } from '~/components/Table/provide/table.provide'
 
 type IProps = {
@@ -13,7 +13,7 @@ type IProps = {
 defineProps<IProps>()
 
 // Injections
-const tableColumns = injectStrict(tableNonHelpersColumnsKey)
+const tableColumns = injectStrict(tableNonHelperColumnsKey)
 const handleTableExport = injectStrict(tableExportKey)
 const isExporting = injectStrict(tableIsExportingKey)
 
