@@ -3,7 +3,6 @@
 import { ICON_BY_FILE_TYPE } from '~/components/FileInput/constants/iconByFileType'
 
 type IProps = {
-  downloadUrl?: string
   editable?: boolean
   file: File | IFile
   noDownloadButton?: boolean
@@ -82,7 +81,7 @@ const imageUrl = computed(() => {
         size="sm"
         class="!rounded-t-0"
         :label="$t('file.download')"
-        @click.stop.prevent="handleDownloadFile(file, downloadUrl)"
+        @click.stop.prevent="handleDownloadFile(file)"
       />
       <Btn
         v-else

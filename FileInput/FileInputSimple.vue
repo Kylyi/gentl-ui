@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { config } from '~/config'
-
 // Types
 import type { IFileInputProps } from '~/components/FileInput/types/file-input-props.type'
 
@@ -14,7 +12,6 @@ import Field from '~/components/Field/Field.vue'
 
 const props = withDefaults(defineProps<IFileInputProps>(), {
   maxChipsRows: 3,
-  downloadUrl: config.fileInput.downloadUrl,
 })
 const emits = defineEmits<{
   (e: 'update:modelValue', value: Array<File | IFile>): void
@@ -140,7 +137,7 @@ onChange(handleAdd)
             color="white"
             self-center
             icon="material-symbols:download"
-            @click.stop.prevent="handleDownloadFile(chip, downloadUrl)"
+            @click.stop.prevent="handleDownloadFile(chip)"
             @mousedown.stop.prevent
           />
 
@@ -170,7 +167,7 @@ onChange(handleAdd)
             h="4"
             self-center
             icon="material-symbols:download"
-            @click.stop.prevent="handleDownloadFile(chip, downloadUrl)"
+            @click.stop.prevent="handleDownloadFile(chip)"
             @mousedown.stop.prevent
           >
             <Tooltip :offset="10"> {{ $t('general.downloadFile') }} </Tooltip>
