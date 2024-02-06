@@ -26,11 +26,11 @@ const errorContainerPaddingLeft = ref('8px')
 const currentInstance = getCurrentInstance()
 
 const isModified = computed(() => {
-  if (!props.originalValue) {
+  if (!props.previousValue) {
     return false
   }
 
-  return !isEqual(props.originalValue, props.modelValue)
+  return !isEqual(props.previousValue, props.modelValue)
 })
 
 const labelProps = computedEager(() => {

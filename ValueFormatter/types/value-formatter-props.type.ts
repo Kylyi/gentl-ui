@@ -3,7 +3,7 @@ import type { PredictDataTypeOptions } from '~/libs/App/functions/misc'
 
 export type IValueFormatter = {
   value: any
-  originalValue?: any
+  previousValue?: any
   dataType?: ExtendedDataType
 
   /**

@@ -70,7 +70,7 @@ export type IInputWrapperProps = InputLabelProps & {
    * The original value of the input
    * Is used to compare the current value with the original value
    */
-  originalValue?: any
+  previousValue?: any
 
   /**
    * Whether the input is readonly

@@ -30,7 +30,7 @@ export function useSelectorUtils(options: ISelectorUtilsOptions) {
     'labelInside',
     'modelValue',
     'loading',
-    'originalValue',
+    'previousValue',
     'placeholder',
     'readonly',
     'required',
