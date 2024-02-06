@@ -133,10 +133,10 @@ function getShownValue(val: any) {
     --apply: decoration-none font-size-$MiniCard-value-font-size text-sm;
     font-weight: var(--MiniCard-value-font-weight);
 
-    &__label{
+    &__label {
       --apply: relative;
 
-      &::before{
+      &::before {
         --apply: content-empty inline-block w-4 min-w-4;
       }
 
@@ -158,9 +158,9 @@ function getShownValue(val: any) {
 }
 
 .dark{
-    .link{
-      &__label{
-        &:hover{
+    .link {
+      &__label {
+        &:hover {
           background-image: linear-gradient(to bottom, transparent 0%, transparent calc(100% - 1px), theme('colors.blue.700') calc(100% - 1px), theme('colors.blue.700') 100%);
           background-size: 100% 100%;
           background-repeat: no-repeat;

@@ -22,12 +22,13 @@ const emits = defineEmits<{
   (e: 'update:currentPage', page: number): void
   (e: 'update:currentPageSize', page: number): void
 }>()
+const slots = useSlots()
 
 // Layout
 const currentPage = useVModel(props, 'currentPage', emits)
 const currentPageSize = useVModel(props, 'currentPageSize', emits)
 
-const pages = computedEager(() => {
+const pages = computed(() => {
   // Less than 5 pages
   if (props.pageCount <= 5) {
     return Array.from({ length: props.pageCount }, (_, i) => i + 1)
@@ -64,7 +65,7 @@ const pages = computedEager(() => {
   }
 })
 
-const isLimitRowsReached = computedEager(() => {
+const isLimitRowsReached = computed(() => {
   const limitRows = props.limitRows ?? config.table.limitRows
   const currentRows = props.currentRows || 0
   const totalRows = props.totalRows || 0
@@ -72,6 +73,10 @@ const isLimitRowsReached = computedEager(() => {
   return (
     config.table.limitRows && currentRows >= limitRows && totalRows > limitRows
   )
+})
+
+const isPaginationRightVisible = computed(() => {
+  return slots['pagination-append'] || !props.noPagination
 })
 </script>
 
@@ -99,8 +104,9 @@ const isLimitRowsReached = computedEager(() => {
             <span
               font="bold"
               data-cy="total-rows"
-              >{{ totalRows }}</span
             >
+              {{ totalRows }}
+            </span>
             {{ $t('general.row', totalRows || 0) }}
           </template>
 
@@ -198,23 +204,27 @@ const isLimitRowsReached = computedEager(() => {
 
       <!-- Page size -->
       <div
-        v-if="!noPagination"
+        v-if="isPaginationRightVisible"
         class="table-pagination__page-size"
       >
-        <span text="caption">
-          {{ $t('table.rowsPerPage') }}
-        </span>
+        <template v-if="!noPagination">
+          <span text="caption">
+            {{ $t('table.rowsPerPage') }}
+          </span>
 
-        <Selector
-          v-model="currentPageSize"
-          :options="[5, 10, 25, 50, 100]"
-          emit-key
-          size="sm"
-          no-search
-          w="17"
-          append-class="!p-x-1"
-          inner-class="!p-l-2 !p-r-2px"
-        />
+          <Selector
+            v-model="currentPageSize"
+            :options="[5, 10, 25, 50, 100]"
+            emit-key
+            size="sm"
+            no-search
+            w="17"
+            append-class="!p-x-1"
+            inner-class="!p-l-2 !p-r-2px"
+          />
+        </template>
+
+        <slot name="pagination-append" />
       </div>
     </div>
   </ClientOnly>

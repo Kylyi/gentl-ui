@@ -51,6 +51,7 @@ defineSlots<{
   rowInside: { columns: any[]; row: any; index: number }
   dataRow: { columns: any[]; row: any; index: number }
   inner: { columns: any[]; row: any; index: number }
+  paginationAppend: { customData: IItem }
   top: IItem
   topLeftPrepend: IItem
   topLeftAppend: IItem
@@ -135,9 +136,10 @@ const {
 const {
   isLoading,
   rows,
-  refreshData,
   search,
   dbQuery,
+  customData,
+  refreshData,
 
   // Pagination
   currentPage,
@@ -394,7 +396,17 @@ onMounted(() => {
       :limit-rows="getData?.limitRows"
       :prev="prev"
       :next="next"
-    />
+    >
+      <template
+        v-if="$slots['pagination-append']"
+        #pagination-append
+      >
+        <slot
+          name="pagination-append"
+          :custom-data="customData"
+        />
+      </template>
+    </TablePagination>
   </div>
 </template>
 

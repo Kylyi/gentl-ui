@@ -586,6 +586,7 @@ export function useTableData(
     search,
     totalRows,
     storageKey,
+    customData,
     refreshData,
 
     // Pagination
