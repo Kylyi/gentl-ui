@@ -26,6 +26,7 @@ import {
 // Injections
 import {
   tableCustomDataKey,
+  tableExternalDataKey,
   tableQueryBuilderKey,
   tableQueryKey,
   tableRecreateQueryBuilderKey,
@@ -38,6 +39,7 @@ import {
 // Store
 import { useTableStore } from '~/components/Table/table.store'
 import { useAppStore } from '~/libs/App/app.store'
+import { tableVersionIdKey } from '~/libs/Version/provide/version.provide'
 
 export function useTableData(
   props: ITableProps,
@@ -84,7 +86,9 @@ export function useTableData(
 
   initializeQueryBuilder()
 
-  // Provides
+  // Provides & Injects
+  const externalData = inject(tableExternalDataKey)
+
   provide(tableRefreshKey, (force?: boolean) => refreshData(force))
   provide(tableRecreateQueryBuilderKey, () => initializeQueryBuilder())
   provide(tableStorageKey, storageKey)
@@ -357,7 +361,7 @@ export function useTableData(
       if (config.table.extractData) {
         customData.value = Object.assign(
           customData.value,
-          config.table.extractData(res)
+          config.table.extractData(res, externalData)
         )
       }
 
@@ -578,6 +582,11 @@ export function useTableData(
   watch(isLoading, loading => instance?.emit('update:loading', loading))
 
   isInitialized.value = true
+
+  function x() {
+    const x = inject(tableVersionIdKey)
+    console.log('Log ~ x:', x)
+  }
 
   return {
     isLoading,
