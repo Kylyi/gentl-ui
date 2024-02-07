@@ -39,7 +39,6 @@ import {
 // Store
 import { useTableStore } from '~/components/Table/table.store'
 import { useAppStore } from '~/libs/App/app.store'
-import { tableVersionIdKey } from '~/libs/Version/provide/version.provide'
 
 export function useTableData(
   props: ITableProps,
@@ -582,11 +581,6 @@ export function useTableData(
   watch(isLoading, loading => instance?.emit('update:loading', loading))
 
   isInitialized.value = true
-
-  function x() {
-    const x = inject(tableVersionIdKey)
-    console.log('Log ~ x:', x)
-  }
 
   return {
     isLoading,
