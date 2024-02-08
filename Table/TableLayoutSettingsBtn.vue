@@ -14,6 +14,9 @@ import {
   tableViewCodeKey,
 } from '~/components/Table/provide/table.provide'
 
+// Store
+import { useTableStore } from '~/components/Table/table.store'
+
 // Components
 import Dialog from '~/components/Dialog/Dialog.vue'
 
@@ -24,6 +27,9 @@ type IProps = {
 const props = withDefaults(defineProps<IProps>(), {
   nonSavableSettings: () => [],
 })
+
+// Store
+const { getTableState, setTableState } = useTableStore()
 
 // Injections
 const tableQuery = injectStrict(tableQueryKey)
@@ -193,6 +199,7 @@ async function handleSaveLayout() {
   }
 
   // When we make some layout default, we make sure the other layouts are not default
+  // Also set the default as a reference for `Reset layout` button
   if (layout.value.default) {
     layouts.value = layouts.value.map(l => {
       if (l.id === res.id) {
@@ -202,6 +209,17 @@ async function handleSaveLayout() {
       const wasPublicPublicAndDefault = l.accessLevel === 3
 
       return { ...l, accessLevel: wasPublicPublicAndDefault ? 4 : 2 }
+    })
+
+    // Set the default layout in the table state
+    const tableState = getTableState(_tableStorageKey.value)
+
+    if (tableState.value.meta) {
+      set(tableState.value.meta, config.table.defaultLayoutKey, res)
+    }
+
+    setTableState(_tableStorageKey.value, {
+      meta: tableState.value.meta,
     })
   }
 

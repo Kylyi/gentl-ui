@@ -86,7 +86,7 @@ export function useTableData(
   initializeQueryBuilder()
 
   // Provides & Injects
-  const externalData = inject(tableExternalDataKey)
+  const externalData = inject(tableExternalDataKey, ref({} as IItem))
 
   provide(tableRefreshKey, (force?: boolean) => refreshData(force))
   provide(tableRecreateQueryBuilderKey, () => initializeQueryBuilder())
