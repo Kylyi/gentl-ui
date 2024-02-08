@@ -142,9 +142,14 @@ const isModified = computed(() => {
               {{ $t('version.currentValue') }}
             </span>
 
-            <span>
-              {{ getShownValue(originalValue) }}
-            </span>
+            <ValueFormatter
+              v-bind="valueFormatterProps"
+              :value="originalValue"
+            >
+              <template #default="{ val }">
+                {{ getShownValue(val) }}
+              </template>
+            </ValueFormatter>
           </Menu>
         </Btn>
       </span>
