@@ -129,9 +129,6 @@ header.is-hidden ~ .page-drawer {
     --apply: flex flex-shrink-0 pointer-events-auto flex-center p-2 w-full
       border-t-1 border-ca;
     --apply: bg-$PageDrawer-bottom-bg;
-
-    // Project specific
-    // --apply: '!hidden';
   }
 
   &--left {

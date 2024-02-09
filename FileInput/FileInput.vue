@@ -2,6 +2,9 @@
 // Types
 import type { IFileInputProps } from '~/components/FileInput/types/file-input-props.type'
 
+// Models
+import { FileModel } from '~/components/FileInput/models/file.model'
+
 // Functions
 import { useFieldUtils } from '~/components/Field/functions/useFieldUtils'
 
@@ -9,9 +12,9 @@ const props = withDefaults(defineProps<IFileInputProps>(), {
   maxChipsRows: 3,
 })
 const emits = defineEmits<{
-  (e: 'update:modelValue', value: Array<File | IFile>): void
-  (e: 'filesAdded', value: Array<File | IFile>): void
-  (e: 'filesRemoved', value: Array<File | IFile>): void
+  (e: 'update:modelValue', value: Array<FileModel | IFile>): void
+  (e: 'filesAdded', value: Array<FileModel | IFile>): void
+  (e: 'filesRemoved', value: Array<FileModel | IFile>): void
 }>()
 
 // Utils
@@ -20,7 +23,7 @@ const { files } = useFiles()
 
 // Layout
 const fileInputWrapperEl = ref<HTMLDivElement>()
-const model = defineModel<Array<File | IFile>>({
+const model = defineModel<Array<FileModel | IFile>>({
   default: [],
 })
 const fieldProps = getFieldProps(props)
@@ -51,7 +54,7 @@ function handleAdd(files: FileList | File[] | null) {
     return
   }
 
-  const filesArray = Array.from(files)
+  const filesArray = Array.from(files).map(file => new FileModel({ file }))
   emits('filesAdded', filesArray)
 
   if (props.multi) {
@@ -74,7 +77,7 @@ function handleRemove(idx: number) {
 }
 
 onChange(handleAdd)
-syncRef(model, files, { direction: 'ltr' })
+syncRef(model, files, { direction: 'both', deep: true })
 </script>
 
 <template>

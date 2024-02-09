@@ -1,10 +1,16 @@
 <script setup lang="ts">
+// Models
+import type { FileModel } from '~/components/FileInput/models/file.model'
+
+// Functions
+import { useNumber } from '~/components/Inputs/NumberInput/functions/useNumber'
+
 // Constants
 import { ICON_BY_FILE_TYPE } from '~/components/FileInput/constants/iconByFileType'
 
 type IProps = {
   editable?: boolean
-  file: File | IFile
+  file: FileModel | IFile
   noDownloadButton?: boolean
 }
 
@@ -12,7 +18,9 @@ const props = defineProps<IProps>()
 defineEmits<{
   (e: 'remove'): void
 }>()
+
 // Utils
+const { formatNumber } = useNumber()
 const { getLocalImageUrl } = useImages()
 
 const icon = computed(() => {
@@ -24,10 +32,13 @@ const icon = computed(() => {
 })
 
 const imageUrl = computed(() => {
-  if ('path' in props.file && props.file.type?.startsWith('image/')) {
+  const isUploadedFile = 'id' in props.file
+  const isImageFile = props.file.type?.startsWith('image/')
+
+  if (isUploadedFile && isImageFile) {
     return getLocalImageUrl(props.file.path)
-  } else if (!('path' in props.file) && props.file.type?.startsWith('image/')) {
-    return URL.createObjectURL(props.file)
+  } else if (!isUploadedFile && isImageFile) {
+    return URL.createObjectURL(props.file.file)
   }
 
   return null
@@ -73,8 +84,9 @@ const imageUrl = computed(() => {
 
     <div
       v-if="!noDownloadButton"
-      class="file-preview--download"
+      class="file-preview--download rounded-b-2 overflow-hidden"
     >
+      <!-- Download file -->
       <Btn
         v-if="'path' in file"
         w-full
@@ -83,12 +95,21 @@ const imageUrl = computed(() => {
         :label="$t('file.download')"
         @click.stop.prevent="handleDownloadFile(file)"
       />
+
+      <!-- Upload info -->
       <Btn
-        v-else
-        :label="$t('file.added')"
+        v-else-if="!file.isUploading"
+        :label="file.isUploading ? $t('file.uploaded') : $t('file.added')"
         size="sm"
-        w-full
-        class="!rounded-t-0"
+        class="!rounded-t-0 w-full"
+      />
+      <ProgressBar
+        v-else
+        :label="
+          progress => `${$t('file.uploading')}... (${formatNumber(progress)}%)`
+        "
+        :progress="file.uploadProgress"
+        rounded="b-2"
       />
     </div>
   </div>

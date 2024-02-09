@@ -99,9 +99,6 @@ onMounted(() => {
 header {
   --apply: relative top-0 inset-inline-0 transition-transform ease-linear;
 
-  // Project specific
-  // --apply: w-full max-w-screen-2xl m-x-auto;
-
   &.is-hidden {
     --apply: -translate-y-100%;
   }
@@ -126,9 +123,6 @@ header {
 }
 
 .navigation {
-  // Project specific
-  --apply: w-full flex flex-gap-2 p-x-1 min-h-52px;
-
   &-wrapper {
     --apply: flex flex-col bg-$Navigation-bg;
   }
