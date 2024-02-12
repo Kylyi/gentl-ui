@@ -26,7 +26,10 @@ export function useTableDataClient() {
     )
     const rows = await sortData(filtered, orderBy || [])
 
-    return { rows, totalRows: toValue(dataRef)?.length }
+    const { skip = 0, take = rows.length } = tableFetchInput.fetchTableQuery
+    const paginatedRows = rows.slice(skip, skip + take)
+
+    return { rows: paginatedRows, totalRows: rows?.length }
   }
 
   return {
