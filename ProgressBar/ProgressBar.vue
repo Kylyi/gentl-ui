@@ -48,5 +48,7 @@ defineProps<IProps>()
 .progress-bar__text {
   --apply: absolute left-1/2 top-1/2 translate--50% mix-blend-difference
     color-white z-3 text-nowrap;
+
+  white-space: nowrap;
 }
 </style>

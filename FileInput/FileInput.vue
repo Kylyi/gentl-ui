@@ -140,7 +140,11 @@ syncRef(model, files, { direction: 'both', deep: true })
   --apply: dark:border-true-gray-600/50 border-true-gray-300/80;
   --apply: dark:bg-darker bg-white;
 
-  grid-template-columns: repeat(auto-fit, minmax(140px, 320px));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+
+  @media screen and (min-width: 768px) {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 320px));
+  }
 
   &.is-dragger-over,
   &:hover {

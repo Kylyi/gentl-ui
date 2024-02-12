@@ -117,7 +117,7 @@ const formClass = computed(() => ({
 
 const controlsClass = computed(() => {
   const classes = [
-    'w-full border-ca',
+    'z-10 w-full border-ca bg-white dark:bg-darker',
     'lt-lg:p-x-2 sticky bottom-0 inset-inline-0',
   ]
 
@@ -342,6 +342,7 @@ onMounted(() => {
             :disabled="submitDisabled"
             :loading="loading"
             :icon="icon"
+            v-bind="submitBtnProps"
             type="submit"
             data-cy="save-button"
             :label="label ?? $t('general.submit')"

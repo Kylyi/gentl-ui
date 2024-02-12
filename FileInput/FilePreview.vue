@@ -99,10 +99,13 @@ const imageUrl = computed(() => {
       <!-- Upload info -->
       <Btn
         v-else-if="!file.isUploading"
-        :label="file.isUploading ? $t('file.uploaded') : $t('file.added')"
+        :label="file.isUploaded ? $t('file.uploaded') : $t('file.added')"
+        :class="{ 'color-positive': file.isUploaded }"
         size="sm"
         class="!rounded-t-0 w-full"
       />
+
+      <!-- Uploading - Progress bar -->
       <ProgressBar
         v-else
         :label="

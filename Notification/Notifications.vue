@@ -33,7 +33,7 @@ const notificationsClass = computed(() => {
       return 'top-20 left-50% translate-x--50%'
 
     case 'top-right':
-      return 'top-20 right-20'
+      return 'top-20 right-10 sm:right-20'
 
     case 'left':
       return 'top-50% left-5 translate-y--50%'

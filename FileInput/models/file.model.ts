@@ -3,7 +3,6 @@ import type { Required } from 'utility-types'
 
 export class FileModel {
   file: File
-  isUploading?: boolean
   uploadProgress: number
 
   get name() {
@@ -14,22 +13,28 @@ export class FileModel {
     return this.file.type
   }
 
-  async upload() {
-    this.isUploading = true
+  get isUploading() {
+    return this.uploadProgress > 0 && this.uploadProgress < 100
+  }
 
+  get isUploaded() {
+    return this.uploadProgress === 100
+  }
+
+  async upload() {
     const formData = new FormData()
     formData.append('files', this.file)
 
     // TODO: Operation for uploading the file
-    await axios.post('/api/files', formData, {
+    const { data } = await axios.post('/api/files', formData, {
       onUploadProgress: progressEvent => {
-        this.uploadProgress = Math.round(
-          (progressEvent.loaded / (progressEvent.total || 0)) * 100
-        )
+        const { loaded, total } = progressEvent
+
+        this.uploadProgress = Math.round((loaded / (total || 1)) * 100)
       },
     })
 
-    this.isUploading = false
+    return data
   }
 
   constructor(obj: Required<Partial<FileModel>, 'file'>) {

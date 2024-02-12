@@ -1,3 +1,5 @@
+import type { IBtnProps } from '~/components/Button/types/btn-props.type'
+
 export interface IFormProps {
   /**
    * If true, the form will have a border.
@@ -125,6 +127,11 @@ export interface IFormProps {
    * The text to display in the submit confirmation menu.
    */
   submitConfirmationText?: string
+
+  /**
+   * Props for the submit button
+   */
+  submitBtnProps?: IBtnProps
 
   /**
    * If true, the submit button will be disabled.

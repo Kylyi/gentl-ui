@@ -88,7 +88,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .page-wrapper {
-  --apply: ease-out overflow-auto grow z-$zPageWrapper p-$PageWrapper-padding;
+  --apply: ease-out grow z-$zPageWrapper p-$PageWrapper-padding;
 
   &.is-mounted {
     transition: padding 250ms ease-out, margin 250ms ease-out;
