@@ -1,9 +1,9 @@
 // Types
-import type { IItem } from '~/libs/App/types/item.type'
 import type {
   ITableDataFetchFncInput,
   ITableFilterItem,
 } from '~/components/Table/types/table-query.type'
+import type { IItem } from '~/libs/App/types/item.type'
 
 // Functions
 import { useFiltering } from '~/libs/App/data/functions/useFiltering'
@@ -24,9 +24,19 @@ export function useTableDataClient() {
       dataRef,
       columnFilters || ([] as ITableFilterItem<any>[])
     )
-    const rows = await sortData(filtered, orderBy || [])
 
-    return { rows, totalRows: toValue(dataRef)?.length }
+    const totalRows = toValue(dataRef)?.length
+
+    const startSliceIndex = tableFetchInput.tableQuery.skip ?? 0
+    const endSliceIndex =
+      startSliceIndex + (tableFetchInput.tableQuery.take ?? totalRows)
+
+    const rows = (await sortData(filtered, orderBy || [])).slice(
+      startSliceIndex,
+      endSliceIndex
+    )
+
+    return { rows, totalRows }
   }
 
   return {
