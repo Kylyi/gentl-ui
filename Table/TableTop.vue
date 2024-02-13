@@ -405,8 +405,8 @@ function handleFitColumns(ev?: MouseEvent) {
       <Separator m="b-1" />
     </template>
 
+    <!-- Subbar -->
     <ClientOnly>
-      <!-- Subbar -->
       <div
         v-if="!tableTopFunctionality?.noSubbar"
         class="table-top__subbar"
@@ -544,7 +544,7 @@ function handleFitColumns(ev?: MouseEvent) {
     --apply: flex gap-1 items-start p-x-2 p-y-1;
 
     &-remove-filters {
-      --apply: shrink-0 w-20 h-full dark:bg-darker bg-white color-ca
+      --apply: shrink-0 w-20 min-h-10 dark:bg-darker bg-white color-ca
         border-2 border-transparent hover:border-negative;
 
       --apply: "!hover:color-negative !p-y-0";
