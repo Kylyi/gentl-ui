@@ -531,6 +531,7 @@ export function useList(
         await nextTick()
 
         // self.emit('search', { hasExactMatch: hasExactMatch.value, search })
+        isInitialized.value = true
       })
     },
     { immediate: true }
@@ -671,9 +672,6 @@ export function useList(
 
     preventNextHoverEventRef.value = true
   }
-
-  // Initialize the searched results
-  isInitialized.value = true
 
   onKeyStroke(['ArrowUp', 'ArrowDown', 'Enter', 'Tab'], handleKey)
 
