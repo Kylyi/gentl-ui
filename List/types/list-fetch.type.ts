@@ -8,6 +8,7 @@ export type IListFetchOptions<T = any> = {
 export type IListFetchPayload<T = any> = {
   search?: string
   options?: IListFetchOptions<T>
+  abortController?: AbortController
 }
 
 export type IListFetchFnc<T = any> = (
