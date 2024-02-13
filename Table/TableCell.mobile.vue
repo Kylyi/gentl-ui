@@ -88,6 +88,15 @@ function focusFieldInNextRow(field?: string) {
 
   if (nextRowEditBtnEl) {
     nextRowEditBtnEl.click()
+
+    const virtualScroller = parentRowEl.closest(
+      '.virtual-scroll'
+    ) as HTMLElement
+
+    const scrollTop = parentRowEl.style.getPropertyValue('--translateY')
+    if (scrollTop) {
+      virtualScroller.scrollTop = Number.parseInt(scrollTop)
+    }
   }
 }
 
@@ -138,17 +147,11 @@ function handleKeyDown(e: KeyboardEvent) {
 
     case 'Enter':
       setTimeout(() => {
-        handleSaveRow()
-
         if (isControlKey) {
           return
         }
 
-        handleKeyDown({
-          ...e,
-          key: 'ArrowDown',
-          ctrlKey: true,
-        } as KeyboardEvent)
+        focusFieldInNextRow()
       })
 
       e.preventDefault?.()
