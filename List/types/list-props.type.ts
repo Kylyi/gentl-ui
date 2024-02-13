@@ -2,6 +2,7 @@ import { type FuseOptions } from '@vueuse/integrations/useFuse'
 
 // Types
 import type { IListBaseProps } from '~/components/List/types/list-base-props.type'
+import type { IListFetchFnc } from '~/components/List/types/list-fetch.type'
 import type { IItemToBeAdded } from '~/components/List/types/list-item-to-add.type'
 
 // Models
@@ -52,12 +53,7 @@ export interface IListProps extends IListBaseProps {
   selected?: any
 
   loadData?: {
-    /**
-     * The payload can actually be typed as follows:
-     * payload: { search?: string, select?: string[] }
-     * But some queries dont have the search so to prevent TS from complaining, just use any
-     */
-    fnc: (payload: any) => Promise<any> | any
+    fnc: IListFetchFnc
     mapKey?: string
     immediate?: boolean
 
