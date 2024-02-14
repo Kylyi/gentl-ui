@@ -525,8 +525,6 @@ export function useList(
             : get(res, mapKey)
         }
 
-        console.log(items.value)
-
         // For some goddamn fucking reason, the assignment above `items.value = ...`
         // needs `nextTick` to properly get the `.length` of the items... What the actual fuck
         await nextTick()
