@@ -484,6 +484,10 @@ export function useList(
 
   // Data fetching
   async function fetchAndSetData(search?: string, options?: IListFetchOptions) {
+    if (isLoading.value) {
+      return
+    }
+
     if (props.loadData) {
       const mapKey = props.loadData.mapKey ?? config.selector.mapKey
 
@@ -520,6 +524,8 @@ export function useList(
             ? [...items.value, ...get(res, mapKey)]
             : get(res, mapKey)
         }
+
+        console.log(items.value)
 
         // For some goddamn fucking reason, the assignment above `items.value = ...`
         // needs `nextTick` to properly get the `.length` of the items... What the actual fuck
