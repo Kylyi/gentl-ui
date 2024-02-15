@@ -317,6 +317,7 @@ onMounted(() => {
           :editable="editable"
           :index="index"
           :selectable="selectionOptions?.selectable"
+          :row-class="rowClass"
           @click="handleRowClick(row, $event)"
         >
           <template #row-inside="{ mode }">
