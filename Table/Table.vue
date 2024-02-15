@@ -316,7 +316,7 @@ onMounted(() => {
           :row-height="tableRowHeight.current"
           :editable="editable"
           :index="index"
-          :selectable="selectable"
+          :selectable="selectionOptions?.selectable"
           @click="handleRowClick(row, $event)"
         >
           <template #row-inside="{ mode }">
@@ -408,6 +408,8 @@ onMounted(() => {
         />
       </template>
     </TablePagination>
+
+    <slot />
   </div>
 </template>
 

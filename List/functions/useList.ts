@@ -48,7 +48,7 @@ export function useList(
   const isInitialized = ref(false)
 
   // Utils
-  const { handleRequest } = useRequest()
+  const { abortController, handleRequest } = useRequest()
   const { normalizeText } = useText()
   const { sortData } = useSorting()
   const { groupData } = useGrouping()
@@ -91,9 +91,6 @@ export function useList(
       ...props.fuseOptions,
     },
   }
-
-  // Request
-  let abortController: AbortController | undefined
 
   // List
   const isLoading = ref(false)
@@ -504,9 +501,7 @@ export function useList(
         isLoading.value = true
 
         const res = await handleRequest(
-          _abortController => {
-            abortController = _abortController()
-
+          abortController => {
             return props.loadData?.fnc({ search, options, abortController })
           },
           { noResolve: true }
@@ -555,7 +550,7 @@ export function useList(
   watch(
     search,
     async search => {
-      abortController?.abort()
+      abortController.value?.abort()
 
       setTimeout(async () => {
         if (props.loadData?.onSearch || !isInitialized.value) {

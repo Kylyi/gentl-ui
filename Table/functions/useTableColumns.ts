@@ -284,7 +284,7 @@ export function useTableColumns(
   function extendColumns(columns: TableColumn[], options?: Options) {
     const { groupsRef = [] } = options || {}
     const groups = toValue(groupsRef)
-    const isSelectable = !!props.selectable
+    const isSelectable = !!props.selectionOptions?.selectable
     const groupExpandWidth = props.groupExpandWidth || 28
 
     // We create a copy of the columns but we keep the reference to the original

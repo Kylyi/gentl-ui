@@ -5,6 +5,7 @@ import type { ITableSelection } from '~/components/Table/types/table-selection.t
 
 // Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
+import type { ITableSelectionOptions } from '~/components/Table/types/table-selection-options.type'
 
 export interface ITableProps {
   /**
@@ -171,11 +172,6 @@ export interface ITableProps {
   nonSavableSettings?: Array<'columns' | 'filters' | 'sorting' | 'public'>
 
   /**
-   * Whether the table rows should be selectable
-   */
-  selectable?: boolean
-
-  /**
    * Defines visuals for the separators in the table
    */
   separator?: 'horizontal' | 'vertical' | 'cell'
@@ -306,17 +302,42 @@ export interface ITableProps {
   splitRow?: number
 
   /**
+   * Selection-related props
+   */
+  selectionOptions?: {
+    /**
+     * Function that gets called on row select, returrn `false` to prevent the
+     * selection from happening
+     */
+    onSelect?: (
+      row: any,
+      selection: MaybeRefOrGetter<ITableSelection>,
+      options?: ITableSelectionOptions
+    ) => void | false | Promise<void | false>
+
+    /**
+     * Selection key
+     * The key to use for the selection
+     */
+    selectionKey?: string
+
+    /**
+     * Whether the table rows should be selectable
+     */
+    selectable?: boolean
+
+    /**
+     * Whether the table rows have the selection disabled
+     */
+    disabled?: boolean
+  }
+
+  /**
    * The selected rows, can be either:
    * * Array<string | number> ~ use for `rowKey` selection
    * * Record<itemKey, item> ~ use for `item` selection
    */
   selected?: ITableSelection
-
-  /**
-   * Selection key
-   * The key to use for the selection
-   */
-  selectionKey?: string
 
   /**
    * Key for the local storage, if not provided, the key will be generated

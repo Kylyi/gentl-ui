@@ -6,7 +6,7 @@ import { type ITableProps } from '~/components/Table/types/table-props.type'
 
 type IProps = Pick<
   ITableProps,
-  'columns' | 'rowHeight' | 'to' | 'selectable' | 'editable'
+  'columns' | 'rowHeight' | 'to' | 'selectionOptions' | 'editable'
 > & {
   index?: number
   row: any

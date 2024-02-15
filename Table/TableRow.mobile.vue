@@ -9,7 +9,7 @@ import { tableIsSelectedRowKey } from '~/components/Table/provide/table.provide'
 
 type IProps = Pick<
   ITableProps,
-  'columns' | 'rowHeight' | 'to' | 'selectable' | 'editable'
+  'columns' | 'rowHeight' | 'to' | 'selectionOptions' | 'editable'
 > & {
   index?: number
   row: any
@@ -43,7 +43,7 @@ const isEditable = computedEager(() => {
       class="tr tr__mobile"
       :class="{
         'is-deleted': row.deleted,
-        'is-selectable': selectable,
+        'is-selectable': selectionOptions?.selectable,
         'is-selected': isSelectedRow(row),
       }"
     >

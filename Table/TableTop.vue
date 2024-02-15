@@ -28,7 +28,7 @@ const props = defineProps<
     ITableProps,
     | 'tableTopFunctionality'
     | 'queryBuilder'
-    | 'selectable'
+    | 'selectionOptions'
     | 'nonSavableSettings'
     | 'minimumColumnWidth'
     | 'exportProps'
@@ -415,7 +415,7 @@ function handleFitColumns(ev?: MouseEvent) {
         <div class="table-top__selection">
           <template
             v-if="
-              selectable &&
+              selectionOptions?.selectable &&
               ($slots['bulk-actions'] || $slots['bulk-actions-menu'])
             "
           >
