@@ -342,6 +342,7 @@ onMounted(() => {
             :disabled="submitDisabled"
             :loading="loading"
             :icon="icon"
+            v-bind="submitBtnProps"
             type="submit"
             data-cy="save-button"
             :label="label ?? $t('general.submit')"

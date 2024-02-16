@@ -16,7 +16,7 @@ import { useTableUtils } from '~/components/Table/functions/useTableUtils'
 import {
   tableColumnsKey,
   tableColumnsRecreateKey,
-  tableNonHelpersColumnsKey,
+  tableNonHelperColumnsKey,
 } from '~/components/Table/provide/table.provide'
 
 // Regex
@@ -70,7 +70,7 @@ export function useTableColumns(
 
   // Provide
   provide(tableColumnsKey, internalColumns)
-  provide(tableNonHelpersColumnsKey, nonHelpersColumns)
+  provide(tableNonHelperColumnsKey, nonHelpersColumns)
   provide(tableColumnsRecreateKey, () => createInternalColumns(true))
 
   const searchableColumnLabels = computed(() => {

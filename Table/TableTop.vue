@@ -7,7 +7,7 @@ import type { ITableProps } from '~/components/Table/types/table-props.type'
 // Injections
 import {
   tableColumnsKey,
-  tableNonHelpersColumnsKey,
+  tableNonHelperColumnsKey,
   tableRefreshKey,
   tableRowsKey,
   tableSelectionKey,
@@ -55,7 +55,7 @@ const { setTableState } = useTableStore()
 // Injections
 const selection = injectStrict(tableSelectionKey)
 const columns = injectStrict(tableColumnsKey)
-const nonHelperColumns = injectStrict(tableNonHelpersColumnsKey)
+const nonHelperColumns = injectStrict(tableNonHelperColumnsKey)
 const storageKey = injectStrict(tableStorageKey)
 const tableRows = injectStrict(tableRowsKey)
 const tableRefresh = injectStrict(tableRefreshKey)

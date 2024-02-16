@@ -197,7 +197,7 @@ watch(notificationCounter, async () => {
 <style lang="scss" scoped>
 .notification-row {
   --apply: relative bg-white dark:bg-darker relative flex flex-col rounded-custom
-    flex-gap-x-2 w-100 p-4 shadow-consistent-sm shadow-ca gap-3;
+    flex-gap-x-2 w-80 p-4 shadow-consistent-sm shadow-ca gap-3;
 
   &::before {
     --apply: content-empty absolute left-0 top-0 h-full w-1 rounded-l-custom bg-current;

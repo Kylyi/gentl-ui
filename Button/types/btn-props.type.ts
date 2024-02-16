@@ -17,6 +17,7 @@ export type INavigation = {
 
 export type IBtnNavigationProps = INavigation & {
   noActiveLink?: boolean
+  noUnderline?: boolean
   type?: 'button' | 'submit' | 'reset'
 }
 

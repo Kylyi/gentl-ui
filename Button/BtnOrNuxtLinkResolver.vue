@@ -42,6 +42,7 @@ const currentPath = computedEager(() => {
     :class="{
       'router-link-active': !exact && toPathString.startsWith(currentPath),
       'no-active': noActiveLink,
+      'no-underline': noUnderline,
     }"
   >
     <slot />
@@ -57,7 +58,7 @@ const currentPath = computedEager(() => {
 </template>
 
 <style lang="scss" scoped>
-a.btn:hover {
+a.btn:not(.no-underline):hover {
   --apply: underline;
 }
 </style>

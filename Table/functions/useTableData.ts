@@ -446,6 +446,8 @@ export function useTableData(
   watch(
     dbQuery,
     async dbQuery => {
+      const _isInitialized = isInitialized.value
+
       // NOTE: When we provide the rows, we don't want to fetch them right away
       if (!isInitialized.value && rows.value.length) {
         return
@@ -545,7 +547,9 @@ export function useTableData(
       // NOTE: Focus the table so we can use keyboard navigation
       // (but only if no floating element is visible - we don't want to close it by refocusing)
       // also when user has search input focused, we don't want to refocus
-      if (process.client) {
+      const shouldFocus = _isInitialized || !props.noFocusOnInit
+
+      if (process.client && shouldFocus) {
         const hasFloatingEl = !!document.querySelector('.floating-element')
         const isSearchInputFocused =
           activeElement.value?.tagName === 'INPUT' &&

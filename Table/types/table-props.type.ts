@@ -25,11 +25,6 @@ export interface ITableProps {
   columns?: TableColumn<any>[]
 
   /**
-   * When true, each table row may have a different height
-   */
-  dynamicRowHeight?: boolean
-
-  /**
    * Whether the table should have inline editing
    */
   editable?: boolean | 'cards' | 'table'
@@ -176,6 +171,13 @@ export interface ITableProps {
    * The class of the row
    */
   rowClass?: (row: any) => ClassType
+
+  /**
+   * When true, table will not get focused on initialization
+   *
+   * Note: We focus the table to enable keyboard navigation
+   */
+  noFocusOnInit?: boolean
 
   /**
    * When true, the table will not save the state in the local storage

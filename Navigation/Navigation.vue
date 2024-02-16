@@ -9,6 +9,12 @@ defineEmits<{
   (e: 'toggle-drawer'): void
 }>()
 
+// Constants
+/**
+ * How many pixels do I need to scroll 'top' to reveal navigation after being hidden
+ */
+const SCROLL_TRIGGER_PX = 80
+
 // Injections
 const rightDrawer = inject('rightDrawer', ref(false))
 const leftDrawer = inject('leftDrawer', ref(false))
@@ -19,29 +25,47 @@ const navigationEl = ref<HTMLElement>()
 
 // Scroll utils
 const lastScrollDirection = ref<'up' | 'down'>('down')
-const { arrivedState, y, directions } = useScroll(
-  () => (process.client ? window : null),
-  { throttle: 10 }
-)
+const diff = ref(0)
+
+const { arrivedState, y } = useScroll(() => (process.client ? window : null), {
+  throttle: 10,
+})
 
 const isScrolled = computed(() => !arrivedState.top)
 
-watch(directions, ({ bottom, top }) => {
-  if (bottom) {
-    lastScrollDirection.value = 'down'
-  } else if (top) {
-    lastScrollDirection.value = 'up'
+watch(y, (oldY, y) => {
+  let newScrolLDirection: 'up' | 'down'
+
+  if (oldY > y) {
+    newScrolLDirection = 'down'
+  } else {
+    newScrolLDirection = 'up'
   }
+
+  // Reset diff if direction changes
+  if (lastScrollDirection.value !== newScrolLDirection) {
+    diff.value = 0
+  }
+
+  diff.value += Math.abs(oldY - y)
+  lastScrollDirection.value = newScrolLDirection
 })
 
-const isNavigationHidden = computedEager(() => {
+const isNavigationHidden = computed(() => {
   if (!navigationEl.value) {
     return false
   }
 
+  const hasScrollerMoreThanNavigationHeight =
+    y.value >= navigationEl.value.offsetHeight
+  const hasScrolledDown = lastScrollDirection.value === 'down'
+  const hasScrolledUpEnough = !(
+    diff.value > SCROLL_TRIGGER_PX && lastScrollDirection.value === 'up'
+  )
+
   return (
-    y.value >= navigationEl.value?.offsetHeight &&
-    lastScrollDirection.value === 'down'
+    hasScrollerMoreThanNavigationHeight &&
+    (hasScrolledDown || hasScrolledUpEnough)
   )
 })
 
@@ -57,7 +81,7 @@ onMounted(() => {
     :class="[
       {
         'has-shadow': isScrolled && !noShadow,
-        'is-hidden': isNavigationHidden && !rightDrawer && !leftDrawer,
+        'is-hidden': isNavigationHidden && !leftDrawer && !rightDrawer,
         'is-initialized': isInitialized,
       },
     ]"
@@ -99,9 +123,6 @@ onMounted(() => {
 header {
   --apply: relative top-0 inset-inline-0 transition-transform ease-linear;
 
-  // Project specific
-  // --apply: w-full max-w-screen-2xl m-x-auto;
-
   &.is-hidden {
     --apply: -translate-y-100%;
   }
@@ -126,9 +147,6 @@ header {
 }
 
 .navigation {
-  // Project specific
-  --apply: w-full flex flex-gap-2 p-x-1 min-h-52px;
-
   &-wrapper {
     --apply: flex flex-col bg-$Navigation-bg;
   }

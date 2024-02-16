@@ -27,7 +27,7 @@ export const tableQueryBuilderKey: InjectionKey<
   Ref<IQueryBuilderRow[] | undefined>
 > = Symbol('tableQueryBuilder')
 
-export const tableNonHelpersColumnsKey: InjectionKey<Ref<TableColumn[]>> =
+export const tableNonHelperColumnsKey: InjectionKey<Ref<TableColumn[]>> =
   Symbol('tableNonHelpersColumns')
 
 export const tableQueryKey: InjectionKey<Ref<ITableDataFetchFncInput>> =

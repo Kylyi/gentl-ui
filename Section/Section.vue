@@ -37,7 +37,7 @@ const isTitleVisible = computedEager(() => {
         <!-- Title -->
         <Heading
           v-if="title"
-          :class="headerClass"
+          :class="[headerClass, { 'p-t-1': subtitle || $slots.subtitle }]"
           :filled="titleFilled"
           flex="col center"
         >
@@ -90,7 +90,7 @@ const isTitleVisible = computedEager(() => {
   }
 
   &-subtitle {
-    --apply: w-full;
+    --apply: w-full p-b-2;
   }
 
   &--bordered {

@@ -31,7 +31,12 @@ export function useSelectorUtils(options: ISelectorUtilsOptions) {
   // which doesn't trigger the focus event on the input. We need to handle
   // this case manually.
   function handleClickWrapper(ev: MouseEvent) {
-    if ((ev.target as HTMLElement).classList.contains('wrapper-body__input')) {
+    const target = ev.target as HTMLElement
+    const clickedInput = target.classList.contains('wrapper-body__input')
+    const clickedPrepend = target.classList.contains('prepend')
+    const clickedAppend = target.classList.contains('append')
+
+    if (clickedInput || clickedPrepend || clickedAppend) {
       handleFocusOrClick(ev)
     }
   }
