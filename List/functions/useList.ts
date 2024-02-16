@@ -6,6 +6,7 @@ import { config } from '~/config'
 
 // Types
 import type { IListProps } from '~/components/List/types/list-props.type'
+import type { IListFetchOptions } from '~/components/List/types/list-fetch.type'
 import {
   type IGroupRow,
   useGrouping,
@@ -47,6 +48,7 @@ export function useList(
   const isInitialized = ref(false)
 
   // Utils
+  const { handleRequest } = useRequest()
   const { normalizeText } = useText()
   const { sortData } = useSorting()
   const { groupData } = useGrouping()
@@ -89,6 +91,9 @@ export function useList(
       ...props.fuseOptions,
     },
   }
+
+  // Request
+  let abortController: AbortController | undefined
 
   // List
   const isLoading = ref(false)
@@ -471,17 +476,21 @@ export function useList(
   }
 
   // Data fetching
-  async function fetchAndSetData(search?: string) {
+  async function fetchAndSetData(search?: string, options?: IListFetchOptions) {
     if (props.loadData) {
       const mapKey = props.loadData.mapKey ?? config.selector.mapKey
 
       try {
         isLoading.value = true
 
-        const res = await props.loadData.fnc({
-          search,
-          select: props.loadData?.select,
-        })
+        const res = await handleRequest(
+          _abortController => {
+            abortController = _abortController()
+
+            return props.loadData?.fnc({ search, options, abortController })
+          },
+          { noResolve: true }
+        )
 
         if (props.loadData.local) {
           items.value = res
@@ -510,15 +519,20 @@ export function useList(
   watch(
     search,
     async search => {
-      if (props.loadData?.onSearch || !isInitialized.value) {
-        await fetchAndSetData(search)
+      abortController?.abort()
+
+      setTimeout(async () => {
+        if (props.loadData?.onSearch || !isInitialized.value) {
+          await fetchAndSetData(search)
+          await nextTick()
+        }
+
+        await handleSearchedResults(results.value)
         await nextTick()
-      }
 
-      await handleSearchedResults(results.value)
-      await nextTick()
-
-      // self.emit('search', { hasExactMatch: hasExactMatch.value, search })
+        // self.emit('search', { hasExactMatch: hasExactMatch.value, search })
+        isInitialized.value = true
+      })
     },
     { immediate: true }
   )
@@ -658,9 +672,6 @@ export function useList(
 
     preventNextHoverEventRef.value = true
   }
-
-  // Initialize the searched results
-  isInitialized.value = true
 
   onKeyStroke(['ArrowUp', 'ArrowDown', 'Enter', 'Tab'], handleKey)
 

@@ -61,7 +61,7 @@ function removeChip() {
       </template>
     </ValueFormatter>
 
-    <!-- REMOVE BTN -->
+    <!-- Remove btn -->
     <Btn
       size="xs"
       preset="CLOSE"

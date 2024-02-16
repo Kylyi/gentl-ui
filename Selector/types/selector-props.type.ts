@@ -3,13 +3,13 @@ import { type FuseOptions } from '@vueuse/integrations/useFuse'
 import type { RouteLocationRaw } from '#vue-router'
 
 // Types
-import { type FloatingUIBaseProps } from '~/components/Dialog/types/dialog-props.type'
+import type { FloatingUIBaseProps } from '~/components/Dialog/types/dialog-props.type'
 import type { IInputProps } from '~/components/Inputs/types/input-props.type'
+import type { IListProps } from '~/components/List/types/list-props.type'
 
 // Models
 import { GroupItem } from '~/libs/App/data/models/group-item.model'
 import { SortItem } from '~/libs/App/data/models/sort-item.model'
-import type { IListProps } from '~/components/List/types/list-props.type'
 
 export type ISelectorProps = IInputProps & {
   /**

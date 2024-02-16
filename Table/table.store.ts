@@ -45,7 +45,7 @@ export const useTableStore = defineStore('table', () => {
               field: filter.field,
               comparator: filter.comparator,
               value: filter.value,
-              dataType: col.dataType,
+              dataType: filter.dataType,
             }
           })
 

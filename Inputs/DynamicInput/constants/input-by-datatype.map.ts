@@ -80,7 +80,6 @@ const INPUT_BY_DATATYPE = {
 
   // Custom
   custom,
-  array: custom,
 
   // SECTION: Simple versions
   // String
@@ -109,7 +108,6 @@ const INPUT_BY_DATATYPE = {
 
   // Custom
   customSimple: custom,
-  arraySimple: custom,
 } as const
 
 export function getInputByDataType<T extends ExtendedDataType>(
