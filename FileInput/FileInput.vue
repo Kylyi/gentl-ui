@@ -119,11 +119,12 @@ syncRef(model, files, { direction: 'both', deep: true })
         class="file-input-wrapper-hint"
       >
         <div
-          ic:sharp-cloud-upload
+          material-symbols:upload
           h="16"
           w="16"
         />
         <div
+          flex="~ col"
           text="center"
           p="x-3"
         >
@@ -136,7 +137,7 @@ syncRef(model, files, { direction: 'both', deep: true })
 
 <style scoped lang="scss">
 .file-input-wrapper {
-  --apply: grid gap-2 border-2 border-dashed p-2 rounded-3 relative min-h-35 overflow-auto;
+  --apply: grid gap-2 border-2 border-dashed p-2 rounded-3 relative min-h-50 overflow-auto;
   --apply: dark:border-true-gray-600/50 border-true-gray-300/80;
   --apply: dark:bg-darker bg-white;
 
@@ -156,7 +157,7 @@ syncRef(model, files, { direction: 'both', deep: true })
   }
 
   &-hint {
-    --apply: absolute grid place-items-center inset-0;
+    --apply: absolute grid place-content-center place-items-center inset-0;
     --apply: color-true-gray-500;
   }
 

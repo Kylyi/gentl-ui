@@ -16,6 +16,7 @@ defineEmits<{
     :loading="loading"
     no-dim
     :size="size"
+    :outlined="outlined"
     :no-uppercase="noUppercase"
     :disabled="disabled"
     data-cy="delete-button"
@@ -26,6 +27,8 @@ defineEmits<{
       placement="bottom-end"
       :title="$t('general.delete')"
       :confirmation-text="confirmationText"
+      no-uplift
+      no-overlay
       @ok="$emit('delete')"
     >
       <slot name="confirmation" />
