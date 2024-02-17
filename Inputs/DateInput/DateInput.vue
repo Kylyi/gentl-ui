@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Dayjs } from 'dayjs'
+import dayjs from 'dayjs'
 
 import { type AnyMaskedOptions, MaskedRange } from 'imask'
 
@@ -114,7 +114,7 @@ const preventSync = autoResetRef(false, 50)
 const wrapperEl = ref<InstanceType<typeof InputWrapper>>()
 const usedTouch = ref(false)
 
-function handleDateSelect(val: Dayjs) {
+function handleDateSelect(val: dayjs.Dayjs) {
   preventSync.value = true
   touch()
 
