@@ -53,8 +53,24 @@ export interface IListProps extends IListBaseProps {
   selected?: any
 
   loadData?: {
+    /**
+     * The function to use for fetching the data
+     */
     fnc: IListFetchFnc
+
+    /**
+     * The key to use for the items from the server response
+     */
     mapKey?: string
+
+    /**
+     * The key to use for the total count of items from the server response
+     */
+    countKey?: string
+
+    /**
+     * When true, the `loadData` fnc will be called on mount
+     */
     immediate?: boolean
 
     /**
@@ -70,6 +86,8 @@ export interface IListProps extends IListBaseProps {
 
     /**
      * The fields to select from the query
+     *
+     * TODO - Not implemeneted
      */
     select?: string[]
   }
