@@ -147,8 +147,10 @@ header {
 }
 
 .navigation {
+  --apply: w-full flex flex-gap-2 p-x-1;
+
   &-wrapper {
-    --apply: flex flex-col bg-$Navigation-bg;
+    --apply: flex flex-col justify-center bg-$Navigation-bg min-h-$navHeight;
   }
 }
 </style>
