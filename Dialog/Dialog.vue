@@ -229,10 +229,10 @@ const isOverlayVisible = computed(() => {
           <!-- Content -->
           <div
             ref="contentEl"
-            flex="~ col grow"
+            flex="~ col grow gap-1"
             overflow="auto"
             rounded="custom"
-            :class="ui?.contentClass"
+            :class="ui?.contentClass ?? 'p-1'"
             :style="ui?.contentStyle"
           >
             <slot :hide="hide" />
