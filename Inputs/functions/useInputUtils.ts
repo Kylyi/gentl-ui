@@ -18,7 +18,7 @@ export function useInputUtils(options: IInputUtilsOptions) {
     setModel,
   } = options
 
-  const { lastPointerDownEvent } = storeToRefs(useAppStore())
+  const { lastPointerDownEvent, hasUserLeftPage } = storeToRefs(useAppStore())
   const instance = getCurrentInstance()
   const { preClick, onBlur, onFocus } = eventHandlers
   const hasBeenTouched = ref(false)
@@ -199,7 +199,7 @@ export function useInputUtils(options: IInputUtilsOptions) {
   }
 
   function handleFocusOrClick(ev: MouseEvent | FocusEvent) {
-    if (focusedProgramatically.value) {
+    if (focusedProgramatically.value || hasUserLeftPage.value) {
       return
     }
 

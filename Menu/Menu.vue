@@ -82,6 +82,33 @@ const {
   floatingReferenceEl,
 } = useMenuLayout(modelHandler, props)
 
+const transitionClass = computed(() => {
+  switch (menuPlacement.value) {
+    case 'top':
+    case 'top-end':
+    case 'top-start':
+      return 'opacity-0 transform-origin-top translate-y-6'
+
+    case 'bottom':
+    case 'bottom-end':
+    case 'bottom-start':
+      return 'opacity-0 transform-origin-bottom translate-y--6'
+
+    case 'left':
+    case 'left-end':
+    case 'left-start':
+      return 'opacity-0 transform-origin-left translate-x-6'
+
+    case 'right':
+    case 'right-end':
+    case 'right-start':
+      return 'opacity-0 transform-origin-right translate-x--6'
+
+    default:
+      return 'opacity-0 transform-origin-center scale-20'
+  }
+})
+
 function hide() {
   modelHandler.value = false
 }
@@ -230,6 +257,8 @@ const isOverlayVisible = computed(() => {
     <Transition
       appear
       :css="!noTransition"
+      :enter-from-class="transitionClass"
+      :leave-to-class="transitionClass"
       @before-enter="$emit('beforeShow')"
       @before-leave="$emit('beforeHide')"
       @after-leave="commitHide"
@@ -390,7 +419,7 @@ const isOverlayVisible = computed(() => {
 
 .menu[placement='right-start'] {
   --apply: transform-origin-top-left;
-}
+}s
 
 .menu[placement='right-end'] {
   --apply: transform-origin-bottom-left;
@@ -407,10 +436,10 @@ const isOverlayVisible = computed(() => {
               transform 0.3s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
-.v-enter-from,
-.v-leave-to {
-  --apply: opacity-0 scale-80;
-}
+// .v-enter-from,
+// .v-leave-to {
+//   --apply: opacity-0 scale-100;
+// }
 
 // Backdrop
 .backdrop {

@@ -54,7 +54,10 @@ function handleSort(sortValue?: 'asc' | 'desc', ev?: PointerEvent) {
 <template>
   <div class="sorting-container">
     <!-- Title -->
-    <div class="flex flex-gap-x-2 p-x-3 p-t-2 p-b-1 items-center">
+    <div
+      flex="~ gap-2 items-center"
+      p="x-3"
+    >
       <span class="sorting-container-title">
         {{ $t('sorting.self') }}
       </span>

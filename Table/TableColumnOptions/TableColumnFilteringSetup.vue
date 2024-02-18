@@ -139,6 +139,6 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .table-column-filtering-chips {
-  --apply: flex flex-col flex-gap-y-2 p-x-3 p-y-2;
+  --apply: flex flex-col gap-y-2 p-x-3;
 }
 </style>

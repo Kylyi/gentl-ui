@@ -222,7 +222,7 @@ function handleMenuBeforeHide() {
       h="!auto"
       max-h="!2/3"
       :reference-target="referenceTarget"
-      :ui="{ contentClass: 'p-0' }"
+      :ui="{ contentClass: 'p-y-2' }"
       @before-hide="handleMenuBeforeHide"
     >
       <TableColumnSorting

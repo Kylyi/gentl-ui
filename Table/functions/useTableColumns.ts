@@ -212,6 +212,7 @@ export function useTableColumns(
             new FilterItem<any>({
               field: filter.field,
               comparator: filter.comparator,
+              dataType: col.dataType,
               value: parseValue(filter.value, col.dataType, {
                 dateFormat: 'YYYY-MM-DD',
               }),
