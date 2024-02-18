@@ -64,13 +64,13 @@ const dialogMaxHeight = computed(() => {
 const transitionClass = computed(() => {
   switch (props.position) {
     case 'top':
-      return 'opacity-0 transform-origin-top translate-y--1/2'
+      return 'opacity-0 transform-origin-top translate-y--10'
     case 'bottom':
-      return 'opacity-0 transform-origin-bottom translate-y-1/2'
+      return 'opacity-0 transform-origin-bottom translate-y-10'
     case 'left':
-      return 'opacity-0 transform-origin-left translate-x--1/2'
+      return 'opacity-0 transform-origin-left translate-x--10'
     case 'right':
-      return 'opacity-0 transform-origin-right translate-x-1/2'
+      return 'opacity-0 transform-origin-right translate-x-10'
     default:
       return 'opacity-0 transform-origin-center scale-20'
   }
