@@ -1,570 +1,173 @@
 <script setup lang="ts">
-import type { MotionInstance } from '@vueuse/motion'
-import {
-  type Placement,
-  arrow,
-  computePosition,
-  flip,
-  offset,
-  shift,
-  size,
-} from '@floating-ui/dom'
-import { config } from '~/config'
+import { type Placement, useFloating } from '@floating-ui/vue'
 
 // Types
 import type { IMenuProps } from '~/components/Menu/types/menu-props.type'
 
-// Floating UI middleware
-import { fitWidth } from '~/utils/floatingMiddleware/fitWidth'
-import { matchWidth } from '~/utils/floatingMiddleware/matchWidth'
-import { cover } from '~/utils/floatingMiddleware/cover'
+// Functions
+import { useMenuLayout } from '~/components/Menu/functions/useMenuLayout'
+import { useMenuMiddleware } from '~/components/Menu/functions/useMenuMiddleware'
 
-// Store
-import { useAppStore } from '~/libs/App/app.store'
-
-defineOptions({
-  inheritAttrs: false,
-})
+defineOptions({ inheritAttrs: false })
 
 const props = withDefaults(defineProps<IMenuProps>(), {
-  offset: 8,
-  maxHeight: 99999,
-  noArrow: true,
   fit: true,
+  maxHeight: 9999,
+  noArrow: true,
   noOverlay: true,
-  transitionDuration: 250,
-  trigger: 'click',
+  offset: 8,
+  transitionDuration: 300,
 })
 
 const emits = defineEmits<{
-  (e: 'update:model-value', val: boolean): void
+  (e: 'update:modelValue', val: boolean): void
   (e: 'hide'): void
   (e: 'show'): void
   (e: 'placement', placement: Placement): void
-  (e: 'before-hide'): void
-  (e: 'before-show'): void
+  (e: 'beforeHide'): void
+  (e: 'beforeShow'): void
 }>()
 
-// Lifecycle
-const hasBeenShown = ref(false)
-
-onMounted(() => {
-  nextTick(() => {
-    triggerEl.value = getTargetElement(props.target)
-    referenceEl.value = getTargetElement(props.referenceTarget)
-    referenceEl.value && referenceEl.value.classList.add('has-menu')
-
-    !props.manual && triggerEl.value?.addEventListener(props.trigger, toggle)
-
-    if (internalValue.value) {
-      show(true)
+defineExpose({
+  show: () => (modelHandler.value = true),
+  hide: (force?: boolean) => {
+    isChangeForced.value = !!force
+    modelHandler.value = false
+  },
+  toggle: () => (modelHandler.value = !modelHandler.value),
+  getFloatingEl: () => floatingEl.value,
+  recomputePosition: (_bounce?: boolean) => {
+    if (_bounce) {
+      bounce()
     }
-  })
+
+    update()
+  },
 })
 
-onBeforeUnmount(() => {
-  cleanComponent()
-  triggerEl.value?.removeEventListener(props.trigger, toggle)
-})
-
-// Store
-const appStore = useAppStore()
-
-// Helpers
+// Utils
 const { color } = useTheme()
 
-async function createFloatInstance(options?: { skipFlip?: boolean }) {
-  if (!referenceEl.value) {
-    return
-  }
-
-  const { skipFlip } = options || {}
-
-  await nextTick()
-
-  if (!menuEl.value) {
-    return
-  }
-
-  // We set the expected height of the Menu if provided to ensure correct Placement
-  if (props.expectedHeight && !hasBeenShown.value) {
-    menuEl.value!.style.height = `${props.expectedHeight}px`
-  }
-
-  // Virtual element ~ will create the menu in the last pointer down event position
-  let virtualEl: any
-
-  if (props.virtual && appStore.lastPointerDownEvent) {
-    const { clientX, clientY } = appStore.lastPointerDownEvent
-
-    virtualEl = {
-      getBoundingClientRect() {
-        return {
-          width: 0,
-          height: 0,
-          x: clientX,
-          y: clientY,
-          top: clientY,
-          left: clientX,
-          right: clientX,
-          bottom: clientY,
-        }
-      },
-    }
-  }
-
-  const referenceElement = virtualEl || referenceEl.value
-
-  if (!referenceElement) {
-    return
-  }
-
-  let idx = Number(!!skipFlip)
-  const { x, y, middlewareData, placement } = await computePosition(
-    referenceElement,
-    menuEl.value,
-    {
-      middleware: [
-        ...(props.fit ? [fitWidth] : []),
-        ...(props.matchWidth ? [matchWidth] : []),
-        ...(props.cover ? [cover] : []),
-        offset(props.offset),
-        shift(),
-        ...(skipFlip
-          ? []
-          : [flip({ fallbackPlacements: props.fallbackPlacements })]),
-        size({
-          apply({ availableWidth, availableHeight, elements }) {
-            if (idx > 0) {
-              Object.assign(elements.floating.style, {
-                maxWidth: `${availableWidth}px`,
-                maxHeight:
-                  typeof props.maxHeight === 'number'
-                    ? `${Math.min(availableHeight, props.maxHeight)}px`
-                    : `min(${availableHeight}px, ${props.maxHeight})`,
-              })
-            }
-
-            idx++
-          },
-          padding: 8,
-          boundary: props.boundary,
-        }),
-
-        ...(!props.noArrow && !props.cover
-          ? [arrow({ element: arrowEl.value!, padding: 4 })]
-          : []),
-      ],
-      placement: previousPlacement.value || props.placement,
-      strategy: 'fixed',
-    }
-  )
-
-  // Once we calculate the Placement, we can reset the height of the Menu which
-  // should be recalculated through the async function that gets the data or whatever
-  if (props.expectedHeight && !hasBeenShown.value) {
-    menuEl.value!.style.height = ''
-    hasBeenShown.value = true
-  }
-
-  if (!preventMotion.value) {
-    handleAnimation(placement)
-  }
-
-  previousPlacement.value = placement
-  Object.assign(menuEl.value!.style, {
-    top: `${Math.round(y)}px`,
-    left: `${Math.round(x)}px`,
-  })
-
-  emits('placement', placement)
-  menuEl.value!.setAttribute('placement', props.cover ? 'center' : placement)
-
-  if (!props.cover && !props.noArrow) {
-    const { x: arrowX, y: arrowY } = middlewareData.arrow || {}
-    Object.assign(arrowEl.value!.style, {
-      top: `${arrowY}px`,
-      left: `${arrowX}px`,
-    })
-  }
-}
-
-function getTargetElement(target: any): any {
-  if (!process.client) {
-    return
-  }
-
-  // Target is an element
-  if (target instanceof Element) {
-    return target as Element
-  }
-
-  // Target is a selector
-  else if (typeof target === 'string') {
-    return document?.querySelector(target) || document?.body || undefined
-  }
-
-  // Target is a component
-  else if (target) {
-    const el = unrefElement(target)
-
-    if (el) {
-      return el
-    }
-  }
-
-  return instance?.vnode.el?.parentNode
-}
-
 // Layout
-const instance = getCurrentInstance()
-const menuEl = ref<HTMLDivElement>()
-const arrowEl = ref<HTMLDivElement>()
-const triggerEl = ref<HTMLDivElement>() // Element that triggers the menu
-const referenceEl = ref<HTMLDivElement>() // Element that menu is attached to
-const backdropBg = ref('bg-transparent')
-const isReferenceElTransparent = ref(false)
-const referenceElOldZIndex = ref<string>()
-const isFirstFloatingEl = ref<boolean>()
-const previousPlacement = ref<Placement>()
+const model = defineModel({ default: false })
+const isChangeForced = ref(false)
+const debouncedModel = ref(model.value)
 
-const { y: pageY } = useElementBounding(referenceEl, { windowResize: true })
+const modelHandler = computed({
+  get: () => model.value,
+  set: async val => {
+    let shouldContinue = true
 
-watchThrottled(
-  pageY,
-  () => {
-    if (menuEl.value) {
-      createFloatInstance({ skipFlip: true })
+    if (!val && !isChangeForced.value) {
+      shouldContinue = (await props.beforeHideFnc?.()) ?? true
     }
+
+    if (shouldContinue) {
+      model.value = val
+    } else {
+      bounce()
+    }
+
+    isChangeForced.value = false
   },
-  { trailing: true, throttle: 100 }
-)
-
-const isOverlayVisible = computedEager(() => {
-  return !props.noOverlay && isFirstFloatingEl.value
 })
 
-const innerClasses = computedEager(() => {
-  return {
-    contentClass: props.dense ? '' : 'p-x-3 p-y-2',
-    headerClass: props.dense ? '' : 'p-l-3 p-r-1',
-  }
-})
+const {
+  arrowEl,
+  contentEl,
+  floatingEl,
+  referenceEl,
+  referenceElZIndex,
+  referenceElBgColor,
+  floatingReferenceEl,
+} = useMenuLayout(modelHandler, props)
 
-// Animations
-const animationTimestamp = ref<{ show: number; hide: number }>({
-  show: 0,
-  hide: 0,
-})
-const motionInstance = ref<MotionInstance | undefined>()
-const animationTimeCorrection = 50
-
-function handleAnimation(placement: Placement) {
-  setTimeout(() => (backdropBg.value = 'bg-darker/80'))
-
-  // Reset transform origin
-  menuEl.value?.classList.forEach(
-    c => c.startsWith('origin-') && menuEl.value?.classList.remove(c)
-  )
-
-  // Default initial state
-  const opacity = 0.4
-  let scaleY = 0.4
-  let scaleX = props.cover ? 0.4 : 1
-
-  // Set transform origin
-  let transformOrigin: string
-  let originModifier = 0
-
-  switch (placement) {
-    case 'bottom':
-    case 'bottom-end':
-    case 'bottom-start': {
-      transformOrigin = 'origin-top'
-      originModifier = -1
-      break
-    }
-
-    case 'top':
-    case 'top-end':
-    case 'top-start': {
-      transformOrigin = 'origin-bottom'
-      originModifier = 1
-      break
-    }
-
-    default:
-      transformOrigin = 'origin-bottom'
-  }
-
-  if (props.cover) {
-    transformOrigin = 'origin-center'
-    originModifier = 0
-  }
-
-  if (props.noTransition) {
-    originModifier = 0
-    scaleX = 1
-    scaleY = 1
-  }
-
-  menuEl.value?.classList.add(transformOrigin)
-
-  if (!motionInstance.value) {
-    motionInstance.value = useMotion(menuEl, {
-      initial: {
-        y:
-          originModifier * (referenceEl.value!.clientHeight / 2 + props.offset),
-        opacity,
-        scaleY,
-        scaleX,
-      },
-      enter: {
-        y: 0,
-        x: 0,
-        opacity: 1,
-        scaleY: 1,
-        scaleX: 1,
-        transition: {
-          type: 'keyframes',
-          duration: props.transitionDuration,
-          ease: 'easeOut',
-        },
-      },
-      leave: {
-        y:
-          originModifier * (referenceEl.value!.clientHeight / 2 + props.offset),
-        opacity: 0,
-        scaleX,
-        scaleY,
-        transition: {
-          duration: props.transitionDuration,
-          type: 'keyframes',
-          ease: 'easeOut',
-        },
-      },
-    })
-
-    motionInstance.value?.apply('enter')?.then(() => {
-      emits('show')
-      emits('update:model-value', true)
-    })
-  }
+function hide() {
+  modelHandler.value = false
 }
 
-async function bounce() {
-  await motionInstance.value?.apply({
-    scaleX: 1.05,
-    scaleY: 1.05,
-    transition: {
-      type: 'keyframes',
-      duration: 50,
-    },
-  })
-
-  await motionInstance.value?.apply('enter')
-}
-
-// Interactions
-const preventInteractions = refAutoReset(false, 75)
-const preventMotion = refAutoReset(false, 25)
-const model = toRef(props, 'modelValue')
-const internalValue = ref(props.modelValue)
-
-function show(force?: boolean) {
-  if (
-    preventInteractions.value ||
-    (internalValue.value && !force) ||
-    !referenceEl.value
-  ) {
+function commitHide() {
+  if (model.value) {
     return
   }
 
-  isFirstFloatingEl.value = !document.querySelector(
-    '.floating-element:not(.is-hiding)'
-  )
+  debouncedModel.value = false
 
-  const referenceElStyle = getComputedStyle(referenceEl.value as any)
-  referenceElOldZIndex.value =
-    referenceElStyle.zIndex === 'auto' ? '' : referenceElStyle.zIndex
+  const referenceEl = floatingReferenceEl.value as HTMLElement
 
-  // TODO: Overlay zIndex -> this doesnt work properly when dealing with zIndexes,
-  // probably create a copy of the button and temporarily show that instead?
-  if (!props.cover && !props.noUplift) {
-    ;(referenceEl.value as any).style.zIndex = '3000'
-  }
+  referenceEl.style.zIndex = referenceElZIndex.value!
+  referenceEl.style.backgroundColor = referenceElBgColor.value!
 
-  isReferenceElTransparent.value =
+  emits('hide')
+}
+
+// We sync the model with the debouncedModel immediately when the value is `true`
+// to show the content immediately to trigger the transition
+whenever(model, isVisible => {
+  debouncedModel.value = isVisible
+
+  const referenceEl = floatingReferenceEl.value as HTMLElement
+  const referenceElStyle = getComputedStyle(referenceEl as any)
+  const isReferenceElTransparent =
     referenceElStyle.backgroundColor === 'rgba(0, 0, 0, 0)'
 
-  if (isReferenceElTransparent.value && color.value === 'light') {
-    ;(referenceEl.value as any).style.backgroundColor = 'white'
-  } else if (isReferenceElTransparent.value) {
-    ;(referenceEl.value as any).style.backgroundColor = 'black'
+  if ((!props.noOverlay || !props.noUplift) && !props.cover) {
+    referenceEl.style.zIndex = '3000'
   }
 
-  ;(referenceEl.value as any).classList.add('shadow-consistent-xs')
-  ;(referenceEl.value as any).classList.add('shadow-ca')
-  ;(referenceEl.value as any).classList.add('transition-all')
-
-  preventInteractions.value = true
-
-  internalValue.value = true
-  emits('before-show')
-
-  // IDLE
-  if (!motionInstance.value) {
-    animationTimestamp.value.show = new Date().getTime()
-    createFloatInstance()
-  }
-
-  // Motion instance exists ~ menu is being currently closed
-  else {
-    animationTimestamp.value.show = new Date().getTime()
-    const diffTime = Math.min(
-      new Date().getTime() -
-        animationTimestamp.value.hide -
-        animationTimeCorrection,
-      props.transitionDuration
-    )
-
-    // @ts-expect-error vue-motion type
-    motionInstance.value.variants.enter.transition.duration =
-      props.transitionDuration - diffTime
-    motionInstance.value.apply('enter')?.then(() => {
-      internalValue.value = true
-      emits('show')
-    })
-  }
-}
-
-async function hide(
-  force = false,
-  skipAnimation = false,
-  hideAncestors?: boolean
-) {
-  if (preventInteractions.value || !internalValue.value) {
-    return
-  }
-  preventInteractions.value = true
-
-  if (hideAncestors) {
-    const menuDom = unrefElement(menuEl)!
-
-    // Get all siblings (including current element)
-    const allSiblings = Array.from(menuDom.parentNode?.children || [])
-
-    // Find the index of current element
-    const currentIndex = allSiblings.indexOf(menuDom)
-
-    // Get all siblings after current element
-    const nextSiblingsAll = allSiblings.slice(currentIndex + 1)
-
-    // Filter siblings to get only ones with 'floating' class
-    const floatingAncestors = nextSiblingsAll.filter(sibling =>
-      sibling.classList.contains('floating-element')
-    )
-
-    floatingAncestors.forEach(floatingUiEl => {
-      floatingUiEl.setAttribute('hide-trigger', 'true')
-    })
-  }
-
-  const shouldHide = (await props.beforeHideFnc?.()) || true
-
-  if (force || (!props.persistent && shouldHide)) {
-    backdropBg.value = 'bg-transparent'
-    emits('before-hide')
-
-    // Component got unmounted (animation has nothing to attach to)
-    if (skipAnimation) {
-      cleanComponent()
-      emits('update:model-value', false)
-      emits('hide')
+  if (isReferenceElTransparent) {
+    if (color.value === 'light') {
+      referenceEl.style.backgroundColor = 'white'
+    } else {
+      referenceEl.style.backgroundColor = 'black'
     }
-
-    // Call leave animation and eventually remove the menu
-    else {
-      // internalValue.value = false
-      menuEl.value?.classList.add('is-hiding')
-      animationTimestamp.value.hide = new Date().getTime()
-      const diffTime = Math.min(
-        new Date().getTime() -
-          animationTimestamp.value.show -
-          animationTimeCorrection,
-        props.transitionDuration
-      )
-
-      if (motionInstance.value) {
-        // @ts-expect-error vue-motion type
-        motionInstance.value.variants.leave.transition.duration = diffTime
-
-        motionInstance.value.apply('leave')?.then(() => {
-          emits('update:model-value', false)
-          emits('hide')
-          cleanComponent()
-          nextTick(() => (backdropBg.value = 'bg-transparent'))
-        })
-      }
-    }
-  } else {
-    bounce()
   }
-}
+})
 
-function toggle(val?: boolean | MouseEvent) {
-  if (typeof val !== 'boolean') {
-    val?.preventDefault()
-    val?.stopPropagation()
-  }
+// Floating UI
+const { middleware } = useMenuMiddleware(props, { arrowEl })
 
-  if (val !== undefined && typeof val === 'boolean') {
-    val ? show() : hide()
-  } else {
-    internalValue.value ? hide() : show()
-  }
-}
+const {
+  floatingStyles,
+  middlewareData,
+  placement: menuPlacement,
+  update,
+} = useFloating(floatingReferenceEl, floatingEl, {
+  middleware,
+  placement: props.placement,
+  strategy: 'fixed',
+  transform: false,
+})
 
-/**
- * Remove all menu-related stuff to not clutter the runtime
- */
-function cleanComponent() {
-  if (referenceEl.value) {
-    ;(referenceEl.value as any).style.zIndex = referenceElOldZIndex.value
-    referenceElOldZIndex.value = undefined
-    ;(referenceEl.value as any).classList.remove('shadow-consistent-xs')
-    ;(referenceEl.value as any).classList.remove('shadow-ca')
+watch(menuPlacement, placement => emits('placement', placement))
 
-    if (isReferenceElTransparent.value) {
-      ;(referenceEl.value as any).style.backgroundColor = 'transparent'
-    }
+// We react to page resize/scroll to reposition the floating UI
+// @ts-expect-error Bad element type
+const { x: pageX, y: pageY } = useElementBounding(referenceEl, {
+  windowResize: true,
+})
 
-    setTimeout(() => {
-      ;(referenceEl.value as any).classList.remove('transition-all')
-    }, 150)
-  }
+watchThrottled([pageX, pageY], () => update(), {
+  trailing: true,
+  throttle: 100,
+})
 
-  menuEl.value?.classList.remove('is-hiding')
-  internalValue.value = false
-  motionInstance.value = undefined
-  previousPlacement.value = undefined
-}
-
-onClickOutside(menuEl, handleClickOutside, {
+// Click outside
+onClickOutside(floatingEl, handleClickOutside, {
   ignore: props.ignoreClickOutside,
 })
 
 function handleClickOutside(ev: Event) {
-  if (!internalValue.value) {
+  if (!model.value) {
     return
   }
 
   const targetEl = ev.target as HTMLElement
 
   const isTargetBody = targetEl === document.body
-  const isPartOfFloatingUI = menuEl.value?.contains(targetEl)
+  const isPartOfFloatingUI = floatingEl.value?.contains(targetEl)
   const isPartOfReferenceEl =
-    !props.virtual && referenceEl.value!.contains(targetEl)
+    !props.virtual && (floatingReferenceEl.value as any)!.contains(targetEl)
   const lastFloatingElement = document.querySelector(
     '.floating-element:last-child'
   )
@@ -575,193 +178,241 @@ function handleClickOutside(ev: Event) {
     !isPartOfFloatingUI &&
     !isPartOfReferenceEl &&
     !isNotifications &&
-    lastFloatingElement === menuEl.value
+    lastFloatingElement === floatingEl.value
   ) {
+    if (props.persistent) {
+      bounce()
+
+      return
+    }
+
     hide()
   }
 }
 
-useMutationObserver(
-  menuEl,
-  () => {
-    if (menuEl.value?.hasAttribute('hide-trigger')) {
-      hide()
+function bounce() {
+  const _floatingEl = floatingEl.value as HTMLElement
 
-      menuEl.value?.removeAttribute('hide-trigger')
-    }
-  },
-  { attributeFilter: ['hide-trigger'] }
-)
+  _floatingEl.addEventListener('animationend', () => {
+    _floatingEl.classList.remove('bounce')
+  })
+  _floatingEl.classList.add('bounce')
+}
 
-watch(model, val => {
-  val ? show() : hide(true)
-})
+// Arrow
+const arrowStyles = computed(() => {
+  const { x, y } = middlewareData.value?.arrow ?? {}
 
-// Watchers for target and referenceTarget
-const referenceTarget = toRef(props, 'referenceTarget')
-const target = toRef(props, 'target')
-
-watch(referenceTarget, (el: any) => {
-  if (el) {
-    referenceEl.value = el
+  return {
+    ...(x && { left: `${x}px` }),
+    ...(y && { top: `${y}px` }),
   }
 })
 
-watch(target, (el: any) => {
-  if (el) {
-    triggerEl.value = el
-  }
-})
-
-defineExpose({
-  show,
-  hide,
-  toggle,
-  getFloatingEl: () => menuEl.value,
-  update: () => {
-    preventMotion.value = true
-    bounce()
-    createFloatInstance()
-  },
-  recomputePosition: () => {
-    const menuDom = unrefElement(menuEl.value)
-
-    if (menuDom) {
-      menuDom.style.maxHeight = ''
-    }
-
-    createFloatInstance({ skipFlip: config.selector.shouldFlipOnSearch })
-  },
+// Overlay
+const isOverlayVisible = computed(() => {
+  return !props.noOverlay
 })
 </script>
 
 <template>
   <Teleport
-    v-if="internalValue || motionInstance?.isAnimating"
+    v-if="debouncedModel"
     to="body"
   >
     <!-- Overlay -->
     <div
       v-if="isOverlayVisible"
       class="backdrop"
-      :class="backdropBg"
-      :style="{ '--transition': `${transitionDuration}ms` }"
+      :class="{ 'is-open': model }"
     />
 
-    <div
-      ref="menuEl"
-      class="menu floating-element"
-      v-bind="$attrs"
+    <Transition
+      appear
+      :css="!noTransition"
+      @before-enter="$emit('beforeShow')"
+      @before-leave="$emit('beforeHide')"
+      @after-leave="commitHide"
+      @after-enter="$emit('show')"
     >
-      <!-- Arrow -->
       <div
-        v-if="!noArrow"
-        ref="arrowEl"
-        class="arrow"
-        :class="{
-          'bg-ca': !hideHeader,
-          'has-header': !hideHeader,
+        v-if="model"
+        ref="floatingEl"
+        class="floating-element menu"
+        :style="{
+          ...floatingStyles,
+          '--transitionDuration': `${transitionDuration}ms`,
         }"
-      />
-
-      <!-- Header -->
-      <slot
-        name="header"
-        :hide="hide"
+        :class="{
+          'is-cover': cover,
+          'is-fit': fit,
+          'is-match-width': matchWidth,
+        }"
+        :placement="menuPlacement"
+        .hide="hide"
+        v-bind="$attrs"
       >
+        <!-- Arrow -->
         <div
-          v-if="!hideHeader"
-          flex="~"
-          h="12"
-          items-center
-          border="b-1 ca"
-          bg="ca"
-          shrink-0
-          rounded="t-inherit"
-          :class="[innerClasses.headerClass, headerClass]"
-        >
-          <slot name="title">
-            <h6
-              flex="1"
-              text="h6"
-              p="r-2"
-              truncate
-            >
-              <span>
-                {{ title }}
-              </span>
-            </h6>
-          </slot>
+          v-if="!noArrow"
+          ref="arrowEl"
+          class="menu__arrow"
+          :style="arrowStyles"
+        />
 
-          <div flex="~ gap-1">
-            <slot name="header-right-prepend" />
+        <!-- Header -->
+        <slot
+          v-if="$slots.title || $slots.header || title"
+          name="header"
+          :hide="hide"
+        >
+          <div
+            class="menu__header"
+            :class="ui?.headerClass"
+            :style="ui?.headerStyle"
+          >
+            <!-- Title -->
+            <slot
+              v-if="$slots.title || $slots.header || title"
+              name="title"
+              :hide="hide"
+            >
+              <h6
+                class="menu__header-title"
+                :class="ui?.titleClass"
+                :style="ui?.titleStyle"
+              >
+                {{ title }}
+              </h6>
+            </slot>
 
             <Btn
               preset="CLOSE"
               size="sm"
-              @click="hide(true, undefined, true)"
+              @click="hide"
             />
-
-            <slot name="header-right-append" />
           </div>
-        </div>
-      </slot>
+        </slot>
 
-      <div
-        flex="~ col"
-        overflow="auto"
-        :class="[contentClass, innerClasses.contentClass]"
-        :style="contentStyle"
-      >
-        <slot :hide="hide"> ...Slot... </slot>
+        <div
+          ref="contentEl"
+          flex="~ col grow gap-1"
+          overflow="auto"
+          :class="ui?.contentClass ?? 'p-1'"
+          :style="ui?.contentStyle"
+        >
+          <slot :hide="hide" />
+        </div>
       </div>
-    </div>
+    </Transition>
   </Teleport>
 </template>
 
 <style lang="scss" scoped>
 .menu {
-  --apply: fixed max-w-95vw max-h-95% dark:bg-darker bg-white border-custom
-    rounded-custom flex flex-col border-ca z-$zMenu;
-}
+  --apply: flex flex-col max-w-95vw max-h-95% rounded-custom z-$zMenu
+    border-1 border-ca
+    bg-white dark:bg-darker;
 
-.backdrop {
-  --apply: fixed inset-0 z-$zBackdrop transition-background-color
-    duration-$transition ease;
-}
+  &__header {
+    --apply: flex items-center gap-2 p-l-3 p-r-1 p-y-2;
+    --apply: bg-$Menu-title-bg;
 
-.arrow {
-  --apply: absolute w-2 h-2 rotate-45 bg-white dark:bg-darker;
+    &-title {
+      --apply: grow;
+    }
+  }
 
-  &.has-header {
-    --apply: bg-ca dark:bg-dark;
+  &__arrow {
+    --apply: absolute w-2 h-2 rotate-45 bg-white dark:bg-darker z--1;
   }
 }
 
-.menu[placement^='top'] > .arrow {
+
+// Arrow placement
+.menu[placement^='top'] > .menu__arrow {
   --apply: bottom--5px border-b-custom border-r-custom border-ca;
 }
 
-.menu[placement^='bottom'] > .arrow {
+.menu[placement^='bottom'] > .menu__arrow {
   --apply: top--5px border-t-custom border-l-custom border-ca;
 }
 
-.menu[placement^='left'] > .arrow {
+.menu[placement^='left'] > .menu__arrow {
   --apply: right--5px border-r-custom border-t-custom border-ca;
 }
 
-.menu[placement^='right'] > .arrow {
+.menu[placement^='right'] > .menu__arrow {
   --apply: left--5px border-l-custom border-b-custom border-ca;
 }
 
-// SELECTOR SPECIFIC
+// Transition
+.menu[placement^='top'] {
+  --apply: transform-origin-bottom;
+}
+
+.menu[placement^='bottom'] {
+  --apply: transform-origin-top;
+}
+
+.menu[placement^='left'] {
+  --apply: transform-origin-right;
+}
+
+.menu[placement^='right'] {
+  --apply: transform-origin-left;
+}
+
+.menu.is-cover {
+  --apply: transform-origin-center;
+}
+
+
+.v-enter-active,
+.v-leave-active {
+  --apply: pointer-events-none;
+  transition: opacity 0.3s ease,
+              transform 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.v-enter-from,
+.v-leave-to {
+  --apply: opacity-0 scale-80;
+}
+
+// Backdrop
+.backdrop {
+  --apply: fixed inset-0 z-$zBackdrop transition-background-color
+    duration-$transitionDuration ease bg-transparent;
+}
+
+.backdrop.is-open {
+  --apply: bg-darker/70;
+}
+
+// Bounce
+.bounce {
+  animation: myBounce 100ms ease-in-out 0s 2 alternate forwards;
+}
+
+@keyframes myBounce {
+	0% {
+		transform: scale(1);
+	}
+
+	100% {
+		transform: scale(1.05);
+	}
+}
+
+// Selector
 .selector.is-menu-width-matched {
-  &.menu[placement^='bottom'] {
-    --apply: rounded-t-0 border-t-0;
+  &[placement^='top'] {
+    --apply: rounded-b-0;
   }
 
-  &.menu[placement^='top'] {
-    --apply: rounded-b-0 border-b-0;
+  &[placement^='bottom'] {
+    --apply: rounded-t-0;
   }
 }
 </style>

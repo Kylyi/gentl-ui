@@ -31,7 +31,7 @@ const emits = defineEmits<{
 const { getDuration } = useDuration()
 
 // Layout
-const numberInputEl = ref<InstanceType<typeof NumberInput>>()
+const numberInputEl = ref<ComponentInstance<typeof NumberInput>>()
 const menuEl = ref<InstanceType<typeof Menu>>()
 const durationUnit = ref<DurationUnit>(props.initialDurationUnit)
 
@@ -152,16 +152,14 @@ defineExpose({
         no-bold
         color="ca"
         tabindex="-1"
-        @mousedown.stop.prevent=""
+        @mousedown.stop.prevent
       >
         <Menu
           ref="menuEl"
-          hide-header
-          content-class="gap-y-1 w-40"
           cover
+          no-transition
           :fit="false"
-          placement="bottom-end"
-          :reference-target="numberInputEl"
+          :ui="{ contentClass: 'gap-1 w-35' }"
         >
           <template #default>
             <Btn
@@ -173,7 +171,7 @@ defineExpose({
               no-bold
               no-uppercase
               @click="unit.handler"
-              @mousedown.stop.prevent=""
+              @mousedown.stop.prevent
             />
           </template>
         </Menu>

@@ -129,10 +129,8 @@ defineExpose({ sync })
     <Menu
       v-model="yearSelectorVisible"
       :target="yearInputEl"
-      hide-header
       :fit="false"
       w="60"
-      content-class="flex-gap-y-1"
       :reference-target="
         $bp.isGreaterOrEqual('xm') ? referenceTarget : undefined
       "

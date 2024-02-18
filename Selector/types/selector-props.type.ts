@@ -3,7 +3,6 @@ import { type FuseOptions } from '@vueuse/integrations/useFuse'
 import type { RouteLocationRaw } from '#vue-router'
 
 // Types
-import type { FloatingUIBaseProps } from '~/components/Dialog/types/dialog-props.type'
 import type { IInputProps } from '~/components/Inputs/types/input-props.type'
 import type { IListProps } from '~/components/List/types/list-props.type'
 
@@ -125,4 +124,4 @@ export type ISelectorProps = IInputProps & {
    * The props that should be passed to the input tag (<input>)
    */
   inputProps?: Record<string, any>
-} & Pick<FloatingUIBaseProps, 'expectedHeight'>
+}

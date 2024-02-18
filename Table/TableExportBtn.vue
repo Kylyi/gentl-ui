@@ -42,12 +42,7 @@ async function handleExport(exportFormat: 'xlsx' | 'csv') {
       <div class="line-md:chevron-small-right rotate-90" />
     </div>
 
-    <Menu
-      hide-header
-      dense
-      p="1"
-      content-class="overflow-hidden"
-    >
+    <Menu>
       <!-- XLSX -->
       <Btn
         :label="$t('export.excel')"

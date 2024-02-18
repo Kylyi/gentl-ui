@@ -130,6 +130,7 @@ onMounted(() => {
     <Btn
       v-if="hasUnusedComparator"
       preset="ADD"
+      outlined
       :label="$t('table.addFilter')"
       @click="handleAddFilter"
     />

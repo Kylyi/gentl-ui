@@ -58,10 +58,7 @@ function handleColorChange(color?: string | null) {
       @click.stop.prevent
       @mousedown.stop.prevent
     >
-      <MenuProxy
-        ref="colorMenuEl"
-        hide-header
-      >
+      <MenuProxy ref="colorMenuEl">
         <ColorBrandingPicker
           @update:model-value="handleColorChange"
           @click.stop.prevent

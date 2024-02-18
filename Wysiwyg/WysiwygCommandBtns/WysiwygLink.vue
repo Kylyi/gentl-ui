@@ -67,11 +67,8 @@ function handleSubmit() {
   >
     <Menu
       ref="menuEl"
-      hide-header
       :no-arrow="false"
-      dense
       w="70"
-      content-class="flex flex-col gap-2 rounded-custom"
       @hide="reset"
     >
       <Form

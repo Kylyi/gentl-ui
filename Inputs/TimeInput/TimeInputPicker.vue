@@ -161,14 +161,13 @@ defineExpose({
     ref="menuProxyEl"
     v-model="isPickerActive"
     manual
-    :hide-header="!usedTouch"
     min-w="!60"
     max-w="!80"
-    w-80
+    w="80"
+    h="!auto"
     position="top"
     placement="bottom-start"
     :reference-target="referenceTarget"
-    h="!auto"
     no-uplift
     @hide="handlePickerHide"
   >

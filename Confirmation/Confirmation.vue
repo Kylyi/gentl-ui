@@ -1,8 +1,8 @@
 <script setup lang="ts">
-// TYPES
+// Types
 import type { IConfirmationProps } from '~/components/Confirmation/types/confirmation-props.type'
 
-const props = withDefaults(defineProps<IConfirmationProps>(), {
+withDefaults(defineProps<IConfirmationProps>(), {
   delay: 500,
 })
 
@@ -11,7 +11,7 @@ const emits = defineEmits<{
   (e: 'update:visible', val: boolean): void
 }>()
 
-const model = useVModel(props, 'visible', emits)
+const model = defineModel<boolean>('visible')
 
 const transitionProps = computed(() => ({
   enterActiveClass: 'animate-fade-in-up animate-duration-350',

@@ -93,16 +93,12 @@ onMounted(() => {
       ref="menuProxyEl"
       v-model="isPickerActive"
       manual
-      hide-header
-      dense
       :reference-target="referenceEl"
       position="top"
       h="!auto"
       w="!auto"
       min-w="!280px"
       max-w="!400px"
-      overflow="hidden"
-      content-class="p-2 flex-gap-y-2"
       tabindex="-1"
       @before-show="pickerState = 'show'"
       @before-hide="pickerState = 'hide'"

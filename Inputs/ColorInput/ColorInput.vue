@@ -68,7 +68,6 @@ const fieldProps = getFieldProps(props)
 
     <MenuProxy
       ref="menuEl"
-      hide-header
       manual
       tabindex="-1"
       :fit="false"
@@ -84,7 +83,6 @@ const fieldProps = getFieldProps(props)
 
     <template #append>
       <div
-        size="sm"
         :class="icon"
         m="x-2"
         tabindex="-1"

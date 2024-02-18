@@ -20,8 +20,6 @@ const includeDeleted = useVModel(props, 'includeDeleted', emits)
     self-center
   >
     <Menu
-      hide-header
-      dense
       w="100"
       placement="bottom-end"
     >

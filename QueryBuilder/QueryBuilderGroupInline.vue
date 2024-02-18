@@ -128,19 +128,21 @@ function handleRemoveGroup() {
       </span>
     </Tooltip>
 
+    <!-- Conditions -->
     <Menu
       ref="conditionMenuEl"
       :no-arrow="false"
-      w="40"
-      hide-header
+      w="20"
     >
-      <!-- Conditions -->
+      <!-- Condition - And -->
       <Btn
         size="xs"
         :label="$t('queryBuilder.and')"
         :class="{ 'color-blue-500': item.condition === 'AND' }"
         @click="handleSetCondition('AND')"
       />
+
+      <!-- Condition - Or -->
       <Btn
         size="xs"
         :label="$t('queryBuilder.or')"

@@ -261,9 +261,7 @@ defineExpose({
         ref="menuProxyEl"
         v-model="isPickerActive"
         manual
-        hide-header
         :cover="usedTouch"
-        dense
         position="top"
         placement="bottom-start"
         no-uplift
@@ -273,7 +271,7 @@ defineExpose({
         w="!auto"
         min-w="!280px"
         max-w="!400px"
-        overflow="hidden"
+        :ui="{ contentClass: 'p-0' }"
         @hide="handlePickerHide"
       >
         <DatePicker

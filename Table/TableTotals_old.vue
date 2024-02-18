@@ -54,10 +54,7 @@ function handleGetTotals() {
             size="sm"
             :label="$t('table.calculateTotals')"
           >
-            <Menu
-              :title="$t('summaryEnum.choose')"
-              content-class="flex flex-col flex-gap-1"
-            >
+            <Menu :title="$t('summaryEnum.choose')">
               <Btn
                 :label="$t('summaryEnum.sum')"
                 size="sm"

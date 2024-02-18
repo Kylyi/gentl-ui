@@ -32,11 +32,7 @@ function handleSetLocale(_locale: LocaleObject, callback?: () => void) {
     h="7"
     name="locale-switch"
   >
-    <Menu
-      hide-header
-      :no-arrow="false"
-      content-class="flex-gap-y-2 !p-1"
-    >
+    <Menu :no-arrow="false">
       <template #default="{ hide }">
         <Btn
           v-for="(_locale, idx) in _locales"

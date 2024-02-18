@@ -1,32 +1,24 @@
 // Types
-import type { IMenuProps } from '~/components/Menu/types/menu-props.type'
+import type { IDialogProps } from '~/components/Dialog/types/dialog-props.type'
 
 // Functions
 import { useFloatingUIUtils } from '~/components/FloatingUI/functions/useFloatingUIUtils'
 
-export function useMenuUtils() {
+export function useDialogUtils() {
   const { getElement } = useFloatingUIUtils()
 
-  function getMenuProps(props: IMenuProps) {
+  function getMenuProps(props: IDialogProps) {
     return reactivePick(props, [
       'beforeHideFnc',
-      'cover',
-      'fallbackPlacements',
-      'fit',
       'manual',
-      'matchWidth',
       'maxHeight',
       'modelValue',
-      'noArrow',
       'noOverlay',
-      'noUplift',
-      'offset',
       'persistent',
-      'placement',
+      'position',
       'title',
       'transitionDuration',
       'target',
-      'referenceTarget',
       'ui',
     ])
   }

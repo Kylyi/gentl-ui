@@ -215,14 +215,14 @@ function handleMenuBeforeHide() {
       ref="menuEl"
       manual
       w="90"
-      dense
-      hide-header
       position="top"
       :placement="placement"
       :offset="offset"
       :no-arrow="false"
+      h="!auto"
+      max-h="!2/3"
       :reference-target="referenceTarget"
-      content-class="flex flex-col"
+      :ui="{ contentClass: 'p-0' }"
       @before-hide="handleMenuBeforeHide"
     >
       <TableColumnSorting
@@ -234,8 +234,9 @@ function handleMenuBeforeHide() {
 
       <TableColumnFiltering
         v-if="column.filterable"
-        v-bind="props"
+        :column="column"
       />
+
       <Banner
         v-else-if="column.filters?.length"
         :label="$t('table.nonInteractiveFilter')"

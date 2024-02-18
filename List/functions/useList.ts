@@ -25,6 +25,7 @@ import { useItemAdding } from '~/components/List/functions/useItemAdding'
 // Components
 import ListVirtualContainer from '~/components/List/ListVirtualContainer.vue'
 import SearchInput from '~/components/Inputs/SearchInput.vue'
+import { useListKeyboardNavigation } from '~/components/List/functions/useListKeyboardNavigation'
 
 type IItem = {
   ref: any
@@ -40,7 +41,7 @@ type IListPropsWithDefaults = Required<
 export function useList(
   items: Ref<any[]>,
   props: IListPropsWithDefaults,
-  listContainer: MaybeElementRef<
+  listContainerRef: MaybeElementRef<
     InstanceType<typeof ListVirtualContainer> | undefined
   >
 ) {
@@ -120,10 +121,6 @@ export function useList(
       return itemPartial
     })
   })
-
-  const scrollTo = (index: number) => {
-    unref(listContainer)?.scrollToIdx(index)
-  }
 
   function resetAddingItem() {
     preAddedItem.value = undefined
@@ -500,9 +497,20 @@ export function useList(
 
         isLoading.value = true
 
+        if (isInitialized.value) {
+          self.emit('before-search', {
+            hasExactMatch: hasExactMatch.value,
+            search,
+          })
+        }
+
         const res = await handleRequest(
           abortController => {
-            return props.loadData?.fnc({ search, options, abortController })
+            return props.loadData?.fnc({
+              search,
+              options,
+              abortController: abortController(),
+            })
           },
           { noResolve: true }
         )
@@ -552,16 +560,24 @@ export function useList(
     async search => {
       abortController.value?.abort()
 
+      // We need to wait for the previous `abort`
       setTimeout(async () => {
-        if (props.loadData?.onSearch || !isInitialized.value) {
+        if (props.loadData?.onSearch) {
           await fetchAndSetData(search)
+        } else {
+          if (isInitialized.value) {
+            self.emit('before-search', {
+              hasExactMatch: hasExactMatch.value,
+              search,
+            })
+          }
+
+          await handleSearchedResults(results.value)
           await nextTick()
+
+          self.emit('search', { hasExactMatch: hasExactMatch.value, search })
         }
 
-        await handleSearchedResults(results.value)
-        await nextTick()
-
-        // self.emit('search', { hasExactMatch: hasExactMatch.value, search })
         isInitialized.value = true
       })
     },
@@ -574,139 +590,17 @@ export function useList(
     }
   })
 
-  const firstNonGroupItemIndex = computed(() =>
-    arr.value.findIndex(item => !('isGroup' in item))
-  )
-
-  watchEffect(() => {
-    if (firstNonGroupItemIndex.value > -1) {
-      hoveredIdx.value = firstNonGroupItemIndex.value
-    }
-  })
-
   // Keyboard navigation
-  const listEl = ref<HTMLDivElement>()
-  const { focused: isFocused } = useFocusWithin(listEl)
-  const preventNextHoverEventRef = autoResetRef(false, 50)
-  const hoveredEl = ref<HTMLDivElement>()
-  const hoveredIdx = ref(-1)
-  const groupsJumped = ref(1) // How many groups we jumped over while using keyboard
-  const modifier = ref<-1 | 0 | 1>(0) // negative ~ above, positive ~ below
-
-  useIntersectionObserver(
-    hoveredEl,
-    ([{ intersectionRect, boundingClientRect }]) => {
-      const containerEl = unref(listContainer)?.getElement()
-      const isHoveredFirst = hoveredIdx.value === 0
-      const isHoveredLast = hoveredIdx.value === arr.value.length - 1
-
-      if (!containerEl || isHoveredFirst || isHoveredLast) {
-        return
-      }
-
-      if (intersectionRect.height > 0) {
-        containerEl.scrollTop +=
-          modifier.value * (boundingClientRect.height - intersectionRect.height)
-      } else {
-        containerEl.scrollTop +=
-          modifier.value * boundingClientRect.height * groupsJumped.value
-        groupsJumped.value = 1
-      }
-    }
-  )
-
-  function handleMouseOver(item: any, index: number) {
-    if (!('isGroup' in item) && !preventNextHoverEventRef.value) {
-      hoveredIdx.value = index
-    }
-  }
-
-  function handleKey(ev: KeyboardEvent, force?: boolean) {
-    if (!isFocused.value && !force) {
-      return
-    }
-
-    switch (ev.key) {
-      case 'ArrowUp':
-        hoveredIdx.value--
-        modifier.value = -1
-        ev.preventDefault()
-        break
-
-      case 'ArrowDown':
-        hoveredIdx.value++
-        modifier.value = 1
-        ev.preventDefault()
-        break
-
-      case 'Enter':
-        if (hoveredIdx.value !== -1 && arr.value[hoveredIdx.value]) {
-          ev.preventDefault()
-          ev.stopPropagation()
-          ev.stopImmediatePropagation()
-          handleSelectItem(arr.value[hoveredIdx.value])
-        }
-
-        return
-
-      // case 'Tab':
-      //   self.emit('update:selected', selected.value)
-
-      //   break
-
-      default:
-        return
-    }
-
-    const itemSelected = arr.value[hoveredIdx.value]
-
-    // Got to the start or at the end of the list
-    if (!itemSelected) {
-      // Got above start
-      if (hoveredIdx.value < 0) {
-        scrollTo(arr.value.length)
-        hoveredIdx.value = arr.value.length
-      }
-
-      // Got under end
-      else {
-        scrollTo(0)
-        hoveredIdx.value = -1
-      }
-
-      handleKey(ev)
-    }
-
-    // Got to a group
-    else if ('isGroup' in itemSelected) {
-      groupsJumped.value += 1
-
-      handleKey(ev)
-    }
-
-    // Got to first non-group item
-    else if (
-      hoveredIdx.value === firstNonGroupItemIndex.value &&
-      modifier.value === -1
-    ) {
-      scrollTo(0)
-    }
-
-    // Regular item
-    else {
-      nextTick(() => {
-        hoveredEl.value = listEl.value?.querySelector(
-          '.item--hovered'
-        ) as HTMLDivElement
-      })
-    }
-
-    preventNextHoverEventRef.value = true
-  }
-
-  onKeyStroke(['ArrowUp', 'ArrowDown', 'Enter'], handleKey)
+  const { hoveredIdx, listEl, handleKey, handleMouseOver } =
+    useListKeyboardNavigation({
+      listContainerRef,
+      handleSelectItem,
+      itemsRef: arr,
+      selectedRef: selected,
+    })
 
   return {
+    isInitialized,
     arr,
     hoveredIdx,
     listEl,

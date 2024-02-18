@@ -29,6 +29,7 @@ defineEmits<{
       :confirmation-text="confirmationText"
       no-uplift
       no-overlay
+      h="auto"
       @ok="$emit('delete')"
     >
       <slot name="confirmation" />

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-// TYPES
+// Types
 import type { IMenuProps } from '~/components/Menu/types/menu-props.type'
 
-// COMPOSITION FUNCTIONS
+// Composition functions
 import { useMenuUtils } from '~/components/Menu/functions/useMenuUtils'
 
 type IHelpBtnProps = {

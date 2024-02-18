@@ -183,10 +183,10 @@ const $z = useZod({ scope: 'qb' })
     <Menu
       v-if="editable"
       ref="itemEditMenuEl"
-      hide-header
       :no-arrow="false"
       :no-overlay="false"
-      dense
+      :fit="false"
+      min-w="min"
       @before-show="isActivelyModifyingValues = true"
       @show="itemEditEl?.focusInput()"
       @before-hide="handleItemEditMenuBeforeHide"

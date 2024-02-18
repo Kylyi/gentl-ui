@@ -64,7 +64,7 @@ const hasContent = computed(() => {
 })
 
 // Selection
-const maxHeight = computedEager(() => {
+const maxHeight = computed(() => {
   return props.maxChipsRows * 26
 })
 
@@ -265,6 +265,7 @@ const isPickerActive = ref(false)
 const pickerAnimationState = ref<'show' | 'hide'>('hide')
 
 function handleBeforeHide() {
+  focusedProgramatically.value = true
   const optionsContainerDom = unrefElement(optionsContainerEl)
   optionsContainerDom?.focus()
 
@@ -294,11 +295,17 @@ function handleShow() {
 }
 
 // Layout
-const { model, wrapperProps, handleClickWrapper, handleFocusOrClick, clear } =
-  useSelectorUtils({
-    props,
-    menuElRef: menuProxyEl,
-  })
+const {
+  focusedProgramatically,
+  model,
+  wrapperProps,
+  handleClickWrapper,
+  handleFocusOrClick,
+  clear,
+} = useSelectorUtils({
+  props,
+  menuElRef: menuProxyEl,
+})
 
 const menuReferenceTarget = ref<HTMLElement>()
 const optionsContainerEl = ref<any>()
@@ -360,11 +367,6 @@ function getData() {
     }
   })
 }
-
-// // We recalculate the menu position on `listOptions` change and `model` changes
-// watch([listOptions, model], () => {
-//   menuProxyEl.value?.recomputePosition()
-// })
 
 defineExpose({
   focus: () => menuProxyEl.value?.show(),
@@ -530,9 +532,7 @@ defineExpose({
         ref="menuProxyEl"
         v-model="isPickerActive"
         manual
-        hide-header
         position="top"
-        dense
         class="selector"
         :class="{
           'has-label': !!label,
@@ -543,10 +543,10 @@ defineExpose({
         :no-arrow="noMenuMatchWidth ? false : true"
         :match-width="!noMenuMatchWidth"
         :reference-target="menuReferenceTarget"
-        :expected-height="expectedHeight"
         :fit="false"
         no-uplift
         max-height="50%"
+        :ui="{ contentClass: 'p-0' }"
         data-cy="drop-down-list"
         @placement="menuPlacement = $event"
         @before-hide="handleBeforeHide"
@@ -564,10 +564,8 @@ defineExpose({
             :item-label="optionLabel"
             v-bind="listProps"
             :class="listClass"
-            @search="
-              pickerAnimationState === 'show' &&
-                menuProxyEl?.recomputePosition()
-            "
+            @search="menuProxyEl?.recomputePosition()"
+            @before-search="menuProxyEl?.recomputePosition()"
             @update:selected="handleSelect"
             @added="handleSelectAdd"
             @selected-multiple="handleSelectedMultiple"

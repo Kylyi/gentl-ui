@@ -2,15 +2,15 @@
 import { arrow, flip, offset, shift, useFloating } from '@floating-ui/vue'
 
 // Types
-import { type IMenuProps } from '~/components/Menu/types/menu-props.type'
+import type { ITooltipProps } from '~/components/Tooltip/types/tooltip-props.type'
 
 defineOptions({
   inheritAttrs: false,
 })
 
 const props = withDefaults(
-  defineProps<IMenuProps & { noInheritFontStyle?: boolean }>(),
-  { noInheritFontStyle: true }
+  defineProps<ITooltipProps & { noInheritFontStyle?: boolean }>(),
+  { noInheritFontStyle: true, offset: 8 }
 )
 
 function getTargetElement(target: any): any {
@@ -66,7 +66,6 @@ const { floatingStyles, placement, middlewareData } = useFloating(
 
 const tooltipClass = computed(() => {
   return {
-    'is-dense': props.dense,
     'font-normal normal-case text-base': props.noInheritFontStyle,
   }
 })
@@ -133,10 +132,6 @@ onMounted(() => {
         v-if="!noArrow"
         ref="arrowEl"
         class="arrow"
-        :class="{
-          'bg-ca': !hideHeader,
-          'has-header': !hideHeader,
-        }"
       />
 
       <slot />
@@ -148,10 +143,6 @@ onMounted(() => {
 .tooltip {
   --apply: dark:bg-darker bg-white border-ca border-custom rounded-custom
     z-$zMenu;
-
-  &.is-dense {
-    --apply: p-0 leading-none;
-  }
 }
 
 .arrow {

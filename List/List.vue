@@ -3,6 +3,7 @@ import { config } from '~/config'
 
 // Types
 import type { IListProps } from '~/components/List/types/list-props.type'
+import type { IListFetchOptions } from '~/components/List/types/list-fetch.type'
 import type { IItemToBeAdded } from '~/components/List/types/list-item-to-add.type'
 
 // Functions
@@ -30,6 +31,10 @@ defineEmits<{
   (e: 'added-multiple', items: any[]): void
   (e: 'removed', item: any): void
   (e: 'search', payload: { hasExactMatch: boolean; search: string }): void
+  (
+    e: 'before-search',
+    payload: { hasExactMatch: boolean; search: string }
+  ): void
 }>()
 
 // Layout
@@ -45,9 +50,22 @@ const ContainerComponent = computed(() => {
     : ListContainer
 })
 
+defineExpose({
+  handleSelectItem: (option: any) => handleSelectItem(option),
+  clearSearch: () => {
+    searchEl.value?.clear()
+    search.value = ''
+  },
+  loadData: (search?: string, options?: IListFetchOptions) =>
+    loadData(search, options),
+  refresh: () => refresh,
+  handleKey: (ev: KeyboardEvent, force?: boolean) => handleKey(ev, force),
+})
+
 const {
   arr,
   isLoading,
+  isInitialized,
   hoveredIdx,
   listEl,
   listRowProps,
@@ -61,17 +79,6 @@ const {
   loadData,
   refresh,
 } = useList(items, props, containerEl)
-
-defineExpose({
-  handleSelectItem: (option: any) => handleSelectItem(option),
-  clearSearch: () => {
-    searchEl.value?.clear()
-    search.value = ''
-  },
-  loadData,
-  refresh,
-  handleKey,
-})
 
 // When `noSearch` is used, we fake the focus on the container to allow
 // keyboard navigation
@@ -116,9 +123,9 @@ onMounted(() => {
       />
     </template>
 
-    <!-- Loading -->
+    <!-- Loading - after initialization -->
     <div
-      v-if="loading || isLoading"
+      v-if="isInitialized && (loading || isLoading)"
       flex="~ center"
     >
       <LoaderInline />
@@ -179,9 +186,16 @@ onMounted(() => {
     </Component>
 
     <Banner
-      v-else
+      v-else-if="!isLoading && isInitialized"
       icon-center
       :label="$t('general.noData')"
+    />
+
+    <LoaderBlock
+      v-else-if="!isInitialized"
+      size="xl"
+      self-center
+      m="y-4"
     />
 
     <slot name="below" />

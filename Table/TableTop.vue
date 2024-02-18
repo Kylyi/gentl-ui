@@ -235,10 +235,7 @@ function handleFitColumns(ev?: MouseEvent) {
       v-if="hasActionBar"
       class="table-top__actionbar"
     >
-      <div
-        flex="~ gap-1 items-center"
-        grow
-      >
+      <div flex="~ gap-1 items-center grow">
         <slot name="left-prepend" />
 
         <slot name="left-append" />
@@ -259,6 +256,7 @@ function handleFitColumns(ev?: MouseEvent) {
           v-model:query-builder="queryBuilder"
           :class="qbControlsClasses.queryBuilderBtn"
           self-start
+          m="t-1"
         />
 
         <slot name="middle-start" />
@@ -324,9 +322,7 @@ function handleFitColumns(ev?: MouseEvent) {
           >
             <Menu
               placement="left"
-              hide-header
               :no-arrow="false"
-              content-class="gap-1"
             >
               <!-- Remove query builder filters -->
               <Btn
@@ -431,12 +427,7 @@ function handleFitColumns(ev?: MouseEvent) {
                 icon="fluent:select-all-on-20-regular !w-5 !h-5"
                 :label="`${$t('general.selected')}: ${selectionCount}`"
               >
-                <MenuProxy
-                  hide-header
-                  dense
-                  p="1"
-                  :no-arrow="false"
-                >
+                <MenuProxy :no-arrow="false">
                   <slot
                     name="bulk-actions-menu"
                     :selection="selection"

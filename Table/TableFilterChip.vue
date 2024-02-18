@@ -69,12 +69,7 @@ function removeChip() {
       @click.stop.prevent="removeChip"
     />
 
-    <Menu
-      hide-header
-      :no-arrow="false"
-      dense
-      p="1"
-    >
+    <Menu :no-arrow="false">
       <TableColumnFilteringItem
         :filter="filter"
         :column="column"

@@ -82,7 +82,6 @@ function handleMonthSelect(month: Month, callback?: () => void) {
 
     <Menu
       v-model="monthSelectorVisible"
-      hide-header
       :fit="false"
       :target="monthBtn"
       :reference-target="

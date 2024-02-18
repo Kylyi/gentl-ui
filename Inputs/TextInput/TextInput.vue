@@ -159,7 +159,6 @@ defineExpose({
       v-if="tooltip || !!$slots.tooltip"
       :model-value="!isBlurred"
       manual
-      hide-header
       placement="right"
       :fallback-placements="['bottom']"
       :reference-target="el"

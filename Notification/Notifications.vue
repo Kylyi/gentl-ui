@@ -51,19 +51,6 @@ const notificationsClass = computed(() => {
       return 'bottom-5 right-5'
   }
 })
-
-useMutationObserver(
-  notificationsEl,
-  () => {
-    const notificationsElDom = unrefElement(notificationsEl)
-
-    if (notificationsElDom?.hasAttribute('hide-trigger')) {
-      notificationStore.removeAllNotifications()
-      notificationsElDom?.removeAttribute('hide-trigger')
-    }
-  },
-  { attributeFilter: ['hide-trigger'] }
-)
 </script>
 
 <template>
@@ -73,6 +60,7 @@ useMutationObserver(
     tag="div"
     class="notifications"
     :class="notificationsClass"
+    .hide="notificationStore.removeAllNotifications"
   >
     <NotificationRow
       v-for="notification in notifications"

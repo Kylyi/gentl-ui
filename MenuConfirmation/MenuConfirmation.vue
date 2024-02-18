@@ -34,7 +34,7 @@ function handleConfirm() {
     isConfirmation.value = true
 
     nextTick(() => {
-      menuEl.value?.update()
+      menuEl.value?.recomputePosition(true)
     })
   }
 }

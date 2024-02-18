@@ -35,9 +35,12 @@ const labelLocalClass = computedEager(() => {
 <style lang="scss" scoped>
 span.label {
   --apply: ease-linear tracking-wide z-10 origin-top-left top-0 left-0 pointer-events-none
-    leading-tight md:self-center color-gray-500 dark:color-gray-400 max-w-full;
+    leading-tight md:self-center color-gray-500 dark:color-gray-400 max-w-full p-x-3;
+
+  --apply: color-$InputLabel-color;
 
   transition: transform .36s cubic-bezier(.4,0,.2,1),
+              padding .36s cubic-bezier(.4,0,.2,1),
               max-width .2s  cubic-bezier(.4,0,.2,1) .2s,
               color     .2s  linear;
 
@@ -47,12 +50,6 @@ span.label {
 
   &:not(.is-inline) {
     --apply: absolute origin-top-left left-0 top-0 truncate w-full;
-  }
-
-  &--sm,
-  &--md,
-  &--lg {
-    --apply: p-x-3;
   }
 
   &--sm {
@@ -120,6 +117,7 @@ span.label {
 .wrapper-body:not(.selector-wrapper):focus-within {
   > .label {
     --apply: color-primary;
+    --apply: color-$InputLabel-active-color;
 
     &:not(.is-inline) {
       --apply: translate-y--180% w-125% max-w-125% scale-80;
@@ -132,6 +130,22 @@ span.label {
 
   > .label[haserror="true"] {
     --apply: color-negative;
+  }
+}
+
+span.label.is-floating:not(.is-inside) {
+  --apply: p-x-1;
+}
+
+span.label.is-inline {
+  @screen lt-md {
+    --apply: p-x-1;
+  }
+}
+
+.wrapper-body:focus-within {
+  span.label:not(.is-inside):not(.is-inline) {
+    --apply: p-x-1;
   }
 }
 </style>
