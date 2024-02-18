@@ -231,6 +231,7 @@ const isOverlayVisible = computed(() => {
             ref="contentEl"
             flex="~ col grow"
             overflow="auto"
+            rounded="custom"
             :class="ui?.contentClass"
             :style="ui?.contentStyle"
           >
@@ -253,7 +254,7 @@ const isOverlayVisible = computed(() => {
   }
 
   &__header {
-    --apply: flex items-center gap-2 p-l-3 p-r-1 p-y-2;
+    --apply: flex items-center gap-2 p-l-3 p-r-1 p-y-2 rounded-t-custom;
     --apply: bg-$Dialog-title-bg;
 
     &-title {
@@ -265,17 +266,33 @@ const isOverlayVisible = computed(() => {
 // Position
 .dialog__wrapper[position='top'] {
   --apply: justify-center items-start;
+
+  .dialog {
+    --apply: rounded-t-none;
+  }
 }
 
 .dialog__wrapper[position='bottom'] {
   --apply: justify-center items-end;
+
+  .dialog {
+    --apply: rounded-b-none;
+  }
 }
 .dialog__wrapper[position='left'] {
   --apply: justify-start items-center;
+
+  .dialog {
+    --apply: rounded-l-none;
+  }
 }
 
 .dialog__wrapper[position='right'] {
   --apply: justify-end items-center;
+
+  .dialog {
+    --apply: rounded-r-none;
+  }
 }
 
 .dialog__wrapper[position='center'] {

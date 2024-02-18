@@ -298,6 +298,7 @@ const isOverlayVisible = computed(() => {
           ref="contentEl"
           flex="~ col grow gap-1"
           overflow="auto"
+          rounded="custom"
           :class="ui?.contentClass ?? 'p-1'"
           :style="ui?.contentStyle"
         >
@@ -315,7 +316,7 @@ const isOverlayVisible = computed(() => {
     bg-white dark:bg-darker;
 
   &__header {
-    --apply: flex items-center gap-2 p-l-3 p-r-1 p-y-2;
+    --apply: flex items-center gap-2 p-l-3 p-r-1 p-y-2 rounded-t-custom;
     --apply: bg-$Menu-title-bg;
 
     &-title {
@@ -347,22 +348,53 @@ const isOverlayVisible = computed(() => {
 }
 
 // Transition
-.menu[placement^='top'] {
+.menu[placement='top'] {
   --apply: transform-origin-bottom;
 }
 
-.menu[placement^='bottom'] {
+.menu[placement='top-start'] {
+  --apply: transform-origin-bottom-left;
+}
+
+.menu[placement='top-end'] {
+  --apply: transform-origin-bottom-right;
+}
+
+.menu[placement='bottom'] {
   --apply: transform-origin-top;
 }
 
-.menu[placement^='left'] {
+.menu[placement='bottom-start'] {
+  --apply: transform-origin-top-left;
+}
+
+.menu[placement='bottom-end'] {
+  --apply: transform-origin-top-right;
+}
+
+.menu[placement='left'] {
   --apply: transform-origin-right;
 }
 
-.menu[placement^='right'] {
+.menu[placement='left-start'] {
+  --apply: transform-origin-top-right;
+}
+
+.menu[placement='left-end'] {
+  --apply: transform-origin-bottom-right;
+}
+
+.menu[placement='right'] {
   --apply: transform-origin-left;
 }
 
+.menu[placement='right-start'] {
+  --apply: transform-origin-top-left;
+}
+
+.menu[placement='right-end'] {
+  --apply: transform-origin-bottom-left;
+}
 .menu.is-cover {
   --apply: transform-origin-center;
 }
