@@ -229,9 +229,7 @@ const isOverlayVisible = computed(() => {
           <!-- Content -->
           <div
             ref="contentEl"
-            flex="~ col grow gap-1"
-            overflow="auto"
-            rounded="custom"
+            class="dialog__content"
             :class="ui?.contentClass ?? 'p-1'"
             :style="ui?.contentStyle"
           >
@@ -260,6 +258,10 @@ const isOverlayVisible = computed(() => {
     &-title {
       --apply: grow;
     }
+  }
+
+  &__content {
+    --apply: relative flex flex-col grow gap-1 overflow-auto rounded-custom;
   }
 }
 

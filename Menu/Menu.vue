@@ -325,9 +325,7 @@ const isOverlayVisible = computed(() => {
 
         <div
           ref="contentEl"
-          flex="~ col grow gap-1"
-          overflow="auto"
-          rounded="custom"
+          class="menu__content"
           :class="ui?.contentClass ?? 'p-1'"
           :style="ui?.contentStyle"
         >
@@ -355,6 +353,10 @@ const isOverlayVisible = computed(() => {
 
   &__arrow {
     --apply: absolute w-2 h-2 rotate-45 bg-white dark:bg-darker z--1;
+  }
+
+  &__content {
+    --apply: relative flex flex-col grow gap-1 overflow-auto rounded-custom;
   }
 }
 

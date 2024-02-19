@@ -76,6 +76,6 @@ function handleClose() {
 }
 
 .actions {
-  --apply: flex items-center p-3 shrink-0 justify-end flex-gap-x-3 bg-ca;
+  --apply: flex items-center p-x-3 p-y-1 shrink-0 justify-end flex-gap-x-3 bg-ca;
 }
 </style>
