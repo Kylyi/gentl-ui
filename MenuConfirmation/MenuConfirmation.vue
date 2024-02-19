@@ -93,6 +93,7 @@ defineExpose({
       bg="primary"
       color="white"
       data-cy="confirm-delete"
+      :class="ui?.confirmBtnClass"
       @click="handleConfirm"
     />
   </MenuProxy>
