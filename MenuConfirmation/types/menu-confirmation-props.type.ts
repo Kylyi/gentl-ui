@@ -16,4 +16,11 @@ export interface IMenuConfirmationProps extends IMenuProps {
    * Use case: when we provide own slot with `Form` for example
    */
   noConfirmBtn?: boolean
+
+  ui?: IMenuProps['ui'] & {
+    /**
+     * Class to apply to the 'confirm' button
+     */
+    confirmBtnClass?: ClassType
+  }
 }
