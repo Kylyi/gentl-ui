@@ -70,6 +70,7 @@ const INPUT_BY_DATATYPE = {
   yearMonth: DATE_INPUT,
   timestamp: DATE_INPUT,
   DateTime: DATE_INPUT,
+  fullDateTime: DATE_INPUT,
 
   // Boolean
   boolean: BOOLEAN_INPUT,
@@ -98,6 +99,7 @@ const INPUT_BY_DATATYPE = {
   yearMonthSimple: DATE_INPUT,
   timestampSimple: DATE_INPUT,
   DateTimeSimple: DATE_INPUT,
+  fullDateTimeSimple: DATE_INPUT,
 
   // Boolean
   booleanSimple: BOOLEAN_INPUT,
