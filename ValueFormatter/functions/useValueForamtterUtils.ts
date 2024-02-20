@@ -121,6 +121,10 @@ export function useValueFormatterUtils() {
       case 'datetimeSimple':
         return formatDate(value, 'long')
 
+      case 'fullDateTime':
+      case 'fullDateTimeSimple':
+        return formatDate(value, 'longWithSeconds')
+
       case 'timestamp':
       case 'timestampSimple':
         return formatDate(value, 'timestamp')
