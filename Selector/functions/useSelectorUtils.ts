@@ -1,8 +1,14 @@
 import { type ISelectorUtilsOptions } from '~/components/Selector/types/selector-utils-options.type'
 
+// Store
+import { useAppStore } from '~/libs/App/app.store'
+
 export function useSelectorUtils(options: ISelectorUtilsOptions) {
   const { props, menuElRef } = options
   const instance = getCurrentInstance()
+
+  // Store
+  const appStore = useAppStore()
 
   // Layout
   const el = ref<any>()
@@ -54,7 +60,7 @@ export function useSelectorUtils(options: ISelectorUtilsOptions) {
   }
 
   function handleFocusOrClick(ev?: MouseEvent | FocusEvent, noHide?: boolean) {
-    if (focusedProgramatically.value) {
+    if (focusedProgramatically.value || appStore.hasUserLeftPage) {
       return
     }
 
