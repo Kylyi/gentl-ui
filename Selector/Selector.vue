@@ -287,10 +287,7 @@ const optionsContainerEl = ref<any>()
 const isLoadingInternal = ref(false)
 
 const isLoading = computed(() => {
-  return (
-    (props.loading || isLoadingInternal.value) &&
-    pickerAnimationState.value !== 'hide'
-  )
+  return props.loading || isLoadingInternal.value
 })
 
 function syncScrollArea() {
