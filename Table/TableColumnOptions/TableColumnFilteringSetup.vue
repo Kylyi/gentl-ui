@@ -18,6 +18,12 @@ type IProps = {
 
 const props = defineProps<IProps>()
 
+// Constants
+const TRIGGER_COMPARATORS = [
+  ComparatorEnum.IS_EMPTY,
+  ComparatorEnum.NOT_IS_EMPTY,
+]
+
 // Utils
 const { getAvailableComparators } = useTableUtils()
 
@@ -68,7 +74,6 @@ function focusOnSpecificFilterInput(filterIndex: number) {
 }
 
 function handleAddFilter() {
-  console.log('here')
   isFocusPrevented.value = false
 
   const isDefaultComparatorUsed = column.value.filters.some(
@@ -103,20 +108,19 @@ function handleAddFilter() {
       focusOnSpecificFilterInput(column.value.filters.length - 1)
 
       // Trigger the refresh when selecting a comparator that has no values (IS_EMPTY, NOT_IS_EMPTY)
-      const TRIGGER_COMPARATORS = [
-        ComparatorEnum.IS_EMPTY,
-        ComparatorEnum.NOT_IS_EMPTY,
-      ]
-
       if (TRIGGER_COMPARATORS.includes(firstNonUsedComparator)) {
         tableRefresh()
       }
     }
   } else {
-    column.value.filters = [
-      ...column.value.filters,
-      new FilterItem(column.value),
-    ]
+    const filter = new FilterItem(column.value)
+
+    column.value.filters = [...column.value.filters, filter]
+
+    // Trigger the refresh when selecting a comparator that has no values (IS_EMPTY, NOT_IS_EMPTY)
+    if (TRIGGER_COMPARATORS.includes(filter.comparator)) {
+      tableRefresh()
+    }
 
     // Focus on the first generated input filter
     focusOnSpecificFilterInput(0)
