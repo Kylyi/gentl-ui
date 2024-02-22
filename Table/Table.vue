@@ -82,6 +82,7 @@ defineExpose({
     options?: { val?: boolean; clearSelection?: boolean }
   ) => handleSelectRow(row, options),
   clearSelection: () => clearSelection(),
+  handleCancelEditRow: () => handleCancelEditRow(),
   customFnc: (
     fnc: (options: {
       columns: TableColumn[]
@@ -167,7 +168,7 @@ const {
 
 const { handleSelectRow, clearSelection } = useTableSelection(props)
 useTableExporting(rows)
-useTableEditing(props)
+const { handleCancelEditRow } = useTableEditing(props)
 
 const overscan = computed(() => {
   return isBreakpoint.value

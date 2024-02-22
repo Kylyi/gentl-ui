@@ -212,6 +212,7 @@ export function useTableColumns(
             new FilterItem<any>({
               field: filter.field,
               comparator: filter.comparator,
+              format: col.format,
               value: parseValue(filter.value, col.dataType, {
                 dateFormat: 'YYYY-MM-DD',
               }),
@@ -241,7 +242,7 @@ export function useTableColumns(
             ...nonInteractiveFilters,
             ...stateColumn.filters
               .filter(filter => !filter.nonInteractive)
-              .map(filter => new FilterItem(filter)),
+              .map(filter => new FilterItem({ ...filter, format: col.format })),
           ]
           col.sort = stateColumn.sort
           col.sortOrder = stateColumn.sortOrder
