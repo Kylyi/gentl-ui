@@ -101,7 +101,7 @@ const isModified = computed(() => {
           <div m-t-2>
             <span
               v-if="!toPreviousValue || !val"
-              class="value-container-card__value color-purple-500"
+              class="value-container-card__value color-purple-500 dark:color-purple-600"
               :class="[previousValueClass, { 'font-bold': !noBold }]"
             >
               {{ getShownValue(val) }}
@@ -112,7 +112,7 @@ const isModified = computed(() => {
               :to="toPreviousValue"
               class="link"
               :class="[previousValueClass, { 'font-bold': !noBold }]"
-              color="purple-500"
+              color="color-purple-500 dark:color-purple-600"
             >
               <span class="link__label">
                 <span class="link__label-icon" />
@@ -125,16 +125,22 @@ const isModified = computed(() => {
     </div>
 
     <DefineTemplate>
-      <span inline-block>
+      <span
+        inline-block
+        bg="purple-500 dark:purple-600"
+        rounded="full"
+      >
         <Btn
           size="xs"
           round
           icon="solar:history-outline !h-5 !w-5"
-          color="true-gray-500"
+          color="white"
           no-dim
-          top="1"
         >
-          <Menu hide-header>
+          <Menu
+            hide-header
+            no-uplift
+          >
             <span
               font="bold"
               text="caption"
@@ -176,8 +182,7 @@ const isModified = computed(() => {
     white-space: pre-line;
 
     &.is-modified {
-      --apply: bg-purple-50 dark:bg-purple-900/25 p-l-1 rounded-custom
-      color-purple-600 dark:color-purple-500;
+      --apply: p-l-1 rounded-custom;
     }
   }
 
@@ -212,8 +217,7 @@ const isModified = computed(() => {
     }
 
     &.is-modified {
-      --apply: bg-purple-50 dark:bg-purple-900/25 p-l-1 rounded-custom
-      color-purple-600 dark:color-purple-500;
+      --apply: p-l-1 rounded-custom;
     }
   }
 }

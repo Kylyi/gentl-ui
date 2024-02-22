@@ -1,9 +1,13 @@
 <script setup lang="ts">
+import { config } from '~/config'
+
 // Models
 import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
 import { TableColumn } from '~/components/Table/models/table-column.model'
 import { FilterItem } from '~/libs/App/data/models/filter-item'
-import { config } from '~/config'
+
+// Injections
+import { tableRefreshKey } from '~/components/Table/provide/table.provide'
 
 // Functions
 import { useTableUtils } from '~/components/Table/functions/useTableUtils'
@@ -14,8 +18,17 @@ type IProps = {
 
 const props = defineProps<IProps>()
 
+// Constants
+const TRIGGER_COMPARATORS = [
+  ComparatorEnum.IS_EMPTY,
+  ComparatorEnum.NOT_IS_EMPTY,
+]
+
 // Utils
 const { getAvailableComparators } = useTableUtils()
+
+// Injections
+const tableRefresh = injectStrict(tableRefreshKey)
 
 // Constants
 const BOOLEANISH_COMPARATORS = [ComparatorEnum.IS, ComparatorEnum.NOT_IS]
@@ -93,12 +106,21 @@ function handleAddFilter() {
 
       // Focus on the new added filter input
       focusOnSpecificFilterInput(column.value.filters.length - 1)
+
+      // Trigger the refresh when selecting a comparator that has no values (IS_EMPTY, NOT_IS_EMPTY)
+      if (TRIGGER_COMPARATORS.includes(firstNonUsedComparator)) {
+        tableRefresh()
+      }
     }
   } else {
-    column.value.filters = [
-      ...column.value.filters,
-      new FilterItem(column.value),
-    ]
+    const filter = new FilterItem(column.value)
+
+    column.value.filters = [...column.value.filters, filter]
+
+    // Trigger the refresh when selecting a comparator that has no values (IS_EMPTY, NOT_IS_EMPTY)
+    if (TRIGGER_COMPARATORS.includes(filter.comparator)) {
+      tableRefresh()
+    }
 
     // Focus on the first generated input filter
     focusOnSpecificFilterInput(0)
