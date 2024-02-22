@@ -23,15 +23,13 @@ const props = withDefaults(defineProps<ISelectorProps>(), {
   errorTakesSpace: true,
   errorVisible: true,
   fuseExtendedSearchToken: config.selector.fuseExtendedSearchToken,
-  inline: config.inputs.inline,
+  layout: config.inputs.wrapperProps.layout,
   maxChipsRows: 2,
   optionKey: 'id',
   optionLabel: 'label',
   options: () => [],
   required: undefined,
   size: 'md',
-  stackLabel: config.inputs.stackLabel,
-  labelInside: config.inputs.labelInside,
 })
 
 const emits = defineEmits<{
@@ -49,7 +47,7 @@ const emits = defineEmits<{
 
 // Lifecycle
 onMounted(() => {
-  menuReferenceTarget.value = self?.proxy?.$el.querySelector('.wrapper-body')
+  menuReferenceTarget.value = self?.proxy?.$el.querySelector('.wrapper__body')
 })
 
 // Utils
@@ -536,7 +534,7 @@ defineExpose({
         class="selector"
         :class="{
           'has-label': !!label,
-          'md:m-l-200px': inline,
+          'md:m-l-200px': layout === 'inline',
           'is-menu-width-matched': !noMenuMatchWidth,
         }"
         :offset="noMenuMatchWidth ? 8 : 0"
@@ -645,19 +643,19 @@ defineExpose({
     --apply: dark:color-primary color-primary;
   }
 
-  :deep(.wrapper-body:after) {
+  :deep(.wrapper__body:after) {
     --apply: border-primary/50 dark:border-primary/50;
   }
 }
 
 .is-active.is-menu-width-matched.has-menu-bottom {
-  :deep(.wrapper-body:after) {
+  :deep(.wrapper__body:after) {
     --apply: rounded-b-0;
   }
 }
 
 .is-active.is-menu-width-matched.has-menu-top {
-  :deep(.wrapper-body:after) {
+  :deep(.wrapper__body:after) {
     --apply: rounded-t-0;
   }
 }

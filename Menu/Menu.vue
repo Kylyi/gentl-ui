@@ -142,7 +142,7 @@ whenever(model, isVisible => {
     referenceEl.style.zIndex = '3000'
   }
 
-  if (isReferenceElTransparent) {
+  if (isReferenceElTransparent && !props.noUplift && !props.cover) {
     if (color.value === 'light') {
       referenceEl.style.backgroundColor = 'white'
     } else {

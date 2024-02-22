@@ -171,7 +171,7 @@ syncRef(model, files, { direction: 'both', deep: true })
   }
 }
 
-.wrapper-body.has-error {
+.wrapper__body.has-error {
   .file-input-wrapper {
     --apply: border-negative;
   }

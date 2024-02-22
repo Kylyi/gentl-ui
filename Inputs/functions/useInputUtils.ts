@@ -64,11 +64,10 @@ export function useInputUtils(options: IInputUtilsOptions) {
     'errorTakesSpace',
     'errorVisible',
     'hint',
-    'inline',
     'label',
     'labelStyle',
     'labelClass',
-    'labelInside',
+    'layout',
     'loading',
     'modelValue',
     'originalValue',
@@ -142,8 +141,11 @@ export function useInputUtils(options: IInputUtilsOptions) {
     const evTarget = ev.target as HTMLElement
 
     // We prevent focusing the input when clicking the label
-    // (label has a `pointer-events: none` ~ we check the `wrapper-body` instead)
-    if (evTarget.classList.contains('wrapper-body') && props.inline) {
+    // (label has a `pointer-events: none` ~ we check the `wrapper__body` instead)
+    if (
+      evTarget.classList.contains('wrapper__body') &&
+      props.layout === 'inline'
+    ) {
       ev.preventDefault()
       ev.stopPropagation()
 

@@ -210,6 +210,7 @@ defineExpose({
       :placeholder="placeholder"
       :readonly="readonly"
       :disabled="disabled"
+      autocomplete="off"
       :label="label || placeholder"
       :name="name || path || label || placeholder"
       class="control"

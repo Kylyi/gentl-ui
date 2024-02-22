@@ -11,11 +11,10 @@ export function useInputWrapperUtils() {
       'errorTakesSpace',
       'errorVisible',
       'hint',
-      'inline',
       'label',
       'labelStyle',
       'labelClass',
-      'labelInside',
+      'layout',
       'loading',
       'modelValue',
       'originalValue',
@@ -36,6 +35,7 @@ export function useInputWrapperUtils() {
   function getInputWrapperStyleVariables(props: IInputWrapperProps) {
     const styleVariables = {
       '--fontSize': '',
+      '--labelFontSize': '',
       '--lineHeight': '',
       '--padding': '',
       '--margin': '',
@@ -43,8 +43,9 @@ export function useInputWrapperUtils() {
       '--borderColor': props.ui?.borderColor || 'var(--color-primary)',
     }
 
-    const isLabelInside = props.labelInside
-    const isInline = props.inline
+    const isLabelInside = props.layout === 'label-inside'
+    const isInline = props.layout === 'inline'
+    const isRegular = props.layout === 'regular'
     const hasLabel = !!props.label
 
     // Size: sm
@@ -55,20 +56,16 @@ export function useInputWrapperUtils() {
       styleVariables['--margin'] = '0'
 
       if (isLabelInside) {
-        styleVariables['--padding'] = '0 12px 4px'
-        styleVariables['--margin'] = '16px 0 0 0'
+        styleVariables['--padding'] = '16px 12px 0'
+        styleVariables['--margin'] = '0'
 
         if (!hasLabel) {
-          styleVariables['--margin'] = '10px 0'
+          styleVariables['--padding'] = '0 12px 0'
         }
       }
 
-      if (!isLabelInside && !isInline && hasLabel) {
-        styleVariables['--bodyMargin'] = '14px 0 0 0'
-      }
-
-      if (props.noBorder && !isLabelInside) {
-        styleVariables['--padding'] = '8px 8px'
+      if (isRegular) {
+        styleVariables['--padding'] = '24px 12px 8px'
       }
     }
 
@@ -80,20 +77,16 @@ export function useInputWrapperUtils() {
       styleVariables['--margin'] = '0'
 
       if (isLabelInside) {
-        styleVariables['--padding'] = '0 12px'
-        styleVariables['--margin'] = '18px 0 2px 0'
+        styleVariables['--padding'] = '16px 12px 0'
+        styleVariables['--margin'] = '0'
 
         if (!hasLabel) {
-          styleVariables['--margin'] = '12px 0'
+          styleVariables['--padding'] = '0 12px 0'
         }
       }
 
-      if (!isLabelInside && !isInline && hasLabel) {
-        styleVariables['--bodyMargin'] = '18px 0 0 0'
-      }
-
-      if (props.noBorder && !isLabelInside) {
-        styleVariables['--padding'] = '8px 8px'
+      if (isRegular) {
+        styleVariables['--padding'] = '24px 12px 8px'
       }
     }
 
@@ -101,24 +94,20 @@ export function useInputWrapperUtils() {
     else if (props.size === 'lg') {
       styleVariables['--fontSize'] = '18px'
       styleVariables['--lineHeight'] = '28px'
-      styleVariables['--padding'] = '12px 12px'
+      styleVariables['--padding'] = '10px 10px'
       styleVariables['--margin'] = '0'
 
       if (isLabelInside) {
-        styleVariables['--padding'] = '0 12px'
-        styleVariables['--margin'] = '20px 0 4px 0'
+        styleVariables['--padding'] = '18px 12px 0'
+        styleVariables['--margin'] = '0'
 
         if (!hasLabel) {
-          styleVariables['--margin'] = '14px 0'
+          styleVariables['--padding'] = '0 12px 0'
         }
       }
 
-      if (!isLabelInside && !isInline && hasLabel) {
-        styleVariables['--bodyMargin'] = '22px 0 0 0'
-      }
-
-      if (props.noBorder && !isLabelInside) {
-        styleVariables['--padding'] = '8px 8px'
+      if (isRegular) {
+        styleVariables['--padding'] = '30px 12px 8px'
       }
     }
 

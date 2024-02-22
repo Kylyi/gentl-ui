@@ -124,7 +124,6 @@ defineExpose({
     >
       <div
         flex="~ center gap-1"
-        fit
         @click="handleFocusOrClick"
       >
         <Btn

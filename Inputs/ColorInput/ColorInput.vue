@@ -23,7 +23,7 @@ const emits = defineEmits<{
 // Lifcecycle
 onMounted(() => {
   referenceEl.value = unrefElement(fieldEl as any)?.querySelector(
-    '.wrapper-body'
+    '.wrapper__body'
   ) as HTMLDivElement
 })
 

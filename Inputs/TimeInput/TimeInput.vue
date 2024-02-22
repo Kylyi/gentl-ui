@@ -35,7 +35,7 @@ defineEmits<{
 // Lifecycle
 onMounted(() => {
   menuReferenceTarget.value =
-    currentInstance?.proxy?.$el.querySelector('.wrapper-body')
+    currentInstance?.proxy?.$el.querySelector('.wrapper__body')
 })
 
 // Utils
@@ -345,9 +345,7 @@ defineExpose({
         v-model:prevent-next-is-am-change="preventNextIsAmChange"
         :reference-target="menuReferenceTarget"
         :is12h="is12h"
-        :class="{
-          'md:m-l-200px': inline,
-        }"
+        :class="{ 'md:m-l-200px': layout === 'inline' }"
         :model-value-localized="modelValueLocalized"
         :handle-manual-model-change="handleManualModelChange"
         :shortcuts="shortcuts"

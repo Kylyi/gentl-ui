@@ -32,7 +32,7 @@ defineExpose({
     immediate
     empty-value=""
     :hint="hint"
-    :inline="inline"
+    :layout="layout"
     :input-class="inputClass"
     :content-class="contentClass"
     :input-style="inputStyle"
