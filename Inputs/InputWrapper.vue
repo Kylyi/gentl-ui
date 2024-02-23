@@ -101,6 +101,7 @@ const wrapperProps = computed(() => {
     hasErrors: !!issues.value.length,
     hint: props.hint,
     size: props.size,
+    hasLabel: !!props.label,
   }
 })
 </script>

@@ -8,6 +8,7 @@ const props = defineProps<
     'noBorder' | 'readonly' | 'disabled' | 'size' | 'hint'
   > & {
     hasErrors?: boolean
+    hasLabel?: boolean
   }
 >()
 

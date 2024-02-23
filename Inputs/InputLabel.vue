@@ -73,11 +73,11 @@ div.label {
     --apply: font-rem-14 leading-3.5;
 
     &.is-inside {
-      --apply: translate-y-3;
+      --apply: translate-y-13px;
     }
 
     &.is-regular {
-      --apply: translate-y-2px;
+      --apply: translate-y-1px;
     }
   }
 
@@ -103,7 +103,7 @@ div.label {
     }
 
     &.is-regular {
-      --apply: translate-y-0;
+      --apply: translate-y--1px;
     }
   }
 

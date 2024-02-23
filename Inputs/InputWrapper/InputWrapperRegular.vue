@@ -8,6 +8,7 @@ const props = defineProps<
     'noBorder' | 'readonly' | 'disabled' | 'size' | 'hint'
   > & {
     hasErrors?: boolean
+    hasLabel?: boolean
   }
 >()
 
@@ -18,6 +19,7 @@ const classes = computed(() => {
     'has-errors': props.hasErrors,
     'is-readonly': props.readonly,
     'is-disabled': props.disabled,
+    'has-label': !!props.hasLabel
   }
 })
 </script>
@@ -72,17 +74,27 @@ const classes = computed(() => {
 .input-wrapper__regular {
   --apply: grid items-center;
 
+  // This is without label!
   grid-template-areas:
-    'nothing  input nothing2 nothing3'
     'prepend  input loading append'
     'nothing4 error nothing5 nothing6';
 
   grid-template-columns: auto 1fr auto auto;
-  grid-template-rows: 16px auto 1fr;
+  grid-template-rows: 1fr auto;
+
+  &.has-label {
+    grid-template-areas:
+    'nothing  input nothing2 nothing3'
+    'prepend  input loading append'
+    'nothing4 error nothing5 nothing6';
+
+    grid-template-columns: auto 1fr auto auto;
+    grid-template-rows: 16px auto 1fr;
+  }
 
   .input-wrapper__regular-input,
   .input-wrapper__regular-label {
-    --apply: relative flex overflow-auto;
+    --apply: relative flex;
     grid-area: input;
   }
 
@@ -105,13 +117,20 @@ const classes = computed(() => {
 }
 
 // Border
+// Without label
 .input-wrapper__regular-border {
   grid-column: 1 / -1;
-  grid-row: 2 / 3;
+  grid-row: 1 / 2;
 
   --apply: fit transition-all border-custom rounded-custom pointer-events-none
     border-ca;
 }
+// With border
+.input-wrapper__regular.has-label > .input-wrapper__regular-border {
+  grid-row: 2 / 3;
+}
+
+
 .input-wrapper__regular:focus-within {
   .input-wrapper__regular-border {
     --apply: border-$borderColor;

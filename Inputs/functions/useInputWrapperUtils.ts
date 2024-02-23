@@ -65,7 +65,11 @@ export function useInputWrapperUtils() {
       }
 
       if (isRegular) {
-        styleVariables['--padding'] = '24px 12px 8px'
+        styleVariables['--padding'] = '24px 12px 7.5px'
+
+        if (!hasLabel) {
+          styleVariables['--padding'] = '8px 12px'
+        }
       }
     }
 
@@ -86,7 +90,11 @@ export function useInputWrapperUtils() {
       }
 
       if (isRegular) {
-        styleVariables['--padding'] = '24px 12px 8px'
+        styleVariables['--padding'] = '25px 12px 7px'
+
+        if (!hasLabel) {
+          styleVariables['--padding'] = '8px 12px'
+        }
       }
     }
 
@@ -107,7 +115,11 @@ export function useInputWrapperUtils() {
       }
 
       if (isRegular) {
-        styleVariables['--padding'] = '30px 12px 8px'
+        styleVariables['--padding'] = '29px 12px 11px'
+
+        if (!hasLabel) {
+          styleVariables['--padding'] = '10px 12px'
+        }
       }
     }
 
