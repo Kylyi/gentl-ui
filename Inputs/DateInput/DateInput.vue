@@ -46,10 +46,6 @@ function isDate(date?: any) {
   return true
 }
 
-function isMaskString(val?: string) {
-  return val === PATTERN.value
-}
-
 // Mask
 const PATTERN = computed(() => getCurrentLocaleDateFormat())
 
@@ -58,6 +54,7 @@ const mask = computed<AnyMaskedOptions>(() => {
     mask: PATTERN.value,
     pattern: PATTERN.value,
     lazy: false,
+    overwrite: true,
     blocks: {
       DD: {
         mask: MaskedRange,
@@ -109,14 +106,16 @@ const mask = computed<AnyMaskedOptions>(() => {
   }
 })
 
+function isMaskString(val?: string) {
+  return val === PATTERN.value
+}
+
 // Layout
 const preventSync = autoResetRef(false, 50)
 const wrapperEl = ref<InstanceType<typeof InputWrapper>>()
-const usedTouch = ref(false)
 
 function handleDateSelect(val: dayjs.Dayjs) {
   preventSync.value = true
-  touch()
 
   if (props.format) {
     handleManualModelChange(val.format(props.format))
@@ -135,7 +134,6 @@ const datePickerEl = ref<InstanceType<typeof DatePicker>>()
 const isPickerActive = ref(false)
 
 function handlePickerHide() {
-  usedTouch.value = false
   isPickerActive.value = false
 }
 
@@ -151,9 +149,8 @@ const {
   handleClickWrapper,
   focus,
   select,
+  handleBlur,
   blur,
-  reset,
-  touch,
   clear,
   getInputElement,
 } = useInputUtils({
@@ -176,8 +173,6 @@ defineExpose({
   focus,
   select,
   blur,
-  reset,
-  touch,
   clear,
   getInputElement,
 })
@@ -216,14 +211,15 @@ defineExpose({
       class="control"
       :class="[inputClass]"
       v-bind="inputProps"
-      @focus.stop.prevent="handleFocusOrClick"
+      @select="handleFocusOrClick"
+      @focus="handleFocusOrClick"
+      @blur="handleBlur"
     />
 
     <template #append>
       <div
         v-if="$slots.append || (!readonly && !disabled)"
         flex="~ gap-1 center"
-        fit
         @click="handleFocusOrClick"
       >
         <slot
@@ -262,7 +258,6 @@ defineExpose({
         ref="menuProxyEl"
         v-model="isPickerActive"
         manual
-        :cover="usedTouch"
         position="top"
         placement="bottom-start"
         no-uplift

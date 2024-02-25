@@ -44,7 +44,6 @@ export function useInputWrapperUtils() {
     }
 
     const isLabelInside = props.layout === 'label-inside'
-    const isInline = props.layout === 'inline'
     const isRegular = props.layout === 'regular'
     const hasLabel = !!props.label
 
@@ -56,7 +55,7 @@ export function useInputWrapperUtils() {
       styleVariables['--margin'] = '0'
 
       if (isLabelInside) {
-        styleVariables['--padding'] = '16px 12px 0'
+        styleVariables['--padding'] = '16px 12px 4px'
         styleVariables['--margin'] = '0'
 
         if (!hasLabel) {
@@ -81,8 +80,7 @@ export function useInputWrapperUtils() {
       styleVariables['--margin'] = '0'
 
       if (isLabelInside) {
-        styleVariables['--padding'] = '16px 12px 0'
-        styleVariables['--margin'] = '0'
+        styleVariables['--padding'] = '20px 10px 2px'
 
         if (!hasLabel) {
           styleVariables['--padding'] = '0 12px 0'
@@ -90,7 +88,7 @@ export function useInputWrapperUtils() {
       }
 
       if (isRegular) {
-        styleVariables['--padding'] = '25px 12px 7px'
+        styleVariables['--padding'] = '9px 12px 7px'
 
         if (!hasLabel) {
           styleVariables['--padding'] = '8px 12px'
@@ -106,7 +104,7 @@ export function useInputWrapperUtils() {
       styleVariables['--margin'] = '0'
 
       if (isLabelInside) {
-        styleVariables['--padding'] = '18px 12px 0'
+        styleVariables['--padding'] = '20px 12px 0'
         styleVariables['--margin'] = '0'
 
         if (!hasLabel) {

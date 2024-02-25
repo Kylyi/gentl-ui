@@ -70,8 +70,6 @@ const {
   focus,
   select,
   blur,
-  reset,
-  touch,
   clear,
   getInputElement,
   handleManualModelChange,
@@ -129,7 +127,6 @@ function handleStep() {
 }
 
 function startStep(_: PointerEvent, increment = true) {
-  touch()
   modifier.value = increment ? 1 : -1
 
   window.addEventListener('pointerup', stopStep)
@@ -153,8 +150,6 @@ defineExpose({
   focus,
   select,
   blur,
-  reset,
-  touch,
   clear,
   getInputElement,
   handleManualModelChange,
@@ -268,6 +263,6 @@ defineExpose({
 
 <style lang="scss" scoped>
 .number-input__step {
-  --apply: flex gap-x-2 flex-center p-x-2 fit;
+  --apply: flex gap-x-2 flex-center p-x-2;
 }
 </style>

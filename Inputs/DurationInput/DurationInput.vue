@@ -56,6 +56,7 @@ const numberInputProps = reactivePick(
   'labelClass',
   'labelStyle',
   'labelInside',
+  'layout',
   'loading',
   'min',
   'max',
@@ -123,8 +124,6 @@ defineExpose({
   focus: () => numberInputEl.value?.focus(),
   select: () => numberInputEl.value?.select(),
   blur: () => numberInputEl.value?.blur(),
-  reset: () => numberInputEl.value?.reset(),
-  touch: () => numberInputEl.value?.touch(),
 })
 </script>
 
@@ -159,7 +158,7 @@ defineExpose({
           cover
           no-transition
           :fit="false"
-          :ui="{ contentClass: 'gap-1 w-35' }"
+          :ui="{ contentClass: 'gap-1 w-35 p-1' }"
         >
           <template #default>
             <Btn

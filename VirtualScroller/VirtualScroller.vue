@@ -71,9 +71,7 @@ const emits = defineEmits<{
 }>()
 
 defineExpose({
-  scrollToTop: () => {
-    scrollTo(0)
-  },
+  scrollToTop: () => scrollTo(0),
   scrollTo,
   focus: () => virtualScrollEl.value?.focus(),
   rerender: (noEmit?: boolean) => rerenderVisibleRows(noEmit),
@@ -322,7 +320,6 @@ async function handleMountedRow(node: any, row: IRow) {
 }
 
 function rerenderVisibleRows(noScrollEvent?: boolean) {
-  console.log('rerender')
   const renderedRowsByIdx = renderedRows.value.rows.reduce((agg, row) => {
     agg[row.idx] = row
     return agg
@@ -343,7 +340,6 @@ watchThrottled(
   width,
   () => {
     pauseRowHeightWatcher()
-    console.log('w')
     rerenderVisibleRows()
     virtualScrollerRect.value = virtualScrollEl.value?.getBoundingClientRect()
 
@@ -357,7 +353,6 @@ watchThrottled(
 )
 
 watch(rows, (rows, rowsOld) => {
-  console.log('rows')
   pauseRowHeightWatcher()
 
   // When fetching more data, we just want to extend the heights array with
@@ -459,7 +454,6 @@ function renderOnlyVisible(
   renderedRows.value = getRenderedRows(_first, _last)
 
   if (alsoRerender) {
-    console.log('wtf')
     rerenderVisibleRows()
   }
 }

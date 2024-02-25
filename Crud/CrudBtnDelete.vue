@@ -19,6 +19,7 @@ defineEmits<{
     :outlined="outlined"
     :no-uppercase="noUppercase"
     :disabled="disabled"
+    tabindex="-1"
     data-cy="delete-button"
     @click="noConfirm && $emit('delete')"
   >

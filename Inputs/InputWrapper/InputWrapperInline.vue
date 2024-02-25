@@ -29,28 +29,37 @@ const classes = computed(() => {
     class="input-wrapper__inline"
     :class="classes"
   >
+    <!-- Label -->
     <div class="input-wrapper__inline-label">
       <slot name="label" />
     </div>
 
-    <div class="input-wrapper__input input-wrapper__inline-input">
+    <!-- Input wrapper -->
+    <div class="input-wrapper__inline-input input-wrapper__focusable">
+      <!-- Prepend -->
       <div class="input-wrapper__inline-input-prepend">
         <slot name="prepend" />
       </div>
 
+      <!-- Input -->
       <div class="input-wrapper__inline-input-input">
         <slot name="input" />
       </div>
 
+      <!-- Loading -->
       <div class="input-wrapper__inline-input-loading">
         <slot name="loading" />
       </div>
 
+      <!-- Append -->
       <div class="input-wrapper__inline-input-append">
         <slot name="append" />
       </div>
 
-      <div class="input-wrapper__inline-border" />
+      <!-- Border -->
+      <div class="input-wrapper__inline-border input-wrapper-border" />
+
+      <!-- Errors & Hint -->
       <div
         v-if="$slots.error || hint"
         class="input-wrapper__inline-input-error"
@@ -70,7 +79,7 @@ const classes = computed(() => {
 
 <style lang="scss" scoped>
 .input-wrapper__inline {
-  --apply: flex flex-col;
+  --apply: flex flex-col rounded-custom;
 
   &-label {
     --apply: shrink-0;
@@ -88,6 +97,7 @@ const classes = computed(() => {
   }
 
   .input-wrapper__inline-input-prepend {
+    --apply: fit flex flex-center;
     grid-area: prepend;
   }
 
@@ -101,6 +111,7 @@ const classes = computed(() => {
   }
 
   .input-wrapper__inline-input-append {
+    --apply: fit flex flex-center;
     grid-area: append;
   }
 

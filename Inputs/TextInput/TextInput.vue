@@ -38,14 +38,12 @@ const {
   hasContent,
   isBlurred,
   hasClearableBtn,
-  handleFocus,
   handleBlur,
   handleClickWrapper,
+  handleFocusOrClick,
   focus,
   select,
   blur,
-  reset,
-  touch,
   clear,
   getInputElement,
   handleManualModelChange,
@@ -65,8 +63,6 @@ defineExpose({
   focus,
   select,
   blur,
-  reset,
-  touch,
   clear,
   getInputElement,
   sync: () => handleManualModelChange(props.modelValue),
@@ -108,7 +104,7 @@ defineExpose({
       :class="[inputClass, { 'custom-enter': !!customEnter }]"
       :style="inputStyle"
       v-bind="inputProps"
-      @focus="handleFocus"
+      @focus="handleFocusOrClick"
       @blur="handleBlur"
       @keypress.enter="$emit('enter', $event)"
     />
@@ -119,7 +115,6 @@ defineExpose({
     >
       <div
         flex="~ gap-1 items-center"
-        fit
         p="x-2"
       >
         <slot

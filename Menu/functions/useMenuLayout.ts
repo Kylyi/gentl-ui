@@ -24,10 +24,6 @@ export function useMenuLayout(model: Ref<boolean>, props: IMenuProps) {
   const referenceElZIndex = ref<string>()
   const referenceElBgColor = ref<string>()
 
-  function toggle() {
-    model.value = !model.value
-  }
-
   const virtualEl = computed(() => {
     if (!props.virtual || !appStore.lastPointerDownEvent) {
       return null
@@ -57,36 +53,20 @@ export function useMenuLayout(model: Ref<boolean>, props: IMenuProps) {
     return referenceEl.value
   })
 
-  // Watch for element changes
-  watch([() => props.target, () => props.referenceTarget], () => {
+  // Methods
+  function toggle() {
+    model.value = !model.value
+  }
+
+  /**
+   * Refreshes the `referenceEl` and `triggerEl`
+   */
+  function refreshAnchors() {
     const parentEl = instance?.vnode?.el?.parentNode
 
     if (triggerEl.value instanceof HTMLElement) {
       triggerEl.value?.removeEventListener(props.trigger ?? 'click', toggle)
     }
-
-    triggerEl.value = getElement(props.target ?? parentEl)
-    referenceEl.value = getElement(props.referenceTarget ?? parentEl)
-
-    if (referenceEl.value && referenceEl.value instanceof HTMLElement) {
-      referenceEl.value.classList.add('has-menu')
-
-      const referenceElStyle = getComputedStyle(referenceEl.value)
-      referenceElZIndex.value = referenceElStyle.zIndex
-      referenceElBgColor.value = referenceElStyle.backgroundColor
-    }
-
-    // Add event listeners when not using the `manual` mode
-    if (!props.manual && triggerEl.value instanceof HTMLElement) {
-      triggerEl.value?.addEventListener(props.trigger ?? 'click', toggle)
-    }
-  })
-
-  // Lifecycle
-  onMounted(async () => {
-    await nextTick()
-
-    const parentEl = instance?.vnode?.el?.parentNode
 
     // Assign the elements
     triggerEl.value = getElement(props.target ?? parentEl)
@@ -104,6 +84,17 @@ export function useMenuLayout(model: Ref<boolean>, props: IMenuProps) {
     if (!props.manual && triggerEl.value instanceof HTMLElement) {
       triggerEl.value?.addEventListener(props.trigger ?? 'click', toggle)
     }
+  }
+
+  // Watch for element changes
+  watch([() => props.target, () => props.referenceTarget], () => {
+    refreshAnchors()
+  })
+
+  // Lifecycle
+  onMounted(async () => {
+    await nextTick()
+    refreshAnchors()
   })
 
   onBeforeUnmount(() => {
@@ -120,5 +111,6 @@ export function useMenuLayout(model: Ref<boolean>, props: IMenuProps) {
     floatingEl,
     floatingReferenceEl,
     referenceEl,
+    refreshAnchors,
   }
 }

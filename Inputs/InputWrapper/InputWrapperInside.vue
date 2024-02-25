@@ -29,19 +29,32 @@ const classes = computed(() => {
     class="input-wrapper__inside"
     :class="classes"
   >
-    <div class="input-wrapper__inside-prepend">
-      <slot name="prepend" />
-    </div>
-
-    <div class="input-wrapper__inside-input input-wrapper__input">
+    <!-- Input -->
+    <div class="input-wrapper__inside-input input-wrapper__focusable">
       <slot name="input" />
     </div>
 
-    <div class="input-wrapper__inside-loading">
+    <!-- Background filler -->
+    <div
+      v-if="hasLabel"
+      class="input-wrapper__inside-background-filler"
+    />
+
+    <!-- Border -->
+    <div class="input-wrapper__inside-border input-wrapper-border" />
+
+    <!-- Prepend -->
+    <div class="input-wrapper__inside-prepend input-wrapper__focusable">
+      <slot name="prepend" />
+    </div>
+
+    <!-- Loading -->
+    <div class="input-wrapper__inside-loading input-wrapper__focusable">
       <slot name="loading" />
     </div>
 
-    <div class="input-wrapper__inside-append">
+    <!-- Append -->
+    <div class="input-wrapper__inside-append input-wrapper__focusable">
       <slot name="append" />
     </div>
 
@@ -67,15 +80,12 @@ const classes = computed(() => {
         name="hint"
       />
     </div>
-
-    <!-- Border -->
-    <div class="input-wrapper__inside-border" />
   </div>
 </template>
 
 <style lang="scss" scoped>
 .input-wrapper__inside {
-  --apply: grid items-center;
+  --apply: grid items-center rounded-custom;
 
   grid-template-areas:
     'prepend input loading append'
@@ -83,10 +93,12 @@ const classes = computed(() => {
     'nothing error nothing2 nothing3';
 
   grid-template-columns: auto 1fr auto auto;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: 20px 1fr auto;
 
   &.is-sm {
     --apply: min-h-9;
+
+    grid-template-rows: 16px 1fr auto;
   }
 
   &.is-md {
@@ -109,6 +121,7 @@ const classes = computed(() => {
   }
 
   .input-wrapper__inside-prepend {
+    --apply: fit flex flex-center;
     grid-area: prepend;
   }
 
@@ -117,6 +130,7 @@ const classes = computed(() => {
   }
 
   .input-wrapper__inside-append {
+    --apply: fit flex flex-center;
     grid-area: append;
   }
 
@@ -129,11 +143,12 @@ const classes = computed(() => {
 // Border
 .input-wrapper__inside-border {
   grid-column: 1 / -1;
-  grid-row: 2 / 3;
+  grid-row: 1 / 3;
 
-  --apply: content-empty absolute fit transition-all border-custom
-    rounded-custom pointer-events-none border-ca;
+  --apply: absolute fit transition-all border-custom rounded-custom
+    pointer-events-none border-ca;
 }
+
 .input-wrapper__inside:focus-within {
   .input-wrapper__inside-border {
     --apply: border-$borderColor;
@@ -169,5 +184,13 @@ const classes = computed(() => {
   &.is-lg > .input-wrapper__inside-input {
     --apply: min-h-56px;
   }
+}
+
+.input-wrapper__inside-background-filler {
+  grid-column: 2 / 3;
+  grid-row: 1 / 2;
+
+  --apply: absolute fit transition-all pointer-events-none rounded-t-custom
+    bg-white dark:bg-darker;
 }
 </style>

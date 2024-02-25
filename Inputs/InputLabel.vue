@@ -90,7 +90,7 @@ div.label {
     }
 
     &.is-regular {
-      --apply: translate-y-1px;
+      --apply: translate-y-28px;
     }
   }
 
@@ -112,20 +112,11 @@ div.label {
   }
 
   &.is-floating.is-inside {
-    --apply: translate-y-1 rounded-t-custom;
+    --apply: translate-y-3px rounded-t-custom;
   }
 
   &.is-floating.is-regular {
-    --apply: translate-y--22px; // Arbitrary value
-
-
-    &.label--md {
-      --apply: translate-y--28px; // Arbitrary value
-    }
-
-    &.label--lg {
-      --apply: translate-y--34px; // Arbitrary value
-    }
+    --apply: translate-y-0px
   }
 
   &.is-required::after {
@@ -144,19 +135,11 @@ div.label {
     }
 
     &.is-inside {
-      --apply: translate-y-1 rounded-t-custom;
+      --apply: translate-y-3px rounded-t-custom;
     }
 
     &.is-regular {
-      --apply: translate-y--22px; // Arbitrary value
-
-      &.label--md {
-        --apply: translate-y--28px; // Arbitrary value
-      }
-
-      &.label--lg {
-        --apply: translate-y--34px; // Arbitrary value
-      }
+      --apply: translate-y--0px;
     }
   }
 
@@ -165,19 +148,19 @@ div.label {
   }
 }
 
-// div.label.is-floating:not(.is-inside) {
-//   --apply: p-x-1;
-// }
+div.label.is-floating:not(.is-inside) {
+  --apply: p-x-1;
+}
 
-// div.label.is-inline {
-//   @screen lt-md {
-//     --apply: p-x-1;
-//   }
-// }
+div.label.is-inline {
+  @screen lt-md {
+    --apply: p-x-1;
+  }
+}
 
-// .wrapper__body:focus-within {
-//   div.label:not(.is-inside):not(.is-inline) {
-//     --apply: p-x-1;
-//   }
-// }
+.wrapper__body:not(.selector-wrapper):focus-within {
+  div.label:not(.is-inside):not(.is-inline) {
+    --apply: p-x-1;
+  }
+}
 </style>

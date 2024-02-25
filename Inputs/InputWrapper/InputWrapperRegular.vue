@@ -19,7 +19,7 @@ const classes = computed(() => {
     'has-errors': props.hasErrors,
     'is-readonly': props.readonly,
     'is-disabled': props.disabled,
-    'has-label': !!props.hasLabel
+    'has-label': !!props.hasLabel,
   }
 })
 </script>
@@ -29,6 +29,7 @@ const classes = computed(() => {
     class="input-wrapper__regular"
     :class="classes"
   >
+    <!-- Label -->
     <div
       v-if="$slots.label"
       class="input-wrapper__regular-label"
@@ -36,22 +37,27 @@ const classes = computed(() => {
       <slot name="label" />
     </div>
 
-    <div class="input-wrapper__regular-prepend">
+    <!-- Prepend -->
+    <div class="input-wrapper__regular-prepend input-wrapper__focusable">
       <slot name="prepend" />
     </div>
 
-    <div class="input-wrapper__regular-input input-wrapper__input">
+    <!-- Input -->
+    <div class="input-wrapper__regular-input input-wrapper__focusable">
       <slot name="input" />
     </div>
 
-    <div class="input-wrapper__regular-loading">
+    <!-- Loading -->
+    <div class="input-wrapper__regular-loading input-wrapper__focusable">
       <slot name="loading" />
     </div>
 
-    <div class="input-wrapper__regular-append">
+    <!-- Append -->
+    <div class="input-wrapper__regular-append input-wrapper__focusable">
       <slot name="append" />
     </div>
 
+    <!-- Errors & Hint -->
     <div
       v-if="$slots.error || hint"
       class="input-wrapper__reular-error"
@@ -66,15 +72,16 @@ const classes = computed(() => {
       />
     </div>
 
-    <div class="input-wrapper__regular-border" />
+    <!-- Border -->
+    <div class="input-wrapper__regular-border input-wrapper-border" />
   </div>
 </template>
 
 <style lang="scss" scoped>
 .input-wrapper__regular {
-  --apply: grid items-center;
+  --apply: grid items-center rounded-custom;
 
-  // This is without label!
+  // Without label
   grid-template-areas:
     'prepend  input loading append'
     'nothing4 error nothing5 nothing6';
@@ -84,21 +91,27 @@ const classes = computed(() => {
 
   &.has-label {
     grid-template-areas:
-    'nothing  input nothing2 nothing3'
-    'prepend  input loading append'
-    'nothing4 error nothing5 nothing6';
+      'nothing  label nothing2 nothing3'
+      'prepend  input loading append'
+      'nothing4 error nothing5 nothing6';
 
     grid-template-columns: auto 1fr auto auto;
     grid-template-rows: 16px auto 1fr;
   }
 
-  .input-wrapper__regular-input,
-  .input-wrapper__regular-label {
-    --apply: relative flex;
+  .input-wrapper__regular-input {
+    --apply: relative flex overflow-auto;
     grid-area: input;
   }
 
+  .input-wrapper__regular-label {
+    --apply: overflow-hidden self-start relative fit;
+    grid-column: 2 / 3;
+    grid-row: 1 / 3;
+  }
+
   .input-wrapper__regular-prepend {
+    --apply: fit flex flex-center;
     grid-area: prepend;
   }
 
@@ -107,6 +120,7 @@ const classes = computed(() => {
   }
 
   .input-wrapper__regular-append {
+    --apply: fit flex flex-center;
     grid-area: append;
   }
 
@@ -129,7 +143,6 @@ const classes = computed(() => {
 .input-wrapper__regular.has-label > .input-wrapper__regular-border {
   grid-row: 2 / 3;
 }
-
 
 .input-wrapper__regular:focus-within {
   .input-wrapper__regular-border {
