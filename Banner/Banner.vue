@@ -4,35 +4,33 @@
 // Types
 import { type IBannerProps } from '~/components/Banner/types/banner-props.type'
 
-const props = withDefaults(defineProps<IBannerProps>(), {
-  modelValue: true,
-})
+const props = defineProps<IBannerProps>()
 
 defineEmits<{
   (e: 'update:modelValue', value: boolean): void
   (e: 'dismiss'): void
 }>()
 
-// LAYOUT
-const model = useVModel(props, 'modelValue')
+defineExpose({ dismiss })
+
+// Layout
+const model = defineModel<boolean>({ default: true })
 const internalValue = ref(props.modelValue)
 const counter = toRef(props, 'counter')
 const bannerEl = ref<HTMLDivElement>()
 
 const icon = computed(() => {
-  const iconClass = props.iconCenter ? 'self-center' : 'self-start'
-
   switch (props.type) {
     case 'warning':
-      return `${iconClass} clarity:warning-solid`
+      return `clarity:warning-solid h-6 w-6`
     case 'info':
-      return `${iconClass} bi:info-lg`
+      return `bi:info-lg h-6 w-6`
     case 'success':
-      return `${iconClass} akar-icons:circle-check-fill`
+      return `akar-icons:circle-check-fill h-6 w-6`
     case 'error':
-      return `${iconClass} ci:error`
+      return `ci:error h-6 w-6`
     default:
-      return `${iconClass} bi:info-lg`
+      return `bi:info-lg h-6 w-6`
   }
 })
 
@@ -43,27 +41,20 @@ function dismiss() {
   }
 }
 
-// COUNTER
+// Counter
 const counterEl = ref<HTMLSpanElement>()
-const { apply } = useMotion(counterEl, {
-  initial: { scale: 1 },
-  enter: { scale: 1 },
-  bounce: {
-    scale: 1.25,
-    transition: {
-      type: 'keyframes',
-      duration: 100,
-    },
-  },
-})
 
-watch(counter, async () => {
-  await apply('bounce')
-  await apply('enter')
-})
+function bounce() {
+  const _counterEl = counterEl.value as HTMLElement
 
-defineExpose({
-  dismiss,
+  _counterEl?.addEventListener('animationend', () => {
+    _counterEl.classList.remove('bounce')
+  })
+  _counterEl?.classList.add('bounce')
+}
+
+watch(counter, () => {
+  bounce()
 })
 </script>
 
@@ -84,20 +75,22 @@ defineExpose({
       ]"
       @click="dismiss"
     >
-      <!-- ICON -->
+      <!-- Icon -->
       <div
         class="banner-icon"
-        :class="[icon, iconClass]"
-      />
+        :class="{ 'self-start': !iconCenter }"
+      >
+        <div :class="[iconClass, icon]" />
+      </div>
 
-      <!-- TEXT -->
+      <!-- Text -->
       <div class="banner-text">
         <slot>
           {{ label }}
         </slot>
       </div>
 
-      <!-- COUNTER -->
+      <!-- Counter -->
       <span
         v-if="counter && counter > 1"
         ref="counterEl"
@@ -111,15 +104,15 @@ defineExpose({
 
 <style lang="scss" scoped>
 .banner {
-  --apply: flex flex-gap-x-2 items-center rounded-custom p-x-2 p-y-1 relative
+  --apply: flex flex-gap-x-2 items-center rounded-custom p-x-2 relative
     min-h-12 color-true-gray;
 
   &-icon {
-    --apply: h-6 w-6 flex-shrink-0 m-y-1;
+    --apply: flex flex-start min-h-12 shrink-0 p-y-3;
   }
 
   &-text {
-    --apply: flex-grow;
+    --apply: flex-grow p-y-2;
   }
 
   &.is-dismissable {
@@ -172,7 +165,7 @@ defineExpose({
   }
 }
 
-// TRANSITION
+// Transition
 .v-enter-active,
 .v-leave-active {
   transition: all 0.25s ease;
@@ -184,5 +177,20 @@ defineExpose({
 
 .v-leave-to {
   --apply: opacity-0 translate-x--100%;
+}
+
+// Bounce
+.bounce {
+  animation: myBounce 100ms ease-in-out 0s 2 alternate forwards;
+}
+
+@keyframes myBounce {
+	0% {
+		transform: scale(1);
+	}
+
+	100% {
+		transform: scale(1.25);
+	}
 }
 </style>
