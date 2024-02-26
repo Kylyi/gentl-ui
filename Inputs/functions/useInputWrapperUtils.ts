@@ -5,8 +5,6 @@ export function useInputWrapperUtils() {
   function getInputWrapperProps(props: IInputWrapperProps) {
     return reactivePick(
       props,
-      'contentClass',
-      'contentStyle',
       'disabled',
       'errorTakesSpace',
       'errorVisible',
@@ -24,8 +22,6 @@ export function useInputWrapperUtils() {
       'size',
       'stackLabel',
       'noBorder',
-      'inputContainerClass',
-      'inputContainerStyle',
       'validation',
       'ui',
       'zod'
@@ -50,24 +46,25 @@ export function useInputWrapperUtils() {
     // Size: sm
     if (props.size === 'sm') {
       styleVariables['--fontSize'] = '14px'
-      styleVariables['--lineHeight'] = '16px'
-      styleVariables['--padding'] = '8px 12px'
-      styleVariables['--margin'] = '0'
+      styleVariables['--lineHeight'] = '24px'
+      styleVariables['--padding'] = '0 12px'
+      styleVariables['--margin'] = '4px 0'
 
       if (isLabelInside) {
         styleVariables['--padding'] = '16px 12px 4px'
         styleVariables['--margin'] = '0'
 
         if (!hasLabel) {
-          styleVariables['--padding'] = '0 12px 0'
+          styleVariables['--padding'] = '0 12px'
         }
       }
 
       if (isRegular) {
-        styleVariables['--padding'] = '24px 12px 7.5px'
+        styleVariables['--padding'] = '0px 12px'
+        styleVariables['--margin'] = '4px 0px'
 
         if (!hasLabel) {
-          styleVariables['--padding'] = '8px 12px'
+          styleVariables['--margin'] = '4px 0'
         }
       }
     }
@@ -75,12 +72,13 @@ export function useInputWrapperUtils() {
     // Size: md
     else if (props.size === 'md') {
       styleVariables['--fontSize'] = '16px'
-      styleVariables['--lineHeight'] = '24px'
-      styleVariables['--padding'] = '8px 12px'
-      styleVariables['--margin'] = '0'
+      styleVariables['--lineHeight'] = '26px'
+      styleVariables['--padding'] = '0px 12px'
+      styleVariables['--margin'] = '7px 0'
 
       if (isLabelInside) {
-        styleVariables['--padding'] = '20px 10px 2px'
+        styleVariables['--padding'] = '0 10px'
+        styleVariables['--margin'] = '19px 0 3px'
 
         if (!hasLabel) {
           styleVariables['--padding'] = '0 12px 0'
@@ -88,10 +86,11 @@ export function useInputWrapperUtils() {
       }
 
       if (isRegular) {
-        styleVariables['--padding'] = '9px 12px 7px'
+        styleVariables['--padding'] = '1px 12px'
+        styleVariables['--margin'] = '6px 0'
 
         if (!hasLabel) {
-          styleVariables['--padding'] = '8px 12px'
+          styleVariables['--margin'] = '6px 0'
         }
       }
     }
@@ -100,8 +99,8 @@ export function useInputWrapperUtils() {
     else if (props.size === 'lg') {
       styleVariables['--fontSize'] = '18px'
       styleVariables['--lineHeight'] = '28px'
-      styleVariables['--padding'] = '10px 10px'
-      styleVariables['--margin'] = '0'
+      styleVariables['--padding'] = '4px 10px'
+      styleVariables['--margin'] = '6px 0'
 
       if (isLabelInside) {
         styleVariables['--padding'] = '20px 12px 0'
@@ -113,10 +112,11 @@ export function useInputWrapperUtils() {
       }
 
       if (isRegular) {
-        styleVariables['--padding'] = '29px 12px 11px'
+        styleVariables['--padding'] = '2px 12px'
+        styleVariables['--margin'] = '8px 0'
 
         if (!hasLabel) {
-          styleVariables['--padding'] = '10px 12px'
+          styleVariables['--margin'] = '8px 9px'
         }
       }
     }

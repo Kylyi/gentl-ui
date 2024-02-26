@@ -49,6 +49,13 @@ const transitionProps = computed(() => ({
   leaveActiveClass: 'animate-fade-out animate-duration-150',
 }))
 
+const ui = computed(() => {
+  return {
+    ...props.ui,
+    contentClass: [props.ui?.contentClass, 'selector-wrapper'],
+  } as typeof props.ui
+})
+
 // Wrapper
 const wrapperProps = getInputWrapperProps(props)
 
@@ -302,7 +309,7 @@ defineExpose({
     v-bind="wrapperProps"
     :has-content="!!modelValue"
     class="relative"
-    :content-class="[contentClass, '!items-start', 'h-full']"
+    :ui="ui"
     @mousedown="focusEditor"
   >
     <EditorContent

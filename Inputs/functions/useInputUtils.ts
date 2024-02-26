@@ -56,8 +56,6 @@ export function useInputUtils(options: IInputUtilsOptions) {
   // Wrapper
   const wrapperProps = reactivePick(
     props,
-    'contentClass',
-    'contentStyle',
     'disabled',
     'emptyValue',
     'errorTakesSpace',
@@ -76,8 +74,6 @@ export function useInputUtils(options: IInputUtilsOptions) {
     'size',
     'stackLabel',
     'noBorder',
-    'inputContainerClass',
-    'inputContainerStyle',
     'validation',
     'ui',
     'zod'

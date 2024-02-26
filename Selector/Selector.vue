@@ -99,7 +99,9 @@ const hasContent = computed(() => {
 
 // Selection
 const maxHeight = computed(() => {
-  return props.maxChipsRows * 26
+  const MARGIN_BOTTOM = 2
+
+  return props.maxChipsRows * 26 - MARGIN_BOTTOM
 })
 
 function getKey(option: any): string {
@@ -349,6 +351,13 @@ const isLoading = computed(() => {
   return props.loading || isLoadingInternal.value
 })
 
+const ui = computed(() => {
+  return {
+    ...props.ui,
+    contentClass: [props.ui?.contentClass, 'selector-wrapper'],
+  } as typeof props.ui
+})
+
 function syncScrollArea() {
   setTimeout(() => {
     el.value?.update?.()
@@ -397,7 +406,7 @@ function getData() {
     v-bind="wrapperProps"
     :loading="isLoading"
     :has-content="hasContent"
-    :content-class="[contentClass, 'selector-wrapper']"
+    :ui="ui"
     :class="[
       menuPlacement === 'bottom' ? 'has-menu-bottom' : 'has-menu-top',
       {
@@ -431,7 +440,7 @@ function getData() {
       :is="scroller ? 'div' : ScrollArea"
       v-else
       ref="el"
-      flex="~ 1 wrap gap-1"
+      flex="~ 1 wrap gap-x-1 gap-y-0.5"
       class="control"
       box="content"
       tabindex="0"

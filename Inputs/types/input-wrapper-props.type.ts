@@ -7,16 +7,6 @@ import type { IZodValidationOptions } from '~/utils/zod/types/zod-validation-opt
 
 export type IInputWrapperProps = InputLabelProps & {
   /**
-   * The class of the input wrapper (including label,...)
-   */
-  contentClass?: ClassType
-
-  /**
-   * The style of the input container
-   */
-  contentStyle?: CSSProperties
-
-  /**
    * The cursor that will be shown when hovering over the input
    */
   cursor?: 'cursor-text' | 'cursor-pointer' | 'cursor-default'
@@ -41,16 +31,6 @@ export type IInputWrapperProps = InputLabelProps & {
    * The hint that will be shown below the input
    */
   hint?: string
-
-  /**
-   * Class of the input container
-   */
-  inputContainerClass?: ClassType
-
-  /**
-   * Style of the input container
-   */
-  inputContainerStyle?: CSSProperties
 
   /**
    * Whether the input is loading
@@ -93,6 +73,30 @@ export type IInputWrapperProps = InputLabelProps & {
      * The border color of the input
      */
     borderColor?: string
+
+    /**
+     * The class of the input wrapper (including label,...)
+     */
+    contentClass?: ClassType
+
+    /**
+     * The style of the input container
+     */
+    contentStyle?: CSSProperties
+
+    /**
+     * Class of the input container
+     *
+     * TODO: Implement
+     */
+    inputContainerClass?: ClassType
+
+    /**
+     * Style of the input container
+     *
+     * * TODO: Implement
+     */
+    inputContainerStyle?: CSSProperties
   }
 
   /**

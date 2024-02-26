@@ -64,7 +64,7 @@ const wrapperClass = computed(() => {
   ]
 })
 
-const wrapperContentClass = computed(() => {
+const contentClass = computed(() => {
   return {
     'is-readonly': props.readonly,
     'is-disabled': props.disabled,
@@ -102,6 +102,7 @@ const wrapperProps = computed(() => {
     hint: props.hint,
     size: props.size,
     hasLabel: !!props.label,
+    ui: props.ui,
   }
 })
 </script>
@@ -117,8 +118,8 @@ const wrapperProps = computed(() => {
       :is="WrapperComponent"
       v-bind="wrapperProps"
       class="wrapper__body"
-      :class="[contentClass, wrapperContentClass]"
-      :style="contentStyle"
+      :class="[contentClass, ui?.contentClass]"
+      :style="ui?.contentStyle"
     >
       <!-- Label -->
       <template
@@ -190,7 +191,7 @@ const wrapperProps = computed(() => {
 
 <style lang="scss" scoped>
 .wrapper {
-  --apply: relative flex flex-col rounded-custom;
+  --apply: relative flex flex-col rounded-custom overflow-hidden;
 
   .wrapper__body {
     --apply: relative;
@@ -209,7 +210,7 @@ const wrapperProps = computed(() => {
     }
 
     :slotted(.control) {
-      --apply: bg-inherit outline-none rounded-custom;
+      --apply: bg-inherit outline-none rounded-custom w-full;
 
       font-size: var(--fontSize);
       line-height: var(--lineHeight);

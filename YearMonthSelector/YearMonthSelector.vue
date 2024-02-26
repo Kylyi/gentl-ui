@@ -11,7 +11,9 @@ import Field from '~/components/Field/Field.vue'
 import MenuProxy from '~/components/MenuProxy/MenuProxy.vue'
 
 const props = withDefaults(defineProps<IYearMonthSelectorProps>(), {
-  contentClass: 'cursor-pointer',
+  ui: () => ({
+    contentClass: 'cursor-pointer',
+  }),
 })
 const emits = defineEmits<{
   (e: 'update:modelValue', payload: Datetime): void

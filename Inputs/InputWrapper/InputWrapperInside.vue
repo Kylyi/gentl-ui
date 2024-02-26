@@ -5,7 +5,7 @@ import type { IInputWrapperProps } from '~/components/Inputs/types/input-wrapper
 const props = defineProps<
   Pick<
     IInputWrapperProps,
-    'noBorder' | 'readonly' | 'disabled' | 'size' | 'hint'
+    'noBorder' | 'readonly' | 'disabled' | 'size' | 'hint' | 'ui'
   > & {
     hasErrors?: boolean
     hasLabel?: boolean
@@ -30,7 +30,11 @@ const classes = computed(() => {
     :class="classes"
   >
     <!-- Input -->
-    <div class="input-wrapper__inside-input input-wrapper__focusable">
+    <div
+      class="input-wrapper__inside-input input-wrapper__focusable"
+      :class="ui?.inputContainerClass"
+      :style="ui?.inputContainerStyle"
+    >
       <slot name="input" />
     </div>
 
@@ -44,17 +48,29 @@ const classes = computed(() => {
     <div class="input-wrapper__inside-border input-wrapper-border" />
 
     <!-- Prepend -->
-    <div class="input-wrapper__inside-prepend input-wrapper__focusable">
+    <div
+      class="input-wrapper__inside-prepend input-wrapper__focusable"
+      :class="ui?.inputContainerClass"
+      :style="ui?.inputContainerStyle"
+    >
       <slot name="prepend" />
     </div>
 
     <!-- Loading -->
-    <div class="input-wrapper__inside-loading input-wrapper__focusable">
+    <div
+      class="input-wrapper__inside-loading input-wrapper__focusable"
+      :class="ui?.inputContainerClass"
+      :style="ui?.inputContainerStyle"
+    >
       <slot name="loading" />
     </div>
 
     <!-- Append -->
-    <div class="input-wrapper__inside-append input-wrapper__focusable">
+    <div
+      class="input-wrapper__inside-append input-wrapper__focusable"
+      :class="ui?.inputContainerClass"
+      :style="ui?.inputContainerStyle"
+    >
       <slot name="append" />
     </div>
 
@@ -93,7 +109,7 @@ const classes = computed(() => {
     'nothing error nothing2 nothing3';
 
   grid-template-columns: auto 1fr auto auto;
-  grid-template-rows: 20px 1fr auto;
+  grid-template-rows: 18px 1fr auto;
 
   &.is-sm {
     --apply: min-h-9;

@@ -38,8 +38,6 @@ const durationUnit = ref<DurationUnit>(props.initialDurationUnit)
 const numberInputProps = reactivePick(
   props,
   'autofocus',
-  'contentClass',
-  'contentStyle',
   'debounce',
   'disabled',
   'emptyValue',
@@ -67,7 +65,8 @@ const numberInputProps = reactivePick(
   'size',
   'stackLabel',
   'step',
-  'inputProps'
+  'inputProps',
+  'ui'
 )
 
 const modelByUnit = computed<Record<DurationUnit, number>>(() => {

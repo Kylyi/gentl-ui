@@ -5,7 +5,7 @@ import type { IInputWrapperProps } from '~/components/Inputs/types/input-wrapper
 const props = defineProps<
   Pick<
     IInputWrapperProps,
-    'noBorder' | 'readonly' | 'disabled' | 'size' | 'hint'
+    'noBorder' | 'readonly' | 'disabled' | 'size' | 'hint' | 'ui'
   > & {
     hasErrors?: boolean
     hasLabel?: boolean
@@ -37,22 +37,35 @@ const classes = computed(() => {
     <!-- Input wrapper -->
     <div class="input-wrapper__inline-input input-wrapper__focusable">
       <!-- Prepend -->
-      <div class="input-wrapper__inline-input-prepend">
+      <div
+        class="input-wrapper__inline-input-prepend"
+        :class="ui?.inputContainerClass"
+        :style="ui?.inputContainerStyle"
+      >
         <slot name="prepend" />
       </div>
 
       <!-- Input -->
-      <div class="input-wrapper__inline-input-input">
+      <div
+        class="input-wrapper__inline-input-input"
+        :class="ui?.inputContainerClass"
+      >
         <slot name="input" />
       </div>
 
       <!-- Loading -->
-      <div class="input-wrapper__inline-input-loading">
+      <div
+        class="input-wrapper__inline-input-loading"
+        :class="ui?.inputContainerClass"
+      >
         <slot name="loading" />
       </div>
 
       <!-- Append -->
-      <div class="input-wrapper__inline-input-append">
+      <div
+        class="input-wrapper__inline-input-append"
+        :class="ui?.inputContainerClass"
+      >
         <slot name="append" />
       </div>
 
