@@ -51,11 +51,11 @@ export function useInputWrapperUtils() {
       styleVariables['--margin'] = '4px 0'
 
       if (isLabelInside) {
-        styleVariables['--padding'] = '16px 12px 4px'
-        styleVariables['--margin'] = '0'
+        styleVariables['--padding'] = '0 12px'
+        styleVariables['--margin'] = '16px 0 4px'
 
         if (!hasLabel) {
-          styleVariables['--padding'] = '0 12px'
+          styleVariables['--margin'] = '10px 0'
         }
       }
 
@@ -77,11 +77,11 @@ export function useInputWrapperUtils() {
       styleVariables['--margin'] = '7px 0'
 
       if (isLabelInside) {
-        styleVariables['--padding'] = '0 10px'
+        styleVariables['--padding'] = '0 12px'
         styleVariables['--margin'] = '19px 0 3px'
 
         if (!hasLabel) {
-          styleVariables['--padding'] = '0 12px 0'
+          styleVariables['--margin'] = '11px 0'
         }
       }
 
@@ -103,11 +103,11 @@ export function useInputWrapperUtils() {
       styleVariables['--margin'] = '6px 0'
 
       if (isLabelInside) {
-        styleVariables['--padding'] = '20px 12px 0'
-        styleVariables['--margin'] = '0'
+        styleVariables['--padding'] = '0 12px'
+        styleVariables['--margin'] = '20px 0 6px'
 
         if (!hasLabel) {
-          styleVariables['--padding'] = '0 12px 0'
+          styleVariables['--margin'] = '13px 12px'
         }
       }
 
@@ -116,7 +116,7 @@ export function useInputWrapperUtils() {
         styleVariables['--margin'] = '8px 0'
 
         if (!hasLabel) {
-          styleVariables['--margin'] = '8px 9px'
+          styleVariables['--margin'] = '8px 0'
         }
       }
     }
