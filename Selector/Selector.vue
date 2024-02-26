@@ -407,6 +407,7 @@ function getData() {
     :loading="isLoading"
     :has-content="hasContent"
     :ui="ui"
+    prefer-margin
     :class="[
       menuPlacement === 'bottom' ? 'has-menu-bottom' : 'has-menu-top',
       {

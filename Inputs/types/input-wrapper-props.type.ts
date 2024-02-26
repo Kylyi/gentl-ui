@@ -55,6 +55,15 @@ export type IInputWrapperProps = InputLabelProps & {
   originalValue?: any
 
   /**
+   * When true, the input element will use `margin` instead of `padding` for
+   * centering purposes
+   *
+   * Usage: `Selector` - when multiple rows of chips are present, the scroll
+   * would work poorly with padding
+   */
+  preferMargin?: boolean
+
+  /**
    * Whether the input is readonly
    */
   readonly?: boolean

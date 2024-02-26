@@ -39,6 +39,7 @@ export function useInputWrapperUtils() {
       '--borderColor': props.ui?.borderColor || 'var(--color-primary)',
     }
 
+    const preferMargin = !!props.preferMargin
     const isLabelInside = props.layout === 'label-inside'
     const isRegular = props.layout === 'regular'
     const hasLabel = !!props.label
@@ -47,24 +48,32 @@ export function useInputWrapperUtils() {
     if (props.size === 'sm') {
       styleVariables['--fontSize'] = '14px'
       styleVariables['--lineHeight'] = '24px'
-      styleVariables['--padding'] = '0 12px'
-      styleVariables['--margin'] = '4px 0'
+      styleVariables['--padding'] = preferMargin ? '0 12px' : '4px 12px'
+      styleVariables['--margin'] = preferMargin ? '4px 0' : '0'
 
       if (isLabelInside) {
-        styleVariables['--padding'] = '0 12px'
-        styleVariables['--margin'] = '16px 0 4px'
+        styleVariables['--padding'] = preferMargin ? '0 12px' : '16px 12px 4px'
+        styleVariables['--margin'] = preferMargin ? '16px 0 4px' : '0'
 
         if (!hasLabel) {
-          styleVariables['--margin'] = '10px 0'
+          if (preferMargin) {
+            styleVariables['--margin'] = '10px 0'
+          } else {
+            styleVariables['--padding'] = '10px 12px'
+          }
         }
       }
 
       if (isRegular) {
-        styleVariables['--padding'] = '0px 12px'
-        styleVariables['--margin'] = '4px 0px'
+        styleVariables['--padding'] = preferMargin ? '0px 12px' : '4px 12px'
+        styleVariables['--margin'] = preferMargin ? '4px 0px' : '0'
 
         if (!hasLabel) {
-          styleVariables['--margin'] = '4px 0'
+          if (preferMargin) {
+            styleVariables['--margin'] = '4px 0'
+          } else {
+            styleVariables['--padding'] = '4px 12px'
+          }
         }
       }
     }
@@ -73,24 +82,32 @@ export function useInputWrapperUtils() {
     else if (props.size === 'md') {
       styleVariables['--fontSize'] = '16px'
       styleVariables['--lineHeight'] = '26px'
-      styleVariables['--padding'] = '0px 12px'
-      styleVariables['--margin'] = '7px 0'
+      styleVariables['--padding'] = preferMargin ? '0px 12px' : '7px 12px'
+      styleVariables['--margin'] = preferMargin ? '7px 0' : '0'
 
       if (isLabelInside) {
-        styleVariables['--padding'] = '0 12px'
-        styleVariables['--margin'] = '19px 0 3px'
+        styleVariables['--padding'] = preferMargin ? '0 12px' : '19px 12px 3px'
+        styleVariables['--margin'] = preferMargin ? '19px 0 3px' : '0'
 
         if (!hasLabel) {
-          styleVariables['--margin'] = '11px 0'
+          if (preferMargin) {
+            styleVariables['--margin'] = '11px 0'
+          } else {
+            styleVariables['--padding'] = '11px 12px'
+          }
         }
       }
 
       if (isRegular) {
-        styleVariables['--padding'] = '1px 12px'
-        styleVariables['--margin'] = '6px 0'
+        styleVariables['--padding'] = preferMargin ? '1px 12px' : '7px 12px'
+        styleVariables['--margin'] = preferMargin ? '6px 0' : '0'
 
         if (!hasLabel) {
-          styleVariables['--margin'] = '6px 0'
+          if (preferMargin) {
+            styleVariables['--margin'] = '6px 0'
+          } else {
+            styleVariables['--padding'] = '7px 12px'
+          }
         }
       }
     }
@@ -99,24 +116,32 @@ export function useInputWrapperUtils() {
     else if (props.size === 'lg') {
       styleVariables['--fontSize'] = '18px'
       styleVariables['--lineHeight'] = '28px'
-      styleVariables['--padding'] = '4px 10px'
-      styleVariables['--margin'] = '6px 0'
+      styleVariables['--padding'] = preferMargin ? '4px 12px' : '10px 12px'
+      styleVariables['--margin'] = preferMargin ? '6px 0' : '0'
 
       if (isLabelInside) {
-        styleVariables['--padding'] = '0 12px'
-        styleVariables['--margin'] = '20px 0 6px'
+        styleVariables['--padding'] = preferMargin ? '0 12px' : '20px 12px 6px'
+        styleVariables['--margin'] = preferMargin ? '20px 0 6px' : '0'
 
         if (!hasLabel) {
-          styleVariables['--margin'] = '13px 12px'
+          if (preferMargin) {
+            styleVariables['--margin'] = '13px 0'
+          } else {
+            styleVariables['--padding'] = '13px 12px'
+          }
         }
       }
 
       if (isRegular) {
-        styleVariables['--padding'] = '2px 12px'
-        styleVariables['--margin'] = '8px 0'
+        styleVariables['--padding'] = preferMargin ? '2px 12px' : '10px 12px'
+        styleVariables['--margin'] = preferMargin ? '8px 0' : '0'
 
         if (!hasLabel) {
-          styleVariables['--margin'] = '8px 0'
+          if (preferMargin) {
+            styleVariables['--margin'] = '10px 0 8px'
+          } else {
+            styleVariables['--padding'] = '10px 12px'
+          }
         }
       }
     }
