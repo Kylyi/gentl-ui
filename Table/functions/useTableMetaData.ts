@@ -17,6 +17,7 @@ import { useTableUtils } from '~/components/Table/functions/useTableUtils'
 
 // Store
 import { useTableStore } from '~/components/Table/table.store'
+import { useAppStore } from '~/libs/App/app.store'
 
 // Constants
 const EXTENDABLE_COLUMN_PROPERTIES: Array<keyof TableColumn> = [
@@ -63,6 +64,7 @@ export async function useTableMetaData(props: ITableProps) {
   const { getTableMetadata } = useTableSpecifics()
 
   // Store
+  const appStore = useAppStore()
   const tableStore = useTableStore()
 
   // Layout
@@ -134,7 +136,7 @@ export async function useTableMetaData(props: ITableProps) {
         )
 
         const localStorageLayoutSchema =
-          config.table.useLocalStorageForDefaultLayout &&
+          !!appStore.appState.table?.autoSaveSchema &&
           stateMetaData.value.schema
 
         layout.value =

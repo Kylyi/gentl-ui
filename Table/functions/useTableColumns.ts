@@ -24,6 +24,7 @@ import { stringToFloat } from '~/libs/App/data/regex/string-to-float.regex'
 
 // Store
 import { useTableStore } from '~/components/Table/table.store'
+import { useAppStore } from '~/libs/App/app.store'
 
 type Options = {
   groupsRef?: MaybeRefOrGetter<GroupItem[]>
@@ -54,6 +55,7 @@ export function useTableColumns(
   const { parseUrlParams, hasVisibleCol, getStorageKey } = useTableUtils(props)
 
   // Store
+  const appStore = useAppStore()
   const { getTableState } = useTableStore()
   const tableState = getTableState(getStorageKey())
 
@@ -230,9 +232,7 @@ export function useTableColumns(
       if (col) {
         // We set the `filters`, `sorting`, `visibility` only in case we don't use
         // server state management and we didn't provide anything in the URL
-        const shouldUseState =
-          !config.table.useServerState ||
-          config.table.useLocalStorageForDefaultLayout
+        const shouldUseState = !!appStore.appState.table?.autoSaveSchema
 
         if (shouldUseState && !isUrlUsed && !props.initialLayoutSchema) {
           const nonInteractiveFilters = col.filters.filter(filter => {
