@@ -18,6 +18,7 @@ const props = withDefaults(defineProps<IInputWrapperProps>(), {
   errorVisible: true,
   size: 'md',
   layout: config.inputs.wrapperProps.layout,
+  stackLabel: config.inputs.wrapperProps.stackLabel,
   required: undefined,
 })
 
