@@ -662,7 +662,7 @@ function getData() {
 
 .is-active {
   :deep(.label) {
-    --apply: dark:color-primary color-primary;
+    --apply: color-$InputLabel-active-color;
   }
 
   :deep(.wrapper__body:after) {

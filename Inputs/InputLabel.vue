@@ -39,15 +39,15 @@ const labelLocalClass = computed(() => {
 
 <style lang="scss" scoped>
 div.label {
-  --apply: ease-linear tracking-wide z-10 origin-top-left top-0 left-0 pointer-events-none
-    leading-tight color-gray-500 dark:color-gray-400 max-w-full p-x-3 break-words;
+  --apply: ease-linear tracking-wide z-10 origin-top-left top-0 left-0
+    pointer-events-none leading-tight max-w-full p-x-3 break-words;
 
   --apply: color-$InputLabel-color;
 
-  transition: transform .2s cubic-bezier(.4,0,.2,1),
-              padding .2s cubic-bezier(.4,0,.2,1),
-              font-size .2s  cubic-bezier(.4,0,.2,1),
-              color     .2s  linear;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              padding 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              font-size 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              color 0.2s linear;
 
   // Layout ~ Inline
   &.is-inline {
@@ -116,7 +116,7 @@ div.label {
   }
 
   &.is-floating.is-regular {
-    --apply: translate-y-0px
+    --apply: translate-y-0px;
   }
 
   &.is-required::after {
@@ -127,7 +127,6 @@ div.label {
 
 .wrapper__body:not(.selector-wrapper):focus-within {
   div.label {
-    --apply: color-primary;
     --apply: color-$InputLabel-active-color;
 
     &:not(.is-inline) {
@@ -143,7 +142,7 @@ div.label {
     }
   }
 
-  div.label[haserror="true"] {
+  div.label[haserror='true'] {
     --apply: color-negative;
   }
 }
