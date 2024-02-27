@@ -191,7 +191,7 @@ const wrapperProps = computed(() => {
 
 <style lang="scss" scoped>
 .wrapper {
-  --apply: relative flex flex-col rounded-custom overflow-hidden;
+  --apply: relative flex flex-col rounded-custom;
 
   .wrapper__body {
     --apply: relative;
