@@ -38,8 +38,6 @@ const durationUnit = ref<DurationUnit>(props.initialDurationUnit)
 const numberInputProps = reactivePick(
   props,
   'autofocus',
-  'contentClass',
-  'contentStyle',
   'debounce',
   'disabled',
   'emptyValue',
@@ -56,6 +54,7 @@ const numberInputProps = reactivePick(
   'labelClass',
   'labelStyle',
   'labelInside',
+  'layout',
   'loading',
   'min',
   'max',
@@ -66,7 +65,8 @@ const numberInputProps = reactivePick(
   'size',
   'stackLabel',
   'step',
-  'inputProps'
+  'inputProps',
+  'ui'
 )
 
 const modelByUnit = computed<Record<DurationUnit, number>>(() => {
@@ -123,8 +123,6 @@ defineExpose({
   focus: () => numberInputEl.value?.focus(),
   select: () => numberInputEl.value?.select(),
   blur: () => numberInputEl.value?.blur(),
-  reset: () => numberInputEl.value?.reset(),
-  touch: () => numberInputEl.value?.touch(),
 })
 </script>
 
@@ -159,7 +157,7 @@ defineExpose({
           cover
           no-transition
           :fit="false"
-          :ui="{ contentClass: 'gap-1 w-35' }"
+          :ui="{ contentClass: 'gap-1 w-35 p-1' }"
         >
           <template #default>
             <Btn

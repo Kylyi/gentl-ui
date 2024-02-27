@@ -304,7 +304,7 @@ onMounted(() => {
       </template>
     </TableHeader>
 
-    <VirtualScrollerOld
+    <VirtualScroller
       v-show="hasVisibleColumn"
       ref="scrollerEl"
       :rows="rowsSplit"
@@ -364,7 +364,7 @@ onMounted(() => {
           </template>
         </Component>
       </template>
-    </VirtualScrollerOld>
+    </VirtualScroller>
 
     <TableNoData
       :has-no-data="!rows.length && !isLoading"

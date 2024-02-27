@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type LocaleObject } from '#i18n'
+import type { LocaleObject } from '@nuxtjs/i18n'
 
 // Utils
 const { localesByCode } = useLocale()

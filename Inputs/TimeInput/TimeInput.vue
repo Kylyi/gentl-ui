@@ -32,14 +32,7 @@ defineEmits<{
   (e: 'blur'): void
 }>()
 
-// Lifecycle
-onMounted(() => {
-  menuReferenceTarget.value =
-    currentInstance?.proxy?.$el.querySelector('.wrapper-body')
-})
-
 // Utils
-const currentInstance = getCurrentInstance()
 const { localeUses24HourTime } = useDateUtils()
 
 const is12h = computed(() => !localeUses24HourTime())
@@ -153,7 +146,6 @@ const maskFullTime = computed<AnyMaskedOptions>(() => {
 })
 
 // Layout
-const menuReferenceTarget = ref<HTMLElement>()
 const wrapperEl = ref<InstanceType<typeof InputWrapper>>()
 const isAm = ref(+delocalizedTimeParts.value.hh < 12)
 
@@ -220,12 +212,11 @@ const {
   focus,
   select,
   blur,
-  reset,
-  touch,
   clear,
   getInputElement,
   handleClickWrapper,
   handleFocusOrClick,
+  handleBlur,
 } = useInputUtils({
   props: propsExtended,
   maskRef: maskFullTime,
@@ -240,8 +231,6 @@ defineExpose({
   focus,
   select,
   blur,
-  reset,
-  touch,
   clear,
   getInputElement,
 })
@@ -283,13 +272,13 @@ defineExpose({
       v-bind="inputProps"
       @focus="handleFocusOrClick"
       @input="handleInput"
+      @blur="handleBlur"
     />
 
     <template #append>
       <div
         v-if="$slots.append || hasClearableBtn || (!readonly && !disabled)"
         flex="~ gap-x-2 center"
-        fit
         @click="handleFocusOrClick"
       >
         <slot
@@ -343,11 +332,8 @@ defineExpose({
         ref="timeInputPickerEl"
         v-model:is-am="isAm"
         v-model:prevent-next-is-am-change="preventNextIsAmChange"
-        :reference-target="menuReferenceTarget"
+        :reference-target="el"
         :is12h="is12h"
-        :class="{
-          'md:m-l-200px': inline,
-        }"
         :model-value-localized="modelValueLocalized"
         :handle-manual-model-change="handleManualModelChange"
         :shortcuts="shortcuts"

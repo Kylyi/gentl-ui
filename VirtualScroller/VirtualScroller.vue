@@ -71,13 +71,12 @@ const emits = defineEmits<{
 }>()
 
 defineExpose({
-  scrollToTop: () => {
-    scrollTo(0)
-  },
+  scrollToTop: () => scrollTo(0),
   scrollTo,
   focus: () => virtualScrollEl.value?.focus(),
   rerender: (noEmit?: boolean) => rerenderVisibleRows(noEmit),
   renderOnlyVisible,
+  updateRowHeight,
 })
 
 // Utils
@@ -137,9 +136,13 @@ const { height, width } = useElementSize(virtualScrollEl)
 
 useScroll(virtualScrollEl, {
   onScroll(ev) {
+    pauseRowHeightWatcher()
     handleScrollEvent(ev)
 
     lastScrollEvent.value = ev
+  },
+  onStop: () => {
+    nextTick(resumeRowHeightWatcher)
   },
 })
 
@@ -237,6 +240,17 @@ function handleScrollEvent(
   }
 }
 
+function updateRowHeight(rowKey: keyof T) {
+  const row = renderedRows.value.rows.find(
+    row => get(row, props.rowKey!) === rowKey
+  )
+
+  if (row) {
+    const el = document.querySelector(`[data-key="${String(rowKey)}"]`)
+    handleMountedRow(el, row)
+  }
+}
+
 /**
  * Gets the rows that should be rendered
  */
@@ -281,7 +295,7 @@ function getRenderedRows(firstIdx: number, lastIdx: number): IVisibleRows {
 /**
  * Scrolls to the row at the given index
  * NOTE - Be aware that this will not work properly if the row heights are not
- * all the same
+ * all the same height
  */
 function scrollTo(idx: number) {
   const scrollY = idx * rowHeight.value
@@ -290,7 +304,7 @@ function scrollTo(idx: number) {
 }
 
 /**
- * When row is mounted, we update the specific height for that row
+ * When row is mounted, we update the height for that specific row
  */
 async function handleMountedRow(node: any, row: IRow) {
   const el = 'el' in node ? node.el : node
@@ -325,8 +339,11 @@ function rerenderVisibleRows(noScrollEvent?: boolean) {
 watchThrottled(
   width,
   () => {
+    pauseRowHeightWatcher()
     rerenderVisibleRows()
     virtualScrollerRect.value = virtualScrollEl.value?.getBoundingClientRect()
+
+    nextTick(resumeRowHeightWatcher)
   },
   {
     throttle: 150,
@@ -336,6 +353,8 @@ watchThrottled(
 )
 
 watch(rows, (rows, rowsOld) => {
+  pauseRowHeightWatcher()
+
   // When fetching more data, we just want to extend the heights array with
   // the default heights -> they will be recalculated when the rows are mounted
   if (props.fetchMore) {
@@ -365,7 +384,38 @@ watch(rows, (rows, rowsOld) => {
       rerenderVisibleRows()
     })
   }
+
+  setTimeout(() => {
+    resumeRowHeightWatcher()
+  })
 })
+
+// Height watcher
+const hasJustRerendered = ref(false)
+
+const { pause: pauseRowHeightWatcher, resume: resumeRowHeightWatcher } =
+  watchPausable(
+    () => renderedRows.value.rows,
+    () => {
+      if (hasJustRerendered.value) {
+        hasJustRerendered.value = false
+
+        return
+      }
+
+      pauseRowHeightWatcher()
+
+      nextTick(() => {
+        rerenderVisibleRows(true)
+        resumeRowHeightWatcher()
+      })
+
+      hasJustRerendered.value = true
+    },
+    { deep: true }
+  )
+
+pauseRowHeightWatcher()
 
 // Lifecycle
 onMounted(() => {
@@ -374,6 +424,8 @@ onMounted(() => {
 
     virtualScrollerRect.value = virtualScrollEl.value?.getBoundingClientRect()
   })
+
+  setTimeout(resumeRowHeightWatcher, 0)
 })
 
 function renderOnlyVisible(

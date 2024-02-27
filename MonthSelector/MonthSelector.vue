@@ -19,7 +19,7 @@ const { formatDate } = useDateUtils()
 
 // Layout
 const now = useNow({ interval: $duration(15, 'minute').as('ms') })
-const nowMonth = eagerComputed(() => {
+const nowMonth = computed(() => {
   const dateObj = $date(now.value)
 
   return `${dateObj.year()}-${dateObj.month()}`
@@ -83,6 +83,7 @@ function handleMonthSelect(month: Month, callback?: () => void) {
     <Menu
       v-model="monthSelectorVisible"
       :fit="false"
+      no-uplift
       :target="monthBtn"
       :reference-target="
         $bp.isGreaterOrEqual('xm') ? referenceTarget : undefined

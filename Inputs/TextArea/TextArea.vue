@@ -37,8 +37,6 @@ const {
   focus,
   select,
   blur,
-  reset,
-  touch,
   clear,
   getInputElement,
   handleBlur,
@@ -60,7 +58,7 @@ if (props.autogrow) {
 
 const { path } = useInputValidationUtils(props)
 
-const resizeClass = computedEager(() => {
+const resizeClass = computed(() => {
   return props.autogrow ? 'resize-none' : props.resize
 })
 
@@ -68,8 +66,6 @@ defineExpose({
   focus,
   select,
   blur,
-  reset,
-  touch,
   clear,
   getInputElement,
   sync: () => handleManualModelChange(props.modelValue),
@@ -124,7 +120,7 @@ defineExpose({
     >
       <div
         flex="~ center gap-1"
-        fit
+        self="start"
         @click="handleFocusOrClick"
       >
         <Btn

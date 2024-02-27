@@ -18,15 +18,14 @@ export function useInputUtils(options: IInputUtilsOptions) {
     setModel,
   } = options
 
-  const { lastPointerDownEvent, hasUserLeftPage } = storeToRefs(useAppStore())
+  const appStore = useAppStore()
   const instance = getCurrentInstance()
-  const { preClick, onBlur, onFocus } = eventHandlers
+  const { onBlur, onFocus } = eventHandlers
   const hasBeenTouched = ref(false)
 
   const debouncedChange = useDebounceFn((val: any) => {
     if (!props.emitOnBlur) {
       setModel?.(val) ?? instance?.emit('update:model-value', val)
-      touch()
     }
   }, props.debounce)
 
@@ -57,18 +56,15 @@ export function useInputUtils(options: IInputUtilsOptions) {
   // Wrapper
   const wrapperProps = reactivePick(
     props,
-    'contentClass',
-    'contentStyle',
     'disabled',
     'emptyValue',
     'errorTakesSpace',
     'errorVisible',
     'hint',
-    'inline',
     'label',
     'labelStyle',
     'labelClass',
-    'labelInside',
+    'layout',
     'loading',
     'modelValue',
     'originalValue',
@@ -78,8 +74,6 @@ export function useInputUtils(options: IInputUtilsOptions) {
     'size',
     'stackLabel',
     'noBorder',
-    'inputContainerClass',
-    'inputContainerStyle',
     'validation',
     'ui',
     'zod'
@@ -87,37 +81,35 @@ export function useInputUtils(options: IInputUtilsOptions) {
 
   // Layout
   const isBlurred = ref(true)
-  const preventNextBlur = autoResetRef(false, 50)
   const menuEl = computed(() => toValue(menuElRef))
-  const hasContent = computedEager(() => {
+  const hasContent = computed(() => {
     return props.hasContent || !isEmpty.value
   })
 
-  const hasClearableBtn = computedEager(() => {
+  const hasClearableBtn = computed(() => {
     return (
       !props.readonly && !props.disabled && props.clearable && hasContent.value
     )
   })
 
   // Input methods
+  const getInputElement = () => el.value
+  const select = () => unrefElement(el)?.select()
+
   const focus = (alignCursor?: boolean) => {
     unrefElement(el)?.focus()
 
     if (alignCursor === true) {
-      setTimeout(() => elMask.value?.updateCursor(elMask.value.value.length), 0)
+      elMask.value?.alignCursorFriendly()
     }
   }
-  const select = () => unrefElement(el)?.select()
-  const reset = () => (hasBeenTouched.value = false)
-  const touch = () => (hasBeenTouched.value = true)
-  const getInputElement = () => el
+
   const blur = () => {
     isBlurred.value = true
     unrefElement(el)?.blur()
   }
 
   const clear = (shouldFocusAfterClear?: boolean) => {
-    touch()
     clearMask()
 
     if (shouldFocusAfterClear || !isBlurred.value) {
@@ -125,130 +117,112 @@ export function useInputUtils(options: IInputUtilsOptions) {
     }
   }
 
-  const handleFocus = (ev: Event) => {
-    setTimeout(() => elMask.value?.alignCursorFriendly())
+  function handleBlur(ev: FocusEvent) {
+    const relatedTarget = ev.relatedTarget as HTMLElement
+    const lastTarget = appStore.lastPointerDownEl
 
-    const shouldBlur =
-      onFocus?.(lastPointerDownEvent.value!.pointerType, ev) || false
-    isBlurred.value = shouldBlur
+    const isFocusable =
+      lastTarget?.classList.contains('input-wrapper__focusable') ||
+      !!lastTarget?.closest('.input-wrapper__focusable')
 
-    if (isBlurred.value) {
-      preventNextBlur.value = true
-      blur()
-    }
-  }
+    const isSameWrapper =
+      el.value?.closest('.wrapper__body') ===
+      lastTarget?.closest('.wrapper__body')
 
-  const handleMouseDown = (ev: MouseEvent) => {
-    const evTarget = ev.target as HTMLElement
+    // `Tab` handling
+    const relatedTargetWrapper = relatedTarget?.closest('.wrapper__body')
+    const isRelatedTargetFocusable =
+      !relatedTargetWrapper ||
+      relatedTargetWrapper === el.value?.closest('.wrapper__body')
 
-    // We prevent focusing the input when clicking the label
-    // (label has a `pointer-events: none` ~ we check the `wrapper-body` instead)
-    if (evTarget.classList.contains('wrapper-body') && props.inline) {
+    // We prevent the blur event when clicking on focusable elements
+    // in the same wrapper
+    if (isFocusable && isSameWrapper && isRelatedTargetFocusable) {
       ev.preventDefault()
-      ev.stopPropagation()
+      focus()
 
       return
     }
 
-    const shouldFocus =
-      preClick?.(lastPointerDownEvent.value!.pointerType, ev) ?? true
+    isBlurred.value = true
 
-    if (!shouldFocus) {
-      ev.preventDefault()
-      ev.stopPropagation()
-    } else {
-      const isTargetInput =
-        (ev.target as HTMLElement).nodeName === 'INPUT' ||
-        (ev.target as HTMLElement).nodeName === 'TEXTAREA'
+    onBlur?.()
+    blur()
+    refresh()
 
-      if (!isTargetInput) {
-        ev.preventDefault()
-      }
-
-      focus(!isTargetInput)
+    if (props.emitOnBlur) {
+      hasJustChanged.value = true
+      setModel?.(lastValidValue.value) ??
+        instance?.emit('update:model-value', lastValidValue.value)
     }
+
+    instance?.emit('blur')
   }
 
-  const handleBlur = () => {
-    if (!preventNextBlur.value) {
-      onBlur?.()
-      blur()
-      refresh()
-
-      if (props.emitOnBlur) {
-        hasJustChanged.value = true
-        setModel?.(lastValidValue.value) ??
-          instance?.emit('update:model-value', lastValidValue.value)
-        touch()
-      }
-
-      instance?.emit('blur')
-    }
-  }
-
-  // Click & focus handler
-  const focusedProgramatically = refAutoReset(false, 50)
-
-  // In some cases, we click into the `margin` of the `.wrapper-body__input`
-  // which doesn't trigger the focus event on the input. We need to handle
-  // this case manually.
+  // In some cases, we click into the wrapper but not directly in the `.control`
+  // element, so the `focus` does not get triggered. We need to handle this case manually
   function handleClickWrapper(ev: MouseEvent) {
-    if ((ev.target as HTMLElement).classList.contains('wrapper-body__input')) {
+    const target = ev.target as HTMLElement
+    const isFocusable =
+      target.classList.contains('input-wrapper__focusable') ||
+      !!target.closest('.input-wrapper__focusable')
+
+    if (isFocusable) {
       handleFocusOrClick(ev)
     }
   }
 
-  function handleFocusOrClick(ev: MouseEvent | FocusEvent) {
-    if (focusedProgramatically.value || hasUserLeftPage.value) {
+  // Click & focus handling
+  function handleFocusOrClick(ev?: Event) {
+    if (appStore.hasUserLeftPage) {
       return
     }
 
-    focusedProgramatically.value = true
-
-    // blurAnyFocusedInput()
-
-    if (
-      !preventFocusOnTouch ||
-      lastPointerDownEvent.value?.pointerType === 'mouse'
-    ) {
-      // This is needed because of Firefox... Idk why
-      setTimeout(() => el.value?.focus(), 0)
-    }
-
-    const hasClickedInsideFloatingElement = !!(
-      ev.target as HTMLElement
-    ).closest('.floating-element')
-
-    if (!hasClickedInsideFloatingElement) {
-      document.querySelectorAll('.floating-element').forEach(el => {
-        const currentMenuDom = menuEl.value?.getFloatingEl()
-
-        if (el !== currentMenuDom) {
-          el.setAttribute('hide-trigger', '')
-        }
-      })
-    }
+    const isSelectEvent = ev?.type === 'select'
+    const isFocusEvent = ev instanceof FocusEvent
 
     if (!props.disabled && !props.readonly) {
+      if (isFocusEvent || isSelectEvent) {
+        const inputMenu = el.value?.closest('.floating-element')
+
+        $hide({ all: true, ignoreUntilEl: inputMenu })
+      }
+
       menuEl.value?.show()
     }
+
+    // In some cases, for example `DateInput`, we don't want to focus the input
+    // on mobile phones
+    const isTouchEvent = appStore.lastPointerDownEvent?.pointerType !== 'mouse'
+    const isFocusPrevented = preventFocusOnTouch && isTouchEvent
+
+    // When event is not a `FocusEvent`, we focus it and align the cursor
+    const isInputFocused = appStore.activeElement === el.value
+
+    if (
+      !isFocusEvent &&
+      !isSelectEvent &&
+      !isInputFocused &&
+      !isFocusPrevented
+    ) {
+      focus(true)
+    }
+
+    if (isFocusPrevented) {
+      blur()
+
+      return
+    }
+
+    isBlurred.value = false
+
+    onFocus?.(isTouchEvent ? 'touch' : 'mouse', ev)
   }
 
   // Autofocus on init
   setTimeout(() => {
     if (props.autofocus) {
       focus()
-    }
-    if (props.immediate) {
-      touch()
-    }
-
-    const val = unref(modelValue)
-    const isEmptyValue =
-      isNil(val) || val === '' || val === unref(props.emptyValue)
-
-    if (!isEmptyValue) {
-      touch()
     }
   }, 300)
 
@@ -264,15 +238,11 @@ export function useInputUtils(options: IInputUtilsOptions) {
     hasNoValue: isEmpty,
     hasClearableBtn,
     hasContent,
-    handleMouseDown,
     handleBlur,
-    handleFocus,
     clear,
     focus,
     select,
     blur,
-    reset,
-    touch,
     getInputElement,
     handleManualModelChange,
     handleFocusOrClick,

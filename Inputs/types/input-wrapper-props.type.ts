@@ -7,16 +7,6 @@ import type { IZodValidationOptions } from '~/utils/zod/types/zod-validation-opt
 
 export type IInputWrapperProps = InputLabelProps & {
   /**
-   * The class of the input wrapper (including label,...)
-   */
-  contentClass?: ClassType
-
-  /**
-   * The style of the input container
-   */
-  contentStyle?: CSSProperties
-
-  /**
    * The cursor that will be shown when hovering over the input
    */
   cursor?: 'cursor-text' | 'cursor-pointer' | 'cursor-default'
@@ -43,16 +33,6 @@ export type IInputWrapperProps = InputLabelProps & {
   hint?: string
 
   /**
-   * Class of the input container
-   */
-  inputContainerClass?: ClassType
-
-  /**
-   * Style of the input container
-   */
-  inputContainerStyle?: CSSProperties
-
-  /**
    * Whether the input is loading
    */
   loading?: boolean
@@ -75,6 +55,15 @@ export type IInputWrapperProps = InputLabelProps & {
   originalValue?: any
 
   /**
+   * When true, the input element will use `margin` instead of `padding` for
+   * centering purposes
+   *
+   * Usage: `Selector` - when multiple rows of chips are present, the scroll
+   * would work poorly with padding
+   */
+  preferMargin?: boolean
+
+  /**
    * Whether the input is readonly
    */
   readonly?: boolean
@@ -93,6 +82,30 @@ export type IInputWrapperProps = InputLabelProps & {
      * The border color of the input
      */
     borderColor?: string
+
+    /**
+     * The class of the input wrapper (including label,...)
+     */
+    contentClass?: ClassType
+
+    /**
+     * The style of the input container
+     */
+    contentStyle?: CSSProperties
+
+    /**
+     * Class of the input container
+     *
+     * TODO: Implement
+     */
+    inputContainerClass?: ClassType
+
+    /**
+     * Style of the input container
+     *
+     * * TODO: Implement
+     */
+    inputContainerStyle?: CSSProperties
   }
 
   /**

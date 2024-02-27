@@ -35,7 +35,7 @@ export type ISelectorProps = IInputProps & {
    * When true, the menu will not be shown when the input is focused (via Tab for example),
    * needs to be actualyl clicked
    */
-  noAutoShowMenuOnFocus?: boolean
+  noShowMenuOnFocus?: boolean
 
   /**
    * For cases when we want to warn user that he is about to clear the value

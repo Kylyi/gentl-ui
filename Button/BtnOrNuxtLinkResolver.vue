@@ -9,11 +9,11 @@ import type { IBtnNavigationProps } from '~/components/Button/types/btn-props.ty
 
 const props = defineProps<IBtnNavigationProps>()
 
-// UTILS
+// Utils
 const nuxtApp = useNuxtApp()
 const route = useRoute()
 
-const toPathString = computedEager(() => {
+const toPathString = computed(() => {
   const to = props.to
 
   if (typeof to === 'string') {
@@ -27,7 +27,7 @@ const toPathString = computedEager(() => {
   return ''
 })
 
-const currentPath = computedEager(() => {
+const currentPath = computed(() => {
   return $p(route.path, nuxtApp.$i18n.locale.value)
 })
 </script>

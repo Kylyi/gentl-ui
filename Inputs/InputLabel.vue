@@ -6,16 +6,21 @@ const props = withDefaults(defineProps<InputLabelProps>(), {
   required: undefined,
 })
 
-const labelLocalClass = computedEager(() => {
+const labelLocalClass = computed(() => {
+  const isInline = props.layout === 'inline'
+  const isInside = props.layout === 'label-inside'
+  const isRegular = props.layout === 'regular'
+
   return [
     props.labelClass,
     `label--${props.size}`,
     {
-      'is-inline': props.inline,
+      'is-inline': isInline,
       'is-required': props.required,
-      'is-inside': props.labelInside,
+      'is-inside': isInside,
+      'is-regular': isRegular,
       'is-floating':
-        !props.inline &&
+        !isInline &&
         (props.stackLabel || props.placeholder || props.hasContent),
     },
   ]
@@ -23,89 +28,95 @@ const labelLocalClass = computedEager(() => {
 </script>
 
 <template>
-  <span
+  <div
     class="label"
     :class="labelLocalClass"
     :style="labelStyle"
   >
     {{ label }}
-  </span>
+  </div>
 </template>
 
 <style lang="scss" scoped>
-span.label {
+div.label {
   --apply: ease-linear tracking-wide z-10 origin-top-left top-0 left-0 pointer-events-none
-    leading-tight md:self-center color-gray-500 dark:color-gray-400 max-w-full p-x-3;
+    leading-tight color-gray-500 dark:color-gray-400 max-w-full p-x-3 break-words;
 
   --apply: color-$InputLabel-color;
 
-  transition: transform .36s cubic-bezier(.4,0,.2,1),
-              padding .36s cubic-bezier(.4,0,.2,1),
-              max-width .2s  cubic-bezier(.4,0,.2,1) .2s,
+  transition: transform .2s cubic-bezier(.4,0,.2,1),
+              padding .2s cubic-bezier(.4,0,.2,1),
+              font-size .2s  cubic-bezier(.4,0,.2,1),
               color     .2s  linear;
 
+  // Layout ~ Inline
   &.is-inline {
-    --apply: order--1 min-w-200px md:w-200px md:text-right lt-md:scale-80;
+    --apply: order--1 font-rem-13;
+
+    @screen md {
+      --apply: min-w-200px w-200px text-right font-rem-14 p-y-0.5 p-x-0;
+    }
   }
 
+  // Layout ~ Regular
+  &.is-regular {
+    --apply: absolute;
+  }
+
+  // Layout ~ not Inline
   &:not(.is-inline) {
-    --apply: absolute origin-top-left left-0 top-0 truncate w-full;
+    --apply: origin-top-left left-0 top-0 truncate w-full overflow-hidden;
   }
 
+  // Size: Small
   &--sm {
     --apply: font-rem-14 leading-3.5;
 
-    &:not(.is-inline) {
-      --apply: top-2;
-    }
-
     &.is-inside {
-      --apply: top-2.5;
+      --apply: translate-y-15px;
     }
 
-    &.is-inline {
-      --apply: self-start md:p-t-2 md:p-b-1;
+    &.is-regular {
+      --apply: translate-y-25px;
     }
   }
 
+  // Size: Medium
   &--md {
-    --apply: font-rem-14 leading-4;
-
-    &:not(.is-inline) {
-      --apply: top-3;
-    }
+    --apply: leading-4;
 
     &.is-inside {
-      --apply: top-3.5;
+      --apply: translate-y-4;
     }
 
-    &.is-inline {
-      --apply: self-start md:p-t-3 md:p-b-1;
+    &.is-regular {
+      --apply: translate-y-27px;
     }
   }
 
+  // Size: Large
   &--lg {
-    --apply: font-rem-16;
-
-    &:not(.is-inline) {
-      --apply: top-4;
-    }
+    --apply: font-rem-16 leading-5;
 
     &.is-inside {
-      --apply: top-4;
+      --apply: translate-y-4.5;
     }
 
-    &.is-inline {
-      --apply: self-start md:p-t-18px md:p-b-1;
+    &.is-regular {
+      --apply: translate-y-30px;
     }
   }
 
   &.is-floating:not(.is-inline) {
-    --apply: translate-y--180% w-125% max-w-125% scale-80;
+    --apply: font-rem-12;
+  }
 
-    &.is-inside {
-      --apply: translate-y--50%;
-    }
+  &.is-floating.is-inside {
+    --apply: translate-y-3px rounded-t-custom;
+  }
+
+  &.is-floating.is-regular {
+    --apply: translate-y-0px
   }
 
   &.is-required::after {
@@ -114,37 +125,41 @@ span.label {
   }
 }
 
-.wrapper-body:not(.selector-wrapper):focus-within {
-  > .label {
+.wrapper__body:not(.selector-wrapper):focus-within {
+  div.label {
     --apply: color-primary;
     --apply: color-$InputLabel-active-color;
 
     &:not(.is-inline) {
-      --apply: translate-y--180% w-125% max-w-125% scale-80;
+      --apply: font-rem-12;
+    }
 
-      &.is-inside {
-        --apply: translate-y--50% rounded-tl;
-      }
+    &.is-inside {
+      --apply: translate-y-3px rounded-t-custom;
+    }
+
+    &.is-regular {
+      --apply: translate-y--0px;
     }
   }
 
-  > .label[haserror="true"] {
+  div.label[haserror="true"] {
     --apply: color-negative;
   }
 }
 
-span.label.is-floating:not(.is-inside) {
+div.label.is-floating:not(.is-inside) {
   --apply: p-x-1;
 }
 
-span.label.is-inline {
+div.label.is-inline {
   @screen lt-md {
     --apply: p-x-1;
   }
 }
 
-.wrapper-body:focus-within {
-  span.label:not(.is-inside):not(.is-inline) {
+.wrapper__body:not(.selector-wrapper):focus-within {
+  div.label:not(.is-inside):not(.is-inline) {
     --apply: p-x-1;
   }
 }

@@ -23,15 +23,23 @@ const props = withDefaults(defineProps<ISelectorProps>(), {
   errorTakesSpace: true,
   errorVisible: true,
   fuseExtendedSearchToken: config.selector.fuseExtendedSearchToken,
-  inline: config.inputs.inline,
-  maxChipsRows: 2,
+  layout: config.inputs.wrapperProps.layout,
+  maxChipsRows: props => {
+    switch (props.layout) {
+      case 'inline':
+        return 10
+
+      case 'label-inside':
+      case 'regular':
+      default:
+        return 2
+    }
+  },
   optionKey: 'id',
   optionLabel: 'label',
   options: () => [],
   required: undefined,
   size: 'md',
-  stackLabel: config.inputs.stackLabel,
-  labelInside: config.inputs.labelInside,
 })
 
 const emits = defineEmits<{
@@ -47,10 +55,36 @@ const emits = defineEmits<{
   (e: 'blur'): void
 }>()
 
+defineExpose({
+  focus: () => handleFocusOrClick(),
+  blur: () => menuProxyEl.value?.hide(),
+  loadData: () => listEl.value?.loadData(),
+  resetInternalOptions: () => {
+    optionsInternal.value = []
+    isOptionsInternalLoaded.value = false
+  },
+  handleSelect,
+  clear: () => clear(),
+})
+
 // Lifecycle
 onMounted(() => {
-  menuReferenceTarget.value = self?.proxy?.$el.querySelector('.wrapper-body')
+  menuReferenceTarget.value = self?.proxy?.$el.querySelector(
+    '.input-wrapper-border'
+  )
 })
+
+// When layout changes, we need to set new reference target for menu
+watch(
+  () => props.layout,
+  () => {
+    nextTick(() => {
+      menuReferenceTarget.value = self?.proxy?.$el.querySelector(
+        '.input-wrapper-border'
+      )
+    })
+  }
+)
 
 // Utils
 const { handleRequest } = useRequest()
@@ -65,7 +99,9 @@ const hasContent = computed(() => {
 
 // Selection
 const maxHeight = computed(() => {
-  return props.maxChipsRows * 26
+  const MARGIN_BOTTOM = 2
+
+  return props.maxChipsRows * 26 - MARGIN_BOTTOM
 })
 
 function getKey(option: any): string {
@@ -216,8 +252,8 @@ const optionsExtended = computed(() => {
 })
 
 /**
- * The options we actually want to show in the list ~ the extended options
- * minus the hidden ones
+ * The options we actually want to show in the list ~
+ * the extended options minus the hidden ones
  */
 const listOptions = computed({
   get() {
@@ -259,14 +295,14 @@ const optionsByKey = computed(() => {
 })
 
 // Picker
-const menuProxyEl = ref<InstanceType<typeof MenuProxy>>()
+const menuProxyEl = ref<ComponentInstance<typeof MenuProxy>>()
 const menuPlacement = ref('bottom')
 const isPickerActive = ref(false)
 const pickerAnimationState = ref<'show' | 'hide'>('hide')
 
 function handleBeforeHide() {
-  focusedProgramatically.value = true
-  const optionsContainerDom = unrefElement(optionsContainerEl)
+  preventNextFocus.value = true
+  const optionsContainerDom = unrefElement(el)
   optionsContainerDom?.focus()
 
   pickerAnimationState.value = 'hide'
@@ -296,7 +332,8 @@ function handleShow() {
 
 // Layout
 const {
-  focusedProgramatically,
+  el,
+  preventNextFocus,
   model,
   wrapperProps,
   handleClickWrapper,
@@ -308,29 +345,24 @@ const {
 })
 
 const menuReferenceTarget = ref<HTMLElement>()
-const optionsContainerEl = ref<any>()
 const isLoadingInternal = ref(false)
 
 const isLoading = computed(() => {
-  return (
-    (props.loading || isLoadingInternal.value) &&
-    pickerAnimationState.value !== 'hide'
-  )
+  return props.loading || isLoadingInternal.value
+})
+
+const ui = computed(() => {
+  return {
+    ...props.ui,
+    contentClass: [props.ui?.contentClass, 'selector-wrapper'],
+  } as typeof props.ui
 })
 
 function syncScrollArea() {
   setTimeout(() => {
-    optionsContainerEl.value?.update?.()
-    optionsContainerEl.value?.scrollToBottom?.()
+    el.value?.update?.()
+    el.value?.scrollToBottom?.()
   }, 0)
-}
-
-function handleKeyDown(e: KeyboardEvent) {
-  if (e.key === 'ArrowDown') {
-    e.preventDefault()
-
-    menuProxyEl.value?.show()
-  }
 }
 
 // Fetch data immediately
@@ -367,18 +399,6 @@ function getData() {
     }
   })
 }
-
-defineExpose({
-  focus: () => menuProxyEl.value?.show(),
-  blur: () => menuProxyEl.value?.hide(),
-  loadData: () => listEl.value?.loadData(),
-  resetInternalOptions: () => {
-    optionsInternal.value = []
-    isOptionsInternalLoaded.value = false
-  },
-  handleSelect,
-  clear,
-})
 </script>
 
 <template>
@@ -386,11 +406,13 @@ defineExpose({
     v-bind="wrapperProps"
     :loading="isLoading"
     :has-content="hasContent"
-    :content-class="[contentClass, 'selector-wrapper']"
+    :ui="ui"
+    prefer-margin
     :class="[
       menuPlacement === 'bottom' ? 'has-menu-bottom' : 'has-menu-top',
       {
         'is-active': pickerAnimationState === 'show',
+        'has-content': hasContent,
         'is-menu-width-matched': !noMenuMatchWidth,
       },
     ]"
@@ -418,8 +440,8 @@ defineExpose({
     <Component
       :is="scroller ? 'div' : ScrollArea"
       v-else
-      ref="optionsContainerEl"
-      flex="~ 1 wrap gap-1"
+      ref="el"
+      flex="~ 1 wrap gap-x-1 gap-y-0.5"
       class="control"
       box="content"
       tabindex="0"
@@ -429,7 +451,6 @@ defineExpose({
       v-bind="inputProps"
       @click="handleFocusOrClick"
       @focus="handleFocusOrClick"
-      @keydown="handleKeyDown"
     >
       <!-- Placeholder -->
       <span
@@ -492,7 +513,6 @@ defineExpose({
         flex="~ gap-x-1 center"
         p="x-2"
         shrink-0
-        fit
         :class="appendClass"
         @click="handleFocusOrClick"
       >
@@ -536,7 +556,6 @@ defineExpose({
         class="selector"
         :class="{
           'has-label': !!label,
-          'md:m-l-200px': inline,
           'is-menu-width-matched': !noMenuMatchWidth,
         }"
         :offset="noMenuMatchWidth ? 8 : 0"
@@ -592,7 +611,7 @@ defineExpose({
 
               <template v-if="multi">
                 <!-- Confirm button (for lt-sm displays) -->
-                <Separator sm="hidden" />
+                <Separator class="!sm:hidden" />
 
                 <Btn
                   sm="!hidden"
@@ -640,25 +659,36 @@ defineExpose({
   }
 }
 
+
 .is-active {
   :deep(.label) {
     --apply: dark:color-primary color-primary;
   }
 
-  :deep(.wrapper-body:after) {
+  :deep(.wrapper__body:after) {
     --apply: border-primary/50 dark:border-primary/50;
   }
 }
 
-.is-active.is-menu-width-matched.has-menu-bottom {
-  :deep(.wrapper-body:after) {
-    --apply: rounded-b-0;
-  }
-}
+@screen md {
+  .is-active.is-menu-width-matched.has-menu-bottom {
+    :deep(.wrapper__body:after) {
+      --apply: rounded-b-0;
+    }
 
-.is-active.is-menu-width-matched.has-menu-top {
-  :deep(.wrapper-body:after) {
-    --apply: rounded-t-0;
+    :deep(.input-wrapper-border) {
+      --apply: rounded-b-0 border-primary/40;
+    }
+  }
+
+  .is-active.is-menu-width-matched.has-menu-top {
+    :deep(.wrapper__body:after) {
+      --apply: rounded-t-0;
+    }
+
+    :deep(.input-wrapper-border) {
+      --apply: rounded-t-0 border-primary/40;
+    }
   }
 }
 

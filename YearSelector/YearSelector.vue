@@ -78,7 +78,7 @@ function handleMouseWheel(ev: WheelEvent) {
   } else {
     internalValue.value--
   }
-  ev.preventDefault()
+
   ev.stopPropagation()
 }
 
@@ -134,8 +134,9 @@ defineExpose({ sync })
       :reference-target="
         $bp.isGreaterOrEqual('xm') ? referenceTarget : undefined
       "
+      no-uplift
       @hide="sync"
-      @mousewheel="handleMouseWheel"
+      @wheel.passive="handleMouseWheel"
     >
       <Btn
         tabindex="-1"

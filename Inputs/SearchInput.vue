@@ -32,9 +32,9 @@ defineExpose({
     immediate
     empty-value=""
     :hint="hint"
-    :inline="inline"
+    :layout="layout"
     :input-class="inputClass"
-    :content-class="contentClass"
+    :content-class="ui?.contentClass"
     :input-style="inputStyle"
     :input-props="inputProps"
     :placeholder="placeholder ?? $t('general.search')"

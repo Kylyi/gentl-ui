@@ -36,6 +36,7 @@ defineExpose({
   },
   toggle: () => (modelHandler.value = !modelHandler.value),
   getFloatingEl: () => floatingEl.value,
+  refreshAnchors: () => refreshAnchors(),
   recomputePosition: (_bounce?: boolean) => {
     if (_bounce) {
       bounce()
@@ -80,6 +81,7 @@ const {
   referenceElZIndex,
   referenceElBgColor,
   floatingReferenceEl,
+  refreshAnchors,
 } = useMenuLayout(modelHandler, props)
 
 const transitionClass = computed(() => {
@@ -142,7 +144,7 @@ whenever(model, isVisible => {
     referenceEl.style.zIndex = '3000'
   }
 
-  if (isReferenceElTransparent) {
+  if (isReferenceElTransparent && !props.noUplift && !props.cover) {
     if (color.value === 'light') {
       referenceEl.style.backgroundColor = 'white'
     } else {
@@ -193,8 +195,10 @@ function handleClickOutside(ev: Event) {
 
   const isTargetBody = targetEl === document.body
   const isPartOfFloatingUI = floatingEl.value?.contains(targetEl)
+
   const isPartOfReferenceEl =
     !props.virtual && (floatingReferenceEl.value as any)!.contains(targetEl)
+
   const lastFloatingElement = document.querySelector(
     '.floating-element:last-child'
   )
@@ -338,7 +342,7 @@ const isOverlayVisible = computed(() => {
 
 <style lang="scss" scoped>
 .menu {
-  --apply: flex flex-col max-w-95vw max-h-95% rounded-custom z-$zMenu
+  --apply: flex flex-col max-w-95vw max-h-95% rounded-custom z-$zMenu rounded-custom
     border-1 border-ca
     bg-white dark:bg-darker;
 

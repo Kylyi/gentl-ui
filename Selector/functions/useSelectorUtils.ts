@@ -31,64 +31,52 @@ export function useSelectorUtils(options: ISelectorUtilsOptions) {
   const wrapperProps = getInputWrapperProps(props)
 
   // Click & focus handler
-  const focusedProgramatically = refAutoReset(false, 50)
+  const preventNextFocus = refAutoReset(false, 50)
 
-  // In some cases, we click into the `margin` of the `.wrapper-body__input`
-  // which doesn't trigger the focus event on the input. We need to handle
-  // this case manually.
+  // In some cases, we click into the wrapper but not directly in the `.control`
+  // element, so the `focus` does not get triggered. We need to handle this case manually
   function handleClickWrapper(ev: MouseEvent) {
     const target = ev.target as HTMLElement
-    const clickedInput = target.classList.contains('wrapper-body__input')
-    const clickedPrepend = target.classList.contains('prepend')
-    const clickedAppend = target.classList.contains('append')
+    const isFocusable =
+      target.classList.contains('input-wrapper__focusable') ||
+      !!target.closest('.input-wrapper__focusable')
 
-    if (clickedInput || clickedPrepend || clickedAppend) {
+    if (isFocusable) {
       handleFocusOrClick(ev)
     }
   }
 
-  function handleFocusOrClick(ev?: MouseEvent | FocusEvent, noHide?: boolean) {
-    if (focusedProgramatically.value || appStore.hasUserLeftPage) {
+  function handleFocusOrClick(ev?: Event) {
+    if (preventNextFocus.value || appStore.hasUserLeftPage) {
       return
     }
 
-    if (ev instanceof FocusEvent && props.noAutoShowMenuOnFocus) {
+    const isFocusEvent = ev instanceof FocusEvent
+    const isSelectEvent = ev?.type === 'select'
+
+    if ((isFocusEvent || isSelectEvent) && props.noShowMenuOnFocus) {
       return
     }
 
-    // When clicked self and menu is already open, don't do anything
-    const currentMenuDom = menuEl.value?.getFloatingEl()
-
-    if (currentMenuDom) {
-      return
-    }
-
-    focusedProgramatically.value = true
-    blurAnyFocusedInput()
-
-    const hasClickedInsideFloatingElement = !!(
-      ev?.target as HTMLElement
-    )?.closest('.floating-element')
-
-    if (!hasClickedInsideFloatingElement && !noHide) {
-      document.querySelectorAll('.floating-element').forEach(el => {
-        const currentMenuDom = menuEl.value?.getFloatingEl()
-
-        if (el !== currentMenuDom) {
-          el.setAttribute('hide-trigger', '')
-        }
-      })
-    }
+    preventNextFocus.value = true
 
     if (!props.disabled && !props.readonly) {
-      menuEl.value?.show()
+      if (isFocusEvent || isSelectEvent) {
+        const inputMenu = unrefElement(el.value)?.closest('.floating-element')
+
+        $hide({ all: true, ignoreUntilEl: inputMenu })
+      }
+
+      setTimeout(() => {
+        menuEl.value?.show()
+      })
     }
   }
 
   // Autofocus on init
   setTimeout(() => {
     if (props.autofocus) {
-      handleFocusOrClick(undefined, true)
+      handleFocusOrClick()
     }
   }, 300)
 
@@ -96,7 +84,7 @@ export function useSelectorUtils(options: ISelectorUtilsOptions) {
     el,
     model,
     wrapperProps,
-    focusedProgramatically,
+    preventNextFocus,
 
     handleFocusOrClick,
     handleClickWrapper,

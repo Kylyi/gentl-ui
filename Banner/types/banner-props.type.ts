@@ -1,4 +1,7 @@
 export type IBannerProps = {
+  /**
+   * The number in top right corner on the `Banner`
+   */
   counter?: number
   dismissable?: boolean
   iconCenter?: boolean
