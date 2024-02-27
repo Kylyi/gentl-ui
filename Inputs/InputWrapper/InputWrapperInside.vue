@@ -211,6 +211,6 @@ const classes = computed(() => {
   grid-row: 1 / 2;
 
   --apply: absolute fit transition-all pointer-events-none rounded-t-custom
-    bg-white dark:bg-darker;
+    bg-inherit;
 }
 </style>
