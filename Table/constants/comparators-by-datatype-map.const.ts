@@ -1,10 +1,9 @@
+import { config } from '~/config'
+
 // Models
 import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
 
-export const COMPARATORS_BY_DATATYPE_MAP: Record<
-  ExtendedDataType,
-  ComparatorEnum[]
-> = {
+export const COMPARATORS_BY_DATATYPE_MAP = {
   // String
   string: [
     ComparatorEnum.EQUAL,
@@ -392,4 +391,7 @@ export const COMPARATORS_BY_DATATYPE_MAP: Record<
     ComparatorEnum.NOT_IS_EMPTY,
   ],
   customSimple: [],
-}
+
+  // App specific
+  ...config.dataTypes.comparators,
+} satisfies Record<ExtendedDataType, ComparatorEnum[]>

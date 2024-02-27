@@ -1,5 +1,4 @@
 // @unocss-include
-import type { AllowedComponentProps, VNodeProps } from 'vue'
 
 // Components
 import TextInput from '~/components/Inputs/TextInput/TextInput.vue'
@@ -7,28 +6,22 @@ import NumberInput from '~/components/Inputs/NumberInput/NumberInput.vue'
 import DateInput from '~/components/Inputs/DateInput/DateInput.vue'
 import Toggle from '~/components/Toggle/Toggle.vue'
 import TimeInput from '~/components/Inputs/TimeInput/TimeInput.vue'
-
-type ComponentProps<C extends Component> = C extends new (...args: any) => any
-  ? Omit<
-      InstanceType<C>['$props'],
-      keyof VNodeProps | keyof AllowedComponentProps
-    >
-  : never
+import { config } from '~/config'
 
 const TEXT_INPUT = {
-  component: TextInput,
+  component: markRaw(TextInput),
   props: {} as ComponentProps<typeof TextInput>,
   icon: 'mi-text',
 }
 
 const NUMBER_INPUT = {
-  component: NumberInput,
+  component: markRaw(NumberInput),
   props: {} as ComponentProps<typeof NumberInput>,
   icon: 'ant-design:number-outlined',
 }
 
 const DATE_INPUT = {
-  component: DateInput,
+  component: markRaw(DateInput),
   props: {
     format: 'YYYY-MM-DD',
   } as ComponentProps<typeof DateInput>,
@@ -36,19 +29,19 @@ const DATE_INPUT = {
 }
 
 const BOOLEAN_INPUT = {
-  component: Toggle,
+  component: markRaw(Toggle),
   props: {} as ComponentProps<typeof Toggle>,
   icon: 'carbon:boolean',
 }
 
 const TIME_INPUT = {
-  component: TimeInput,
+  component: markRaw(TimeInput),
   props: {} as ComponentProps<typeof TimeInput>,
   icon: 'ion:time-outline',
 }
 
 const custom = {
-  component: TextInput,
+  component: markRaw(TextInput),
   props: {},
   icon: 'carbon:unknown',
 }
@@ -110,6 +103,9 @@ const INPUT_BY_DATATYPE = {
 
   // Custom
   customSimple: custom,
+
+  // App specific
+  ...config.dataTypes.inputs,
 } as const
 
 export function getInputByDataType<T extends ExtendedDataType>(
