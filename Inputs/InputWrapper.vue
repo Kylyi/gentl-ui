@@ -195,7 +195,6 @@ const wrapperProps = computed(() => {
 
   .wrapper__body {
     --apply: relative;
-    --apply: dark:bg-darker bg-white;
     margin: var(--bodyMargin);
 
     &.is-readonly,
@@ -226,9 +225,8 @@ const wrapperProps = computed(() => {
 
     &:not(:focus-within) {
       :slotted(.control) {
-        --apply: "!color-transparent";
+        --apply: '!color-transparent';
       }
-
     }
   }
 }

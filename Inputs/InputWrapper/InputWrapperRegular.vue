@@ -37,6 +37,9 @@ const classes = computed(() => {
       <slot name="label" />
     </div>
 
+    <!-- Border -->
+    <div class="input-wrapper__regular-border input-wrapper-border" />
+
     <!-- Prepend -->
     <div
       class="input-wrapper__regular-prepend input-wrapper__focusable"
@@ -87,9 +90,6 @@ const classes = computed(() => {
         name="hint"
       />
     </div>
-
-    <!-- Border -->
-    <div class="input-wrapper__regular-border input-wrapper-border" />
   </div>
 </template>
 
@@ -153,7 +153,7 @@ const classes = computed(() => {
   grid-row: 1 / 2;
 
   --apply: fit transition-all border-custom rounded-custom pointer-events-none
-    border-ca;
+    border-ca bg-white dark:bg-darker;
 }
 
 .input-wrapper__regular:not(.has-border) .input-wrapper__regular-border {

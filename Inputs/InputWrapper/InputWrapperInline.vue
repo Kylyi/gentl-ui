@@ -36,6 +36,9 @@ const classes = computed(() => {
 
     <!-- Input wrapper -->
     <div class="input-wrapper__inline-input input-wrapper__focusable">
+      <!-- Border -->
+      <div class="input-wrapper__inline-border input-wrapper-border" />
+
       <!-- Prepend -->
       <div
         class="input-wrapper__inline-input-prepend"
@@ -68,9 +71,6 @@ const classes = computed(() => {
       >
         <slot name="append" />
       </div>
-
-      <!-- Border -->
-      <div class="input-wrapper__inline-border input-wrapper-border" />
 
       <!-- Errors & Hint -->
       <div
@@ -173,7 +173,7 @@ const classes = computed(() => {
   grid-row: 1 / 2;
 
   --apply: transition-all border-custom rounded-custom pointer-events-none
-    border-ca fit;
+    border-ca fit bg-white dark:bg-darker;
 }
 
 .input-wrapper__inline:not(.has-border) .input-wrapper__inline-border {
