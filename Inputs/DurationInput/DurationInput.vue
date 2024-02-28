@@ -51,8 +51,6 @@ const numberInputProps = reactivePick(
   'inputClass',
   'inputStyle',
   'label',
-  'labelClass',
-  'labelStyle',
   'labelInside',
   'layout',
   'loading',

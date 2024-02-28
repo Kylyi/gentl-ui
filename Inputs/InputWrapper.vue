@@ -42,14 +42,13 @@ const labelProps = computed(() => {
     hasContent: props.hasContent,
     hasError: !!issues.value.length,
     label: props.label,
-    labelClass: props.labelClass,
-    labelStyle: props.labelStyle,
     layout: props.layout,
     placeholder: props.placeholder,
     required: props.required,
     size: props.size,
     stackLabel: props.stackLabel,
     validation: props.validation,
+    ui: props.ui,
   }
 })
 

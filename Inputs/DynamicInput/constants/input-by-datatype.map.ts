@@ -1,4 +1,5 @@
 // @unocss-include
+import { config } from '~/config'
 
 // Components
 import TextInput from '~/components/Inputs/TextInput/TextInput.vue'
@@ -6,7 +7,6 @@ import NumberInput from '~/components/Inputs/NumberInput/NumberInput.vue'
 import DateInput from '~/components/Inputs/DateInput/DateInput.vue'
 import Toggle from '~/components/Toggle/Toggle.vue'
 import TimeInput from '~/components/Inputs/TimeInput/TimeInput.vue'
-import { config } from '~/config'
 
 const TEXT_INPUT = {
   component: markRaw(TextInput),

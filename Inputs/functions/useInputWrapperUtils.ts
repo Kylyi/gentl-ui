@@ -10,8 +10,6 @@ export function useInputWrapperUtils() {
       'errorVisible',
       'hint',
       'label',
-      'labelStyle',
-      'labelClass',
       'layout',
       'loading',
       'modelValue',

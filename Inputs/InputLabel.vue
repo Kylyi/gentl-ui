@@ -12,7 +12,7 @@ const labelLocalClass = computed(() => {
   const isRegular = props.layout === 'regular'
 
   return [
-    props.labelClass,
+    props.ui?.labelClass,
     `label--${props.size}`,
     {
       'is-inline': isInline,
@@ -31,7 +31,7 @@ const labelLocalClass = computed(() => {
   <div
     class="label"
     :class="labelLocalClass"
-    :style="labelStyle"
+    :style="ui?.labelStyle"
   >
     {{ label }}
   </div>

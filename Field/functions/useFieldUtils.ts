@@ -62,8 +62,6 @@ export function useFieldUtils(options?: {
       'errorVisible',
       'hint',
       'label',
-      'labelClass',
-      'labelStyle',
       'layout',
       'loading',
       'noContent',

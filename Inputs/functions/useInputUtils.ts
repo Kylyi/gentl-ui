@@ -62,8 +62,6 @@ export function useInputUtils(options: IInputUtilsOptions) {
     'errorVisible',
     'hint',
     'label',
-    'labelStyle',
-    'labelClass',
     'layout',
     'loading',
     'modelValue',
