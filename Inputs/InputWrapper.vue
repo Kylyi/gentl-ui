@@ -127,7 +127,7 @@ const wrapperProps = computed(() => {
       >
         <InputLabel
           v-bind="labelProps"
-          :required="isRequired"
+          :required="isRequired || required"
         />
       </template>
 
