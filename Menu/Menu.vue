@@ -346,6 +346,8 @@ const isOverlayVisible = computed(() => {
     border-1 border-ca
     bg-white dark:bg-darker;
 
+  --apply: shadow-consistent-xs shadow-darker/20;
+
   &__header {
     --apply: flex items-center gap-2 p-l-3 p-r-1 p-y-2 rounded-t-custom;
     --apply: bg-$Menu-title-bg;

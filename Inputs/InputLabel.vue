@@ -90,7 +90,7 @@ div.label {
     }
 
     &.is-regular {
-      --apply: translate-y-29px;
+      --apply: translate-y-28px;
     }
   }
 

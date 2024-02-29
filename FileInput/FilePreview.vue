@@ -48,12 +48,7 @@ const imageUrl = computed(() => {
 <template>
   <div class="file-preview">
     <div class="file-preview--header">
-      <span
-        self-center
-        text="caption"
-        line-clamp="2"
-        p="y-1"
-      >
+      <span class="file-preview__filename">
         {{ file?.name }}
       </span>
 
@@ -125,8 +120,12 @@ const imageUrl = computed(() => {
 
   grid-template-rows: auto 1fr auto;
 
+  &__filename {
+    --apply: self-center text-caption line-clamp-2 p-y-1 break-words;
+  }
+
   &--header {
-    --apply: flex flex-row gap-x-2 p-x-2 w-full justify-between p-t-1 p-b-2;
+    --apply: flex flex-row gap-x-2 p-x-2 w-full justify-between p-t-1 p-b-2 overflow-auto;
   }
 
   &--image {

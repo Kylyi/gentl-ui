@@ -11,7 +11,8 @@ import Field from '~/components/Field/Field.vue'
 import MenuProxy from '~/components/MenuProxy/MenuProxy.vue'
 
 const props = defineProps<IYearMonthSelectorProps>()
-const emits = defineEmits<{
+
+defineEmits<{
   (e: 'update:modelValue', payload: Datetime): void
   (e: 'previous'): void
 }>()

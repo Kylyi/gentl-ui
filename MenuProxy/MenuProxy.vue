@@ -20,11 +20,10 @@ type IProps = {
 
 const props = withDefaults(defineProps<IProps>(), {
   breakpoint: 'sm',
-  offset: 8,
-  maxHeight: 99999,
-  noArrow: true,
   fit: true,
-  noOverlay: true,
+  maxHeight: 99999,
+  offset: 8,
+  noArrow: true,
   transitionDuration: 250,
 })
 
@@ -61,6 +60,7 @@ defineExpose({
     ref="menuProxyEl"
     v-bind="$props"
     v-model="model"
+    :no-overlay="!!isMenu"
     @hide="emits('hide')"
     @show="emits('show')"
     @before-hide="emits('beforeHide')"

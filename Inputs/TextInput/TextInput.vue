@@ -26,7 +26,7 @@ const props = withDefaults(defineProps<ITextInputProps>(), {
   stackLabel: undefined,
 })
 defineEmits<{
-  (e: 'update:model-value', val?: string | undefined | null): void
+  (e: 'update:modelValue', val?: string | undefined | null): void
   (e: 'validation-reset', val?: string | undefined | null): void
   (e: 'blur'): void
   (e: 'enter', event: KeyboardEvent): void
