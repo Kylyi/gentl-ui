@@ -15,6 +15,7 @@ const props = withDefaults(defineProps<ITextAreaInputProps>(), {
   errorVisible: true,
   inline: undefined,
   labelInside: undefined,
+  // @ts-expect-error Wrong IMask type
   mask: () => ({ mask: String }),
   required: undefined,
   rounded: true,
@@ -30,7 +31,7 @@ defineEmits<{
 
 const {
   el,
-  maskedValue,
+  masked,
   wrapperProps,
   hasClearableBtn,
   hasContent,
@@ -40,7 +41,6 @@ const {
   clear,
   getInputElement,
   handleBlur,
-  handleManualModelChange,
   handleClickWrapper,
   handleFocusOrClick,
   elMask,
@@ -52,7 +52,7 @@ const {
 if (props.autogrow) {
   useTextareaAutosize({
     element: el as MaybeElementRef<HTMLTextAreaElement>,
-    input: maskedValue,
+    input: masked,
   })
 }
 
@@ -68,11 +68,9 @@ defineExpose({
   blur,
   clear,
   getInputElement,
-  sync: () => handleManualModelChange(props.modelValue),
   updateMask: (fnc: (mask: InputMask<any>) => void) => {
     fnc(elMask.value as InputMask<any>)
   },
-  handleManualModelChange,
 })
 </script>
 
@@ -97,7 +95,7 @@ defineExpose({
     <textarea
       ref="el"
       flex="grow"
-      :value="maskedValue"
+      :value="masked"
       :placeholder="placeholder"
       :readonly="readonly"
       :disabled="disabled"

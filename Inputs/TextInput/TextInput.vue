@@ -18,6 +18,7 @@ const props = withDefaults(defineProps<ITextInputProps>(), {
   errorVisible: true,
   inline: undefined,
   labelInside: undefined,
+  // @ts-expect-error Wrong IMask type
   mask: () => ({ mask: String }),
   required: undefined,
   rounded: true,
@@ -33,7 +34,7 @@ defineEmits<{
 
 const {
   el,
-  maskedValue,
+  masked,
   wrapperProps,
   hasContent,
   isBlurred,
@@ -46,7 +47,6 @@ const {
   blur,
   clear,
   getInputElement,
-  handleManualModelChange,
 } = useInputUtils({
   props,
   maskRef: toRef(props, 'mask'),
@@ -65,7 +65,6 @@ defineExpose({
   blur,
   clear,
   getInputElement,
-  sync: () => handleManualModelChange(props.modelValue),
 })
 </script>
 
@@ -89,7 +88,7 @@ defineExpose({
 
     <input
       ref="el"
-      :value="maskedValue"
+      :value="masked"
       flex="1"
       :type="type"
       :inputmode="inputmode"
@@ -144,7 +143,7 @@ defineExpose({
         <CopyBtn
           v-if="hasCopyBtn"
           :size="size"
-          :model-value="maskedValue"
+          :model-value="masked"
         />
       </div>
     </template>

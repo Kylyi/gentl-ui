@@ -4,6 +4,7 @@ import type { IFieldProps } from '~/components/Field/types/field-props.type'
 
 // Functions
 import { useInputWrapperUtils } from '~/components/Inputs/functions/useInputWrapperUtils'
+import { useFieldUtils } from '~/components/Field/functions/useFieldUtils'
 
 const props = defineProps<IFieldProps>()
 defineEmits<{
@@ -11,17 +12,15 @@ defineEmits<{
 }>()
 
 // Utils
+const { el, handleClickWrapper } = useFieldUtils()
 const { getInputWrapperProps } = useInputWrapperUtils()
-
-// Layout
-const controlEl = ref<HTMLDivElement>()
 
 // Wrapper
 const wrapperProps = getInputWrapperProps(props)
 
 defineExpose({
-  focus: () => controlEl.value?.focus(),
-  blur: () => controlEl.value?.blur(),
+  focus: () => el.value?.focus(),
+  blur: () => el.value?.blur(),
 })
 </script>
 
@@ -30,8 +29,8 @@ defineExpose({
     v-bind="wrapperProps"
     error-visible
     :has-content="!noContent"
+    @click="handleClickWrapper"
   >
-    {{ wrapperProps.zod }}
     <template
       v-if="$slots.prepend"
       #prepend
@@ -40,7 +39,7 @@ defineExpose({
     </template>
 
     <span
-      ref="controlEl"
+      ref="el"
       class="control w-full"
       :class="[
         controlClass,

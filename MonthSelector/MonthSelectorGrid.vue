@@ -18,7 +18,7 @@ const nowMonth = eagerComputed(() => {
   return `${dateObj.year()}-${padStart(String(dateObj.month()), 2, '0')}`
 })
 
-const dateObj = computed(() => $date(props.date))
+const dateObj = computed(() => $date(props.modelValue))
 const months = computed(() => {
   return Array.from({ length: 12 }, (_, idx) => {
     const idxString = padStart(String(idx), 2, '0')
@@ -49,7 +49,7 @@ const months = computed(() => {
         'current': nowMonth === m.month && dateObj.month() !== m.idx,
       }"
       @click="$emit('month', m.idx)"
-      @mousedown.stop.prevent=""
+      @mousedown.stop.prevent
     />
   </div>
 </template>

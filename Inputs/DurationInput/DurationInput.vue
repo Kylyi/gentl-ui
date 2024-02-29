@@ -24,7 +24,7 @@ const props = withDefaults(defineProps<IDurationInputProps>(), {
 })
 
 const emits = defineEmits<{
-  (e: 'update:model-value', val?: any): void
+  (e: 'update:modelValue', val?: any): void
   (e: 'blur'): void
 }>()
 
@@ -82,23 +82,24 @@ const modelByUnit = computed<Record<DurationUnit, number>>(() => {
   }
 })
 
-const model = computed(() => {
-  return props.emptyValue === props.modelValue
-    ? props.emptyValue
-    : modelByUnit.value[durationUnit.value]
+const model = computed({
+  get() {
+    return props.emptyValue === props.modelValue
+      ? props.emptyValue
+      : modelByUnit.value[durationUnit.value]
+  },
+  set(val) {
+    let duration: any
+
+    if (typeof val === 'number') {
+      duration = val * MODIFIER_BY_UNIT[durationUnit.value]
+    } else {
+      duration = val
+    }
+
+    emits('update:modelValue', duration)
+  },
 })
-
-function handleModelChange(val: any) {
-  let duration: any
-
-  if (typeof val === 'number') {
-    duration = val * MODIFIER_BY_UNIT[durationUnit.value]
-  } else {
-    duration = val
-  }
-
-  emits('update:model-value', duration)
-}
 
 // Units
 const units = computed(() => {
@@ -111,8 +112,12 @@ const units = computed(() => {
 })
 
 function handleDurationUnitChange(unit: DurationUnit) {
+  const isEmptyValue = props.emptyValue === model.value
   durationUnit.value = unit
-  numberInputEl.value?.handleManualModelChange(model.value, true)
+
+  nextTick(() => {
+    model.value = isEmptyValue ? props.emptyValue : modelByUnit.value[unit]
+  })
 
   menuEl.value?.hide()
 }
@@ -127,9 +132,8 @@ defineExpose({
 <template>
   <NumberInput
     ref="numberInputEl"
-    :model-value="model"
+    v-model="model"
     v-bind="numberInputProps"
-    @update:model-value="handleModelChange"
   >
     <template v-if="$slots.prepend">
       <slot name="prepend" />
@@ -149,6 +153,7 @@ defineExpose({
         color="ca"
         tabindex="-1"
         @mousedown.stop.prevent
+        @click.stop.prevent
       >
         <Menu
           ref="menuEl"

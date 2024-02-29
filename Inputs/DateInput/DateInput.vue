@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
 
-import { type AnyMaskedOptions, MaskedRange } from 'imask'
+import { type FactoryOpts, MaskedRange } from 'imask'
 
 // Types
 import type { IDateInputProps } from '~/components/Inputs/DateInput/types/date-input-props.type'
@@ -29,7 +29,7 @@ const props = withDefaults(defineProps<IDateInputProps>(), {
 })
 
 defineEmits<{
-  (e: 'update:model-value', val?: Datetime): void
+  (e: 'update:modelValue', val?: Datetime): void
   (e: 'validation-reset', val?: string | undefined | null): void
   (e: 'blur'): void
 }>()
@@ -49,7 +49,7 @@ function isDate(date?: any) {
 // Mask
 const PATTERN = computed(() => getCurrentLocaleDateFormat())
 
-const mask = computed<AnyMaskedOptions>(() => {
+const mask = computed<FactoryOpts>(() => {
   return {
     mask: PATTERN.value,
     pattern: PATTERN.value,
@@ -116,12 +116,7 @@ const wrapperEl = ref<InstanceType<typeof InputWrapper>>()
 
 function handleDateSelect(val: dayjs.Dayjs) {
   preventSync.value = true
-
-  if (props.format) {
-    handleManualModelChange(val.format(props.format))
-  } else {
-    handleManualModelChange(val)
-  }
+  model.value = props.format ? val.format(props.format) : val
 
   if (props.autoClose) {
     menuProxyEl.value?.hide()
@@ -133,18 +128,13 @@ const menuProxyEl = ref<InstanceType<typeof MenuProxy>>()
 const datePickerEl = ref<InstanceType<typeof DatePicker>>()
 const isPickerActive = ref(false)
 
-function handlePickerHide() {
-  isPickerActive.value = false
-}
-
 const {
   el,
-  typedValue,
-  maskedValue,
+  model,
+  masked,
   wrapperProps,
   hasNoValue,
   hasClearableBtn,
-  handleManualModelChange,
   handleFocusOrClick,
   handleClickWrapper,
   focus,
@@ -199,9 +189,9 @@ defineExpose({
 
     <input
       ref="el"
-      :value="typedValue ? maskedValue : undefined"
       flex="1"
       type="text"
+      :value="masked"
       :placeholder="placeholder"
       :readonly="readonly"
       :disabled="disabled"
@@ -211,7 +201,6 @@ defineExpose({
       class="control"
       :class="[inputClass]"
       v-bind="inputProps"
-      @select="handleFocusOrClick"
       @focus="handleFocusOrClick"
       @blur="handleBlur"
     />
@@ -268,7 +257,6 @@ defineExpose({
         min-w="!280px"
         max-w="!400px"
         :ui="{ contentClass: 'p-0' }"
-        @hide="handlePickerHide"
       >
         <DatePicker
           ref="datePickerEl"

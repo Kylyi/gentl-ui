@@ -13,22 +13,43 @@ const props = withDefaults(defineProps<IDatePickerProps>(), {
 })
 
 const emits = defineEmits<{
-  (e: 'update:model-value', val: dayjs.Dayjs): void
+  (e: 'update:modelValue', val: dayjs.Dayjs): void
 }>()
+
+// Constants
+const MIN_COUNT_OF_WEEKS = 6
 
 // Utils
 const { formatDate, getPeriod, getExtendedPeriod, getDaysInPeriod } =
   useDateUtils()
 
 // Layout
-const daysCount = computedEager(() => 7 - props.excludedDays.length)
+const originalModel = defineModel<any>()
+const daysCount = computed(() => 7 - props.excludedDays.length)
 const daysInPeriod = computed(() =>
   getDaysInPeriod(extendedPeriod, {
     excludedDays: excludedDays.value,
     currentPeriod: period.value,
   })
 )
-const minCountOfWeeks = 6
+
+const eventsByDay = computed(() => {
+  return props.events?.reduce((agg, event) => {
+    const day = $date(event.date).startOf('d').format('YYYY-MM-DD')
+
+    if (agg[day] === undefined) {
+      agg[day] = []
+    }
+
+    agg[day].push(event)
+
+    return agg
+  }, {} as Record<string, DayEvent[]>)
+})
+
+function handleSelectToday() {
+  emits('update:modelValue', $date().startOf('d'))
+}
 
 function isDayDisabled(day: Day) {
   if (!props.disabledDays && !props.allowedDays) {
@@ -48,41 +69,40 @@ function isDayDisabled(day: Day) {
   }
 }
 
-const eventsByDay = computed(() => {
-  return props.events?.reduce((agg, event) => {
-    const day = $date(event.date).startOf('d').format('YYYY-MM-DD')
-
-    if (agg[day] === undefined) {
-      agg[day] = []
+// Data
+const model = computed<Datetime>({
+  get() {
+    if (isNil(originalModel.value) || originalModel.value === '') {
+      return null
     }
 
-    agg[day].push(event)
-
-    return agg
-  }, {} as Record<string, DayEvent[]>)
+    return $date(originalModel.value)
+  },
+  set(val) {
+    originalModel.value = val
+  },
 })
 
-function handleSelectToday() {
-  emits('update:model-value', $date().startOf('d'))
-}
-
-// Data
-const model = computed(() => {
-  if (isNil(props.modelValue) || props.modelValue === '') {
-    return null
-  }
-
-  return $date(props.modelValue)
-})
+/**
+ * Internal value is used to navigate through months/years in the picker without
+ * changing the actual `model`
+ */
 const internalValue = ref<Datetime>(model.value) as Ref<Datetime>
 const excludedDays = toRef(props, 'excludedDays')
-const period = computed(() =>
-  getPeriod({ dateRef: internalValue, unit: 'month' })
-)
-const extendedPeriod = computed(() =>
-  getExtendedPeriod({ dateRef: internalValue, unit: 'month', minCountOfWeeks })
-)
+
 const internalValueObj = computed(() => $date(internalValue.value))
+
+const period = computed(() => {
+  return getPeriod({ dateRef: internalValue, unit: 'month' })
+})
+
+const extendedPeriod = computed(() => {
+  return getExtendedPeriod({
+    dateRef: internalValue,
+    unit: 'month',
+    minCountOfWeeks: MIN_COUNT_OF_WEEKS,
+  })
+})
 
 const hasValue = computed(() => {
   return !isNil(model.value)
@@ -93,7 +113,7 @@ function handleDaySelect(day: Day) {
     return
   }
 
-  emits('update:model-value', day.dateObj)
+  model.value = day.dateObj
 }
 
 defineExpose({

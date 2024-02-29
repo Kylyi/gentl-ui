@@ -59,7 +59,6 @@ const fieldProps = getFieldProps(props)
     ref="fieldEl"
     v-bind="fieldProps"
     :no-content="!model"
-    @click="handleClickWrapper"
     @focus="handleFocusOrClick"
   >
     <span :style="{ color: model }">

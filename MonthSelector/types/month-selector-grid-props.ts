@@ -1,3 +1,3 @@
 export interface IMonthSelectorGridProps {
-  date: Datetime
+  modelValue: Datetime
 }

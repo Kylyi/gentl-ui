@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type AnyMaskedOptions, MaskedRange } from 'imask'
+import { type FactoryOpts, MaskedRange } from 'imask'
 
 // Types
 import type { ITimeInputPickerProps } from '~/components/Inputs/TimeInput/types/time-input-picker-props.type'
@@ -20,6 +20,9 @@ const emits = defineEmits<{
 // Utils
 const { lastPointerDownEvent } = storeToRefs(useAppStore())
 
+// Layout
+const model = defineModel<any>()
+
 // Options
 const minuteOptions = computed(() =>
   [...Array(60).keys()].map(val => padStart(String(val), 2, '0'))
@@ -31,7 +34,7 @@ const hourOptions = computed(() =>
 )
 
 // Masks
-const maskHours = computed<AnyMaskedOptions>(() => {
+const maskHours = computed<FactoryOpts>(() => {
   return {
     mask: 'HH',
     lazy: false,
@@ -48,7 +51,7 @@ const maskHours = computed<AnyMaskedOptions>(() => {
   }
 })
 
-const maskMinutes = computed<AnyMaskedOptions>(() => {
+const maskMinutes = computed<FactoryOpts>(() => {
   return {
     mask: 'mm',
     lazy: false,
@@ -110,14 +113,14 @@ function setValue(
     preventNextIsAmChange.value = true
     isAm.value = +val.split(':')[0] < 12
 
-    props.handleManualModelChange(val, true)
+    model.value = val
   } else {
     const [hh, mm] = (props.modelValueLocalized || '12:00').split(':')
 
     if (type === 'h') {
-      props.handleManualModelChange(`${val}:${mm}`, true)
+      model.value = `${val}:${mm}`
     } else {
-      props.handleManualModelChange(`${hh}:${val}`, true)
+      model.value = `${hh}:${val}`
     }
   }
 
@@ -132,20 +135,12 @@ function setValue(
   if (syncWithInputs && usedTouch.value) {
     preventPickerSync.value = true
     preventNextChangeFromMobileInputs.value = true
-    syncInternalValueWithInputs()
   }
 }
 
 function syncInternalValueWithPicker() {
   hourEl.value?.sync()
   minuteEl.value?.sync()
-}
-
-function syncInternalValueWithInputs() {
-  nextTick(() => {
-    hInput.value?.sync()
-    mInput.value?.sync()
-  })
 }
 
 defineExpose({
@@ -178,12 +173,12 @@ defineExpose({
     >
       <div
         flex="~ gap-x-2 wrap"
-        p="l-3 r-1 y-2"
+        p="l-1 r-1 y-2"
         items-center
       >
         <TextInput
           ref="hInput"
-          label-inside
+          layout="label-inside"
           :model-value="localizedTimeParts.hh"
           input-class="text-center w-full"
           class="w-[calc(50%-8px)]"
@@ -194,7 +189,7 @@ defineExpose({
         />
         <TextInput
           ref="mInput"
-          label-inside
+          layout="label-inside"
           :model-value="localizedTimeParts.mm"
           input-class="text-center w-full"
           class="w-[calc(50%-8px)]"

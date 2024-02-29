@@ -1,53 +1,75 @@
 // Types
 import type { IFieldProps } from '~/components/Field/types/field-props.type'
 
+// Store
+import { useAppStore } from '~/libs/App/app.store'
+
 export function useFieldUtils(options?: {
   props?: IFieldProps
   menuElRef?: MaybeRefOrGetter
 }) {
-  const currentInstance = getCurrentInstance()
-  const { props, menuElRef } = options || {}
+  const { menuElRef } = options || {}
+
+  // Store
+  const appStore = useAppStore()
 
   // Layout
+  const el = ref<HTMLDivElement>()
   const menuEl = computed(() => toValue(menuElRef))
 
-  // Click & focus handler
-  const focusedProgramatically = refAutoReset(false, 50)
+  const inputElement = computed(() => {
+    return unrefElement(el.value as any) as HTMLInputElement | undefined
+  })
 
-  // In some cases, we click into the `margin` of the `.wrapper-body__input`
-  // which doesn't trigger the focus event on the input. We need to handle
-  // this case manually.
+  // In some cases, we click into the wrapper but not directly in the `.control`
+  // element, so the `focus` does not get triggered. We need to handle this case manually
   function handleClickWrapper(ev: MouseEvent) {
-    if ((ev.target as HTMLElement).classList.contains('wrapper-body__input')) {
+    const target = ev.target as HTMLElement
+    const isFocusable =
+      target.classList.contains('input-wrapper__focusable') ||
+      !!target.closest('.input-wrapper__focusable')
+
+    if (isFocusable) {
       handleFocusOrClick(ev)
     }
   }
 
-  function handleFocusOrClick(ev: MouseEvent | FocusEvent) {
-    if (focusedProgramatically.value) {
+  // Click & focus handling
+  function handleFocusOrClick(ev?: Event) {
+    if (appStore.hasUserLeftPage) {
       return
     }
 
-    focusedProgramatically.value = true
+    const isSelectEvent = ev?.type === 'select'
+    const isFocusEvent = ev instanceof FocusEvent
 
-    currentInstance?.proxy?.$el.querySelector('.control').focus()
+    if (isFocusEvent || isSelectEvent) {
+      const inputMenu = inputElement.value?.closest('.floating-element')
 
-    const hasClickedInsideFloatingElement = !!(
-      ev.target as HTMLElement
-    ).closest('.floating-element')
-
-    if (!hasClickedInsideFloatingElement) {
-      document.querySelectorAll('.floating-element').forEach(el => {
-        const currentMenuDom = menuEl.value?.getFloatingEl()
-
-        if (el !== currentMenuDom) {
-          el.setAttribute('hide-trigger', '')
-        }
-      })
+      $hide({ all: true, ignoreUntilEl: inputMenu })
     }
 
-    if (!props?.disabled && !props?.readonly) {
+    nextTick(() => {
       menuEl.value?.show()
+    })
+
+    // In some cases, for example `DateInput`, we don't want to focus the input
+    // on mobile phones
+    const isTouchEvent = appStore.lastPointerDownEvent?.pointerType !== 'mouse'
+    const isFocusPrevented = isTouchEvent
+
+    // When event is not a `FocusEvent`, we focus it and align the cursor
+    const isInputFocused = appStore.activeElement === inputElement.value
+
+    // We need to manually focus the input when necessary, ie. when the event
+    // would not focus the input automatically
+    if (
+      !isFocusEvent &&
+      !isSelectEvent &&
+      !isInputFocused &&
+      !isFocusPrevented
+    ) {
+      inputElement.value?.focus()
     }
   }
 
@@ -76,6 +98,7 @@ export function useFieldUtils(options?: {
   }
 
   return {
+    el,
     getFieldProps,
     handleClickWrapper,
     handleFocusOrClick,

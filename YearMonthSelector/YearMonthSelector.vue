@@ -10,11 +10,7 @@ import { useFieldUtils } from '~/components/Field/functions/useFieldUtils'
 import Field from '~/components/Field/Field.vue'
 import MenuProxy from '~/components/MenuProxy/MenuProxy.vue'
 
-const props = withDefaults(defineProps<IYearMonthSelectorProps>(), {
-  ui: () => ({
-    contentClass: 'cursor-pointer',
-  }),
-})
+const props = defineProps<IYearMonthSelectorProps>()
 const emits = defineEmits<{
   (e: 'update:modelValue', payload: Datetime): void
   (e: 'previous'): void
@@ -24,8 +20,8 @@ const emits = defineEmits<{
 const { d } = useI18n()
 
 // Layout
-const fieldEl = ref<InstanceType<typeof Field>>()
-const model = useVModel(props, 'modelValue', emits)
+const fieldEl = ref<ComponentInstance<typeof Field>>()
+const model = defineModel<Datetime>()
 
 const modelFormatted = computed(() => {
   if (!model.value) {
@@ -37,7 +33,7 @@ const modelFormatted = computed(() => {
 
 // Picker
 const referenceEl = ref<HTMLDivElement>()
-const menuProxyEl = ref<InstanceType<typeof MenuProxy>>()
+const menuProxyEl = ref<ComponentInstance<typeof MenuProxy>>()
 const isPickerActive = ref(false)
 const pickerState = ref('hide')
 
@@ -61,20 +57,19 @@ function handleYearPrevious() {
 }
 
 // Field
-const { getFieldProps, handleClickWrapper, handleFocusOrClick } = useFieldUtils(
-  {
-    props,
-    menuElRef: menuProxyEl,
-  }
-)
+const { getFieldProps, handleFocusOrClick } = useFieldUtils({
+  props,
+  menuElRef: menuProxyEl,
+})
 
 const fieldProps = getFieldProps(props)
 
 onMounted(() => {
   nextTick(() => {
-    referenceEl.value = unrefElement(fieldEl as any)?.querySelector(
-      '.control'
-    ) as HTMLDivElement
+    const fieldElDom = unrefElement(fieldEl as any)
+    const wrapperElDom = fieldElDom?.querySelector('.input-wrapper-border')
+
+    referenceEl.value = wrapperElDom
   })
 })
 </script>
@@ -84,7 +79,6 @@ onMounted(() => {
     ref="fieldEl"
     v-bind="fieldProps"
     :no-content="!modelFormatted"
-    @click="handleClickWrapper"
     @focus="handleFocusOrClick"
   >
     <span>
@@ -96,17 +90,20 @@ onMounted(() => {
       v-model="isPickerActive"
       manual
       :reference-target="referenceEl"
+      :fit="false"
       position="top"
+      placement="bottom-start"
       h="!auto"
       w="!auto"
       min-w="!280px"
       max-w="!400px"
       tabindex="-1"
+      no-uplift
       @before-show="pickerState = 'show'"
       @before-hide="pickerState = 'hide'"
     >
       <YearSelector
-        :date="model"
+        :model-value="model"
         @year="handleYearSelect"
         @next="handleYearNext"
         @previous="handleYearPrevious"
@@ -115,7 +112,7 @@ onMounted(() => {
       <Separator />
 
       <MonthSelectorGrid
-        :date="model"
+        :model-value="model"
         @month="handleMonthSelect"
       />
     </MenuProxy>

@@ -1,4 +1,4 @@
 export interface IMonthSelectorProps {
-  date: Datetime
+  modelValue?: Datetime
   referenceTarget?: any
 }

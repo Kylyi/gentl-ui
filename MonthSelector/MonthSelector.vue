@@ -28,7 +28,7 @@ const nowMonth = computed(() => {
 const monthBtn = ref<any>()
 const monthSelectorVisible = ref(false)
 
-const dateObj = computed(() => $date(props.date))
+const dateObj = computed(() => $date(props.modelValue))
 
 const months = computed(() => {
   return Array.from({ length: 12 }, (_, idx) => {
@@ -54,6 +54,7 @@ function handleMonthSelect(month: Month, callback?: () => void) {
 
 <template>
   <div class="month-selector">
+    <!-- Previous -->
     <Btn
       size="auto"
       class="month-selector__previous"
@@ -62,6 +63,8 @@ function handleMonthSelect(month: Month, callback?: () => void) {
       @click="$emit('previous')"
       @mousedown.stop.prevent=""
     />
+
+    <!-- Current month -->
     <Btn
       ref="monthBtn"
       size="sm"
@@ -71,6 +74,8 @@ function handleMonthSelect(month: Month, callback?: () => void) {
       tabindex="-1"
       :label="formatDate(dateObj.valueOf(), 'month')"
     />
+
+    <!-- Next -->
     <Btn
       size="auto"
       class="month-selector__next"

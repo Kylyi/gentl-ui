@@ -1,8 +1,11 @@
+import { useIMask } from 'vue-imask'
+
 // Types
+import { createMask } from 'imask'
 import type { IInputUtilsOptions } from '~/components/Inputs/types/input-utils-options.type'
 
 // Functions
-import { useMask } from '~/components/Inputs/functions/useMask'
+import { useInputWrapperUtils } from '~/components/Inputs/functions/useInputWrapperUtils'
 
 // Store
 import { useAppStore } from '~/libs/App/app.store'
@@ -15,8 +18,11 @@ export function useInputUtils(options: IInputUtilsOptions) {
     maskEventHandlers,
     menuElRef,
     preventFocusOnTouch,
-    setModel,
   } = options
+
+  // Utils
+  const isInitialized = ref(false)
+  const { getInputWrapperProps } = useInputWrapperUtils()
 
   const appStore = useAppStore()
   const instance = getCurrentInstance()
@@ -25,61 +31,59 @@ export function useInputUtils(options: IInputUtilsOptions) {
 
   const debouncedChange = useDebounceFn((val: any) => {
     if (!props.emitOnBlur) {
-      setModel?.(val) ?? instance?.emit('update:model-value', val)
+      originalModel.value = val
     }
   }, props.debounce)
 
   // Mask
-  const { modelValue, emptyValue } = toRefs(props)
-  const {
-    el,
-    elMask,
-    hasJustChanged,
-    refresh,
-    destroyMask,
-    maskedValue,
-    typedValue,
-    lastValidValue,
-    isEmpty,
-    clear: clearMask,
-    handleManualModelChange,
-  } = useMask({
-    modelValue,
-    allowIncompleteMaskValue: props.allowIncompleteMaskValue,
-    maskOptions: maskRef,
-    updateValueFnc: debouncedChange,
-    emptyValue,
-    eventHandlers: maskEventHandlers,
-    setModel,
+  const lastValidValue = ref<any>()
+  const { emptyValue } = toRefs(props)
+  const { el, mask, masked, unmasked, typed } = useIMask(maskRef, {
+    onAccept: ev => {
+      nextTick(() => {
+        maskEventHandlers?.onAccept?.(lastValidValue.value, ev)
+      })
+    },
+    onComplete: ev => {
+      nextTick(() => maskEventHandlers?.onCompleted?.(lastValidValue.value, ev))
+    },
+  })
+
+  const originalModel = useVModel(props, 'modelValue', undefined, {
+    defaultValue: props.emptyValue,
+  })
+  const model = ref(originalModel.value)
+
+  // We also need to create an instance of mask to get the `masked` value
+  // because `useIMask` initializes values in `onMounted` which would break SSR
+  const temporaryMask = createMask(toValue(maskRef.value))
+  temporaryMask.typedValue = model.value
+
+  // Init the values
+  masked.value = temporaryMask.value
+  typed.value = temporaryMask.typedValue
+  unmasked.value = temporaryMask.unmaskedValue
+
+  const isEmpty = computed(() => {
+    return (
+      typed.value === unref(emptyValue) ||
+      isNil(typed.value) ||
+      unmasked.value === ''
+    )
   })
 
   // Wrapper
-  const wrapperProps = reactivePick(
-    props,
-    'disabled',
-    'emptyValue',
-    'errorTakesSpace',
-    'errorVisible',
-    'hint',
-    'label',
-    'layout',
-    'loading',
-    'modelValue',
-    'originalValue',
-    'placeholder',
-    'readonly',
-    'required',
-    'size',
-    'stackLabel',
-    'noBorder',
-    'validation',
-    'ui',
-    'zod'
-  )
+  const wrapperProps = getInputWrapperProps(props)
 
   // Layout
   const isBlurred = ref(true)
+
   const menuEl = computed(() => toValue(menuElRef))
+
+  const inputElement = computed(() => {
+    return unrefElement(el.value as any) as HTMLInputElement | undefined
+  })
+
   const hasContent = computed(() => {
     return props.hasContent || !isEmpty.value
   })
@@ -91,24 +95,24 @@ export function useInputUtils(options: IInputUtilsOptions) {
   })
 
   // Input methods
-  const getInputElement = () => el.value
-  const select = () => unrefElement(el)?.select()
+  const getInputElement = () => inputElement.value
+  const select = () => inputElement.value?.select()
 
   const focus = (alignCursor?: boolean) => {
-    unrefElement(el)?.focus()
+    inputElement.value?.focus()
 
     if (alignCursor === true) {
-      elMask.value?.alignCursorFriendly()
+      mask.value?.alignCursorFriendly()
     }
   }
 
   const blur = () => {
     isBlurred.value = true
-    unrefElement(el)?.blur()
+    inputElement.value?.blur()
   }
 
   const clear = (shouldFocusAfterClear?: boolean) => {
-    clearMask()
+    model.value = props.emptyValue
 
     if (shouldFocusAfterClear || !isBlurred.value) {
       setTimeout(() => focus(), 0)
@@ -124,14 +128,14 @@ export function useInputUtils(options: IInputUtilsOptions) {
       !!lastTarget?.closest('.input-wrapper__focusable')
 
     const isSameWrapper =
-      el.value?.closest('.wrapper__body') ===
+      inputElement.value?.closest('.wrapper__body') ===
       lastTarget?.closest('.wrapper__body')
 
     // `Tab` handling
     const relatedTargetWrapper = relatedTarget?.closest('.wrapper__body')
     const isRelatedTargetFocusable =
       !relatedTargetWrapper ||
-      relatedTargetWrapper === el.value?.closest('.wrapper__body')
+      relatedTargetWrapper === inputElement.value?.closest('.wrapper__body')
 
     // We prevent the blur event when clicking on focusable elements
     // in the same wrapper
@@ -144,14 +148,27 @@ export function useInputUtils(options: IInputUtilsOptions) {
 
     isBlurred.value = true
 
+    // Reset the `model` to its `lastValidValue` if it differs
+    const isSame = isEqual(model.value, lastValidValue.value)
+
+    if (!isSame) {
+      // We need to reset the iMask placeholder
+      const isModelEmpty =
+        isNil(originalModel.value) ||
+        toValue(originalModel) === toValue(emptyValue)
+
+      if (isModelEmpty) {
+        unmasked.value = ''
+      } else {
+        model.value = lastValidValue.value
+      }
+    }
+
     onBlur?.()
     blur()
-    refresh()
 
     if (props.emitOnBlur) {
-      hasJustChanged.value = true
-      setModel?.(lastValidValue.value) ??
-        instance?.emit('update:model-value', lastValidValue.value)
+      originalModel.value = model.value
     }
 
     instance?.emit('blur')
@@ -181,12 +198,14 @@ export function useInputUtils(options: IInputUtilsOptions) {
 
     if (!props.disabled && !props.readonly) {
       if (isFocusEvent || isSelectEvent) {
-        const inputMenu = el.value?.closest('.floating-element')
+        const inputMenu = inputElement.value?.closest('.floating-element')
 
         $hide({ all: true, ignoreUntilEl: inputMenu })
       }
 
-      menuEl.value?.show()
+      nextTick(() => {
+        menuEl.value?.show()
+      })
     }
 
     // In some cases, for example `DateInput`, we don't want to focus the input
@@ -195,8 +214,10 @@ export function useInputUtils(options: IInputUtilsOptions) {
     const isFocusPrevented = preventFocusOnTouch && isTouchEvent
 
     // When event is not a `FocusEvent`, we focus it and align the cursor
-    const isInputFocused = appStore.activeElement === el.value
+    const isInputFocused = appStore.activeElement === inputElement.value
 
+    // We need to manually focus the input when necessary, ie. when the event
+    // would not focus the input automatically
     if (
       !isFocusEvent &&
       !isSelectEvent &&
@@ -207,8 +228,6 @@ export function useInputUtils(options: IInputUtilsOptions) {
     }
 
     if (isFocusPrevented) {
-      blur()
-
       return
     }
 
@@ -224,12 +243,50 @@ export function useInputUtils(options: IInputUtilsOptions) {
     }
   }, 300)
 
-  onBeforeUnmount(destroyMask)
+  // We sync the `model` with the `typed` value from iMask
+  syncRef(model, typed, {
+    direction: 'both',
+    transform: {
+      rtl: val => {
+        if (!isInitialized.value) {
+          return model.value
+        }
+
+        const value = isEmpty.value ? props.emptyValue : val
+
+        // We only emit the value when the mask is complete
+        // or if we allow incomplete mask values
+        // or if we removed the value (ie. isEmpty === true)
+        const isComplete = mask.value?.masked.isComplete
+
+        if (isComplete || props.allowIncompleteMaskValue || isEmpty.value) {
+          lastValidValue.value = value
+          debouncedChange(value)
+        }
+
+        return value
+      },
+    },
+    flush: 'post',
+    immediate: false,
+  })
+
+  // We also need to sync the `model` when the `originalModel` changes
+  watch(originalModel, val => {
+    model.value = val
+  })
+
+  // Initialize
+  onMounted(() => {
+    nextTick(() => {
+      isInitialized.value = true
+    })
+  })
 
   return {
     el,
-    maskedValue,
-    typedValue,
+    model,
+    masked,
     hasBeenTouched,
     isBlurred,
     wrapperProps,
@@ -242,9 +299,8 @@ export function useInputUtils(options: IInputUtilsOptions) {
     select,
     blur,
     getInputElement,
-    handleManualModelChange,
     handleFocusOrClick,
     handleClickWrapper,
-    elMask,
+    elMask: mask,
   }
 }
