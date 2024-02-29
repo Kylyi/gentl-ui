@@ -121,7 +121,7 @@ const classes = computed(() => {
   }
 
   .input-wrapper__regular-label {
-    --apply: overflow-hidden self-start relative fit;
+    --apply: self-start relative fit;
     grid-column: 2 / 3;
     grid-row: 1 / 3;
   }
