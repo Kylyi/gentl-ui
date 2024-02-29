@@ -60,9 +60,13 @@ export function useInputUtils(options: IInputUtilsOptions) {
   temporaryMask.typedValue = model.value
 
   // Init the values
-  masked.value = temporaryMask.value
-  typed.value = temporaryMask.typedValue
-  unmasked.value = temporaryMask.unmaskedValue
+  const isModelEmpty = isNil(model.value) || model.value === props.modelValue
+
+  if (!isModelEmpty) {
+    masked.value = temporaryMask.value
+    typed.value = temporaryMask.typedValue
+    unmasked.value = temporaryMask.unmaskedValue
+  }
 
   const isEmpty = computed(() => {
     return (
