@@ -27,22 +27,22 @@ export interface ISectionProps {
     /**
      * Class to apply to the `title`
      */
-    titleClass: ClassType
+    titleClass?: ClassType
 
     /**
      * Style to apply to the `title`
      */
-    titleStyle: CSSProperties
+    titleStyle?: CSSProperties
 
     /**
      * Style to apply to the `subtitle`
      */
-    subtitleClass: ClassType
+    subtitleClass?: ClassType
 
     /**
      * Style to apply to the `subtitle`
      */
-    subtitleStyle: CSSProperties
+    subtitleStyle?: CSSProperties
 
     /**
      * Class to apply to the content

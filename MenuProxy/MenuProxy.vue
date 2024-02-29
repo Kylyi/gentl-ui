@@ -83,8 +83,8 @@ defineExpose({
       />
     </template>
 
-    <template #default>
-      <slot />
+    <template #default="{ hide }">
+      <slot :hide="hide" />
     </template>
   </Component>
 </template>

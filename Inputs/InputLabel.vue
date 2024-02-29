@@ -45,9 +45,8 @@ div.label {
   --apply: color-$InputLabel-color;
 
   transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-              padding 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-              font-size 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-              color 0.2s linear;
+    padding 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    font-size 0.2s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s linear;
 
   // Layout ~ Inline
   &.is-inline {
@@ -116,7 +115,7 @@ div.label {
   }
 
   &.is-floating.is-regular {
-    --apply: translate-y-0px;
+    --apply: translate-y--1px;
   }
 
   &.is-required::after {
@@ -138,7 +137,7 @@ div.label {
     }
 
     &.is-regular {
-      --apply: translate-y--0px;
+      --apply: translate-y--1px;
     }
   }
 

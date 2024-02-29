@@ -1,8 +1,13 @@
 <script setup lang="ts">
-defineProps<{
+const props = defineProps<{
   noAccountBtn?: boolean
   noToolbar?: boolean
   noShadow?: boolean
+
+  /**
+   * When true, the navigation will not hide when scrolling
+   */
+  noHide?: boolean
 }>()
 
 defineEmits<{
@@ -52,7 +57,7 @@ watch(y, (oldY, y) => {
 })
 
 const isNavigationHidden = computed(() => {
-  if (!navigationEl.value) {
+  if (!navigationEl.value || props.noHide) {
     return false
   }
 
