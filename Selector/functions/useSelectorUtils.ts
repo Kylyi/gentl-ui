@@ -19,6 +19,7 @@ export function useSelectorUtils(options: ISelectorUtilsOptions) {
 
   // Layout
   const el = ref<any>()
+  const inputId = props.id ?? useId()
   const model = useVModel(props, 'modelValue')
   const menuEl = computed(() => toValue(menuElRef))
 
@@ -82,6 +83,7 @@ export function useSelectorUtils(options: ISelectorUtilsOptions) {
 
   return {
     el,
+    inputId,
     model,
     wrapperProps,
     preventNextFocus,

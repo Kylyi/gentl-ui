@@ -15,6 +15,7 @@ export function useFieldUtils(options?: {
 
   // Layout
   const el = ref<HTMLDivElement>()
+  const inputId = options?.props?.id ?? useId()
   const menuEl = computed(() => toValue(menuElRef))
 
   const inputElement = computed(() => {
@@ -99,6 +100,7 @@ export function useFieldUtils(options?: {
 
   return {
     el,
+    inputId,
     getFieldProps,
     handleClickWrapper,
     handleFocusOrClick,

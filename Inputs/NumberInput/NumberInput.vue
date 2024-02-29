@@ -61,6 +61,7 @@ const mask = computed<MaskedNumber>(() => {
 
 const {
   el,
+  inputId,
   model,
   masked,
   wrapperProps,
@@ -172,6 +173,7 @@ defineExpose({
     </template>
 
     <input
+      :id="inputId"
       ref="el"
       flex="1"
       :value="masked"

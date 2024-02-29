@@ -12,7 +12,7 @@ defineEmits<{
 }>()
 
 // Utils
-const { el, handleClickWrapper } = useFieldUtils()
+const { el, inputId, handleClickWrapper } = useFieldUtils()
 const { getInputWrapperProps } = useInputWrapperUtils()
 
 // Wrapper
@@ -39,6 +39,7 @@ defineExpose({
     </template>
 
     <span
+      :id="inputId"
       ref="el"
       class="control w-full"
       :class="[

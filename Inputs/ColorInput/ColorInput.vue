@@ -44,12 +44,10 @@ function handlePickColor(color?: string) {
 }
 
 // Field
-const { getFieldProps, handleClickWrapper, handleFocusOrClick } = useFieldUtils(
-  {
-    props,
-    menuElRef: menuEl,
-  }
-)
+const { getFieldProps, handleFocusOrClick } = useFieldUtils({
+  props,
+  menuElRef: menuEl,
+})
 
 const fieldProps = getFieldProps(props)
 </script>

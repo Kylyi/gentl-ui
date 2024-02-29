@@ -130,6 +130,7 @@ const isPickerActive = ref(false)
 
 const {
   el,
+  inputId,
   model,
   masked,
   wrapperProps,
@@ -188,6 +189,7 @@ defineExpose({
     </template>
 
     <input
+      :id="inputId"
       ref="el"
       flex="1"
       type="text"

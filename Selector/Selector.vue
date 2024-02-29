@@ -333,6 +333,7 @@ function handleShow() {
 // Layout
 const {
   el,
+  inputId,
   preventNextFocus,
   model,
   wrapperProps,
@@ -440,6 +441,7 @@ function getData() {
     <Component
       :is="scroller ? 'div' : ScrollArea"
       v-else
+      :id="inputId"
       ref="el"
       flex="~ 1 wrap gap-x-1 gap-y-0.5"
       class="control"

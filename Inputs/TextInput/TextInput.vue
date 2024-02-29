@@ -11,6 +11,7 @@ defineOptions({
     test: 'a',
   },
 })
+
 const props = withDefaults(defineProps<ITextInputProps>(), {
   allowIncompleteMaskValue: false,
   debounce: 0,
@@ -34,6 +35,7 @@ defineEmits<{
 
 const {
   el,
+  inputId,
   masked,
   wrapperProps,
   hasContent,
@@ -87,6 +89,7 @@ defineExpose({
     </template>
 
     <input
+      :id="inputId"
       ref="el"
       :value="masked"
       flex="1"

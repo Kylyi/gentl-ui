@@ -80,6 +80,7 @@ export function useInputUtils(options: IInputUtilsOptions) {
   const wrapperProps = getInputWrapperProps(props)
 
   // Layout
+  const inputId = props.id ?? useId()
   const isBlurred = ref(true)
 
   const menuEl = computed(() => toValue(menuElRef))
@@ -289,6 +290,7 @@ export function useInputUtils(options: IInputUtilsOptions) {
 
   return {
     el,
+    inputId,
     model,
     masked,
     hasBeenTouched,

@@ -31,6 +31,7 @@ defineEmits<{
 
 const {
   el,
+  inputId,
   masked,
   wrapperProps,
   hasClearableBtn,
@@ -93,6 +94,7 @@ defineExpose({
     </template>
 
     <textarea
+      :id="inputId"
       ref="el"
       flex="grow"
       :value="masked"

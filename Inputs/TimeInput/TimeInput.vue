@@ -157,6 +157,7 @@ const propsExtended = reactiveComputed(() => ({
 
 const {
   el,
+  inputId,
   masked,
   model,
   wrapperProps,
@@ -254,6 +255,7 @@ defineExpose({
     </template>
 
     <input
+      :id="inputId"
       ref="el"
       :value="masked"
       flex="1"

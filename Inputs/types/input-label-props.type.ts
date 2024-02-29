@@ -9,6 +9,11 @@ export type InputLabelProps = {
   hasContent?: boolean
 
   /**
+   * The input's id
+   */
+  id?: string
+
+  /**
    * The input's label
    */
   label?: string
