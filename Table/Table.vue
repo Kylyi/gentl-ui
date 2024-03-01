@@ -89,6 +89,7 @@ defineExpose({
     row: any,
     options?: { val?: boolean; clearSelection?: boolean }
   ) => handleSelectRow(row, options),
+  clearSelection: () => clearSelection(),
   customFnc: (
     fnc: (options: {
       columns: TableColumn[]
@@ -173,7 +174,7 @@ const {
   handleResize
 )
 
-const { handleSelectRow } = useTableSelection(props)
+const { handleSelectRow, clearSelection } = useTableSelection(props)
 useTableExporting(rows)
 useTableEditing(props)
 
