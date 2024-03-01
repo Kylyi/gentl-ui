@@ -21,18 +21,19 @@ export class FileModel {
     return this.uploadProgress === 100
   }
 
-  async upload() {
+  async upload(requestHandler: any) {
     const formData = new FormData()
     formData.append('files', this.file)
 
-    // TODO: Operation for uploading the file
-    const { data } = await axios.post('/api/files', formData, {
-      onUploadProgress: progressEvent => {
-        const { loaded, total } = progressEvent
+    const { data } = await requestHandler(() =>
+      axios.post('/api/files', formData, {
+        onUploadProgress: progressEvent => {
+          const { loaded, total } = progressEvent
 
-        this.uploadProgress = Math.round((loaded / (total || 1)) * 100)
-      },
-    })
+          this.uploadProgress = Math.round((loaded / (total || 1)) * 100)
+        },
+      })
+    )
 
     return data
   }
