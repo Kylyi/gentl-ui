@@ -27,6 +27,7 @@ defineExpose({
 <template>
   <InputWrapper
     v-bind="wrapperProps"
+    :id="inputId"
     error-visible
     :has-content="!noContent"
     @click="handleClickWrapper"

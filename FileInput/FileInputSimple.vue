@@ -19,11 +19,11 @@ const emits = defineEmits<{
   (e: 'filesRemoved', value: Array<File | IFile>): void
 }>()
 
-// UTILS
+// Utils
 const { formatBytes } = useNumber()
 const { getFieldProps } = useFieldUtils()
 
-// LAYOUT
+// Layout
 const fileInputEl = ref<InstanceType<typeof Field>>()
 const optionsContainerEl = ref<any>()
 const model = useVModel(props, 'modelValue', emits)
@@ -87,8 +87,8 @@ onChange(handleAdd)
 
 <template>
   <Field
-    ref="fileInputEl"
     v-bind="fieldProps"
+    ref="fileInputEl"
     :no-content="!model?.length && !placeholder"
     :class="{ 'dragged-over': isOverDropZone }"
     @click="handleOpen"

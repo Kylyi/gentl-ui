@@ -405,6 +405,7 @@ function getData() {
 <template>
   <InputWrapper
     v-bind="wrapperProps"
+    :id="inputId"
     :loading="isLoading"
     :has-content="hasContent"
     :ui="ui"

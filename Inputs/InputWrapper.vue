@@ -41,6 +41,7 @@ const labelProps = computed(() => {
   return {
     hasContent: props.hasContent,
     hasError: !!issues.value.length,
+    id: props.id,
     label: props.label,
     layout: props.layout,
     placeholder: props.placeholder,

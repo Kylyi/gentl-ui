@@ -28,19 +28,20 @@ const labelLocalClass = computed(() => {
 </script>
 
 <template>
-  <div
+  <label
+    :for="id"
     class="label"
     :class="labelLocalClass"
     :style="ui?.labelStyle"
   >
     {{ label }}
-  </div>
+  </label>
 </template>
 
 <style lang="scss" scoped>
-div.label {
-  --apply: ease-linear tracking-wide z-10 origin-top-left top-0 left-0
-    pointer-events-none leading-tight max-w-full p-x-3 break-words;
+label.label {
+  --apply: block ease-linear tracking-wide z-10 origin-top-left top-0 left-0
+    leading-tight max-w-full p-x-3 break-words cursor-text;
 
   --apply: color-$InputLabel-color;
 
@@ -125,7 +126,7 @@ div.label {
 }
 
 .wrapper__body:not(.selector-wrapper):focus-within {
-  div.label {
+  label.label {
     --apply: color-$InputLabel-active-color;
 
     &:not(.is-inline) {
@@ -141,23 +142,23 @@ div.label {
     }
   }
 
-  div.label[haserror='true'] {
+  label.label[haserror='true'] {
     --apply: color-negative;
   }
 }
 
-div.label.is-floating:not(.is-inside) {
+label.label.is-floating:not(.is-inside) {
   --apply: p-x-1;
 }
 
-div.label.is-inline {
+label.label.is-inline {
   @screen lt-md {
     --apply: p-x-1;
   }
 }
 
 .wrapper__body:not(.selector-wrapper):focus-within {
-  div.label:not(.is-inside):not(.is-inline) {
+  label.label:not(.is-inside):not(.is-inline) {
     --apply: p-x-1;
   }
 }

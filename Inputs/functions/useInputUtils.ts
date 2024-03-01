@@ -285,6 +285,7 @@ export function useInputUtils(options: IInputUtilsOptions) {
   onMounted(() => {
     nextTick(() => {
       isInitialized.value = true
+      lastValidValue.value = model.value
     })
   })
 
