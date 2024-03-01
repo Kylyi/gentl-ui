@@ -37,7 +37,10 @@ const wrapperClass = computed(() => {
 })
 
 // File handling
-const { isOverDropZone } = useDropZone(fileInputWrapperEl, handleAdd)
+const { isOverDropZone } = useDropZone(fileInputWrapperEl, {
+  onDrop: handleAdd,
+  dataTypes: props.accept?.split(',').map(type => type.trim()),
+})
 const { open, onChange, reset } = useFileDialog({
   accept: props.accept,
   multiple: props.multi,

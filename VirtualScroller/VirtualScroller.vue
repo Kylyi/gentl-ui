@@ -107,7 +107,7 @@ const rowKey = toRef(props, 'rowKey') as Ref<keyof T>
 const virtualScrollerRect = ref<DOMRect>()
 const visibleItemsIdx = ref({ first: 0, last: 0 })
 
-const overscan = computedEager(() => {
+const overscan = computed(() => {
   return {
     top: props.overscan?.top ?? OVERSCAN_PX.top,
     bottom: props.overscan?.bottom ?? OVERSCAN_PX.bottom,
@@ -325,6 +325,7 @@ function rerenderVisibleRows(noScrollEvent?: boolean) {
     return agg
   }, {} as Record<number, IRow>)
   const children = Array.from(containerEl.value?.children || [])
+
   children?.forEach(el => {
     const idx = Number((el as HTMLElement).dataset.idx ?? 0)
     const row = renderedRowsByIdx[idx]

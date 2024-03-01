@@ -358,6 +358,7 @@ onMounted(() => {
           >
             <slot
               :name="col.name"
+              :width="col.adjustedWidthPx"
               :row="row"
               :index="index"
               :refresh-data-fnc="refreshData"
