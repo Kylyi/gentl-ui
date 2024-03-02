@@ -35,6 +35,7 @@ const props = withDefaults(defineProps<ITableProps>(), {
   useUrl: true,
   infiniteScroll: config.table.props.infiniteScroll,
   noSearch: config.table.props.noSearch,
+  noLock: config.table.props.noLock,
 })
 
 defineEmits<{
@@ -286,6 +287,7 @@ onMounted(() => {
       :rows="rows"
       :minimum-column-width="minimumColumnWidth"
       :small-screen="!isBreakpoint"
+      :no-lock="noLock"
       :class="{ 'shadow-lg shadow-ca': isScrolled }"
       @scrolled="handleScrollLeft"
       @resized="scrollerEl?.rerender"

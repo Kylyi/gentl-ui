@@ -71,6 +71,11 @@ export interface ITableProps {
   noFilters?: boolean
 
   /**
+   * Whether the table should have the lock-column buttons
+   */
+  noLock?: boolean
+
+  /**
    * Whether the table header should be hidden
    */
   noHeader?: boolean
