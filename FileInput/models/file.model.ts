@@ -29,6 +29,7 @@ export class FileModel {
 
     const formData = new FormData()
     formData.append('files', this.file)
+    this.hasError = false
 
     const { data } = await requestHandler(
       () =>
