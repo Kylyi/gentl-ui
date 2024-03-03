@@ -91,6 +91,15 @@ const imageUrl = computed(() => {
         @click.stop.prevent="handleDownloadFile(file)"
       />
 
+      <!-- Upload failed -->
+      <Btn
+        v-else-if="file.hasError"
+        :label="$t('file.uploadFailed')"
+        color="negative"
+        size="sm"
+        class="!rounded-t-0 w-full"
+      />
+
       <!-- Upload info -->
       <Btn
         v-else-if="!file.isUploading"

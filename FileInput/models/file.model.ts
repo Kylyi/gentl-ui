@@ -4,6 +4,7 @@ import type { Required } from 'utility-types'
 export class FileModel {
   file: File
   uploadProgress: number
+  hasError = false
 
   get name() {
     return this.file.name
@@ -22,17 +23,26 @@ export class FileModel {
   }
 
   async upload(requestHandler: any) {
+    if (this.uploadProgress === 100 && !this.hasError) {
+      return
+    }
+
     const formData = new FormData()
     formData.append('files', this.file)
 
-    const { data } = await requestHandler(() =>
-      axios.post('/api/files', formData, {
-        onUploadProgress: progressEvent => {
-          const { loaded, total } = progressEvent
+    const { data } = await requestHandler(
+      () =>
+        axios.post('/api/files', formData, {
+          onUploadProgress: progressEvent => {
+            const { loaded, total } = progressEvent
 
-          this.uploadProgress = Math.round((loaded / (total || 1)) * 100)
-        },
-      })
+            this.uploadProgress = Math.round((loaded / (total || 1)) * 100)
+          },
+        }),
+      {
+        onError: () => (this.hasError = true),
+        logging: { operationName: 'file.upload' },
+      }
     )
 
     return data

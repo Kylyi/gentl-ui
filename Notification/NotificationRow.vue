@@ -159,6 +159,7 @@ watch(notificationCounter, async () => {
         v-for="(subtitle, idx) in subtitleArr"
         :key="idx"
         list="inside none"
+        text="caption"
       >
         {{ subtitle }}
       </li>
@@ -197,7 +198,7 @@ watch(notificationCounter, async () => {
 <style lang="scss" scoped>
 .notification-row {
   --apply: relative bg-white dark:bg-darker relative flex flex-col rounded-custom
-    flex-gap-x-2 w-80 p-4 shadow-consistent-sm shadow-ca gap-3;
+    w-80 p-4 shadow-consistent-sm shadow-ca;
 
   &::before {
     --apply: content-empty absolute left-0 top-0 h-full w-1 rounded-l-custom bg-current;
