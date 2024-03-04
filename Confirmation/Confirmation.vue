@@ -32,12 +32,14 @@ function handleClose() {
     >
       <!-- Checkmark -->
       <div class="confirmation-checkmark">
-        <Checkmark
-          :delay="delay"
-          w="35"
-          h="35"
-          :class="checkmarkClass"
-        />
+        <slot name="checkmark">
+          <Checkmark
+            :delay="delay"
+            w="35"
+            h="35"
+            :class="checkmarkClass"
+          />
+        </slot>
 
         <slot>
           <h6

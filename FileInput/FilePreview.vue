@@ -20,7 +20,7 @@ defineEmits<{
 }>()
 
 // Utils
-const { formatNumber } = useNumber()
+const { formatNumber, formatBytes } = useNumber()
 const { getLocalImageUrl } = useImages()
 
 const icon = computed(() => {
@@ -100,11 +100,20 @@ const imageUrl = computed(() => {
         class="!rounded-t-0 w-full"
       />
 
-      <!-- Upload info -->
+      <!-- To be uploaded -->
+      <div
+        v-else-if="!file.isUploading && !file.isUploaded"
+        :label="$t('file.added')"
+        class="flex flex-center rounded-t-0 w-full h-8 bg-blue-50 text-caption text-xs"
+      >
+        {{ formatBytes(file.file.size) }}
+      </div>
+
+      <!-- Uploaded successfully -->
       <Btn
         v-else-if="!file.isUploading"
-        :label="file.isUploaded ? $t('file.uploaded') : $t('file.added')"
-        :class="{ 'color-positive': file.isUploaded }"
+        :label="$t('file.uploaded')"
+        color="positive"
         size="sm"
         class="!rounded-t-0 w-full"
       />
@@ -124,7 +133,7 @@ const imageUrl = computed(() => {
 
 <style lang="scss" scoped>
 .file-preview {
-  --apply: grid gap-4 fit items-center border-1 border-dotted rounded-3
+  --apply: grid gap-2 fit items-center border-1 border-dotted rounded-3
     border-ca color-ca;
 
   grid-template-rows: auto 1fr auto;

@@ -537,11 +537,16 @@ function getData() {
           </MenuConfirmation>
         </Btn>
 
-        <div
+        <slot
           v-if="!disabled && !readonly && !noDropdownIcon"
-          fluent:chevron-up-down-24-regular
-          class="dropdown-icon"
-        />
+          name="dropdown-icon"
+          :is-open="isPickerActive"
+        >
+          <div
+            fluent:chevron-up-down-24-regular
+            class="dropdown-icon"
+          />
+        </slot>
 
         <slot
           name="append"
@@ -647,7 +652,7 @@ function getData() {
 }
 
 .dropdown-icon {
-  --apply: shrink-0 color-ca slef-center inline cursor-pointer;
+  --apply: shrink-0 color-ca inline cursor-pointer;
 }
 
 .wrapper--sm {
