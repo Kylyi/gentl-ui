@@ -131,7 +131,7 @@ export interface IFormProps {
   /**
    * Props for the submit button
    */
-  submitBtnProps?: IBtnProps
+  submitBtnProps?: IBtnProps & IItem
 
   /**
    * If true, the submit button will be disabled.
