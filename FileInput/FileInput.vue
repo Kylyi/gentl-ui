@@ -90,6 +90,7 @@ syncRef(model, files, { direction: 'both', deep: true })
     no-border
     control-class="!p-0"
     stack-label
+    class="file-input"
   >
     <div
       ref="fileInputWrapperEl"
