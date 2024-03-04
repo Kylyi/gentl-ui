@@ -37,10 +37,14 @@ export class FileModel {
           onUploadProgress: progressEvent => {
             const { loaded, total } = progressEvent
 
-            this.uploadProgress = Math.round((loaded / (total || 1)) * 100)
+            this.uploadProgress = Math.max(
+              Math.round((loaded / (total || 1)) * 100),
+              99
+            )
           },
         }),
       {
+        onComplete: () => (this.uploadProgress = 100),
         onError: () => (this.hasError = true),
         logging: { operationName: 'file.upload' },
       }
