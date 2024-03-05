@@ -96,6 +96,7 @@ const imageUrl = computed(() => {
         v-else-if="file.hasError"
         :label="$t('file.uploadFailed')"
         color="negative"
+        bg="negative/15"
         size="sm"
         class="!rounded-t-0 w-full"
       />

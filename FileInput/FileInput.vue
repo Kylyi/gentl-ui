@@ -105,6 +105,7 @@ syncRef(model, files, { direction: 'both', deep: true })
         :editable="!readonly && !disabled"
         :no-download-button="noDownloadButton"
         @remove="handleRemove(idx)"
+        @click.stop.prevent
       />
 
       <!-- Add file(s) -->
@@ -147,7 +148,7 @@ syncRef(model, files, { direction: 'both', deep: true })
 
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 
-  @media screen and (min-width: 768px) {
+  @screen lg {
     grid-template-columns: repeat(auto-fit, minmax(240px, 320px));
   }
 
@@ -171,7 +172,8 @@ syncRef(model, files, { direction: 'both', deep: true })
 
 
   .file-add {
-    --apply: fit flex-gap-4 border-2 border-dotted border-primary min-h-50;
+    --apply: fit flex-gap-4 border-2 border-dotted border-primary;
+    --apply: min-h-146px; // This is the height of the file preview
   }
 }
 
