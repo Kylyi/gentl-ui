@@ -70,36 +70,36 @@ label.label {
 
   // Size: Small
   &--sm {
-    --apply: font-rem-14 leading-3.5;
+    --apply: font-rem-14;
 
     &.is-inside {
-      --apply: translate-y-13px;
+      --apply: translate-y-11px;
     }
 
     &.is-regular {
-      --apply: translate-y-25px;
+      --apply: translate-y-23.5px;
     }
   }
 
   // Size: Medium
   &--md {
-    --apply: leading-4;
+    // --apply: leading-4;
 
     &.is-inside {
-      --apply: translate-y-14px;
+      --apply: translate-y-11.5px;
     }
 
     &.is-regular {
-      --apply: translate-y-28px;
+      --apply: translate-y-26px;
     }
   }
 
   // Size: Large
   &--lg {
-    --apply: font-rem-16 leading-5;
+    --apply: font-rem-16;
 
     &.is-inside {
-      --apply: translate-y-17px;
+      --apply: translate-y-16.5px;
     }
 
     &.is-regular {

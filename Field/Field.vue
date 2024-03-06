@@ -31,6 +31,7 @@ defineExpose({
     error-visible
     :has-content="!noContent"
     @click="handleClickWrapper"
+    @label-click="el?.focus()"
   >
     <template
       v-if="$slots.prepend"

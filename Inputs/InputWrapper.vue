@@ -22,6 +22,10 @@ const props = withDefaults(defineProps<IInputWrapperProps>(), {
   required: undefined,
 })
 
+defineEmits<{
+  (e: 'label-click', ev: MouseEvent): void
+}>()
+
 // Utils
 const { getInputWrapperStyleVariables } = useInputWrapperUtils()
 const { issues, isRequired } = useInputValidationUtils(props)
@@ -129,6 +133,7 @@ const wrapperProps = computed(() => {
         <InputLabel
           v-bind="labelProps"
           :required="isRequired || required"
+          @click="$emit('label-click', $event)"
         />
       </template>
 

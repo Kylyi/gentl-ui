@@ -420,6 +420,7 @@ function getData() {
     ]"
     .focus="handleFocusOrClick"
     @click="handleClickWrapper"
+    @label-click="handleFocusOrClick"
   >
     <template
       v-if="$slots.prepend"

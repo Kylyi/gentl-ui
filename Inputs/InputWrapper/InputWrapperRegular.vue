@@ -153,7 +153,7 @@ const classes = computed(() => {
   grid-row: 1 / 2;
 
   --apply: fit transition-all border-custom rounded-custom pointer-events-none
-    border-ca bg-white dark:bg-darker;
+    border-ca;
 }
 
 .input-wrapper__regular:not(.has-border) .input-wrapper__regular-border {

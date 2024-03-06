@@ -101,7 +101,7 @@ const classes = computed(() => {
 
 <style lang="scss" scoped>
 .input-wrapper__inside {
-  --apply: grid items-center rounded-custom bg-white dark:bg-darker;
+  --apply: grid items-center rounded-custom;
 
   grid-template-areas:
     'prepend input loading append'
