@@ -2,11 +2,16 @@
 import type { LocaleObject } from '@nuxtjs/i18n'
 
 // Utils
+const rC = useRuntimeConfig()
 const { localesByCode } = useLocale()
 const { locale, locales } = useI18n()
 const switchLocalePath = useSwitchLocalePath()
 
-const localeCookie = useCookie('lang', { path: '/', sameSite: 'lax' })
+const localeCookie = useCookie('lang', {
+  path: '/',
+  sameSite: 'lax',
+  domain: rC.public.COOKIE_DOMAIN,
+})
 
 const _locales = computed(() => locales.value as LocaleObject[])
 
