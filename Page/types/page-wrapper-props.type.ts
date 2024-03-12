@@ -25,4 +25,8 @@ export type IPageWrapperProps = {
    * The page title
    */
   title?: string
+
+  ui?: {
+    titleWithShadow?: boolean
+  }
 }
