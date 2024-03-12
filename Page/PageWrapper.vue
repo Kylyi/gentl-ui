@@ -7,6 +7,9 @@ import type { IPageWrapperProps } from '~/components/Page/types/page-wrapper-pro
 withDefaults(defineProps<IPageWrapperProps>(), {
   pad: true,
   includeTopBar: true,
+  ui: () => ({
+    titleWithShadow: config.pageWrapper?.ui?.titleWithShadow ?? true,
+  }),
 })
 
 const { isMobile, isSidebarOpen } = useMobile()
@@ -58,8 +61,7 @@ onMounted(() => {
           <div
             class="page-title"
             :class="{
-              'has-shadow':
-                ui?.titleWithShadow || config.pageWrapper?.ui?.titleWithShadow,
+              'has-shadow': ui?.titleWithShadow,
             }"
           >
             <h4 class="page-title__text">
