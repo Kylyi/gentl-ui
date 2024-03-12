@@ -55,7 +55,13 @@ onMounted(() => {
 
       <slot name="title">
         <template v-if="title">
-          <div class="page-title">
+          <div
+            class="page-title"
+            :class="{
+              'has-shadow':
+                ui?.titleWithShadow || config.pageWrapper?.ui?.titleWithShadow,
+            }"
+          >
             <h4 class="page-title__text">
               {{ title }}
 
@@ -136,7 +142,9 @@ onMounted(() => {
     --apply: grow font-700;
   }
 
-  box-shadow: 0 8px 8px -9px theme('colors.truegray.300');
+  &.has-shadow {
+    box-shadow: 0 8px 8px -9px theme('colors.truegray.300');
+  }
 }
 
 .dark .page-title {
