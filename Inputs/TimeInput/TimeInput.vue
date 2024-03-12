@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // TODO: am/pm values are not reactive on language change (broken only for 13h for some reason...)
 
-import { type AnyMaskedOptions, MaskedRange } from 'imask'
+import { type FactoryOpts, MaskedRange } from 'imask'
 
 // Types
 import type { ITimeInputProps } from '~/components/Inputs/TimeInput/types/time-input-props.type'
@@ -27,21 +27,13 @@ const props = withDefaults(defineProps<ITimeInputProps>(), {
 })
 
 defineEmits<{
-  (e: 'update:model-value', val?: Datetime): void
+  (e: 'update:modelValue', val?: Datetime): void
   (e: 'validation-reset', val?: string | undefined | null): void
   (e: 'blur'): void
 }>()
 
-// Lifecycle
-onMounted(() => {
-  menuReferenceTarget.value =
-    currentInstance?.proxy?.$el.querySelector('.wrapper-body')
-})
-
 // Utils
-const currentInstance = getCurrentInstance()
 const { localeUses24HourTime } = useDateUtils()
-const { path } = useInputValidationUtils(props)
 
 const is12h = computed(() => !localeUses24HourTime())
 
@@ -91,11 +83,10 @@ function delocalizeTime(time?: string | undefined) {
 const PATTERN = 'HH:mm'
 
 // Layout
-const model = defineModel<string>({ local: true })
 const preventNextIsAmChange = autoResetRef(false, 50)
 
 const delocalizedTimeParts = computed(() => {
-  const time = model.value || '12:00'
+  const time = props.modelValue || '12:00'
 
   return {
     hh: time.split(':')[0],
@@ -103,8 +94,8 @@ const delocalizedTimeParts = computed(() => {
   }
 })
 
-// Masks
-const maskFullTime = computed<AnyMaskedOptions>(() => {
+// Mask
+const maskFullTime = computed<FactoryOpts>(() => {
   return {
     mask: PATTERN,
     pattern: PATTERN,
@@ -154,16 +145,38 @@ const maskFullTime = computed<AnyMaskedOptions>(() => {
 })
 
 // Layout
-const menuReferenceTarget = ref<HTMLElement>()
 const wrapperEl = ref<InstanceType<typeof InputWrapper>>()
 const isAm = ref(+delocalizedTimeParts.value.hh < 12)
 
-const modelValueLocalized = computed(() => localizeTime(model.value))
+const modelValueLocalized = computed(() => localizeTime(props.modelValue))
 
 const propsExtended = reactiveComputed(() => ({
   ...props,
   modelValue: modelValueLocalized.value,
 }))
+
+const {
+  el,
+  inputId,
+  masked,
+  model,
+  wrapperProps,
+  hasNoValue,
+  hasClearableBtn,
+  focus,
+  select,
+  blur,
+  clear,
+  getInputElement,
+  handleClickWrapper,
+  handleFocusOrClick,
+  handleBlur,
+} = useInputUtils({
+  props: propsExtended,
+  maskRef: maskFullTime,
+  preventFocusOnTouch: true,
+  menuElRef: () => timeInputPickerEl.value?.getMenuEl(),
+})
 
 function handleInput(ev: Event) {
   const { data } = ev as InputEvent
@@ -201,7 +214,7 @@ watch(isAm, isAm => {
       model.value = `${+hh + 12}:${mm}`
     }
   } else {
-    handleManualModelChange(isAm ? '00:00' : '12:00', true)
+    model.value = isAm ? '00:00' : '12:00'
   }
 })
 
@@ -211,36 +224,12 @@ watch(model, () => {
   isAm.value = +delocalizedTimeParts.value.hh < 12
 })
 
-const {
-  el,
-  maskedValue,
-  wrapperProps,
-  hasNoValue,
-  hasClearableBtn,
-  handleManualModelChange,
-  focus,
-  select,
-  blur,
-  reset,
-  touch,
-  clear,
-  getInputElement,
-  handleClickWrapper,
-  handleFocusOrClick,
-} = useInputUtils({
-  props: propsExtended,
-  maskRef: maskFullTime,
-  preventFocusOnTouch: true,
-  menuElRef: () => timeInputPickerEl.value?.getMenuEl(),
-  setModel: (val: string) => (model.value = val),
-})
+const { path } = useInputValidationUtils(props)
 
 defineExpose({
   focus,
   select,
   blur,
-  reset,
-  touch,
   clear,
   getInputElement,
 })
@@ -248,8 +237,9 @@ defineExpose({
 
 <template>
   <InputWrapper
-    ref="wrapperEl"
     v-bind="wrapperProps"
+    :id="inputId"
+    ref="wrapperEl"
     :has-content="!hasNoValue"
     .focus="focus"
     @click="handleClickWrapper"
@@ -266,8 +256,9 @@ defineExpose({
     </template>
 
     <input
+      :id="inputId"
       ref="el"
-      :value="maskedValue"
+      :value="masked"
       flex="1"
       type="text"
       inputmode="decimal"
@@ -275,20 +266,20 @@ defineExpose({
       :readonly="readonly"
       :disabled="disabled"
       :label="label || placeholder"
-      :name="name || validation?.$path || label || placeholder"
+      :name="name || path || label || placeholder"
       class="control"
       :class="[inputClass]"
       :style="inputStyle"
       v-bind="inputProps"
       @focus="handleFocusOrClick"
       @input="handleInput"
+      @blur="handleBlur"
     />
 
     <template #append>
       <div
         v-if="$slots.append || hasClearableBtn || (!readonly && !disabled)"
         flex="~ gap-x-2 center"
-        fit
         @click="handleFocusOrClick"
       >
         <slot
@@ -340,15 +331,12 @@ defineExpose({
     <template #menu>
       <TimeInputPicker
         ref="timeInputPickerEl"
+        v-model="model"
         v-model:is-am="isAm"
         v-model:prevent-next-is-am-change="preventNextIsAmChange"
-        :reference-target="menuReferenceTarget"
+        :reference-target="el"
         :is12h="is12h"
-        :class="{
-          'md:m-l-200px': inline,
-        }"
         :model-value-localized="modelValueLocalized"
-        :handle-manual-model-change="handleManualModelChange"
         :shortcuts="shortcuts"
       />
     </template>

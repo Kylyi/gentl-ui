@@ -1,15 +1,14 @@
 import { type CSSProperties } from 'vue'
+import { type FuseOptions } from '@vueuse/integrations/useFuse'
+import type { RouteLocationRaw } from '#vue-router'
 
 // Types
-import { type FuseOptions } from '@vueuse/integrations/useFuse'
-import { type FloatingUIBaseProps } from '~/components/Dialog/types/dialog-props.type'
-import type { RouteLocationRaw } from '#vue-router'
 import type { IInputProps } from '~/components/Inputs/types/input-props.type'
+import type { IListProps } from '~/components/List/types/list-props.type'
 
 // Models
 import { GroupItem } from '~/libs/App/data/models/group-item.model'
 import { SortItem } from '~/libs/App/data/models/sort-item.model'
-import type { IListProps } from '~/components/List/types/list-props.type'
 
 export type ISelectorProps = IInputProps & {
   /**
@@ -41,7 +40,7 @@ export type ISelectorProps = IInputProps & {
    * When true, the menu will not be shown when the input is focused (via Tab for example),
    * needs to be actualyl clicked
    */
-  noAutoShowMenuOnFocus?: boolean
+  noShowMenuOnFocus?: boolean
 
   /**
    * For cases when we want to warn user that he is about to clear the value
@@ -53,7 +52,6 @@ export type ISelectorProps = IInputProps & {
   disabledFnc?: (item: any) => boolean
   fuseOptions?: FuseOptions<any>
   groupBy?: GroupItem[]
-  loadData?: IListProps['loadData']
   noDropdownIcon?: boolean
   noTruncate?: boolean
   preselectFirst?: boolean
@@ -94,6 +92,7 @@ export type ISelectorProps = IInputProps & {
   // List
   emitKey?: boolean
   itemHeight?: number
+  loadData?: IListProps['loadData']
   multi?: boolean
   maxChipsRows?: number
   noFilter?: boolean
@@ -131,4 +130,4 @@ export type ISelectorProps = IInputProps & {
    * The props that should be passed to the input tag (<input>)
    */
   inputProps?: Record<string, any>
-} & Pick<FloatingUIBaseProps, 'expectedHeight'>
+}

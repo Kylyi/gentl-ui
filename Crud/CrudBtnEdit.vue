@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import type { RouteLocationRaw } from '#vue-router'
+
 // Types
 import type { ICrudBtnProps } from '~/components/Crud/types/crud-btn-props.type'
 
 type IProps = ICrudBtnProps & {
-  to?: any
+  to?: RouteLocationRaw
 }
 
 withDefaults(defineProps<IProps>(), {
@@ -14,7 +16,7 @@ withDefaults(defineProps<IProps>(), {
 <template>
   <Btn
     preset="EDIT"
-    :label="labels && (label || $t('edit'))"
+    :label="labels && (label || $t('general.edit'))"
     :loader-type="loaderType"
     :loading="loading"
     :to="to"

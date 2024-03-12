@@ -11,7 +11,7 @@ defineEmits<{
 <template>
   <Btn
     preset="SAVE"
-    :label="labels && $t('save')"
+    :label="labels && $t('general.save')"
     :loader-type="loaderType"
     :loading="loading"
     no-dim

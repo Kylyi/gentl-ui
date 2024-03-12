@@ -8,6 +8,9 @@ import { TableColumn } from '~/components/Table/models/table-column.model'
 // Injections
 import { tableFocusKey } from '~/components/Table/provide/table.provide'
 
+// Constants
+import { NON_VALUE_COMPARATORS } from '~/components/Table/constants/comparator-categories.const'
+
 // Components
 import MenuProxy from '~/components/MenuProxy/MenuProxy.vue'
 import TableColumnSorting from '~/components/Table/TableColumnOptions/TableColumnSorting.vue'
@@ -191,7 +194,7 @@ function handleMenuBeforeHide() {
               :data-type="column.dataType"
               :empty-value="emptyValue"
               :format="column.format"
-              :empty-value-string="$t('empty')"
+              :empty-value-string="$t('general.empty')"
               text="sm"
             />
 
@@ -199,9 +202,9 @@ function handleMenuBeforeHide() {
               v-if="filter.nonInteractive"
               text="xs caption right"
               border="t-1 ca"
-              leading="6"
+              general.emptyng="6"
             >
-              {{ $t('filter.nonInteractiveExplain') }}
+              {{ $t('table.nonInteractiveFilter') }}
             </span>
           </div>
         </template>
@@ -212,14 +215,14 @@ function handleMenuBeforeHide() {
       v-model="isMenuShown"
       manual
       w="90"
-      dense
-      hide-header
       position="top"
       :placement="placement"
       :offset="offset"
       :no-arrow="false"
       :reference-target="referenceTarget"
-      content-class="flex flex-col"
+      h="!auto"
+      max-h="!2/3"
+      :ui="{ contentClass: 'p-y-2' }"
       @before-hide="handleMenuBeforeHide"
     >
       <TableColumnSorting
@@ -231,11 +234,12 @@ function handleMenuBeforeHide() {
 
       <TableColumnFiltering
         v-if="column.filterable"
-        v-bind="props"
+        :column="column"
       />
+
       <Banner
         v-else-if="column.filters?.length"
-        :label="$t('filter.nonInteractiveExplain')"
+        :label="$t('table.nonInteractiveFilter')"
         icon-center
         type="info"
         outlined
@@ -251,7 +255,7 @@ function handleMenuBeforeHide() {
 
   &-badge {
     --apply: flex flex-center absolute -bottom-.5 -right-.5 w-3 h-3 bg-white
-      bg-tertiary color-white text-10px rounded-full leading-none z-1;
+      color-black text-9px rounded-full leading-none z-1;
   }
 }
 

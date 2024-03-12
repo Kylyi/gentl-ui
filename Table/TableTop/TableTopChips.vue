@@ -2,6 +2,9 @@
 // Types
 import type { TableColumn } from '~/components/Table/models/table-column.model'
 
+// Constants
+import { NON_VALUE_COMPARATORS } from '~/components/Table/constants/comparator-categories.const'
+
 type IProps = {
   columns: TableColumn[]
 }

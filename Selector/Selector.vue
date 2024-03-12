@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// TODO: I'm using `props.optionLabel` for adding new items on the fly
+// ENHANCMENT: I'm using `props.optionLabel` for adding new items on the fly
 // but it will not work when optionLabel is a function
 import { config } from '~/config'
 
@@ -24,9 +24,18 @@ const props = withDefaults(defineProps<ISelectorProps>(), {
   errorTakesSpace: true,
   errorVisible: true,
   fuseExtendedSearchToken: config.selector.fuseExtendedSearchToken,
-  inline: undefined,
-  labelInside: undefined,
-  maxChipsRows: 2,
+  layout: config.inputs.wrapperProps.layout,
+  maxChipsRows: props => {
+    switch (props.layout) {
+      case 'inline':
+        return 10
+
+      case 'label-inside':
+      case 'regular':
+      default:
+        return 2
+    }
+  },
   optionKey: 'id',
   optionLabel: 'label',
   options: () => [],
@@ -49,10 +58,36 @@ const emits = defineEmits<{
   (e: 'blur'): void
 }>()
 
+defineExpose({
+  focus: () => handleFocusOrClick(),
+  blur: () => menuProxyEl.value?.hide(),
+  loadData: () => listEl.value?.loadData(),
+  resetInternalOptions: () => {
+    optionsInternal.value = []
+    isOptionsInternalLoaded.value = false
+  },
+  handleSelect,
+  clear: () => clear(),
+})
+
 // Lifecycle
 onMounted(() => {
-  menuReferenceTarget.value = self?.proxy?.$el.querySelector('.wrapper-body')
+  menuReferenceTarget.value = self?.proxy?.$el.querySelector(
+    '.input-wrapper-border'
+  )
 })
+
+// When layout changes, we need to set new reference target for menu
+watch(
+  () => props.layout,
+  () => {
+    nextTick(() => {
+      menuReferenceTarget.value = self?.proxy?.$el.querySelector(
+        '.input-wrapper-border'
+      )
+    })
+  }
+)
 
 // Utils
 const { handleRequest } = useRequest()
@@ -67,8 +102,10 @@ const hasContent = computed(() => {
 })
 
 // Selection
-const maxHeight = computedEager(() => {
-  return props.maxChipsRows * 26
+const maxHeight = computed(() => {
+  const MARGIN_BOTTOM = 2
+
+  return props.maxChipsRows * 26 - MARGIN_BOTTOM
 })
 
 function getKey(option: any): string {
@@ -197,8 +234,8 @@ const optionsExtended = computed(() => {
 })
 
 /**
- * The options we actually want to show in the list ~ the extended options
- * minus the hidden ones
+ * The options we actually want to show in the list ~
+ * the extended options minus the hidden ones
  */
 const listOptions = computed({
   get() {
@@ -240,13 +277,14 @@ const optionsByKey = computed(() => {
 })
 
 // Picker
-const menuProxyEl = ref<InstanceType<typeof MenuProxy>>()
+const menuProxyEl = ref<ComponentInstance<typeof MenuProxy>>()
 const menuPlacement = ref('bottom')
 const isPickerActive = ref(false)
 const pickerAnimationState = ref<'show' | 'hide'>('hide')
 
 function handleBeforeHide() {
-  const optionsContainerDom = unrefElement(optionsContainerEl)
+  preventNextFocus.value = true
+  const optionsContainerDom = unrefElement(el)
   optionsContainerDom?.focus()
 
   pickerAnimationState.value = 'hide'
@@ -264,7 +302,6 @@ function handleHide() {
 
   if (props.loadData?.onSearch) {
     listEl.value?.clearSearch()
-    listEl.value?.reset()
   }
 
   emits('picker-hide')
@@ -276,24 +313,38 @@ function handleShow() {
 }
 
 // Layout
-const { model, wrapperProps, handleClickWrapper, handleFocusOrClick, clear } =
-  useSelectorUtils({
-    props,
-    menuElRef: menuProxyEl,
-  })
+const {
+  el,
+  inputId,
+  preventNextFocus,
+  model,
+  wrapperProps,
+  handleClickWrapper,
+  handleFocusOrClick,
+  clear,
+} = useSelectorUtils({
+  props,
+  menuElRef: menuProxyEl,
+})
 
 const menuReferenceTarget = ref<HTMLElement>()
-const optionsContainerEl = ref<any>()
 const isLoadingInternal = ref(false)
 
 const isLoading = computed(() => {
   return props.loading || isLoadingInternal.value
 })
 
+const ui = computed(() => {
+  return {
+    ...props.ui,
+    contentClass: [props.ui?.contentClass, 'selector-wrapper'],
+  } as typeof props.ui
+})
+
 function syncScrollArea() {
   setTimeout(() => {
-    optionsContainerEl.value?.update?.()
-    optionsContainerEl.value?.scrollToBottom?.()
+    el.value?.update?.()
+    el.value?.scrollToBottom?.()
   }, 0)
 }
 
@@ -339,40 +390,27 @@ function getData() {
     }
   })
 }
-
-// // We recalculate the menu position on `listOptions` change and `model` changes
-// watch([listOptions, model], () => {
-//   menuProxyEl.value?.recomputePosition()
-// })
-
-defineExpose({
-  focus: () => menuProxyEl.value?.show(),
-  blur: () => menuProxyEl.value?.hide(),
-  loadData: () => listEl.value?.loadData(),
-  resetInternalOptions: () => {
-    optionsInternal.value = []
-    isOptionsInternalLoaded.value = false
-  },
-  handleSelect,
-  clear,
-})
 </script>
 
 <template>
   <InputWrapper
     v-bind="wrapperProps"
+    :id="inputId"
     :loading="isLoading"
     :has-content="hasContent"
-    :content-class="[contentClass, 'selector-wrapper']"
+    :ui="ui"
+    prefer-margin
     :class="[
       menuPlacement === 'bottom' ? 'has-menu-bottom' : 'has-menu-top',
       {
         'is-active': pickerAnimationState === 'show',
+        'has-content': hasContent,
         'is-menu-width-matched': !noMenuMatchWidth,
       },
     ]"
     .focus="handleFocusOrClick"
     @click="handleClickWrapper"
+    @label-click="handleFocusOrClick"
   >
     <template
       v-if="$slots.prepend"
@@ -396,8 +434,9 @@ defineExpose({
     <Component
       :is="scroller ? 'div' : ScrollArea"
       v-else
-      ref="optionsContainerEl"
-      flex="~ 1 wrap gap-1"
+      :id="inputId"
+      ref="el"
+      flex="~ 1 wrap gap-x-1 gap-y-0.5"
       class="control"
       box="content"
       tabindex="0"
@@ -470,7 +509,6 @@ defineExpose({
         flex="~ gap-x-1 center"
         p="x-2"
         shrink-0
-        fit
         :class="appendClass"
         @click="handleFocusOrClick"
       >
@@ -492,11 +530,16 @@ defineExpose({
           </MenuConfirmation>
         </Btn>
 
-        <div
+        <slot
           v-if="!disabled && !readonly && !noDropdownIcon"
-          fluent:chevron-up-down-24-regular
-          class="dropdown-icon"
-        />
+          name="dropdown-icon"
+          :is-open="isPickerActive"
+        >
+          <div
+            fluent:chevron-up-down-24-regular
+            class="dropdown-icon"
+          />
+        </slot>
 
         <slot
           name="append"
@@ -510,23 +553,20 @@ defineExpose({
         ref="menuProxyEl"
         v-model="isPickerActive"
         manual
-        hide-header
         position="top"
-        dense
         class="selector"
         :class="{
           'has-label': !!label,
-          'md:m-l-200px': inline,
           'is-menu-width-matched': !noMenuMatchWidth,
         }"
         :offset="noMenuMatchWidth ? 8 : 0"
         :no-arrow="noMenuMatchWidth ? false : true"
         :match-width="!noMenuMatchWidth"
         :reference-target="menuReferenceTarget"
-        :expected-height="expectedHeight"
         :fit="false"
         no-uplift
         max-height="50%"
+        :ui="{ contentClass: 'p-0' }"
         data-cy="drop-down-list"
         @placement="menuPlacement = $event"
         @before-hide="handleBeforeHide"
@@ -544,7 +584,8 @@ defineExpose({
             :item-label="optionLabel"
             v-bind="listProps"
             :class="listClass"
-            @search="isPickerActive && menuProxyEl?.recomputePosition()"
+            @search="menuProxyEl?.recomputePosition()"
+            @before-search="menuProxyEl?.recomputePosition()"
             @update:selected="handleSelect"
             @added="handleSelectAdd"
             @selected-multiple="handleSelectedMultiple"
@@ -571,7 +612,7 @@ defineExpose({
 
               <template v-if="multi">
                 <!-- Confirm button (for lt-sm displays) -->
-                <Separator sm="hidden" />
+                <Separator class="!sm:hidden" />
 
                 <Btn
                   sm="!hidden"
@@ -604,7 +645,7 @@ defineExpose({
 }
 
 .dropdown-icon {
-  --apply: shrink-0 color-ca slef-center inline cursor-pointer;
+  --apply: shrink-0 color-ca inline cursor-pointer;
 }
 
 .wrapper--sm {
@@ -619,25 +660,36 @@ defineExpose({
   }
 }
 
+
 .is-active {
   :deep(.label) {
-    --apply: dark:color-primary color-primary;
+    --apply: color-$InputLabel-active-color;
   }
 
-  :deep(.wrapper-body:after) {
-    --apply: border-primary dark:border-primary;
-  }
-}
-
-.is-active.is-menu-width-matched.has-menu-bottom {
-  :deep(.wrapper-body:after) {
-    --apply: rounded-b-0;
+  :deep(.wrapper__body:after) {
+    --apply: border-primary/50 dark:border-primary/50;
   }
 }
 
-.is-active.is-menu-width-matched.has-menu-top {
-  :deep(.wrapper-body:after) {
-    --apply: rounded-t-0;
+@screen md {
+  .is-active.is-menu-width-matched.has-menu-bottom {
+    :deep(.wrapper__body:after) {
+      --apply: rounded-b-0;
+    }
+
+    :deep(.input-wrapper-border) {
+      --apply: rounded-b-0 border-primary/40;
+    }
+  }
+
+  .is-active.is-menu-width-matched.has-menu-top {
+    :deep(.wrapper__body:after) {
+      --apply: rounded-t-0;
+    }
+
+    :deep(.input-wrapper-border) {
+      --apply: rounded-t-0 border-primary/40;
+    }
   }
 }
 

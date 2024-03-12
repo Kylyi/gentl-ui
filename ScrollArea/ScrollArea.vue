@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import PerfectScrollbar from 'perfect-scrollbar'
 
-// TYPES
+// Types
 import type { IScrollAreaProps } from '~/components/ScrollArea/types/scroll-area-props.type'
 
 const props = defineProps<IScrollAreaProps>()

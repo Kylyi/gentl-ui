@@ -55,7 +55,10 @@ defineExpose({
       <!-- Title & Subtitle -->
       <div class="main-bar-title">
         <!-- Title -->
-        <Heading filled>
+        <Heading
+          filled
+          :class="[headingClass, { '!min-h-9': !!subtitle || $slots.subtitle }]"
+        >
           {{ title }}
 
           <slot name="title-append" />

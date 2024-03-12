@@ -2,6 +2,9 @@
 // Types
 import type { IPageDrawerProps } from '~/components/Page/types/page-drawer-props.type'
 
+// Constants
+import { $bp } from '~/libs/App/constants/breakpoints.constant'
+
 const props = withDefaults(defineProps<IPageDrawerProps>(), {
   absoluteBreakpoint: 'md',
   absoluteFullWidthBreakpoint: 'md',
@@ -121,14 +124,13 @@ header.is-hidden ~ .page-drawer {
 
   &-content {
     --apply: flex flex-col flex-grow overflow-auto pointer-events-auto;
+    --apply: bg-$PageDrawer-content-bg;
   }
 
   &-bottom {
     --apply: flex flex-shrink-0 pointer-events-auto flex-center p-2 w-full
       border-t-1 border-ca;
-
-    // Project specific
-    // --apply: '!hidden';
+    --apply: bg-$PageDrawer-bottom-bg;
   }
 
   &--left {
@@ -146,7 +148,7 @@ header.is-hidden ~ .page-drawer {
       --apply: translate-x-0;
     }
 
-    @media screen and (min-width: 1536px) {
+    @screen page {
       margin-right: calc(calc(100% - var(--pageWidth)) / 2);
     }
   }

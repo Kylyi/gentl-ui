@@ -16,7 +16,7 @@ import { useTableUtils } from '~/components/Table/functions/useTableUtils'
 import {
   tableColumnsKey,
   tableColumnsRecreateKey,
-  tableNonHelpersColumnsKey,
+  tableNonHelperColumnsKey,
 } from '~/components/Table/provide/table.provide'
 
 // Regex
@@ -72,7 +72,7 @@ export function useTableColumns(
 
   // Provide
   provide(tableColumnsKey, internalColumns)
-  provide(tableNonHelpersColumnsKey, nonHelpersColumns)
+  provide(tableNonHelperColumnsKey, nonHelpersColumns)
   provide(tableColumnsRecreateKey, () => createInternalColumns(true))
 
   const searchableColumnLabels = computed(() => {
@@ -215,6 +215,7 @@ export function useTableColumns(
               field: filter.field,
               comparator: filter.comparator,
               format: col.format,
+              dataType: col.dataType,
               value: parseValue(filter.value, col.dataType, {
                 dateFormat: 'YYYY-MM-DD',
               }),

@@ -15,6 +15,7 @@ const props = withDefaults(defineProps<ITextAreaInputProps>(), {
   errorVisible: true,
   inline: undefined,
   labelInside: undefined,
+  // @ts-expect-error Wrong IMask type
   mask: () => ({ mask: String }),
   required: undefined,
   rounded: true,
@@ -30,19 +31,17 @@ defineEmits<{
 
 const {
   el,
-  maskedValue,
+  inputId,
+  masked,
   wrapperProps,
   hasClearableBtn,
   hasContent,
   focus,
   select,
   blur,
-  reset,
-  touch,
   clear,
   getInputElement,
   handleBlur,
-  handleManualModelChange,
   handleClickWrapper,
   handleFocusOrClick,
   elMask,
@@ -51,16 +50,16 @@ const {
   maskRef: toRef(props, 'mask'),
 })
 
-const { path } = useInputValidationUtils(props)
-
 if (props.autogrow) {
   useTextareaAutosize({
     element: el as MaybeElementRef<HTMLTextAreaElement>,
-    input: maskedValue,
+    input: masked,
   })
 }
 
-const resizeClass = computedEager(() => {
+const { path } = useInputValidationUtils(props)
+
+const resizeClass = computed(() => {
   return props.autogrow ? 'resize-none' : props.resize
 })
 
@@ -68,21 +67,18 @@ defineExpose({
   focus,
   select,
   blur,
-  reset,
-  touch,
   clear,
   getInputElement,
-  sync: () => handleManualModelChange(props.modelValue),
   updateMask: (fnc: (mask: InputMask<any>) => void) => {
     fnc(elMask.value as InputMask<any>)
   },
-  handleManualModelChange,
 })
 </script>
 
 <template>
   <InputWrapper
     v-bind="wrapperProps"
+    :id="inputId"
     :has-content="hasContent"
     .focus="focus"
     @click="handleClickWrapper"
@@ -99,9 +95,10 @@ defineExpose({
     </template>
 
     <textarea
+      :id="inputId"
       ref="el"
       flex="grow"
-      :value="maskedValue"
+      :value="masked"
       :placeholder="placeholder"
       :readonly="readonly"
       :disabled="disabled"
@@ -124,7 +121,7 @@ defineExpose({
     >
       <div
         flex="~ center gap-1"
-        fit
+        self="start"
         @click="handleFocusOrClick"
       >
         <Btn

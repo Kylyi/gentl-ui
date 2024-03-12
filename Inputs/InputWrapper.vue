@@ -6,93 +6,109 @@ import type { IInputWrapperProps } from '~/components/Inputs/types/input-wrapper
 
 // Functions
 import { useInputWrapperUtils } from '~/components/Inputs/functions/useInputWrapperUtils'
+import { useInputValidationUtils } from '~/components/Inputs/functions/useInputValidationUtils'
+
+// Components
+import InputWrapperRegular from '~/components/Inputs/InputWrapper/InputWrapperRegular.vue'
+import InputWrapperInline from '~/components/Inputs/InputWrapper/InputWrapperInline.vue'
+import InputWrapperInside from '~/components/Inputs/InputWrapper/InputWrapperInside.vue'
 
 const props = withDefaults(defineProps<IInputWrapperProps>(), {
   cursor: 'cursor-text',
   errorVisible: true,
   size: 'md',
-  stackLabel: config.inputs.stackLabel,
-  labelInside: config.inputs.labelInside,
-  inline: config.inputs.inline,
+  layout: config.inputs.wrapperProps.layout,
+  stackLabel: config.inputs.wrapperProps.stackLabel,
   required: undefined,
 })
 
+defineEmits<{
+  (e: 'label-click', ev: MouseEvent): void
+}>()
+
 // Utils
 const { getInputWrapperStyleVariables } = useInputWrapperUtils()
+const { issues, isRequired } = useInputValidationUtils(props)
 
 // Layout
 const wrapperEl = ref<HTMLDivElement>()
-const errorContainerPaddingLeft = ref('8px')
-const currentInstance = getCurrentInstance()
 
 const isModified = computed(() => {
-  if (!props.previousValue) {
+  if (!props.originalValue) {
     return false
   }
 
-  return !isEqual(props.previousValue, props.modelValue)
+  return !isEqual(props.originalValue, props.modelValue)
 })
 
-const labelProps = computedEager(() => {
+const labelProps = computed(() => {
   return {
     hasContent: props.hasContent,
-    hasError: !!props.validation?.$errors.length,
-    inline: props.inline,
+    hasError: !!issues.value.length,
+    id: props.id,
     label: props.label,
-    labelClass: props.labelClass,
-    labelInside: props.labelInside,
-    labelStyle: props.labelStyle,
+    layout: props.layout,
     placeholder: props.placeholder,
     required: props.required,
     size: props.size,
     stackLabel: props.stackLabel,
     validation: props.validation,
+    ui: props.ui,
   }
 })
 
-const wrapperClass = computedEager(() => {
+const wrapperClass = computed(() => {
   return [
     `wrapper--${props.size}`,
     props.cursor,
     {
       'has-content': props.hasContent,
-      'has-label-inside': props.labelInside,
-      'is-inline': props.inline,
+      'has-label-inside': props.layout === 'label-inside',
+      'is-inline': props.layout === 'inline',
     },
   ]
 })
 
-const wrapperContentClass = computedEager(() => {
+const contentClass = computed(() => {
   return {
     'is-readonly': props.readonly,
     'is-disabled': props.disabled,
-    'has-error': props.validation?.$errors?.length,
+    'has-error': !!issues.value.length,
     'has-label': !!props.label,
-    'has-border': !props.noBorder,
     'is-modified': isModified.value,
   }
 })
 
-const wrapperStyleVariables = computedEager(() =>
+const wrapperStyleVariables = computed(() =>
   getInputWrapperStyleVariables(props)
 )
 
-function getErrorContainerPosition() {
-  const instanceEl = currentInstance?.vnode.el
+// Wrapper
+const WrapperComponent = computed(() => {
+  switch (props.layout) {
+    case 'inline':
+      return InputWrapperInline
 
-  if (!instanceEl) {
-    return
+    case 'label-inside':
+      return InputWrapperInside
+
+    default:
+      return InputWrapperRegular
   }
+})
 
-  const inputEl = instanceEl.querySelector('.control')
-  const instanceElX = instanceEl.getBoundingClientRect().x
-  const inputElX = inputEl.getBoundingClientRect().x
-
-  const diffX = inputElX - instanceElX
-  errorContainerPaddingLeft.value = `${diffX || 8}px`
-}
-
-useResizeObserver(wrapperEl, getErrorContainerPosition)
+const wrapperProps = computed(() => {
+  return {
+    noBorder: props.noBorder,
+    readonly: props.readonly,
+    disabled: props.disabled,
+    hasErrors: !!issues.value.length,
+    hint: props.hint,
+    size: props.size,
+    hasLabel: !!props.label,
+    ui: props.ui,
+  }
+})
 </script>
 
 <template>
@@ -102,80 +118,77 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
     :class="wrapperClass"
     :style="wrapperStyleVariables"
   >
-    <div
-      class="wrapper-body"
-      :class="[contentClass, wrapperContentClass]"
-      :style="contentStyle"
+    <Component
+      :is="WrapperComponent"
+      v-bind="wrapperProps"
+      class="wrapper__body"
+      :class="[contentClass, ui?.contentClass]"
+      :style="ui?.contentStyle"
     >
-      <span
+      <!-- Label -->
+      <template
+        v-if="label"
+        #label
+      >
+        <InputLabel
+          v-bind="labelProps"
+          :required="isRequired || required"
+          @click="$emit('label-click', $event)"
+        />
+      </template>
+
+      <!-- Prepend -->
+      <template
         v-if="$slots.prepend"
-        class="prepend"
+        #prepend
       >
         <slot name="prepend" />
-      </span>
+      </template>
 
-      <span
-        class="wrapper-body__input"
-        :class="inputContainerClass"
-        :style="inputContainerStyle"
-        data-cy="input-field"
-      >
-        <div
-          v-if="isModified"
-          class="wrapper-body__input-modified"
-        >
-          <div class="eos-icons:diff-modified-outlined w-3 h-3 color-warning" />
-
-          <Tooltip
-            :offset="4"
-            placement="left"
-            dense
-          >
-            <span
-              color="warning"
-              text="xs"
-              p="x-1 y-0.5"
-              >{{ $t('general.modified') }}</span
-            >
-          </Tooltip>
-        </div>
-
+      <!-- Input -->
+      <template #input>
         <slot />
-      </span>
+      </template>
 
-      <InputLabel
-        v-if="label"
-        v-bind="labelProps"
-      />
+      <!-- Loading -->
+      <template
+        v-if="loading"
+        #loading
+      >
+        <LoaderBlock
+          :size="7"
+          class="loading"
+        />
+      </template>
 
-      <span
+      <!-- Append -->
+      <template
         v-if="$slots.append"
-        class="append"
+        #append
       >
         <slot name="append" />
-      </span>
+      </template>
 
-      <LoaderBlock
-        v-if="loading"
-        :size="7"
-        m="x-2"
-        class="loading"
-      />
-    </div>
+      <!-- Error -->
+      <template
+        v-if="errorVisible"
+        #error
+      >
+        <ErrorContainer
+          :error-takes-space="errorTakesSpace"
+          :errors="issues"
+          class="wrapper-error"
+        />
+      </template>
 
-    <ErrorContainer
-      v-if="errorVisible"
-      :error-takes-space="errorTakesSpace"
-      :errors="validation?.$errors"
-      class="wrapper-error"
-      :style="{ paddingLeft: errorContainerPaddingLeft }"
-    />
-
-    <HintContainer
-      v-if="!validation?.$errors.length && hint"
-      :hint="hint"
-      :style="{ paddingLeft: errorContainerPaddingLeft }"
-    />
+      <!-- Hint -->
+      <template
+        v-if="hint"
+        #hint
+      >
+        <HintContainer :hint="hint" />
+      </template>
+    </Component>
 
     <slot name="menu" />
   </div>
@@ -183,92 +196,11 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
 
 <style lang="scss" scoped>
 .wrapper {
-  --apply: relative flex flex-col rounded-b-custom;
+  --apply: relative flex flex-col rounded-custom;
 
-  &::after {
-    // --apply: absolute content-empty inset-0 pointer-events-none;
-    // --apply: outline-2 outline-dashed outline-red outline-offset-2 rounded-custom;
-  }
-
-  .wrapper-body {
-    --apply: dark:bg-darker bg-white;
-    --apply: relative grid;
+  .wrapper__body {
+    --apply: relative;
     margin: var(--bodyMargin);
-
-    grid-template-columns: auto 1fr auto;
-    grid-template-rows: auto 1fr;
-    grid-template-areas:
-      "nothing label nothing2 nothing3"
-      "prepend input loading  append";
-
-    .prepend {
-      grid-area: prepend;
-    }
-
-    .append {
-      --apply: fit;
-      grid-area: append;
-    }
-
-    .wrapper-body__input {
-      grid-area: input;
-    }
-
-    .wrapper-body__input-modified {
-      --apply: flex gap-1 items-center absolute top-1 right-1 text-xs z-1;
-    }
-
-    .label {
-      grid-area: label;
-    }
-
-    .loading {
-      grid-area: loading;
-    }
-
-    &.has-border::after {
-      --apply: content-empty absolute inset-inline-0 bottom-0 top-0 transition-all
-      border-custom rounded-custom pointer-events-none;
-    }
-
-    &::after {
-      --apply: border-ca;
-    }
-
-    &:focus-within::after {
-      --apply: border-$border-color;
-    }
-
-    &.has-error::after {
-      --apply: border-negative;
-    }
-
-  }
-
-  &.is-inline {
-    .wrapper-body {
-      @media screen and (min-width: 768px) {
-        grid-template-columns: auto auto 1fr auto;
-        grid-template-areas:
-          "label prepend input append loading"
-      }
-
-      &::after {
-        --apply: md:top-0 md:left-200px;
-      }
-
-      .label {
-        --apply: lt-md:(p-t-2 self-end);
-      }
-    }
-  }
-
-  &-body {
-    --apply: flex items-center rounded-custom;
-
-    &__input {
-      --apply: flex lt-md:flex-col relative grow gap-x-2 gap-y-1px overflow-auto h-full;
-    }
 
     &.is-readonly,
     &.is-disabled {
@@ -282,36 +214,12 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
     }
 
     :slotted(.control) {
-      --apply: bg-inherit outline-none rounded-custom;
-      // --apply: p-x-3;
+      --apply: bg-inherit outline-none rounded-custom w-full;
 
       font-size: var(--fontSize);
       line-height: var(--lineHeight);
       padding: var(--padding);
       margin: var(--margin);
-    }
-  }
-
-
-  &.is-inline {
-      .wrapper-body::after {
-        --apply: lt-md:top-22px;
-      }
-    }
-
-  &--md {
-    &.is-inline {
-      .wrapper-body::after {
-        --apply: lt-md:top-6;
-      }
-    }
-  }
-
-  &--lg {
-    &.is-inline {
-      .wrapper-body::after {
-        --apply: lt-md:top-7;
-      }
     }
   }
 
@@ -322,9 +230,8 @@ useResizeObserver(wrapperEl, getErrorContainerPosition)
 
     &:not(:focus-within) {
       :slotted(.control) {
-        --apply: "!color-transparent";
+        --apply: '!color-transparent';
       }
-
     }
   }
 }

@@ -13,7 +13,7 @@ const tooManyRowsWarningVisible = ref(true)
 
     <Btn
       m="y-2"
-      :label="$t('understood')"
+      :label="$t('general.understood')"
       size="sm"
       @click="tooManyRowsWarningVisible = false"
     />

@@ -121,6 +121,10 @@ export function useValueFormatterUtils() {
       case 'datetimeSimple':
         return formatDate(value, 'long')
 
+      case 'fullDateTime':
+      case 'fullDateTimeSimple':
+        return formatDate(value, 'longWithSeconds')
+
       case 'timestamp':
       case 'timestampSimple':
         return formatDate(value, 'timestamp')
@@ -137,7 +141,7 @@ export function useValueFormatterUtils() {
       case 'bool':
       case 'booleanSimple':
       case 'boolSimple':
-        return JSON.parse(value) ? $t('yes') : $t('no')
+        return JSON.parse(value) ? $t('general.yes') : $t('general.no')
 
       case 'string':
       case 'stringSimple':

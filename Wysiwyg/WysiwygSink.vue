@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Editor } from '@tiptap/vue-3'
 
-// COMPONENTS
+// Components
 import MenuProxy from '~/components/MenuProxy/MenuProxy.vue'
 
 type IProps = {
@@ -24,7 +24,7 @@ const emits = defineEmits<{
   (e: 'toggle-task-list'): void
 }>()
 
-// LAYOUT
+// Layout
 const colorMenuEl = ref<InstanceType<typeof MenuProxy>>()
 
 const canUseImage = computedEager(() => {
@@ -58,10 +58,7 @@ function handleColorChange(color?: string | null) {
       @click.stop.prevent
       @mousedown.stop.prevent
     >
-      <MenuProxy
-        ref="colorMenuEl"
-        hide-header
-      >
+      <MenuProxy ref="colorMenuEl">
         <ColorBrandingPicker
           @update:model-value="handleColorChange"
           @click.stop.prevent

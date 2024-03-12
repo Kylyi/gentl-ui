@@ -43,6 +43,7 @@ const breadcrumbs = computed(() => {
           :class="{
             'is-last': breadcrumb === breadcrumbs[breadcrumbs.length - 1],
           }"
+          :no-dim="breadcrumb === breadcrumbs[breadcrumbs.length - 1]"
           no-uppercase
         />
       </template>

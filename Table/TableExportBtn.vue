@@ -3,7 +3,7 @@
 import {
   tableExportKey,
   tableIsExportingKey,
-  tableNonHelpersColumnsKey,
+  tableNonHelperColumnsKey,
 } from '~/components/Table/provide/table.provide'
 
 type IProps = {
@@ -13,7 +13,7 @@ type IProps = {
 defineProps<IProps>()
 
 // Injections
-const tableColumns = injectStrict(tableNonHelpersColumnsKey)
+const tableColumns = injectStrict(tableNonHelperColumnsKey)
 const handleTableExport = injectStrict(tableExportKey)
 const isExporting = injectStrict(tableIsExportingKey)
 
@@ -42,12 +42,7 @@ async function handleExport(exportFormat: 'xlsx' | 'csv') {
       <div class="line-md:chevron-small-right rotate-90" />
     </div>
 
-    <Menu
-      hide-header
-      dense
-      p="1"
-      content-class="overflow-hidden"
-    >
+    <Menu>
       <!-- XLSX -->
       <Btn
         :label="$t('export.excel')"

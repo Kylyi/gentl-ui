@@ -16,6 +16,9 @@ import {
 } from '~/components/QueryBuilder/provide/query-builder.provide'
 import { tableRefreshKey } from '~/components/Table/provide/table.provide'
 
+// Constants
+import { COLORS } from '~/libs/App/constants/colors.constant'
+
 // Components
 import Menu from '~/components/Menu/Menu.vue'
 
@@ -125,19 +128,21 @@ function handleRemoveGroup() {
       </span>
     </Tooltip>
 
+    <!-- Conditions -->
     <Menu
       ref="conditionMenuEl"
       :no-arrow="false"
-      w="40"
-      hide-header
+      w="20"
     >
-      <!-- Conditions -->
+      <!-- Condition - And -->
       <Btn
         size="xs"
         :label="$t('queryBuilder.and')"
         :class="{ 'color-blue-500': item.condition === 'AND' }"
         @click="handleSetCondition('AND')"
       />
+
+      <!-- Condition - Or -->
       <Btn
         size="xs"
         :label="$t('queryBuilder.or')"
@@ -154,7 +159,7 @@ function handleRemoveGroup() {
       <Btn
         v-if="level"
         size="xs"
-        :label="$t('remove')"
+        :label="$t('general.remove')"
         preset="TRASH"
         @click="handleRemoveGroup"
       />

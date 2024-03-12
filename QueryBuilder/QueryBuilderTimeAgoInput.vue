@@ -119,13 +119,11 @@ function setUnit(unitShortName: string) {
           color="ca"
           tabindex="-1"
           w="16"
-          @mousedown.stop.prevent=""
+          @mousedown.stop.prevent
         >
           <Menu
             ref="menuEl"
-            hide-header
-            content-class="gap-y-1 w-40"
-            cover
+            w="40"
             :fit="false"
           >
             <template #default>

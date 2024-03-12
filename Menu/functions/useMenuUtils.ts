@@ -1,16 +1,18 @@
-// TYPES
+// Types
 import type { IMenuProps } from '~/components/Menu/types/menu-props.type'
 
+// Functions
+import { useFloatingUIUtils } from '~/components/FloatingUI/functions/useFloatingUIUtils'
+
 export function useMenuUtils() {
+  const { getElement } = useFloatingUIUtils()
+
   function getMenuProps(props: IMenuProps) {
     return reactivePick(props, [
-      'contentClass',
+      'beforeHideFnc',
       'cover',
-      'dense',
       'fallbackPlacements',
       'fit',
-      'headerClass',
-      'hideHeader',
       'manual',
       'matchWidth',
       'maxHeight',
@@ -25,10 +27,12 @@ export function useMenuUtils() {
       'transitionDuration',
       'target',
       'referenceTarget',
+      'ui',
     ])
   }
 
   return {
     getMenuProps,
+    getElement,
   }
 }

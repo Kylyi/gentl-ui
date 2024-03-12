@@ -27,7 +27,7 @@ defineEmits<{
 
 <style lang="scss" scoped>
 .burger {
-  --apply: rotate-0 transition-all ease-in-out duration-500 cursor-pointer
+  --apply: rotate-0 transition-transform ease-in-out duration-500 cursor-pointer
     relative w-9 h-9;
 
   &-wrapper {

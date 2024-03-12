@@ -59,9 +59,24 @@ export type IListProps = IListBaseProps & {
   selected?: any
 
   loadData?: {
+    /**
+     * The function to use for fetching the data
+     */
     fnc: IListFetchFnc
+
+    /**
+     * The key to use for the items from the server response
+     */
     mapKey?: string
+
+    /**
+     * The key to use for the total count of items from the server response
+     */
     countKey?: string
+
+    /**
+     * When true, the `loadData` fnc will be called on mount
+     */
     immediate?: boolean
 
     /**
@@ -74,6 +89,13 @@ export type IListProps = IListBaseProps & {
      * When true, the `loadData` fnc will be called on every search
      */
     onSearch?: boolean
+
+    /**
+     * The fields to select from the query
+     *
+     * TODO - Not implemeneted
+     */
+    select?: string[]
   }
 
   /**
@@ -106,7 +128,7 @@ export type IListProps = IListBaseProps & {
   searchDebounce?: number
 
   /**
-   * The props that should be passed to the input tag (<input>)
+   * The props that should be passed to the search input tag (<input>)
    */
   inputProps?: Record<string, any>
 

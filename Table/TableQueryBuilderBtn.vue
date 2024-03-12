@@ -6,7 +6,7 @@ import { type IQueryBuilderRow } from '~/components/QueryBuilder/types/query-bui
 
 // Injections
 import {
-  tableNonHelpersColumnsKey,
+  tableNonHelperColumnsKey,
   tableRefreshKey,
 } from '~/components/Table/provide/table.provide'
 
@@ -24,7 +24,7 @@ defineEmits<{
 }>()
 
 // Injections
-const nonHelperColumns = injectStrict(tableNonHelpersColumnsKey, ref([]))
+const nonHelperColumns = injectStrict(tableNonHelperColumnsKey, ref([]))
 const tableRefresh = injectStrict(tableRefreshKey, () => {})
 
 // Layout
@@ -57,7 +57,7 @@ function handleSync() {
   tableRefresh()
 }
 
-const $z = useVuelidate({ $scope: 'qb' })
+const $z = useZod({ scope: 'qb' })
 </script>
 
 <template>

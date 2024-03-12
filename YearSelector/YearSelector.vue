@@ -15,9 +15,14 @@ const emits = defineEmits<{
 // Layout
 const yearInputEl = ref<InstanceType<typeof NumberInput>>()
 const yearSelectorVisible = ref(false)
-const dateObj = computed(() => $date(props.date))
-const internalValue = ref($date(props.date).year())
 const isRangeChanged = refAutoReset(false, 300)
+
+/**
+ * Internal value is used to navigate through years without changing the actual `model`
+ */
+const internalValue = ref($date(props.modelValue).year())
+
+const dateObj = computed(() => $date(props.modelValue))
 
 const yearOptions = computed(() => {
   const countOfYearsShown = 5
@@ -62,7 +67,7 @@ function stopChange() {
 }
 
 function sync() {
-  return (internalValue.value = $date(props.date).year())
+  return (internalValue.value = $date(props.modelValue).year())
 }
 
 function handleYearSelect(year: number) {
@@ -78,16 +83,13 @@ function handleMouseWheel(ev: WheelEvent) {
   } else {
     internalValue.value--
   }
-  ev.preventDefault()
+
   ev.stopPropagation()
 }
 
 watch(
-  () => props.date,
-  date => {
-    internalValue.value = $date(date).year()
-    nextTick(() => yearInputEl.value?.sync())
-  }
+  () => props.modelValue,
+  model => (internalValue.value = $date(model).year())
 )
 
 defineExpose({ sync })
@@ -129,15 +131,14 @@ defineExpose({ sync })
     <Menu
       v-model="yearSelectorVisible"
       :target="yearInputEl"
-      hide-header
       :fit="false"
       w="60"
-      content-class="flex-gap-y-1"
       :reference-target="
         $bp.isGreaterOrEqual('xm') ? referenceTarget : undefined
       "
-      @hide="sync"
-      @mousewheel="handleMouseWheel"
+      no-uplift
+      @before-hide="sync"
+      @wheel.passive="handleMouseWheel"
     >
       <Btn
         tabindex="-1"

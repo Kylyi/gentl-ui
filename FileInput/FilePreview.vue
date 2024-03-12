@@ -1,6 +1,8 @@
 <script setup lang="ts">
-// Types
-import type { IFile } from '~/components/FileInput/types/file.type'
+// Models
+
+// Functions
+import { useNumber } from '~/components/Inputs/NumberInput/functions/useNumber'
 
 // Constants
 import { ICON_BY_FILE_TYPE } from '~/components/FileInput/constants/iconByFileType'
@@ -16,7 +18,9 @@ const props = defineProps<IProps>()
 defineEmits<{
   (e: 'remove'): void
 }>()
+
 // Utils
+const { formatNumber, formatBytes } = useNumber()
 const { getLocalImageUrl } = useImages()
 
 const icon = computed(() => {
@@ -28,10 +32,13 @@ const icon = computed(() => {
 })
 
 const imageUrl = computed(() => {
-  if ('path' in props.file && props.file.type?.startsWith('image/')) {
+  const isUploadedFile = 'id' in props.file
+  const isImageFile = props.file.type?.startsWith('image/')
+
+  if (isUploadedFile && isImageFile) {
     return getLocalImageUrl(props.file.path)
-  } else if (!('path' in props.file) && props.file.type?.startsWith('image/')) {
-    return URL.createObjectURL(props.file)
+  } else if (!isUploadedFile && isImageFile) {
+    return URL.createObjectURL(props.file.file)
   }
 
   return null
@@ -41,11 +48,7 @@ const imageUrl = computed(() => {
 <template>
   <div class="file-preview">
     <div class="file-preview--header">
-      <span
-        self-center
-        text="caption"
-        line-clamp="2"
-      >
+      <span class="file-preview__filename">
         {{ file?.name }}
       </span>
 
@@ -76,20 +79,54 @@ const imageUrl = computed(() => {
 
     <div
       v-if="!noDownloadButton"
-      class="file-preview--download"
+      class="file-preview--download rounded-b-2 overflow-hidden"
     >
+      <!-- Download file -->
       <Btn
         v-if="'path' in file"
         w-full
         size="sm"
+        class="!rounded-t-0"
         :label="$t('file.download')"
         @click.stop.prevent="handleDownloadFile(file, downloadUrl)"
       />
+
+      <!-- Upload failed -->
       <Btn
-        v-else
-        :label="$t('file.added')"
+        v-else-if="file.hasError"
+        :label="$t('file.uploadFailed')"
+        color="negative"
+        bg="negative/15"
         size="sm"
-        w-full
+        class="!rounded-t-0 w-full"
+      />
+
+      <!-- To be uploaded -->
+      <div
+        v-else-if="!file.isUploading && !file.isUploaded"
+        :label="$t('file.added')"
+        class="flex flex-center rounded-t-0 w-full h-8 bg-blue-50 text-caption text-xs"
+      >
+        {{ formatBytes(file.file.size) }}
+      </div>
+
+      <!-- Uploaded successfully -->
+      <Btn
+        v-else-if="!file.isUploading"
+        :label="$t('file.uploaded')"
+        color="positive"
+        size="sm"
+        class="!rounded-t-0 w-full"
+      />
+
+      <!-- Uploading - Progress bar -->
+      <ProgressBar
+        v-else
+        :label="
+          progress => `${$t('file.uploading')}... (${formatNumber(progress)}%)`
+        "
+        :progress="file.uploadProgress"
+        rounded="b-2"
       />
     </div>
   </div>
@@ -97,13 +134,17 @@ const imageUrl = computed(() => {
 
 <style lang="scss" scoped>
 .file-preview {
-  --apply: grid gap-4 fit items-center border-1 border-dotted rounded-3
+  --apply: grid gap-2 fit items-center border-1 border-dotted rounded-3
     border-ca color-ca;
 
   grid-template-rows: auto 1fr auto;
 
+  &__filename {
+    --apply: self-center text-caption line-clamp-2 p-y-1 break-words;
+  }
+
   &--header {
-    --apply: flex flex-row gap-x-2 p-x-2 w-full justify-between p-t-1 p-b-2;
+    --apply: flex flex-row gap-x-2 p-x-2 w-full justify-between p-t-1 p-b-2 overflow-auto;
   }
 
   &--image {

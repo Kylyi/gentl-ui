@@ -19,6 +19,7 @@ const props = withDefaults(defineProps<INumberInputProps>(), {
   fractionDigits: 2,
   inline: undefined,
   labelInside: undefined,
+  // @ts-expect-error Wrong IMask type, will be overriden anyway
   mask: () => ({ mask: String }),
   required: undefined,
   size: 'md',
@@ -29,7 +30,7 @@ const props = withDefaults(defineProps<INumberInputProps>(), {
 })
 
 defineEmits<{
-  (e: 'update:model-value', val?: number | undefined | null): void
+  (e: 'update:modelValue', val?: number | undefined | null): void
   (e: 'blur'): void
 }>()
 
@@ -45,11 +46,9 @@ const mask = computed<MaskedNumber>(() => {
     radix: separators.value.decimalSeparator,
     mapToRadix: ['.', ','],
     scale: props.fractionDigits,
-    ...(props.mask || {}),
     mask: Number,
     min: props.min,
     max: props.max,
-    // @ts-expect-error imask type
     format: (value: any) => {
       if (isNil(value)) {
         return ''
@@ -62,19 +61,17 @@ const mask = computed<MaskedNumber>(() => {
 
 const {
   el,
-  maskedValue,
-  typedValue,
+  inputId,
+  model,
+  masked,
   wrapperProps,
   hasNoValue,
   hasClearableBtn,
   focus,
   select,
   blur,
-  reset,
-  touch,
   clear,
   getInputElement,
-  handleManualModelChange,
   handleClickWrapper,
   handleFocusOrClick,
   handleBlur,
@@ -91,7 +88,7 @@ const decrement = ref<InstanceType<typeof Btn>>()
 const modifier = ref<-1 | 1>(1)
 
 const stepAdjusted = computed(() => {
-  if (!typedValue.value) {
+  if (!model.value) {
     return typeof props.step === 'number' ? props.step : 1
   }
 
@@ -99,9 +96,9 @@ const stepAdjusted = computed(() => {
     return props.step || 0
   }
 
-  if (+typedValue.value <= 200) {
+  if (+model.value <= 200) {
     return 1
-  } else if (+typedValue.value <= 20000) {
+  } else if (+model.value <= 20000) {
     return 100
   } else {
     return 1000
@@ -114,7 +111,7 @@ const { pause, resume } = useIntervalFn(() => handleStep(), 120, {
 })
 
 function handleStep() {
-  let currentValue = typedValue.value
+  let currentValue = model.value
 
   if (
     isNil(currentValue) ||
@@ -125,11 +122,10 @@ function handleStep() {
   }
 
   const nextValue = +currentValue! + stepAdjusted.value * modifier.value
-  handleManualModelChange(nextValue, false)
+  model.value = nextValue
 }
 
 function startStep(_: PointerEvent, increment = true) {
-  touch()
   modifier.value = increment ? 1 : -1
 
   window.addEventListener('pointerup', stopStep)
@@ -153,18 +149,15 @@ defineExpose({
   focus,
   select,
   blur,
-  reset,
-  touch,
   clear,
   getInputElement,
-  handleManualModelChange,
-  sync: () => handleManualModelChange(props.modelValue),
 })
 </script>
 
 <template>
   <InputWrapper
     v-bind="wrapperProps"
+    :id="inputId"
     :has-content="!hasNoValue"
     .focus="focus"
     @click="handleClickWrapper"
@@ -181,9 +174,10 @@ defineExpose({
     </template>
 
     <input
+      :id="inputId"
       ref="el"
-      :value="maskedValue"
       flex="1"
+      :value="masked"
       inputmode="numeric"
       :placeholder="placeholder"
       :readonly="readonly"
@@ -268,6 +262,6 @@ defineExpose({
 
 <style lang="scss" scoped>
 .number-input__step {
-  --apply: flex gap-x-2 flex-center p-x-2 fit;
+  --apply: flex gap-x-2 flex-center p-x-2;
 }
 </style>

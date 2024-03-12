@@ -3,10 +3,14 @@
 // and `v-show` in parent for each tab. There must be a better way to do this.
 import { isVNode } from 'vue'
 
+import { config } from '~/config'
+
 // Types
 import type { ITabsProps } from '~/components/Tabs/types/tabs-props.type'
 
-const props = defineProps<ITabsProps>()
+const props = withDefaults(defineProps<ITabsProps>(), {
+  noAnimation: config.tabs.props.noAnimation,
+})
 const emits = defineEmits<{
   (e: 'update:modelValue', id: string | number): void
 }>()
@@ -31,12 +35,20 @@ const oldModel = ref(model.value)
 const instance = getCurrentInstance()
 
 const tabs = computed(() => {
-  return (instance?.slots.default?.() || [])
+  const defaultSlot = instance?.slots.default?.() || []
+  const vueInstances = defaultSlot.flatMap(t => {
+    const children = t.children || []
+
+    return [
+      ...(isVNode(t) ? [t] : []),
+      ...(Array.isArray(children) ? children.filter(isVNode) : []),
+    ]
+  })
+
+  return vueInstances
     .filter(
       t =>
-        isVNode(t) &&
-        typeof t.type === 'object' &&
-        (t.type as any).name?.startsWith('Tab_')
+        typeof t.type === 'object' && (t.type as any).name?.startsWith('Tab_')
     )
     .map((t: VNode) => {
       return {

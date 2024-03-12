@@ -1,4 +1,4 @@
-import type { AnyMaskedOptions } from 'imask'
+import type { FactoryOpts } from 'imask'
 import { type CSSProperties } from 'vue'
 
 // Types
@@ -59,7 +59,7 @@ export type IInputProps = IInputWrapperProps & {
   name?: string
 
   // Mask (https://imask.js.org/guide.html)
-  mask?: AnyMaskedOptions
+  mask?: FactoryOpts
 
   // Mask event handlers
   maskEventHandlers?: {

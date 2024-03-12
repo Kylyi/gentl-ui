@@ -1,21 +1,26 @@
 <script setup lang="ts">
-// Types
+// Functions
 import type { InputLabelProps } from '~/components/Inputs/types/input-label-props.type'
 
 const props = withDefaults(defineProps<InputLabelProps>(), {
   required: undefined,
 })
 
-const labelLocalClass = computedEager(() => {
+const labelLocalClass = computed(() => {
+  const isInline = props.layout === 'inline'
+  const isInside = props.layout === 'label-inside'
+  const isRegular = props.layout === 'regular'
+
   return [
-    props.labelClass,
+    props.ui?.labelClass,
     `label--${props.size}`,
     {
-      'is-inline': props.inline,
-      'is-required': props.required ?? !!props.validation?.required,
-      'is-inside': props.labelInside,
+      'is-inline': isInline,
+      'is-required': props.required,
+      'is-inside': isInside,
+      'is-regular': isRegular,
       'is-floating':
-        !props.inline &&
+        !isInline &&
         (props.stackLabel || props.placeholder || props.hasContent),
     },
   ]
@@ -23,92 +28,95 @@ const labelLocalClass = computedEager(() => {
 </script>
 
 <template>
-  <span
+  <label
+    :for="id"
     class="label"
     :class="labelLocalClass"
-    :style="labelStyle"
+    :style="ui?.labelStyle"
   >
     {{ label }}
-  </span>
+  </label>
 </template>
 
 <style lang="scss" scoped>
-span.label {
-  --apply: ease-linear tracking-wide z-10 origin-top-left top-0 left-0 pointer-events-none
-    leading-tight md:self-center color-gray-500 dark:color-gray-400 max-w-full;
+label.label {
+  --apply: block ease-linear tracking-wide z-10 origin-top-left top-0 left-0
+    leading-tight max-w-full p-x-3 break-words cursor-text;
 
-  transition: transform .36s cubic-bezier(.4,0,.2,1),
-              max-width .2s  cubic-bezier(.4,0,.2,1) .2s,
-              color     .2s  linear;
+  --apply: color-$InputLabel-color;
 
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    padding 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    font-size 0.2s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s linear;
+
+  // Layout ~ Inline
   &.is-inline {
-    --apply: order--1 min-w-200px md:w-200px md:text-right lt-md:scale-80;
+    --apply: order--1 font-rem-13;
+
+    @screen md {
+      --apply: min-w-200px w-200px text-right font-rem-14 p-y-0.5 p-x-0;
+    }
   }
 
+  // Layout ~ Regular
+  &.is-regular {
+    --apply: absolute;
+  }
+
+  // Layout ~ not Inline
   &:not(.is-inline) {
-    --apply: absolute origin-top-left left-0 top-0 truncate w-full;
+    --apply: origin-top-left left-0 top-0 truncate w-full overflow-hidden;
   }
 
-  &--sm,
-  &--md,
-  &--lg {
-    --apply: p-x-3;
-  }
-
+  // Size: Small
   &--sm {
-    --apply: font-rem-14 leading-3.5;
-
-    &:not(.is-inline) {
-      --apply: top-2;
-    }
+    --apply: font-rem-14;
 
     &.is-inside {
-      --apply: top-2.5;
+      --apply: translate-y-11px;
     }
 
-    &.is-inline {
-      --apply: self-start md:p-t-2 md:p-b-1;
+    &.is-regular {
+      --apply: translate-y-23.5px;
     }
   }
 
+  // Size: Medium
   &--md {
-    --apply: font-rem-14 leading-4;
-
-    &:not(.is-inline) {
-      --apply: top-3;
-    }
+    // --apply: leading-4;
 
     &.is-inside {
-      --apply: top-3.5;
+      --apply: translate-y-11.5px;
     }
 
-    &.is-inline {
-      --apply: self-start md:p-t-3 md:p-b-1;
+    &.is-regular {
+      --apply: translate-y-26px;
     }
   }
 
+  // Size: Large
   &--lg {
     --apply: font-rem-16;
 
-    &:not(.is-inline) {
-      --apply: top-4;
-    }
-
     &.is-inside {
-      --apply: top-4;
+      --apply: translate-y-16.5px;
     }
 
-    &.is-inline {
-      --apply: self-start md:p-t-18px md:p-b-1;
+    &.is-regular {
+      --apply: translate-y-30px;
     }
   }
 
   &.is-floating:not(.is-inline) {
-    --apply: translate-y--180% w-125% max-w-125% scale-80;
+    --apply: font-rem-12;
+  }
 
-    &.is-inside {
-      --apply: translate-y--65%;
-    }
+  &.is-floating.is-inside {
+    --apply: translate-y-3px rounded-t-custom;
+  }
+
+  &.is-floating.is-regular {
+    --apply: translate-y--1px;
   }
 
   &.is-required::after {
@@ -117,21 +125,41 @@ span.label {
   }
 }
 
-.wrapper-body:focus-within {
-  > .label {
-    --apply: color-primary;
+.wrapper__body:not(.selector-wrapper):focus-within {
+  label.label {
+    --apply: color-$InputLabel-active-color;
 
     &:not(.is-inline) {
-      --apply: translate-y--180% w-125% max-w-125% scale-80;
+      --apply: font-rem-12;
+    }
 
-      &.is-inside {
-        --apply: translate-y--65% rounded-tl;
-      }
+    &.is-inside {
+      --apply: translate-y-3px rounded-t-custom;
+    }
+
+    &.is-regular {
+      --apply: translate-y--1px;
     }
   }
 
-  > .label[haserror="true"] {
+  label.label[haserror='true'] {
     --apply: color-negative;
+  }
+}
+
+label.label.is-floating:not(.is-inside) {
+  --apply: p-x-1;
+}
+
+label.label.is-inline {
+  @screen lt-md {
+    --apply: p-x-1;
+  }
+}
+
+.wrapper__body:not(.selector-wrapper):focus-within {
+  label.label:not(.is-inside):not(.is-inline) {
+    --apply: p-x-1;
   }
 }
 </style>

@@ -147,11 +147,17 @@ function handleKeyDown(e: KeyboardEvent) {
 
     case 'Enter':
       setTimeout(() => {
+        handleSaveRow()
+
         if (isControlKey) {
           return
         }
 
-        focusFieldInNextRow()
+        handleKeyDown({
+          ...e,
+          key: 'ArrowDown',
+          ctrlKey: true,
+        } as KeyboardEvent)
       })
 
       e.preventDefault?.()

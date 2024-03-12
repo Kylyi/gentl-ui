@@ -93,7 +93,7 @@ const isModified = computed(() => {
           </slot>
         </template>
 
-        <!-- Orginal Value -->
+        <!-- Previous Value -->
         <template
           v-if="previousValue !== undefined"
           #previousValue="{ val }"

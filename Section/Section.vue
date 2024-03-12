@@ -37,7 +37,7 @@ const isTitleVisible = computedEager(() => {
         <!-- Title -->
         <Heading
           v-if="title"
-          :class="headerClass"
+          :class="[headerClass, { 'p-t-1': subtitle || $slots.subtitle }]"
           :filled="titleFilled"
           flex="col center"
         >
@@ -71,7 +71,11 @@ const isTitleVisible = computedEager(() => {
       </slot>
     </div>
 
-    <div v-bind="$attrs">
+    <div
+      p="t-2"
+      gap="$Section-content-gap"
+      v-bind="$attrs"
+    >
       <slot />
     </div>
   </section>
@@ -79,14 +83,14 @@ const isTitleVisible = computedEager(() => {
 
 <style lang="scss" scoped>
 .section {
-  --apply: flex flex-col rounded-custom;
+  --apply: relative flex flex-col rounded-custom max-w-$Section-max-w;
 
   &--dense {
     --apply: p-x-0 p-b-0;
   }
 
   &-subtitle {
-    --apply: w-full;
+    --apply: w-full p-b-2;
   }
 
   &--bordered {
@@ -104,5 +108,9 @@ const isTitleVisible = computedEager(() => {
   .section-subtitle {
     --apply: p-b-3;
   }
+}
+
+.heading.is-filled::before {
+  --apply: absolute content-empty top-0 left-0 w-1 h-full bg-primary;
 }
 </style>

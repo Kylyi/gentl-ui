@@ -14,7 +14,7 @@ defineProps<IProps>()
     :icon="BUTTON_PRESET.ARCHIVE.icon"
     bg="dark-50"
     color="true-gray-400"
-    :label="$t('archived')"
+    :label="$t('general.archived')"
     h-8
     :class="{ 'absolute!': absolute }"
   />

@@ -1,14 +1,10 @@
 <script setup lang="ts">
 import { config } from '~/config'
 
-type IProps = {
-  pad?: boolean
-  loading?: boolean
-  title?: string
-  includeTopBar?: boolean
-}
+// Types
+import type { IPageWrapperProps } from '~/components/Page/types/page-wrapper-props.type'
 
-withDefaults(defineProps<IProps>(), {
+withDefaults(defineProps<IPageWrapperProps>(), {
   pad: true,
   includeTopBar: true,
 })
@@ -51,7 +47,10 @@ onMounted(() => {
     </Component>
 
     <!-- Content -->
-    <div class="page-wrapper__content">
+    <div
+      class="page-wrapper__content"
+      :class="contentClass"
+    >
       <slot name="title-left" />
 
       <slot name="title">
@@ -89,7 +88,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .page-wrapper {
-  --apply: ease-out overflow-auto grow p-$PageWrapper-padding;
+  --apply: ease-out grow z-$zPageWrapper p-$PageWrapper-padding;
 
   &.is-mounted {
     transition: padding 250ms ease-out, margin 250ms ease-out;
@@ -112,17 +111,14 @@ onMounted(() => {
   }
 }
 
-@media not print {
-  .page-drawer.is-open.page-drawer--left ~ .page-wrapper {
-    margin-left: calc(var(--drawerLeftMiniWidth));
-  }
-
-  .page-drawer.is-open.page-drawer--left:not(.is-absolute):not(.is-mini)
-    ~ .page-wrapper {
-    margin-left: calc(var(--drawerLeftWidth));
-  }
+.page-drawer.is-open.page-drawer--left ~ .page-wrapper {
+  margin-left: calc(var(--drawerLeftMiniWidth));
 }
 
+.page-drawer.is-open.page-drawer--left:not(.is-absolute):not(.is-mini)
+  ~ .page-wrapper {
+  margin-left: calc(var(--drawerLeftWidth));
+}
 
 .page-drawer.is-open.page-drawer--right ~ .page-wrapper {
   padding-right: var(--drawerRightMiniWidth);
@@ -134,7 +130,7 @@ onMounted(() => {
 }
 
 .page-title {
-  --apply: flex gap-2 p-x-4 md:(p-t-4 p-b-2 p-l-4 p-r-2) max-w-screen-lg m-b-1 p-b-1;
+  --apply: flex gap-2 p-x-4 md:(p-y-4 p-x-2) max-w-screen-lg m-b-2 p-b-1;
 
   &__text {
     --apply: grow font-700;

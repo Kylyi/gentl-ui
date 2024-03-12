@@ -1,35 +1,54 @@
-import { type Boundary } from '@floating-ui/dom'
-import { type CSSProperties } from 'vue'
+import type { CSSProperties } from 'vue'
 
-export type DialogPosition = 'top' | 'bottom' | 'left' | 'right'
+export type DialogPosition = 'center' | 'top' | 'bottom' | 'left' | 'right'
 
-export type FloatingUIBaseProps = {
-  boundary?: Boundary
-  contentClass?: string
-  contentStyle?: CSSProperties
-  dense?: boolean
-  headerClass?: ClassType
-  hideHeader?: boolean
+export type IDialogProps = {
+  /**
+   * Function we can inject before the hide event
+   * Should return whether the hide event should go through or not (boolean)
+   */
+  beforeHideFnc?: () => boolean | Promise<boolean>
+
+  /**
+   * Selectors of the elements that should not trigger the hide event
+   */
+  ignoreClickOutside?: string[]
+
+  /**
+   * When true, the `Menu` needs to be controller via v-model or exposed methods
+   */
   manual?: boolean
+
+  /**
+   * The maximum height for the floating element content (including title!)
+   */
   maxHeight?: number | string
+
+  /**
+   * Model value
+   */
   modelValue?: boolean
+
+  /**
+   * When true, the `Menu` will not have an overlay/backdrop
+   */
+  noOverlay?: boolean
+
+  /**
+   * When true, the `Menu` will not have a transition
+   */
   noTransition?: boolean
+
+  /**
+   * When true, the `Menu` will not be closable by clicking outside of it
+   * -> either ESC or the `CLOSE` button will be the only way to close it
+   */
   persistent?: boolean
-  title?: string
-  transitionDuration?: number
-  trigger?: 'click' | 'contextmenu'
 
   /**
-   * The backdrop class
+   * The FloatingUI placement
    */
-  backdropClass?: ClassType
-
-  /**
-   * When we're using async data in the Menu, the height is not known before the data is fetched.
-   * This prop should help us set the height approximatively to what should be expected.
-   * Note: is only used for `Menu`
-   */
-  expectedHeight?: number
+  position?: DialogPosition
 
   /**
    * Element that triggers the Floating UI
@@ -37,39 +56,49 @@ export type FloatingUIBaseProps = {
   target?: any
 
   /**
-   * This prop is not used in <Dialog /> but it needs to be here because <Menu /> uses it
-   * therefore <MenuProxy /> uses it. If it wasn't here, the HTML would try
-   * to stringify it and throw an error.
+   * Title of the floating element
    */
-  referenceTarget?: any
+  title?: string
 
   /**
-   * When true, the `CLOSE` button will not be shown
+   * The duration of show/hide transition the floating element
    */
-  noClose?: boolean
+  transitionDuration?: number
 
   /**
-   * Used only in <Menu /> to prevent the menu to automatically `uplift` (~ high zIndex)
-   * the `referenceTarget`
-   * CANNOT BE USED WITH OVERLAY!
+   * The trigger event
    */
-  noUplift?: boolean
+  trigger?: 'click' | 'contextmenu'
 
-  /**
-   * Function we can inject before the hide event
-   * Should return whether the hide event should go through or not (Boolean)
-   */
-  beforeHideFnc?: () => boolean | Promise<boolean>
-}
+  ui?: {
+    /**
+     * Class to apply to the `content`
+     */
+    contentClass?: ClassType
 
-export type IDialogProps = FloatingUIBaseProps & {
-  position?: DialogPosition
-  seamless?: boolean
+    /**
+     * Style to apply to the `content`
+     */
+    contentStyle?: CSSProperties
 
-  /**
-   * This prop is not used but it needs to be here because <Menu /> uses it
-   * therefore <MenuProxy /> uses it. If it wasn't here, the HTML would try
-   * to stringify it and throw an error.
-   */
-  referenceTarget?: any
+    /**
+     * Class to apply to the `header`
+     */
+    headerClass?: ClassType
+
+    /**
+     * Style to apply to the `header`
+     */
+    headerStyle?: CSSProperties
+
+    /**
+     * Class to apply to the `title`
+     */
+    titleClass?: ClassType
+
+    /**
+     * Style to apply to the `title`
+     */
+    titleStyle?: CSSProperties
+  }
 }

@@ -23,7 +23,7 @@ const emits = defineEmits<{
 // Lifcecycle
 onMounted(() => {
   referenceEl.value = unrefElement(fieldEl as any)?.querySelector(
-    '.wrapper-body'
+    '.wrapper__body'
   ) as HTMLDivElement
 })
 
@@ -44,12 +44,10 @@ function handlePickColor(color?: string) {
 }
 
 // Field
-const { getFieldProps, handleClickWrapper, handleFocusOrClick } = useFieldUtils(
-  {
-    props,
-    menuElRef: menuEl,
-  }
-)
+const { getFieldProps, handleFocusOrClick } = useFieldUtils({
+  props,
+  menuElRef: menuEl,
+})
 
 const fieldProps = getFieldProps(props)
 </script>
@@ -59,7 +57,6 @@ const fieldProps = getFieldProps(props)
     ref="fieldEl"
     v-bind="fieldProps"
     :no-content="!model"
-    @click="handleClickWrapper"
     @focus="handleFocusOrClick"
   >
     <span :style="{ color: model }">
@@ -68,7 +65,6 @@ const fieldProps = getFieldProps(props)
 
     <MenuProxy
       ref="menuEl"
-      hide-header
       manual
       tabindex="-1"
       :fit="false"
@@ -84,7 +80,6 @@ const fieldProps = getFieldProps(props)
 
     <template #append>
       <div
-        size="sm"
         :class="icon"
         m="x-2"
         tabindex="-1"

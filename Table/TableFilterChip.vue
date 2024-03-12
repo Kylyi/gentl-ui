@@ -61,7 +61,7 @@ function removeChip() {
       </template>
     </ValueFormatter>
 
-    <!-- REMOVE BTN -->
+    <!-- Remove btn -->
     <Btn
       size="xs"
       preset="CLOSE"
@@ -69,12 +69,7 @@ function removeChip() {
       @click.stop.prevent="removeChip"
     />
 
-    <Menu
-      hide-header
-      :no-arrow="false"
-      dense
-      p="1"
-    >
+    <Menu :no-arrow="false">
       <TableColumnFilteringItem
         :filter="filter"
         :column="column"

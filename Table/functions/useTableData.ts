@@ -55,7 +55,6 @@ export function useTableData(
 ) {
   // Utils
   const route = useRoute()
-  // const request = useRequestEvent()
   const instance = getCurrentInstance()
   const { getStorageKey, parseUrlParams, getRowKey } = useTableUtils(props)
   const { isLoading, handleRequest } = useRequest({
@@ -77,6 +76,33 @@ export function useTableData(
     : ref<number>()
 
   const storageKey = computed(() => getStorageKey())
+
+  const rowKey = computed(() => getRowKey(props))
+
+  const rowsSplit = computed<any[]>(() => {
+    if (!props.splitRow) {
+      return rows.value.map(row => ({
+        [rowKey.value]: row[rowKey.value],
+        data: [row],
+      }))
+    }
+
+    return rows.value.reduce((agg, row, idx) => {
+      const mod = idx % props.splitRow!
+
+      if (mod === 0) {
+        agg.push({
+          [rowKey.value]: '',
+          data: [],
+        })
+      }
+
+      agg[agg.length - 1][rowKey.value] += `_${row[rowKey.value]}`
+      agg[agg.length - 1].data.push(row)
+
+      return agg
+    }, [] as any[])
+  })
 
   // Store
   const { activeElement } = storeToRefs(useAppStore())
@@ -137,7 +163,10 @@ export function useTableData(
       return
     }
 
-    const isAtBottom = visibleEndItem.index >= rows.value.length - 20
+    // When using split rows, we need to adjust the `visibleEndItem` index
+    const modifier = props.splitRow ?? 1
+
+    const isAtBottom = visibleEndItem.index * modifier >= rows.value.length - 20
 
     if (hasMore.value && isAtBottom && !fetchMore.value) {
       fetchMore.value = true
@@ -324,8 +353,26 @@ export function useTableData(
       // NOTE: We check whether the amount of data we already fetched is not
       // greater than the limit
       const limitRows = props.getData?.limitRows || config.table.limitRows
+
       if (limitRows && rows.value.length >= limitRows) {
         return
+      }
+
+      // When fetching more data, we need to manually get the queryParams again as
+      // it is not triggered in the `dbQuery` computed
+      if (isFetchMore) {
+        options.fetchQueryParams = config.table.getQuery({
+          ...options.fetchTableQuery,
+          count: false,
+          fetchMore: {
+            $key: get(lastRow.value, rowKey.value),
+            rowKey: rowKey.value,
+            lastRow: lastRow.value,
+          },
+        })
+
+        options.tableQuery.count = false
+        options.fetchTableQuery.count = false
       }
 
       if (
@@ -337,22 +384,6 @@ export function useTableData(
         }
 
         options = config.table.extendTableFetchInput(options)
-      }
-
-      // When fetching more data, we need to manually get the queryParams again as
-      // it is not triggered in the `dbQuery` computed
-      if (isFetchMore) {
-        options.fetchQueryParams = config.table.getQuery({
-          ...options.fetchTableQuery,
-          count: false,
-          fetchMore: {
-            $key: get(lastRow.value, getRowKey(props)),
-            rowKey: getRowKey(props),
-            lastRow: lastRow.value,
-          },
-        })
-
-        options.tableQuery.count = false
       }
 
       const res = await fetchData(options)
@@ -401,7 +432,9 @@ export function useTableData(
       }
 
       // We reset the `fetchMore`
-      fetchMore.value = false
+      nextTick(() => {
+        fetchMore.value = false
+      })
 
       // We set the `dataHasBeenFetched` to true
       dataHasBeenFetched.value = true
@@ -416,6 +449,8 @@ export function useTableData(
   watch(
     dbQuery,
     async dbQuery => {
+      const _isInitialized = isInitialized.value
+
       // NOTE: When we provide the rows, we don't want to fetch them right away
       if (!isInitialized.value && rows.value.length) {
         return
@@ -515,7 +550,9 @@ export function useTableData(
       // NOTE: Focus the table so we can use keyboard navigation
       // (but only if no floating element is visible - we don't want to close it by refocusing)
       // also when user has search input focused, we don't want to refocus
-      if (process.client) {
+      const shouldFocus = _isInitialized || !props.noFocusOnInit
+
+      if (process.client && shouldFocus) {
         const hasFloatingEl = !!document.querySelector('.floating-element')
         const isSearchInputFocused =
           activeElement.value?.tagName === 'INPUT' &&
@@ -585,6 +622,8 @@ export function useTableData(
   return {
     isLoading,
     rows,
+    rowsSplit,
+    fetchMore,
     dbQuery,
     search,
     totalRows,

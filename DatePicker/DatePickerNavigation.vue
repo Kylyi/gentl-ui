@@ -1,42 +1,41 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
 
-// TYPES
+// Types
 import type { IDatePickerNavigationProps } from '~/components/DatePicker/types/datepicker-navigation-props.type'
 
 const props = defineProps<IDatePickerNavigationProps>()
 
 const emits = defineEmits<{
-  (e: 'update:model-value', val: dayjs.Dayjs): void
+  (e: 'update:modelValue', val: dayjs.Dayjs): void
 }>()
 
 const navigationEl = ref<HTMLDivElement>()
 const date = computed(() => props.modelValue?.valueOf())
 
 function handleNavigation(val: number, unit: 'month' | 'year') {
-  emits('update:model-value', props.modelValue.add(val, unit))
+  emits('update:modelValue', props.modelValue.add(val, unit))
 }
 
 function handleSetDate(payload: { idx: number }, unit: 'year' | 'month') {
-  const date = $date(props.modelValue)
-  const val = date[unit](payload.idx)
-
-  emits('update:model-value', val as dayjs.Dayjs)
+  emits(
+    'update:modelValue',
+    $date(props.modelValue)[unit](payload.idx) as dayjs.Dayjs
+  )
 }
 </script>
 
 <template>
   <div
     ref="navigationEl"
-    flex="~ xm:gap-x-1 shrink-0"
-    items-center
+    flex="~ xm:gap-x-1 shrink-0 items-center"
     p="x-2"
     w="full"
     h="12"
     overflow="auto"
   >
     <MonthSelector
-      :date="date"
+      :model-value="date"
       flex="grow-max"
       :reference-target="navigationEl"
       @previous="handleNavigation(-1, 'month')"
@@ -45,7 +44,7 @@ function handleSetDate(payload: { idx: number }, unit: 'year' | 'month') {
     />
 
     <YearSelector
-      :date="date"
+      :model-value="date"
       justify-end
       :reference-target="navigationEl"
       @previous="handleNavigation(-1, 'year')"

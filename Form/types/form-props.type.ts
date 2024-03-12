@@ -1,3 +1,5 @@
+import type { IBtnProps } from '~/components/Button/types/btn-props.type'
+
 export interface IFormProps {
   /**
    * If true, the form will have a border.
@@ -127,6 +129,11 @@ export interface IFormProps {
   submitConfirmationText?: string
 
   /**
+   * Props for the submit button
+   */
+  submitBtnProps?: IBtnProps & IItem
+
+  /**
    * If true, the submit button will be disabled.
    */
   submitDisabled?: boolean
@@ -146,5 +153,12 @@ export interface IFormProps {
      *  Class for the wrapper around the submit button
      */
     submitWrapperClass?: ClassType
+
+    /**
+     * When true, the controls part of the `Form` will not have a spacer
+     *
+     * Useful when we want to put submit class over the entire width of the form
+     */
+    noSpacer?: boolean
   }
 }

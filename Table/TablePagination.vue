@@ -12,7 +12,7 @@ type IProps = {
   currentRows?: number
   infiniteScroll?: boolean
   limitRows?: number
-
+  rowsPerPageOptions?: number[]
   prev: () => void
   next: () => void
 }
@@ -82,7 +82,10 @@ const isPaginationRightVisible = computed(() => {
 
 <template>
   <ClientOnly>
-    <div class="table-pagination">
+    <div
+      v-if="pageCount !== Number.POSITIVE_INFINITY"
+      class="table-pagination"
+    >
       <!-- Total rows -->
       <div
         absolute
@@ -204,27 +207,26 @@ const isPaginationRightVisible = computed(() => {
 
       <!-- Page size -->
       <div
-        v-if="isPaginationRightVisible"
+        v-if="!noPagination"
         class="table-pagination__page-size"
       >
-        <template v-if="!noPagination">
-          <span text="caption">
-            {{ $t('table.rowsPerPage') }}
-          </span>
+        <span
+          text="caption"
+          class="!lt-md:hidden"
+        >
+          {{ $t('table.rowsPerPage') }}
+        </span>
 
-          <Selector
-            v-model="currentPageSize"
-            :options="[5, 10, 25, 50, 100]"
-            emit-key
-            size="sm"
-            no-search
-            w="17"
-            append-class="!p-x-1"
-            inner-class="!p-l-2 !p-r-2px"
-          />
-        </template>
-
-        <slot name="pagination-append" />
+        <Selector
+          v-model="currentPageSize"
+          :options="rowsPerPageOptions"
+          emit-key
+          size="sm"
+          no-search
+          w="17"
+          append-class="!p-x-1"
+          inner-class="!p-l-2 !p-r-2px"
+        />
       </div>
     </div>
   </ClientOnly>
@@ -240,7 +242,7 @@ const isPaginationRightVisible = computed(() => {
 
   &__page-size {
     --apply: absolute right-2 flex flex-center flex-gap-x-2;
-    --apply: '!lt-md:hidden';
+    --apply: 'lt-sm:hidden';
   }
 }
 </style>

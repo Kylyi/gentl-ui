@@ -3,7 +3,6 @@ import { config } from '~/config'
 
 // Types
 import type { IFileInputProps } from '~/components/FileInput/types/file-input-props.type'
-import type { IFile } from '~/components/FileInput/types/file.type'
 
 // Functions
 import { useFieldUtils } from '~/components/Field/functions/useFieldUtils'
@@ -23,11 +22,11 @@ const emits = defineEmits<{
   (e: 'filesRemoved', value: Array<File | IFile>): void
 }>()
 
-// UTILS
+// Utils
 const { formatBytes } = useNumber()
 const { getFieldProps } = useFieldUtils()
 
-// LAYOUT
+// Layout
 const fileInputEl = ref<InstanceType<typeof Field>>()
 const optionsContainerEl = ref<any>()
 const model = useVModel(props, 'modelValue', emits)
@@ -91,8 +90,8 @@ onChange(handleAdd)
 
 <template>
   <Field
-    ref="fileInputEl"
     v-bind="fieldProps"
+    ref="fileInputEl"
     :no-content="!model?.length && !placeholder"
     :class="{ 'dragged-over': isOverDropZone }"
     @click="handleOpen"

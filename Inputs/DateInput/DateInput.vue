@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { Dayjs } from 'dayjs'
+import dayjs from 'dayjs'
 
-import { type AnyMaskedOptions, MaskedRange } from 'imask'
+import { type FactoryOpts, MaskedRange } from 'imask'
 
 // Types
 import type { IDateInputProps } from '~/components/Inputs/DateInput/types/date-input-props.type'
@@ -29,7 +29,7 @@ const props = withDefaults(defineProps<IDateInputProps>(), {
 })
 
 defineEmits<{
-  (e: 'update:model-value', val?: Datetime): void
+  (e: 'update:modelValue', val?: Datetime): void
   (e: 'validation-reset', val?: string | undefined | null): void
   (e: 'blur'): void
 }>()
@@ -46,18 +46,15 @@ function isDate(date?: any) {
   return true
 }
 
-function isMaskString(val?: string) {
-  return val === PATTERN.value
-}
-
 // Mask
 const PATTERN = computed(() => getCurrentLocaleDateFormat())
 
-const mask = computed<AnyMaskedOptions>(() => {
+const mask = computed<FactoryOpts>(() => {
   return {
     mask: PATTERN.value,
     pattern: PATTERN.value,
     lazy: false,
+    overwrite: true,
     blocks: {
       DD: {
         mask: MaskedRange,
@@ -109,20 +106,17 @@ const mask = computed<AnyMaskedOptions>(() => {
   }
 })
 
+function isMaskString(val?: string) {
+  return val === PATTERN.value
+}
+
 // Layout
 const preventSync = autoResetRef(false, 50)
 const wrapperEl = ref<InstanceType<typeof InputWrapper>>()
-const usedTouch = ref(false)
 
-function handleDateSelect(val: Dayjs) {
+function handleDateSelect(val: dayjs.Dayjs) {
   preventSync.value = true
-  touch()
-
-  if (props.format) {
-    handleManualModelChange(val.format(props.format))
-  } else {
-    handleManualModelChange(val)
-  }
+  model.value = props.format ? val.format(props.format) : val
 
   if (props.autoClose) {
     menuProxyEl.value?.hide()
@@ -134,26 +128,20 @@ const menuProxyEl = ref<InstanceType<typeof MenuProxy>>()
 const datePickerEl = ref<InstanceType<typeof DatePicker>>()
 const isPickerActive = ref(false)
 
-function handlePickerHide() {
-  usedTouch.value = false
-  isPickerActive.value = false
-}
-
 const {
   el,
-  typedValue,
-  maskedValue,
+  inputId,
+  model,
+  masked,
   wrapperProps,
   hasNoValue,
   hasClearableBtn,
-  handleManualModelChange,
   handleFocusOrClick,
   handleClickWrapper,
   focus,
   select,
+  handleBlur,
   blur,
-  reset,
-  touch,
   clear,
   getInputElement,
 } = useInputUtils({
@@ -176,8 +164,6 @@ defineExpose({
   focus,
   select,
   blur,
-  reset,
-  touch,
   clear,
   getInputElement,
 })
@@ -185,8 +171,9 @@ defineExpose({
 
 <template>
   <InputWrapper
-    ref="wrapperEl"
     v-bind="wrapperProps"
+    :id="inputId"
+    ref="wrapperEl"
     :has-content="!hasNoValue"
     .focus="focus"
     @click="handleClickWrapper"
@@ -203,26 +190,28 @@ defineExpose({
     </template>
 
     <input
+      :id="inputId"
       ref="el"
-      :value="typedValue ? maskedValue : undefined"
       flex="1"
       type="text"
+      :value="masked"
       :placeholder="placeholder"
       :readonly="readonly"
       :disabled="disabled"
+      autocomplete="off"
       :label="label || placeholder"
       :name="name || path || label || placeholder"
       class="control"
       :class="[inputClass]"
       v-bind="inputProps"
-      @focus.stop.prevent="handleFocusOrClick"
+      @focus="handleFocusOrClick"
+      @blur="handleBlur"
     />
 
     <template #append>
       <div
         v-if="$slots.append || (!readonly && !disabled)"
         flex="~ gap-1 center"
-        fit
         @click="handleFocusOrClick"
       >
         <slot
@@ -261,9 +250,6 @@ defineExpose({
         ref="menuProxyEl"
         v-model="isPickerActive"
         manual
-        hide-header
-        :cover="usedTouch"
-        dense
         position="top"
         placement="bottom-start"
         no-uplift
@@ -273,8 +259,7 @@ defineExpose({
         w="!auto"
         min-w="!280px"
         max-w="!400px"
-        overflow="hidden"
-        @hide="handlePickerHide"
+        :ui="{ contentClass: 'p-0' }"
       >
         <DatePicker
           ref="datePickerEl"

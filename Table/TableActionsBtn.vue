@@ -20,8 +20,6 @@ const includeDeleted = useVModel(props, 'includeDeleted', emits)
     self-center
   >
     <Menu
-      hide-header
-      dense
       w="100"
       placement="bottom-end"
     >
@@ -29,7 +27,7 @@ const includeDeleted = useVModel(props, 'includeDeleted', emits)
       <template v-if="useIncludeDeleted">
         <Toggle
           v-model="includeDeleted"
-          :label="$t('includeArchived')"
+          :label="$t('general.includeArchived')"
         />
         <Separator inset />
       </template>

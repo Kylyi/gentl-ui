@@ -2,49 +2,36 @@
 // Types
 import type { IFieldProps } from '~/components/Field/types/field-props.type'
 
+// Functions
+import { useInputWrapperUtils } from '~/components/Inputs/functions/useInputWrapperUtils'
+import { useFieldUtils } from '~/components/Field/functions/useFieldUtils'
+
 const props = defineProps<IFieldProps>()
 defineEmits<{
   (e: 'focus', ev: FocusEvent | MouseEvent): void
 }>()
 
-// Layout
-const controlEl = ref<HTMLDivElement>()
+// Utils
+const { el, inputId, handleClickWrapper } = useFieldUtils()
+const { getInputWrapperProps } = useInputWrapperUtils()
 
 // Wrapper
-const wrapperProps = reactivePick(
-  props,
-  'contentClass',
-  'contentStyle',
-  'disabled',
-  'validation',
-  'errorTakesSpace',
-  'errorVisible',
-  'hint',
-  'inline',
-  'label',
-  'labelClass',
-  'labelStyle',
-  'labelInside',
-  'loading',
-  'noBorder',
-  'placeholder',
-  'readonly',
-  'required',
-  'size',
-  'stackLabel'
-)
+const wrapperProps = getInputWrapperProps(props)
 
 defineExpose({
-  focus: () => controlEl.value?.focus(),
-  blur: () => controlEl.value?.blur(),
+  focus: () => el.value?.focus(),
+  blur: () => el.value?.blur(),
 })
 </script>
 
 <template>
   <InputWrapper
     v-bind="wrapperProps"
+    :id="inputId"
     error-visible
     :has-content="!noContent"
+    @click="handleClickWrapper"
+    @label-click="el?.focus()"
   >
     <template
       v-if="$slots.prepend"
@@ -54,7 +41,8 @@ defineExpose({
     </template>
 
     <span
-      ref="controlEl"
+      :id="inputId"
+      ref="el"
       class="control w-full"
       :class="[
         controlClass,

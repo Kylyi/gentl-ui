@@ -34,8 +34,14 @@ const props = withDefaults(defineProps<ITableProps>(), {
   totalRows: 0,
   useUrl: true,
   infiniteScroll: config.table.props.infiniteScroll,
-  noSearch: config.table.props.noSearch,
   noLock: config.table.props.noLock,
+  splitRow: 1,
+  noSearch: config.table.props.noSearch,
+  tableTopFunctionality: () => ({
+    ...config.table.props.tableTopFunctionality,
+  }),
+  rowsPerPageOptions: () =>
+    config.table.props.rowsPerPageOptions || [10, 25, 50, 100],
 })
 
 defineEmits<{
@@ -49,10 +55,11 @@ defineEmits<{
 
 defineSlots<{
   [key: string]: any
-  rowInside: { columns: any[]; row: any; index: number }
   dataRow: { columns: any[]; row: any; index: number }
   inner: { columns: any[]; row: any; index: number }
   paginationAppend: { customData: IItem }
+  default: IItem
+  rowInside: { columns: any[]; row: any; index: number }
   top: IItem
   topLeftPrepend: IItem
   topLeftAppend: IItem
@@ -142,7 +149,9 @@ const {
   search,
   dbQuery,
   customData,
+  rowsSplit,
   refreshData,
+  fetchMore,
 
   // Pagination
   currentPage,
@@ -186,7 +195,9 @@ function handleColumnsWidthChange() {
 }
 
 onMounted(() => {
-  scrollerEl.value?.focus()
+  if (!props.noFocusOnInit) {
+    scrollerEl.value?.focus()
+  }
 })
 </script>
 
@@ -300,19 +311,19 @@ onMounted(() => {
     <VirtualScroller
       v-show="hasVisibleColumn"
       ref="scrollerEl"
-      :rows="rows"
+      :rows="rowsSplit"
       :row-key="rowKey"
-      :dynamic-row-height="dynamicRowHeight"
       :row-height="tableRowHeight.current"
       :no-scroll-emit="!infiniteScroll"
       :overscan="overscan"
+      :fetch-more="fetchMore"
       class="scroller"
       @virtual-scroll="handleInfiniteScroll"
     >
       <template #default="{ row, index }">
         <Component
           :is="TableRowComponent"
-          :row="row"
+          :rows="row.data"
           :columns="internalColumns"
           :to="to"
           :class="{ 'is-clickable': rowClickable, 'odd': index % 2 !== 0 }"
@@ -320,10 +331,11 @@ onMounted(() => {
           :editable="editable"
           :index="index"
           :selectable="selectionOptions?.selectable"
+          :split-row="splitRow"
           :row-class="rowClass"
-          @click="handleRowClick(row, $event)"
+          @click="handleRowClick(row.data, $event)"
         >
-          <template #row-inside="{ mode }">
+          <template #row-inside="{ mode, row }">
             <slot
               name="row-inside"
               :columns="columns"
@@ -333,7 +345,7 @@ onMounted(() => {
             />
           </template>
 
-          <template #default>
+          <template #default="{ row }">
             <slot
               name="data-row"
               :columns="columns"
@@ -354,10 +366,11 @@ onMounted(() => {
           <template
             v-for="col in columns"
             :key="col.name"
-            #[col.name]
+            #[col.name]="{ row }"
           >
             <slot
               :name="col.name"
+              :width="col.adjustedWidthPx"
               :row="row"
               :index="index"
               :refresh-data-fnc="refreshData"
@@ -397,6 +410,7 @@ onMounted(() => {
       :total-rows="totalRows"
       :infinite-scroll="infiniteScroll"
       :no-pagination="noPagination || infiniteScroll"
+      :rows-per-page-options="rowsPerPageOptions"
       :current-rows="rows.length"
       :limit-rows="getData?.limitRows"
       :prev="prev"

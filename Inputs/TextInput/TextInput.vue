@@ -6,6 +6,12 @@ import { type ITextInputProps } from '~/components/Inputs/TextInput/types/text-i
 import { useInputUtils } from '~/components/Inputs/functions/useInputUtils'
 import { useInputValidationUtils } from '~/components/Inputs/functions/useInputValidationUtils'
 
+defineOptions({
+  customOptions: {
+    test: 'a',
+  },
+})
+
 const props = withDefaults(defineProps<ITextInputProps>(), {
   allowIncompleteMaskValue: false,
   debounce: 0,
@@ -13,6 +19,7 @@ const props = withDefaults(defineProps<ITextInputProps>(), {
   errorVisible: true,
   inline: undefined,
   labelInside: undefined,
+  // @ts-expect-error Wrong IMask type
   mask: () => ({ mask: String }),
   required: undefined,
   rounded: true,
@@ -20,7 +27,7 @@ const props = withDefaults(defineProps<ITextInputProps>(), {
   stackLabel: undefined,
 })
 defineEmits<{
-  (e: 'update:model-value', val?: string | undefined | null): void
+  (e: 'update:modelValue', val?: string | undefined | null): void
   (e: 'validation-reset', val?: string | undefined | null): void
   (e: 'blur'): void
   (e: 'enter', event: KeyboardEvent): void
@@ -28,22 +35,20 @@ defineEmits<{
 
 const {
   el,
-  maskedValue,
+  inputId,
+  masked,
   wrapperProps,
   hasContent,
   isBlurred,
   hasClearableBtn,
-  handleFocus,
   handleBlur,
   handleClickWrapper,
+  handleFocusOrClick,
   focus,
   select,
   blur,
-  reset,
-  touch,
   clear,
   getInputElement,
-  handleManualModelChange,
 } = useInputUtils({
   props,
   maskRef: toRef(props, 'mask'),
@@ -60,17 +65,15 @@ defineExpose({
   focus,
   select,
   blur,
-  reset,
-  touch,
   clear,
   getInputElement,
-  sync: () => handleManualModelChange(props.modelValue),
 })
 </script>
 
 <template>
   <InputWrapper
     v-bind="wrapperProps"
+    :id="inputId"
     :has-content="hasContent"
     .focus="focus"
     @click="handleClickWrapper"
@@ -87,8 +90,9 @@ defineExpose({
     </template>
 
     <input
+      :id="inputId"
       ref="el"
-      :value="maskedValue"
+      :value="masked"
       flex="1"
       :type="type"
       :inputmode="inputmode"
@@ -103,7 +107,7 @@ defineExpose({
       :class="[inputClass, { 'custom-enter': !!customEnter }]"
       :style="inputStyle"
       v-bind="inputProps"
-      @focus="handleFocus"
+      @focus="handleFocusOrClick"
       @blur="handleBlur"
       @keypress.enter="$emit('enter', $event)"
     />
@@ -114,7 +118,6 @@ defineExpose({
     >
       <div
         flex="~ gap-1 items-center"
-        fit
         p="x-2"
       >
         <slot
@@ -144,7 +147,7 @@ defineExpose({
         <CopyBtn
           v-if="hasCopyBtn"
           :size="size"
-          :model-value="maskedValue"
+          :model-value="masked"
         />
       </div>
     </template>
@@ -154,7 +157,6 @@ defineExpose({
       v-if="tooltip || !!$slots.tooltip"
       :model-value="!isBlurred"
       manual
-      hide-header
       placement="right"
       :fallback-placements="['bottom']"
       :reference-target="el"

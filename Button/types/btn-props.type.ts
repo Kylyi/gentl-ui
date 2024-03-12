@@ -1,4 +1,5 @@
 // Types
+import type { RouteLocationRaw } from '#vue-router'
 import type { NavigateToOptions } from '~/shims'
 
 // Constants
@@ -10,12 +11,13 @@ export type INavigation = {
   exact?: boolean
   external?: boolean
   replace?: boolean
-  to?: any
+  to?: RouteLocationRaw | undefined
   navigateToOptions?: NavigateToOptions
 }
 
 export type IBtnNavigationProps = INavigation & {
   noActiveLink?: boolean
+  noUnderline?: boolean
   type?: 'button' | 'submit' | 'reset'
 }
 

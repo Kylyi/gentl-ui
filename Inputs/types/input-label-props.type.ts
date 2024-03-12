@@ -1,48 +1,32 @@
 import { type CSSProperties } from 'vue'
 
 // Types
-// TODO: Once Zod is ready, uncomment this and use as `validation`
-// import type { IZodValidationItem } from '~/utils/zod/types/zod-validation-item.type'
 
 export type InputLabelProps = {
   /**
-   * Whether the input has some content
-   *
-   * When `false`, the label will be in its default position, otherwise, it will be "stacked" (above the input)
-   * Note: For `inline` this doesnt really do anything
+   * Whether the input has content or not
    */
   hasContent?: boolean
 
   /**
-   * When true, the `label` and `input` will be on the same line on >md screens, ie. they will be quite wide
-   * On smaller screens, the label will be stacked (above the input)
+   * The input's id
    */
-  inline?: boolean
+  id?: string
 
   /**
-   * The label of the input
+   * The input's label
    */
   label?: string
 
   /**
-   * The class of the label
-   */
-  labelClass?: ClassType
-
-  /**
-   * When true, the label will be inside the input (in the container)
-   */
-  labelInside?: boolean
-
-  /**
-   * The style of the label
-   */
-  labelStyle?: CSSProperties
-
-  /**
-   * The placeholder of the input
+   * The input's placeholder
    */
   placeholder?: string
+
+  /**
+   * The input's layout
+   */
+  layout?: 'inline' | 'label-inside' | 'regular'
 
   /**
    * Adds `*` ater the label to indicate it's a required field
@@ -50,17 +34,17 @@ export type InputLabelProps = {
   required?: boolean
 
   /**
-   * The size of the input
+   * The input's size
    */
   size?: 'sm' | 'md' | 'lg'
 
   /**
-   * When `true`, the label will be stacked even when no content is present in the input
+   * When true, the label will be `floating` even when with no content
    */
   stackLabel?: boolean
 
-  /**
-   * Validation object
-   */
-  validation?: any
+  ui?: {
+    labelClass?: ClassType
+    labelStyle?: CSSProperties
+  }
 }

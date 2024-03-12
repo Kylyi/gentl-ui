@@ -162,6 +162,7 @@ function handleLayoutSelect(
           value: filter.value,
           comparator: filter.comparator,
           format: column.format,
+          dataType: filter.dataType,
         })
       )
     }
@@ -225,6 +226,7 @@ function handleLayoutSelect(
     option-label="name"
     size="sm"
     w="50"
+    layout="regular"
     :placeholder="$t('table.layoutState')"
     data-cy="scheme-search"
     @update:model-value="handleLayoutSelect"

@@ -67,11 +67,8 @@ function handleSubmit() {
   >
     <Menu
       ref="menuEl"
-      hide-header
       :no-arrow="false"
-      dense
       w="70"
-      content-class="flex flex-col gap-2 rounded-custom"
       @hide="reset"
     >
       <Form
@@ -92,7 +89,7 @@ function handleSubmit() {
         <!-- Text -->
         <TextInput
           v-model="link.text"
-          :label="$t('name')"
+          :label="$t('general.title')"
           label-inside
           placeholder="Google"
           autofocus
@@ -101,7 +98,7 @@ function handleSubmit() {
         <!-- Url -->
         <TextInput
           v-model="link.url"
-          :label="$t('wysiwyg.link')"
+          :label="$t('general.link')"
           placeholder="https://google.com"
           label-inside
         />

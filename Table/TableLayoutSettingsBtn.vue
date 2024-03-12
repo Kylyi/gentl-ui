@@ -180,7 +180,7 @@ async function handleSaveLayout() {
         { mode, tableQuery: tableQuery.value }
       )
     },
-    { $v, notifySuccess: true, logging: { operationName: 'table.layoutSave' } }
+    { $z, notifySuccess: true, logging: { operationName: 'table.layoutSave' } }
   )
 
   // When we create a new layout, we add it to the layouts array
@@ -228,15 +228,16 @@ async function handleSaveLayout() {
 }
 
 async function handleDeleteLayoutState() {
-  const deletedFilterId = await handleRequest(
+  const res = await handleRequest(
     () => deleteLayout(currentLayoutId.value),
     {
       notifySuccess: true,
-      payloadKey: 'data.payload.id',
+      noResolve: true,
       logging: { operationName: 'table.layoutDelete' },
     }
   )
 
+  const deletedFilterId = res.data.payload.id
   layouts.value = layouts.value.filter(l => l.id !== deletedFilterId)
 
   if (currentLayout.value?.id === deletedFilterId) {
@@ -259,19 +260,16 @@ function reset() {
     public: false,
   }
 
-  $v.value.$reset()
+  $z.value.$reset()
 }
 
-const $v = useVuelidate(
+const $z = useZod(
   {
-    layout: {
-      name: {
-        required,
-      },
-    },
+    layout: z.object({
+      name: z.string(),
+    }),
   },
-  { layout },
-  { $scope: false }
+  { layout }
 )
 </script>
 
@@ -281,7 +279,7 @@ const $v = useVuelidate(
     size="sm"
     color="ca"
     no-uppercase
-    :label="$t('settings')"
+    :label="$t('general.settings')"
     data-cy="settings"
   >
     <Dialog
@@ -296,10 +294,10 @@ const $v = useVuelidate(
     >
       <Form
         p="2"
-        :label="$t('save')"
+        :label="$t('general.save')"
         :submit-disabled="!isSaveable || !hasLayoutChanged"
         :ui="{ submitClass: 'w-40' }"
-        :loading="isLoading"
+        :loading="isLoadgeneral.save
         :submit-confirmation="false"
         focus-first-input
         @submit="handleSaveLayout"
@@ -307,7 +305,8 @@ const $v = useVuelidate(
         <TextInput
           v-model="layout.name"
           :label="$t('table.layoutName')"
-          :validation="$v.layout?.name"
+          layout="regular"
+          :validation="$z.layout?.name"
         />
 
         <Separator spaced />

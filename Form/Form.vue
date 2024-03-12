@@ -45,7 +45,7 @@ const { errorsExtended, handleDismissError } = useFormErrors(errors, emits)
 const formEl = ref<HTMLFormElement>()
 const menuConfirmationEl = ref<InstanceType<typeof MenuConfirmation>>()
 const isSubmitted = ref(false)
-const isEditing = defineModel('isEditing', { default: false, local: true })
+const isEditing = defineModel('isEditing', { default: false })
 const { isDesktop } = useDevice()
 
 provide(isFormEditingKey, isEditing)
@@ -117,7 +117,7 @@ const formClass = computed(() => ({
 
 const controlsClass = computed(() => {
   const classes = [
-    'w-full border-ca',
+    'z-10 w-full border-ca bg-white dark:bg-darker',
     'lt-lg:p-x-2 sticky bottom-0 inset-inline-0',
   ]
 
@@ -312,7 +312,10 @@ onMounted(() => {
         </slot>
 
         <!-- Spacer -->
-        <div grow />
+        <div
+          v-if="!ui?.noSpacer"
+          grow
+        />
 
         <div
           relative
@@ -339,9 +342,10 @@ onMounted(() => {
             :disabled="submitDisabled"
             :loading="loading"
             :icon="icon"
+            v-bind="submitBtnProps"
             type="submit"
             data-cy="save-button"
-            :label="label ?? $t('submit')"
+            :label="label ?? $t('general.submit')"
           >
             <Component
               :is="FormConfirmation"

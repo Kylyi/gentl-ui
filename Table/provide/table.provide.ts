@@ -57,8 +57,8 @@ export const tableQueryBuilderKey: InjectionKey<
 /**
  * Table non-helper columns (~ only columns that contain actual data)
  */
-export const tableNonHelpersColumnsKey: InjectionKey<Ref<TableColumn[]>> =
-  Symbol('tableNonHelpersColumns')
+export const tableNonHelperColumnsKey: InjectionKey<Ref<TableColumn[]>> =
+  Symbol('tableNonHelperColumns')
 
 /**
  * Table query
@@ -91,9 +91,6 @@ export const tableInlineEditKey: InjectionKey<
 > = Symbol('tableInlineEdit')
 
 export const tableResizeKey: InjectionKey<() => void> = Symbol('tableResize')
-
-export const tableSlotsKey: InjectionKey<Record<string, any>> =
-  Symbol('tableSlots')
 
 // SECTION: Selection
 /**
@@ -139,6 +136,9 @@ export const tableIsExportingKey: InjectionKey<Ref<boolean>> =
  * Focuses the table to allow keyboard navigation
  */
 export const tableFocusKey: InjectionKey<() => void> = Symbol('focusTable')
+
+export const tableSlotsKey: InjectionKey<Record<string, any>> =
+  Symbol('tableSlots')
 
 /**
  * The custom data is a project-specific or table-specific object that can be extended through config,

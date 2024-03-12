@@ -1,12 +1,17 @@
 <script setup lang="ts">
-import { type LocaleObject } from '#i18n'
+import type { LocaleObject } from '@nuxtjs/i18n'
 
 // Utils
+const rC = useRuntimeConfig()
 const { localesByCode } = useLocale()
 const { locale, locales } = useI18n()
 const switchLocalePath = useSwitchLocalePath()
 
-const localeCookie = useCookie('lang', { path: '/', sameSite: 'lax' })
+const localeCookie = useCookie('lang', {
+  path: '/',
+  sameSite: 'lax',
+  domain: rC.public.COOKIE_DOMAIN,
+})
 
 const _locales = computed(() => locales.value as LocaleObject[])
 
@@ -32,11 +37,7 @@ function handleSetLocale(_locale: LocaleObject, callback?: () => void) {
     h="7"
     name="locale-switch"
   >
-    <Menu
-      hide-header
-      :no-arrow="false"
-      content-class="flex-gap-y-2 !p-1"
-    >
+    <Menu :no-arrow="false">
       <template #default="{ hide }">
         <Btn
           v-for="(_locale, idx) in _locales"

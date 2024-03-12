@@ -16,6 +16,7 @@ import { useRenderTemporaryTableCell } from '~/components/Table/functions/useRen
 
 // Constants
 import { DATE_TYPES } from '~/libs/App/types/datetime.type'
+import { NON_VALUE_COMPARATORS } from '~/components/Table/constants/comparator-categories.const'
 
 // Components
 import DynamicInput from '~/components/Inputs/DynamicInput/DynamicInput.vue'
@@ -27,7 +28,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   label: string
   width: number | string = 1
   align: 'left' | 'center' | 'right' = 'left'
-  field: Extract<keyof T, string | number>
+  field: ObjectKey<T>
   hideLabel?: boolean
   noFilters?: boolean
   filterable = true
@@ -226,7 +227,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     }
 
     return {
-      field: this.field.toString(),
+      field: this.field,
       direction: this.sort,
       sortOrder: this.sortOrder,
     }
@@ -468,6 +469,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     this.filters = col.filters ? col.filters : []
     this.filterComponent = col.filterComponent
     this.comparators = col.comparators
+    this.comparator = col.comparator || this.comparator
     this.extraComparators = col.extraComparators
     this.noFilterSort = col.noFilterSort ?? false
     this.filterFormat = col.filterFormat
@@ -486,7 +488,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
 
     if (DATE_TYPES.includes(this.dataType) && !this.sortFormat) {
       this.sortFormat = (row: T) => {
-        return getDateSimpleValue(row[this.field as keyof T] as Datetime)
+        return getDateSimpleValue(get(row, this.field) as Datetime)
       }
     }
 

@@ -3,6 +3,7 @@ import { config } from '~/config'
 
 // Types
 import type { IListProps } from '~/components/List/types/list-props.type'
+import type { IListFetchOptions } from '~/components/List/types/list-fetch.type'
 import type { IItemToBeAdded } from '~/components/List/types/list-item-to-add.type'
 
 // Functions
@@ -30,6 +31,10 @@ defineEmits<{
   (e: 'added-multiple', items: any[]): void
   (e: 'removed', item: any): void
   (e: 'search', payload: { hasExactMatch: boolean; search: string }): void
+  (
+    e: 'before-search',
+    payload: { hasExactMatch: boolean; search: string }
+  ): void
 }>()
 
 // Layout
@@ -47,9 +52,22 @@ const ContainerComponent = computed(() => {
   //   : ListContainer
 })
 
+defineExpose({
+  handleSelectItem: (option: any) => handleSelectItem(option),
+  clearSearch: () => {
+    searchEl.value?.clear()
+    search.value = ''
+  },
+  loadData: (search?: string, options?: IListFetchOptions) =>
+    loadData(search, options),
+  refresh: () => refresh,
+  handleKey: (ev: KeyboardEvent, force?: boolean) => handleKey(ev, force),
+})
+
 const {
   arr,
   isLoading,
+  isInitialized,
   hoveredIdx,
   listEl,
   listRowProps,
@@ -62,20 +80,7 @@ const {
   handleSelectItem,
   loadData,
   refresh,
-  reset,
 } = useList(items, props, containerEl)
-
-defineExpose({
-  handleSelectItem: (option: any) => handleSelectItem(option),
-  clearSearch: () => {
-    searchEl.value?.clear()
-    search.value = ''
-  },
-  loadData,
-  handleKey,
-  refresh,
-  reset,
-})
 
 // When `noSearch` is used, we fake the focus on the container to allow
 // keyboard navigation
@@ -103,6 +108,7 @@ onMounted(() => {
           :class="{ 'm-2': !dense }"
           grow
           :debounce="searchDebounce"
+          layout="label-inside"
           class="bg-white dark:bg-darker"
           :autofocus="!noAutofocus"
           data-cy="list-search"
@@ -119,9 +125,9 @@ onMounted(() => {
       />
     </template>
 
-    <!-- Loading -->
+    <!-- Loading - after initialization -->
     <div
-      v-if="loading || isLoading"
+      v-if="isInitialized && (loading || isLoading)"
       flex="~ center"
     >
       <LoaderInline />
@@ -129,7 +135,7 @@ onMounted(() => {
 
     <Btn
       v-if="allowSelectAllFiltered && search"
-      :label="$t('selectFiltered')"
+      :label="$t('general.selectFiltered')"
       no-uppercase
       m="x-1 y-2"
       :disabled="loading"
@@ -147,7 +153,7 @@ onMounted(() => {
       ref="containerEl"
       :items="arr"
       :class="contentClass"
-      tabindex="0"
+      :tabindex="noSearch ? 0 : undefined"
       has-infinite-scroll
       data-cy="search-results"
       @infinite-scroll="loadData(search, { fetchMore: true })"
@@ -184,9 +190,16 @@ onMounted(() => {
     </Component>
 
     <Banner
-      v-else
+      v-else-if="!isLoading && isInitialized"
       icon-center
       :label="$t('general.noData')"
+    />
+
+    <LoaderBlock
+      v-else-if="!isInitialized"
+      size="xl"
+      self-center
+      m="y-4"
     />
 
     <slot name="below" />

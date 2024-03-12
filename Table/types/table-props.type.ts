@@ -1,11 +1,13 @@
+import type { RouteLocationRaw } from '#vue-router'
+
 // Types
 import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
 import type { ITableDataFetchFncInput } from '~/components/Table/types/table-query.type'
 import type { ITableSelection } from '~/components/Table/types/table-selection.type'
+import type { ITableSelectionOptions } from '~/components/Table/types/table-selection-options.type'
 
 // Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
-import type { ITableSelectionOptions } from '~/components/Table/types/table-selection-options.type'
 
 export interface ITableProps {
   /**
@@ -22,11 +24,6 @@ export interface ITableProps {
    * Definition of the table columns
    */
   columns?: TableColumn<any>[]
-
-  /**
-   * When true, each table row may have a different height
-   */
-  dynamicRowHeight?: boolean
 
   /**
    * Whether the table should have inline editing
@@ -84,6 +81,11 @@ export interface ITableProps {
    * Basically the opposite of pagination
    */
   infiniteScroll?: boolean
+
+  /**
+   * Number of rows per page options when using pagination
+   */
+  rowsPerPageOptions?: number[]
 
   /**
    * The initial layout schema for the table
@@ -175,6 +177,18 @@ export interface ITableProps {
    * The class of the row
    */
   rowClass?: (row: any) => ClassType
+
+  /**
+   * When true, table will not get focused on initialization
+   *
+   * Note: We focus the table to enable keyboard navigation
+   */
+  noFocusOnInit?: boolean
+
+  /**
+   * When true, the table will not save the state in the local storage
+   */
+  noStateSave?: boolean
 
   /**
    * The settings that are saveable whtin the table
@@ -306,8 +320,6 @@ export interface ITableProps {
 
   /**
    * Will split the table row into multiple columns
-   * Usage: For mobile view
-   * FIXME: Currently broken
    */
   splitRow?: number
 
@@ -357,14 +369,9 @@ export interface ITableProps {
   storageKey?: string | null
 
   /**
-   * When true, the table will not save the state in the local storage
-   */
-  noStateSave?: boolean
-
-  /**
    * Link to the detail from page
    */
-  to?: (row: any) => any
+  to?: (row: any) => RouteLocationRaw
 
   /**
    * Whether to use the url to store the table state

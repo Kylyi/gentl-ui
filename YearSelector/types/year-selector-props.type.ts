@@ -1,4 +1,4 @@
 export interface YearSelectorProps {
-  date: Datetime
+  modelValue: Datetime
   referenceTarget?: any
 }

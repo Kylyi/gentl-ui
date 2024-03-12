@@ -18,7 +18,7 @@ export type ITableColumnState = Pick<
 > & {
   filters: Pick<
     TableColumn['filters'][0],
-    'field' | 'comparator' | 'value' | 'nonInteractive' | 'dataType'
+    'id' | 'field' | 'comparator' | 'value' | 'nonInteractive' | 'dataType'
   >[]
 }
 

@@ -49,7 +49,8 @@ const transitionProps = computed(() => ({
 const btnProps = computed(() => {
   const preset: keyof typeof BUTTON_PRESET =
     props.preset ?? (props.archived ? 'RESTORE' : 'EDIT')
-  const label = props.label ?? (props.archived ? $t('restore') : $t('edit'))
+  const label =
+    props.label ?? (props.archived ? $t('general.restore') : $t('general.edit'))
 
   return { preset, label }
 })

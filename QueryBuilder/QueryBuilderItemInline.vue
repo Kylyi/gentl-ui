@@ -16,6 +16,10 @@ import {
 } from '~/components/QueryBuilder/provide/query-builder.provide'
 import { tableRefreshKey } from '~/components/Table/provide/table.provide'
 
+// Constants
+import { COLORS } from '~/libs/App/constants/colors.constant'
+import { NON_VALUE_COMPARATORS } from '~/components/Table/constants/comparator-categories.const'
+
 // Components
 import Menu from '~/components/Menu/Menu.vue'
 import QueryBuilderItem from '~/components/QueryBuilder/QueryBuilderItem.vue'
@@ -128,7 +132,7 @@ async function handleItemEditMenuBeforeHide() {
   }
 }
 
-const $z = useVuelidate({ $scope: 'qb' })
+const $z = useZod({ scope: 'qb' })
 </script>
 
 <template>
@@ -183,10 +187,10 @@ const $z = useVuelidate({ $scope: 'qb' })
     <Menu
       v-if="editable"
       ref="itemEditMenuEl"
-      hide-header
       :no-arrow="false"
       :no-overlay="false"
-      dense
+      :fit="false"
+      min-w="min"
       @before-show="isActivelyModifyingValues = true"
       @show="itemEditEl?.focusInput()"
       @before-hide="handleItemEditMenuBeforeHide"

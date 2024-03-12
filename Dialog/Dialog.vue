@@ -1,364 +1,119 @@
 <script setup lang="ts">
-import { type MotionInstance } from '@vueuse/motion'
-
 // Types
 import type { IDialogProps } from '~/components/Dialog/types/dialog-props.type'
 
-defineOptions({
-  inheritAttrs: false,
-})
+// Functions
+import { useDialogLayout } from '~/components/Dialog/functions/useDialogLayout'
+
+defineOptions({ inheritAttrs: false })
 
 const props = withDefaults(defineProps<IDialogProps>(), {
   maxHeight: 99999,
-  transitionDuration: 250,
+  position: 'center',
+  transitionDuration: 300,
 })
 
 const emits = defineEmits<{
-  (e: 'update:model-value', val: boolean): void
+  (e: 'update:modelValue', val: boolean): void
   (e: 'hide'): void
   (e: 'show'): void
-  (e: 'before-hide'): void
-  (e: 'before-show'): void
+  (e: 'beforeHide'): void
+  (e: 'beforeShow'): void
 }>()
 
-// Helpers
-function getTargetElement(target: any): any {
-  if (!process.client) {
-    return
-  }
-
-  // Target is an element
-  if (target instanceof Element) {
-    return target as Element
-  }
-
-  // Target is a selector
-  else if (typeof target === 'string') {
-    return document?.querySelector(target) || document?.body || undefined
-  }
-
-  // Target is a Vue element
-  else if (target) {
-    const el = unrefElement(target)
-
-    if (el) {
-      return el
-    }
-  }
-
-  return instance?.vnode.el?.parentNode
-}
+defineExpose({
+  show: () => (modelHandler.value = true),
+  hide: (force?: boolean) => {
+    isChangeForced.value = !!force
+    modelHandler.value = false
+  },
+  toggle: () => (modelHandler.value = !modelHandler.value),
+  getFloatingEl: () => floatingEl.value,
+})
 
 // Layout
-const instance = getCurrentInstance()
-const dialogEl = ref<HTMLDivElement>()
-const dialogWrapperEl = ref<HTMLDivElement>()
-const triggerEl = ref<HTMLDivElement>() // Element that triggers the menu
-const backdropBg = ref('bg-transparent')
+const model = defineModel({ default: false })
+const isChangeForced = ref(false)
+const debouncedModel = ref(model.value)
 
-const dialogClasses = computedEager(() => {
-  const contentClass = [props.contentClass]
+const modelHandler = computed({
+  get: () => model.value,
+  set: async val => {
+    let shouldContinue = true
 
-  if (!props.dense) {
-    contentClass.push('p-y-2')
-    contentClass.push('p-x-3')
-  }
+    if (!val && !isChangeForced.value) {
+      shouldContinue = (await props.beforeHideFnc?.()) ?? true
+    }
 
-  const innerClasses = {
-    contentClass: contentClass.filter(Boolean).join(' '),
-    headerClass: props.dense
-      ? 'bg-white dark:bg-darker'
-      : 'bg-white dark:bg-darker p-l-3 p-r-1',
-  }
+    if (shouldContinue) {
+      model.value = val
+    } else {
+      bounce()
+    }
 
+    isChangeForced.value = false
+  },
+})
+
+const dialogMaxHeight = computed(() => {
+  return typeof props.maxHeight === 'number'
+    ? `${props.maxHeight}px`
+    : props.maxHeight
+})
+
+const transitionClass = computed(() => {
   switch (props.position) {
     case 'top':
-      return {
-        containerClass: 'flex items-start justify-center',
-        wrapperClass: 'rounded-b-custom !border-t-0',
-        ...innerClasses,
-      }
-
+      return 'opacity-0 transform-origin-top translate-y--10'
     case 'bottom':
-      return {
-        containerClass: 'flex items-end justify-center',
-        wrapperClass: 'rounded-t-custom !border-b-0',
-        ...innerClasses,
-      }
-
+      return 'opacity-0 transform-origin-bottom translate-y-10'
     case 'left':
-      return {
-        containerClass: 'flex items-center justify-start',
-        wrapperClass: 'rounded-custom',
-        ...innerClasses,
-      }
-
+      return 'opacity-0 transform-origin-left translate-x--10'
     case 'right':
-      return {
-        containerClass: 'flex items-center justify-end',
-        wrapperClass: 'rounded-custom',
-        ...innerClasses,
-      }
-
+      return 'opacity-0 transform-origin-right translate-x-10'
     default:
-      return {
-        containerClass: 'flex flex-center',
-        wrapperClass: 'rounded-custom dialog--centered',
-        ...innerClasses,
-      }
+      return 'opacity-0 transform-origin-center scale-20'
   }
 })
 
-const placement = computedEager(() => {
-  if (props.position === 'top') {
-    return 'bottom'
-  } else if (props.position === 'bottom') {
-    return 'top'
-  }
-})
+const { contentEl, dialogWrapperEl, floatingEl } = useDialogLayout(
+  modelHandler,
+  props
+)
 
-// Animations
-const animationTimestamp = ref<{ show: number; hide: number }>({
-  show: 0,
-  hide: 0,
-})
-const motionInstance = ref<MotionInstance | undefined>()
-const animationTimeCorrection = 50
-
-async function handleAnimation() {
-  await nextTick()
-
-  setTimeout(() => (backdropBg.value = 'bg-darker/80'))
-
-  // Reset transform origin
-  dialogEl.value?.classList.forEach(
-    c => c.startsWith('origin-') && dialogEl.value?.classList.remove(c)
-  )
-
-  // Set transform origin
-  let transformOrigin: string
-
-  // Initial
-  const initial = {
-    opacity: 0,
-    x: 0,
-    y: 0,
-    scaleX: 1,
-    scaleY: 1,
-  }
-
-  switch (props.position) {
-    case 'bottom': {
-      transformOrigin = 'origin-bottom'
-      initial.y = 100
-      document.documentElement.classList.add('overflow-y-hidden')
-
-      break
-    }
-
-    case 'top': {
-      transformOrigin = 'origin-top'
-      initial.y = -100
-
-      break
-    }
-
-    case 'left': {
-      transformOrigin = 'origin-left'
-      initial.x = -100
-
-      break
-    }
-
-    case 'right': {
-      transformOrigin = 'origin-right'
-      initial.x = 100
-
-      break
-    }
-
-    default:
-      transformOrigin = 'origin-center'
-  }
-
-  dialogEl.value?.classList.add(transformOrigin)
-
-  // @ts-expect-error vue-motion type
-  motionInstance.value = useMotion(dialogEl.value, {
-    initial,
-    enter: {
-      x: 0,
-      y: 0,
-      opacity: 1,
-      scaleY: 1,
-      scaleX: 1,
-      transition: {
-        type: 'keyframes',
-        duration: props.transitionDuration,
-        ease: 'linear',
-      },
-    },
-    leave: {
-      ...initial,
-      transition: {
-        duration: props.transitionDuration,
-        type: 'keyframes',
-        ease: 'linear',
-      },
-    },
-  })
-
-  motionInstance.value?.apply('enter')?.then(() => emits('show'))
-
-  setTimeout(() => {
-    document.documentElement.classList.remove('overflow-y-hidden')
-  }, 150)
+function hide() {
+  modelHandler.value = false
 }
 
-async function bounce() {
-  await motionInstance.value?.apply({
-    scaleX: 1.05,
-    scaleY: 1.05,
-    transition: {
-      type: 'keyframes',
-      duration: 50,
-    },
-  })
-
-  await motionInstance.value?.apply('enter')
-}
-
-// Interactions
-const preventInteractions = refAutoReset(false, 10)
-const internalValue = ref(props.modelValue)
-
-function show() {
-  if (preventInteractions.value) {
+function commitHide() {
+  if (model.value) {
     return
   }
-  preventInteractions.value = true
 
-  // Idle
-  if (!motionInstance.value) {
-    animationTimestamp.value.show = new Date().getTime()
-    internalValue.value = true
-    handleAnimation()
-    emits('update:model-value', true)
-    emits('before-show')
-  }
-
-  // Motion instance exists ~ dialog is being currently closed
-  else {
-    internalValue.value = true
-    animationTimestamp.value.show = new Date().getTime()
-    const diffTime = Math.min(
-      new Date().getTime() -
-        animationTimestamp.value.hide -
-        animationTimeCorrection,
-      props.transitionDuration
-    )
-
-    // @ts-expect-error Blind assignment
-    motionInstance.value.variants.enter.transition.duration =
-      props.transitionDuration - diffTime
-    motionInstance.value.apply('enter')
-  }
+  debouncedModel.value = false
+  emits('hide')
 }
 
-function hide(force = false, skipAnimation = false, hideAncestors?: boolean) {
-  if (preventInteractions.value) {
-    return
-  }
-  preventInteractions.value = true
+// We sync the model with the debouncedModel immediately when the value is `true`
+// to show the content immediately to trigger the transition
+whenever(model, isVisible => {
+  debouncedModel.value = isVisible
+})
 
-  if (hideAncestors) {
-    const menuDom = unrefElement(dialogEl)!
-
-    // Get all siblings (including current element)
-    const allSiblings = Array.from(menuDom.parentNode?.children || [])
-
-    // Find the index of current element
-    const currentIndex = allSiblings.indexOf(menuDom)
-
-    // Get all siblings after current element
-    const nextSiblingsAll = allSiblings.slice(currentIndex + 1)
-
-    // Filter siblings to get only ones with 'floating' class
-    const floatingAncestors = nextSiblingsAll.filter(sibling =>
-      sibling.classList.contains('floating-element')
-    )
-
-    floatingAncestors.forEach(floatingUiEl => {
-      floatingUiEl.setAttribute('hide-trigger', 'true')
-    })
-  }
-
-  if (force || !props.persistent) {
-    backdropBg.value = 'bg-transparent'
-
-    // Component got unmounted (animation has nothing to attach to)
-    if (skipAnimation) {
-      cleanComponent()
-      emits('update:model-value', false)
-      emits('hide')
-      emits('before-hide')
-    }
-
-    // Call leave animation and eventually remove the menu
-    else {
-      animationTimestamp.value.hide = new Date().getTime()
-      const diffTime = Math.min(
-        new Date().getTime() -
-          animationTimestamp.value.show -
-          animationTimeCorrection,
-        props.transitionDuration
-      )
-
-      if (motionInstance.value) {
-        emits('before-hide')
-        // @ts-expect-error Blind assignment
-        motionInstance.value.variants.leave.transition.duration = diffTime
-        motionInstance.value.leave(() => {
-          cleanComponent()
-          emits('hide')
-          emits('update:model-value', false)
-          nextTick(() => (backdropBg.value = 'bg-transparent'))
-        })
-      }
-    }
-  } else {
-    bounce()
-  }
-}
-
-function toggle(val?: boolean | MouseEvent) {
-  if (val !== undefined && typeof val === 'boolean') {
-    val ? show() : hide()
-  } else {
-    internalValue.value ? hide() : show()
-  }
-}
-
-/**
- * Remove all menu-related stuff to not clutter the runtime
- */
-function cleanComponent() {
-  internalValue.value = false
-  motionInstance.value = undefined
-}
-
-onClickOutside(dialogEl, handleClickOutside)
+// Click outside
+onClickOutside(floatingEl, handleClickOutside, {
+  ignore: props.ignoreClickOutside,
+})
 
 function handleClickOutside(ev: Event) {
-  if (!internalValue.value) {
+  if (!model.value) {
     return
   }
 
   const targetEl = ev.target as HTMLElement
 
   const isTargetBody = targetEl === document.body
-  const isPartOfFloatingUI = dialogEl.value?.contains(targetEl)
-  const isPartOfReferenceEl = triggerEl.value!.contains(targetEl)
+  const isPartOfFloatingUI = floatingEl.value?.contains(targetEl)
   const lastFloatingElement = document.querySelector(
     '.floating-element:last-child'
   )
@@ -367,161 +122,216 @@ function handleClickOutside(ev: Event) {
   if (
     !isTargetBody &&
     !isPartOfFloatingUI &&
-    !isPartOfReferenceEl &&
     !isNotifications &&
     lastFloatingElement === dialogWrapperEl.value
   ) {
+    if (props.persistent) {
+      bounce()
+
+      return
+    }
+
     hide()
   }
 }
 
-useMutationObserver(
-  dialogWrapperEl,
-  () => {
-    if (dialogWrapperEl.value?.hasAttribute('hide-trigger')) {
-      hide()
+// Animations
+function bounce() {
+  const _floatingEl = floatingEl.value as HTMLElement
 
-      dialogWrapperEl.value?.removeAttribute('hide-trigger')
-    }
-  },
-  { attributeFilter: ['hide-trigger'] }
-)
-
-watch(
-  () => props.modelValue,
-  val => (val ? show() : hide(true))
-)
-
-// Lifecycle
-onMounted(() => {
-  nextTick(() => {
-    triggerEl.value = getTargetElement(props.target)
-
-    !props.manual && triggerEl.value?.addEventListener('click', toggle)
-
-    if (internalValue.value) {
-      show()
-    }
+  _floatingEl.addEventListener('animationend', () => {
+    _floatingEl.classList.remove('bounce')
   })
-})
+  _floatingEl.classList.add('bounce')
+}
 
-onBeforeUnmount(() => {
-  cleanComponent()
-  triggerEl.value?.removeEventListener('click', toggle)
+// Overlay
+const isOverlayVisible = computed(() => {
+  return !props.noOverlay
 })
-
-defineExpose({ show, hide, toggle, getFloatingEl: () => dialogWrapperEl.value })
 </script>
 
 <template>
   <Teleport
-    v-if="internalValue || motionInstance?.isAnimating"
+    v-if="debouncedModel"
     to="body"
   >
+    <!-- Overlay -->
     <div
-      ref="dialogWrapperEl"
-      class="dialog-wrapper floating-element"
-      :class="dialogClasses.containerClass"
-      :style="{
-        '--dialogMaxHeight':
-          typeof maxHeight === 'number' ? `${maxHeight}px` : maxHeight,
-        '--transition': `${transitionDuration}ms`,
-      }"
+      v-if="isOverlayVisible"
+      class="backdrop"
+      :class="{ 'is-active': model }"
+    />
+
+    <Transition
+      appear
+      :css="!noTransition"
+      :enter-from-class="transitionClass"
+      :leave-to-class="transitionClass"
+      @before-enter="$emit('beforeShow')"
+      @before-leave="$emit('beforeHide')"
+      @after-leave="commitHide"
+      @after-enter="$emit('show')"
     >
-      <!-- Backdrop -->
       <div
-        v-if="!seamless"
-        class="backdrop"
-        :class="[backdropBg, backdropClass]"
-      />
-
-      <!-- Dialog wrapper -->
-      <div
-        ref="dialogEl"
-        class="dialog"
-        :class="dialogClasses.wrapperClass"
-        :placement="placement"
-        h="120"
-        w="100"
-        max-h="[min(95%,var(--dialogMaxHeight))]"
-        max-w="95vw"
-        v-bind="$attrs"
+        v-if="model"
+        ref="dialogWrapperEl"
+        class="dialog__wrapper floating-element"
+        :position="position"
+        :style="{ '--dialogMaxHeight': dialogMaxHeight }"
+        .hide="hide"
       >
-        <!-- Header -->
-        <slot
-          v-if="!hideHeader"
-          name="header"
-          :hide="hide"
+        <!-- Dialog -->
+        <div
+          ref="floatingEl"
+          class="dialog"
+          :style="{ '--transitionDuration': `${transitionDuration}ms` }"
+          h="120"
+          w="100"
+          max-h="[min(95%,var(--dialogMaxHeight))]"
+          max-w="95vw"
+          v-bind="$attrs"
         >
-          <div
-            flex="~"
-            h="12"
-            items-center
-            border="b-1 ca"
-            bg="ca"
-            shrink-0
-            :class="[dialogClasses.headerClass, headerClass]"
+          <!-- Header -->
+          <slot
+            v-if="$slots.title || $slots.header || title"
+            name="header"
+            :hide="hide"
           >
-            <slot name="title">
-              <h6
-                flex="1"
-                text="h6"
-                p="r-2"
-                truncate
+            <div
+              class="dialog__header"
+              :class="ui?.headerClass"
+              :style="ui?.headerStyle"
+            >
+              <!-- Title -->
+              <slot
+                v-if="$slots.title || $slots.header || title"
+                name="title"
+                :hide="hide"
               >
-                <span>
+                <h6
+                  class="dialog__header-title"
+                  :class="ui?.titleClass"
+                  :style="ui?.titleStyle"
+                >
                   {{ title }}
-                </span>
-              </h6>
-            </slot>
-
-            <div flex="~ gap-1">
-              <slot name="header-right-prepend" />
+                </h6>
+              </slot>
 
               <Btn
-                v-if="!noClose"
                 preset="CLOSE"
                 size="sm"
-                @click="hide(true, undefined, true)"
+                @click="hide"
               />
-
-              <slot name="header-right-append" />
             </div>
-          </div>
-        </slot>
+          </slot>
 
-        <!-- Content -->
-        <div
-          flex="~ col 1"
-          overflow="auto"
-          relative
-          :class="dialogClasses.contentClass"
-          :style="contentStyle"
-        >
-          <slot> Slot. </slot>
+          <!-- Content -->
+          <div
+            ref="contentEl"
+            class="dialog__content"
+            :class="ui?.contentClass ?? 'p-1'"
+            :style="ui?.contentStyle"
+          >
+            <slot :hide="hide" />
+          </div>
         </div>
       </div>
-    </div>
+    </Transition>
   </Teleport>
 </template>
 
 <style lang="scss" scoped>
-.dialog-wrapper {
-  --apply: fixed inset-0 z-$zDialog;
-}
-
 .dialog {
-  --apply: flex flex-col bg-white dark:bg-darker overflow-auto
-   border-custom border-ca;
+  --apply: flex flex-col max-w-95vw max-h-95% rounded-custom z-1
+    border-1 border-ca pointer-events-auto
+    bg-white dark:bg-darker;
+
+  &__wrapper {
+    --apply: flex fixed inset-0 z-$zDialog pointer-events-none;
+  }
+
+  &__header {
+    --apply: flex items-center gap-2 p-l-3 p-r-1 p-y-2 rounded-t-custom;
+    --apply: bg-$Dialog-title-bg;
+
+    &-title {
+      --apply: grow;
+    }
+  }
+
+  &__content {
+    --apply: relative flex flex-col grow gap-1 overflow-auto rounded-custom;
+  }
 }
 
+// Position
+.dialog__wrapper[position='top'] {
+  --apply: justify-center items-start;
+
+  .dialog {
+    --apply: rounded-t-none;
+  }
+}
+
+.dialog__wrapper[position='bottom'] {
+  --apply: justify-center items-end;
+
+  .dialog {
+    --apply: rounded-b-none;
+  }
+}
+.dialog__wrapper[position='left'] {
+  --apply: justify-start items-center;
+
+  .dialog {
+    --apply: rounded-l-none;
+  }
+}
+
+.dialog__wrapper[position='right'] {
+  --apply: justify-end items-center;
+
+  .dialog {
+    --apply: rounded-r-none;
+  }
+}
+
+.dialog__wrapper[position='center'] {
+  --apply: flex-center;
+}
+
+
+.v-enter-active,
+.v-leave-active {
+  --apply: pointer-events-none;
+  transition: opacity 0.3s ease,
+              transform 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+// Backdrop
 .backdrop {
-  --apply: inset-0 absolute transition-background-color
-    duration-$transition ease;
+  --apply: fixed inset-0 transition-background-color z-$zBackdrop
+    duration-$transitionDuration ease bg-transparent;
+
+  &.is-active {
+    --apply: bg-darker/70;
+
+  }
 }
 
-// Specifically for selector
-.selector {
-  --apply: w-95vw;
+// Bounce
+.bounce {
+  animation: myBounce 100ms ease-in-out 0s 2 alternate forwards;
+}
+
+@keyframes myBounce {
+  0% {
+    transform: scale(1);
+  }
+
+  100% {
+    transform: scale(1.05);
+  }
 }
 </style>

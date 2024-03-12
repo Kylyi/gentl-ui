@@ -10,6 +10,7 @@ import { BUTTON_PRESET } from '~/components/Button/constants/button-preset.const
 
 // Directives
 import { vRipple } from '~/libs/App/directives/ripple.directive'
+import { useBtnUtils } from '~/components/Button/functions/useBtnUtils'
 
 const props = withDefaults(defineProps<IBtnProps>(), {
   align: 'center',
@@ -20,16 +21,10 @@ const props = withDefaults(defineProps<IBtnProps>(), {
   type: 'button',
 })
 
-const btnProps = reactivePick(props, [
-  'external',
-  'noActiveLink',
-  'to',
-  'type',
-  'disabled',
-  'download',
-  'exact',
-  'navigateToOptions',
-])
+// Utils
+const { getBtnProps } = useBtnUtils()
+
+const btnProps = getBtnProps(props)
 
 // Layout
 const slots = useSlots()

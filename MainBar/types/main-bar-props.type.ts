@@ -8,4 +8,5 @@ export interface IMainBarProps {
   subtitle?: string
   title: string
   titleTruncate?: boolean
+  headingClass?: ClassType
 }
