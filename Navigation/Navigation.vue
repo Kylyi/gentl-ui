@@ -15,6 +15,8 @@ defineEmits<{
 }>()
 
 // Constants
+/**
+ * How many pixels do I need to scroll 'top' to reveal navigation after being hidden
  */
 const SCROLL_TRIGGER_PX = 80
 
