@@ -148,6 +148,8 @@ onMounted(() => {
 }
 
 .dark .page-title {
-  box-shadow: 0 8px 8px -9px theme('colors.truegray.700');
+  &.has-shadow {
+    box-shadow: 0 8px 8px -9px theme('colors.truegray.700');
+  }
 }
 </style>
