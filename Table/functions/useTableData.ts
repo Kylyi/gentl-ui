@@ -382,9 +382,7 @@ export function useTableData(
       // When any of the hashes mismatches, we force metadata refetch and data refetch
       if (!dataHasBeenFetched.value) {
         const resHashes = res.hashes
-        console.log('Log ~ resHashes:', resHashes)
         const stateHashes = extractHashes(tableState.value.meta)
-        console.log('Log ~ stateHashes:', tableState.value.meta, stateHashes)
 
         const hasHashMismatch = Object.keys(stateHashes).some(key => {
           const stateHash = stateHashes[key]
