@@ -64,7 +64,6 @@ export function useTableData(
 
   function extractHashes(data: any) {
     const hashKeys = props.getData?.hashKeys ?? config.table.hashKeys
-    console.log('Log ~ extractHashes ~ hashKeys:', hashKeys)
     const hashes: Record<string, string | number> = {}
 
     Object.keys(hashKeys).forEach(key => {
@@ -383,7 +382,9 @@ export function useTableData(
       // When any of the hashes mismatches, we force metadata refetch and data refetch
       if (!dataHasBeenFetched.value) {
         const resHashes = res.hashes
+        console.log('Log ~ resHashes:', resHashes)
         const stateHashes = extractHashes(tableState.value)
+        console.log('Log ~ stateHashes:', stateHashes)
 
         const hasHashMismatch = Object.keys(stateHashes).some(key => {
           const stateHash = stateHashes[key]
