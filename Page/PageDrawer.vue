@@ -21,7 +21,7 @@ const emits = defineEmits<{
 const miniOriginal = useVModel(props, 'mini', emits)
 const miniLocal = ref(!!miniOriginal.value)
 
-const isMini = computedEager(() => miniLocal.value)
+const isMini = computed(() => miniLocal.value)
 
 function toggleMini() {
   miniLocal.value = !miniLocal.value
@@ -31,7 +31,7 @@ function toggleMini() {
 watch(miniOriginal, mini => (miniLocal.value = mini))
 
 // Layout
-const pageDrawerClasses = computedEager(() => {
+const pageDrawerClasses = computed(() => {
   return [
     `page-drawer--${props.side}`,
     `${isMini.value ? 'w-$drawerMiniWidth' : 'w-$drawerWidth'}`,

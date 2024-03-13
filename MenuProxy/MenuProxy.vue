@@ -24,6 +24,7 @@ const props = withDefaults(defineProps<IProps>(), {
   maxHeight: 99999,
   offset: 8,
   noArrow: true,
+  noOverlay: true,
   transitionDuration: 250,
 })
 
@@ -52,15 +53,19 @@ defineExpose({
   },
   getFloatingEl: () => menuProxyEl.value?.getFloatingEl(),
 })
+
+// NOTE: The `v-model:no-overlay` should not really use the `v-model` part
+// but the order of props is important and eslint would try to auto-fix this for us
+// so this is a workaround to avoid that
 </script>
 
 <template>
   <Component
     :is="isMenu ? Menu : Dialog"
     ref="menuProxyEl"
+    v-model:no-overlay="isMenu"
     v-bind="$props"
     v-model="model"
-    :no-overlay="!!isMenu"
     @hide="emits('hide')"
     @show="emits('show')"
     @before-hide="emits('beforeHide')"
