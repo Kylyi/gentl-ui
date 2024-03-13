@@ -154,7 +154,7 @@ onMounted(() => {
       :items="arr"
       :class="contentClass"
       :tabindex="noSearch ? 0 : undefined"
-      has-infinite-scroll
+      :has-infinite-scroll="hasInfiniteScroll"
       data-cy="search-results"
       @infinite-scroll="loadData(search, { fetchMore: true })"
     >

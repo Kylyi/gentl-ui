@@ -584,6 +584,7 @@ function getData() {
             :item-label="optionLabel"
             v-bind="listProps"
             :class="listClass"
+            has-infinite-scroll
             @search="menuProxyEl?.recomputePosition()"
             @before-search="menuProxyEl?.recomputePosition()"
             @update:selected="handleSelect"
