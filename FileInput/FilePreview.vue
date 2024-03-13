@@ -1,5 +1,6 @@
 <script setup lang="ts">
 // Models
+import type { FileModel } from '~/components/FileInput/models/file.model'
 
 // Functions
 import { useNumber } from '~/components/Inputs/NumberInput/functions/useNumber'
@@ -10,7 +11,7 @@ import { ICON_BY_FILE_TYPE } from '~/components/FileInput/constants/iconByFileTy
 type IProps = {
   downloadUrl?: string
   editable?: boolean
-  file: File | IFile
+  file: FileModel | IFile
   noDownloadButton?: boolean
 }
 

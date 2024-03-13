@@ -82,19 +82,10 @@ const classes = computed(() => {
       <slot name="label" />
     </div>
 
-    <!-- Errors -->
-    <div
-      v-if="$slots.error || hint"
-      class="input-wrapper__reular-error"
-    >
-      <slot
-        v-if="hasErrors"
-        name="error"
-      />
-      <slot
-        v-else-if="hint"
-        name="hint"
-      />
+    <!-- Errors & Hint -->
+    <div class="input-wrapper__reular-error">
+      <slot name="hint" />
+      <slot name="error" />
     </div>
   </div>
 </template>

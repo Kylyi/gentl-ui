@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import type { RouteLocationRaw } from '#vue-router'
-
 // Types
 import type { ICrudBtnProps } from '~/components/Crud/types/crud-btn-props.type'
 
 type IProps = ICrudBtnProps & {
-  to?: RouteLocationRaw
+  to?: any // should be RouteLocationRaw but that breaks some projects for whatever reason
 }
 
 withDefaults(defineProps<IProps>(), {

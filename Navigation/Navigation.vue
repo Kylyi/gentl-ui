@@ -22,6 +22,7 @@ const SCROLL_TRIGGER_PX = 80
 
 // Injections
 const rightDrawer = inject('rightDrawer', ref(false))
+const leftDrawer = inject('leftDrawer', ref(false))
 
 // Layout
 const isInitialized = ref(false)

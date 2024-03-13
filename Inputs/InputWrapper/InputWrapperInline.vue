@@ -73,18 +73,9 @@ const classes = computed(() => {
       </div>
 
       <!-- Errors & Hint -->
-      <div
-        v-if="$slots.error || hint"
-        class="input-wrapper__inline-input-error"
-      >
-        <slot
-          v-if="hasErrors"
-          name="error"
-        />
-        <slot
-          v-else-if="hint"
-          name="hint"
-        />
+      <div class="input-wrapper__inline-input-error">
+        <slot name="error" />
+        <slot name="hint" />
       </div>
     </div>
   </div>
