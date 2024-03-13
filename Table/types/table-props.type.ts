@@ -232,7 +232,7 @@ export interface ITableProps {
    * `payloadKey` ~ key in the response that contains the data
    * `countKey` ~ key in the response that contains the total count of rows
    * `urlKey` ~ key in the response that contains the query params for the request
-   * `hashKey` ~ key in the response that contains the hash key for the table
+   * `hashKeys` ~ keys in the response that contains table hashes - used to hydrate the table state
    * `createIdentifier` ~ function to create a unique identifier for each row when the `rowKey` is not unique
    * `errorHandler` ~ function to handle errors that come from fetching the table data
    */
@@ -240,7 +240,7 @@ export interface ITableProps {
     fnc: (options: ITableDataFetchFncInput) => Promise<any> | any
     payloadKey?: string
     countKey?: string
-    hashKey?: string
+    hashKeys?: Record<string, string>
     versionKey?: string
     createIdentifier?: (row: any, idx: number) => string | number
     errorHandler?: (error: any) => void
