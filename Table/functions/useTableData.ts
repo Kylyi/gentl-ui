@@ -61,6 +61,21 @@ export function useTableData(
     loadingInitialState: !props.rows,
   })
 
+  function extractHashes(data: any) {
+    const hashKeys = props.getData?.hashKeys ?? config.table.hashKeys
+    const hashes: Record<string, string | number> = {}
+
+    Object.keys(hashKeys).forEach(key => {
+      const hash = get(data, hashKeys[key as keyof typeof hashKeys])
+
+      if (hash) {
+        hashes[key] = hash
+      }
+    })
+
+    return hashes
+  }
+
   // Layout
   const isInitialized = ref(false)
   const hasMore = ref(false)
@@ -332,7 +347,7 @@ export function useTableData(
             result,
             props.getData.countKey || config.table.countKey
           ),
-          hash: get(result, props.getData.hashKey || config.table.hashKey),
+          hashes: extractHashes(result),
           res: result,
         }
       },
@@ -395,24 +410,26 @@ export function useTableData(
         )
       }
 
-      // When hash mismatches, we force metadata refetch and data refetch
-      const currentHash = get(
-        tableState.value.meta,
-        props.getData?.hashKey || config.table.hashKey
-      )
-      const newHash = get(res, 'hash')
+      // When any of the hashes mismatches, we force metadata refetch and data refetch
+      if (!dataHasBeenFetched.value) {
+        const resHashes = res.hashes
+        const stateHashes = extractHashes(tableState.value.meta)
 
-      if (
-        !!currentHash &&
-        currentHash !== newHash &&
-        !dataHasBeenFetched.value
-      ) {
-        await metaDataRefetch?.(true)
-        recreateColumns?.(false)
-        initializeQueryBuilder()
-        resizeColumns?.(true)
+        const hasHashMismatch = Object.keys(stateHashes).some(key => {
+          const stateHash = stateHashes[key]
+          const resHash = resHashes[key]
 
-        return
+          return stateHash !== resHash
+        })
+
+        if (hasHashMismatch) {
+          await metaDataRefetch?.(true)
+          recreateColumns?.(false)
+          initializeQueryBuilder()
+          resizeColumns?.(true)
+
+          return
+        }
       }
 
       if (res) {
