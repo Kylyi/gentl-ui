@@ -383,7 +383,7 @@ export function useTableData(
       if (!dataHasBeenFetched.value) {
         const resHashes = res.hashes
         console.log('Log ~ resHashes:', resHashes)
-        const stateHashes = extractHashes(tableState.value)
+        const stateHashes = extractHashes(tableState.value.meta)
         console.log('Log ~ stateHashes:', tableState.value.meta, stateHashes)
 
         const hasHashMismatch = Object.keys(stateHashes).some(key => {
