@@ -63,7 +63,8 @@ export function useTableData(
   })
 
   function extractHashes(data: any) {
-    const hashKeys = props.getData?.hashKeys ?? config.table.hashKeys ?? {}
+    const hashKeys = props.getData?.hashKeys ?? config.table.hashKeys
+    console.log('Log ~ extractHashes ~ hashKeys:', hashKeys)
     const hashes: Record<string, string | number> = {}
 
     Object.keys(hashKeys).forEach(key => {
