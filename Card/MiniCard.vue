@@ -138,8 +138,9 @@ const isModified = computed(() => {
           no-dim
         >
           <Menu
-            hide-header
             no-uplift
+            w="80"
+            :ui="{ contentClass: 'p-2' }"
           >
             <span
               font="bold"

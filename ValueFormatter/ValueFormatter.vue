@@ -14,7 +14,7 @@ const props = defineProps<IValueFormatter>()
 // Utils
 const { formatValue } = useValueFormatterUtils()
 
-const formattedValue = computedEager(() => {
+const formattedValue = computed(() => {
   return formatValue(props.value, props.row, {
     dataType: props.dataType,
     format: props.format,
@@ -24,7 +24,7 @@ const formattedValue = computedEager(() => {
   })
 })
 
-const formattedOriginalValue = computedEager(() => {
+const formattedOriginalValue = computed(() => {
   return formatValue(props.previousValue, props.row, {
     dataType: props.dataType,
     format: props.format,

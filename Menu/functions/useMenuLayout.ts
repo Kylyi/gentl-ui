@@ -22,7 +22,7 @@ export function useMenuLayout(model: Ref<boolean>, props: IMenuProps) {
   const triggerEl = ref<ReturnType<typeof getElement>>()
   const contentEl = ref<HTMLElement>()
   const referenceElZIndex = ref<string>()
-  const referenceElBgColor = ref<string>()
+  const isReferenceElTransparent = ref(false)
 
   const virtualEl = computed(() => {
     if (!props.virtual || !appStore.lastPointerDownEvent) {
@@ -77,7 +77,8 @@ export function useMenuLayout(model: Ref<boolean>, props: IMenuProps) {
 
       const referenceElStyle = getComputedStyle(referenceEl.value)
       referenceElZIndex.value = referenceElStyle.zIndex
-      referenceElBgColor.value = referenceElStyle.backgroundColor
+      isReferenceElTransparent.value =
+        referenceElStyle.backgroundColor === 'rgba(0, 0, 0, 0)'
     }
 
     // Add event listeners when not using the `manual` mode
@@ -104,8 +105,8 @@ export function useMenuLayout(model: Ref<boolean>, props: IMenuProps) {
   })
 
   return {
+    isReferenceElTransparent,
     referenceElZIndex,
-    referenceElBgColor,
     arrowEl,
     contentEl,
     floatingEl,
