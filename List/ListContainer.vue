@@ -29,11 +29,13 @@ useScroll(listContainerEl, {
     }
 
     // Check if we are infinite-scrolling
-    const THRESHOLD = 160 // Let's assume 40px per row => 4 rows
-    if (
-      containerEl.scrollHeight - containerEl.scrollTop - THRESHOLD <=
-      containerEl.clientHeight
-    ) {
+    const THRESHOLD = 400 // Let's assume 40px per row => 10 rows
+    const remainingScroll =
+      containerEl.scrollHeight -
+      containerEl.clientHeight -
+      containerEl.scrollTop
+
+    if (remainingScroll <= THRESHOLD) {
       emits('infinite-scroll')
     }
   },

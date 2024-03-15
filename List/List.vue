@@ -61,7 +61,10 @@ defineExpose({
   loadData: (search?: string, options?: IListFetchOptions) =>
     loadData(search, options),
   refresh: () => refresh,
-  handleKey: (ev: KeyboardEvent, force?: boolean) => handleKey(ev, force),
+  handleKey: (
+    ev: KeyboardEvent,
+    options?: { force?: boolean; repeated?: boolean }
+  ) => handleKey(ev, options),
 })
 
 const {
