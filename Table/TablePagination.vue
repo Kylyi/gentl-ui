@@ -101,15 +101,15 @@ const isPaginationRightVisible = computed(() => {
             <span
               font="bold"
               data-cy="current-rows"
-              >{{ currentRows }}</span
             >
+              {{ currentRows }}
+            </span>
             {{ $t('general.outOf') }}
             <span
               font="bold"
               data-cy="total-rows"
+              >{{ totalRows }}</span
             >
-              {{ totalRows }}
-            </span>
             {{ $t('general.row', totalRows || 0) }}
           </template>
 
@@ -207,7 +207,7 @@ const isPaginationRightVisible = computed(() => {
 
       <!-- Page size -->
       <div
-        v-if="!noPagination"
+        v-if="isPaginationRightVisible"
         class="table-pagination__page-size"
       >
         <span
