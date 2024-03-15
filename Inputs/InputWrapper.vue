@@ -132,6 +132,7 @@ const wrapperProps = computed(() => {
       class="wrapper__body"
       :class="[contentClass, ui?.contentClass]"
       :style="ui?.contentStyle"
+      data-cy="input-field"
     >
       <!-- Label -->
       <template
