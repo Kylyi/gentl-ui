@@ -103,7 +103,7 @@ function setUnit(unitShortName: string) {
     ref="inputEl"
     :model-value="agoValue.value"
     size="sm"
-    layout="inline"
+    layout="label-inside"
     class="qb-item__content-value"
     @update:model-value="agoValue = { value: $event }"
   >
