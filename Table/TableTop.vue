@@ -495,11 +495,7 @@ function handleFitColumns(ev?: MouseEvent) {
             @click="handleFitColumns"
           />
 
-          <template
-            v-if="
-              config.table.useServerState && !tableTopFunctionality?.noLayout
-            "
-          >
+          <template v-if="!tableTopFunctionality?.noLayout">
             <!-- Layout selector -->
             <TableLayoutSelector v-model:query-builder="queryBuilder" />
 

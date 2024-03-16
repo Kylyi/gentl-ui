@@ -606,7 +606,11 @@ export function useTableData(
     const usedQueryBuilder = isUrlUsed ? urlQueryBuilder : schemaQueryBuilder
 
     // When the query builder is present in the URL, use it
-    if (usedQueryBuilder && queryBuilder.value !== undefined) {
+    if (
+      usedQueryBuilder &&
+      usedQueryBuilder.length &&
+      queryBuilder.value !== undefined
+    ) {
       queryBuilder.value = usedQueryBuilder.length
         ? usedQueryBuilder
         : [
@@ -622,7 +626,6 @@ export function useTableData(
 
     // Otherwise, when the query builder is present in the table state, use it
     else if (
-      !config.table.useServerState &&
       !isUrlUsed &&
       tableState.value.queryBuilder?.length &&
       queryBuilder.value !== undefined
