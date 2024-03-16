@@ -43,6 +43,7 @@ const props = withDefaults(defineProps<ISelectorProps>(), {
   size: 'md',
   stackLabel: undefined,
   noHighlight: config.list.noHighlight,
+  hasInfiniteScroll: config.selector.props.hasInfiniteScroll,
 })
 
 const emits = defineEmits<{
@@ -584,7 +585,7 @@ function getData() {
             :item-label="optionLabel"
             v-bind="listProps"
             :class="listClass"
-            has-infinite-scroll
+            :has-infinite-scroll="hasInfiniteScroll"
             @search="menuProxyEl?.recomputePosition()"
             @before-search="menuProxyEl?.recomputePosition()"
             @update:selected="handleSelect"
