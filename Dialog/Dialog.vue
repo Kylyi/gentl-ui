@@ -326,12 +326,12 @@ const isOverlayVisible = computed(() => {
 }
 
 @keyframes myBounce {
-	0% {
-		transform: scale(1);
-	}
+  0% {
+    transform: scale(1);
+  }
 
-	100% {
-		transform: scale(1.05);
-	}
+  100% {
+    transform: scale(1.05);
+  }
 }
 </style>

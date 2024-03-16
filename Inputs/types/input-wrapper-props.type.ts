@@ -44,7 +44,6 @@ export type IInputWrapperProps = InputLabelProps & {
 
   /**
    * Whether the input has no border
-   * FIXME: Currently broken
    */
   noBorder?: boolean
 

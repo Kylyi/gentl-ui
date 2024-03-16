@@ -6,7 +6,7 @@ import { type ITableProps } from '~/components/Table/types/table-props.type'
 
 type IProps = Pick<
   ITableProps,
-  'columns' | 'rowHeight' | 'to' | 'selectable' | 'editable' | 'rowClass'
+  'columns' | 'rowHeight' | 'to' | 'selectionOptions' | 'editable' | 'rowClass'
 > & {
   index?: number
   rows: any[]
@@ -74,9 +74,7 @@ const isEditable = computedEager(() => {
   }
 
   &.is-odd {
-    .cell {
-      --apply: bg-$Table-alternate-row-bg;
-    }
+    --apply: bg-$Table-alternate-row-bg;
   }
 }
 

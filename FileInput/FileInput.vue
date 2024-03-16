@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { config } from '~/config'
+
 // Types
 import type { IFileInputProps } from '~/components/FileInput/types/file-input-props.type'
 
@@ -10,6 +12,7 @@ import { useFieldUtils } from '~/components/Field/functions/useFieldUtils'
 
 const props = withDefaults(defineProps<IFileInputProps>(), {
   maxChipsRows: 3,
+  downloadUrl: config.fileInput.downloadUrl,
 })
 const emits = defineEmits<{
   (e: 'update:modelValue', value: Array<FileModel | IFile>): void
@@ -104,6 +107,7 @@ syncRef(model, files, { direction: 'both', deep: true })
         :file="file"
         :editable="!readonly && !disabled"
         :no-download-button="noDownloadButton"
+        :download-url="downloadUrl"
         @remove="handleRemove(idx)"
         @click.stop.prevent
       />

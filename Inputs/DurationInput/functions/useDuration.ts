@@ -1,4 +1,4 @@
-// COMPOSITION FUNCTIONS
+// Functions
 
 import {
   type INumberOptions,

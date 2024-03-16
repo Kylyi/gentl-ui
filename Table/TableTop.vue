@@ -28,7 +28,7 @@ const props = defineProps<
     ITableProps,
     | 'tableTopFunctionality'
     | 'queryBuilder'
-    | 'selectable'
+    | 'selectionOptions'
     | 'nonSavableSettings'
     | 'minimumColumnWidth'
     | 'exportProps'
@@ -360,7 +360,7 @@ function handleFitColumns(ev?: MouseEvent) {
           <!-- Subscriptions -->
           <template
             v-if="
-              tableTopFunctionality?.noSubscription &&
+              !tableTopFunctionality?.noSubscription &&
               'subscriptionComponent' in config &&
               config.subscriptionComponent
             "
@@ -411,7 +411,7 @@ function handleFitColumns(ev?: MouseEvent) {
         <div class="table-top__selection">
           <template
             v-if="
-              selectable &&
+              selectionOptions?.selectable &&
               ($slots['bulk-actions'] || $slots['bulk-actions-menu'])
             "
           >
@@ -495,11 +495,7 @@ function handleFitColumns(ev?: MouseEvent) {
             @click="handleFitColumns"
           />
 
-          <template
-            v-if="
-              config.table.useServerState && !tableTopFunctionality?.noLayout
-            "
-          >
+          <template v-if="!tableTopFunctionality?.noLayout">
             <!-- Layout selector -->
             <TableLayoutSelector v-model:query-builder="queryBuilder" />
 

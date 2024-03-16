@@ -23,7 +23,7 @@ export function useValueFormatterUtils() {
       'emptyValueString',
       'row',
       'emptyValue',
-      'originalValue',
+      'previousValue',
       'predictDataType',
       'resolveEnums',
     ])
@@ -112,8 +112,8 @@ export function useValueFormatterUtils() {
         return formatNumber(value)
 
       case 'date':
-      case 'DateTime':
       case 'dateSimple':
+      case 'DateTime':
       case 'DateTimeSimple':
         return formatDate(value, 'short')
 

@@ -26,6 +26,7 @@ import {
 // Injections
 import {
   tableCustomDataKey,
+  tableExternalDataKey,
   tableQueryBuilderKey,
   tableQueryKey,
   tableRecreateQueryBuilderKey,
@@ -59,6 +60,21 @@ export function useTableData(
   const { isLoading, handleRequest } = useRequest({
     loadingInitialState: !props.rows,
   })
+
+  function extractHashes(data: any) {
+    const hashKeys = props.getData?.hashKeys ?? config.table.hashKeys
+    const hashes: Record<string, string | number> = {}
+
+    Object.keys(hashKeys).forEach(key => {
+      const hash = get(data, hashKeys[key as keyof typeof hashKeys])
+
+      if (hash) {
+        hashes[key] = hash
+      }
+    })
+
+    return hashes
+  }
 
   // Layout
   const isInitialized = ref(false)
@@ -110,7 +126,9 @@ export function useTableData(
 
   initializeQueryBuilder()
 
-  // Provides
+  // Provides & Injects
+  const externalData = inject(tableExternalDataKey, ref({} as IItem))
+
   provide(tableRefreshKey, (force?: boolean) => refreshData(force))
   provide(tableRecreateQueryBuilderKey, () => initializeQueryBuilder())
   provide(tableStorageKey, storageKey)
@@ -329,7 +347,7 @@ export function useTableData(
             result,
             props.getData.countKey || config.table.countKey
           ),
-          hash: get(result, props.getData.hashKey || config.table.hashKey),
+          hashes: extractHashes(result),
           res: result,
         }
       },
@@ -388,28 +406,30 @@ export function useTableData(
       if (config.table.extractData) {
         customData.value = Object.assign(
           customData.value,
-          config.table.extractData(res)
+          config.table.extractData(res, externalData)
         )
       }
 
-      // When hash mismatches, we force metadata refetch and data refetch
-      const currentHash = get(
-        tableState.value.meta,
-        props.getData?.hashKey || config.table.hashKey
-      )
-      const newHash = get(res, 'hash')
+      // When any of the hashes mismatches, we force metadata refetch and data refetch
+      if (!dataHasBeenFetched.value) {
+        const resHashes = res.hashes
+        const stateHashes = extractHashes(tableState.value.meta)
 
-      if (
-        !!currentHash &&
-        currentHash !== newHash &&
-        !dataHasBeenFetched.value
-      ) {
-        await metaDataRefetch?.(true)
-        recreateColumns?.(false)
-        initializeQueryBuilder()
-        resizeColumns?.(true)
+        const hasHashMismatch = Object.keys(stateHashes).some(key => {
+          const stateHash = stateHashes[key]
+          const resHash = resHashes[key]
 
-        return
+          return stateHash !== resHash
+        })
+
+        if (hasHashMismatch) {
+          await metaDataRefetch?.(true)
+          recreateColumns?.(false)
+          initializeQueryBuilder()
+          resizeColumns?.(true)
+
+          return
+        }
       }
 
       if (res) {
@@ -586,7 +606,11 @@ export function useTableData(
     const usedQueryBuilder = isUrlUsed ? urlQueryBuilder : schemaQueryBuilder
 
     // When the query builder is present in the URL, use it
-    if (usedQueryBuilder && queryBuilder.value !== undefined) {
+    if (
+      usedQueryBuilder &&
+      usedQueryBuilder.length &&
+      queryBuilder.value !== undefined
+    ) {
       queryBuilder.value = usedQueryBuilder.length
         ? usedQueryBuilder
         : [
@@ -602,7 +626,6 @@ export function useTableData(
 
     // Otherwise, when the query builder is present in the table state, use it
     else if (
-      !config.table.useServerState &&
       !isUrlUsed &&
       tableState.value.queryBuilder?.length &&
       queryBuilder.value !== undefined
@@ -625,6 +648,7 @@ export function useTableData(
     search,
     totalRows,
     storageKey,
+    customData,
     refreshData,
 
     // Pagination

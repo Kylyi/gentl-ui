@@ -8,7 +8,7 @@ import type { IItemToBeAdded } from '~/components/List/types/list-item-to-add.ty
 // Models
 import { SortItem } from '~/libs/App/data/models/sort-item.model'
 
-export interface IListProps extends IListBaseProps {
+export type IListProps = IListBaseProps & {
   bordered?: boolean
   clearable?: boolean
   contentClass?: ClassType
@@ -43,6 +43,12 @@ export interface IListProps extends IListBaseProps {
    * https://www.fusejs.io/examples.html#extended-search
    */
   fuseExtendedSearchToken?: "'" | '=' | '!' | '^' | '!^' | '$' | '!$'
+
+  /**
+   * When true, when scrolling to the bottom of the list, the `loadData` fnc will be called
+   * and the list will be extended with the new data
+   */
+  hasInfiniteScroll?: boolean
 
   /**
    * Can be either

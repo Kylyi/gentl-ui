@@ -40,8 +40,8 @@ export function useTableLayout(
     hasVisibleColumn,
     internalColumns,
     searchableColumnLabels,
-    stretchColumns,
     resizeColumns,
+    stretchColumns,
     recreateColumns,
   } = useTableColumns(props, columnsRef, layoutRef)
 
@@ -110,7 +110,7 @@ export function useTableLayout(
         internalColumns.value,
         {
           groupsRef: [],
-          isSelectableRef: props.selectable,
+          isSelectableRef: props.selectionOptions?.selectable,
           groupExpandWidthRef: props.groupExpandWidth,
           minColWidthRef: props.minimumColumnWidth,
         }
@@ -138,7 +138,7 @@ export function useTableLayout(
         toValue(internalColumns),
         {
           groupsRef: [],
-          isSelectableRef: props.selectable,
+          isSelectableRef: props.selectionOptions?.selectable,
           groupExpandWidthRef: props.groupExpandWidth,
           minColWidthRef: props.minimumColumnWidth,
         }

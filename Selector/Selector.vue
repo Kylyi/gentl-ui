@@ -10,6 +10,7 @@ import type { IItemToBeAdded } from '~/components/List/types/list-item-to-add.ty
 // Functions
 import { useSelectorUtils } from '~/components/Selector/functions/useSelectorUtils'
 import { useInputValidationUtils } from '~/components/Inputs/functions/useInputValidationUtils'
+import { useListUtils } from '~/components/List/functions/useListUtils'
 
 // Components
 import List from '~/components/List/List.vue'
@@ -40,6 +41,9 @@ const props = withDefaults(defineProps<ISelectorProps>(), {
   options: () => [],
   required: undefined,
   size: 'md',
+  stackLabel: undefined,
+  noHighlight: config.list.noHighlight,
+  hasInfiniteScroll: config.selector.props.hasInfiniteScroll,
 })
 
 const emits = defineEmits<{
@@ -89,6 +93,7 @@ watch(
 // Utils
 const { handleRequest } = useRequest()
 const { path } = useInputValidationUtils(props)
+const { getListProps } = useListUtils()
 const self = getCurrentInstance()
 
 const hasContent = computed(() => {
@@ -216,29 +221,7 @@ const isOptionsInternalLoaded = ref(false)
 const listEl = ref<InstanceType<typeof List>>()
 const options = toRef(props, 'options')
 const optionsInternal = ref<any[]>([])
-const listProps = reactivePick(props, [
-  'allowAdd',
-  'allowSelectAllFiltered',
-  'clearable',
-  'disabledFnc',
-  'emitKey',
-  'fuseExtendedSearchToken',
-  'fuseOptions',
-  'groupBy',
-  'itemHeight',
-  'loadData',
-  'loading',
-  'multi',
-  'noFilter',
-  'noHighlight',
-  'noLocalAdd',
-  'noSearch',
-  'noSort',
-  'inputProps',
-  'search',
-  'searchDebounce',
-  'sortBy',
-])
+const listProps = getListProps(props)
 
 const optionsExtended = computed(() => {
   const optionsAdjusted = [...options.value, ...optionsInternal.value].map(
@@ -366,6 +349,14 @@ function syncScrollArea() {
   }, 0)
 }
 
+function handleKeyDown(e: KeyboardEvent) {
+  if (e.key === 'ArrowDown') {
+    e.preventDefault()
+
+    menuProxyEl.value?.show()
+  }
+}
+
 // Fetch data immediately
 if (props.loadData?.immediate) {
   getData()
@@ -432,6 +423,7 @@ function getData() {
     <span
       v-if="$slots.selection"
       class="control"
+      :class="controlClass"
       @click="handleFocusOrClick"
     >
       <slot
@@ -455,6 +447,7 @@ function getData() {
       v-bind="inputProps"
       @click="handleFocusOrClick"
       @focus="handleFocusOrClick"
+      @keydown="handleKeyDown"
     >
       <!-- Placeholder -->
       <span
@@ -592,6 +585,7 @@ function getData() {
             :item-label="optionLabel"
             v-bind="listProps"
             :class="listClass"
+            :has-infinite-scroll="hasInfiniteScroll"
             @search="menuProxyEl?.recomputePosition()"
             @before-search="menuProxyEl?.recomputePosition()"
             @update:selected="handleSelect"

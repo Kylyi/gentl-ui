@@ -43,6 +43,7 @@ const loaderClass = computedEager(() => {
     viewBox="0 0 100 100"
     enable-background="new 0 0 0 0"
     xml:space="preserve"
+    data-cy="loader"
     :class="loaderClass"
   >
     <circle

@@ -1,5 +1,3 @@
-import type { RouteLocationRaw } from '#vue-router'
-
 // Types
 import type { IValueFormatter } from '~/components/ValueFormatter/types/value-formatter-props.type'
 
@@ -30,19 +28,24 @@ export type IMiniCardProps = IValueFormatter & {
   valueClass?: ClassType
 
   /**
-   * The orginal value class of the card
+   * The previous value class of the card
    */
-  originalValueClass?: ClassType
+  previousValueClass?: ClassType
 
   /**
    * The link we want to redirect to
    */
-  to?: RouteLocationRaw
+  to?: any // should be RouteLocationRaw but that breaks some projects for whatever reason
 
   /**
-   * The link we want to redirect to orginal value
+   * The link we want to redirect to previous value
    */
-  toOriginalValue?: RouteLocationRaw
+  toPreviousValue?: any
+
+  /**
+   * The previous value of the field used to compare with current value
+   */
+  previousValue?: any
 
   /**
    * The orginal value of the field used to compare with current value

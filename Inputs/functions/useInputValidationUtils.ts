@@ -22,20 +22,22 @@ export function useInputValidationUtils(props: IInputWrapperProps) {
 
   const isRequired = computed(() => {
     return Array.isArray(validation.value)
-      ? validation.value.some(item => item?.required)
-      : validation.value?.required
+      ? validation.value.some(item => item?.$required)
+      : validation.value?.$required
   })
 
   const path = computed(() => {
     return Array.isArray(validation.value)
-      ? validation.value.map(item => item?.path).join('.')
-      : validation.value?.path
+      ? validation.value.map(item => item?.$path).join('.')
+      : validation.value?.$path
   })
 
   const issues = computed(() => {
     return Array.isArray(validation.value)
-      ? (validation.value.flatMap(v => v?.messages).filter(Boolean) as string[])
-      : validation.value?.messages || []
+      ? (validation.value
+          .flatMap(v => v?.$messages)
+          .filter(Boolean) as string[])
+      : validation.value?.$messages || []
   })
 
   return {

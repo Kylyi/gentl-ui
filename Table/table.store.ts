@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-import { config } from '~/config'
 
 // Types
 import type { ITableState } from '~/components/Table/types/table-state.type'
@@ -30,11 +29,6 @@ export const useTableStore = defineStore('table', () => {
     tableStorageKey: string,
     state?: Partial<ITableState>
   ) {
-    // We update the server state
-    if (config.table.useServerState) {
-      // TODO: Implement
-    }
-
     // Pick only the relevant data from columns when provided
     if (state?.columns) {
       state.columns = state.columns.map(col => {

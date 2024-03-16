@@ -35,7 +35,7 @@ const self = getCurrentInstance()
 
 function focusSiblingCellHorizontal(
   direction: 'previous' | 'next',
-  _e: KeyboardEvent
+  e: KeyboardEvent
 ) {
   let siblingCell = self?.vnode?.el?.[`${direction}ElementSibling`] as
     | HTMLElement
@@ -43,7 +43,7 @@ function focusSiblingCellHorizontal(
     | undefined
   const isLastCell = !siblingCell || !siblingCell?.classList?.contains?.('cell')
   const parentRowEl = self?.vnode.el?.closest(
-    '.virtual-scroll__row'
+    '.virtual-scroll__content-row'
   ) as HTMLElement
 
   lastDirection.value = direction === 'next' ? 'right' : 'left'
@@ -58,7 +58,7 @@ function focusSiblingCellHorizontal(
   }
 
   const isLastParentRow = !parentRowElSibling?.classList?.contains?.(
-    'virtual-scroll__row'
+    'virtual-scroll__content-row'
   )
   if (isLastCell && isLastParentRow) {
     return
@@ -93,7 +93,7 @@ function focusSiblingCellVertical(
   )
 
   const parentRowEl = self?.vnode.el?.closest(
-    '.virtual-scroll__row'
+    '.virtual-scroll__content-row'
   ) as HTMLElement
 
   lastDirection.value = direction === 'next' ? 'down' : 'up'
@@ -108,7 +108,7 @@ function focusSiblingCellVertical(
   ] as HTMLElement
 
   const isLastParentRow = !parentRowElSibling?.classList?.contains?.(
-    'virtual-scroll__row'
+    'virtual-scroll__content-row'
   )
   if (isLastParentRow) {
     return

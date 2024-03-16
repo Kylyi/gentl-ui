@@ -45,9 +45,11 @@ const items =
     : ref<any[]>([])
 
 const ContainerComponent = computed(() => {
-  return props.virtual || items.value.length >= 1e3
-    ? ListVirtualContainer
-    : ListContainer
+  return ListContainer
+
+  // return props.virtual || items.value.length >= 1e3
+  //   ? ListVirtualContainer
+  //   : ListContainer
 })
 
 defineExpose({
@@ -59,7 +61,10 @@ defineExpose({
   loadData: (search?: string, options?: IListFetchOptions) =>
     loadData(search, options),
   refresh: () => refresh,
-  handleKey: (ev: KeyboardEvent, force?: boolean) => handleKey(ev, force),
+  handleKey: (
+    ev: KeyboardEvent,
+    options?: { force?: boolean; repeated?: boolean }
+  ) => handleKey(ev, options),
 })
 
 const {
@@ -105,8 +110,8 @@ onMounted(() => {
           v-model="search"
           :class="{ 'm-2': !dense }"
           grow
-          :inline="false"
           :debounce="searchDebounce"
+          layout="label-inside"
           class="bg-white dark:bg-darker"
           :autofocus="!noAutofocus"
           data-cy="list-search"
@@ -152,7 +157,9 @@ onMounted(() => {
       :items="arr"
       :class="contentClass"
       :tabindex="noSearch ? 0 : undefined"
+      :has-infinite-scroll="hasInfiniteScroll"
       data-cy="search-results"
+      @infinite-scroll="loadData(search, { fetchMore: true })"
     >
       <template #default="{ item, index }">
         <ListRow

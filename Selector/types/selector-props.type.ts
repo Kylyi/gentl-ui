@@ -27,6 +27,11 @@ export type ISelectorProps = IInputProps & {
   clearable?: boolean
 
   /**
+   * The class applied to the `control` element
+   */
+  controlClass?: ClassType
+
+  /**
    * Whether to hide clear buttons for selected items
    */
   noItemsClear?: boolean
@@ -84,7 +89,7 @@ export type ISelectorProps = IInputProps & {
   noLocalAdd?: boolean
   sortBy?: SortItem[]
 
-  // LIST
+  // List
   emitKey?: boolean
   itemHeight?: number
   loadData?: IListProps['loadData']
@@ -97,6 +102,7 @@ export type ISelectorProps = IInputProps & {
   searchDebounce?: number
   listClass?: ClassType
   search?: string
+  hasInfiniteScroll?: IListProps['hasInfiniteScroll']
 
   /**
    * The extended search token for fuse.js library

@@ -12,10 +12,10 @@ type IProps = Pick<
   | 'columns'
   | 'rowHeight'
   | 'to'
-  | 'selectable'
+  | 'selectionOptions'
   | 'editable'
-  | 'splitRow'
   | 'rowClass'
+  | 'splitRow'
 > & {
   index?: number
   rows: any[]
@@ -49,9 +49,11 @@ const isEditable = computedEager(() => {
       :key="idx"
       class="tr tr__mobile"
       :class="[
-        { 'is-deleted': row.deleted },
-        { 'is-selectable': selectable },
-        { 'is-selected': isSelectedRow(row) },
+        {
+          'is-deleted': row.deleted,
+          'is-selectable': selectionOptions?.selectable,
+          'is-selected': isSelectedRow(row),
+        },
         rowClass?.(row),
       ]"
       :data-split-row-idx="idx"
@@ -70,6 +72,7 @@ const isEditable = computedEager(() => {
           :column="col"
           :row="row"
           :editable="isEditable"
+          :column-index="idx"
         >
           <slot
             :name="col.name"
@@ -77,6 +80,9 @@ const isEditable = computedEager(() => {
           />
         </TableCellMobile>
       </slot>
+
+      <!-- Used for absolutely position info/element -->
+      <slot name="inner" />
     </Component>
   </div>
 </template>
@@ -104,7 +110,7 @@ const isEditable = computedEager(() => {
   }
 
   &.is-selected {
-    --apply: bg-secondary/30 border-secondary;
+    --apply: dark:bg-blue-900/30 bg-blue-100/30 border-primary dark:border-blue-600 border-2;
   }
 }
 

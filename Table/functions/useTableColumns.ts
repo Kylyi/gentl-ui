@@ -24,6 +24,7 @@ import { stringToFloat } from '~/libs/App/data/regex/string-to-float.regex'
 
 // Store
 import { useTableStore } from '~/components/Table/table.store'
+import { useAppStore } from '~/libs/App/app.store'
 
 type Options = {
   groupsRef?: MaybeRefOrGetter<GroupItem[]>
@@ -54,6 +55,7 @@ export function useTableColumns(
   const { parseUrlParams, hasVisibleCol, getStorageKey } = useTableUtils(props)
 
   // Store
+  const appStore = useAppStore()
   const { getTableState } = useTableStore()
   const tableState = getTableState(getStorageKey())
 
@@ -212,6 +214,7 @@ export function useTableColumns(
             new FilterItem<any>({
               field: filter.field,
               comparator: filter.comparator,
+              format: col.format,
               dataType: col.dataType,
               value: parseValue(filter.value, col.dataType, {
                 dateFormat: 'YYYY-MM-DD',
@@ -230,9 +233,7 @@ export function useTableColumns(
       if (col) {
         // We set the `filters`, `sorting`, `visibility` only in case we don't use
         // server state management and we didn't provide anything in the URL
-        const shouldUseState =
-          !config.table.useServerState ||
-          config.table.useLocalStorageForDefaultLayout
+        const shouldUseState = !!appStore.appState.table?.autoSaveSchema
 
         if (shouldUseState && !isUrlUsed && !props.initialLayoutSchema) {
           const nonInteractiveFilters = col.filters.filter(filter => {
@@ -242,7 +243,7 @@ export function useTableColumns(
             ...nonInteractiveFilters,
             ...stateColumn.filters
               .filter(filter => !filter.nonInteractive)
-              .map(filter => new FilterItem(filter)),
+              .map(filter => new FilterItem({ ...filter, format: col.format })),
           ]
           col.sort = stateColumn.sort
           col.sortOrder = stateColumn.sortOrder
@@ -285,7 +286,7 @@ export function useTableColumns(
   function extendColumns(columns: TableColumn[], options?: Options) {
     const { groupsRef = [] } = options || {}
     const groups = toValue(groupsRef)
-    const isSelectable = !!props.selectable
+    const isSelectable = !!props.selectionOptions?.selectable
     const groupExpandWidth = props.groupExpandWidth || 28
 
     // We create a copy of the columns but we keep the reference to the original

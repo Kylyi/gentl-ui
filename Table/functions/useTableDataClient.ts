@@ -16,7 +16,8 @@ export function useTableDataClient() {
 
   async function handleLocalFetch<T = IItem>(
     dataRef: MaybeRefOrGetter<T[]>,
-    tableFetchInput: ITableDataFetchFncInput
+    tableFetchInput: ITableDataFetchFncInput,
+    options?: { take?: number }
   ) {
     const { columnFilters, orderBy } = tableFetchInput.fetchTableQuery
 
@@ -27,7 +28,7 @@ export function useTableDataClient() {
     const rows = await sortData(filtered, orderBy || [])
 
     const { skip = 0, take = rows.length } = tableFetchInput.fetchTableQuery
-    const paginatedRows = rows.slice(skip, skip + take)
+    const paginatedRows = rows.slice(skip, skip + (options?.take ?? take))
 
     return { rows: paginatedRows, totalRows: rows?.length }
   }

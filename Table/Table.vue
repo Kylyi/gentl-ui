@@ -33,8 +33,9 @@ const props = withDefaults(defineProps<ITableProps>(), {
   separator: 'cell',
   totalRows: 0,
   useUrl: true,
-  splitRow: 1,
   infiniteScroll: config.table.props.infiniteScroll,
+  noLock: config.table.props.noLock,
+  splitRow: 1,
   noSearch: config.table.props.noSearch,
   tableTopFunctionality: () => ({
     ...config.table.props.tableTopFunctionality,
@@ -54,10 +55,11 @@ defineEmits<{
 
 defineSlots<{
   [key: string]: any
-  default: IItem
-  rowInside: { columns: any[]; row: any; index: number }
   dataRow: { columns: any[]; row: any; index: number }
   inner: { columns: any[]; row: any; index: number }
+  paginationAppend: { customData: IItem }
+  default: IItem
+  rowInside: { columns: any[]; row: any; index: number }
   top: IItem
   topLeftPrepend: IItem
   topLeftAppend: IItem
@@ -76,9 +78,7 @@ provide(tableSlotsKey, slots)
 
 defineExpose({
   rerender: (noEmit?: boolean) => scrollerEl.value?.rerender(noEmit),
-  refreshData: () => {
-    refreshData(true)
-  },
+  refreshData: () => refreshData(true),
   resizeColumns: (force?: boolean) => handleResize(force),
   adjustColumns: (fnc: (columns: TableColumn[]) => void) => {
     fnc(internalColumns.value)
@@ -90,6 +90,7 @@ defineExpose({
     options?: { val?: boolean; clearSelection?: boolean }
   ) => handleSelectRow(row, options),
   clearSelection: () => clearSelection(),
+  handleCancelEditRow: () => handleCancelEditRow(),
   customFnc: (
     fnc: (options: {
       columns: TableColumn[]
@@ -145,10 +146,11 @@ const {
 const {
   isLoading,
   rows,
-  rowsSplit,
-  refreshData,
   search,
   dbQuery,
+  customData,
+  rowsSplit,
+  refreshData,
   fetchMore,
 
   // Pagination
@@ -176,7 +178,7 @@ const {
 
 const { handleSelectRow, clearSelection } = useTableSelection(props)
 useTableExporting(rows)
-useTableEditing(props)
+const { handleCancelEditRow } = useTableEditing(props)
 
 const overscan = computed(() => {
   return isBreakpoint.value
@@ -296,6 +298,7 @@ onMounted(() => {
       :rows="rows"
       :minimum-column-width="minimumColumnWidth"
       :small-screen="!isBreakpoint"
+      :no-lock="noLock"
       :class="{ 'shadow-lg shadow-ca': isScrolled }"
       @scrolled="handleScrollLeft"
       @resized="scrollerEl?.rerender"
@@ -327,7 +330,7 @@ onMounted(() => {
           :row-height="tableRowHeight.current"
           :editable="editable"
           :index="index"
-          :selectable="selectable"
+          :selectable="selectionOptions?.selectable"
           :split-row="splitRow"
           :row-class="rowClass"
           @click="handleRowClick(row.data, $event)"
@@ -345,6 +348,15 @@ onMounted(() => {
           <template #default="{ row }">
             <slot
               name="data-row"
+              :columns="columns"
+              :row="row"
+              :index="index"
+            />
+          </template>
+
+          <template #inner>
+            <slot
+              name="inner"
               :columns="columns"
               :row="row"
               :index="index"
@@ -403,7 +415,17 @@ onMounted(() => {
       :limit-rows="getData?.limitRows"
       :prev="prev"
       :next="next"
-    />
+    >
+      <template
+        v-if="$slots['pagination-append']"
+        #pagination-append
+      >
+        <slot
+          name="pagination-append"
+          :custom-data="customData"
+        />
+      </template>
+    </TablePagination>
 
     <slot />
   </div>

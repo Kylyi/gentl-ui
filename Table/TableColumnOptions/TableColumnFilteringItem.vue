@@ -272,7 +272,7 @@ defineExpose({
         :hidden-options="hiddenComparators"
         hide-self
         size="sm"
-        :inline="false"
+        layout="regular"
         @update:model-value="handleComparatorChange"
       />
 
@@ -310,7 +310,7 @@ defineExpose({
       :debounce="500"
       :placeholder="`${$t('table.filterValue')}...`"
       empty-value=""
-      :inline="false"
+      layout="regular"
       @update:model-value="handleValueChange"
     />
 
@@ -330,7 +330,7 @@ defineExpose({
       option-key="_value"
       option-label="_label"
       size="sm"
-      :inline="false"
+      layout="regular"
       :placeholder="`${$t('table.filterValue')}...`"
       @update:model-value="handleValueChange($event, { debounce: false })"
     />
@@ -359,7 +359,7 @@ defineExpose({
       ref="valueInputEl"
       v-model="filter.value"
       size="sm"
-      :inline="false"
+      layout="regular"
       :placeholder="`${$t('table.filterValue')}...`"
       @update:model-value="
         handleValueChange($event, { set: true, debounce: true })

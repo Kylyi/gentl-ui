@@ -78,8 +78,8 @@ const {
   contentEl,
   floatingEl,
   referenceEl,
+  isReferenceElTransparent,
   referenceElZIndex,
-  referenceElBgColor,
   floatingReferenceEl,
   refreshAnchors,
 } = useMenuLayout(modelHandler, props)
@@ -125,7 +125,10 @@ function commitHide() {
   const referenceEl = floatingReferenceEl.value as HTMLElement
 
   referenceEl.style.zIndex = referenceElZIndex.value!
-  referenceEl.style.backgroundColor = referenceElBgColor.value!
+
+  if (isReferenceElTransparent.value) {
+    referenceEl.style.backgroundColor = ''
+  }
 
   emits('hide')
 }
@@ -137,14 +140,17 @@ whenever(model, isVisible => {
 
   const referenceEl = floatingReferenceEl.value as HTMLElement
   const referenceElStyle = getComputedStyle(referenceEl as any)
-  const isReferenceElTransparent =
+
+  referenceElZIndex.value = referenceElStyle.zIndex
+
+  isReferenceElTransparent.value =
     referenceElStyle.backgroundColor === 'rgba(0, 0, 0, 0)'
 
   if ((!props.noOverlay || !props.noUplift) && !props.cover) {
     referenceEl.style.zIndex = '3000'
   }
 
-  if (isReferenceElTransparent && !props.noUplift && !props.cover) {
+  if (isReferenceElTransparent.value && !props.noUplift && !props.cover) {
     if (color.value === 'light') {
       referenceEl.style.backgroundColor = 'white'
     } else {
@@ -465,13 +471,13 @@ const isOverlayVisible = computed(() => {
 }
 
 @keyframes myBounce {
-	0% {
-		transform: scale(1);
-	}
+  0% {
+    transform: scale(1);
+  }
 
-	100% {
-		transform: scale(1.05);
-	}
+  100% {
+    transform: scale(1.05);
+  }
 }
 
 // Selector

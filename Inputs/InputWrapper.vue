@@ -83,6 +83,14 @@ const wrapperStyleVariables = computed(() =>
   getInputWrapperStyleVariables(props)
 )
 
+const isInputRequired = computed(() => {
+  if (!isNil(props.required)) {
+    return props.required
+  }
+
+  return isRequired.value
+})
+
 // Wrapper
 const WrapperComponent = computed(() => {
   switch (props.layout) {
@@ -117,6 +125,7 @@ const wrapperProps = computed(() => {
     class="wrapper"
     :class="wrapperClass"
     :style="wrapperStyleVariables"
+    data-cy="input-field"
   >
     <Component
       :is="WrapperComponent"
@@ -132,7 +141,7 @@ const wrapperProps = computed(() => {
       >
         <InputLabel
           v-bind="labelProps"
-          :required="isRequired || required"
+          :required="isInputRequired"
           @click="$emit('label-click', $event)"
         />
       </template>

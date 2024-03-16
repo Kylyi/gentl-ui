@@ -1,5 +1,4 @@
 // Types
-import type { RouteLocationRaw } from '#vue-router'
 import type { NavigateToOptions } from '~/shims'
 
 // Constants
@@ -11,7 +10,7 @@ export type INavigation = {
   exact?: boolean
   external?: boolean
   replace?: boolean
-  to?: RouteLocationRaw | undefined
+  to?: any // should be RouteLocationRaw but that breaks some projects for whatever reason
   navigateToOptions?: NavigateToOptions
 }
 

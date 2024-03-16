@@ -71,6 +71,10 @@ function getDataType(): ExtendedDataType {
     return 'string'
   }
 
+  if (DATE_TYPES.includes(col.dataType)) {
+    return 'date'
+  }
+
   switch (item.value.comparator) {
     case ComparatorEnum.AGO:
     case ComparatorEnum.NOT_AGO:

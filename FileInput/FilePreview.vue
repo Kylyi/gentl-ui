@@ -9,6 +9,7 @@ import { useNumber } from '~/components/Inputs/NumberInput/functions/useNumber'
 import { ICON_BY_FILE_TYPE } from '~/components/FileInput/constants/iconByFileType'
 
 type IProps = {
+  downloadUrl?: string
   editable?: boolean
   file: FileModel | IFile
   noDownloadButton?: boolean
@@ -88,7 +89,7 @@ const imageUrl = computed(() => {
         size="sm"
         class="!rounded-t-0"
         :label="$t('file.download')"
-        @click.stop.prevent="handleDownloadFile(file)"
+        @click.stop.prevent="handleDownloadFile(file, downloadUrl)"
       />
 
       <!-- Upload failed -->

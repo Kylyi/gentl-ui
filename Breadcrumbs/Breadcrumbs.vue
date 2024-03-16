@@ -63,7 +63,6 @@ const breadcrumbs = computed(() => {
     --apply: flex flex-gap-x-1 items-center md:p-x-3;
     --apply: bg-$Breadcrumbs-bg;
   }
-
 }
 
 @screen lt-lg {

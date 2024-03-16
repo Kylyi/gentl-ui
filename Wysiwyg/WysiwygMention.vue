@@ -51,7 +51,8 @@ const { floatingStyles, placement } = useFloating(virtualEl, mentionEl, {
 defineExpose({
   show: () => (isMentionOpen.value = true),
   hide: () => (isMentionOpen.value = false),
-  onKeyDown: (event: KeyboardEvent) => listEl.value?.handleKey(event, true),
+  onKeyDown: (event: KeyboardEvent) =>
+    listEl.value?.handleKey(event, { force: true }),
 })
 </script>
 

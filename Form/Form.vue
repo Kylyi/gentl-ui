@@ -79,10 +79,8 @@ const formConfirmation = computed(() => {
     return config.form.confirmation.enabled
   }
 
-  // Otherwise, we use the value from the app state (with fallback to config)
-  const isEnabled =
-    !!appState.value.form?.confirmation?.enabled ||
-    config.form.confirmation.enabled
+  // Otherwise, we use the value from the app state
+  const isEnabled = !!appState.value.form?.confirmation?.enabled
 
   return isEnabled
 })
@@ -117,7 +115,7 @@ const formClass = computed(() => ({
 
 const controlsClass = computed(() => {
   const classes = [
-    'z-10 w-full border-ca bg-white dark:bg-darker',
+    'z-$zBackdrop w-full border-ca bg-white dark:bg-darker',
     'lt-lg:p-x-2 sticky bottom-0 inset-inline-0',
   ]
 

@@ -4,6 +4,7 @@ import type { RouteLocationRaw } from '#vue-router'
 import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
 import type { ITableDataFetchFncInput } from '~/components/Table/types/table-query.type'
 import type { ITableSelection } from '~/components/Table/types/table-selection.type'
+import type { ITableSelectionOptions } from '~/components/Table/types/table-selection-options.type'
 
 // Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
@@ -65,6 +66,11 @@ export interface ITableProps {
    * Whether the column filters should be hidden
    */
   noFilters?: boolean
+
+  /**
+   * Whether the table should have the lock-column buttons
+   */
+  noLock?: boolean
 
   /**
    * Whether the table header should be hidden
@@ -190,11 +196,6 @@ export interface ITableProps {
   nonSavableSettings?: Array<'columns' | 'filters' | 'sorting' | 'public'>
 
   /**
-   * Whether the table rows should be selectable
-   */
-  selectable?: boolean
-
-  /**
    * Defines visuals for the separators in the table
    */
   separator?: 'horizontal' | 'vertical' | 'cell'
@@ -245,7 +246,7 @@ export interface ITableProps {
    * `payloadKey` ~ key in the response that contains the data
    * `countKey` ~ key in the response that contains the total count of rows
    * `urlKey` ~ key in the response that contains the query params for the request
-   * `hashKey` ~ key in the response that contains the hash key for the table
+   * `hashKeys` ~ keys in the response that contains table hashes - used to hydrate the table state
    * `createIdentifier` ~ function to create a unique identifier for each row when the `rowKey` is not unique
    * `errorHandler` ~ function to handle errors that come from fetching the table data
    */
@@ -253,11 +254,11 @@ export interface ITableProps {
     fnc: (options: ITableDataFetchFncInput) => Promise<any> | any
     payloadKey?: string
     countKey?: string
-    hashKey?: string
+    hashKeys?: Record<string, string>
     versionKey?: string
-    limitRows?: number
     createIdentifier?: (row: any, idx: number) => string | number
     errorHandler?: (error: any) => void
+    limitRows?: number
   }
 
   getTotalsData?: {
@@ -323,17 +324,42 @@ export interface ITableProps {
   splitRow?: number
 
   /**
+   * Selection-related props
+   */
+  selectionOptions?: {
+    /**
+     * Function that gets called on row select, returrn `false` to prevent the
+     * selection from happening
+     */
+    onSelect?: (
+      row: any,
+      selection: MaybeRefOrGetter<ITableSelection>,
+      options?: ITableSelectionOptions
+    ) => void | false | Promise<void | false>
+
+    /**
+     * Selection key
+     * The key to use for the selection
+     */
+    selectionKey?: string
+
+    /**
+     * Whether the table rows should be selectable
+     */
+    selectable?: boolean
+
+    /**
+     * Whether the table rows have the selection disabled
+     */
+    disabled?: boolean
+  }
+
+  /**
    * The selected rows, can be either:
    * * Array<string | number> ~ use for `rowKey` selection
    * * Record<itemKey, item> ~ use for `item` selection
    */
   selected?: ITableSelection
-
-  /**
-   * Selection key
-   * The key to use for the selection
-   */
-  selectionKey?: string
 
   /**
    * Key for the local storage, if not provided, the key will be generated

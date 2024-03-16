@@ -26,7 +26,7 @@ export function useListKeyboardNavigation(options: {
   const hoveredEl = ref<HTMLDivElement>()
   const hoveredIdx = ref(-1)
   const groupsJumped = ref(1) // How many groups we jumped over while using keyboard
-  const modifier = ref<-1 | 0 | 1>(0) // negative ~ above, positive ~ below
+  const modifier = ref<number>(0) // negative ~ above, positive ~ below
 
   const firstNonGroupItemIndex = computed(() =>
     toValue(itemsRef).findIndex(item => !('isGroup' in item))
@@ -72,7 +72,15 @@ export function useListKeyboardNavigation(options: {
     toValue(listContainerRef)?.scrollToIdx(index)
   }
 
-  function handleKey(ev: KeyboardEvent, force?: boolean) {
+  function handleKey(
+    ev: KeyboardEvent,
+    options?: { force?: boolean; repeated?: boolean }
+  ) {
+    // NOTE: When we get a `repeated` event, it means the user got under or above the list
+    // In that case, we need to adjust situations that would lead to stack overflow,
+    // for example when PageDown is pressed while there are only few items in the list
+    const { force = false, repeated } = options ?? {}
+
     if (!isFocused.value && !force) {
       return
     }
@@ -87,6 +95,18 @@ export function useListKeyboardNavigation(options: {
       case 'ArrowDown':
         hoveredIdx.value++
         modifier.value = 1
+        ev.preventDefault()
+        break
+
+      case 'PageUp':
+        hoveredIdx.value -= repeated ? 1 : 5
+        modifier.value = repeated ? -1 : -5
+        ev.preventDefault()
+        break
+
+      case 'PageDown':
+        hoveredIdx.value += repeated ? 1 : 5
+        modifier.value = repeated ? 1 : 5
         ev.preventDefault()
         break
 
@@ -125,7 +145,7 @@ export function useListKeyboardNavigation(options: {
         hoveredIdx.value = -1
       }
 
-      handleKey(ev)
+      handleKey(ev, { repeated: true })
     }
 
     // Got to a group
@@ -155,7 +175,10 @@ export function useListKeyboardNavigation(options: {
     preventNextHoverEventRef.value = true
   }
 
-  onKeyStroke(['ArrowUp', 'ArrowDown', 'Enter', 'Tab'], handleKey)
+  onKeyStroke(
+    ['ArrowUp', 'ArrowDown', 'Enter', 'Tab', 'PageUp', 'PageDown'],
+    handleKey
+  )
 
   return {
     handleKey,

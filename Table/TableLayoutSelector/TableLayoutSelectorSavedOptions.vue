@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { config } from '~/config'
-
 // Types
 import type { ITableLayout } from '~/components/Table/types/table-layout.type'
 
@@ -76,9 +74,7 @@ const layoutInfo = computed(() => {
         class="layout-info-icon ic:round-public color-blue-500"
       />
       <div
-        v-if="
-          layoutInfo.isDefault && !config.table.useLocalStorageForDefaultLayout
-        "
+        v-if="layoutInfo.isDefault"
         class="layout-info-icon fluent:book-default-28-filled color-blue-500"
       />
     </div>

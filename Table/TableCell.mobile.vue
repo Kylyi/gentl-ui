@@ -8,6 +8,7 @@ import { tableInlineEditKey } from '~/components/Table/provide/table.provide'
 
 type IProps = {
   column: TableColumn
+  columnIndex: number
   editable?: boolean
   row: any
 }
@@ -87,6 +88,15 @@ function focusFieldInNextRow(field?: string) {
 
   if (nextRowEditBtnEl) {
     nextRowEditBtnEl.click()
+
+    const virtualScroller = parentRowEl.closest(
+      '.virtual-scroll'
+    ) as HTMLElement
+
+    const scrollTop = parentRowEl.style.getPropertyValue('--translateY')
+    if (scrollTop) {
+      virtualScroller.scrollTop = Number.parseInt(scrollTop)
+    }
   }
 }
 
@@ -227,6 +237,7 @@ function selectSelf(self: any) {
       <div
         v-if="isEditingField"
         flex="~ gap-1"
+        :class="{ 'm-r-18': columnIndex === 0 }"
       >
         <Component
           :is="col._editComponent.component"
