@@ -79,10 +79,8 @@ const formConfirmation = computed(() => {
     return config.form.confirmation.enabled
   }
 
-  // Otherwise, we use the value from the app state (with fallback to config)
-  const isEnabled =
-    !!appState.value.form?.confirmation?.enabled ??
-    config.form.confirmation.enabled
+  // Otherwise, we use the value from the app state
+  const isEnabled = !!appState.value.form?.confirmation?.enabled
 
   return isEnabled
 })
