@@ -89,7 +89,7 @@ const imageUrl = computed(() => {
         size="sm"
         class="!rounded-t-0"
         :label="$t('file.download')"
-        @click.stop.prevent="handleDownloadFile(file, downloadUrl)"
+        @click.stop.prevent="handleDownloadFile(file, { url: downloadUrl })"
       />
 
       <!-- Upload failed -->
