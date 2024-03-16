@@ -38,41 +38,29 @@ const classes = computed(() => {
     </div>
 
     <!-- Border -->
-    <div class="input-wrapper__regular-border input-wrapper-border" />
-
-    <!-- Prepend -->
     <div
-      class="input-wrapper__regular-prepend input-wrapper__focusable"
+      class="input-wrapper__regular-border input-wrapper-border"
       :class="ui?.inputContainerClass"
       :style="ui?.inputContainerStyle"
-    >
+    />
+
+    <!-- Prepend -->
+    <div class="input-wrapper__regular-prepend input-wrapper__focusable">
       <slot name="prepend" />
     </div>
 
     <!-- Input -->
-    <div
-      class="input-wrapper__regular-input input-wrapper__focusable"
-      :class="ui?.inputContainerClass"
-      :style="ui?.inputContainerStyle"
-    >
+    <div class="input-wrapper__regular-input input-wrapper__focusable">
       <slot name="input" />
     </div>
 
     <!-- Loading -->
-    <div
-      class="input-wrapper__regular-loading input-wrapper__focusable"
-      :class="ui?.inputContainerClass"
-      :style="ui?.inputContainerStyle"
-    >
+    <div class="input-wrapper__regular-loading input-wrapper__focusable">
       <slot name="loading" />
     </div>
 
     <!-- Append -->
-    <div
-      class="input-wrapper__regular-append input-wrapper__focusable"
-      :class="ui?.inputContainerClass"
-      :style="ui?.inputContainerStyle"
-    >
+    <div class="input-wrapper__regular-append input-wrapper__focusable">
       <slot name="append" />
     </div>
 
@@ -142,9 +130,10 @@ const classes = computed(() => {
 .input-wrapper__regular-border {
   grid-column: 1 / -1;
   grid-row: 1 / 2;
+  transition: border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
-  --apply: fit transition-all border-custom rounded-custom pointer-events-none
-    border-ca;
+  --apply: fit border-custom rounded-custom pointer-events-none border-ca
+    bg-$Input-wrapper-bg;
 }
 
 .input-wrapper__regular:not(.has-border) .input-wrapper__regular-border {

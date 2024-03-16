@@ -37,38 +37,29 @@ const classes = computed(() => {
     <!-- Input wrapper -->
     <div class="input-wrapper__inline-input input-wrapper__focusable">
       <!-- Border -->
-      <div class="input-wrapper__inline-border input-wrapper-border" />
-
-      <!-- Prepend -->
       <div
-        class="input-wrapper__inline-input-prepend"
+        class="input-wrapper__inline-border input-wrapper-border"
         :class="ui?.inputContainerClass"
         :style="ui?.inputContainerStyle"
-      >
+      />
+
+      <!-- Prepend -->
+      <div class="input-wrapper__inline-input-prepend">
         <slot name="prepend" />
       </div>
 
       <!-- Input -->
-      <div
-        class="input-wrapper__inline-input-input"
-        :class="ui?.inputContainerClass"
-      >
+      <div class="input-wrapper__inline-input-input">
         <slot name="input" />
       </div>
 
       <!-- Loading -->
-      <div
-        class="input-wrapper__inline-input-loading"
-        :class="ui?.inputContainerClass"
-      >
+      <div class="input-wrapper__inline-input-loading">
         <slot name="loading" />
       </div>
 
       <!-- Append -->
-      <div
-        class="input-wrapper__inline-input-append"
-        :class="ui?.inputContainerClass"
-      >
+      <div class="input-wrapper__inline-input-append">
         <slot name="append" />
       </div>
 
@@ -162,9 +153,10 @@ const classes = computed(() => {
 .input-wrapper__inline-border {
   grid-column: 1 / -1;
   grid-row: 1 / 2;
+  transition: border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
-  --apply: transition-all border-custom rounded-custom pointer-events-none
-    border-ca fit;
+  --apply: border-custom rounded-custom pointer-events-none border-ca fit
+    bg-$Input-wrapper-bg;
 }
 
 .input-wrapper__inline:not(.has-border) .input-wrapper__inline-border {

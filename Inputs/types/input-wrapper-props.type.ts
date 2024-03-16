@@ -95,14 +95,14 @@ export type IInputWrapperProps = InputLabelProps & {
     /**
      * Class of the input container
      *
-     * TODO: Implement
+     * Note: Primarily used for background color
      */
     inputContainerClass?: ClassType
 
     /**
      * Style of the input container
      *
-     * * TODO: Implement
+     * * Note: Primarily used for background color
      */
     inputContainerStyle?: CSSProperties
   }

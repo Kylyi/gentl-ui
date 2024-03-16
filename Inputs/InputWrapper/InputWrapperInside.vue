@@ -27,14 +27,11 @@ const classes = computed(() => {
 <template>
   <div
     class="input-wrapper__inside"
-    :class="classes"
+    :class="[classes, ui?.inputContainerClass]"
+    :style="ui?.inputContainerStyle"
   >
     <!-- Input -->
-    <div
-      class="input-wrapper__inside-input input-wrapper__focusable"
-      :class="ui?.inputContainerClass"
-      :style="ui?.inputContainerStyle"
-    >
+    <div class="input-wrapper__inside-input input-wrapper__focusable">
       <slot name="input" />
     </div>
 
@@ -48,29 +45,17 @@ const classes = computed(() => {
     <div class="input-wrapper__inside-border input-wrapper-border" />
 
     <!-- Prepend -->
-    <div
-      class="input-wrapper__inside-prepend input-wrapper__focusable"
-      :class="ui?.inputContainerClass"
-      :style="ui?.inputContainerStyle"
-    >
+    <div class="input-wrapper__inside-prepend input-wrapper__focusable">
       <slot name="prepend" />
     </div>
 
     <!-- Loading -->
-    <div
-      class="input-wrapper__inside-loading input-wrapper__focusable"
-      :class="ui?.inputContainerClass"
-      :style="ui?.inputContainerStyle"
-    >
+    <div class="input-wrapper__inside-loading input-wrapper__focusable">
       <slot name="loading" />
     </div>
 
     <!-- Append -->
-    <div
-      class="input-wrapper__inside-append input-wrapper__focusable"
-      :class="ui?.inputContainerClass"
-      :style="ui?.inputContainerStyle"
-    >
+    <div class="input-wrapper__inside-append input-wrapper__focusable">
       <slot name="append" />
     </div>
 
@@ -92,7 +77,7 @@ const classes = computed(() => {
 
 <style lang="scss" scoped>
 .input-wrapper__inside {
-  --apply: grid items-center rounded-custom;
+  --apply: grid items-center rounded-custom bg-$Input-wrapper-bg;
 
   grid-template-areas:
     'prepend input loading append'
@@ -151,9 +136,10 @@ const classes = computed(() => {
 .input-wrapper__inside-border {
   grid-column: 1 / -1;
   grid-row: 1 / 3;
+  transition: border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
-  --apply: absolute fit transition-all border-custom rounded-custom
-    pointer-events-none border-ca;
+  --apply: absolute fit border-custom rounded-custom pointer-events-none
+    border-ca;
 }
 
 .input-wrapper__inside:not(.has-border) .input-wrapper__inside-border {
@@ -201,7 +187,6 @@ const classes = computed(() => {
   grid-column: 2 / 3;
   grid-row: 1 / 2;
 
-  --apply: absolute fit transition-all pointer-events-none rounded-t-custom
-    bg-inherit;
+  --apply: absolute fit pointer-events-none rounded-t-custom bg-inherit;
 }
 </style>

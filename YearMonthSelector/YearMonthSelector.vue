@@ -100,7 +100,6 @@ onMounted(() => {
       max-w="!400px"
       tabindex="-1"
       no-uplift
-      :ui="{ contentClass: 'p-b-0' }"
       @before-show="pickerState = 'show'"
       @before-hide="pickerState = 'hide'"
     >
