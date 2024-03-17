@@ -1,3 +1,5 @@
+import type { CSSProperties } from 'vue'
+
 // Types
 import type { IValueFormatter } from '~/components/ValueFormatter/types/value-formatter-props.type'
 
@@ -26,6 +28,11 @@ export type IMiniCardProps = IValueFormatter & {
    * The value class of the card
    */
   valueClass?: ClassType
+
+  /**
+   * The value style of the card
+   */
+  valueStyle?: CSSProperties
 
   /**
    * The previous value class of the card

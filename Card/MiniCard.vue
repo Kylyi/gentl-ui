@@ -68,6 +68,7 @@ const isModified = computed(() => {
                 valueClass,
                 { 'font-bold': !noBold, 'is-modified': isModified },
               ]"
+              :style="valueStyle"
             >
               {{ getShownValue(val) }}
 

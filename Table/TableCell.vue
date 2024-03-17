@@ -346,6 +346,9 @@ function selectSelf(self: any) {
             :editable="false"
             :label="val"
             m="x-2"
+            :visuals="{
+              checked: { checkbox: '!bg-blue-500 !border-blue-500' },
+            }"
           />
 
           <!-- Link -->

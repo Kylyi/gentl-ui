@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { config } from '~/config'
+
 // Types
 import type { ISectionProps } from '~/components/Section/types/section-props.type'
 
@@ -8,6 +10,7 @@ defineOptions({
 
 withDefaults(defineProps<ISectionProps>(), {
   titleElement: 'h6',
+  ui: () => config.section2.props.ui ?? {},
 })
 </script>
 
@@ -59,7 +62,7 @@ withDefaults(defineProps<ISectionProps>(), {
 <style scoped lang="scss">
 .section {
   // Theme
-  --apply: max-w-$Section-max-w p-$Section-content-padding;
+  --apply: max-w-$Section-max-w p-$Section-padding;
 
   --apply: flex flex-col;
 

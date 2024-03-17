@@ -7,6 +7,7 @@ import NumberInput from '~/components/Inputs/NumberInput/NumberInput.vue'
 import DateInput from '~/components/Inputs/DateInput/DateInput.vue'
 import Toggle from '~/components/Toggle/Toggle.vue'
 import TimeInput from '~/components/Inputs/TimeInput/TimeInput.vue'
+import DurationInput from '~/components/Inputs/DurationInput/DurationInput.vue'
 
 const TEXT_INPUT = {
   component: markRaw(TextInput),
@@ -18,6 +19,14 @@ const NUMBER_INPUT = {
   component: markRaw(NumberInput),
   props: {} as ComponentProps<typeof NumberInput>,
   icon: 'ant-design:number-outlined',
+}
+
+const DURATION_INPUT = {
+  component: markRaw(DurationInput),
+  props: {
+    format: '0,0.00',
+  } as ComponentProps<typeof DurationInput>,
+  icon: 'carbon:time',
 }
 
 const DATE_INPUT = {
@@ -57,6 +66,9 @@ const INPUT_BY_DATATYPE = {
   long: NUMBER_INPUT,
   double: NUMBER_INPUT,
 
+  // Duration
+  duration: DURATION_INPUT,
+
   // Date
   date: DATE_INPUT,
   datetime: DATE_INPUT,
@@ -85,6 +97,9 @@ const INPUT_BY_DATATYPE = {
   intSimple: NUMBER_INPUT,
   longSimple: NUMBER_INPUT,
   doubleSimple: NUMBER_INPUT,
+
+  // Duration
+  durationSimple: DURATION_INPUT,
 
   // Date
   dateSimple: DATE_INPUT,

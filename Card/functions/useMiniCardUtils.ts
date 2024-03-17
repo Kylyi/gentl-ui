@@ -19,6 +19,8 @@ export function useMiniCardUtils() {
       'previousValueClass',
       'toPreviousValue',
       'originalValue',
+      'valueStyle',
+      'valueClass',
     ])
   }
 
