@@ -113,12 +113,12 @@ export function useValueFormatterUtils() {
 
       case 'date':
       case 'dateSimple':
-      case 'DateTime':
-      case 'DateTimeSimple':
         return formatDate(value, 'short')
 
       case 'datetime':
       case 'datetimeSimple':
+      case 'DateTime':
+      case 'DateTimeSimple':
         return formatDate(value, 'long')
 
       case 'fullDateTime':
