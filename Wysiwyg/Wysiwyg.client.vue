@@ -315,6 +315,7 @@ defineExpose({
     <EditorContent
       class="control"
       :editor="editor"
+      min-h="50"
     />
 
     <WysiwygMention
