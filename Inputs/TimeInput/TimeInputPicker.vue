@@ -178,7 +178,7 @@ defineExpose({
       >
         <TextInput
           ref="hInput"
-          layout="label-inside"
+          layout="regular"
           :model-value="localizedTimeParts.hh"
           input-class="text-center w-full"
           class="w-[calc(50%-8px)]"
@@ -189,7 +189,7 @@ defineExpose({
         />
         <TextInput
           ref="mInput"
-          layout="label-inside"
+          layout="regular"
           :model-value="localizedTimeParts.mm"
           input-class="text-center w-full"
           class="w-[calc(50%-8px)]"

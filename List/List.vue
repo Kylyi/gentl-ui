@@ -111,7 +111,7 @@ onMounted(() => {
           :class="{ 'm-2': !dense }"
           grow
           :debounce="searchDebounce"
-          layout="label-inside"
+          layout="regular"
           class="bg-white dark:bg-darker"
           :autofocus="!noAutofocus"
           data-cy="list-search"
