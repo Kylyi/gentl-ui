@@ -94,10 +94,8 @@ const component = computed(() => {
  */
 const customValue = computed({
   get() {
-    if (colSelected.value?.filterComponent?.valueFormatter) {
-      return colSelected.value.filterComponent.valueFormatter.getter(
-        item.value.value
-      )
+    if (customFilterComponent.value?.valueFormatter) {
+      return customFilterComponent.value.valueFormatter.getter(item.value.value)
     }
 
     return item.value.value
@@ -105,9 +103,8 @@ const customValue = computed({
   set(value) {
     const val = typeof value === 'string' ? value.trim() : value
 
-    if (colSelected.value?.filterComponent?.valueFormatter) {
-      item.value.value =
-        colSelected.value.filterComponent.valueFormatter.setter(val)
+    if (customFilterComponent.value?.valueFormatter) {
+      item.value.value = customFilterComponent.value.valueFormatter.setter(val)
 
       return
     }
@@ -159,7 +156,14 @@ const customFilterComponent = computed(() => {
     return
   }
 
-  return colSelected.value.filterComponent ?? getCustomFilter(colSelected.value)
+  const isCustomFilterComponent =
+    colSelected.value.filterComponent?.comparators.includes(
+      item.value.comparator
+    )
+
+  return isCustomFilterComponent
+    ? colSelected.value.filterComponent
+    : getCustomFilter(colSelected.value, item.value)
 })
 
 function handleRemoveCondition() {
