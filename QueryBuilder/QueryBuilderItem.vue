@@ -378,6 +378,7 @@ const $z = useZod(
           class="qb-item__content-value"
           :placeholder="`${$t('table.filterValue')}...`"
           data-cy="qb-item__content-value"
+          :validation="$z.item.value"
         />
 
         <!-- Selector for `Comparator.IN` and `Comparator.NOT_IN` for simple string cases -->
