@@ -82,8 +82,8 @@ const inputDebounce = computed(() => {
  */
 const customValueComputed = computed({
   get() {
-    if (props.column.filterComponent?.valueFormatter) {
-      return props.column.filterComponent.valueFormatter.getter(
+    if (customFilterComponent.value?.valueFormatter) {
+      return customFilterComponent.value.valueFormatter.getter(
         filter.value.value
       )
     }
@@ -91,9 +91,9 @@ const customValueComputed = computed({
     return filter.value.value
   },
   set(value) {
-    if (props.column.filterComponent?.valueFormatter) {
+    if (customFilterComponent.value?.valueFormatter) {
       filter.value.value =
-        props.column.filterComponent.valueFormatter.setter(value)
+        customFilterComponent.value.valueFormatter.setter(value)
 
       return
     }
@@ -137,7 +137,12 @@ const comparatorOptions = computed(() => {
 })
 
 const customFilterComponent = computed(() => {
-  return column.value.filterComponent ?? getCustomFilter(column.value)
+  const isCustomFilterComponent =
+    column.value.filterComponent?.comparators.includes(filter.value.comparator)
+
+  return isCustomFilterComponent
+    ? column.value.filterComponent
+    : getCustomFilter(column.value, filter.value)
 })
 
 const hiddenComparators = computed(() => {
