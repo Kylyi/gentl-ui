@@ -155,7 +155,8 @@ export function useTableLayout(
     _isOverflown => {
       isOverflown.value = _isOverflown as boolean
 
-      handleResize(true)
+      // handleResize(true)
+      nextTick(() => handleResize(true))
     },
     { direction: 'vertical' }
   )

@@ -81,6 +81,7 @@ defineExpose({
 
 // Utils
 const { isDesktopOrTablet } = useDevice()
+const { onOverflow } = useOverflow()
 const lastScrollEvent = ref<Event>()
 const preventNextScroll = autoResetRef(false, 50)
 let lastScrollTop = 0
@@ -90,6 +91,7 @@ function getRowKey(row: T) {
 }
 
 // Constants
+const VIRTUAL_SCROLL_THRESHOLD = 100
 const OVERSCAN_PX = { top: 200, bottom: 400 }
 const INITIAL_ROWS_RENDER_COUNT =
   props.initialRowsRenderCount ??
@@ -102,6 +104,7 @@ const rows = toRef(props, 'rows')
 const containerEl = ref<HTMLDivElement>()
 const virtualScrollEl = ref<HTMLDivElement>()
 const isMounted = ref(false)
+const isVirtual = ref(false)
 const rowHeight = toRef(props, 'rowHeight')
 const rowKey = toRef(props, 'rowKey') as Ref<keyof T>
 const virtualScrollerRect = ref<DOMRect>()
@@ -144,6 +147,10 @@ useScroll(virtualScrollEl, {
   onStop: () => {
     nextTick(resumeRowHeightWatcher)
   },
+})
+
+onOverflow(virtualScrollEl, () => {
+  setTimeout(() => rerenderVisibleRows())
 })
 
 const virtualScrollStyle = computed(() => {
@@ -354,6 +361,7 @@ watchThrottled(
 )
 
 watch(rows, (rows, rowsOld) => {
+  isVirtual.value = rows?.length > VIRTUAL_SCROLL_THRESHOLD
   pauseRowHeightWatcher()
 
   // When fetching more data, we just want to extend the heights array with
@@ -422,10 +430,8 @@ pauseRowHeightWatcher()
 onMounted(() => {
   nextTick(() => {
     isMounted.value = true
-
     virtualScrollerRect.value = virtualScrollEl.value?.getBoundingClientRect()
   })
-
   setTimeout(resumeRowHeightWatcher, 0)
 })
 
@@ -464,7 +470,7 @@ function renderOnlyVisible(
   <div
     ref="virtualScrollEl"
     class="virtual-scroll"
-    :class="{ 'is-mounted': isMounted }"
+    :class="{ 'is-virtual': isMounted && isVirtual }"
     :style="virtualScrollStyle"
     tabindex="0"
   >
@@ -514,7 +520,7 @@ function renderOnlyVisible(
   }
 }
 
-.virtual-scroll.is-mounted {
+.virtual-scroll.is-virtual {
   .virtual-scroll__row {
     --apply: absolute;
 
