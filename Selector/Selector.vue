@@ -300,6 +300,7 @@ function handleBeforeShow() {
 function handleHide() {
   isPickerActive.value = false
   pickerAnimationState.value = 'hide'
+  optionsInternal.value = []
 
   if (props.loadData?.onSearch) {
     listEl.value?.clearSearch()
