@@ -470,7 +470,7 @@ function renderOnlyVisible(
   <div
     ref="virtualScrollEl"
     class="virtual-scroll"
-    :class="{ 'is-virtual': isMounted }"
+    :class="{ 'is-virtual': isMounted && isVirtual }"
     :style="virtualScrollStyle"
     tabindex="0"
   >
