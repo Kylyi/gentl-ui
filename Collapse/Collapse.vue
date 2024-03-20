@@ -7,7 +7,7 @@ const props = withDefaults(defineProps<ICollapseProps>(), {
 })
 
 const emits = defineEmits<{
-  (e: 'update:model-value', val: boolean): void
+  (e: 'update:modelValue', val: boolean): void
   (e: 'before-show'): void
   (e: 'show'): void
   (e: 'before-hide'): void
@@ -17,7 +17,7 @@ const emits = defineEmits<{
 // Layout
 const headerEl = ref<HTMLDivElement>()
 const contentEl = ref<HTMLDivElement>()
-const model = toRef(props, 'modelValue')
+const model = defineModel<boolean>()
 const isLoading = ref(false)
 const preventNextExpand = autoResetRef(false, 100)
 const internalValue = ref<boolean>(model.value || !!props.initialValue)
@@ -37,7 +37,7 @@ async function handleToggle() {
 
   internalValue.value = !internalValue.value
   internalValue.value ? emits('before-show') : emits('before-hide')
-  emits('update:model-value', internalValue.value)
+  model.value = internalValue.value
 }
 
 function handleEnter() {
