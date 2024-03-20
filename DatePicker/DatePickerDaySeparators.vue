@@ -9,7 +9,7 @@ withDefaults(defineProps<IDatePickerDaySeparatorsProps>(), {
 </script>
 
 <template>
-  <!-- HORIZONTAL SEPARATORS -->
+  <!-- Horizontal separators -->
   <div
     v-for="w in weekCount - 1"
     :key="w"
@@ -22,7 +22,7 @@ withDefaults(defineProps<IDatePickerDaySeparatorsProps>(), {
     :style="{ top: `calc(${(100 / weekCount) * w}% - 0.5px)` }"
   />
 
-  <!-- VERTICAL SEPARATORS -->
+  <!-- Vertical separators -->
   <div
     v-for="d in daysCount - 1"
     :key="d"
