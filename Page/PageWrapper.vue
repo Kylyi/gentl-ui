@@ -54,31 +54,58 @@ onMounted(() => {
       class="page-wrapper__content"
       :class="contentClass"
     >
-      <slot name="title-left" />
-
-      <slot name="title">
-        <template v-if="title">
-          <div
-            class="page-title"
-            :class="{
-              'has-shadow': ui?.titleWithShadow,
-            }"
-          >
-            <h4 class="page-title__text">
-              {{ title }}
-
-              <slot name="title-append" />
-            </h4>
-
-            <slot name="title-right" />
-          </div>
+      <PageTitle
+        :title="title"
+        :ui="ui"
+      >
+        <template
+          v-if="$slots['title-left']"
+          #title-left
+        >
+          <slot name="title-left" />
         </template>
-      </slot>
+
+        <template
+          v-if="$slots['title-prepend']"
+          #title-prepend
+        >
+          <slot name="title-prepend" />
+        </template>
+
+        <template
+          v-if="$slots.title"
+          #default
+        >
+          <slot name="title" />
+        </template>
+
+        <template
+          v-if="$slots['title-append']"
+          #title-append
+        >
+          <slot name="title-append" />
+        </template>
+
+        <template
+          v-if="$slots['title-right']"
+          #title-right
+        >
+          <slot name="title-right" />
+        </template>
+
+        <template
+          v-if="$slots['title-below']"
+          #title-below
+        >
+          <slot name="title-below" />
+        </template>
+      </PageTitle>
 
       <slot
         v-if="!loading"
         p="r-2!"
       />
+
       <slot
         v-else
         name="loading"
@@ -135,23 +162,5 @@ onMounted(() => {
 .page-drawer.is-open.page-drawer--right:not(.is-absolute):not(.is-mini)
   ~ .page-wrapper {
   padding-right: var(--drawerRightWidth);
-}
-
-.page-title {
-  --apply: flex gap-2 p-x-4 md:(p-y-4 p-x-2) max-w-screen-lg m-b-2 p-b-1;
-
-  &__text {
-    --apply: grow font-700;
-  }
-
-  &.has-shadow {
-    box-shadow: 0 8px 8px -9px theme('colors.truegray.300');
-  }
-}
-
-.dark .page-title {
-  &.has-shadow {
-    box-shadow: 0 8px 8px -9px theme('colors.truegray.700');
-  }
 }
 </style>
