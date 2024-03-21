@@ -81,7 +81,13 @@ const { contentEl, dialogWrapperEl, floatingEl } = useDialogLayout(
   props
 )
 
-function hide() {
+function hide(ignorePersistent = true) {
+  if (props.persistent && !ignorePersistent) {
+    bounce()
+
+    return
+  }
+
   modelHandler.value = false
 }
 
@@ -219,6 +225,7 @@ const isOverlayVisible = computed(() => {
               </slot>
 
               <Btn
+                v-if="!noClose"
                 preset="CLOSE"
                 size="sm"
                 @click="hide"

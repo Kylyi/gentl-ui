@@ -30,6 +30,11 @@ export type IDialogProps = {
   modelValue?: boolean
 
   /**
+   * When true, the `Menu` will not have a close button
+   */
+  noClose?: boolean
+
+  /**
    * When true, the `Menu` will not have an overlay/backdrop
    */
   noOverlay?: boolean
