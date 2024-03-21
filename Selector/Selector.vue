@@ -65,7 +65,6 @@ defineExpose({
   loadData: () => listEl.value?.loadData(),
   resetInternalOptions: () => {
     optionsInternal.value = []
-    isOptionsInternalLoaded.value = false
   },
   handleSelect,
   clear: () => clear(),
@@ -217,7 +216,6 @@ function handleSelectRemove(data: any) {
 }
 
 // List
-const isOptionsInternalLoaded = ref(false)
 const listEl = ref<InstanceType<typeof List>>()
 const options = toRef(props, 'options')
 const optionsInternal = ref<any[]>([])
@@ -300,7 +298,7 @@ function handleBeforeShow() {
 function handleHide() {
   isPickerActive.value = false
   pickerAnimationState.value = 'hide'
-  optionsInternal.value = []
+  // optionsInternal.value = []
 
   if (props.loadData?.onSearch) {
     listEl.value?.clearSearch()
