@@ -80,7 +80,7 @@ onMounted(() => {
     ref="fieldEl"
     v-bind="fieldProps"
     :no-content="!modelFormatted"
-    @focus="handleFocusOrClick"
+    @focus="!readonly && handleFocusOrClick"
   >
     <span>
       {{ modelFormatted || '&nbsp;' }}
