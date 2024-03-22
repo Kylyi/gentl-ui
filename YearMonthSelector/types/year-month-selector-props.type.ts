@@ -5,5 +5,4 @@ export interface IYearMonthSelectorProps extends IInputWrapperProps {
   clearable?: boolean
   emptyValue?: any
   modelValue?: Datetime
-  readonly?: boolean
 }
