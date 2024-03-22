@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { config } from '~/config'
+
 // Types
 import type { ISectionProps } from '~/components/Section/types/section-props.type'
 
@@ -6,10 +8,15 @@ defineOptions({
   inheritAttrs: false,
 })
 
-const props = defineProps<ISectionProps>()
+const props = withDefaults(defineProps<ISectionProps>(), {
+  titleFilled: config?.section?.titleFilled || false,
+  titleFilledWithHighlight:
+    config?.section?.titleFilledWithHighlight && config?.section?.titleFilled,
+})
 
 const slots = useSlots()
-const isTitleVisible = computedEager(() => {
+
+const isTitleVisible = computed(() => {
   return !!(props.title || props.subtitle || slots.subtitle || slots.title)
 })
 </script>
@@ -37,7 +44,11 @@ const isTitleVisible = computedEager(() => {
         <!-- Title -->
         <Heading
           v-if="title"
-          :class="[headerClass, { 'p-t-1': subtitle || $slots.subtitle }]"
+          :class="[
+            headerClass,
+            { 'p-t-1': subtitle || $slots.subtitle },
+            { 'is-highlighted': titleFilledWithHighlight },
+          ]"
           :filled="titleFilled"
           flex="col center"
         >
@@ -110,7 +121,10 @@ const isTitleVisible = computedEager(() => {
   }
 }
 
-.heading.is-filled::before {
-  --apply: absolute content-empty top-0 left-0 w-1 h-full bg-primary;
+.heading.is-filled.is-highlighted {
+
+  ::before {
+    --apply: absolute content-empty top-0 left-0 w-1 h-full bg-primary;
+  }
 }
 </style>
