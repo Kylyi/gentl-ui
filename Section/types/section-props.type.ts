@@ -19,6 +19,13 @@ export interface ISectionProps {
   titleFilled?: boolean
 
   /**
+   * When true:
+   * The filled title will have left highlight.
+   * The unfilled title will have bottom highlight
+   */
+  highlighted?: boolean
+
+  /**
    * The element to use for the header
    */
   titleElement?: 'h6' | 'h5' | 'h4' | 'h3' | 'h2' | 'h1' | string
