@@ -9,9 +9,8 @@ defineOptions({
 })
 
 const props = withDefaults(defineProps<ISectionProps>(), {
-  titleFilled: config?.section?.titleFilled || false,
-  titleFilledWithHighlight:
-    config?.section?.titleFilledWithHighlight && config?.section?.titleFilled,
+  titleFilled: config?.section?.titleFilled ?? false,
+  highlighted: config?.section?.highlighted ?? true,
 })
 
 const slots = useSlots()
@@ -47,9 +46,10 @@ const isTitleVisible = computed(() => {
           :class="[
             headerClass,
             { 'p-t-1': subtitle || $slots.subtitle },
-            { 'is-highlighted': titleFilledWithHighlight },
+            { highlighted },
           ]"
           :filled="titleFilled"
+          :highlighted="highlighted"
           flex="col center"
         >
           <div
@@ -121,9 +121,8 @@ const isTitleVisible = computed(() => {
   }
 }
 
-.heading.is-filled.is-highlighted {
-
-  ::before {
+.heading.is-filled.highlighted  {
+  &::before {
     --apply: absolute content-empty top-0 left-0 w-1 h-full bg-primary;
   }
 }

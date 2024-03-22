@@ -19,10 +19,11 @@ export interface ISectionProps {
   titleFilled?: boolean
 
   /**
-   * When true, the filled title will have left side border (highlight)
-   * Should be used in combination with titleFilled prop.
+   * When true:
+   * The filled title will have left highlight.
+   * The unfilled title will have bottom highlight
    */
-  titleFilledWithHighlight?: boolean
+  highlighted?: boolean
 
   /**
    * The element to use for the header

@@ -1,16 +1,19 @@
 <script setup lang="ts">
 type IProps = {
   filled?: boolean
+  highlighted?: boolean
 }
 
-defineProps<IProps>()
+withDefaults(defineProps<IProps>(), {
+  highlighted: true,
+})
 </script>
 
 <template>
   <h6
     class="heading"
     min-h="12"
-    :class="{ 'is-filled': filled }"
+    :class="[{ 'is-filled': filled }, { highlighted }]"
   >
     <slot />
   </h6>
@@ -19,7 +22,9 @@ defineProps<IProps>()
 <style lang="scss" scoped>
 .heading {
   --apply: flex items-center p-x-2 rounded-custom relative;
+}
 
+.heading.highlighted {
   &::before {
     --apply: bottom-0 w-9/10 h-1 left-0 bg-primary content-empty absolute
       rounded-full;
