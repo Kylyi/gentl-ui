@@ -46,7 +46,7 @@ const isTitleVisible = computed(() => {
           :class="[
             headerClass,
             { 'p-t-1': subtitle || $slots.subtitle },
-            { highlighted },
+            { 'is-highlighted': highlighted },
           ]"
           :filled="titleFilled"
           :highlighted="highlighted"
@@ -121,7 +121,7 @@ const isTitleVisible = computed(() => {
   }
 }
 
-.heading.is-filled.highlighted  {
+.heading.is-filled.is-highlighted  {
   &::before {
     --apply: absolute content-empty top-0 left-0 w-1 h-full bg-primary;
   }

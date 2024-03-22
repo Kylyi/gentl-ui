@@ -13,7 +13,7 @@ withDefaults(defineProps<IProps>(), {
   <h6
     class="heading"
     min-h="12"
-    :class="[{ 'is-filled': filled }, { highlighted }]"
+    :class="[{ 'is-filled': filled }, { 'is-highlighted': highlighted }]"
   >
     <slot />
   </h6>
@@ -24,7 +24,7 @@ withDefaults(defineProps<IProps>(), {
   --apply: flex items-center p-x-2 rounded-custom relative;
 }
 
-.heading.highlighted {
+.heading.is-highlighted {
   &::before {
     --apply: bottom-0 w-9/10 h-1 left-0 bg-primary content-empty absolute
       rounded-full;
