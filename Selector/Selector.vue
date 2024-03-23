@@ -423,6 +423,8 @@ function getData() {
       v-if="$slots.selection"
       class="control"
       :class="controlClass"
+      :readonly="readonly"
+      :disabled="disabled"
       @click="handleFocusOrClick"
     >
       <slot
@@ -443,6 +445,8 @@ function getData() {
       :name="name || path || label || placeholder"
       :class="[innerClass, { 'is-multi': !!multi }]"
       :style="{ maxHeight: `${maxHeight}px` }"
+      :readonly="readonly"
+      :disabled="disabled"
       v-bind="inputProps"
       @click="handleFocusOrClick"
       @focus="handleFocusOrClick"

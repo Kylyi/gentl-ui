@@ -51,6 +51,8 @@ defineExpose({
       ]"
       :style="inputStyle"
       tabindex="0"
+      :readonly="readonly"
+      :disabled="disabled"
       @focus="$emit('focus', $event)"
     >
       <slot> {{ modelValue || placeholder || '&nbsp;' }} </slot>

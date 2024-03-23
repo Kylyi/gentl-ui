@@ -179,12 +179,11 @@ function focusFirstInput() {
   const shouldFocus =
     lastPointerDownType?.value === 'mouse' ||
     (isDesktop && !lastPointerDownType.value)
-
   if (shouldFocus && props.focusFirstInput) {
-    const spanElements =
-      formEl?.value?.querySelectorAll('span.wrapper-body__input') || []
+    const inputElements =
+      formEl?.value?.querySelectorAll('.wrapper__body') || []
 
-    const firstEditableField = Array.from(spanElements).find(el => {
+    const firstEditableField = Array.from(inputElements).find(el => {
       const inputChild = el.querySelector(
         '.control:not([readonly]):not([disabled])'
       ) as HTMLElement

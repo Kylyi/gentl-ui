@@ -9,8 +9,8 @@ defineOptions({
 })
 
 const props = withDefaults(defineProps<ISectionProps>(), {
-  titleFilled: config?.section?.titleFilled ?? false,
-  highlighted: config?.section?.highlighted ?? true,
+  titleFilled: config.section.props?.titleFilled ?? false,
+  highlighted: config.section.props?.highlighted ?? true,
 })
 
 const slots = useSlots()

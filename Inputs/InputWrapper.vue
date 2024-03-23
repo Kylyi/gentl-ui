@@ -52,7 +52,6 @@ const labelProps = computed(() => {
     required: props.required,
     size: props.size,
     stackLabel: props.stackLabel,
-    validation: props.validation,
     ui: props.ui,
   }
 })
