@@ -1,5 +1,4 @@
 // @unocss-include
-import defu from 'defu'
 import type { DefineComponent } from 'vue'
 import { appConfig } from '~/config'
 
@@ -69,7 +68,7 @@ import type {
 // Models
 import type { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
 
-export const config = defu(
+export const config = merge(
   {
     // Badge
     badge: {
