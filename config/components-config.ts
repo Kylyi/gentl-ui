@@ -284,11 +284,7 @@ export const config = merge(
     // Page wrapper
     pageWrapper: {
       topBar: undefined as unknown as DefineComponent<any>,
-      props: {
-        ui: {
-          titleWithShadow: true,
-        },
-      } as IPageWrapperProps,
+      props: {} as IPageWrapperProps,
     },
 
     // Page title
