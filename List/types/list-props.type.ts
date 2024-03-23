@@ -34,6 +34,19 @@ export type IListProps = IListBaseProps & {
   virtual?: boolean
 
   /**
+   * When `allowAdd` is used, we can also supply items that are about to be added
+   * This is useful when using the `List` inside a `Menu`
+   * -> When the `Menu` is closed, the `List` instance is destroyed and we lose the items
+   * so we save it in the parent component
+   */
+  addedItems?: IItemToBeAdded[]
+
+  /**
+   * Allows on-the-fly adding of new items
+   */
+  allowAdd?: boolean
+
+  /**
    * When using `multi` mode, whether to allow selecting all filtered options
    */
   allowSelectAllFiltered?: boolean
@@ -51,12 +64,9 @@ export type IListProps = IListBaseProps & {
   hasInfiniteScroll?: boolean
 
   /**
-   * Can be either
-   * Array<string | number | item>
-   * Record<itemKey, boolean | item>
-   * itemKey (~ only if not using `multi`)
+   * The props that should be passed to the search input tag (<input>)
    */
-  selected?: any
+  inputProps?: Record<string, any>
 
   loadData?: {
     /**
@@ -99,17 +109,9 @@ export type IListProps = IListBaseProps & {
   }
 
   /**
-   * Allows on-the-fly adding of new items
+   * When true, the search/container will not be focused on mount
    */
-  allowAdd?: boolean
-
-  /**
-   * When `allowAdd` is used, we can also supply items that are about to be added
-   * This is useful when using the `List` inside a `Menu`
-   * -> When the `Menu` is closed, the `List` instance is destroyed and we lose the items
-   * so we save it in the parent component
-   */
-  addedItems?: IItemToBeAdded[]
+  noAutofocus?: boolean
 
   /**
    * When true (with combination of `alowAdd`), the component will not add the
@@ -128,12 +130,16 @@ export type IListProps = IListBaseProps & {
   searchDebounce?: number
 
   /**
-   * The props that should be passed to the search input tag (<input>)
+   * Can be either
+   * Array<string | number | item>
+   * Record<itemKey, boolean | item>
+   * itemKey (~ only if not using `multi`)
    */
-  inputProps?: Record<string, any>
+  selected?: any
 
   /**
-   * When true, the search/container will not be focused on mount
+   * When true, when searching locally, the search string will first
+   * be transformed via the `toBoldLatin` fnc
    */
-  noAutofocus?: boolean
+  useToBoldLatin?: boolean
 }

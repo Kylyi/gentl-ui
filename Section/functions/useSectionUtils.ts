@@ -1,4 +1,4 @@
-// TYPES;
+// Types
 import type { ISectionProps } from '~/components/Section/types/section-props.type'
 
 export function useSectionUtils() {
@@ -11,7 +11,6 @@ export function useSectionUtils() {
       'subtitleClass',
       'title',
       'titleClass',
-      'titleFilled',
     ])
   }
 

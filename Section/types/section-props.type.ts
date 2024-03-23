@@ -1,6 +1,9 @@
 import type { CSSProperties } from 'vue'
 
-export interface ISectionProps {
+// Types
+import type { IHeadingProps } from '~/components/Typography/types/heading-props.type'
+
+export type ISectionProps = IHeadingProps & {
   /**
    * When true, the section will have a border.
    */
@@ -16,14 +19,6 @@ export interface ISectionProps {
   subtitleClass?: ClassType
   title?: string | number | false | null
   titleClass?: ClassType
-  titleFilled?: boolean
-
-  /**
-   * When true:
-   * The filled title will have left highlight.
-   * The unfilled title will have bottom highlight
-   */
-  highlighted?: boolean
 
   /**
    * The element to use for the header

@@ -1,6 +1,6 @@
 import { type CSSProperties } from 'vue'
 import { type Required } from 'utility-types'
-import { config } from '~/config'
+import { config } from '~/components/config/components-config'
 
 // Types
 import type { DistinctData } from '~/components/Table/types/distinct-data.type'

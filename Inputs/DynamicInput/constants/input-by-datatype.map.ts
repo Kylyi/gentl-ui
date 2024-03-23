@@ -1,5 +1,5 @@
 // @unocss-include
-import { config } from '~/config'
+import { config } from '~/components/config/components-config'
 
 // Components
 import TextInput from '~/components/Inputs/TextInput/TextInput.vue'

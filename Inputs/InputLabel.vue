@@ -1,8 +1,8 @@
 <script setup lang="ts">
 // Functions
-import type { InputLabelProps } from '~/components/Inputs/types/input-label-props.type'
+import type { IInputLabelProps } from '~/components/Inputs/types/input-label-props.type'
 
-const props = withDefaults(defineProps<InputLabelProps>(), {
+const props = withDefaults(defineProps<IInputLabelProps>(), {
   required: undefined,
 })
 

@@ -1,11 +1,11 @@
 import { type CSSProperties } from 'vue'
 
 // Types
-import type { InputLabelProps } from '~/components/Inputs/types/input-label-props.type'
+import type { IInputLabelProps } from '~/components/Inputs/types/input-label-props.type'
 import type { IZodValidationItem } from '~/utils/zod/types/zod-validation-item.type'
 import type { IZodValidationOptions } from '~/utils/zod/types/zod-validation-options.type'
 
-export type IInputWrapperProps = InputLabelProps & {
+export type IInputWrapperProps = IInputLabelProps & {
   /**
    * The cursor that will be shown when hovering over the input
    */

@@ -1,10 +1,8 @@
 <script setup lang="ts">
-type IProps = {
-  filled?: boolean
-  highlighted?: boolean
-}
+// Types
+import type { IHeadingProps } from '~/components/Typography/types/heading-props.type'
 
-withDefaults(defineProps<IProps>(), {
+withDefaults(defineProps<IHeadingProps>(), {
   highlighted: true,
 })
 </script>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { config } from '~/config'
+import { config } from '~/components/config/components-config'
 
 // Types
 import type { IListProps } from '~/components/List/types/list-props.type'
@@ -20,7 +20,7 @@ const props = withDefaults(defineProps<IListProps>(), {
   groupBy: () => [],
   itemKey: 'id',
   itemLabel: 'label',
-  fuseExtendedSearchToken: config.selector.fuseExtendedSearchToken,
+  fuseExtendedSearchToken: config.selector.props.fuseExtendedSearchToken,
 })
 
 defineEmits<{

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // ENHANCMENT: I'm using `props.optionLabel` for adding new items on the fly
 // but it will not work when optionLabel is a function
-import { config } from '~/config'
+import { config } from '~/components/config/components-config'
 
 // Types
 import type { ISelectorProps } from '~/components/Selector/types/selector-props.type'
@@ -23,8 +23,8 @@ const props = withDefaults(defineProps<ISelectorProps>(), {
   emptyValue: () => undefined,
   errorTakesSpace: true,
   errorVisible: true,
-  fuseExtendedSearchToken: config.selector.fuseExtendedSearchToken,
-  layout: config.inputs.wrapperProps.layout,
+  fuseExtendedSearchToken: config.selector.props.fuseExtendedSearchToken,
+  layout: config.inputWrapper.props.layout,
   maxChipsRows: props => {
     switch (props.layout) {
       case 'inline':
@@ -42,7 +42,7 @@ const props = withDefaults(defineProps<ISelectorProps>(), {
   required: undefined,
   size: 'md',
   stackLabel: undefined,
-  noHighlight: config.list.noHighlight,
+  noHighlight: config.list.props.noHighlight,
   hasInfiniteScroll: config.selector.props.hasInfiniteScroll,
 })
 

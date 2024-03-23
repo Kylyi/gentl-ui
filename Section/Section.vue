@@ -1,19 +1,28 @@
 <script setup lang="ts">
-import { config } from '~/config'
+import { config } from '~/components/config/components-config'
 
 // Types
 import type { ISectionProps } from '~/components/Section/types/section-props.type'
+
+// Functions
+import { useHeadingUtils } from '~/components/Typography/functions/useHeadingUtils'
 
 defineOptions({
   inheritAttrs: false,
 })
 
 const props = withDefaults(defineProps<ISectionProps>(), {
-  titleFilled: config.section.props?.titleFilled ?? false,
+  filled: config.section.props?.filled ?? false,
   highlighted: config.section.props?.highlighted ?? true,
 })
 
 const slots = useSlots()
+
+// Utils
+const { getHeadingProps } = useHeadingUtils()
+
+// Layout
+const headingProps = getHeadingProps(props)
 
 const isTitleVisible = computed(() => {
   return !!(props.title || props.subtitle || slots.subtitle || slots.title)
@@ -48,8 +57,7 @@ const isTitleVisible = computed(() => {
             { 'p-t-1': subtitle || $slots.subtitle },
             { 'is-highlighted': highlighted },
           ]"
-          :filled="titleFilled"
-          :highlighted="highlighted"
+          v-bind="headingProps"
           flex="col center"
         >
           <div

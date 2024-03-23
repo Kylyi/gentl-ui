@@ -1,4 +1,6 @@
-export type IPageWrapperProps = {
+import type { IPageTitleProps } from '~/components/Page/types/page-title-props.type'
+
+export type IPageWrapperProps = IPageTitleProps & {
   /**
    * Class for the content wrapper
    */
@@ -20,13 +22,4 @@ export type IPageWrapperProps = {
    * Usage: SSR
    */
   pad?: boolean
-
-  /**
-   * The page title
-   */
-  title?: string
-
-  ui?: {
-    titleWithShadow?: boolean
-  }
 }

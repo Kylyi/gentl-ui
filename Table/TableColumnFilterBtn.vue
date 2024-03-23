@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { type Placement } from '@floating-ui/dom'
-import { config } from '~/config'
+import { config } from '~/components/config/components-config'
 
 // Models
 import { TableColumn } from '~/components/Table/models/table-column.model'

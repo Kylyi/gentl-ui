@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { config } from '~/config'
+import { config } from '~/components/config/components-config'
 
 // Types
 import { FilterItem } from '~/libs/App/data/models/filter-item'

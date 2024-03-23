@@ -1,11 +1,11 @@
 <script setup lang="ts">
 // Types
-import type { YearSelectorProps } from '~/components/YearSelector/types/year-selector-props.type'
+import type { IYearSelectorProps } from '~/components/YearSelector/types/year-selector-props.type'
 
 // Components
 import NumberInput from '~/components/Inputs/NumberInput/NumberInput.vue'
 
-const props = defineProps<YearSelectorProps>()
+const props = defineProps<IYearSelectorProps>()
 const emits = defineEmits<{
   (e: 'year', year: number): void
   (e: 'previous'): void

@@ -1,4 +1,4 @@
-export interface YearSelectorProps {
+export type IYearSelectorProps = {
   modelValue: Datetime
   referenceTarget?: any
 }

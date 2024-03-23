@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { klona } from 'klona'
 
-import { config } from '~/config'
+import { config } from '~/components/config/components-config'
 
 // Types
 import type { ITableProps } from '~/components/Table/types/table-props.type'

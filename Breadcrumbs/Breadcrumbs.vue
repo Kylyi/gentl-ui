@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { config } from '~/config'
+import { config } from '~/components/config/components-config'
 
 // Constants
 import { BUTTON_PRESET } from '~/components/Button/constants/button-preset.constant'

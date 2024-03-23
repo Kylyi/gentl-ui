@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { config } from '~/config'
+import { config } from '~/components/config/components-config'
 
 // Types
 import type { IFileInputProps } from '~/components/FileInput/types/file-input-props.type'
@@ -14,7 +14,7 @@ import Field from '~/components/Field/Field.vue'
 
 const props = withDefaults(defineProps<IFileInputProps>(), {
   maxChipsRows: 3,
-  downloadUrl: config.fileInput.downloadUrl,
+  downloadUrl: config.fileInput.props.downloadUrl,
 })
 const emits = defineEmits<{
   (e: 'update:modelValue', value: Array<File | IFile>): void

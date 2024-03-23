@@ -1,5 +1,5 @@
 // Models
-import { config } from '~/config'
+import { config } from '~/components/config/components-config'
 import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
 
 export const NON_VALUE_COMPARATORS = [

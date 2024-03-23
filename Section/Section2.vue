@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { config } from '~/config'
+import { config } from '~/components/config/components-config'
 
 // Types
 import type { ISectionProps } from '~/components/Section/types/section-props.type'

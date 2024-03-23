@@ -1,5 +1,5 @@
 import { klona } from 'klona'
-import { config } from '~/config'
+import { config } from '~/components/config/components-config'
 
 // Types
 import type { ITableState } from '~/components/Table/types/table-state.type'

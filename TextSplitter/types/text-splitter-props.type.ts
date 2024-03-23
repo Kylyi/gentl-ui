@@ -1,3 +1,3 @@
-export interface ITextSplitterProps {
+export type ITextSplitterProps = {
   modelValue: string[]
 }

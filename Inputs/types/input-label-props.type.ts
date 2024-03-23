@@ -2,7 +2,7 @@ import { type CSSProperties } from 'vue'
 
 // Types
 
-export type InputLabelProps = {
+export type IInputLabelProps = {
   /**
    * Whether the input has content or not
    */

@@ -1,4 +1,4 @@
-import { config } from '~/config'
+import { config } from '~/components/config/components-config'
 
 // Types
 import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
@@ -367,7 +367,7 @@ export function useTableData(
 
       // NOTE: We check whether the amount of data we already fetched is not
       // greater than the limit
-      const limitRows = props.getData?.limitRows || config.table.limitRows
+      const limitRows = props.getData?.limitRows || config.table.props.limitRows
 
       if (limitRows && rows.value.length >= limitRows) {
         return

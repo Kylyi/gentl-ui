@@ -2,7 +2,7 @@ import { type UseFuseOptions, useFuse } from '@vueuse/integrations/useFuse'
 import { klona } from 'klona'
 import { type Required } from 'utility-types'
 import { type MaybeElementRef } from '@vueuse/core'
-import { config } from '~/config'
+import { config } from '~/components/config/components-config'
 
 // Types
 import type { IListProps } from '~/components/List/types/list-props.type'
@@ -93,6 +93,9 @@ export function useList(
     },
   }
 
+  const useToBoldLatin =
+    props.useToBoldLatin ?? config.list.props.useToBoldLatin
+
   // List
   const isLoading = ref(false)
   const listRowProps = computed(() => getListProps(props))
@@ -112,7 +115,7 @@ export function useList(
         set(
           itemPartial,
           key as string,
-          config.list.useToBoldLatin
+          useToBoldLatin
             ? $toBoldLatin(val?.toString())
             : normalizeText(val?.toString())
         )
@@ -338,7 +341,7 @@ export function useList(
       return search.value
     }
 
-    const searchBoldLatin = config.list.useToBoldLatin
+    const searchBoldLatin = useToBoldLatin
       ? $toBoldLatin(search.value)
       : search.value
 
@@ -416,9 +419,7 @@ export function useList(
         return {
           ref: item._ref,
           id: getKey(item._ref),
-          _highlighted: config.list.useToBoldLatin
-            ? getLabel(item._ref)
-            : highlighted,
+          _highlighted: useToBoldLatin ? getLabel(item._ref) : highlighted,
         }
       })
     }

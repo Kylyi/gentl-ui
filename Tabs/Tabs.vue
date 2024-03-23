@@ -3,7 +3,7 @@
 // and `v-show` in parent for each tab. There must be a better way to do this.
 import { isVNode } from 'vue'
 
-import { config } from '~/config'
+import { config } from '~/components/config/components-config'
 
 // Types
 import type { ITabsProps } from '~/components/Tabs/types/tabs-props.type'

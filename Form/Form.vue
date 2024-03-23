@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { config } from '~/config'
+import { config } from '~/components/config/components-config'
 
 // Types
 import type { IFormProps } from '~/components/Form/types/form-props.type'
 
 // Functions
 import { useFormErrors } from '~/components/Form/functions/useFormErrors'
+
+// Store
 import { useAppStore } from '~/libs/App/app.store'
 
 // Components
@@ -69,6 +71,10 @@ const formConfirmation = computed(() => {
   // When set in code, we want to use the value from the code
   if (props.submitConfirmation !== undefined) {
     return props.submitConfirmation
+  }
+
+  if (!('form' in config && 'confirmation' in config.form)) {
+    return
   }
 
   // When we don't allow people to edit the confirmation we just use whatever is

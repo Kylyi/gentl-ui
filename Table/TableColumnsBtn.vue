@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { DragHandle, SlickItem, SlickList } from 'vue-slicksort'
-import { config } from '~/config'
+import { config } from '~/components/config/components-config'
 
 // Types
 import type { IBtnProps } from '~/components/Button/types/btn-props.type'

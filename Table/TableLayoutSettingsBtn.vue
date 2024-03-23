@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { klona } from 'klona'
-import { config } from '~/config'
+import { config } from '~/components/config/components-config'
 
 // Types
 import { type ITableLayout } from '~/components/Table/types/table-layout.type'

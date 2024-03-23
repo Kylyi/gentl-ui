@@ -1,4 +1,4 @@
-import { config } from '~/config'
+import { config } from '~/components/config/components-config'
 
 // Types
 import type { IItem } from '~/libs/App/types/item.type'

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { config } from '~/config'
+import { config } from '~/components/config/components-config'
 
 // Types
 import type { IPageWrapperProps } from '~/components/Page/types/page-wrapper-props.type'
@@ -7,9 +7,7 @@ import type { IPageWrapperProps } from '~/components/Page/types/page-wrapper-pro
 withDefaults(defineProps<IPageWrapperProps>(), {
   pad: true,
   includeTopBar: true,
-  ui: () => ({
-    titleWithShadow: config.pageWrapper?.ui?.titleWithShadow ?? true,
-  }),
+  ui: () => config.pageWrapper.props.ui ?? {},
 })
 
 const { isMobile, isSidebarOpen } = useMobile()

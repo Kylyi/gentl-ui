@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// TYPES
+// Types
 import type { ITextSplitterProps } from '~/components/TextSplitter/types/text-splitter-props.type'
 
 defineProps<ITextSplitterProps>()

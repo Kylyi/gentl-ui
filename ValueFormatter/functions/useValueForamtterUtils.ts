@@ -1,4 +1,4 @@
-import { config } from '~/config'
+import { config } from '~/components/config/components-config'
 
 // Types
 import type { IValueFormatter } from '~/components/ValueFormatter/types/value-formatter-props.type'

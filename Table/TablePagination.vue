@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { config } from '~/config'
+import { config } from '~/components/config/components-config'
 
 type IProps = {
   currentPage: number
@@ -66,13 +66,11 @@ const pages = computed(() => {
 })
 
 const isLimitRowsReached = computed(() => {
-  const limitRows = props.limitRows ?? config.table.limitRows
+  const limitRows = props.limitRows ?? config.table.props.limitRows
   const currentRows = props.currentRows || 0
   const totalRows = props.totalRows || 0
 
-  return (
-    config.table.limitRows && currentRows >= limitRows && totalRows > limitRows
-  )
+  return limitRows && currentRows >= limitRows && totalRows > limitRows
 })
 
 const isPaginationRightVisible = computed(() => {

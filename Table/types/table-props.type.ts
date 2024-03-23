@@ -110,6 +110,11 @@ export interface ITableProps {
   loadingOnTop?: boolean
 
   /**
+   * The maximum amount of rows when using the infinite scroll
+   */
+  limitRows?: number
+
+  /**
    * The minimum column width
    */
   minimumColumnWidth?: number
