@@ -454,7 +454,7 @@ export const config = merge(
       /**
        * If true, the `localStorage` will be used to load the last used layout when no layout is specified by the API
        */
-      useLocalStorageForDefaultLayout: false,
+      useLocalStorageForDefaultLayout: true,
     },
 
     // Tabs
