@@ -271,6 +271,9 @@ export function useInputUtils(options: IInputUtilsOptions) {
 
         return value
       },
+      ltr: val => {
+        return isNil(val) ? '' : val
+      },
     },
     flush: 'post',
     immediate: false,
