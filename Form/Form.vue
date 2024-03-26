@@ -121,7 +121,7 @@ const formClass = computed(() => ({
 
 const controlsClass = computed(() => {
   const classes = [
-    'z-$zBackdrop w-full border-ca bg-white dark:bg-darker',
+    'z-$zDrawer w-full border-ca bg-white dark:bg-darker',
     'lt-lg:p-x-2 sticky bottom-0 inset-inline-0',
   ]
 
