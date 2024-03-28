@@ -221,7 +221,7 @@ const isPaginationRightVisible = computed(() => {
           emit-key
           size="sm"
           no-search
-          w="17"
+          w="18"
           append-class="!p-x-1"
           inner-class="!p-l-2 !p-r-2px"
         />
