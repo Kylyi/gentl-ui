@@ -91,7 +91,7 @@ function getRowKey(row: T) {
 }
 
 // Constants
-const VIRTUAL_SCROLL_THRESHOLD = 100
+const VIRTUAL_SCROLL_THRESHOLD = 80
 const OVERSCAN_PX = { top: 200, bottom: 400 }
 const INITIAL_ROWS_RENDER_COUNT =
   props.initialRowsRenderCount ??
@@ -211,8 +211,12 @@ function handleScrollEvent(
 
   // Rendered rows
   const overscanTop = Math.max(scrollY - overscan.value.top, 1)
-  const firstIdx = heightsCumulated.value.findIndex(h => h >= overscanTop)
-  const lastIdx = firstIdx + rowsInViewport.value
+  const firstIdx = isVirtual.value
+    ? heightsCumulated.value.findIndex(h => h >= overscanTop)
+    : 0
+  const lastIdx = isVirtual.value
+    ? firstIdx + rowsInViewport.value
+    : rows.value?.length - 1
 
   renderedRows.value = getRenderedRows(firstIdx, lastIdx)
 
