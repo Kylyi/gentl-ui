@@ -34,7 +34,16 @@ const icon = computed(() => {
 
 const imageUrl = computed(() => {
   const isUploadedFile = 'id' in props.file
-  const isImageFile = props.file.type?.startsWith('image/')
+  const PREVIEWABLE_IMAGE_TYPES = [
+    'image/jpeg',
+    'image/jpg',
+    'image/png',
+    'image/gif',
+    'image/svg+xml',
+    'image/webp',
+    'image/bmp',
+  ]
+  const isImageFile = PREVIEWABLE_IMAGE_TYPES.includes(props.file.type)
 
   if (isUploadedFile && isImageFile) {
     return getLocalImageUrl(props.file.path)
