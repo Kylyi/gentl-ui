@@ -21,6 +21,7 @@ const props = withDefaults(defineProps<IListProps>(), {
   itemKey: 'id',
   itemLabel: 'label',
   fuseExtendedSearchToken: config.selector.props.fuseExtendedSearchToken,
+  useToBoldLatin: undefined,
 })
 
 defineEmits<{
