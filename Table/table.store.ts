@@ -41,6 +41,7 @@ export const useTableStore = defineStore('table', () => {
               value: filter.value,
               dataType: col.dataType,
               id: filter.id,
+              filterField: filter.filterField,
             }
           })
 
@@ -55,6 +56,7 @@ export const useTableStore = defineStore('table', () => {
           frozen: col.frozen,
           semiFrozen: col.semiFrozen,
           originalWidth: col.originalWidth,
+          filterField: col.filterField,
         }
       })
     }

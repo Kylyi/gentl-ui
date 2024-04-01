@@ -68,7 +68,7 @@ const classes = computed(() => {
     </div>
 
     <!-- Errors & Hint -->
-    <div class="input-wrapper__reular-error">
+    <div class="input-wrapper__regular-error">
       <slot name="hint" />
       <slot name="error" />
     </div>
@@ -126,7 +126,7 @@ const classes = computed(() => {
     grid-area: append;
   }
 
-  .input-wrapper__reular-error {
+  .input-wrapper__regular-error {
     --apply: p-x-3;
     grid-area: error;
   }

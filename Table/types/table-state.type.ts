@@ -15,10 +15,17 @@ export type ITableColumnState = Pick<
   | 'semiFrozen'
   | 'dataType'
   | 'originalWidth'
+  | 'filterField'
 > & {
   filters: Pick<
-    TableColumn['filters'][0],
-    'id' | 'field' | 'comparator' | 'value' | 'nonInteractive' | 'dataType'
+    TableColumn['filters'][number],
+    | 'id'
+    | 'field'
+    | 'comparator'
+    | 'value'
+    | 'nonInteractive'
+    | 'dataType'
+    | 'filterField'
   >[]
 }
 

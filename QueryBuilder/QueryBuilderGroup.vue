@@ -37,6 +37,7 @@ function handleAddCondition() {
     {
       id: generateUUID(),
       field: undefined as unknown as string,
+      filterField: undefined as unknown as string,
       comparator: undefined as unknown as ComparatorEnum,
       value: undefined as unknown as string,
       path: `${group.value.path}.children.${group.value.children.length}`,

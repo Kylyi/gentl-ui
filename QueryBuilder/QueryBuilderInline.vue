@@ -66,6 +66,7 @@ function handleAddFirstCondition() {
     {
       id: generateUUID(),
       field: firstColumn?.field as string,
+      filterField: firstColumn?.filterField as string,
       comparator: firstColumn?.comparator as ComparatorEnum,
       value: undefined as unknown as string,
       path,

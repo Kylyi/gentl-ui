@@ -1,7 +1,9 @@
 export type DistinctData = {
-  id?: number | string
-  _value: any
-  _label?: string | number
+  id: any
+  label: string
 
-  [key: string]: any
+  /**
+   * The original object (reference)
+   */
+  ref?: IItem
 }

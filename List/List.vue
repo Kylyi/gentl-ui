@@ -114,6 +114,7 @@ onMounted(() => {
           :debounce="searchDebounce"
           layout="regular"
           class="bg-white dark:bg-darker"
+          :loading="isLoading"
           :autofocus="!noAutofocus"
           data-cy="list-search"
           v-bind="inputProps"
@@ -128,14 +129,6 @@ onMounted(() => {
         class="separator"
       />
     </template>
-
-    <!-- Loading - after initialization -->
-    <div
-      v-if="isInitialized && (loading || isLoading)"
-      flex="~ center"
-    >
-      <LoaderInline />
-    </div>
 
     <Btn
       v-if="allowSelectAllFiltered && search"

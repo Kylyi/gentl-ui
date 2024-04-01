@@ -48,11 +48,19 @@ function handleMenuHide() {
   emits('hide')
 }
 
+function handleMenuShow() {
+  if (props.focusConfirmButton) {
+    focusConfirmButton()
+  }
+}
+
+function focusConfirmButton() {
+  const confirmBtnDom = unrefElement(confirmBtnEl)
+  confirmBtnDom?.focus()
+}
+
 defineExpose({
-  focusConfirmButton: () => {
-    const confirmBtnDom = unrefElement(confirmBtnEl)
-    confirmBtnDom?.focus()
-  },
+  focusConfirmButton,
   recomputeMenuPosition: () => menuEl.value?.recomputePosition(),
   hide: () => menuEl.value?.hide(),
   show: () => menuEl.value?.show(),
@@ -66,6 +74,7 @@ defineExpose({
     min-w="60"
     position="top"
     :title="menuProps.title ?? $t('general.confirmAction')"
+    @show="handleMenuShow"
     @hide="handleMenuHide"
   >
     <slot name="prepend" />

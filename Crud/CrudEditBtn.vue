@@ -80,7 +80,9 @@ function handleClick() {
         :class="{ 'is-archived': archived }"
         data-cy="crud-edit-button"
         @click="handleClick"
-      />
+      >
+        <slot />
+      </Btn>
     </div>
   </Transition>
 </template>

@@ -53,5 +53,7 @@ const isEditing = computed({
     w="40"
     :label="$t('general.cancel')"
     @click="isEditing = false"
-  />
+  >
+    <slot />
+  </Btn>
 </template>

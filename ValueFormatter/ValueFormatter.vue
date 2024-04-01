@@ -3,7 +3,7 @@
 import type { IValueFormatter } from '~/components/ValueFormatter/types/value-formatter-props.type'
 
 // Functions
-import { useValueFormatterUtils } from '~/components/ValueFormatter/functions/useValueForamtterUtils'
+import { useValueFormatterUtils } from '~/components/ValueFormatter/functions/useValueFormatterUtils'
 
 defineOptions({
   inheritAttrs: false,

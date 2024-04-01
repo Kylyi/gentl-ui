@@ -21,6 +21,7 @@ const props = withDefaults(defineProps<IDurationInputProps>(), {
   labelInside: undefined,
   required: undefined,
   stackLabel: undefined,
+  errorVisible: undefined,
 })
 
 const emits = defineEmits<{
@@ -64,7 +65,8 @@ const numberInputProps = reactivePick(
   'stackLabel',
   'step',
   'inputProps',
-  'ui'
+  'ui',
+  'zod'
 )
 
 const modelByUnit = computed<Record<DurationUnit, number>>(() => {
@@ -134,6 +136,7 @@ defineExpose({
     ref="numberInputEl"
     v-model="model"
     v-bind="numberInputProps"
+    :zod="zod"
   >
     <template v-if="$slots.prepend">
       <slot name="prepend" />

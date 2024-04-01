@@ -193,7 +193,7 @@ useResizeObserver(headerEl, entries => {
 }
 
 .collapse {
-  --apply: relative flex flex-col rounded-b-custom;
+  --apply: relative flex flex-col rounded-b-custom transition-padding;
 
   &.is-padded {
     --apply: p-t-2 p-b-4 p-x-2;

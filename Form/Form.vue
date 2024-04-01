@@ -143,6 +143,7 @@ onKeyStroke(['e', 'E'], (ev: KeyboardEvent) => {
     ev.preventDefault()
     isEditing.value = false
     menuConfirmationEl.value?.hide()
+    activeElement.value?.blur?.()
 
     return
   }
@@ -242,8 +243,10 @@ defineExpose({
 
 // When triggering the edit mode, we want to focus the first input
 whenever(isEditing, () => {
-  // Small delay for waiting for the input to be appended in EDIT mode
-  nextTick(() => {
+  // We need a timeout to
+  // 1. Wait for the form to be rendered
+  // 2. Potentially prevent the `e` key being inputted into the input
+  setTimeout(() => {
     focusFirstInput()
   })
 })
@@ -261,6 +264,7 @@ onMounted(() => {
     :class="formClass"
     autocomplete="off"
     novalidate
+    .handleEnter="handleEnter"
     @submit.stop.prevent="throttledSubmit()"
     @keydown.enter="handleEnter"
   >
@@ -331,7 +335,13 @@ onMounted(() => {
             v-if="editControls?.cancel"
             :class="{ invisible: !isEditing }"
             :reset="reset"
-          />
+          >
+            <KeyboardShortcut
+              char="E"
+              with-ctrl
+              class="!absolute top--1 right-1"
+            />
+          </CrudBtnCancel>
 
           <Btn
             v-if="!noSubmit"
@@ -364,9 +374,20 @@ onMounted(() => {
             </Component>
 
             <slot name="submit-btn" />
+
+            <KeyboardShortcut
+              with-ctrl
+              char="&#9166;"
+              class="!absolute top--1 right-1"
+            />
           </Btn>
 
-          <CrudEditBtn v-if="editControls?.edit" />
+          <CrudEditBtn v-if="editControls?.edit">
+            <KeyboardShortcut
+              char="E"
+              class="!absolute top--1 right-1"
+            />
+          </CrudEditBtn>
 
           <slot name="submit-after" />
         </div>

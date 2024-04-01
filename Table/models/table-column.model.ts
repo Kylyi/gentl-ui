@@ -35,8 +35,27 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   reorderable = true
   resizable = true
   sortable = true
+
+  /**
+   * When true, the column label will be shown in the help button in the
+   * search input of the table
+   *
+   * @default false
+   */
   searchable?: boolean
+
+  /**
+   * When true, the column will be selectable
+   *
+   * @default true
+   */
   selectable?: boolean
+
+  /**
+   * We might need to filter by a different field than the one displayed,
+   * this property is used for that
+   */
+  filterField?: string
 
   /**
    * When true, the column will be not editable
@@ -296,6 +315,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
       case 'date':
       case 'timestamp':
       case 'duration':
+      case 'custom':
         this.comparator = defaultComparator ?? ComparatorEnum.EQUAL
 
         break
@@ -310,6 +330,14 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
         this.comparator = defaultComparator ?? ComparatorEnum.STARTS_WITH
 
         break
+    }
+
+    // If the column doesn't support the comparator, we set it to the first one
+    if (
+      this.comparators &&
+      !this.comparators.includes(this.comparator as ComparatorEnum)
+    ) {
+      this.comparator = this.comparators[0]
     }
   }
 
@@ -431,6 +459,14 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     }
   }
 
+  /**
+   * Function that defines how do we access a value for this column
+   * for a specific row
+   */
+  valueGetter(row: T) {
+    return get(row, this.field) as any
+  }
+
   constructor(col: Required<Partial<TableColumn<T>>, 'field'>) {
     this.name = col.name ?? col.field
     this.format = col.format
@@ -438,6 +474,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     this.dataType = col.dataType ?? this.dataType
     this.label = String(col.label || col.name)
     this.field = col.field
+    this.filterField = col.filterField
     this.width = col.width || this.width
     this.originalWidth = col.width || this.width
     this.minWidth = col.minWidth
@@ -475,6 +512,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     this.noFilterSort = col.noFilterSort ?? false
     this.filterFormat = col.filterFormat
     this.getDistinctData = col.getDistinctData
+    this.valueGetter = col.valueGetter ?? this.valueGetter
 
     this.reorderable = col.reorderable ?? this.reorderable
     this.resizable = col.resizable ?? this.resizable

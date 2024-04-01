@@ -3,9 +3,10 @@
 import { type IMiniCardProps } from '~/components/Card/types/mini-card-props.type'
 
 // Functions
-import { useValueFormatterUtils } from '~/components/ValueFormatter/functions/useValueForamtterUtils'
+import { useValueFormatterUtils } from '~/components/ValueFormatter/functions/useValueFormatterUtils'
 
 const props = withDefaults(defineProps<IMiniCardProps>(), {
+  emptyValueString: '-',
   previousValue: undefined,
 })
 

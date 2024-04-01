@@ -409,8 +409,6 @@ const $z = useZod(
           }"
           :multi="isSelectorComparator(item.comparator)"
           emit-key
-          option-key="_value"
-          option-label="_label"
           class="qb-item__content-value"
           size="sm"
           :placeholder="`${$t('table.filterValue')}...`"

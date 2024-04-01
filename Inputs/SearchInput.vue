@@ -35,6 +35,7 @@ defineExpose({
     :layout="layout"
     :input-class="inputClass"
     :input-style="inputStyle"
+    :loading="loading"
     :ui="ui"
     :input-props="inputProps"
     :placeholder="placeholder ?? $t('general.search')"

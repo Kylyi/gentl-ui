@@ -66,7 +66,7 @@ function handleSort(sortValue?: 'asc' | 'desc', ev?: PointerEvent) {
         :label="$t('sorting.clear')"
         size="xs"
         color="negative"
-        @click="handleSort()"
+        @click="handleSort(undefined, $event)"
       />
     </div>
 

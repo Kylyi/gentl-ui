@@ -1,7 +1,7 @@
 import { type SuggestionKeyDownProps } from '@tiptap/suggestion'
 
 // Functions
-import { useValueFormatterUtils } from '~/components/ValueFormatter/functions/useValueForamtterUtils'
+import { useValueFormatterUtils } from '~/components/ValueFormatter/functions/useValueFormatterUtils'
 
 // Injections
 import { mentionEntityKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'

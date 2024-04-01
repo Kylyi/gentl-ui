@@ -5,6 +5,7 @@ import type { IValueFormatter } from '~/components/ValueFormatter/types/value-fo
 
 // Functions
 import { useNumber } from '~/components/Inputs/NumberInput/functions/useNumber'
+import { useDuration } from '~/components/Inputs/DurationInput/functions/useDuration'
 
 // Constants
 import { messages } from '~/utils/i18n'
@@ -12,6 +13,7 @@ import { messages } from '~/utils/i18n'
 export function useValueFormatterUtils() {
   // Utils
   const { locale } = useI18n()
+  const { formatDuration } = useDuration()
   const { formatNumber } = useNumber()
   const { formatDate, formatTime } = useDateUtils()
 
@@ -110,6 +112,13 @@ export function useValueFormatterUtils() {
       case 'numberSimple':
       case 'intSimple':
         return formatNumber(value)
+
+      case 'duration':
+      case 'durationSimple':
+        // eslint-disable-next-line no-case-declarations
+        const { val, formatted, unit } = formatDuration(value)
+
+        return `${formatted} ${$t(`general.${unit}`, val)}`
 
       case 'date':
       case 'dateSimple':

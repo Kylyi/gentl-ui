@@ -41,7 +41,7 @@ const props = withDefaults(defineProps<ISelectorProps>(), {
   options: () => [],
   required: undefined,
   size: 'md',
-  stackLabel: undefined,
+  stackLabel: config.inputWrapper.props.stackLabel,
   noHighlight: config.list.props.noHighlight,
   hasInfiniteScroll: config.selector.props.hasInfiniteScroll,
 })

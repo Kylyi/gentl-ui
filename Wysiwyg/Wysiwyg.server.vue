@@ -4,7 +4,7 @@ import type { IWysiwygProps } from '~/components/Wysiwyg/types/wysiwyg-props.typ
 import type { IItem } from '~/libs/App/types/item.type'
 
 // Functions
-import { useValueFormatterUtils } from '~/components/ValueFormatter/functions/useValueForamtterUtils'
+import { useValueFormatterUtils } from '~/components/ValueFormatter/functions/useValueFormatterUtils'
 import { useInputWrapperUtils } from '~/components/Inputs/functions/useInputWrapperUtils'
 
 import { mentionEntityKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'

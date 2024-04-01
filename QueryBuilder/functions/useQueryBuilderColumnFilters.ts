@@ -27,6 +27,7 @@ export function useQueryBuilderColumnFilters(
         return {
           id: generateUUID(),
           field: filter.field,
+          filterField: filter.filterField,
           comparator: filter.comparator,
           value: filter.value,
           path: `column_filters.${filter.id}`,

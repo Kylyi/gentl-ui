@@ -10,6 +10,7 @@ export type IQueryBuilderItem<T = IItem> = {
   id: string
   path: string
   field: ObjectKey<T>
+  filterField?: ObjectKey<T>
   comparator: ComparatorEnum
   value?: any
   isNotDraggable?: boolean

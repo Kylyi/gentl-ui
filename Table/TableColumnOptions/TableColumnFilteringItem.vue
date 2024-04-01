@@ -332,8 +332,6 @@ defineExpose({
       }"
       :multi="isSelectorComparator(filter.comparator)"
       emit-key
-      option-key="_value"
-      option-label="_label"
       size="sm"
       layout="regular"
       :placeholder="`${$t('table.filterValue')}...`"

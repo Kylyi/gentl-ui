@@ -2,14 +2,19 @@ import type { IMenuProps } from '~/components/Menu/types/menu-props.type'
 
 export interface IMenuConfirmationProps extends IMenuProps {
   /**
-   * Whether the confirmation has visual confirmation (the big checkmark)
-   */
-  hasConfirmation?: boolean
-
-  /**
    * The text to display in the confirmation menu
    */
   confirmationText?: string
+
+  /**
+   * When true, the 'confirm' button will be focused when the menu is opened
+   */
+  focusConfirmButton?: boolean
+
+  /**
+   * Whether the confirmation has visual confirmation (the big checkmark)
+   */
+  hasConfirmation?: boolean
 
   /**
    * Whether to show the confirmation button

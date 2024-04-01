@@ -9,7 +9,7 @@ type IProps = {
 
 const props = defineProps<IProps>()
 
-const { isApple } = useDevice()
+const { isApple, isDesktop } = useDevice()
 
 const hasAnyModifier = computed(() => {
   return props.withCtrl || props.withAlt || props.withShift
@@ -17,7 +17,10 @@ const hasAnyModifier = computed(() => {
 </script>
 
 <template>
-  <div class="keyboard-shortcut">
+  <div
+    v-if="isDesktop"
+    class="keyboard-shortcut"
+  >
     <!-- Modifier - CTRL -->
     <div
       v-if="withCtrl"
@@ -82,10 +85,11 @@ const hasAnyModifier = computed(() => {
   --apply: flex gap-1 items-center font-mono color-ca leading-none;
 
   &__wrapper {
-    --apply: flex flex-center border-1 border-ca rounded-custom w-4.5 h-4.5;
+    --apply: flex flex-center border-1 border-ca rounded-1 w-4.5 h-4.5
+      bg-white color-darker dark:(bg-darker color-white);
 
     & > .icon {
-      --apply: w-full h-full;
+      --apply: h-4 w-4;
     }
   }
 }

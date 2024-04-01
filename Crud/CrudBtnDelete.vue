@@ -25,15 +25,18 @@ defineEmits<{
   >
     <MenuConfirmation
       v-if="!noConfirm"
-      placement="bottom-end"
       :title="$t('general.delete')"
       :confirmation-text="confirmationText"
+      placement="bottom-start"
       no-uplift
       no-overlay
+      focus-confirm-button
       h="auto"
       @ok="$emit('delete')"
     >
       <slot name="confirmation" />
     </MenuConfirmation>
+
+    <slot />
   </Btn>
 </template>

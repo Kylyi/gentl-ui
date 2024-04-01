@@ -21,6 +21,12 @@ export function useInputValidationUtils(props: IInputWrapperProps) {
   })
 
   const isRequired = computed(() => {
+    if (props.zod) {
+      return $z.value.$isFieldRequired(
+        typeof props.zod === 'string' ? props.zod : props.zod?.key
+      )
+    }
+
     return Array.isArray(validation.value)
       ? validation.value.some(item => item?.$required)
       : validation.value?.$required

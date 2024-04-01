@@ -331,7 +331,7 @@ function selectSelf(self: any) {
     <!-- Regular field -->
     <ValueFormatter
       v-else
-      :value="get(row, col.field)"
+      :value="col.valueGetter(row)"
       :data-type="col.dataType"
       :row="row"
       :format="col.format"
@@ -342,7 +342,7 @@ function selectSelf(self: any) {
           <!-- Boolean -->
           <Checkbox
             v-if="col.dataType === 'boolean'"
-            :model-value="get(row, col.field)"
+            :model-value="col.valueGetter(row)"
             :editable="false"
             :label="val"
             m="x-2"
