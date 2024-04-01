@@ -79,9 +79,10 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
       const _label = label !== '' ? label : `(${t('general.empty')})`
 
       return {
-        ...item,
-        _value: get(item, field || col.field),
-        _label,
+        id: get(item, field || col.field),
+        label: _label,
+
+        ref: item,
       }
     })
   }
