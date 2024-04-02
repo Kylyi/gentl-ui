@@ -55,7 +55,7 @@ const hasContent = computed(() => {
 
   &__wrapper {
     --apply: flex flex-col gap-6;
-    --apply: max-w-$PageTitle-max-width p-$PageTitle-padding m-$PageTitleMargin;
+    --apply: max-w-$PageTitle-max-width p-$PageTitle-padding m-$PageTitle-margin;
 
     &.has-shadow {
       box-shadow: 0 8px 8px -9px theme('colors.truegray.300');
