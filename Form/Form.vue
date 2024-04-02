@@ -337,6 +337,7 @@ onMounted(() => {
             :reset="reset"
           >
             <KeyboardShortcut
+              v-if="!noShortcuts"
               char="E"
               with-ctrl
               class="!absolute top--1 right-1"
@@ -376,13 +377,14 @@ onMounted(() => {
             <slot name="submit-btn" />
 
             <KeyboardShortcut
+              v-if="!noShortcuts"
               with-ctrl
               char="&#9166;"
               class="!absolute top--1 right-1"
             />
           </Btn>
 
-          <CrudEditBtn v-if="editControls?.edit">
+          <CrudEditBtn v-if="editControls?.edit && !noShortcuts">
             <KeyboardShortcut
               char="E"
               class="!absolute top--1 right-1"

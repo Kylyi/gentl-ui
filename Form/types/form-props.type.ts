@@ -102,6 +102,11 @@ export interface IFormProps {
   noGrow?: boolean
 
   /**
+   * If true, the form will not show the shortcuts.
+   */
+  noShortcuts?: boolean
+
+  /**
    * If true, the form will include the submit button.
    */
   noSubmit?: boolean
