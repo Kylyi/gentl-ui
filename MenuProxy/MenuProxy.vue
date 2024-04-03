@@ -91,5 +91,9 @@ defineExpose({
     <template #default="{ hide }">
       <slot :hide="hide" />
     </template>
+
+    <template #header-right>
+      <slot name="header-right" />
+    </template>
   </Component>
 </template>

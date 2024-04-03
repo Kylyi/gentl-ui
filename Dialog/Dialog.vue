@@ -224,6 +224,8 @@ const isOverlayVisible = computed(() => {
                 </h6>
               </slot>
 
+              <slot name="header-right" />
+
               <Btn
                 v-if="!noClose"
                 preset="CLOSE"

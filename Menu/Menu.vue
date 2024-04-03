@@ -325,6 +325,8 @@ const isOverlayVisible = computed(() => {
               </h6>
             </slot>
 
+            <slot name="header-right" />
+
             <Btn
               preset="CLOSE"
               size="sm"
