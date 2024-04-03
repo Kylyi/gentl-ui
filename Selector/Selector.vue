@@ -20,6 +20,8 @@ import ScrollArea from '~/components/ScrollArea/ScrollArea.vue'
 
 const props = withDefaults(defineProps<ISelectorProps>(), {
   debounce: 0,
+  disabled: undefined,
+  readonly: undefined,
   emptyValue: () => undefined,
   errorTakesSpace: true,
   errorVisible: true,
