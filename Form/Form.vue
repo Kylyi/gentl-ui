@@ -144,6 +144,7 @@ onKeyStroke(['e', 'E'], (ev: KeyboardEvent) => {
     isEditing.value = false
     menuConfirmationEl.value?.hide()
     activeElement.value?.blur?.()
+    props.reset?.()
 
     return
   }
