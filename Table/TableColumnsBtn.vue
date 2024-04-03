@@ -184,6 +184,7 @@ async function handleApplyChanges() {
         grid="~ cols-2"
         bg="dark:darker white"
         p="2"
+        no-shortcuts
         :label="$t('table.applyColumns')"
         :submit-disabled="!filteredCols.length"
         :submit-confirmation="false"

@@ -299,6 +299,7 @@ const $z = useZod(
         :loading="isLoading"
         :submit-confirmation="false"
         focus-first-input
+        no-shortcuts
         @submit="handleSaveLayout"
       >
         <TextInput
