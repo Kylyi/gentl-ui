@@ -1,4 +1,7 @@
 <script setup lang="ts">
+// Store
+import { useAppStore } from '~/libs/App/app.store'
+
 type IProps = {
   icon?: string
   char?: string
@@ -9,16 +12,22 @@ type IProps = {
 
 const props = defineProps<IProps>()
 
-const { isApple, isDesktop } = useDevice()
+// Utils
+const appStore = useAppStore()
+const { isApple } = useDevice()
 
 const hasAnyModifier = computed(() => {
   return props.withCtrl || props.withAlt || props.withShift
+})
+
+const isVisible = computed(() => {
+  return appStore.lastPointerDownType === 'mouse'
 })
 </script>
 
 <template>
   <div
-    v-if="isDesktop"
+    v-if="isVisible"
     class="keyboard-shortcut"
   >
     <!-- Modifier - CTRL -->
