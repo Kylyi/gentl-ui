@@ -60,7 +60,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   /**
    * When true, the column will be not editable
    */
-  noEdit?: boolean
+  noEdit?: boolean | ((row: T) => boolean)
 
   /**
    * When true, the column will be hidden in the table

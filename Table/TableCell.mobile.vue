@@ -118,7 +118,20 @@ const { pause, resume } = useIntersectionObserver(
   { immediate: false }
 )
 
-const isEditingField = computedEager(() => {
+const isEditable = computed(() => {
+  if (!props.editable) {
+    return false
+  }
+
+  const isCellEditable =
+    typeof col.value.noEdit === 'function'
+      ? !col.value.noEdit(props.row)
+      : !col.value.noEdit
+
+  return isCellEditable
+})
+
+const isEditingField = computed(() => {
   return (
     isEditing.value &&
     editRow.value?.row === props.row &&
@@ -219,7 +232,7 @@ function selectSelf(self: any) {
       </span>
 
       <Btn
-        v-if="editable && !col.noEdit"
+        v-if="editable && isEditable"
         size="xs"
         :preset="isEditingField ? 'CLOSE' : 'EDIT'"
         class="cell-edit-btn"
