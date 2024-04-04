@@ -90,6 +90,13 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   link?: (row: T) => string | undefined | false
 
   /**
+   * The link's props
+   *
+   * Usage: passing `target` or `rel` props to the link
+   */
+  linkProps?: Record<string, any>
+
+  /**
    * The column's minimum width in px
    */
   minWidth?: number
@@ -488,6 +495,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     this.nonInteractive = col.nonInteractive ?? false
     this.autofitAdjustment = col.autofitAdjustment ?? 0
     this.link = col.link
+    this.linkProps = col.linkProps
     this.noFreeze = col.noFreeze
     this.autofitLongestText = col.autofitLongestText ?? true
     this.selectable = col.selectable ?? true

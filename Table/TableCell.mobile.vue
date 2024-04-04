@@ -297,6 +297,7 @@ function selectSelf(self: any) {
               v-else-if="col.link?.(row)"
               class="link"
               :to="col.link(row) || ''"
+              v-bind="col.linkProps"
               p="x-2"
             >
               {{ val }}
