@@ -262,7 +262,7 @@ export function useTableData(
         select: select.value,
         includeDeleted: tableState.value.includeDeleted,
         appendedLayoutSchema: props.appendedLayoutSchema,
-        count: true,
+        isInitialFetch: true,
       }
 
       // When there are some columns with `alwaysSelected` attribute set to true,
@@ -378,7 +378,7 @@ export function useTableData(
       if (isFetchMore) {
         options.fetchQueryParams = config.table.getQuery({
           ...options.fetchTableQuery,
-          count: false,
+          isInitialFetch: false,
           fetchMore: {
             $key: get(lastRow.value, rowKey.value),
             rowKey: rowKey.value,
@@ -386,8 +386,8 @@ export function useTableData(
           },
         })
 
-        options.tableQuery.count = false
-        options.fetchTableQuery.count = false
+        options.tableQuery.isInitialFetch = false
+        options.fetchTableQuery.isInitialFetch = false
       }
 
       if (

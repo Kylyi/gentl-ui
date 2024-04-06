@@ -26,7 +26,8 @@ const props = withDefaults(defineProps<IFormProps>(), {
   hasControls: undefined,
   submitConfirmation: undefined,
   focusFirstInput: false,
-  preventSubmitOnEnter: config.form.props.preventSubmitOnEnter,
+  preventSubmitOnEnter: config.form.props?.preventSubmitOnEnter,
+  noShortcuts: config.form.props?.noShortcuts,
 })
 
 const emits = defineEmits<{

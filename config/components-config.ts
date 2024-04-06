@@ -172,6 +172,34 @@ export const config = merge(
         focusFirstInput: true,
         dense: true,
       } as IFormProps,
+
+      confirmation: {
+        /**
+         * When true, the user will be presented with confirmation menu with
+         * possibility to add comment when submitting a form
+         */
+        enabled: false,
+
+        /**
+         * When true, the user will be required to add a comment when submitting a form
+         */
+        required: false,
+
+        /**
+         * When true, user will be able to change the `enabled` and `required` props in the UI
+         */
+        editable: false,
+
+        /**
+         * The component to use for the confirmation
+         */
+        component: undefined as unknown as DefineComponent<any>,
+      },
+
+      /**
+       * When the form is submitted and no errors are present, this function will be called
+       */
+      onSubmitSuccess: () => {},
     },
 
     // Input block
@@ -512,6 +540,11 @@ export const config = merge(
     // Year selector
     yearSelector: {
       props: {} as IYearSelectorProps,
+    },
+
+    // Logging
+    logging: {
+      limit: 100,
     },
 
     // Data types

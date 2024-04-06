@@ -39,7 +39,7 @@ export type ITableQuery = {
   skip?: number
   select?: string[]
   includeDeleted?: boolean
-  count?: boolean // Whether to also fetch the total count of items
+  isInitialFetch?: boolean // Whether this is the initial fetch
 
   /**
    * The layout schema that will be included in every request but will not be
