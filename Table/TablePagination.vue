@@ -204,28 +204,30 @@ const isPaginationRightVisible = computed(() => {
       </template>
 
       <!-- Page size -->
-      <div
+      <slot
         v-if="isPaginationRightVisible"
-        class="table-pagination__page-size"
+        name="pagination-append"
       >
-        <span
-          text="caption"
-          class="!lt-md:hidden"
-        >
-          {{ $t('table.rowsPerPage') }}
-        </span>
+        <div class="table-pagination__page-size">
+          <span
+            text="caption"
+            class="!lt-md:hidden"
+          >
+            {{ $t('table.rowsPerPage') }}
+          </span>
 
-        <Selector
-          v-model="currentPageSize"
-          :options="rowsPerPageOptions"
-          emit-key
-          size="sm"
-          no-search
-          w="18"
-          append-class="!p-x-1"
-          inner-class="!p-l-2 !p-r-2px"
-        />
-      </div>
+          <Selector
+            v-model="currentPageSize"
+            :options="rowsPerPageOptions"
+            emit-key
+            size="sm"
+            no-search
+            w="18"
+            append-class="!p-x-1"
+            inner-class="!p-l-2 !p-r-2px"
+          />
+        </div>
+      </slot>
     </div>
   </ClientOnly>
 </template>
