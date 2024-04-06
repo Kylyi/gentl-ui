@@ -315,10 +315,12 @@ function selectSelf(self: any) {
 
 <style lang="scss" scoped>
 .cell {
-  --apply: grid col-span-2 leading-tight h-$mobileRowHeight items-center
+  --apply: grid col-span-2 leading-tight items-center
     p-l-2 p-r-1 rounded-custom;
 
   grid-template-columns: subgrid;
+
+  // --apply: h-$mobileRowHeight;
 
   &.is-editable:hover,
   &.is-editing {

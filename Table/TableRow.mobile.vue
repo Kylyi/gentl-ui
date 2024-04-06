@@ -99,7 +99,7 @@ const isEditable = computedEager(() => {
   }
 
   grid-template-columns: 1fr 2fr;
-  grid-template-rows: repeat(auto-fit, var(--mobileRowHeight));
+  // grid-template-rows: repeat(auto-fit, var(--mobileRowHeight));
 
   &.is-deleted {
     --apply: line-through color-ca;
