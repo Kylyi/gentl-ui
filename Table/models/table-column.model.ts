@@ -5,7 +5,10 @@ import { config } from '~/components/config/components-config'
 // Types
 import type { DistinctData } from '~/components/Table/types/distinct-data.type'
 import type { IItem, IItemBase } from '~/libs/App/types/item.type'
-import type { ITableOrderBy } from '~/components/Table/types/table-query.type'
+import type {
+  ITableFilterItem,
+  ITableOrderBy,
+} from '~/components/Table/types/table-query.type'
 
 // Models
 import { FilterItem } from '~/libs/App/data/models/filter-item'
@@ -134,7 +137,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
    */
   filterComponent?: {
     component: any
-    props?: IItem | ((row: T) => IItem)
+    props?: IItem | ((row: T, column: ITableFilterItem) => IItem)
     comparators: ComparatorEnum[]
     valueFormatter?: {
       getter: (value: any) => any

@@ -33,7 +33,7 @@ const preset = computed(() =>
   props.preset ? BUTTON_PRESET[props.preset] : null
 )
 
-const btnClass = computedEager(() => {
+const btnClass = computed(() => {
   return [
     `btn--${props.size}`,
     { 'is-stacked': props.stacked },
