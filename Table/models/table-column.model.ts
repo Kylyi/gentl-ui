@@ -134,7 +134,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
    */
   filterComponent?: {
     component: any
-    props?: Record<string, any>
+    props?: IItem | ((row: T) => IItem)
     comparators: ComparatorEnum[]
     valueFormatter?: {
       getter: (value: any) => any

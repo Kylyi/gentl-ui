@@ -373,7 +373,11 @@ const $z = useZod(
           v-if="customFilterComponent?.comparators.includes(item.comparator)"
           ref="valueInputEl"
           v-model="customValue"
-          v-bind="customFilterComponent.props"
+          v-bind="
+            typeof customFilterComponent.props === 'function'
+              ? customFilterComponent.props(customValueComputed)
+              : customFilterComponent.props
+          "
           size="sm"
           class="qb-item__content-value"
           :placeholder="`${$t('table.filterValue')}...`"

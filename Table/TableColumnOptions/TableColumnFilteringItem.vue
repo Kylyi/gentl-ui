@@ -297,7 +297,11 @@ defineExpose({
       v-if="customFilterComponent?.comparators.includes(filter.comparator)"
       ref="valueInputEl"
       v-model="customValueComputed"
-      v-bind="customFilterComponent.props"
+      v-bind="
+        typeof customFilterComponent.props === 'function'
+          ? customFilterComponent.props(customValueComputed)
+          : customFilterComponent.props
+      "
       size="sm"
       :placeholder="`${$t('table.filterValue')}...`"
       @update:model-value="handleValueChange"
