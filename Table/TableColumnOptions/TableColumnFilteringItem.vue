@@ -299,7 +299,7 @@ defineExpose({
       v-model="customValueComputed"
       v-bind="
         typeof customFilterComponent.props === 'function'
-          ? customFilterComponent.props(customValueComputed, column)
+          ? customFilterComponent.props(customValueComputed, filter)
           : customFilterComponent.props
       "
       size="sm"
