@@ -375,7 +375,7 @@ const $z = useZod(
           v-model="customValue"
           v-bind="
             typeof customFilterComponent.props === 'function'
-              ? customFilterComponent.props(customValueComputed)
+              ? customFilterComponent.props(customValue)
               : customFilterComponent.props
           "
           size="sm"
