@@ -40,9 +40,7 @@ export function useInputValidationUtils(props: IInputWrapperProps) {
 
   const issues = computed(() => {
     return Array.isArray(validation.value)
-      ? (validation.value
-          .flatMap(v => v?.$messages)
-          .filter(Boolean) as string[])
+      ? validation.value[0]?.$messages || ([].filter(Boolean) as string[])
       : validation.value?.$messages || []
   })
 
