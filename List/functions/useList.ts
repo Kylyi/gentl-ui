@@ -343,7 +343,7 @@ export function useList(
 
     const searchBoldLatin = useToBoldLatin
       ? $toBoldLatin(search.value)
-      : search.value
+      : normalizeText(search.value)
 
     if (!props.fuseExtendedSearchToken) {
       return searchBoldLatin
