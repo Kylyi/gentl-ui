@@ -27,13 +27,14 @@ export class FileModel {
       return
     }
 
+    const filesHost = useRuntimeConfig().public.FILES_HOST ?? '/api/files'
     const formData = new FormData()
     formData.append('files', this.file)
     this.hasError = false
 
     const { data } = await requestHandler(
       () =>
-        axios.post(import.meta.env.FILES_HOST ?? '/api/files', formData, {
+        axios.post(filesHost, formData, {
           onUploadProgress: progressEvent => {
             const { loaded, total } = progressEvent
 
