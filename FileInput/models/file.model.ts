@@ -33,7 +33,7 @@ export class FileModel {
 
     const { data } = await requestHandler(
       () =>
-        axios.post('/api/files', formData, {
+        axios.post(import.meta.env.FILES_HOST ?? '/api/files', formData, {
           onUploadProgress: progressEvent => {
             const { loaded, total } = progressEvent
 
