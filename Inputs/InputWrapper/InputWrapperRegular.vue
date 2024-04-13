@@ -120,7 +120,7 @@ const classes = computed(() => {
   }
 
   .input-wrapper__regular-error {
-    --apply: p-x-3;
+    --apply: flex flex-col p-x-1;
     grid-area: error;
   }
 }
