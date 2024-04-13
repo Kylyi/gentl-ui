@@ -46,8 +46,9 @@ const slots = useSlots()
 
 // Constants
 const MIN_VISIBLE_QUERY_BUILDER_ROWS = 1
-const MAX_VISIBLE_QUERY_BUILDER_ROWS = 3
+const MAX_VISIBLE_QUERY_BUILDER_ROWS = 2
 const QUERY_BUILDER_INLINE_PADDING = 8
+const QUERY_BUILDER_INLINE_GAP = 2
 
 // Store
 const { setTableState } = useTableStore()
@@ -79,10 +80,14 @@ const hasActionBar = computedEager(() => {
 const queryBuilderHeight = computed(() => {
   return {
     minHeight: `${
-      MIN_VISIBLE_QUERY_BUILDER_ROWS * 32 + QUERY_BUILDER_INLINE_PADDING
+      MIN_VISIBLE_QUERY_BUILDER_ROWS * 26 +
+      QUERY_BUILDER_INLINE_PADDING +
+      QUERY_BUILDER_INLINE_GAP
     }px`,
     maxHeight: `${
-      MAX_VISIBLE_QUERY_BUILDER_ROWS * 32 + QUERY_BUILDER_INLINE_PADDING
+      MAX_VISIBLE_QUERY_BUILDER_ROWS * 26 +
+      QUERY_BUILDER_INLINE_PADDING +
+      QUERY_BUILDER_INLINE_GAP
     }px`,
   }
 })
@@ -279,21 +284,15 @@ function handleFitColumns(ev?: MouseEvent) {
 
             <VerticalScroller
               grow
+              self-center
               :style="queryBuilderHeight"
             >
-              <div
-                p="1"
-                bg="white dark:darker"
-                rounded="custom"
-                min-h="10"
-              >
-                <QueryBuilderInline
-                  ref="queryBuilderInlineEl"
-                  v-model:items="queryBuilder"
-                  :columns="nonHelperColumns"
-                  editable
-                />
-              </div>
+              <QueryBuilderInline
+                ref="queryBuilderInlineEl"
+                v-model:items="queryBuilder"
+                :columns="nonHelperColumns"
+                editable
+              />
             </VerticalScroller>
           </template>
 

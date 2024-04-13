@@ -214,25 +214,25 @@ function handleRemoveGroup() {
 
 <style scoped lang="scss">
 .condition-btn {
-  --apply: m-t-1;
-
   &.is-first-child {
     --apply: m-l-2;
 
     &::before {
-      --apply: absolute -top-1.5 -left-2.5 text-7.5 leading-none font-normal;
-      content: '[';
+      --apply: absolute -left-2.5 text-6.5 leading-none font-normal;
+
+      content: '\2772';
       color: var(--bracketColor);
     }
   }
 }
 
 .last-child-bracket {
-  --apply: relative self-center m-t-1 m-r-2;
+  --apply: relative self-center m-r-2;
 
   &::after {
-    --apply: absolute -top-1.5 -right-2 text-7.5 leading-none font-normal;
-    content: ']';
+    --apply: absolute -right-2 text-6.5 leading-none font-normal;
+    content: '\2773';
+
     color: var(--bracketColor);
   }
 }

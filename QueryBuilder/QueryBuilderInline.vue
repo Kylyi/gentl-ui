@@ -170,6 +170,6 @@ defineExpose({
 
 <style scoped lang="scss">
 .query-builder-inline {
-  --apply: flex items-center flex-wrap;
+  --apply: flex items-center flex-wrap gap-0.5 p-y-1;
 }
 </style>

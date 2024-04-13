@@ -243,7 +243,7 @@ const $z = useZod({ scope: 'qb' })
 <style scoped lang="scss">
 .qb-item {
   --apply: relative flex gap-1 bg-ca border-1 border-dashed border-ca
-    rounded-custom p-l-1.5 m-r-1 m-t-1 items-center cursor-pointer;
+    rounded-custom p-l-1.5 items-center cursor-pointer;
 
   --apply: min-h-26px; // Arbitrary number that looks good...
 
@@ -268,8 +268,9 @@ const $z = useZod({ scope: 'qb' })
 
 .qb-item.is-first-child {
   &::before {
-    --apply: absolute -top-1.5 -left-2.5 text-7.5 leading-none;
-    content: '[';
+    --apply: absolute -left-2.5 text-6.5 leading-none;
+
+    content: '\2772';
     color: var(--bracketColor);
   }
 }
@@ -278,13 +279,14 @@ const $z = useZod({ scope: 'qb' })
   --apply: relative;
 
   &::after {
-    --apply: absolute -top-1.5 -right-2 text-7.5 leading-none font-normal;
-    content: ']';
+    --apply: absolute -right-2 text-6.5 leading-none font-normal;
+    content: '\2773';
+
     color: var(--bracketColor);
   }
 }
 
 .close-bracket {
-  --apply: m-t-1 m-r-2 self-center;
+  --apply: m-r-2 self-center;
 }
 </style>

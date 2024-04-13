@@ -10,7 +10,7 @@ const emits = defineEmits<{
   (e: 'resized'): void
 }>()
 
-// UTILS
+// Utils
 const { onOverflow } = useOverflow()
 
 const scrollEl = ref<HTMLDivElement>()
@@ -70,14 +70,14 @@ const { pause, resume } = useIntervalFn(
 function handleWheel(ev: WheelEvent) {
   const scrollSpeed = 25
 
-  // SCROLLING RIGHT
+  // Scrolling top
   if (ev.deltaY > 0 && !arrivedState.bottom) {
     handleScroll(scrollSpeed)
     ev.stopPropagation()
     ev.preventDefault()
   }
 
-  // SCROLLING LEFT
+  // Scrolling bottom
   else if (ev.deltaY < 0 && !arrivedState.top) {
     handleScroll(-1 * scrollSpeed)
     ev.stopPropagation()
@@ -107,7 +107,7 @@ defineExpose({
     class="scroller-vertical"
     :class="[arrows === 'inside' ? 'arrows-inside' : 'arrows-outside']"
   >
-    <!-- TOP ARROW -->
+    <!-- Top arrow -->
     <div
       v-if="hasArrows"
       class="arrow arrow--top"
@@ -126,14 +126,13 @@ defineExpose({
 
     <div
       ref="scrollEl"
-      hide-scrollbar
-      class="content"
+      class="content hide-scrollbar"
       :class="contentClass"
     >
       <slot />
     </div>
 
-    <!-- BOTTOM ARROW -->
+    <!-- Bottom arrow -->
     <div
       v-if="hasArrows"
       class="arrow arrow--bottom"

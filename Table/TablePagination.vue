@@ -87,7 +87,7 @@ const isPaginationRightVisible = computed(() => {
       <!-- Total rows -->
       <div
         absolute
-        left-2
+        left="2"
         :class="{ 'lt-md:hidden': !noPagination }"
         flex="~ gap-x-2 center"
       >
