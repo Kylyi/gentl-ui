@@ -230,6 +230,7 @@ function handleEnter(ev: KeyboardEvent) {
   ) {
     ev.preventDefault()
   } else if (isCtrlKey && !props.submitDisabled) {
+    activeElement.value?.blur?.()
     throttledSubmit()
   }
 }

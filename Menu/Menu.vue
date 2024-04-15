@@ -358,7 +358,7 @@ const isOverlayVisible = computed(() => {
 
   &__header {
     --apply: flex items-center gap-2 p-l-3 p-r-1 p-y-2 rounded-t-custom;
-    --apply: bg-$Menu-title-bg;
+    --apply: bg-$Menu-title-bg color-$Menu-title-color;
 
     &-title {
       --apply: grow;

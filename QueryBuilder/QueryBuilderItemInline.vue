@@ -268,7 +268,7 @@ const $z = useZod({ scope: 'qb' })
 
 .qb-item.is-first-child {
   &::before {
-    --apply: absolute -left-2.5 text-6.5 leading-none;
+    --apply: absolute -left-2.5 text-6 leading-none;
 
     content: '\2772';
     color: var(--bracketColor);
@@ -279,9 +279,9 @@ const $z = useZod({ scope: 'qb' })
   --apply: relative;
 
   &::after {
-    --apply: absolute -right-2 text-6.5 leading-none font-normal;
-    content: '\2773';
+    --apply: absolute -right-2 text-6 leading-none font-normal;
 
+    content: '\2773';
     color: var(--bracketColor);
   }
 }

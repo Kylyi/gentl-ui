@@ -40,6 +40,11 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   sortable = true
 
   /**
+   * When provided, the `select` will be extended with these fields
+   */
+  needsFields?: string[]
+
+  /**
    * When true, the column label will be shown in the help button in the
    * search input of the table
    *
@@ -103,12 +108,6 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
    * The column's minimum width in px
    */
   minWidth?: number
-
-  /**
-   * In cases we use chips or any other custom components,
-   * we might need to adjust the width that autofit calculates
-   */
-  autofitAdjustment = 0
 
   /**
    * When true, the column cannot be frozen
@@ -367,9 +366,10 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
         .slice(0, config.table.columnAutoFit.rowsLimit)
         .reduce(
           (agg, row) => {
-            const cellValue = get(row, this.field)
-            const cellFormattedValue =
-              this.format?.(row, cellValue) || cellValue
+            const cellValue = this.valueGetter(row)
+            const cellFormattedValue = Array.isArray(cellValue)
+              ? cellValue.map(val => this.format?.(row, val) || val).join(', ')
+              : this.format?.(row, cellValue) || cellValue
 
             const labelChars = String(cellFormattedValue || '').length
 
@@ -484,7 +484,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     this.dataType = col.dataType ?? this.dataType
     this.label = String(col.label || col.name)
     this.field = col.field
-    this.filterField = col.filterField
+    this.filterField = col.filterField || this.field
     this.width = col.width || this.width
     this.originalWidth = col.width || this.width
     this.minWidth = col.minWidth
@@ -496,12 +496,12 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     this.hidden = col.hidden ?? false
     this.alwaysSelected = col.alwaysSelected ?? false
     this.nonInteractive = col.nonInteractive ?? false
-    this.autofitAdjustment = col.autofitAdjustment ?? 0
     this.link = col.link
     this.linkProps = col.linkProps
     this.noFreeze = col.noFreeze
     this.autofitLongestText = col.autofitLongestText ?? true
     this.selectable = col.selectable ?? true
+    this.needsFields = col.needsFields
 
     // Editing
     this.noEdit = col.noEdit

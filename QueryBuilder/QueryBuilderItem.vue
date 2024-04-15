@@ -209,6 +209,7 @@ function handleFieldChange(field: string) {
 
   item.value.field = field
   item.value.comparator = col.comparator
+  item.value.filterField = col.filterField
 }
 
 function handleComparatorChange(comparator: ComparatorEnum) {

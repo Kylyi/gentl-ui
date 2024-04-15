@@ -220,7 +220,7 @@ export function useTableData(
 
     return columns
       .filter(col => !col.isHelperCol && !col.hidden)
-      .map(col => col.field)
+      .flatMap(col => [col.field, ...(col.needsFields ?? [])])
   })
 
   // Column filters

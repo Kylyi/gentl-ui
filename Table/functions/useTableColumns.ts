@@ -196,7 +196,11 @@ export function useTableColumns(
         return
       }
 
-      const col = _columns.find(col => col.field === filter.field)
+      const col = _columns.find(col => {
+        return (
+          col.field === filter.field || col.filterField === filter.filterField
+        )
+      })
 
       if (col) {
         // We check if it is one of the predefined filters and eventually merge
@@ -205,20 +209,23 @@ export function useTableColumns(
           f => f.comparator === filter.comparator
         )
 
+        const filterValue = Array.isArray(filter.value)
+          ? filter.value.map(val =>
+              parseValue(val, col.dataType, { dateFormat: 'YYYY-MM-DD' })
+            )
+          : parseValue(filter.value, col.dataType, { dateFormat: 'YYYY-MM-DD' })
+
         if (predefinedFilter) {
-          predefinedFilter.value = parseValue(filter.value, col.dataType, {
-            dateFormat: 'YYYY-MM-DD',
-          })
+          predefinedFilter.value = filterValue
         } else {
           col.filters.push(
             new FilterItem<any>({
-              field: filter.field,
+              field: col.field,
+              filterField: col.filterField,
               comparator: filter.comparator,
               format: col.format,
               dataType: col.dataType,
-              value: parseValue(filter.value, col.dataType, {
-                dateFormat: 'YYYY-MM-DD',
-              }),
+              value: filterValue,
             })
           )
         }

@@ -80,7 +80,8 @@ function handleSelectColor(color?: string) {
       <div grid="~ flow-col gap-x-px">
         <div
           class="color-block"
-          w="!28"
+          p="x-2"
+          w="!fit"
           border="1 ca"
           rounded="custom"
           text="center"
@@ -88,6 +89,21 @@ function handleSelectColor(color?: string) {
         >
           {{ $t('color.auto') }}
         </div>
+
+        <div
+          class="color-block"
+          bg="white"
+          border="1 ca"
+          text="center"
+          @click="handleSelectColor('white')"
+        />
+
+        <div
+          class="color-block"
+          bg="black"
+          text="center"
+          @click="handleSelectColor('black')"
+        />
 
         <div
           v-for="themeColor in themeColors"

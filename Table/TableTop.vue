@@ -18,6 +18,7 @@ import {
 
 // Store
 import { useTableStore } from '~/components/Table/table.store'
+import { useAppStore } from '~/libs/App/app.store'
 
 // Components
 import QueryBuilderInline from '~/components/QueryBuilder/QueryBuilderInline.vue'
@@ -51,6 +52,7 @@ const QUERY_BUILDER_INLINE_PADDING = 8
 const QUERY_BUILDER_INLINE_GAP = 2
 
 // Store
+const appStore = useAppStore()
 const { setTableState } = useTableStore()
 
 // Injections
@@ -176,12 +178,31 @@ function handleFilterClear(filters?: 'queryBuilder' | 'columns') {
 
     tableRefresh()
   } else if (filters === 'queryBuilder') {
-    queryBuilderInlineEl.value?.clearFilter()
+    queryBuilder.value = [
+      {
+        id: generateUUID(),
+        isGroup: true,
+        children: [],
+        condition: 'AND',
+        path: '0',
+      },
+    ]
   } else {
+    // Clear columns filters
     columns.value.forEach(col => {
       col.clearFilters()
     })
-    queryBuilderInlineEl.value?.clearFilter()
+
+    // Reset query builder
+    queryBuilder.value = [
+      {
+        id: generateUUID(),
+        isGroup: true,
+        children: [],
+        condition: 'AND',
+        path: '0',
+      },
+    ]
     search.value = ''
 
     if (!queryBuilderInlineEl.value && !search.value) {
@@ -231,6 +252,21 @@ function handleFitColumns(ev?: MouseEvent) {
     emits('update:columnsWidth')
   }, 0)
 }
+
+// Keyboard shortcuts
+onKeyStroke(['d', 'D'], (ev: KeyboardEvent) => {
+  // When using CTRL or META, we return back to readonly mode
+  const isControlKey = ev.ctrlKey || ev.metaKey
+  const isFocusedInInput = appStore.isActiveElementInput()
+
+  if (isFocusedInInput || !isControlKey) {
+    return
+  }
+
+  ev.preventDefault()
+
+  handleFilterClear()
+})
 </script>
 
 <template>
@@ -351,8 +387,15 @@ function handleFitColumns(ev?: MouseEvent) {
                 no-uppercase
                 color="negative"
                 data-cy="remove-all-filters"
+                p="!y-1.5"
                 @click="handleFilterClear"
-              />
+              >
+                <KeyboardShortcut
+                  char="D"
+                  with-ctrl
+                  class="!absolute top--1 right-1"
+                />
+              </Btn>
             </Menu>
           </Btn>
 

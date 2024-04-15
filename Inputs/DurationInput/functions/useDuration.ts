@@ -54,7 +54,12 @@ export function useDuration() {
   const getDuration = (
     value: number,
     unit?: IDurationOptions['unit']
-  ): { val: number; unit: IDurationOptions['unit']; formatted: string } => {
+  ): {
+    val: number
+    unit: IDurationOptions['unit']
+    formatted: string
+    formattedWithUnit: string
+  } => {
     if (!unit) {
       if ($duration(value).as('second') <= 1) {
         unit = 'millisecond'
@@ -70,8 +75,15 @@ export function useDuration() {
     }
 
     const val = $duration(value).as(unit)
+    const formatted = formatNumber(val)
+    const unitTranslated = $t(`general.${unit}`, val)
 
-    return { val, unit, formatted: formatNumber(val) }
+    return {
+      val,
+      unit,
+      formatted,
+      formattedWithUnit: `${formatted} ${unitTranslated}`,
+    }
   }
 
   return {
