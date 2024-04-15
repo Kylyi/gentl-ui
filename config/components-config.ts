@@ -152,6 +152,7 @@ export const config = merge(
     fileInput: {
       props: {
         downloadUrl: undefined,
+        multi: true,
       } as IFileInputProps,
     },
 

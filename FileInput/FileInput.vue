@@ -13,7 +13,7 @@ import { useFieldUtils } from '~/components/Field/functions/useFieldUtils'
 const props = withDefaults(defineProps<IFileInputProps>(), {
   maxChipsRows: 3,
   downloadUrl: config.fileInput.props.downloadUrl,
-  multi: true,
+  multi: config.fileInput.props.multi,
 })
 const emits = defineEmits<{
   (e: 'update:modelValue', value: Array<FileModel | IFile>): void
@@ -122,7 +122,7 @@ syncRef(model, files, { direction: 'both', deep: true })
         size="auto"
         stacked
         color="primary"
-        :label="$t('file.add', 3)"
+        :label="$t('file.add', multi ? 2 : 1)"
       />
 
       <div
