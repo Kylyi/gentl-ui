@@ -6,7 +6,7 @@ import { BUTTON_PRESET } from '~/components/Button/constants/button-preset.const
 
 export type INavigation = {
   disabled?: boolean
-  download?: boolean
+  download?: boolean | string
   exact?: boolean
   external?: boolean
   replace?: boolean
