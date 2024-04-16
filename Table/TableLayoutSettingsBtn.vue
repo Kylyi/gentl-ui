@@ -229,7 +229,7 @@ async function handleSaveLayout() {
 
 async function handleDeleteLayoutState() {
   const deletedFilterId = await handleRequest(
-    () => deleteLayout(currentLayoutId.value),
+    () => deleteLayout(currentLayoutId.value, _tableStorageKey.value),
     {
       notifySuccess: true,
       noResolve: true,
