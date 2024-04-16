@@ -70,7 +70,7 @@ function handleClose() {
 
 <style lang="scss" scoped>
 .confirmation {
-  --apply: flex flex-col inset-0 absolute bg-white dark:bg-darker rounded-custom z-10;
+  --apply: flex flex-col inset-0 absolute bg-white dark:bg-darker rounded-custom z-$zMax;
 
   &-checkmark {
     --apply: flex flex-col flex-center grow;
