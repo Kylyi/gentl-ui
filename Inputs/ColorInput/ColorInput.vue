@@ -33,6 +33,16 @@ const referenceEl = ref<HTMLDivElement>()
 const menuEl = ref<InstanceType<typeof MenuProxy>>()
 const model = useVModel(props, 'modelValue', emits)
 
+const modelLabel = computed(() => {
+  if (!model.value) {
+    return '&nbsp;'
+  }
+
+  const label = $t(`color.${model.value}`)
+
+  return label === `color.${model.value}` ? model.value : label
+})
+
 function handlePickColor(color?: string) {
   model.value = color
   fieldEl.value?.focus()
@@ -60,7 +70,7 @@ const fieldProps = getFieldProps(props)
     @focus="handleFocusOrClick"
   >
     <span :style="{ color: model }">
-      {{ model || '&nbsp;' }}
+      {{ modelLabel }}
     </span>
 
     <MenuProxy
