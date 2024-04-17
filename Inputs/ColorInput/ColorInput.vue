@@ -35,7 +35,7 @@ const model = useVModel(props, 'modelValue', emits)
 
 const modelLabel = computed(() => {
   if (!model.value) {
-    return '&nbsp;'
+    return ''
   }
 
   const label = $t(`color.${model.value}`)
@@ -70,7 +70,7 @@ const fieldProps = getFieldProps(props)
     @focus="handleFocusOrClick"
   >
     <span :style="{ color: model }">
-      {{ modelLabel }}
+      {{ modelLabel || '&nbsp;' }}
     </span>
 
     <MenuProxy
