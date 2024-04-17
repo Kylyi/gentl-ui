@@ -107,6 +107,14 @@ const editControls = computed(() => {
   }
 })
 
+const hasKeyboardShortcuts = computed(() => {
+  if (!isNil(appState.value.general?.keyboardShortcuts)) {
+    return appState.value.general?.keyboardShortcuts
+  }
+
+  return !props.noShortcuts
+})
+
 const FormConfirmation = computed(() => {
   return config.form?.confirmation?.component ?? MenuConfirmation
 })
@@ -340,7 +348,7 @@ onMounted(() => {
             :reset="reset"
           >
             <KeyboardShortcut
-              v-if="!noShortcuts"
+              v-if="hasKeyboardShortcuts"
               char="E"
               with-ctrl
               class="!absolute top--1 right-1"
@@ -380,15 +388,16 @@ onMounted(() => {
             <slot name="submit-btn" />
 
             <KeyboardShortcut
-              v-if="!noShortcuts"
+              v-if="hasKeyboardShortcuts"
               with-ctrl
               char="&#9166;"
               class="!absolute top--1 right-1"
             />
           </Btn>
 
-          <CrudEditBtn v-if="editControls?.edit && !noShortcuts">
+          <CrudEditBtn v-if="editControls?.edit">
             <KeyboardShortcut
+              v-if="hasKeyboardShortcuts"
               char="E"
               class="!absolute top--1 right-1"
             />
