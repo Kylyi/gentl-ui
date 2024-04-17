@@ -27,7 +27,7 @@ const props = withDefaults(defineProps<IFormProps>(), {
   submitConfirmation: undefined,
   focusFirstInput: false,
   preventSubmitOnEnter: config.form.props?.preventSubmitOnEnter,
-  noShortcuts: config.form.props?.noShortcuts,
+  noShortcuts: undefined,
 })
 
 const emits = defineEmits<{
@@ -108,11 +108,15 @@ const editControls = computed(() => {
 })
 
 const hasKeyboardShortcuts = computed(() => {
+  if (!isNil(props.noShortcuts)) {
+    return !props.noShortcuts
+  }
+
   if (!isNil(appState.value.general?.keyboardShortcuts)) {
     return appState.value.general?.keyboardShortcuts
   }
 
-  return !props.noShortcuts
+  return !!config.form.props?.noShortcuts
 })
 
 const FormConfirmation = computed(() => {
