@@ -22,31 +22,34 @@ const breadcrumbs = computed(() => {
 <template>
   <div class="breadcrumbs-wrapper">
     <div class="breadcrumbs">
-      <template
-        v-for="(breadcrumb, idx) in breadcrumbs"
-        :key="`${breadcrumb.to}-${idx}`"
-      >
-        <!-- Chevron -->
-        <span
-          v-if="typeof breadcrumb === 'string'"
-          :class="BUTTON_PRESET.CHEVRON_RIGHT.icon"
-          class="breadcrumb-item"
-        />
+      <HorizontalScroller content-class="flex items-center">
+        <template
+          v-for="(breadcrumb, idx) in breadcrumbs"
+          :key="`${breadcrumb.to}-${idx}`"
+        >
+          <!-- Chevron -->
+          <span
+            v-if="typeof breadcrumb === 'string'"
+            :class="BUTTON_PRESET.CHEVRON_RIGHT.icon"
+            class="breadcrumb-item"
+          />
 
-        <Btn
-          v-else
-          v-bind="breadcrumb"
-          no-active-link
-          color="!dark !dark:light"
-          size="sm"
-          class="breadcrumb-item"
-          :class="{
-            'is-last': breadcrumb === breadcrumbs[breadcrumbs.length - 1],
-          }"
-          :no-dim="breadcrumb === breadcrumbs[breadcrumbs.length - 1]"
-          no-uppercase
-        />
-      </template>
+          <Btn
+            v-else
+            v-bind="breadcrumb"
+            no-active-link
+            color="!dark !dark:light"
+            size="sm"
+            class="breadcrumb-item"
+            no-truncate
+            :class="{
+              'is-last': breadcrumb === breadcrumbs[breadcrumbs.length - 1],
+            }"
+            :no-dim="breadcrumb === breadcrumbs[breadcrumbs.length - 1]"
+            no-uppercase
+          />
+        </template>
+      </HorizontalScroller>
 
       <slot name="append" />
     </div>
@@ -57,7 +60,7 @@ const breadcrumbs = computed(() => {
 
 <style lang="scss">
 .breadcrumbs {
-  --apply: flex grow flex-gap-x-1 items-center text-sm m-t-2 m-b-1;
+  --apply: flex grow flex-gap-x-1 items-center text-sm m-t-2 m-b-1 overflow-auto;
 
   &-wrapper {
     --apply: flex flex-gap-x-1 items-center md:p-x-3;
@@ -65,8 +68,12 @@ const breadcrumbs = computed(() => {
   }
 }
 
+.breadcrumb-item {
+  --apply: shrink-0;
+}
+
 @screen lt-lg {
-  .breadcrumbs > .breadcrumb-item {
+  .breadcrumbs .breadcrumb-item {
     --apply: hidden;
 
     &.is-last {
