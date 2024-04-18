@@ -68,6 +68,11 @@ export type IMenuProps = {
   noArrow?: boolean
 
   /**
+   * When true, the `Menu` will not have a close button
+   */
+  noClose?: boolean
+
+  /**
    * When true, the `Menu` will not "uplift" the reference element
    *
    * Uplifting = highlighting the reference element
