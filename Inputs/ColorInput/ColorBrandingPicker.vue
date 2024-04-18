@@ -13,11 +13,11 @@ const emits = defineEmits<{
   (e: 'update:modelValue', val: string | undefined): void
 }>()
 
+// Constants
 const relevantColors = [
   'yellow',
   'orange',
   'red',
-  'rose',
   'pink',
   'fuchsia',
   'purple',
@@ -25,28 +25,29 @@ const relevantColors = [
   'teal',
   'lightBlue',
   'blue',
-  'indigo',
   'violet',
   'lime',
   'green',
   'emerald',
-  'gray',
-  'neutral',
   'slate',
   'trueGray',
 ]
 
 const themeColors = [
-  'var(--color-primary)',
-  'var(--color-secondary)',
-  'var(--color-tertiary)',
-  'var(--color-positive)',
-  'var(--color-negative)',
-  'var(--color-warning)',
-  'var(--color-info)',
+  'primary',
+  'secondary',
+  'tertiary',
+  'positive',
+  'negative',
+  'warning',
+  'info',
 ]
 
-const standardColorsByColumn = computedEager(() => {
+// Layout
+const model = defineModel<string>()
+const { isSupported, open: openEyeDropper, sRGBHex } = useEyeDropper()
+
+const standardColorsByColumn = computed(() => {
   const _colors = pick(colors, relevantColors)
 
   return Object.entries(_colors).reduce((agg, [key, value]) => {
@@ -57,61 +58,88 @@ const standardColorsByColumn = computedEager(() => {
       agg[key]?.splice(agg[key]!.length - 2, 1)
     }
 
+    // Pick every second color
+    agg[key] = agg[key]?.filter((_, i) => i % 2 === 0)
+
     return agg
   }, {} as Record<string, ISelectorProps['options']>)
 })
 
-function handleSelectColor(color?: string) {
-  emits('update:modelValue', color)
+watch(sRGBHex, value => {
+  if (value) {
+    model.value = value
+  }
+})
+
+// Methods
+function setColor(color: string, isThemeColor = false) {
+  if (isThemeColor) {
+    model.value = getColor(color)
+
+    return
+  }
+
+  model.value = hexToRgb(color)
 }
 </script>
 
 <template>
   <div flex="~ col gap-y-3">
     <!-- Theme colors -->
-    <div flex="~ gap-y-px wrap">
-      <div
-        w="full"
-        text="caption"
-      >
+    <div flex="~ col gap-y-px wrap">
+      <div text="caption">
         {{ $t('color.theme') }}
       </div>
 
-      <div grid="~ flow-col gap-x-px">
-        <div
-          class="color-block"
-          p="x-2"
-          w="!fit"
-          border="1 ca"
-          rounded="custom"
-          text="center"
-          @click="handleSelectColor()"
-        >
-          {{ $t('color.auto') }}
+      <div flex="~ justify-between">
+        <div grid="~ flow-col gap-x-px">
+          <div
+            class="color-block"
+            p="x-2"
+            w="!fit"
+            border="1 ca"
+            text="center"
+            leading="none"
+            flex="~ center"
+            @click="model = undefined"
+          >
+            {{ $t('color.auto') }}
+          </div>
+
+          <div
+            class="color-block"
+            bg="white"
+            border="1 ca"
+            text="center"
+            @click="setColor('#FFFFFF')"
+          />
+
+          <div
+            class="color-block"
+            bg="black"
+            text="center"
+            @click="setColor('#000000')"
+          />
+
+          <div
+            v-for="themeColor in themeColors"
+            :key="themeColor"
+            :style="{ backgroundColor: `var(--color-${themeColor})` }"
+            class="color-block"
+            @click="setColor(themeColor, true)"
+          />
         </div>
 
-        <div
-          class="color-block"
-          bg="white"
-          border="1 ca"
-          text="center"
-          @click="handleSelectColor('white')"
-        />
-
-        <div
-          class="color-block"
-          bg="black"
-          text="center"
-          @click="handleSelectColor('black')"
-        />
-
-        <div
-          v-for="themeColor in themeColors"
-          :key="themeColor"
-          :style="{ backgroundColor: themeColor }"
-          class="color-block"
-          @click="handleSelectColor(themeColor)"
-        />
+        <div grid="~ flow-col gap-x-px">
+          <button
+            v-if="isSupported"
+            class="color-block"
+            flex="~ center"
+            @click="openEyeDropper()"
+          >
+            <div class="mdi:eyedropper" />
+          </button>
+        </div>
       </div>
     </div>
 
@@ -135,7 +163,7 @@ function handleSelectColor(color?: string) {
             :key="shade"
             :style="{ backgroundColor: shade }"
             class="color-block"
-            @click="handleSelectColor(shade)"
+            @click="setColor(shade)"
           />
         </div>
       </div>
