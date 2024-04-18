@@ -17,6 +17,12 @@ export type IPageWrapperProps = IPageTitleProps & {
   loading?: boolean
 
   /**
+   * When true, the page content will be moved (via `transform`) to the right
+   * instead of being under the sidebar
+   */
+  moveContent?: boolean
+
+  /**
    * If true, the page will include margin-top corresponding to the navigation height
    *
    * Usage: SSR

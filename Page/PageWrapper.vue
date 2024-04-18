@@ -7,11 +7,14 @@ import type { IPageWrapperProps } from '~/components/Page/types/page-wrapper-pro
 withDefaults(defineProps<IPageWrapperProps>(), {
   pad: true,
   includeTopBar: true,
+  moveContent: config.pageWrapper.props.moveContent ?? true,
   ui: () => config.pageWrapper.props.ui ?? {},
 })
 
-const { isMobile, isSidebarOpen } = useMobile()
+// Utils
+const { isMobile } = useMobile()
 
+// Layout
 const mounted = ref(false)
 
 onMounted(() => {
@@ -26,7 +29,8 @@ onMounted(() => {
       'is-scrollable': $route.meta.isPageScrollable,
       'is-mounted': mounted,
       'is-padded': pad,
-      'is-mobile-and-sidebar-open': isMobile && isSidebarOpen,
+      'is-mobile': isMobile,
+      'move-content': moveContent,
     }"
   >
     <!-- TopBar -->
@@ -124,7 +128,8 @@ onMounted(() => {
   --apply: ease-out grow z-$zPageWrapper p-$PageWrapper-padding;
 
   &.is-mounted {
-    transition: padding 250ms ease-out, margin 250ms ease-out;
+    transition: padding 250ms ease-out, margin 250ms ease-out,
+      transform 250ms ease-out;
   }
 
   &:not(.is-scrollable) {
@@ -133,10 +138,6 @@ onMounted(() => {
 
   &.is-padded {
     --apply: m-t-$navHeight;
-  }
-
-  &.is-mobile-and-sidebar-open {
-    --apply: overflow-x-hidden rounded-l-2 p-r-0;
   }
 
   &__content {
@@ -150,7 +151,16 @@ onMounted(() => {
 
 .page-drawer.is-open.page-drawer--left:not(.is-absolute):not(.is-mini)
   ~ .page-wrapper {
-  margin-left: calc(var(--drawerLeftWidth));
+  &.is-mobile.move-content {
+    transform: translateX(
+      calc(var(--drawerLeftWidth) - var(--drawerLeftMiniWidth))
+    );
+  }
+
+  &:not(.is-mobile),
+  &.is-mobile:not(.move-content) {
+    margin-left: calc(var(--drawerLeftWidth));
+  }
 }
 
 .page-drawer.is-open.page-drawer--right ~ .page-wrapper {

@@ -102,9 +102,9 @@ header.is-hidden ~ .page-drawer {
 
   --apply: print:hidden;
 
-  transition:
-    width 250ms,
-    transform 250ms;
+  transition-property: width transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
 
   &-filler {
     --apply: relative shrink-0 border-b-1 border-true-gray/10;
