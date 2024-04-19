@@ -18,6 +18,8 @@ const searchEl = ref<InstanceType<typeof TextInput>>()
 defineExpose({
   clear: () => searchEl.value?.clear(),
   focus: () => searchEl.value?.focus(),
+  blur: () => searchEl.value?.blur(),
+  select: () => searchEl.value?.select(),
 })
 </script>
 
@@ -52,6 +54,8 @@ defineExpose({
     </template>
 
     <template #append="{ clear }">
+      <slot name="append" />
+
       <div
         v-if="modelValue || $slots.append"
         flex="~ center gap-1"
@@ -68,8 +72,6 @@ defineExpose({
           data-cy="clear-search"
           @click="clear()"
         />
-
-        <slot name="append" />
       </div>
     </template>
   </TextInput>

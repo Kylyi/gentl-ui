@@ -127,6 +127,7 @@ export function useInputUtils(options: IInputUtilsOptions) {
   function handleBlur(ev: FocusEvent) {
     const relatedTarget = ev.relatedTarget as HTMLElement
     const lastTarget = appStore.lastPointerDownEl
+    const isProgrammatic = appStore.activeElement === document.body
 
     const isFocusable =
       lastTarget?.classList.contains('input-wrapper__focusable') ||
@@ -144,7 +145,12 @@ export function useInputUtils(options: IInputUtilsOptions) {
 
     // We prevent the blur event when clicking on focusable elements
     // in the same wrapper
-    if (isFocusable && isSameWrapper && isRelatedTargetFocusable) {
+    if (
+      isFocusable &&
+      isSameWrapper &&
+      isRelatedTargetFocusable &&
+      !isProgrammatic
+    ) {
       ev.preventDefault()
       focus()
 

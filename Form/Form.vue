@@ -148,7 +148,7 @@ const controlsClass = computed(() => {
 })
 
 // Keyboard shortcuts
-onKeyStroke(['e', 'E'], (ev: KeyboardEvent) => {
+onKeyStroke(['e', 'E'], ev => {
   // When using CTRL or META, we return back to readonly mode
   const isControlKey = ev.ctrlKey || ev.metaKey
 

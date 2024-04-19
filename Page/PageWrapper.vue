@@ -7,7 +7,7 @@ import type { IPageWrapperProps } from '~/components/Page/types/page-wrapper-pro
 withDefaults(defineProps<IPageWrapperProps>(), {
   pad: true,
   includeTopBar: true,
-  moveContent: config.pageWrapper.props.moveContent ?? true,
+  moveContent: config.pageWrapper.props.moveContent ?? false,
   ui: () => config.pageWrapper.props.ui ?? {},
 })
 

@@ -6,12 +6,6 @@ import { type ITextInputProps } from '~/components/Inputs/TextInput/types/text-i
 import { useInputUtils } from '~/components/Inputs/functions/useInputUtils'
 import { useInputValidationUtils } from '~/components/Inputs/functions/useInputValidationUtils'
 
-defineOptions({
-  customOptions: {
-    test: 'a',
-  },
-})
-
 const props = withDefaults(defineProps<ITextInputProps>(), {
   allowIncompleteMaskValue: false,
   debounce: 0,
