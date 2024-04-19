@@ -355,9 +355,10 @@ function selectSelf(self: any) {
           <NuxtLink
             v-else-if="col.link?.(row)"
             class="link"
+            truncate
+            p="x-2"
             :to="col.link(row) || ''"
             v-bind="col.linkProps"
-            p="x-2"
           >
             {{ val }}
           </NuxtLink>

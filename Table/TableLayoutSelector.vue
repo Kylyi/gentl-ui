@@ -164,7 +164,7 @@ function handleLayoutSelect(
           value: filter.value,
           comparator: filter.comparator,
           format: column.format,
-          dataType: filter.dataType,
+          dataType: column.dataType,
         })
       )
     }
