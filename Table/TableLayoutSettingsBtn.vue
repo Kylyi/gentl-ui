@@ -414,7 +414,10 @@ const $z = useZod(
 
             <!-- Public -->
             <Toggle
-              v-if="!nonSaveableSettingsByName.public"
+              v-if="
+                !nonSaveableSettingsByName.public &&
+                config.table.canSaveLayoutAsPublic
+              "
               v-model="layout.public"
               container-class="bg-white dark:bg-darker"
               :label="$t('table.savePublic')"

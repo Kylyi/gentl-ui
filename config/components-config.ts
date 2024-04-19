@@ -402,6 +402,11 @@ export const config = merge(
       canSaveLayoutAsDefault: false,
 
       /**
+       * When true, the scheme can be saved as public
+       */
+      canSaveLayoutAsPublic: false,
+
+      /**
        * Settings for the column auto-fit feature
        */
       columnAutoFit: {
