@@ -159,7 +159,7 @@ defineExpose({
       v-if="noChildren && editable"
       size="xs"
       preset="ADD"
-      m="t-1 l-2"
+      m="l-2"
       color="dark:white"
       border="2 primary"
       :label="$t('queryBuilder.addFirstCondition')"
