@@ -128,9 +128,8 @@ header.is-hidden ~ .page-drawer {
   }
 
   &-bottom {
-    --apply: flex flex-shrink-0 pointer-events-auto flex-center p-2 w-full
-      border-t-1 border-ca;
-    --apply: bg-$PageDrawer-bottom-bg;
+    --apply: flex shrink-0 overflow-auto pointer-events-auto;
+    --apply: bg-$PageDrawer-content-bg;
   }
 
   &--left {
