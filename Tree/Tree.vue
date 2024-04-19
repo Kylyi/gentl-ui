@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { klona } from 'klona'
+import { klona } from 'klona/full'
 
 // Types
 import type { ITreeNode } from '~/components/Tree/types/tree-node.type'

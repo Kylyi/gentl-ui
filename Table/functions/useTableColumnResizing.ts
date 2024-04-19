@@ -1,4 +1,4 @@
-import { klona } from 'klona'
+import { klona } from 'klona/full'
 
 // Models
 import { TableColumn } from '~/components/Table/models/table-column.model'

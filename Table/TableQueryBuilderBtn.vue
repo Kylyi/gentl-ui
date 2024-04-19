@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { klona } from 'klona'
+import { klona } from 'klona/full'
 
 // Types
 import { type IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'

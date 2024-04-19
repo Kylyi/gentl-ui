@@ -1,5 +1,5 @@
 import { type UseFuseOptions, useFuse } from '@vueuse/integrations/useFuse'
-import { klona } from 'klona'
+import { klona } from 'klona/full'
 import { type Required } from 'utility-types'
 import { type MaybeElementRef } from '@vueuse/core'
 import { config } from '~/components/config/components-config'

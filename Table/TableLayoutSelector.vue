@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { klona } from 'klona'
+import { klona } from 'klona/full'
 import { config } from '~/components/config/components-config'
 
 // Types
