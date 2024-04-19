@@ -166,7 +166,8 @@ const isOverlayVisible = computed(() => {
     <div
       v-if="isOverlayVisible"
       class="backdrop"
-      :class="{ 'is-active': model }"
+      :style="ui?.backdropStyle"
+      :class="[ui?.backdropClass, { 'is-active': model }]"
     />
 
     <Transition

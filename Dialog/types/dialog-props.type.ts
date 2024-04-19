@@ -77,6 +77,16 @@ export type IDialogProps = {
 
   ui?: {
     /**
+     * Class to apply to the `backdrop`
+     */
+    backdropClass?: ClassType
+
+    /**
+     * Class to apply to the `backdrop`
+     */
+    backdropStyle?: CSSProperties
+
+    /**
      * Class to apply to the `content`
      */
     contentClass?: ClassType
