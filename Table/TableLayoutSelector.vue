@@ -16,6 +16,7 @@ import {
   tableColumnsKey,
   tableLayoutKey,
   tableLayoutsKey,
+  tableRefreshKey,
   tableResizeKey,
 } from '~/components/Table/provide/table.provide'
 
@@ -42,6 +43,7 @@ const layouts = injectStrict(tableLayoutsKey)
 const layout = injectStrict(tableLayoutKey)
 const _getTableStorageKey = injectStrict(getTableStorageKey)
 const tableResize = injectStrict(tableResizeKey)
+const tableRefresh = injectStrict(tableRefreshKey)
 
 // Store
 const { getTableState } = useTableStore()
@@ -202,16 +204,15 @@ function handleLayoutSelect(
 
     // When only filter columns are part of the schema, we manually trigger the
     // table refresh as it is not watched
-    // const isOnlyColFilters =
-    //   schemaFilters.length &&
-    //   !schemaColumns.length &&
-    //   !schemaSort.length &&
-    //   !schemaQueryBuilder.length
+    const isOnlyColFilters =
+      schemaFilters.length &&
+      !schemaColumns.length &&
+      !schemaSort.length &&
+      !schemaQueryBuilder.length
 
-    // if (isOnlyColFilters) {
-    //   console.log('Log ~ setTimeout ~ isOnlyColFilters:', isOnlyColFilters)
-    //   // tableRefresh(true)
-    // }
+    if (isOnlyColFilters) {
+      tableRefresh(true)
+    }
   }, 0)
 
   layoutSelectorEl.value?.blur()
