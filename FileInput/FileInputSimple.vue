@@ -111,7 +111,7 @@ onChange(handleAdd)
       ref="optionsContainerEl"
       flex="~ 1 wrap gap-1"
       box="content"
-      p="y-0.5 l-0"
+      p="y-0.5 inline-0"
       tabindex="0"
       :class="{ 'is-multi': !!multi }"
       :style="{ maxHeight: `${maxHeight}px` }"

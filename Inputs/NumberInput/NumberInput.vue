@@ -241,7 +241,8 @@ defineExpose({
             no-hover-effect
             touch-none
             @pointerdown="startStep($event, true)"
-            @mousedown.stop.prevent=""
+            @mousedown.stop.prevent
+            @click.stop.prevent
           />
           <Btn
             ref="decrement"
@@ -252,7 +253,8 @@ defineExpose({
             no-hover-effect
             touch-none
             @pointerdown="startStep($event, false)"
-            @mousedown.stop.prevent=""
+            @mousedown.stop.prevent
+            @click.stop.prevent
           />
         </div>
       </div>

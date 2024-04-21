@@ -45,12 +45,12 @@ const modelLabel = computed(() => {
 
 function handlePickColor(color?: string) {
   model.value = color
-  fieldEl.value?.focus()
+  // fieldEl.value?.focus()
 
-  menuEl.value?.hide()
-  nextTick(() => {
-    fieldEl.value?.blur()
-  })
+  // menuEl.value?.hide()
+  // nextTick(() => {
+  //   fieldEl.value?.blur()
+  // })
 }
 
 // Field

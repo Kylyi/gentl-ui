@@ -65,9 +65,26 @@ const standardColorsByColumn = computed(() => {
   }, {} as Record<string, ISelectorProps['options']>)
 })
 
+const opacity = computed({
+  get() {
+    if (model.value?.startsWith('rgba')) {
+      return Number(model.value.split(', ')[3].replace(')', '')) * 100
+    }
+  },
+  set(val) {
+    if (model.value?.startsWith('rgba')) {
+      // Remove `rgba(` and `)`
+      const _model = model.value.replace(/^rgba\(|\)$/g, '')
+      const [r, g, b, _] = _model.split(',').map(trim)
+
+      model.value = `rgba(${r}, ${g}, ${b}, ${(val ?? 0) / 100})`
+    }
+  },
+})
+
 watch(sRGBHex, value => {
   if (value) {
-    model.value = value
+    model.value = hexToRgb(value)
   }
 })
 
@@ -167,6 +184,28 @@ function setColor(color: string, isThemeColor = false) {
           />
         </div>
       </div>
+    </div>
+
+    <!-- Customize color -->
+    <div
+      v-if="typeof opacity === 'number'"
+      flex="~ gap-2"
+    >
+      <RangeInput
+        v-model.number="opacity"
+        :step="5"
+        h="10"
+        grow
+      />
+
+      <NumberInput
+        v-model="opacity"
+        size="sm"
+        :min="0"
+        :max="100"
+        :step="5"
+        w="!20"
+      />
     </div>
   </div>
 </template>
