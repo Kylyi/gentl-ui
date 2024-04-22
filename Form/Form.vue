@@ -134,7 +134,7 @@ const formClass = computed(() => ({
 
 const controlsClass = computed(() => {
   const classes = [
-    'z-$zDrawer w-full border-ca bg-white dark:bg-darker',
+    'w-full border-ca bg-white dark:bg-darker',
     'lt-lg:p-x-2 sticky bottom-0 inset-inline-0',
   ]
 
@@ -435,6 +435,8 @@ onMounted(() => {
 
     > #form-controls {
       --apply: border-x-2 border-b-2 border-ca rounded-b-custom;
+
+      z-index: calc(var(--zDrawer) - 1);
     }
   }
 
