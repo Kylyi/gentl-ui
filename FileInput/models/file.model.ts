@@ -54,6 +54,7 @@ export class FileModel {
       {
         onComplete: () => (this.uploadProgress = 100),
         onError: (error: any) => {
+          this.uploadProgress = 99
           this.hasError = true
           onError?.(error)
         },
