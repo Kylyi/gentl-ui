@@ -182,7 +182,7 @@ export function useInputUtils(options: IInputUtilsOptions) {
       originalModel.value = model.value
     }
 
-    instance?.emit('blur')
+    instance?.emit('blur', ev)
   }
 
   // In some cases, we click into the wrapper but not directly in the `.control`

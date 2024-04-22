@@ -11,6 +11,7 @@ withDefaults(defineProps<ITextInputProps>(), {
 })
 defineEmits<{
   (e: 'update:model-value', val?: string | undefined | null): void
+  (e: 'blur', ev: FocusEvent): void
 }>()
 
 const searchEl = ref<InstanceType<typeof TextInput>>()
@@ -42,6 +43,7 @@ defineExpose({
     :input-props="inputProps"
     :placeholder="placeholder ?? $t('general.search')"
     @update:model-value="$emit('update:model-value', $event)"
+    @blur="$emit('blur', $event)"
   >
     <template #prepend>
       <slot name="prepend" />
