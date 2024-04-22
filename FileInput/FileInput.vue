@@ -13,6 +13,7 @@ import { useFieldUtils } from '~/components/Field/functions/useFieldUtils'
 const props = withDefaults(defineProps<IFileInputProps>(), {
   maxChipsRows: 3,
   downloadUrl: config.fileInput.props.downloadUrl,
+  multi: config.fileInput.props.multi,
 })
 const emits = defineEmits<{
   (e: 'update:modelValue', value: Array<FileModel | IFile>): void
@@ -36,6 +37,7 @@ const wrapperClass = computed(() => {
     'is-dragger-over': isOverDropZone.value,
     'is-disabled': props.disabled,
     'is-readonly': props.readonly,
+    'grid gap-2 min-h-fit': props.multi,
   }
 })
 
@@ -114,13 +116,13 @@ syncRef(model, files, { direction: 'both', deep: true })
 
       <!-- Add file(s) -->
       <Btn
-        v-if="model.length && !readonly && !disabled"
+        v-if="model.length && !readonly && !disabled && multi"
         class="file-add"
         icon="eva:plus-fill h-8 w-8"
         size="auto"
         stacked
         color="primary"
-        :label="$t('file.add', 1)"
+        :label="$t('file.add', multi ? 2 : 1)"
       />
 
       <div
@@ -137,7 +139,7 @@ syncRef(model, files, { direction: 'both', deep: true })
           text="center"
           p="x-3"
         >
-          {{ $t('file.uploadOrDnD') }}
+          {{ $t('file.upload', multi ? 2 : 1) }}
         </div>
       </div>
     </div>
@@ -146,7 +148,7 @@ syncRef(model, files, { direction: 'both', deep: true })
 
 <style scoped lang="scss">
 .file-input-wrapper {
-  --apply: grid gap-2 border-2 border-dashed p-2 rounded-3 relative min-h-50 overflow-auto;
+  --apply: h-50 border-2 border-dashed p-2 rounded-3 relative  overflow-auto;
   --apply: dark:border-true-gray-600/50 border-true-gray-300/80;
   --apply: dark:bg-darker bg-white;
 
