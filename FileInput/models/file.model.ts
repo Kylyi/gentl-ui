@@ -22,7 +22,14 @@ export class FileModel {
     return this.uploadProgress === 100
   }
 
-  async upload(requestHandler: any) {
+  async upload(
+    requestHandler: any,
+    options?: {
+      onError?: (error: any) => void
+      notifyError?: boolean
+    }
+  ) {
+    const { onError, notifyError } = options ?? {}
     if (this.uploadProgress === 100 && !this.hasError) {
       return
     }
@@ -46,7 +53,11 @@ export class FileModel {
         }),
       {
         onComplete: () => (this.uploadProgress = 100),
-        onError: () => (this.hasError = true),
+        onError: (error: any) => {
+          this.hasError = true
+          onError?.(error)
+        },
+        notifyError,
         logging: { operationName: 'file.upload' },
       }
     )
