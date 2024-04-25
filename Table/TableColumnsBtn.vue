@@ -311,6 +311,7 @@ async function handleApplyChanges() {
                   v-if="col.reorderable && !col.isHelperCol"
                   class="handle icon-park-outline:drag"
                   data-cy="dragable-item"
+                  shrink="0"
                 />
 
                 <span
