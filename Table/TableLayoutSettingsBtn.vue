@@ -83,6 +83,13 @@ const isSaveable = computed(() => {
   )
 })
 
+const hasSaveLayoutOptions = computed(() => {
+  return (
+    config.table.canSaveLayoutAsPublic &&
+    !nonSaveableSettingsByName.value.public
+  )
+})
+
 function handleDialogBeforeShow() {
   layout.value.name =
     currentLayout.value?.name !== $t('table.layoutStateNoLayout')
@@ -404,7 +411,10 @@ const $z = useZod(
           </div>
 
           <!-- Right side -->
-          <div flex="~ col gap-1">
+          <div
+            v-if="hasSaveLayoutOptions"
+            flex="~ col gap-1"
+          >
             <span
               text="caption"
               font="bold"
