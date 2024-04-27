@@ -83,12 +83,12 @@ const isSaveable = computed(() => {
   )
 })
 
-const hasSaveLayoutOptions = computed(
-  () =>
-    config.table.canSaveLayoutAsDefault ||
-    (config.table.canSaveLayoutAsPublic &&
-      !nonSaveableSettingsByName.value.public)
-)
+const hasSaveLayoutOptions = computed(() => {
+  return (
+    config.table.canSaveLayoutAsPublic &&
+    !nonSaveableSettingsByName.value.public
+  )
+})
 
 function handleDialogBeforeShow() {
   layout.value.name =
