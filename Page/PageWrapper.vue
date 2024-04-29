@@ -65,6 +65,10 @@ onMounted(() => {
       <template #append>
         <slot name="breadcrumbs-append" />
       </template>
+
+      <template #right>
+        <slot name="breadcrumbs-right" />
+      </template>
     </Breadcrumbs>
 
     <!-- Content -->
