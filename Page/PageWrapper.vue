@@ -8,6 +8,7 @@ withDefaults(defineProps<IPageWrapperProps>(), {
   pad: true,
   includeTopBar: true,
   moveContent: config.pageWrapper.props.moveContent ?? false,
+  breadcrumbs: config.pageWrapper.props.breadcrumbs,
   ui: () => config.pageWrapper.props.ui ?? {},
 })
 
@@ -50,6 +51,21 @@ onMounted(() => {
         <slot name="breadcrumbs-append" />
       </template>
     </Component>
+
+    <!-- Breadcrumbs -->
+    <Breadcrumbs v-if="breadcrumbs">
+      <template #above>
+        <slot name="breadcrumbs-above" />
+      </template>
+
+      <template #below>
+        <slot name="breadcrumbs-below" />
+      </template>
+
+      <template #append>
+        <slot name="breadcrumbs-append" />
+      </template>
+    </Breadcrumbs>
 
     <!-- Content -->
     <div
