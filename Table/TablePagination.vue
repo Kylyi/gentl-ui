@@ -137,7 +137,7 @@ const isPaginationRightVisible = computed(() => {
           flex="~ gap-2 items-center"
           text="caption"
         >
-          <div class="color-blue-500 bi:info-lg" />
+          <div class="color-blue-500 i-bi:info-lg" />
           <span>{{ $t('table.limitRowsReached') }}</span>
 
           <Tooltip
@@ -157,7 +157,7 @@ const isPaginationRightVisible = computed(() => {
           :disabled="isFirstPage"
           size="sm"
           disable-style="flat"
-          icon="line-md:chevron-small-double-right rotate-180"
+          icon="i-line-md:chevron-small-double-right rotate-180"
           @click="currentPage = 1"
         />
 
@@ -166,7 +166,7 @@ const isPaginationRightVisible = computed(() => {
           :disabled="isFirstPage"
           size="sm"
           disable-style="flat"
-          icon="material-symbols:chevron-right-rounded rotate-180"
+          icon="i-material-symbols:chevron-right-rounded rotate-180"
           @click="prev"
         />
 
@@ -189,7 +189,7 @@ const isPaginationRightVisible = computed(() => {
         <Btn
           :disabled="isLastPage"
           size="sm"
-          icon="material-symbols:chevron-right-rounded"
+          icon="i-material-symbols:chevron-right-rounded"
           @click="next"
         />
 
@@ -198,7 +198,7 @@ const isPaginationRightVisible = computed(() => {
           :disabled="isLastPage"
           size="sm"
           disable-style="flat"
-          icon="line-md:chevron-small-double-right"
+          icon="i-line-md:chevron-small-double-right"
           @click="currentPage = pageCount"
         />
       </template>

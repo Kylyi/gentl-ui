@@ -28,7 +28,7 @@ async function handleExport(exportFormat: 'xlsx' | 'csv') {
 
 <template>
   <Btn
-    icon="material-symbols:download"
+    icon="i-material-symbols:download"
     color="ca"
     no-uppercase
     size="sm"
@@ -39,14 +39,14 @@ async function handleExport(exportFormat: 'xlsx' | 'csv') {
     <div class="export-btn__label">
       {{ $t('table.export', 1) }}
 
-      <div class="line-md:chevron-small-right rotate-90" />
+      <div class="i-line-md:chevron-small-right rotate-90" />
     </div>
 
     <Menu>
       <!-- XLSX -->
       <Btn
         :label="$t('export.excel')"
-        icon="bi:filetype-xlsx"
+        icon="i-bi:filetype-xlsx"
         :loading="loading || isExporting"
         align="left"
         no-uppercase
@@ -56,7 +56,7 @@ async function handleExport(exportFormat: 'xlsx' | 'csv') {
       <!-- CSV -->
       <Btn
         :label="$t('export.csv')"
-        icon="bi:filetype-csv"
+        icon="i-bi:filetype-csv"
         :loading="loading || isExporting"
         align="left"
         no-uppercase

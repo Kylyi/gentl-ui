@@ -59,7 +59,7 @@ function handleMonthSelect(month: Month, callback?: () => void) {
       size="auto"
       class="month-selector__previous"
       tabindex="-1"
-      icon="majesticons:chevron-left"
+      icon="i-majesticons:chevron-left"
       @click="$emit('previous')"
       @mousedown.stop.prevent=""
     />
@@ -80,7 +80,7 @@ function handleMonthSelect(month: Month, callback?: () => void) {
       size="auto"
       class="month-selector__next"
       tabindex="-1"
-      icon="majesticons:chevron-right"
+      icon="i-majesticons:chevron-right"
       @click="$emit('next')"
       @mousedown.stop.prevent
     />

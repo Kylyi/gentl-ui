@@ -81,7 +81,7 @@ function handleSort(sortValue?: 'asc' | 'desc', ev?: PointerEvent) {
         size="sm"
         no-uppercase
         color="ca"
-        icon="ph:sort-descending-bold"
+        icon="i-ph:sort-descending-bold"
         class="!rounded-r-0"
         border="r-1 ca"
         :class="{ 'is-active': column.sort === 'asc' }"
@@ -95,7 +95,7 @@ function handleSort(sortValue?: 'asc' | 'desc', ev?: PointerEvent) {
         no-uppercase
         color="ca"
         class="!rounded-l-0"
-        icon="ph:sort-ascending-bold"
+        icon="i-ph:sort-ascending-bold"
         :class="{ 'is-active': column.sort === 'desc' }"
         data-cy="sort-desc"
         @click="handleSort('desc', $event)"

@@ -1,6 +1,6 @@
 <template>
   <div class="query-builder-move-handler">
-    <div class="akar-icons:drag-vertical query-builder-move-handler__icon" />
+    <div class="i-akar-icons:drag-vertical query-builder-move-handler__icon" />
   </div>
 </template>
 

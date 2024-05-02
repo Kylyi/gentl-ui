@@ -98,7 +98,7 @@ onChange(handleAdd)
   >
     <template #append>
       <Btn
-        icon="material-symbols:attachment"
+        icon="i-material-symbols:attachment"
         size="sm"
         m="x-2"
         @click.stop.prevent="handleOpen"
@@ -139,7 +139,7 @@ onChange(handleAdd)
             bg="primary"
             color="white"
             self-center
-            icon="material-symbols:download"
+            icon="i-material-symbols:download"
             @click.stop.prevent="handleDownloadFile(chip, { url: downloadUrl })"
             @mousedown.stop.prevent
           />
@@ -169,7 +169,7 @@ onChange(handleAdd)
             w="4"
             h="4"
             self-center
-            icon="material-symbols:download"
+            icon="i-material-symbols:download"
             @click.stop.prevent="handleDownloadFile(chip, { url: downloadUrl })"
             @mousedown.stop.prevent
           >

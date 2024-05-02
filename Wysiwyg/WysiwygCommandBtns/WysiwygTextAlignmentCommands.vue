@@ -28,7 +28,7 @@ const isAlignedJustify = computed(() =>
 <template>
   <div flex="~">
     <Btn
-      icon="material-symbols:format-align-left-rounded"
+      icon="i-material-symbols:format-align-left-rounded"
       size="sm"
       color="ca"
       :class="{ 'is-active': isAlignedLeft }"
@@ -36,7 +36,7 @@ const isAlignedJustify = computed(() =>
       @mousedown.stop.prevent
     />
     <Btn
-      icon="material-symbols:format-align-center-rounded"
+      icon="i-material-symbols:format-align-center-rounded"
       size="sm"
       color="ca"
       :class="{ 'is-active': isAlignedCenter }"
@@ -44,7 +44,7 @@ const isAlignedJustify = computed(() =>
       @mousedown.stop.prevent
     />
     <Btn
-      icon="material-symbols:format-align-right-rounded"
+      icon="i-material-symbols:format-align-right-rounded"
       size="sm"
       color="ca"
       :class="{ 'is-active': isAlignedRight }"
@@ -52,7 +52,7 @@ const isAlignedJustify = computed(() =>
       @mousedown.stop.prevent
     />
     <Btn
-      icon="material-symbols:format-align-justify-rounded"
+      icon="i-material-symbols:format-align-justify-rounded"
       size="sm"
       color="ca"
       :class="{ 'is-active': isAlignedJustify }"

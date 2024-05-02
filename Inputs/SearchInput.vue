@@ -49,7 +49,7 @@ defineExpose({
       <slot name="prepend" />
       <div
         v-if="!$slots.prepend"
-        carbon:search
+        i-carbon:search
         color="ca"
         m="l-2"
       />
@@ -69,7 +69,7 @@ defineExpose({
           size="auto"
           w="8"
           h="8"
-          icon="carbon:close text-2xl"
+          icon="i-carbon:close text-2xl"
           color="ca"
           data-cy="clear-search"
           @click="clear()"

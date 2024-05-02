@@ -9,7 +9,7 @@ const breadcrumbsInjected = injectStrict(breadcrumbsKey, ref([]))
 const breadcrumbs = computed(() => {
   return [
     {
-      icon: 'lucide:home',
+      icon: 'i-lucide:home',
       to: $p(config.breadcrumbs.homePath || '/'),
     },
     ...breadcrumbsInjected.value,

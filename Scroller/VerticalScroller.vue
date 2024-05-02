@@ -119,7 +119,7 @@ defineExpose({
         self-center
         no-dim
         no-hover-effect
-        icon="majesticons:chevron-up"
+        icon="i-majesticons:chevron-up"
         @pointerdown.stop.prevent="handleScrollViaBtn(false)"
       />
     </div>
@@ -144,7 +144,7 @@ defineExpose({
         self-center
         no-dim
         no-hover-effect
-        icon="majesticons:chevron-down"
+        icon="i-majesticons:chevron-down"
         @pointerdown.stop.prevent="handleScrollViaBtn(true)"
       />
     </div>

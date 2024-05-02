@@ -154,7 +154,7 @@ function setColor(color: string, isThemeColor = false) {
             flex="~ center"
             @click="openEyeDropper()"
           >
-            <div class="mdi:eyedropper" />
+            <div class="i-mdi:eyedropper" />
           </button>
         </div>
       </div>

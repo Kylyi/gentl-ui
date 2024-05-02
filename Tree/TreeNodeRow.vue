@@ -71,8 +71,8 @@ const handleCollapse = injectStrict(
         :loading="isLoading"
         :icon="
           collapsedRef[node.id]
-            ? 'majesticons:chevron-right w-5 h-5 transition-transform'
-            : 'majesticons:chevron-right w-5 h-5 rotate-90 transition-transform'
+            ? 'i-majesticons:chevron-right w-5 h-5 transition-transform'
+            : 'i-majesticons:chevron-right w-5 h-5 rotate-90 transition-transform'
         "
         @click="handleCollapseInternal(node)"
       />

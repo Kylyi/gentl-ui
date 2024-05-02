@@ -37,12 +37,12 @@ const isVisible = computed(() => {
     >
       <div
         v-if="isApple"
-        ph:command
+        i-ph:command
         class="icon"
       />
       <div
         v-else
-        fluent:control-button-20-regular
+        i-fluent:control-button-20-regular
         class="icon"
       />
     </div>
@@ -54,12 +54,12 @@ const isVisible = computed(() => {
     >
       <div
         v-if="isApple"
-        ph:option
+        i-ph:option
         class="icon"
       />
       <div
         v-else
-        tabler:alt
+        i-tabler:alt
         class="icon"
       />
     </div>
@@ -70,7 +70,7 @@ const isVisible = computed(() => {
       class="keyboard-shortcut__wrapper"
     >
       <div
-        material-symbols:shift-lock-rounded
+        i-material-symbols:shift-lock-rounded
         class="icon"
       />
     </div>

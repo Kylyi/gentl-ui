@@ -121,7 +121,7 @@ onMounted(() => {
     <template #append>
       <Btn
         v-if="clearable && modelValue && !readonly && !disabled"
-        icon="eva:close-fill h-6 w-6"
+        icon="i-eva:close-fill h-6 w-6"
         color="ca"
         size="auto"
         h="7"
@@ -130,7 +130,7 @@ onMounted(() => {
       />
 
       <div
-        formkit:month
+        i-formkit:month
         class="picker-icon"
       />
     </template>

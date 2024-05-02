@@ -10,7 +10,7 @@ import MenuProxy from '~/components/MenuProxy/MenuProxy.vue'
 import Field from '~/components/Field/Field.vue'
 
 const props = withDefaults(defineProps<IColorProps>(), {
-  icon: 'material-symbols:format-color-text-rounded',
+  icon: 'i-material-symbols:format-color-text-rounded',
   inline: undefined,
   labelInside: undefined,
   required: undefined,

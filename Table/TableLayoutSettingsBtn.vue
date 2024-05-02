@@ -281,7 +281,7 @@ const $z = useZod(
 
 <template>
   <Btn
-    icon="solar:settings-linear"
+    icon="i-solar:settings-linear"
     size="sm"
     color="ca"
     no-uppercase
@@ -360,7 +360,7 @@ const $z = useZod(
                 #append
               >
                 <div>
-                  <div class="clarity:warning-solid color-amber-500" />
+                  <div class="i-clarity:warning-solid color-amber-500" />
 
                   <Tooltip
                     :offset="8"
@@ -392,7 +392,7 @@ const $z = useZod(
                 #append
               >
                 <div>
-                  <div class="clarity:warning-solid color-amber-500" />
+                  <div class="i-clarity:warning-solid color-amber-500" />
 
                   <Tooltip
                     :offset="8"

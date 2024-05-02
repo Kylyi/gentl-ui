@@ -22,15 +22,15 @@ const bannerEl = ref<HTMLDivElement>()
 const icon = computed(() => {
   switch (props.type) {
     case 'warning':
-      return `clarity:warning-solid h-6 w-6`
+      return `i-clarity:warning-solid h-6 w-6`
     case 'info':
-      return `bi:info-lg h-6 w-6`
+      return `i-bi:info-lg h-6 w-6`
     case 'success':
-      return `akar-icons:circle-check-fill h-6 w-6`
+      return `i-akar-icons:circle-check-fill h-6 w-6`
     case 'error':
-      return `ci:error h-6 w-6`
+      return `i-ci:error h-6 w-6`
     default:
-      return `bi:info-lg h-6 w-6`
+      return `i-bi:info-lg h-6 w-6`
   }
 })
 

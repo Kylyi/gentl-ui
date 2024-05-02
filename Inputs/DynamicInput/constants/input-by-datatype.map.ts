@@ -18,7 +18,7 @@ const TEXT_INPUT = {
 const NUMBER_INPUT = {
   component: markRaw(NumberInput),
   props: {} as ComponentProps<typeof NumberInput>,
-  icon: 'ant-design:number-outlined',
+  icon: 'i-ant-design:number-outlined',
 }
 
 const DURATION_INPUT = {
@@ -26,7 +26,7 @@ const DURATION_INPUT = {
   props: {
     format: '0,0.00',
   } as ComponentProps<typeof DurationInput>,
-  icon: 'carbon:time',
+  icon: 'i-carbon:time',
 }
 
 const DATE_INPUT = {
@@ -34,25 +34,25 @@ const DATE_INPUT = {
   props: {
     format: 'YYYY-MM-DD',
   } as ComponentProps<typeof DateInput>,
-  icon: 'system-uicons:calendar-date',
+  icon: 'i-system-uicons:calendar-date',
 }
 
 const BOOLEAN_INPUT = {
   component: markRaw(Toggle),
   props: {} as ComponentProps<typeof Toggle>,
-  icon: 'carbon:boolean',
+  icon: 'i-carbon:boolean',
 }
 
 const TIME_INPUT = {
   component: markRaw(TimeInput),
   props: {} as ComponentProps<typeof TimeInput>,
-  icon: 'ion:time-outline',
+  icon: 'i-ion:time-outline',
 }
 
 const custom = {
   component: markRaw(TextInput),
   props: {},
-  icon: 'carbon:unknown',
+  icon: 'i-carbon:unknown',
 }
 
 const INPUT_BY_DATATYPE = {

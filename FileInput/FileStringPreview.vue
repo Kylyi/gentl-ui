@@ -42,7 +42,7 @@ const icon = computed(() => {
 
   const icon =
     ICON_BY_FILE_EXTENSION[ext as keyof typeof ICON_BY_FILE_EXTENSION] ||
-    'bi:file-image'
+    'i-bi:file-image'
 
   return icon
 })
@@ -113,7 +113,7 @@ const imageUrl = computed(() => {
       size="sm"
       w-full
       :rounded="false"
-      icon="material-symbols:download"
+      icon="i-material-symbols:download"
       self-start
       :label="$t('file.download')"
       @click.stop.prevent="handleDownloadFile(file, { url: downloadUrl })"

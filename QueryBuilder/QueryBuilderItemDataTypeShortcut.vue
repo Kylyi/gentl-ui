@@ -11,7 +11,7 @@ const props = defineProps<IProps>()
 
 const shortcut = computed(() => {
   if (props.custom) {
-    return 'carbon:area-custom'
+    return 'i-carbon:area-custom'
   }
 
   return getInputByDataType(props.dataType)?.icon

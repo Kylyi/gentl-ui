@@ -158,7 +158,7 @@ useResizeObserver(headerEl, entries => {
 
       <slot name="expand-icon">
         <div
-          majesticons:chevron-right
+          i-majesticons:chevron-right
           transition="duration-150"
           color="$Collapse-dropdown-icon-color"
           :class="{ 'rotate-90deg': internalValue }"

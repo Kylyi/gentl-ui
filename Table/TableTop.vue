@@ -466,7 +466,7 @@ onKeyStroke(['d', 'D'], (ev: KeyboardEvent) => {
                 size="sm"
                 no-uppercase
                 p="!r-0.5"
-                icon="fluent:select-all-on-20-regular !w-5 !h-5"
+                icon="i-fluent:select-all-on-20-regular !w-5 !h-5"
                 :label="`${$t('general.selected')}: ${selectionCount}`"
               >
                 <MenuProxy :no-arrow="false">
@@ -477,7 +477,7 @@ onKeyStroke(['d', 'D'], (ev: KeyboardEvent) => {
                 </MenuProxy>
 
                 <div
-                  class="line-md:chevron-small-right rotate-90 h-4 w-4 m-l--1"
+                  class="i-line-md:chevron-small-right rotate-90 h-4 w-4 m-l--1"
                 />
               </Btn>
             </slot>
@@ -531,7 +531,7 @@ onKeyStroke(['d', 'D'], (ev: KeyboardEvent) => {
             v-if="!tableTopFunctionality?.noAutoFit && !smallScreen"
             size="sm"
             no-uppercase
-            icon="material-symbols:fit-width"
+            icon="i-material-symbols:fit-width"
             color="ca"
             :label="$t('table.fitColumns')"
             @click="handleFitColumns"

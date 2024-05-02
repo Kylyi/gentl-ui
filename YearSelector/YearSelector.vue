@@ -102,7 +102,7 @@ defineExpose({ sync })
       size="auto"
       class="year-select__previous"
       tabindex="-1"
-      icon="majesticons:chevron-left"
+      icon="i-majesticons:chevron-left"
       @click="$emit('previous')"
     />
 
@@ -124,7 +124,7 @@ defineExpose({ sync })
       size="auto"
       class="year-select__next"
       tabindex="-1"
-      icon="majesticons:chevron-right"
+      icon="i-majesticons:chevron-right"
       @click="$emit('next')"
     />
 
@@ -143,7 +143,7 @@ defineExpose({ sync })
       <Btn
         tabindex="-1"
         size="xs"
-        icon="bi:caret-up-fill"
+        icon="i-bi:caret-up-fill"
         color="ca"
         name="increment"
         :ripple="false"
@@ -167,7 +167,7 @@ defineExpose({ sync })
       <Btn
         tabindex="-1"
         size="xs"
-        icon="bi:caret-up-fill rotate-180"
+        icon="i-bi:caret-up-fill rotate-180"
         color="ca"
         name="decrement"
         :ripple="false"

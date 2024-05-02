@@ -113,11 +113,11 @@ function handleMenuBeforeHide() {
     <template #icon>
       <div class="w-7 h-7 relative">
         <div
-          class="icon top-.25 left-.25 ic:round-filter-alt"
+          class="icon top-.25 left-.25 i-ic:round-filter-alt"
           :class="{ 'color-white': column.filterDbQuery }"
         />
         <div
-          class="icon bottom-.25 right-.25 basil:sort-outline"
+          class="icon bottom-.25 right-.25 i-basil:sort-outline"
           :class="{ 'color-white': column.sort }"
           z-1
           data-cy="sort-outline"
@@ -164,8 +164,8 @@ function handleMenuBeforeHide() {
           <div
             :class="[
               column.sort === 'asc'
-                ? 'ph:sort-descending-bold'
-                : 'ph:sort-ascending-bold',
+                ? 'i-ph:sort-descending-bold'
+                : 'i-ph:sort-ascending-bold',
             ]"
           />
           <span text="xs">

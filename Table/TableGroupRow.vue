@@ -49,8 +49,8 @@ const cols = computed(() => {
 const collapsedBtnInfo = computed(() => {
   return {
     icon: collapsed.value[props.row.id]
-      ? 'majesticons:chevron-right transition-transform'
-      : 'majesticons:chevron-right rotate-90 transition-transform',
+      ? 'i-majesticons:chevron-right transition-transform'
+      : 'i-majesticons:chevron-right rotate-90 transition-transform',
     style: `${(props.row.groupIdx / 2) * props.groupExpandWidth}px`,
   }
 })

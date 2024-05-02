@@ -7,7 +7,7 @@ defineEmits<{
 <template>
   <div flex="~">
     <Btn
-      icon="ion:image-outline"
+      icon="i-ion:image-outline"
       size="sm"
       color="ca"
       @click.stop.prevent="$emit('set-image')"

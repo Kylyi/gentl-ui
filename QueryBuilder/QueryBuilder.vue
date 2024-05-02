@@ -147,7 +147,7 @@ defineExpose({
       }"
     >
       <div
-        class="tabler:arrow-back drop-indicator__icon"
+        class="i-tabler:arrow-back drop-indicator__icon"
         :class="{
           'rotate-y-180 -top-3': draggedItem.dropDirection === 'below',
           'rotate-180 -top-7px': draggedItem.dropDirection === 'above',

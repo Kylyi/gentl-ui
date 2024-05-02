@@ -80,7 +80,7 @@ function handleClick() {
 
     <Btn
       v-if="hasRemove"
-      icon="eva:close-fill !w-4 !h-4"
+      icon="i-eva:close-fill !w-4 !h-4"
       size="auto"
       color="ca"
       h="4"

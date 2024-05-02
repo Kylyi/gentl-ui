@@ -29,7 +29,7 @@ const errorMessages = computed(() => {
     >
       <div
         m="r-2"
-        ci:error
+        i-ci:error
         class="inline-block align-middle"
       />
       <span

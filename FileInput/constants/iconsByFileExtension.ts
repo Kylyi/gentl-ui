@@ -1,14 +1,14 @@
 // @unocss-include
 
 export const ICON_BY_FILE_EXTENSION = {
-  pdf: 'bi:filetype-pdf', // PDF
-  csv: 'bi:filetype-csv', // CSV
-  xlsx: 'bi:filetype-xlsx', // XLSX
-  xls: 'bi:filetype-xls', // XLS
-  docx: 'bi:filetype-docx', // DOCX
-  doc: 'bi:filetype-doc', // DOC
-  pptx: 'bi:filetype-pptx', // PPTX
-  ppt: 'bi:filetype-ppt', // PPT
-  txt: 'bi:filetype-txt', // TXT
-  json: 'bi:filetype-json', // JSON
+  pdf: 'i-bi:filetype-pdf', // PDF
+  csv: 'i-bi:filetype-csv', // CSV
+  xlsx: 'i-bi:filetype-xlsx', // XLSX
+  xls: 'i-bi:filetype-xls', // XLS
+  docx: 'i-bi:filetype-docx', // DOCX
+  doc: 'i-bi:filetype-doc', // DOC
+  pptx: 'i-bi:filetype-pptx', // PPTX
+  ppt: 'i-bi:filetype-ppt', // PPT
+  txt: 'i-bi:filetype-txt', // TXT
+  json: 'i-bi:filetype-json', // JSON
 } as const

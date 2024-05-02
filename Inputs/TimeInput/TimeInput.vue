@@ -290,7 +290,7 @@ defineExpose({
 
         <Btn
           v-if="hasClearableBtn"
-          icon="eva:close-fill h-6 w-6"
+          icon="i-eva:close-fill h-6 w-6"
           color="ca"
           size="auto"
           h="7"
@@ -322,7 +322,7 @@ defineExpose({
 
           <div
             class="time-input-icon"
-            bx:time-five
+            i-bx:time-five
           />
         </template>
       </div>

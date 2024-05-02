@@ -54,7 +54,7 @@ function handleColorChange(color?: string | null) {
 
     <Btn
       size="sm"
-      icon="material-symbols:format-color-text-rounded"
+      icon="i-material-symbols:format-color-text-rounded"
       @click.stop.prevent
       @mousedown.stop.prevent
     >

@@ -22,7 +22,7 @@ const isUnderline = computed(() => props.editor.isActive('underline'))
 <template>
   <div flex="~">
     <Btn
-      icon="material-symbols:format-bold-rounded"
+      icon="i-material-symbols:format-bold-rounded"
       size="sm"
       color="ca"
       :class="{ 'is-active': isBold }"
@@ -30,7 +30,7 @@ const isUnderline = computed(() => props.editor.isActive('underline'))
       @mousedown.stop.prevent
     />
     <Btn
-      icon="material-symbols:format-italic-rounded !w-5 !h-5 m-b-1px"
+      icon="i-material-symbols:format-italic-rounded !w-5 !h-5 m-b-1px"
       size="sm"
       color="ca"
       :class="{ 'is-active': isItalic }"
@@ -38,7 +38,7 @@ const isUnderline = computed(() => props.editor.isActive('underline'))
       @mousedown.stop.prevent
     />
     <Btn
-      icon="material-symbols:format-underlined-rounded"
+      icon="i-material-symbols:format-underlined-rounded"
       size="sm"
       color="ca"
       :class="{ 'is-active': isUnderline }"

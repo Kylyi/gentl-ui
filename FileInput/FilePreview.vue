@@ -27,7 +27,7 @@ const { getLocalImageUrl } = useImages()
 const icon = computed(() => {
   const icon =
     ICON_BY_FILE_TYPE[props.file.type as keyof typeof ICON_BY_FILE_TYPE] ||
-    'bi:file-image'
+    'i-bi:file-image'
 
   return icon
 })

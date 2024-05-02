@@ -135,7 +135,7 @@ const isModified = computed(() => {
         <Btn
           size="xs"
           round
-          icon="solar:history-outline !h-5 !w-5"
+          icon="i-solar:history-outline !h-5 !w-5"
           color="white"
           no-dim
         >
@@ -215,7 +215,7 @@ const isModified = computed(() => {
 
       &-icon{
         // top-0.4 makes the icon align with text, no deeper meaning
-        --apply: ph:link min-h-4 h-4 min-w-4 w-4 absolute left-0 top-0.4;
+        --apply: i-ph:link min-h-4 h-4 min-w-4 w-4 absolute left-0 top-0.4;
       }
     }
 

@@ -66,7 +66,7 @@ const $z = useZod({ scope: 'qb' })
     no-uppercase
     outlined
     :class="queryBuilderHasChildren ? 'color-primary' : 'color-ca'"
-    icon="basil:filter-solid"
+    icon="i-basil:filter-solid"
   >
     <Tooltip
       placement="top"

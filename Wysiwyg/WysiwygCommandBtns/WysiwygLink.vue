@@ -58,7 +58,7 @@ function handleSubmit() {
 
 <template>
   <Btn
-    icon="ph:link"
+    icon="i-ph:link"
     size="sm"
     color="ca"
     :class="{ 'is-active': editor.isActive('link') }"

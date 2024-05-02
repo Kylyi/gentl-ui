@@ -14,11 +14,11 @@ const { color, toggleDark } = useTheme()
     :visuals="{
       unchecked: {
         bullet: 'bg-transparent',
-        icon: 'clarity:moon-solid color-light text-sm',
+        icon: 'i-clarity:moon-solid color-light text-sm',
       },
       checked: {
         bullet: 'bg-transparent',
-        icon: 'akar-icons:sun text-sm',
+        icon: 'i-akar-icons:sun text-sm',
       },
     }"
     @update:model-value="toggleDark()"

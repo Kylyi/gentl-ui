@@ -133,7 +133,7 @@ async function handleApplyChanges() {
 
 <template>
   <Btn
-    icon="tabler:columns-2"
+    icon="i-tabler:columns-2"
     color="ca"
     self-center
     no-uppercase
@@ -309,7 +309,7 @@ async function handleApplyChanges() {
               >
                 <DragHandle
                   v-if="col.reorderable && !col.isHelperCol"
-                  class="handle icon-park-outline:drag"
+                  class="handle i-icon-park-outline:drag"
                   data-cy="dragable-item"
                   shrink="0"
                 />
@@ -325,7 +325,7 @@ async function handleApplyChanges() {
 
                 <Btn
                   v-if="idx > 0"
-                  icon="mingcute:arrow-to-up-line"
+                  icon="i-mingcute:arrow-to-up-line"
                   m="r-1"
                   size="xs"
                   color="ca"

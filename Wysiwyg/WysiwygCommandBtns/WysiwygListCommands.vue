@@ -20,7 +20,7 @@ const isNumberedList = computed(() => props.editor.isActive('orderedList'))
 <template>
   <div flex="~">
     <Btn
-      icon="material-symbols:format-list-bulleted-rounded"
+      icon="i-material-symbols:format-list-bulleted-rounded"
       size="sm"
       color="ca"
       :class="{ 'is-active': isBulletedList }"
@@ -28,7 +28,7 @@ const isNumberedList = computed(() => props.editor.isActive('orderedList'))
       @mousedown.stop.prevent
     />
     <Btn
-      icon="material-symbols:format-list-numbered-rounded"
+      icon="i-material-symbols:format-list-numbered-rounded"
       size="sm"
       color="ca"
       :class="{ 'is-active': isNumberedList }"

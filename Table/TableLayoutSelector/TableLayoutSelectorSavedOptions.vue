@@ -50,20 +50,20 @@ const layoutInfo = computed(() => {
         v-if="layoutInfo.hasColumns"
         class="layout-info-icon color-blue-500"
       >
-        <div tabler:columns-2 />
+        <div i-tabler:columns-2 />
       </div>
       <div
         v-if="layoutInfo.hasFilters"
         class="layout-info-icon color-blue-500"
       >
-        <div ic:round-filter-alt />
+        <div i-ic:round-filter-alt />
       </div>
       <div
         v-if="layoutInfo.hasSorting"
         class="layout-info-icon color-blue-500"
         m="l--1"
       >
-        <div basil:sort-outline />
+        <div i-basil:sort-outline />
       </div>
     </div>
 
@@ -71,11 +71,11 @@ const layoutInfo = computed(() => {
     <div flex="~ gap-0.5">
       <div
         v-if="layoutInfo.isPublic"
-        class="layout-info-icon ic:round-public color-blue-500"
+        class="layout-info-icon i-ic:round-public color-blue-500"
       />
       <div
         v-if="layoutInfo.isDefault"
-        class="layout-info-icon fluent:book-default-28-filled color-blue-500"
+        class="layout-info-icon i-fluent:book-default-28-filled color-blue-500"
       />
     </div>
   </div>

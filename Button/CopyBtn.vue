@@ -51,7 +51,7 @@ function handleCopy() {
     <template #icon>
       <div
         v-if="!copied"
-        bx:copy
+        i-bx:copy
         class="icon"
       />
       <Checkmark

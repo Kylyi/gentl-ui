@@ -27,8 +27,8 @@ const columns = toRef(props, 'columns')
 
 const btnProps = computed(() => {
   return column.value.frozen
-    ? { class: 'color-primary', icon: 'basil:lock-solid' }
-    : { class: 'color-ca', icon: 'basil:unlock-outline' }
+    ? { class: 'color-primary', icon: 'i-basil:lock-solid' }
+    : { class: 'color-ca', icon: 'i-basil:unlock-outline' }
 })
 
 function handleFreezeColumn() {

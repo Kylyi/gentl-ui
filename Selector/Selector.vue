@@ -520,7 +520,7 @@ function getData() {
       >
         <Btn
           v-if="clearable && hasContent && !disabled && !readonly"
-          icon="eva:close-fill h-6 w-6"
+          icon="i-eva:close-fill h-6 w-6"
           color="ca"
           size="auto"
           h="7"
@@ -542,7 +542,7 @@ function getData() {
           :is-open="isPickerActive"
         >
           <div
-            fluent:chevron-up-down-24-regular
+            i-fluent:chevron-up-down-24-regular
             class="dropdown-icon"
           />
         </slot>

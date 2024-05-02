@@ -15,7 +15,7 @@ const includeDeleted = useVModel(props, 'includeDeleted', emits)
 
 <template>
   <Btn
-    icon="material-symbols:more-vert"
+    icon="i-material-symbols:more-vert"
     color="ca"
     self-center
   >

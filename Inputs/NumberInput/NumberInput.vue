@@ -210,7 +210,7 @@ defineExpose({
 
         <Btn
           v-if="hasClearableBtn"
-          icon="eva:close-fill h-6 w-6"
+          icon="i-eva:close-fill h-6 w-6"
           color="ca"
           size="auto"
           h="7"
@@ -236,7 +236,7 @@ defineExpose({
             ref="increment"
             tabindex="-1"
             size="auto"
-            icon="bi:caret-up-fill w-4 h-4"
+            icon="i-bi:caret-up-fill w-4 h-4"
             color="ca"
             no-hover-effect
             touch-none
@@ -248,7 +248,7 @@ defineExpose({
             ref="decrement"
             tabindex="-1"
             size="auto"
-            icon="bi:caret-up-fill rotate-180 w-4 h-4"
+            icon="i-bi:caret-up-fill rotate-180 w-4 h-4"
             color="ca"
             no-hover-effect
             touch-none

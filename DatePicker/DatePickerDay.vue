@@ -68,7 +68,7 @@ const eventsAdjusted = computed<Pick<DayEvent, 'color' | 'icon'>[]>(() => {
         :key="idx"
         w="3"
         h="3"
-        :class="[event.color, event.icon || 'ic:round-lens']"
+        :class="[event.color, event.icon || 'i-ic:round-lens']"
         hover="scale-150"
         transition="transform-300"
       />

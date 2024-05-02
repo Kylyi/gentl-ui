@@ -118,7 +118,7 @@ syncRef(model, files, { direction: 'both', deep: true })
       <Btn
         v-if="model.length && !readonly && !disabled && multi"
         class="file-add"
-        icon="eva:plus-fill h-8 w-8"
+        icon="i-eva:plus-fill h-8 w-8"
         size="auto"
         stacked
         color="primary"
@@ -130,7 +130,7 @@ syncRef(model, files, { direction: 'both', deep: true })
         class="file-input-wrapper-hint"
       >
         <div
-          material-symbols:upload
+          i-material-symbols:upload
           h="16"
           w="16"
         />

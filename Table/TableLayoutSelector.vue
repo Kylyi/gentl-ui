@@ -233,7 +233,7 @@ function handleLayoutSelect(
     @update:model-value="handleLayoutSelect"
   >
     <template #prepend>
-      <div class="solar:eye-linear m-l-2 color-ca" />
+      <div class="i-solar:eye-linear m-l-2 color-ca" />
     </template>
 
     <template #above-options>

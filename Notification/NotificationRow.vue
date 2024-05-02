@@ -19,15 +19,15 @@ const isPausedByForce = ref(false)
 const icon = computed(() => {
   switch (props.notification.type) {
     case 'warning':
-      return 'fluent:warning-24-filled'
+      return 'i-fluent:warning-24-filled'
     case 'info':
-      return 'bi:info-lg'
+      return 'i-bi:info-lg'
     case 'positive':
-      return 'ep:success-filled'
+      return 'i-ep:success-filled'
     case 'negative':
-      return 'octicon:x-circle-fill-24'
+      return 'i-octicon:x-circle-fill-24'
     default:
-      return 'bi:info-lg'
+      return 'i-bi:info-lg'
   }
 })
 

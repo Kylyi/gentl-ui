@@ -75,11 +75,11 @@ const collapseProps = computed(() => {
   return collapsed.value[props.item.id]
     ? {
         label: t('queryBuilder.expand'),
-        icon: 'line-md:chevron-small-right order-2',
+        icon: 'i-line-md:chevron-small-right order-2',
       }
     : {
         label: t('queryBuilder.collapse'),
-        icon: 'line-md:chevron-small-right rotate-90 order-2',
+        icon: 'i-line-md:chevron-small-right rotate-90 order-2',
       }
 })
 </script>
@@ -138,7 +138,7 @@ const collapseProps = computed(() => {
         <!-- Remove group -->
         <Btn
           class="on-hover"
-          icon="material-symbols:delete-sweep-rounded !w-5 !h-5"
+          icon="i-material-symbols:delete-sweep-rounded !w-5 !h-5"
           color="negative"
           size="xs"
           m="l-2"
@@ -169,7 +169,7 @@ const collapseProps = computed(() => {
         <!-- Add row -->
         <Btn
           :label="$t('queryBuilder.addCondition')"
-          icon="eva:plus-fill"
+          icon="i-eva:plus-fill"
           color="ca"
           bg="white dark:darker"
           no-uppercase
@@ -181,7 +181,7 @@ const collapseProps = computed(() => {
         <!-- Add group -->
         <Btn
           :label="$t('queryBuilder.addGroup')"
-          icon="formkit:add"
+          icon="i-formkit:add"
           bg="white dark:darker"
           color="ca"
           no-uppercase
