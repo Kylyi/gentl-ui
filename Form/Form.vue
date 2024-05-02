@@ -420,11 +420,15 @@ onMounted(() => {
     --apply: flex-gap-2 border-ca;
   }
 
+  > .form-content {
+    --apply: p-$Form-content-padding;
+  }
+
   &.is-grown {
     --apply: contents;
 
     > .form-content {
-      --apply: flex-grow p-$Form-content-padding;
+      --apply: flex-grow;
     }
   }
 
