@@ -11,11 +11,21 @@ export function notify(
     timeout?: number
     subtitle?: string | string[]
     componentBelow?: INotification['componentBelow']
+    removeNotificationsAfterSuccess?: boolean
   }
 ) {
-  const { timeout = 3000, subtitle, componentBelow } = options || {}
+  const {
+    timeout = 3000,
+    subtitle,
+    componentBelow,
+    removeNotificationsAfterSuccess = false,
+  } = options || {}
 
-  const { addNotification } = useNotificationStore()
+  const { addNotification, removeAllNotifications } = useNotificationStore()
+
+  if (type === 'positive' && removeNotificationsAfterSuccess) {
+    removeAllNotifications()
+  }
 
   return addNotification({
     title,
