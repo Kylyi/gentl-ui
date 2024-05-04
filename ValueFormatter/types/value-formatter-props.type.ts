@@ -1,6 +1,3 @@
-// Types
-import type { PredictDataTypeOptions } from '~/libs/Shared/functions/misc'
-
 export type IValueFormatter = {
   value: any
   previousValue?: any
