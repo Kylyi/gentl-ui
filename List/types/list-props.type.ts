@@ -6,7 +6,7 @@ import type { IListFetchFnc } from '~/components/List/types/list-fetch.type'
 import type { IItemToBeAdded } from '~/components/List/types/list-item-to-add.type'
 
 // Models
-import { SortItem } from '~/libs/App/data/models/sort-item.model'
+import { SortItem } from '~/libs/Shared/models/sort-item.model'
 
 export type IListProps = IListBaseProps & {
   bordered?: boolean

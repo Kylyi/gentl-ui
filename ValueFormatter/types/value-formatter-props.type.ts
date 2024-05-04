@@ -1,5 +1,5 @@
 // Types
-import type { PredictDataTypeOptions } from '~/libs/App/functions/misc'
+import type { PredictDataTypeOptions } from '~/libs/Shared/functions/misc'
 
 export type IValueFormatter = {
   value: any

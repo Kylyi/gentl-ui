@@ -2,9 +2,9 @@
 import { config } from '~/components/config/components-config'
 
 // Models
-import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
+import { FilterItem } from '~/libs/Shared/models/filter-item'
+import { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
 import { TableColumn } from '~/components/Table/models/table-column.model'
-import { FilterItem } from '~/libs/App/data/models/filter-item'
 
 // Injections
 import { tableRefreshKey } from '~/components/Table/provide/table.provide'

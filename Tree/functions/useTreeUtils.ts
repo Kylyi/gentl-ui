@@ -5,7 +5,7 @@ import type { ITreeNode } from '~/components/Tree/types/tree-node.type'
 import type { ITreeProps } from '~/components/Tree/types/tree-props.type'
 
 // COMPOSITION FUNCTIONS
-import { useTraversing } from '~/libs/App/functions/useTraversing'
+import { useTraversing } from '~/libs/Shared/functions/useTraversing'
 
 export function useTreeUtils(props: ITreeProps) {
   // UTILS

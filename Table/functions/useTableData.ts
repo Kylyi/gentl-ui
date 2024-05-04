@@ -4,7 +4,6 @@ import { config } from '~/components/config/components-config'
 import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
 import type { ITableLayout } from '~/components/Table/types/table-layout.type'
 import type { ITableProps } from '~/components/Table/types/table-props.type'
-import type { FilterItem } from '~/libs/App/data/models/filter-item'
 import type { IVirtualScrollEvent } from '~/components/VirtualScroller/types/virtual-scroll-event.type'
 import type {
   ITableDataFetchFncInput,
@@ -15,6 +14,7 @@ import type {
 
 // Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
+import { FilterItem } from '~/libs/Shared/models/filter-item'
 
 // Functions
 import { useTableUtils } from '~/components/Table/functions/useTableUtils'

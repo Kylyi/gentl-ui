@@ -8,7 +8,7 @@ import type { ITableLayout } from '~/components/Table/types/table-layout.type'
 import type { ITableProps } from '~/components/Table/types/table-props.type'
 
 // Models
-import { FilterItem } from '~/libs/App/data/models/filter-item'
+import { FilterItem } from '~/libs/Shared/models/filter-item'
 
 // Injections
 import {

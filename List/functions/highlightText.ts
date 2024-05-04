@@ -1,7 +1,7 @@
 import * as Fuse from 'fuse.js'
 
 // Types
-import type { IItem } from '~/libs/App/types/item.type'
+import type { IItem } from '~/libs/Shared/types/item.type'
 
 /**
  *

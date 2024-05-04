@@ -4,21 +4,21 @@ import { config } from '~/components/config/components-config'
 
 // Types
 import type { DistinctData } from '~/components/Table/types/distinct-data.type'
-import type { IItem, IItemBase } from '~/libs/App/types/item.type'
+import type { IItem, IItemBase } from '~/libs/Shared/types/item.type'
 import type {
   ITableFilterItem,
   ITableOrderBy,
 } from '~/components/Table/types/table-query.type'
 
 // Models
-import { FilterItem } from '~/libs/App/data/models/filter-item'
-import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
+import { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
+import { FilterItem } from '~/libs/Shared/models/filter-item'
 
 // Functions
 import { useRenderTemporaryTableCell } from '~/components/Table/functions/useRenderTemporaryTableCell'
 
 // Constants
-import { DATE_TYPES } from '~/libs/App/types/datetime.type'
+import { DATE_TYPES } from '~/libs/Shared/types/datetime.type'
 import { NON_VALUE_COMPARATORS } from '~/components/Table/constants/comparator-categories.const'
 
 // Components

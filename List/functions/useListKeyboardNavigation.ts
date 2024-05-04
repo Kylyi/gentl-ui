@@ -1,7 +1,7 @@
 import { type MaybeElementRef } from '@vueuse/core'
 
 // Types
-import type { IGroupRow } from '~/libs/App/data/functions/useGrouping'
+import type { IGroupRow } from '~/libs/Shared/functions/data/useGrouping'
 
 // Components
 import ListVirtualContainer from '~/components/List/ListVirtualContainer.vue'

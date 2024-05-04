@@ -4,13 +4,13 @@ import type { ITableProps } from '~/components/Table/types/table-props.type'
 
 // Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
-import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
+import { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
 
 // Injections
 import { getTableStorageKey } from '~/components/Table/provide/table.provide'
 
 // Functions
-import { getComponentName } from '~/libs/App/functions/misc'
+import { getComponentName } from '~/libs/Shared/functions/misc'
 import { parseSortingFromUrl } from '~/libs/App/functions/table/extractSortingFromUrl'
 import { parseFiltersFromUrl } from '~/libs/App/functions/table/extractFiltersFromUrl'
 import { parseVisibleColumnsFromUrl } from '~/libs/App/functions/table/extractVisibleColumnsFromUrl'

@@ -1,7 +1,7 @@
 import { config } from '~/components/config/components-config'
 
 // Types
-import type { IItem } from '~/libs/App/types/item.type'
+import type { IItem } from '~/libs/Shared/types/item.type'
 import type { IQueryBuilderGroup } from '~/components/QueryBuilder/types/query-builder-group-props.type'
 import type { IQueryBuilderItem } from '~/components/QueryBuilder/types/query-builder-item-props.type'
 import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'

@@ -10,15 +10,15 @@ import type { IListFetchOptions } from '~/components/List/types/list-fetch.type'
 import {
   type IGroupRow,
   useGrouping,
-} from '~/libs/App/data/functions/useGrouping'
+} from '~/libs/Shared/functions/data/useGrouping'
 
 // Models
-import { GroupItem } from '~/libs/App/data/models/group-item.model'
-import { SortItem } from '~/libs/App/data/models/sort-item.model'
+import { SortItem } from '~/libs/Shared/models/sort-item.model'
+import { GroupItem } from '~/libs/Shared/models/group-item.model'
 
 // Functions
 import { highlight } from '~/components/List/functions/highlightText'
-import { useSorting } from '~/libs/App/data/functions/useSorting'
+import { useSorting } from '~/libs/Shared/functions/data/useSorting'
 import { useListUtils } from '~/components/List/functions/useListUtils'
 import { useItemAdding } from '~/components/List/functions/useItemAdding'
 

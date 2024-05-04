@@ -6,7 +6,7 @@ import {
 } from '~/components/QueryBuilder/types/query-builder-item-props.type'
 
 // Models
-import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
+import { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
 
 // Functions
 import { getInputByDataType } from '~/components/Inputs/DynamicInput/constants/input-by-datatype.map'

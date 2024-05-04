@@ -6,7 +6,7 @@ import type {
 } from '~/components/QueryBuilder/types/query-builder-group-props.type'
 
 // Models
-import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
+import { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
 
 // Injections
 import {
@@ -28,6 +28,9 @@ const props = withDefaults(defineProps<IQueryBuilderGroupProps>(), {
 const emits = defineEmits<{
   (e: 'delete:row', item: IQueryBuilderGroup): void
 }>()
+
+// Utils
+const { getColor } = useColors()
 
 // Injections
 const container = injectStrict(qbContainerKey)

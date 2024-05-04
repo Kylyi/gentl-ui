@@ -7,7 +7,7 @@ import { TableColumn } from '~/components/Table/models/table-column.model'
 import { useTableStore } from '~/components/Table/table.store'
 
 // Functions
-import { stringToFloat } from '~/libs/App/data/regex/string-to-float.regex'
+import { stringToFloat } from '~/libs/Shared/regex/string-to-float.regex'
 
 // Injections
 import {

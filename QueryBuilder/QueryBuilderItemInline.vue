@@ -6,7 +6,7 @@ import type {
 } from '~/components/QueryBuilder/types/query-builder-item-props.type'
 
 // Models
-import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
+import { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
 
 // Injections
 import {
@@ -34,6 +34,9 @@ const emits = defineEmits<{
   (e: 'add:row'): void
   (e: 'delete:row', item: IQueryBuilderItem): void
 }>()
+
+// Utils
+const { getColor } = useColors()
 
 // Injections
 const columns = injectStrict(qbColumnsKey)

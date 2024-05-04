@@ -6,7 +6,7 @@ import type { DayEvent } from '~/components/DatePicker/types/DayEvent.type'
 import type { IDatePickerProps } from '~/components/DatePicker/types/datepicker-props.type'
 
 // Models
-import { Day } from '~/libs/App/data/models/day.model'
+import type { Day } from '~/libs/Shared/models/day.model';
 
 const props = withDefaults(defineProps<IDatePickerProps>(), {
   excludedDays: () => [],

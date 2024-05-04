@@ -7,7 +7,7 @@ import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-bui
 import type { IQueryBuilderGroup } from '~/components/QueryBuilder/types/query-builder-group-props.type'
 
 // Models
-import { FilterItem } from '~/libs/App/data/models/filter-item'
+import { FilterItem } from '~/libs/Shared/models/filter-item'
 
 // Injections
 import { qbIsActivelyModifyingValuesKey } from '~/components/QueryBuilder/provide/query-builder.provide'

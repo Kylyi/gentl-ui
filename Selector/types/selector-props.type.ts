@@ -7,8 +7,8 @@ import type { IInputProps } from '~/components/Inputs/types/input-props.type'
 import type { IListProps } from '~/components/List/types/list-props.type'
 
 // Models
-import { GroupItem } from '~/libs/App/data/models/group-item.model'
-import { SortItem } from '~/libs/App/data/models/sort-item.model'
+import type { GroupItem } from '~/libs/Shared/models/group-item.model'
+import type { SortItem } from '~/libs/Shared/models/sort-item.model'
 
 export type ISelectorProps = IInputProps & {
   /**

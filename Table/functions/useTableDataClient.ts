@@ -1,13 +1,13 @@
 // Types
-import type { IItem } from '~/libs/App/types/item.type'
+import type { IItem } from '~/libs/Shared/types/item.type'
 import type {
   ITableDataFetchFncInput,
   ITableFilterItem,
 } from '~/components/Table/types/table-query.type'
 
 // Functions
-import { useFiltering } from '~/libs/App/data/functions/useFiltering'
-import { useSorting } from '~/libs/App/data/functions/useSorting'
+import { useFiltering } from '~/libs/Shared/functions/data/useFiltering'
+import { useSorting } from '~/libs/Shared/functions/data/useSorting'
 
 export function useTableDataClient() {
   // Utils

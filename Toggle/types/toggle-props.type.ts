@@ -1,6 +1,6 @@
 // TYPES
 import type { IItemProps } from '~/components/Item/types/item-props.type'
-import type { ClassType } from '~/libs/App/types/class.type'
+import type { ClassType } from '~/libs/Shared/types/class.type'
 
 export type ToggleState = 'checked' | 'unchecked' | 'indeterminate'
 

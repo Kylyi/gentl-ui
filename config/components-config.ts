@@ -66,7 +66,7 @@ import type {
 } from '~/components/Table/types/table-query.type'
 
 // Models
-import type { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
+import type { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
 
 export const config = merge(
   {

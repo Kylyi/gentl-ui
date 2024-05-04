@@ -1,10 +1,10 @@
 // Types
-import type { IItem } from '~/libs/App/types/item.type'
+import type { IItem } from '~/libs/Shared/types/item.type'
 import type { IQueryBuilderGroup } from '~/components/QueryBuilder/types/query-builder-group-props.type'
 import type { IQueryBuilderRowProps } from '~/components/QueryBuilder/types/query-builder-row-props.type'
 
 // Models
-import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
+import { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
 
 export type IQueryBuilderItem<T = IItem> = {
   id: string

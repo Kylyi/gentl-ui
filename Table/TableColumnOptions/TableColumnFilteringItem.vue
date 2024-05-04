@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { config } from '~/components/config/components-config'
 
-// Types
-import { FilterItem } from '~/libs/App/data/models/filter-item'
-
 // Models
-import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
+import { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
+import { FilterItem } from '~/libs/Shared/models/filter-item'
 
 // Functions
 import { useTableUtils } from '~/components/Table/functions/useTableUtils'

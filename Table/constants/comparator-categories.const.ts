@@ -1,6 +1,6 @@
 // Models
 import { config } from '~/components/config/components-config'
-import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
+import { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
 
 export const NON_VALUE_COMPARATORS = [
   ComparatorEnum.IS_EMPTY,

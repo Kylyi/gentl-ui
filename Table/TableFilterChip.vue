@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
-import { FilterItem } from '~/libs/App/data/models/filter-item'
+import { FilterItem } from '~/libs/Shared/models/filter-item'
 
 // Injections
 import { tableRefreshKey } from '~/components/Table/provide/table.provide'

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Types
-import { type IGroupRow } from '~/libs/App/data/functions/useGrouping'
+import { type IGroupRow } from '~/libs/Shared/functions/data/useGrouping'
 
 // Models
 import { TableColumn } from '~/components/Table/models/table-column.model'

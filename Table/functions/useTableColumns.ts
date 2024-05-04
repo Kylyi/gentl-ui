@@ -6,8 +6,8 @@ import type { ITableLayout } from '~/components/Table/types/table-layout.type'
 
 // Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
-import { GroupItem } from '~/libs/App/data/models/group-item.model'
-import { FilterItem } from '~/libs/App/data/models/filter-item'
+import { FilterItem } from '~/libs/Shared/models/filter-item'
+import { GroupItem } from '~/libs/Shared/models/group-item.model'
 
 // Functions
 import { useTableUtils } from '~/components/Table/functions/useTableUtils'
@@ -20,7 +20,7 @@ import {
 } from '~/components/Table/provide/table.provide'
 
 // Regex
-import { stringToFloat } from '~/libs/App/data/regex/string-to-float.regex'
+import { stringToFloat } from '~/libs/Shared/regex/string-to-float.regex'
 
 // Store
 import { useTableStore } from '~/components/Table/table.store'

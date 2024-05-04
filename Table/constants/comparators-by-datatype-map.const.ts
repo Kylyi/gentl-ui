@@ -2,7 +2,7 @@ import { defu } from 'defu'
 import { config } from '~/components/config/components-config'
 
 // Models
-import { ComparatorEnum } from '~/libs/App/data/enums/comparator.enum'
+import { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
 
 export const COMPARATORS_BY_DATATYPE_MAP = defu(
   {

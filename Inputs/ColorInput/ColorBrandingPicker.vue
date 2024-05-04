@@ -43,6 +43,9 @@ const themeColors = [
   'info',
 ]
 
+// Utils
+const { getColor, hexToRgb } = useColors()
+
 // Layout
 const model = defineModel<string>()
 const { isSupported, open: openEyeDropper, sRGBHex } = useEyeDropper()

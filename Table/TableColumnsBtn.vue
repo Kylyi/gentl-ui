@@ -4,8 +4,8 @@ import { config } from '~/components/config/components-config'
 
 // Types
 import type { IBtnProps } from '~/components/Button/types/btn-props.type'
-import type { IGroupRow } from '~/libs/App/data/functions/useGrouping'
-import type { IItem } from '~/libs/App/types/item.type'
+import type { IGroupRow } from '~/libs/Shared/functions/data/useGrouping'
+import type { IItem } from '~/libs/Shared/types/item.type'
 
 // Models
 import { TableColumn } from '~/components/Table/models/table-column.model'

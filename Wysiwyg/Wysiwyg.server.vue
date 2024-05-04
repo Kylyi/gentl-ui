@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // Types
 import type { IWysiwygProps } from '~/components/Wysiwyg/types/wysiwyg-props.type'
-import type { IItem } from '~/libs/App/types/item.type'
+import type { IItem } from '~/libs/Shared/types/item.type'
 
 // Functions
 import { useValueFormatterUtils } from '~/components/ValueFormatter/functions/useValueFormatterUtils'
