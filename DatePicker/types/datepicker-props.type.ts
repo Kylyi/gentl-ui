@@ -4,7 +4,7 @@ import dayjs from 'dayjs'
 import { type DayEvent } from '~/components/DatePicker/types/DayEvent.type'
 
 // Models
-import { DayEnum } from '~/libs/Shared/enums/day.enum'
+import { DayEnum } from '~/components/Inputs/DateInput/enums/day.enum'
 
 export interface IDatePickerProps {
   allowedDays?: Array<dayjs.Dayjs> | ((date: dayjs.Dayjs) => boolean)
