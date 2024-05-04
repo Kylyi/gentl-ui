@@ -10,7 +10,6 @@ import { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
 import { getTableStorageKey } from '~/components/Table/provide/table.provide'
 
 // Functions
-import { getComponentName } from '~/libs/Shared/functions/misc'
 import { parseSortingFromUrl } from '~/libs/App/functions/table/extractSortingFromUrl'
 import { parseFiltersFromUrl } from '~/libs/App/functions/table/extractFiltersFromUrl'
 import { parseVisibleColumnsFromUrl } from '~/libs/App/functions/table/extractVisibleColumnsFromUrl'
