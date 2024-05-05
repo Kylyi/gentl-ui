@@ -12,7 +12,7 @@ import DurationInput from '~/components/Inputs/DurationInput/DurationInput.vue'
 const TEXT_INPUT = {
   component: markRaw(TextInput),
   props: {} as ComponentProps<typeof TextInput>,
-  icon: 'mi-text',
+  icon: 'i-mi-text',
 }
 
 const NUMBER_INPUT = {

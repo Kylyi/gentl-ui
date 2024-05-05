@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import { config } from '~/components/config/components-config'
 
+// Types
+import type { IBreadcrumb } from './types/breadcrumb.type';
+
 // Constants
 import { BUTTON_PRESET } from '~/components/Button/constants/button-preset.constant'
 
 const breadcrumbsInjected = injectStrict(breadcrumbsKey, ref([]))
 
+// Layout
 const breadcrumbs = computed(() => {
   return [
     {
@@ -17,6 +21,12 @@ const breadcrumbs = computed(() => {
     .flatMap(breadcrumb => [breadcrumb, 'splitter'])
     .slice(0, -1)
 })
+
+function getLabel(breadcrumb: IBreadcrumb) {
+  return typeof breadcrumb.label === 'function'
+    ? breadcrumb.label()
+    : breadcrumb.label
+}
 </script>
 
 <template>
@@ -37,6 +47,7 @@ const breadcrumbs = computed(() => {
           <Btn
             v-else
             v-bind="breadcrumb"
+            :label="getLabel(breadcrumb)"
             no-active-link
             color="!dark !dark:light"
             size="sm"
