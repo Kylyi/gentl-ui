@@ -163,7 +163,18 @@ export async function useTableMetaData(props: ITableProps) {
             }
           }
 
-          layout.value.schema = props.initialLayoutSchema
+          // When using the initial layout schema, we merge it with the existing
+          // schema. The initial layout schema has the highest priority tho.
+          const schemaParams = new URLSearchParams(_layout?.schema ?? '')
+          const initSchemaParams = new URLSearchParams(
+            props.initialLayoutSchema
+          )
+
+          initSchemaParams.forEach((value, key) => {
+            schemaParams.set(key, value)
+          })
+
+          layout.value.schema = schemaParams.toString()
         }
 
         layouts.value = get(result, layoutsKey || config.table.layoutsKey) || []
