@@ -163,7 +163,7 @@ export async function useTableMetaData(props: ITableProps) {
             }
           }
 
-          // When using the initial layout schema, we merge it with the existing
+          // When using the initial layout schema, we merge it with the default
           // schema. The initial layout schema has the highest priority tho.
           const schemaParams = new URLSearchParams(_layout?.schema ?? '')
           const initSchemaParams = new URLSearchParams(
