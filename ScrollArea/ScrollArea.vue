@@ -12,7 +12,7 @@ const ps = ref<PerfectScrollbar>()
 onMounted(() => {
   if (scrollArea.value) {
     ps.value = new PerfectScrollbar(scrollArea.value, {
-      wheelSpeed: 0.1,
+      wheelSpeed: 0.75,
       ...(props.options || {}),
     })
   }
