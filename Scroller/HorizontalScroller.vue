@@ -76,14 +76,14 @@ function handleWheel(ev: WheelEvent) {
   isLocalScroll.value = true
   const scrollSpeed = 25
 
-  // SCROLLING RIGHT
+  // Scrolling right
   if (ev.deltaY > 0 && !arrivedState.right) {
     handleScroll(scrollSpeed)
     ev.stopPropagation()
     ev.preventDefault()
   }
 
-  // SCROLLING LEFT
+  // Scrolling left
   else if (ev.deltaY < 0 && !arrivedState.left) {
     handleScroll(-1 * scrollSpeed)
     ev.stopPropagation()
@@ -183,7 +183,7 @@ defineExpose({
 
 .arrows-inside {
   .arrow {
-    --apply: absolute w-16 h-full flex z-5 pointer-events-none;
+    --apply: absolute w-8 h-full max-h-20 flex z-5 pointer-events-none top-1/2 translate-y--1/2;
 
     .btn {
       --apply: opacity-20 pointer-events-auto;
@@ -198,13 +198,11 @@ defineExpose({
     &.is-active {
 
       &.arrow--left {
-        background:
-          linear-gradient(to right, theme('colors.truegray.200') 0%, theme('colors.truegray.200') 16px, transparent);
+        background: linear-gradient(to right, rgba(64, 64, 64, 0.2) 0%, rgba(64, 64, 64, 0.2) 8px, transparent);
       }
 
       &.arrow--right {
-        background:
-          linear-gradient(to left, theme('colors.truegray.200') 0%, theme('colors.truegray.200') 16px, transparent);
+        background: linear-gradient(to left, rgba(64, 64, 64, 0.2) 0%, rgba(64, 64, 64, 0.2) 8px, transparent);
       }
 
       > .btn {
@@ -226,11 +224,11 @@ defineExpose({
   .arrows-inside {
     .is-active.arrow {
       &--left {
-        background: linear-gradient(to right, theme('colors.truegray.800') 0%, theme('colors.truegray.800') 16px, transparent);
+        background: linear-gradient(to right, rgba(64, 64, 64, 0.6) 0%, rgba(64, 64, 64, 0.6) 8px, transparent);
       }
 
       &--right {
-        background: linear-gradient(to left, theme('colors.truegray.800') 0%, theme('colors.truegray.800') 16px, transparent);
+        background: linear-gradient(to left, rgba(64, 64, 64, 0.6) 0%, rgba(64, 64, 64, 0.6) 8px, transparent);
       }
     }
   }

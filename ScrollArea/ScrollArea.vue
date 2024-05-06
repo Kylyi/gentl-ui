@@ -22,6 +22,10 @@ onBeforeUnmount(() => {
   ps.value?.destroy()
 })
 
+useResizeObserver(scrollArea, () => {
+  ps.value?.update()
+})
+
 defineExpose({
   update: () => ps.value?.update(),
   scrollToBottom: () => {
