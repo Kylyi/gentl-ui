@@ -77,8 +77,6 @@ export function useTableLayout(
   }
 
   const scrollbarWidth = computed(() => {
-    console.log(isOverflown.value ? _scrollbarWidth : 0)
-
     return isOverflown.value ? _scrollbarWidth : 0
   })
 

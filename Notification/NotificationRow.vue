@@ -244,7 +244,7 @@ watch(notificationCounter, async () => {
   }
 
   .notification-subtitle {
-    --apply: tracking-wide text-sm color-black dark:color-white break-words;
+    --apply: tracking-wide text-sm color-black dark:color-white break-words p-b-3;
   }
 
   .counter {
