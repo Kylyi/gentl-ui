@@ -126,6 +126,7 @@ const {
   // Element refs
   scrollerEl,
   headerEl,
+  scrollbarWidth,
   scrollerElBounds,
   scrollLeft,
   totalsEl,
@@ -348,6 +349,7 @@ onMounted(() => {
               :mode="mode"
               :bounds="scrollerElBounds"
               :scroll-left="scrollLeft"
+              :scrollbar-width="scrollbarWidth"
             />
           </template>
 

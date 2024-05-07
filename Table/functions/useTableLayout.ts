@@ -34,7 +34,7 @@ export function useTableLayout(
   const instance = getCurrentInstance()
 
   // Utils
-  const { onOverflow } = useOverflow()
+  const { scrollbarWidth: _scrollbarWidth, onOverflow } = useOverflow()
   const { getRowKey } = useTableUtils()
   const {
     hasVisibleColumn,
@@ -75,6 +75,12 @@ export function useTableLayout(
       instance?.emit('row-click', { row, el, ev: event })
     }
   }
+
+  const scrollbarWidth = computed(() => {
+    console.log(isOverflown.value ? _scrollbarWidth : 0)
+
+    return isOverflown.value ? _scrollbarWidth : 0
+  })
 
   // CSS variables
   const rowHeight = useCssVar('--rowHeight', tableEl)
@@ -229,6 +235,7 @@ export function useTableLayout(
     isScrolled,
     isOverflown,
     isBreakpoint,
+    scrollbarWidth,
     scrollerElBounds: toReactive(scrollerElBounds),
     tableRowHeight,
     TableRowComponent,

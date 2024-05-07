@@ -648,6 +648,7 @@ export function useTableColumns(
     internalColumns,
     hasVisibleColumn,
     searchableColumnLabels,
+    // scrollbarWidth: computed(() => (isOverflown.value ? scrollbarWidth : 0)),
     resizeColumns,
     stretchColumns,
     extendColumns,
