@@ -406,7 +406,10 @@ export function useTableData(
       if (config.table.extractData) {
         customData.value = Object.assign(
           customData.value,
-          config.table.extractData(res, externalData)
+          config.table.extractData(res, {
+            externalDataRef: externalData,
+            metaRef: tableState.value?.meta,
+          })
         )
       }
 

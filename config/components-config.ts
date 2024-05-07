@@ -448,7 +448,13 @@ export const config = merge(
        * be visible only when `shouldBeExportable` is true. This fuction can be used to extract
        * the `shouldBeExportable` property from the API response and provide for the component
        */
-      extractData: (res: any, externalData?: Ref<IItem>) => {
+      extractData: (
+        res: any,
+        options?: {
+          externalDataRef?: Ref<IItem>
+          metaRef?: MaybeRefOrGetter<IItem>
+        }
+      ) => {
         return {}
       },
 
