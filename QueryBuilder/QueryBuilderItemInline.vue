@@ -45,6 +45,7 @@ const isActivelyModifyingValues = injectStrict(
   ref(false)
 )
 const tableRefresh = injectStrict(tableRefreshKey, () => {})
+const noItemOverlay = inject('noItemOverlay', ref(false))
 
 // Layout
 const itemEditMenuEl = ref<InstanceType<typeof Menu>>()
@@ -191,8 +192,9 @@ const $z = useZod({ scope: 'qb' })
       v-if="editable"
       ref="itemEditMenuEl"
       :no-arrow="false"
-      :no-overlay="false"
+      :no-item-overlay="noItemOverlay"
       :fit="false"
+      placement="bottom-start"
       min-w="min"
       @before-show="isActivelyModifyingValues = true"
       @show="itemEditEl?.focusInput()"

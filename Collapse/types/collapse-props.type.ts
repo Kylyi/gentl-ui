@@ -44,6 +44,11 @@ export interface ICollapseProps {
   modelValue?: boolean
 
   /**
+   * When true, the collapse will not animate
+   */
+  noAnimate?: boolean
+
+  /**
    * When true, the collapse header will not be shown
    */
   noHeader?: boolean

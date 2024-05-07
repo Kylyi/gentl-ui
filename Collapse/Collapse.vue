@@ -170,6 +170,7 @@ useResizeObserver(headerEl, entries => {
     <Transition
       :enter-active-class="`${transitionClass} transition-active`"
       :leave-active-class="`${transitionClass} transition-active`"
+      :css="!noAnimate"
       @after-enter="handleEnter"
       @after-leave="handleLeave"
     >

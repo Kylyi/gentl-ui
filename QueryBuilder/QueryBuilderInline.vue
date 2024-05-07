@@ -21,13 +21,22 @@ import {
 } from '~/components/QueryBuilder/provide/query-builder.provide'
 import { useQueryBuilderColumnFilters } from '~/components/QueryBuilder/functions/useQueryBuilderColumnFilters'
 
-const props = defineProps<IQueryBuilderProps>()
+const props = defineProps<IQueryBuilderProps & {
+  /**
+   * When true, the `QueryBuilderInlineItem` will not use overlay
+   * for the edit menu
+   */
+  noItemOverlay?: boolean
+}>()
 
 // Layout
 const queryBuilderEl = ref<HTMLDivElement>()
 const items = useVModel(props, 'items')
 const level = 0
 const isSmallerScreen = ref(false)
+const noItemOverlay = toRef(props, 'noItemOverlay')
+
+provide('noItemOverlay', noItemOverlay)
 
 const noChildren = computed(() => {
   return !(items.value[0] as IQueryBuilderGroup)?.children.length
