@@ -124,6 +124,8 @@ const {
   // Element refs
   scrollerEl,
   headerEl,
+  scrollerElBounds,
+  scrollLeft,
   totalsEl,
   tableEl,
 
@@ -342,6 +344,8 @@ onMounted(() => {
               :row="row"
               :index="index"
               :mode="mode"
+              :bounds="scrollerElBounds"
+              :scroll-left="scrollLeft"
             />
           </template>
 

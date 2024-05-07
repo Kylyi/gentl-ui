@@ -56,8 +56,9 @@ export function useTableLayout(
   const headerEl = ref<InstanceType<typeof TableHeader>>()
   const totalsEl = ref<InstanceType<typeof TableTotals>>()
   const containerEl = ref<HTMLDivElement>()
+  const scrollerElBounds = useElementBounding(scrollerEl)
 
-  const rowKey = computedEager(() => getRowKey(props))
+  const rowKey = computed(() => getRowKey(props))
 
   function handleRowClick(rows: any[], event: PointerEvent) {
     const rowEl = event.target as HTMLElement
@@ -228,6 +229,7 @@ export function useTableLayout(
     isScrolled,
     isOverflown,
     isBreakpoint,
+    scrollerElBounds: toReactive(scrollerElBounds),
     tableRowHeight,
     TableRowComponent,
     rowKey,
@@ -235,6 +237,7 @@ export function useTableLayout(
 
     // Element refs
     scrollerEl,
+    scrollLeft,
     tableEl,
     headerEl,
     totalsEl,
