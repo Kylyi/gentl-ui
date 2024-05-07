@@ -5,6 +5,7 @@ import { type ICrudBtnProps } from '~/components/Crud/types/crud-btn-props.type'
 defineProps<ICrudBtnProps & { confirmationText?: string }>()
 defineEmits<{
   (e: 'delete'): void
+  (e: 'hide'): void
 }>()
 </script>
 
@@ -32,6 +33,7 @@ defineEmits<{
       no-overlay
       focus-confirm-button
       h="auto"
+      @hide="$emit('hide')"
       @ok="$emit('delete')"
     >
       <slot name="confirmation" />

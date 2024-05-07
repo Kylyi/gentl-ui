@@ -94,14 +94,16 @@ defineExpose({
   customFnc: (
     fnc: (options: {
       columns: TableColumn[]
-      rows: any[]
+      rowsRef: Ref<any[]>
+      totalRowsRef: Ref<number | undefined>
       tableRowHeight: typeof tableRowHeight.value
       scrollerEl: typeof scrollerEl.value
     }) => void
   ) => {
     fnc({
       columns: internalColumns.value,
-      rows: rows.value,
+      rowsRef: rows,
+      totalRowsRef: totalRows,
       tableRowHeight: tableRowHeight.value,
       scrollerEl: scrollerEl.value,
     })
