@@ -112,7 +112,7 @@ watch(counter, () => {
   }
 
   &-text {
-    --apply: flex-grow p-y-2;
+    --apply: flex-grow p-y-2 p-r-2;
   }
 
   &.is-dismissable {
