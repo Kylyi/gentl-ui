@@ -154,11 +154,12 @@ export function useTableColumns(
 
     const { schemaSort, filters: schemaFilters } = parseUrlParams({
       columnsRef: _columns,
-      searchParams: layoutRef.value?.schema,
+      searchParams: layoutRef.value?.schema ?? ' ',
       fromSchema: !!layoutRef.value?.schema,
     })
 
     const { columns: stateColumns } = tableState.value
+    const shouldUrlBeUsed = props.useUrl
 
     const isUrlUsed =
       !!urlSort.length ||
@@ -169,7 +170,7 @@ export function useTableColumns(
     // When something is present in the URL, we just use that,
     // otherwise we use the schema
     const sort = isUrlUsed ? urlSort : schemaSort
-    const filters = isUrlUsed ? urlFilters : schemaFilters
+    const filters = isUrlUsed && shouldUrlBeUsed ? urlFilters : schemaFilters
 
     // When sorting is provided in the URL, we set the sorting for the columns
     // that are in the URL and reset it for the others
