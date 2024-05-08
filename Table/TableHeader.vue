@@ -20,6 +20,7 @@ import HorizontalScroller from '~/components/Scroller/HorizontalScroller.vue'
 type IProps = {
   columns: TableColumn<any>[]
   minimumColumnWidth?: number
+  noLock?: boolean
   rows: any[]
   smallScreen?: boolean
 }
@@ -127,6 +128,7 @@ defineExpose({
       :columns="columns"
       :last="idx === visibleColumns.length - 1"
       :small-screen="smallScreen"
+      :no-lock="noLock"
     >
       <template #selection>
         <Checkbox
