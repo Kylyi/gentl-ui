@@ -2,9 +2,7 @@
 // Types
 import type { ICollapseProps } from '~/components/Collapse/types/collapse-props.type'
 
-const props = withDefaults(defineProps<ICollapseProps>(), {
-  padded: true,
-})
+const props = defineProps<ICollapseProps>()
 
 const emits = defineEmits<{
   (e: 'update:modelValue', val: boolean): void
@@ -13,6 +11,11 @@ const emits = defineEmits<{
   (e: 'before-hide'): void
   (e: 'hide'): void
 }>()
+
+defineExpose({
+  show: () => (internalValue.value = true),
+  hide: () => (internalValue.value = false),
+})
 
 // Layout
 const headerEl = ref<HTMLDivElement>()
