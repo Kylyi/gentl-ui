@@ -8,9 +8,10 @@ export function useItemAdding(
     'allowAdd' | 'itemKey' | 'itemLabel' | 'addedItems' | 'multi'
   >
 ) {
-  const instance = getCurrentInstance()
   const preAddedItem = ref<IItemToBeAdded>()
-  const addedItems = ref<IItemToBeAdded[]>(props.addedItems || [])
+  const addedItems = props.addedItems
+  ? useVModel(props, 'addedItems') as Ref<IItemToBeAdded[]>
+  : ref<IItemToBeAdded[]>([])
 
   function handleSearch(payload: { search: string; hasExactMatch: boolean }) {
     const { search, hasExactMatch } = payload
@@ -50,8 +51,6 @@ export function useItemAdding(
       ...addedItems.value,
       { ...item, _isNew: false, _isCreate: true },
     ]
-
-    instance?.emit('update:addedItems', addedItems.value)
   }
 
   return {

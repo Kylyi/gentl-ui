@@ -61,7 +61,7 @@ defineExpose({
   },
   loadData: (search?: string, options?: IListFetchOptions) =>
     loadData(search, options),
-  refresh: () => refresh,
+  refresh: () => refresh(),
   handleKey: (
     ev: KeyboardEvent,
     options?: { force?: boolean; repeated?: boolean }
@@ -228,6 +228,10 @@ onMounted(() => {
   .separator {
     --apply: order-1;
   }
+}
+
+.list-search {
+  --apply: flex-wrap;
 }
 
 .no-data {

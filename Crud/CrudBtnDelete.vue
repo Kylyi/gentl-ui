@@ -1,8 +1,9 @@
 <script setup lang="ts">
 // Types
-import { type ICrudBtnProps } from '~/components/Crud/types/crud-btn-props.type'
+import type { ICrudBtnProps } from '~/components/Crud/types/crud-btn-props.type'
+import type { IMenuProps } from '~/components/Menu/types/menu-props.type'
 
-defineProps<ICrudBtnProps & { confirmationText?: string }>()
+defineProps<ICrudBtnProps & { confirmationText?: string; menuProps?: IMenuProps }>()
 defineEmits<{
   (e: 'delete'): void
   (e: 'hide'): void
@@ -33,6 +34,7 @@ defineEmits<{
       no-overlay
       focus-confirm-button
       h="auto"
+      v-bind="menuProps"
       @hide="$emit('hide')"
       @ok="$emit('delete')"
     >

@@ -232,9 +232,8 @@ export function useList(
     }
 
     // We reset the added items in single mode
-    if (!props.multi && !option.ref._isCreate) {
+    if (!props.multi && !option.ref._isCreate && !props.keepAddedItems) {
       addedItems.value = []
-      self.emit('update:addedItems', addedItems.value)
     }
 
     // We selected a `preAdded` item
@@ -314,14 +313,12 @@ export function useList(
 
       const isToBeCreated = '_isCreate' in item && item._isCreate
       // Remove the item from the added items if it was about to be created
-      if (isToBeCreated && selectedByKey.value[itemKey] && props.multi) {
-        addedItems.value = addedItems.value.filter(
+      if (isToBeCreated && selectedByKey.value[itemKey] && props.multi && !props.keepAddedItems) {
+        addedItems.value =  addedItems.value.filter(
           item => getKey(item) !== itemKey
         )
-        self?.emit('update:addedItems', addedItems.value)
 
-        resetAddingItem()
-        handleSearchedResults(results.value)
+        nextTick(() => handleSearchedResults(results.value))
       }
     } else if (props.multi && props.groupsSelectable) {
       // ENHANCEMENT: SELECT ALL ITEMS IN GROUP
@@ -413,6 +410,7 @@ export function useList(
       const { highlightedResult } = highlight(res, {
         keys: fuseOptions?.fuseOptions?.keys || [],
         searchValue: search.value,
+        itemGetter: item => item._ref
       })
 
       highlightedItems = highlightedResult.map(({ item, highlighted }) => {
@@ -616,7 +614,6 @@ export function useList(
     handleSelectItem,
     loadData: fetchAndSetData,
     refresh: () => {
-      addedItems.value = props.addedItems || addedItems.value
       handleSearchedResults(results.value)
     },
     reset,

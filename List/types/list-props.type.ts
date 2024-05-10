@@ -68,6 +68,11 @@ export type IListProps = IListBaseProps & {
    */
   inputProps?: Record<string, any>
 
+  /**
+   * When true, the `addedItems` will not be removed on unselect
+   */
+  keepAddedItems?: boolean
+
   loadData?: {
     /**
      * The function to use for fetching the data

@@ -174,17 +174,18 @@ function handleRemove(item: any) {
     model.value = props.emptyValue
   }
 
+  // TODO: Remove once I'm sure it's not really needed...
   // Remove the item from the added items if it was about to be created
-  if (typeof item === 'object' && '_isCreate' in item && item._isCreate) {
-    addedItems.value = props.multi
-      ? addedItems.value.filter(_item => getKey(_item) !== getKey(item))
-      : []
+  // if (typeof item === 'object' && '_isCreate' in item && item._isCreate) {
+  //   addedItems.value = props.multi
+  //     ? addedItems.value.filter(_item => getKey(_item) !== getKey(item))
+  //     : []
 
-    nextTick(() => {
-      listEl.value?.clearSearch()
-      listEl.value?.refresh()
-    })
-  }
+  //   nextTick(() => {
+  //     listEl.value?.clearSearch()
+  //     listEl.value?.refresh()
+  //   })
+  // }
 
   syncScrollArea()
 }

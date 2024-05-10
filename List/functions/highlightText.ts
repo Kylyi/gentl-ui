@@ -28,12 +28,15 @@ export function highlight<T = IItem>(
      * and we search for 'Джон', then the highlighted text will be 'Джон Doe'
      */
     displayKeys?: string[]
+
+    itemGetter?: (item: T) => T
   }
 ) {
   const {
     keys = [],
     highlightClassName = 'fuse-highlighted',
     displayKeys,
+    itemGetter
   } = options || {}
   let hasExactMatch = false
 
@@ -77,7 +80,9 @@ export function highlight<T = IItem>(
       keys.forEach((key, idx) => {
         const match = matches?.find(match => match.key === key)
         const displayKey = displayKeys?.[idx]
-        const displayText = displayKey ? get(item, displayKey) : undefined
+        const _item = itemGetter?.(item) ?? item
+        const displayText = get(_item, displayKey ?? key as string)
+
 
         highlighted = match
           ? generateHighlightedText(
@@ -86,7 +91,7 @@ export function highlight<T = IItem>(
               match.indices,
               displayText
             )
-          : `${highlighted} ${get(item, displayKey ?? (key as string))}`
+          : `${highlighted} ${displayText}`
       })
 
       hasExactMatch = hasExactMatch || score! <= Number.EPSILON
