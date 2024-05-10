@@ -78,6 +78,7 @@ const {
   search,
   searchEl,
   selectedByKey,
+  isSelected,
   handleKey,
   handleMouseOver,
   handleSelectFiltered,
@@ -174,6 +175,7 @@ onMounted(() => {
               :item="option.ref"
               :highlighted="option._highlighted"
               :index="index"
+              :is-selected="isSelected(option.ref)"
             />
 
             <slot

@@ -126,7 +126,7 @@ function commitHide() {
 
   referenceEl.style.zIndex = referenceElZIndex.value!
 
-  if (isReferenceElTransparent.value) {
+  if (isReferenceElTransparent.value && !props.noUplift) {
     referenceEl.style.backgroundColor = ''
   }
 

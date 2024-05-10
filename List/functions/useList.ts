@@ -61,7 +61,7 @@ export function useList(
     addItem,
   } = useItemAdding(props)
 
-  const { getKey, getLabel, getOption, getEmitValue } = {
+  const { getKey, getLabel, getOption, getEmitValue, isSelected } = {
     getKey: (option: any) =>
       typeof option === 'object' ? get(option, props.itemKey) : option,
     getOption: (option: any) =>
@@ -75,6 +75,11 @@ export function useList(
 
       return typeof option === 'object' ? get(option, props.itemLabel) : option
     },
+    isSelected: (option: any) => {
+      const key = getKey(option)
+
+      return selectedByKey.value[key]
+    }
   }
 
   const fuseOptions: UseFuseOptions<any> = {
@@ -608,6 +613,7 @@ export function useList(
     listRowProps,
     search,
     selectedByKey,
+    isSelected,
     handleKey,
     handleMouseOver,
     handleSelectFiltered,
