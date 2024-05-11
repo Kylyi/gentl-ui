@@ -58,6 +58,7 @@ const numberInputProps = reactivePick(
   'min',
   'max',
   'name',
+  'noBorder',
   'placeholder',
   'readonly',
   'required',

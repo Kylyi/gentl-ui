@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'vue'
 import { type ImageOptions } from '@tiptap/extension-image'
 
 // TYPES
@@ -8,6 +9,8 @@ export interface IWysiwygProps extends IInputWrapperProps {
   allowLink?: boolean
   image?: Partial<ImageOptions>
   debounce?: number
+  editorClass?: ClassType
+  editorStyle?: CSSProperties
   emptyValue?: any
   hint?: string
   name?: string
@@ -28,4 +31,5 @@ export interface IWysiwygProps extends IInputWrapperProps {
    * This will override the mention value!
    */
   mentionReplace?: boolean
+
 }

@@ -5,9 +5,13 @@ import { type IListProps } from '~/components/List/types/list-props.type'
 export function useItemAdding(
   props: Pick<
     IListProps,
-    'allowAdd' | 'itemKey' | 'itemLabel' | 'addedItems' | 'multi'
+    'allowAdd' | 'itemKey' | 'itemLabel' | 'addedItems' | 'multi' | 'transformAddedItem'
   >
 ) {
+  const {
+    transformAddedItem = (item: IItem) => item,
+  } = props
+
   const preAddedItem = ref<IItemToBeAdded>()
   const addedItems = props.addedItems
   ? useVModel(props, 'addedItems') as Ref<IItemToBeAdded[]>
@@ -29,12 +33,12 @@ export function useItemAdding(
             ? 'label'
             : props.itemLabel || 'label'
 
-        preAddedItem.value = {
+        preAddedItem.value = transformAddedItem({
           [props.itemKey as string]: String(new Date().getTime()),
           [labelKey]: search,
           _isNew: true,
           _isCreate: false,
-        }
+        })
       }
 
       // Item with exact match found or no `search` value
@@ -47,10 +51,10 @@ export function useItemAdding(
   }
 
   function addItem(item: IItemToBeAdded) {
-    addedItems.value = [
-      ...addedItems.value,
-      { ...item, _isNew: false, _isCreate: true },
-    ]
+    item._isCreate = true
+    item._isNew = false
+
+    addedItems.value = [ ...addedItems.value, item]
   }
 
   return {

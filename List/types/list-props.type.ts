@@ -143,6 +143,11 @@ export type IListProps = IListBaseProps & {
   selected?: any
 
   /**
+   * The function to use for transforming the added item
+   */
+  transformAddedItem?: (item: any) => any
+
+  /**
    * When true, when searching locally, the search string will first
    * be transformed via the `toBoldLatin` fnc
    */

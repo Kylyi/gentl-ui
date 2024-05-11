@@ -101,7 +101,7 @@ const classes = computed(() => {
 
   .input-wrapper__regular-label {
     --apply: self-start relative fit;
-    grid-column: 2 / 3;
+    grid-column: 2 / 5;
     grid-row: 1 / 3;
   }
 
@@ -136,10 +136,6 @@ const classes = computed(() => {
     bg-$Input-wrapper-bg;
 }
 
-.input-wrapper__regular:not(.has-border) .input-wrapper__regular-border {
-  --apply: border-none;
-}
-
 // With label
 .input-wrapper__regular.has-label > .input-wrapper__regular-border {
   grid-row: 2 / 3;
@@ -165,5 +161,9 @@ const classes = computed(() => {
   :slotted(.control) {
     --apply: '!cursor-not-allowed';
   }
+}
+
+.input-wrapper__regular:not(.has-border) .input-wrapper__regular-border {
+  --apply: border-none;
 }
 </style>

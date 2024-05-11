@@ -46,7 +46,7 @@ export function useInputWrapperUtils() {
     if (props.size === 'sm') {
       styleVariables['--fontSize'] = '14px'
       styleVariables['--lineHeight'] = '24px'
-      styleVariables['--padding'] = preferMargin ? '0 12px' : '0px 12px'
+      styleVariables['--padding'] = preferMargin ? '0 12px' : '4px 12px'
       styleVariables['--margin'] = preferMargin ? '4px 0' : '0'
 
       if (isLabelInside) {

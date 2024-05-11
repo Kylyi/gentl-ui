@@ -159,10 +159,6 @@ const classes = computed(() => {
     bg-$Input-wrapper-bg;
 }
 
-.input-wrapper__inline:not(.has-border) .input-wrapper__inline-border {
-  --apply: border-none;
-}
-
 .input-wrapper__inline:focus-within {
   .input-wrapper__inline-border {
     --apply: border-$borderColor;
@@ -183,5 +179,9 @@ const classes = computed(() => {
   :slotted(.control) {
     --apply: '!cursor-not-allowed';
   }
+}
+
+.input-wrapper__inline:not(.has-border) .input-wrapper__inline-border {
+  --apply: border-none;
 }
 </style>

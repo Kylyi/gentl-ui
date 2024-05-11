@@ -182,10 +182,12 @@ const { x: pageX, y: pageY } = useElementBounding(referenceEl, {
   windowResize: true,
 })
 
-watchThrottled([pageX, pageY], () => update(), {
-  trailing: true,
-  throttle: 100,
-})
+if (!props.noMove) {
+  watchThrottled([pageX, pageY], update, {
+    trailing: true,
+    throttle: 100,
+  })
+}
 
 // Click outside
 onClickOutside(floatingEl, handleClickOutside, {

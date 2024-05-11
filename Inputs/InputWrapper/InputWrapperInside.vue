@@ -142,10 +142,6 @@ const classes = computed(() => {
     border-ca;
 }
 
-.input-wrapper__inside:not(.has-border) .input-wrapper__inside-border {
-  --apply: border-none;
-}
-
 .input-wrapper__inside:focus-within {
   .input-wrapper__inside-border {
     --apply: border-$borderColor;
@@ -188,5 +184,9 @@ const classes = computed(() => {
   grid-row: 1 / 2;
 
   --apply: absolute fit pointer-events-none rounded-t-custom bg-inherit;
+}
+
+.input-wrapper__inside:not(.has-border) .input-wrapper__inside-border {
+  --apply: border-none;
 }
 </style>

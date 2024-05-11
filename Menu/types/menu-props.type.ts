@@ -73,6 +73,11 @@ export type IMenuProps = {
   noClose?: boolean
 
   /**
+   * When true, the `Menu` position will not be automatically updated
+   */
+  noMove?: boolean
+
+  /**
    * When true, the `Menu` will not "uplift" the reference element
    *
    * Uplifting = highlighting the reference element
