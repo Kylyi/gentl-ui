@@ -288,7 +288,6 @@ onMounted(() => {
 
     <div
       class="form-content"
-      rounded="t-custom"
       overflow="auto"
       :class="{ 'flex flex-col': !$attrs.grid }"
       v-bind="$attrs"

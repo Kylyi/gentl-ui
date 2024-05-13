@@ -56,39 +56,26 @@ const rowInfo = computed(() => {
   >
     <slot :option="item">
       <div
-        v-if="rowInfo.isNew || rowInfo.isCreate"
-        flex="shrink"
-        w="8"
-        h="8"
-        p="y-2 r-3"
-        :class="[
-          rowInfo.isNew ? BUTTON_PRESET.ADD.icon : BUTTON_PRESET.ADD.icon,
-        ]"
-      />
-
-      <div
-        flex="~ 1 col"
-        w="full"
-        p="y-0.5 r-3"
+        flex="~ col grow"
+        p="y-1"
       >
-        <span
-          :class="{ truncate }"
-          p="y-1.5"
-          v-html="rowInfo.isGroup ? item.label : item._highlighted"
-        />
+        <span v-html="item._highlighted" />
 
-        <span
-          v-if="rowInfo.isNew || rowInfo.isCreate"
-          italic
-          color="dark dark:light"
-          text="sm"
+        <div
+          v-if="'_isNew' in item.ref"
+          flex="~ gap-1 items-center"
+          text="caption xs"
         >
-          {{
-            rowInfo.isNew
-              ? $t('general.addNewItem')
-              : $t('general.autoCreateItem')
-          }}
-        </span>
+          <div class="i-eva:plus-fill inline-block" />
+
+          <span>
+            {{
+              rowInfo.isNew
+                ? $t('general.addNewItem')
+                : $t('general.autoCreateItem')
+            }}
+          </span>
+        </div>
       </div>
     </slot>
   </Component>

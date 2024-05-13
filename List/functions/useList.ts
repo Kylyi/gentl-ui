@@ -245,10 +245,13 @@ export function useList(
     if ('_isNew' in option.ref && option.ref._isNew) {
       !props.noLocalAdd && addItem(option.ref)
 
+      option.ref._isNew = false
+      option.ref._isCreate = true
+
       resetAddingItem()
       handleSelectItem({
         ...option,
-        ref: { ...option.ref, _isNew: false, _isCreate: true },
+        ref: option.ref,
       })
 
       return
