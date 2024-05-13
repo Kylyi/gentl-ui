@@ -124,6 +124,7 @@ function commitHide() {
 
   const referenceEl = floatingReferenceEl.value as HTMLElement
 
+  referenceEl.classList.remove('is-menu-active')
   referenceEl.style.zIndex = referenceElZIndex.value!
 
   if (isReferenceElTransparent.value && !props.noUplift) {
@@ -141,6 +142,7 @@ whenever(model, isVisible => {
   const referenceEl = floatingReferenceEl.value as HTMLElement
   const referenceElStyle = getComputedStyle(referenceEl as any)
 
+  referenceEl.classList.add('is-menu-active')
   referenceElZIndex.value = referenceElStyle.zIndex
 
   isReferenceElTransparent.value =

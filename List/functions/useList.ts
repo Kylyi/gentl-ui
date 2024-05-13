@@ -5,6 +5,7 @@ import { type MaybeElementRef } from '@vueuse/core'
 import { config } from '~/components/config/components-config'
 
 // Types
+import type { IListItem } from '~/components/List/types/list-item.type'
 import type { IListProps } from '~/components/List/types/list-props.type'
 import type { IListFetchOptions } from '~/components/List/types/list-fetch.type'
 import {
@@ -21,17 +22,14 @@ import { highlight } from '~/components/List/functions/highlightText'
 import { useSorting } from '~/libs/Shared/functions/data/useSorting'
 import { useListUtils } from '~/components/List/functions/useListUtils'
 import { useItemAdding } from '~/components/List/functions/useItemAdding'
-
-// Components
-import ListVirtualContainer from '~/components/List/ListVirtualContainer.vue'
-import SearchInput from '~/components/Inputs/SearchInput.vue'
 import { useListKeyboardNavigation } from '~/components/List/functions/useListKeyboardNavigation'
 
-type IItem = {
-  ref: any
-  id: string
-  _highlighted?: string
-}
+// Injections
+import { listItemsKey } from '~/components/List/provide/list.provide'
+
+// Components
+import SearchInput from '~/components/Inputs/SearchInput.vue'
+import ListVirtualContainer from '~/components/List/ListVirtualContainer.vue'
 
 type IListPropsWithDefaults = Required<
   IListProps,
@@ -337,8 +335,10 @@ export function useList(
   const searchEl = ref<InstanceType<typeof SearchInput>>()
   const search = ref(props.search || '')
   const hasExactMatch = ref(false)
-  const arr = ref<Array<IGroupRow | IItem>>([])
+  const arr = ref<Array<IGroupRow | IListItem>>([])
   const isPreventFetchData = refAutoReset(false, 150)
+
+  provide(listItemsKey, arr)
 
   // Extended search
   const extendedSearch = computed(() => {
@@ -388,7 +388,7 @@ export function useList(
     const _hasExactMatch = itemsExtended.value.some(
       item => getLabel(item._ref) === search.value
     )
-    let highlightedItems: { ref: any; id: string; _highlighted?: string }[] = []
+    let highlightedItems: IListItem[] = []
 
     // When we're not using FE filtering
     if (props.noFilter) {
@@ -397,6 +397,7 @@ export function useList(
           ref: item._ref,
           id: getKey(item._ref),
           _highlighted: getLabel(item._ref),
+          path: '' // Just prepare
         }
       })
     }
@@ -409,6 +410,7 @@ export function useList(
           id: getKey(item._ref),
           _highlighted: getLabel(item._ref),
           score,
+          path: '' // Just prepare
         }
       })
     }
@@ -426,6 +428,7 @@ export function useList(
           ref: item._ref,
           id: getKey(item._ref),
           _highlighted: useToBoldLatin ? getLabel(item._ref) : highlighted,
+          path: '' // Just prepare
         }
       })
     }
@@ -472,14 +475,26 @@ export function useList(
         id: getKey(preAddedItem),
         ref: preAddedItem,
         _highlighted: getLabel(preAddedItem),
+        path: '' // Just prepare
       })
     }
 
     hasExactMatch.value = _hasExactMatch
-    arr.value = groupedArray.map(item => {
+    // TODO: Groups currently don't work
+    // let groupId = ''
+    arr.value = groupedArray.map((item, idx) => {
+      // if ('isGroup' in item) {
+      //   groupId = item.id
+      // }
+
       return 'isGroup' in item
         ? item
-        : { id: item.id, ref: item.ref, _highlighted: item._highlighted }
+        : {
+          id: item.id,
+          ref: item.ref,
+          _highlighted: item._highlighted,
+          path: String(idx)
+        }
     })
   }
 

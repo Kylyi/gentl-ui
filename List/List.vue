@@ -9,6 +9,10 @@ import type { IItemToBeAdded } from '~/components/List/types/list-item-to-add.ty
 // Functions
 import { useList } from '~/components/List/functions/useList'
 
+// Injections
+import { listContainerKey } from '~/components/List/provide/list.provide'
+import { useListDragAndDrop } from '~/components/List/functions/useListDragAndDrop'
+
 // Components
 import ListVirtualContainer from '~/components/List/ListVirtualContainer.vue'
 import ListContainer from '~/components/List/ListContainer.vue'
@@ -53,6 +57,10 @@ const ContainerComponent = computed(() => {
   //   : ListContainer
 })
 
+const scrollContainer = computed(() => containerEl.value?.getElement())
+
+provide(listContainerKey, scrollContainer)
+
 defineExpose({
   handleSelectItem: (option: any) => handleSelectItem(option),
   clearSearch: () => {
@@ -86,6 +94,13 @@ const {
   loadData,
   refresh,
 } = useList(items, props, containerEl)
+
+// D'n'D
+const { listElRect } = useListDragAndDrop(listEl as Ref<HTMLDivElement>)
+
+useResizeObserver(listEl, entries => {
+  listElRect.value = listEl.value?.getBoundingClientRect()
+})
 
 // When `noSearch` is used, we fake the focus on the container to allow
 // keyboard navigation

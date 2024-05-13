@@ -2,8 +2,8 @@
 // Types
 import type { IListRowProps } from '~/components/List/types/list-row-props.type'
 
-// Constants
-import { BUTTON_PRESET } from '~/components/Button/constants/button-preset.constant'
+// Functions
+import { useListItemDragAndDrop } from './functions/useListItemDragAndDrop'
 
 const props = withDefaults(defineProps<IListRowProps>(), {
   basePadding: 12,
@@ -33,16 +33,27 @@ const rowInfo = computed(() => {
     },
   }
 })
+
+// D'n'D
+const {
+  draggableEl,
+  handleMouseDown,
+  handleTouchStart
+} = useListItemDragAndDrop(props.item)
+
 </script>
 
 <template>
   <Component
+    ref="draggableEl"
     :is="tag"
     :style="rowInfo._style"
     class="item"
+    :data-path="item.path"
     data-cy="item-selectable"
     :class="[
       rowClass,
+      rowInfo.isGroup ? 'list-group' : 'list-row',
       {
         'item--selectable': !rowInfo.isGroup && !noSelect,
         'item--group': rowInfo.isGroup,
@@ -53,7 +64,11 @@ const rowInfo = computed(() => {
         'is-disabled': isDisabled,
       },
     ]"
+    @mousedown="handleMouseDown"
+    @touchstart="handleTouchStart"
   >
+    <ListMoveHandler v-if="reorderable" />
+
     <slot :option="item">
       <div
         flex="~ col grow"
