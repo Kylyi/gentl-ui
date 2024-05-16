@@ -200,6 +200,11 @@ export interface ITableProps {
    */
   nonSavableSettings?: Array<'columns' | 'filters' | 'sorting' | 'public'>
 
+  paginationOptions?: {
+    pageSize?: number
+    page?: number
+  }
+
   /**
    * Defines visuals for the separators in the table
    */

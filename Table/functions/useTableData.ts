@@ -191,7 +191,10 @@ export function useTableData(
 
   // Data fetching
   const pagination = computed(() => {
-    const { page, pageSize } = config.table.defaultPagination
+    const {
+      page = config.table.defaultPagination.page,
+      pageSize = config.table.defaultPagination.pageSize,
+    } = props.paginationOptions ?? {}
 
     const take = tableState.value.pageSize || pageSize
     const skip = ((tableState.value.page || page) - 1) * take
