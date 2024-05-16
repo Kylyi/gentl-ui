@@ -149,5 +149,7 @@ defineExpose({
         />
       </div>
     </template>
+
+    <slot name="inner" />
   </InputWrapper>
 </template>

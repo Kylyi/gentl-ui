@@ -335,9 +335,9 @@ onMounted(() => {
           :row-height="tableRowHeight.current"
           :editable="editable"
           :index="index"
-          :selectable="selectionOptions?.selectable"
           :split-row="splitRow"
           :row-class="rowClass"
+          :selection-options="selectionOptions"
           @click="handleRowClick(row.data, $event)"
         >
           <template #row-inside="{ mode, row }">
