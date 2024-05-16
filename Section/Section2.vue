@@ -67,7 +67,7 @@ withDefaults(defineProps<ISectionProps>(), {
   --apply: flex flex-col;
 
   &__title {
-    --apply: font-bold m-b-0 p-b-1;
+    --apply: font-semibold m-b-0 p-b-0.5;
   }
 
   &__subtitle {

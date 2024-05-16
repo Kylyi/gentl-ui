@@ -13,6 +13,7 @@ const props = withDefaults(defineProps<IListRowProps>(), {
 
 const DEFAULT_ROW_HEIGHT = 40
 
+const item = toRef(props, 'item')
 const rowInfo = computed(() => {
   const data = props.item
   const ref = typeof data.ref === 'object' ? data.ref || {} : {}
@@ -39,7 +40,7 @@ const {
   draggableEl,
   handleMouseDown,
   handleTouchStart
-} = useListItemDragAndDrop(props.item)
+} = useListItemDragAndDrop(item)
 
 </script>
 
@@ -67,7 +68,10 @@ const {
     @mousedown="handleMouseDown"
     @touchstart="handleTouchStart"
   >
-    <ListMoveHandler v-if="reorderable" />
+    <ListMoveHandler
+      v-if="reorderable"
+      class="self-start m-t-2.5"
+    />
 
     <slot :option="item">
       <div

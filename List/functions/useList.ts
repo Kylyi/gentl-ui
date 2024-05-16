@@ -76,7 +76,7 @@ export function useList(
     isSelected: (option: any) => {
       const key = getKey(option)
 
-      return selectedByKey.value[key]
+      return !!selectedByKey.value[key]
     }
   }
 
@@ -243,6 +243,12 @@ export function useList(
     if ('_isNew' in option.ref && option.ref._isNew) {
       !props.noLocalAdd && addItem(option.ref)
 
+      if (!props.noLocalAdd) {
+        addItem(option.ref)
+      } else {
+        self.emit('update:addedItems', [option.ref])
+      }
+
       option.ref._isNew = false
       option.ref._isCreate = true
 
@@ -338,7 +344,7 @@ export function useList(
   const arr = ref<Array<IGroupRow | IListItem>>([])
   const isPreventFetchData = refAutoReset(false, 150)
 
-  provide(listItemsKey, arr)
+  provide(listItemsKey, items)
 
   // Extended search
   const extendedSearch = computed(() => {

@@ -96,7 +96,7 @@ const {
 } = useList(items, props, containerEl)
 
 // D'n'D
-const { listElRect } = useListDragAndDrop(listEl as Ref<HTMLDivElement>)
+const { draggedItem, listElRect } = useListDragAndDrop(listEl as Ref<HTMLDivElement>)
 
 useResizeObserver(listEl, entries => {
   listElRect.value = listEl.value?.getBoundingClientRect()
@@ -197,6 +197,7 @@ onMounted(() => {
               v-else
               name="option-group"
               :item="option"
+              :idx="index"
             />
           </template>
         </ListRow>
@@ -217,12 +218,31 @@ onMounted(() => {
     />
 
     <slot name="below" />
+
+    <!-- Drop indicator -->
+    <div
+      v-if="draggedItem?.dropIndicatorPos"
+      class="drop-indicator"
+      :style="{
+        left: `${draggedItem.dropIndicatorPos.x ?? 0}px`,
+        top: `${draggedItem.dropIndicatorPos.y ?? 0}px`,
+        width: `${draggedItem.dropIndicatorPos.width ?? 0}px`,
+      }"
+    >
+      <div
+        class="i-tabler:arrow-back drop-indicator__icon"
+        :class="{
+          'rotate-y-180 -top-3': draggedItem.dropDirection === 'below',
+          'rotate-180 -top-7px': draggedItem.dropDirection === 'above',
+        }"
+      />
+    </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .list {
-  --apply: flex flex-col overflow-auto;
+  --apply: relative flex flex-col overflow-auto;
 
   &.is-bordered {
     --apply: border-1 border-ca rounded-3;
@@ -258,6 +278,14 @@ onMounted(() => {
 .selector {
   .no-data {
     --apply: p-x-3;
+  }
+}
+
+.drop-indicator {
+  --apply: absolute h-2px bg-primary w-full rounded-full pointer-events-none z-2;
+
+  &__icon {
+    --apply: w-5 h-5 relative -left-5 color-primary;
   }
 }
 </style>

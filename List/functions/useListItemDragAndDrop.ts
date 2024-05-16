@@ -7,7 +7,7 @@ import { listContainerKey, listDraggedItemKey, listItemsKey } from '~/components
 // Constants
 const ITEM_ROW_LEFT_MARGIN = 0
 
-export function useListItemDragAndDrop(item: MaybeRefOrGetter<IListItem>) {
+export function useListItemDragAndDrop(itemRef: MaybeRefOrGetter<IListItem>) {
   // Injections
   const scrollContainer = injectStrict(listContainerKey)
   const draggedItem = injectStrict(listDraggedItemKey)
@@ -143,8 +143,8 @@ export function useListItemDragAndDrop(item: MaybeRefOrGetter<IListItem>) {
       const { newPath, dropDirection, newPathIsGroup } = draggedItem.value
 
       if (newPath && dropDirection) {
-        const _items = toValue(items)
-        const _item = toValue(item)
+        let _items = toValue(items)
+        const item = toValue(itemRef)
 
         // Get current row info
         const currentPath = draggedItem.value.path
@@ -154,19 +154,19 @@ export function useListItemDragAndDrop(item: MaybeRefOrGetter<IListItem>) {
         const currentIndex = +currentPath.slice(-1)
         const newIndex = +newPath.slice(-1)
 
-        const splicedItem = _items.splice(currentIndex, 1, { path: '_moved' } as any)[0]
-        _items.splice(dropDirection === 'below' ? newIndex + 1 : newIndex, 0, splicedItem)
+        const splicedItem = _items[currentIndex]
+        _items = _items.toSpliced(currentIndex, 1, { path: '_moved' } as any)
+        _items = _items.toSpliced(dropDirection === 'below' ? newIndex + 1 : newIndex, 0, splicedItem)
 
         // @ts-expect-error Fuck
         const _tempItemIdx = _items.findIndex(item => item.path === '_moved')
         if (_tempItemIdx > -1) {
-          _items.splice(_tempItemIdx, 1)
+          _items = _items.toSpliced(_tempItemIdx, 1)
         }
 
-        _items.forEach((item, idx) => {
-          // @ts-expect-error Fuck
-          item.path = `${idx}`
-        })
+        items.value = _items
+
+        updatePaths()
         // !SECTION
 
 
@@ -256,8 +256,8 @@ export function useListItemDragAndDrop(item: MaybeRefOrGetter<IListItem>) {
       document.body.appendChild(clonedElement)
 
       draggedItem.value = {
-        path: toValue(item).path,
-        row: toValue(item).ref,
+        path: toValue(itemRef).path,
+        row: toValue(itemRef).ref,
         pos: { x: clientX, y: clientY },
       }
     }
@@ -310,24 +310,21 @@ export function useListItemDragAndDrop(item: MaybeRefOrGetter<IListItem>) {
   }
 
   /**
-   * Update paths of the items structure, when no `parent` is provided, it updates
-   * the paths of the whole structure
+   * Update paths of the items structure
    */
-  // function updatePaths(parent?: IQueryBuilderGroup) {
-  //   const _parent = parent ?? (toValue(items)[0] as IQueryBuilderGroup)
+  function updatePaths() {
+    toValue(items).forEach((item, idx) => {
+      // @ts-expect-error Groups
+      item.path = `${idx}`
+    })
+  }
 
-  //   _parent.children.forEach((child, idx) => {
-  //     child.path = `${_parent.path}.children.${idx}`
-
-  //     if ('isGroup' in child) {
-  //       updatePaths(child)
-  //     }
-  //   })
-  // }
+  watchThrottled(items, updatePaths, { throttle: 100 })
 
   return {
     draggableEl,
     handleMouseDown,
     handleTouchStart,
+    updatePaths,
   }
 }

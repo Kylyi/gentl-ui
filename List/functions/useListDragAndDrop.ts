@@ -36,7 +36,6 @@ export function useListDragAndDrop(
     const els = document.elementsFromPoint(posX, posY)
     const listRow = els.find(el => el.classList.contains('list-row')) as HTMLElement
     const listRowPath = listRow?.dataset.path
-
     // When no list row is found, we don't really do anything
     // We also do nothing when we're dragging over the same row
     // We also do nothing when we're dragging over descendants of the dragged item

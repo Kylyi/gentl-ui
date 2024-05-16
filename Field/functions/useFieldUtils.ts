@@ -47,7 +47,8 @@ export function useFieldUtils(options?: {
     if (isFocusEvent || isSelectEvent) {
       const inputMenu = inputElement.value?.closest('.floating-element')
 
-      $hide({ all: true, ignoreUntilEl: inputMenu })
+      // FIXME: I dont fucking know
+      // $hide({ all: true, ignoreUntilEl: inputMenu })
     }
 
     nextTick(() => {

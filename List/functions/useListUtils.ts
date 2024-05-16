@@ -26,6 +26,7 @@ export function useListUtils() {
       'noHighlight',
       'noLocalAdd',
       'noSearch',
+      'reorderable',
       'searchDebounce',
       'noSort',
       'search',
