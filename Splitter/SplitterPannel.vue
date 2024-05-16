@@ -1,20 +1,24 @@
 <script setup lang="ts">
-// Types
-import type { ISplitterPannelProps } from '~/components/Splitter/types/splitter-pannel.type'
+// Components
+import Splitter from '~/components/Splitter/Splitter.vue'
 
-const props = defineProps<ISplitterPannelProps>()
+// Types
+import type { ISplitterPanelProps } from '~/components/Splitter/types/splitter-panel.type'
+
+const props = defineProps<ISplitterPanelProps>()
 
 // Layout
 const component = ref<HTMLElement>()
 const slots = useSlots()
+
 const nestedState = ref<boolean | null>(null)
 const isNested = computed(() => {
   return slots.default?.().some(child => {
-    nestedState.value = (child.type as any).name === 'Splitter' ? true : null
+    nestedState.value = child.type === Splitter ? true : null
     return nestedState.value
   })
 })
-const splitterPannelClass = computed(() => {
+const splitterPanelClass = computed(() => {
   return [
     'splitter-panel',
     {
@@ -39,7 +43,7 @@ defineExpose({
 <template>
   <div
     ref="component"
-    :class="splitterPannelClass"
+    :class="splitterPanelClass"
     :style="splitterPanelStyle"
   >
     <slot></slot>
@@ -48,16 +52,14 @@ defineExpose({
 
 <style scoped lang="scss">
 .splitter-panel {
-  flex-grow: 1;
-  overflow: hidden;
+  --apply: rounded-custom grow overflow-hidden;
 }
 
 .splitter-panel-nested {
-  display: flex;
+  --apply: flex-col;
 }
 
 .splitter-panel .splitter {
-  flex-grow: 1;
-  border: 0 none;
+  --apply: grow border-0;
 }
 </style>

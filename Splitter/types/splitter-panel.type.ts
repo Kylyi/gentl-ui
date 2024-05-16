@@ -1,4 +1,4 @@
-export type ISplitterPannelProps = {
+export type ISplitterPanelProps = {
   /**
    * Size of the pannel relative to 100%.
    */
