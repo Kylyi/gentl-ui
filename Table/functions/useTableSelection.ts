@@ -83,6 +83,9 @@ export function useTableSelection(props: ITableProps) {
       }
     } else if (Array.isArray(selection.value)) {
       selection.value = [...(selection.value || []), key]
+
+      // We need to wait for the next tick to ensure that the selection is updated
+      await nextTick()
     } else if (selection.value) {
       selection.value[key] = row
     }
