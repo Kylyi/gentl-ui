@@ -2,7 +2,8 @@
 import type { IListItem } from '~/components/List/types/list-item.type'
 
 // Injections
-import { listContainerKey, listDraggedItemKey, listItemsKey } from '~/components/List/provide/list.provide'
+import {
+  listContainerKey, listDraggedItemKey, listItemsKey, listEmitDragEndEventKey, listEmitDragStartEventKey } from '~/components/List/provide/list.provide'
 
 // Constants
 const ITEM_ROW_LEFT_MARGIN = 0
@@ -12,6 +13,8 @@ export function useListItemDragAndDrop(itemRef: MaybeRefOrGetter<IListItem>) {
   const scrollContainer = injectStrict(listContainerKey)
   const draggedItem = injectStrict(listDraggedItemKey)
   const items = injectStrict(listItemsKey)
+  const emitDragStartEvent = injectStrict(listEmitDragStartEventKey)
+  const emitDragEndEvent = injectStrict(listEmitDragEndEventKey)
 
     // D'n'D
   const draggableEl = ref<HTMLElement>()
@@ -44,6 +47,8 @@ export function useListItemDragAndDrop(itemRef: MaybeRefOrGetter<IListItem>) {
     cloneElement(event)
     document.addEventListener('mousemove', handleMouseMove)
     document.addEventListener('mouseup', handleDragEnd)
+
+    emitDragStartEvent(draggedItem.value!)
   }
 
   function handleMouseMove(event: MouseEvent) {
@@ -150,6 +155,7 @@ export function useListItemDragAndDrop(itemRef: MaybeRefOrGetter<IListItem>) {
         const currentPath = draggedItem.value.path
         // const currentParentPath = currentPath.split('.').slice(0, -2).join('.')
 
+        // TODO: Refactor this
         // SECTION: Temporary solution
         const currentIndex = +currentPath.slice(-1)
         const newIndex = +newPath.slice(-1)
@@ -217,6 +223,9 @@ export function useListItemDragAndDrop(itemRef: MaybeRefOrGetter<IListItem>) {
 
         // // We update the paths for the structure
         // updatePaths()
+
+        // We emit the drag end event
+        emitDragEndEvent(draggedItem.value)
 
         // We reset the dragged item
         draggedItem.value = undefined

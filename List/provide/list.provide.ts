@@ -10,3 +10,7 @@ export const listContainerKey: InjectionKey<Ref<HTMLElement | undefined>> =
 
 export const listDraggedItemKey: InjectionKey<Ref<IListDraggedItem | undefined>> =
   Symbol('listDraggedItem')
+
+export const listEmitDragEndEventKey: InjectionKey<(item: IListDraggedItem) => void> = Symbol('listEmitDragEndEvent')
+
+export const listEmitDragStartEventKey: InjectionKey<(item: IListDraggedItem) => void> = Symbol('listEmitDragStartEvent')

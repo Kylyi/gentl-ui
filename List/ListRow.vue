@@ -42,6 +42,9 @@ const {
   handleTouchStart
 } = useListItemDragAndDrop(item)
 
+function getItem() {
+  return item.value
+}
 </script>
 
 <template>
@@ -67,6 +70,7 @@ const {
     ]"
     @mousedown="handleMouseDown"
     @touchstart="handleTouchStart"
+    .getItem="getItem"
   >
     <ListMoveHandler
       v-if="reorderable"

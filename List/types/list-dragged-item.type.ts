@@ -10,4 +10,6 @@ export type IListDraggedItem = {
   dropDirection?: 'below' | 'above'
   newPath?: string
   path: string
+
+  target?: IItem
 }

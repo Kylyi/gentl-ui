@@ -5,6 +5,7 @@ import { config } from '~/components/config/components-config'
 import type { IListProps } from '~/components/List/types/list-props.type'
 import type { IListFetchOptions } from '~/components/List/types/list-fetch.type'
 import type { IItemToBeAdded } from '~/components/List/types/list-item-to-add.type'
+import type { IListDraggedItem } from '~/components/List/types/list-dragged-item.type'
 
 // Functions
 import { useList } from '~/components/List/functions/useList'
@@ -40,6 +41,8 @@ defineEmits<{
     e: 'before-search',
     payload: { hasExactMatch: boolean; search: string }
   ): void
+  (e: 'drag:start', item: IListDraggedItem): void
+  (e: 'drag:end', item: IListDraggedItem): void
 }>()
 
 // Layout
