@@ -7,7 +7,11 @@ import type {
   ISplitterProps,
 } from '~/components/Splitter/types/splitter.type'
 
+// Components
 import SplitterPanel from '~/components/Splitter/SplitterPannel.vue'
+
+// Utils
+import { useDomUtils } from '~/components/Splitter/functions/useDomUtils'
 
 const props = withDefaults(defineProps<ISplitterProps>(), {
   gutterSize: 4,
@@ -17,6 +21,7 @@ const emits = defineEmits<ISplitterEmit>()
 
 // Utils
 const slots = useSlots()
+const { getOuterHeight, getOuterWidth } = useDomUtils()
 
 // Layout
 const panels = computed(() => {
@@ -36,6 +41,7 @@ const panels = computed(() => {
 
   return panels
 })
+
 const horizontal = computed(() => props.layout === 'horizontal')
 const size = ref<number>(0)
 const prevSize = ref<string>('0')
@@ -55,6 +61,7 @@ const gutterElement = ref<HTMLElement>()
 const splitterClasses = computed(() => {
   return ['p-splitter', `p-splitter-${props.layout}`]
 })
+
 const gutterStyle = computed<CSSProperties>(() => ({
   [horizontal.value ? 'width' : 'height']: `${props.gutterSize}px`,
 }))
@@ -66,13 +73,7 @@ const mouseUpListener = ref<(event: MouseEvent) => void>()
 function isSplitterPanel(child: VNode) {
   return child.type === SplitterPanel
 }
-/**
- * This function is called when the user starts resizing the splitter
- * It sets the initial state of the splitter and the panels to be resized
- * @param event
- * @param index
- * @param isKeyDown
- */
+
 function onResizeStart(
   event: TouchEvent | MouseEvent,
   index: number,
@@ -91,7 +92,7 @@ function onResizeStart(
       : splitterEl.value.clientHeight
   }
 
-  // [3]- Set the start position
+  // [3]- Set the start position and dragging state
   if (!isKeyDown) {
     dragging.value = true
     startPos.value =
@@ -102,17 +103,15 @@ function onResizeStart(
         : event instanceof MouseEvent
         ? event.pageY
         : event.changedTouches[0].pageY
-
-    console.log('Start Position:', startPos.value)
   }
 
   // [4]- Set the previous and next panel [because we need to resize them]
   prevPanelEl.value = gutterElement.value?.previousElementSibling as HTMLElement
   nextPanelEl.value = gutterElement.value?.nextElementSibling as HTMLElement
 
-  // [5]- If key is down, set the previous and next panel size
+  // [5]- Set the previous and next panel size [because we need to resize them]
+  // If key is down means we are resizing with the keyboard, otherwise we are resizing with the mouse or touch
   if (isKeyDown) {
-    // Do something
     prevPanelSize.value = horizontal.value
       ? getOuterWidth(prevPanelEl.value, true)
       : getOuterHeight(prevPanelEl.value, true)
@@ -121,14 +120,13 @@ function onResizeStart(
       ? getOuterWidth(nextPanelEl.value, true)
       : getOuterHeight(nextPanelEl.value, true)
   } else {
-    // Do something
     prevPanelSize.value =
       (100 *
         (horizontal.value
           ? getOuterWidth(prevPanelEl.value, true)
           : getOuterHeight(prevPanelEl.value, true))) /
       size.value
-    console.log('Prev Panel Size:', prevPanelSize.value)
+
     nextPanelSize.value =
       (100 *
         (horizontal.value
@@ -166,13 +164,11 @@ function onResize(
       newNextPanelSize = (100 * (nextPanelSize?.value + step)) / size.value
     }
   } else {
-    if (horizontal.value) {
-      if (event instanceof MouseEvent) {
+    if (event instanceof MouseEvent) {
+      if (horizontal.value) {
         newPos =
           (event.pageX * 100) / size.value - (startPos.value * 100) / size.value
-      }
-    } else {
-      if (event instanceof MouseEvent) {
+      } else {
         newPos =
           (event.pageY * 100) / size.value - (startPos.value * 100) / size.value
       }
@@ -246,64 +242,25 @@ function clear() {
   dragging.value = false
 
   // Clear size
-  size.value = undefined
+  size.value = 0
 
   // Clear start position
-  startPos.value = undefined
+  startPos.value = 0
 
   // Clear [previous, next] panel
   prevPanelEl.value = undefined
   nextPanelEl.value = undefined
 
   // Clear [previous, next] panel size
-  prevPanelSize.value = undefined
-  nextPanelSize.value = undefined
+  prevPanelSize.value = 0
+  nextPanelSize.value = 0
 
   // Clear gutter element
   gutterElement.value = undefined
 
   // Clear previous panel index
-  prevPanelIndex.value = undefined
+  prevPanelIndex.value = 0
 }
-
-// #region helpers
-function getOuterWidth(el?: HTMLElement, margin?: boolean) {
-  if (el) {
-    let width = el.offsetWidth
-
-    if (margin) {
-      const style = getComputedStyle(el)
-
-      width +=
-        Number.parseFloat(style.marginLeft) +
-        Number.parseFloat(style.marginRight)
-    }
-
-    return width
-  }
-
-  return 0
-}
-
-function getOuterHeight(el?: HTMLElement, margin?: boolean) {
-  if (el) {
-    let height = el.offsetHeight
-
-    if (margin) {
-      const style = getComputedStyle(el)
-
-      height +=
-        Number.parseFloat(style.marginTop) +
-        Number.parseFloat(style.marginBottom)
-    }
-
-    return height
-  }
-
-  return 0
-}
-
-// #endregion
 </script>
 
 <template>
@@ -320,7 +277,7 @@ function getOuterHeight(el?: HTMLElement, margin?: boolean) {
       <component
         :is="panel"
         tabindex="-1"
-      ></component>
+      />
 
       <!-- Gutter (the handler to resise) -->
       <div
@@ -343,54 +300,41 @@ function getOuterHeight(el?: HTMLElement, margin?: boolean) {
 </template>
 
 <style scoped lang="scss">
-// Splitter [default is horizontal]
 .p-splitter {
-  display: flex;
-  flex-wrap: nowrap;
+  --apply: flex flex-row flex-nowrap gap-x-1;
 }
 
 .p-splitter-vertical {
-  flex-direction: column;
+  --apply: flex flex-col gap-y-1;
 }
 
 // Splitter gutter
 .p-splitter-gutter {
-  flex-grow: 0;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: col-resize;
-  background-color: gray;
+  --apply: flex shrink-0 grow-0 items-center justify-center cursor-col-resize
+    bg-gray-600 rounded-custom;
 }
 
 .p-splitter-horizontal.p-splitter-resizing {
-  cursor: col-resize;
-  user-select: none;
+  --apply: cursor-col-resize select-none;
 }
 
 .p-splitter-horizontal > .p-splitter-gutter > .p-splitter-gutter-handle {
-  height: 24px;
-  width: 100%;
+  --apply: w-full h-6;
 }
 
 .p-splitter-horizontal > .p-splitter-gutter {
-  cursor: col-resize;
+  --apply: cursor-col-resize;
 }
 
 .p-splitter-vertical.p-splitter-resizing {
-  cursor: row-resize;
-  user-select: none;
+  --apply: cursor-row-resize select-none;
 }
 
 .p-splitter-vertical > .p-splitter-gutter {
-  cursor: row-resize;
-  width: 100%;
-  background-color: gray;
+  --apply: cursor-row-resize w-full bg-gray-600;
 }
 
 .p-splitter-vertical > .p-splitter-gutter > .p-splitter-gutter-handle {
-  width: 24px;
-  height: 100%;
+  --apply: h-full w-6;
 }
 </style>
