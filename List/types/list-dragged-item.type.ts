@@ -1,5 +1,7 @@
+import type { IListItem } from '~/components/List/types/list-item.type';
+
 export type IListDraggedItem = {
-  row: IItem
+  row: IListItem
   pos: { x: number | null; y: number | null }
   dropIndicatorPos?: {
     x: number | null
@@ -7,9 +9,9 @@ export type IListDraggedItem = {
     width: number | null
   }
   newPathIsGroup?: boolean
-  dropDirection?: 'below' | 'above'
+  direction?: 'below' | 'above'
   newPath?: string
   path: string
 
-  target?: IItem
+  target?: IListItem
 }

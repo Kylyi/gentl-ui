@@ -538,6 +538,11 @@ function getData() {
         </Btn>
 
         <slot
+          name="append"
+          :clear="clear"
+        />
+
+        <slot
           v-if="!disabled && !readonly && !noDropdownIcon"
           name="dropdown-icon"
           :is-open="isPickerActive"
@@ -547,11 +552,6 @@ function getData() {
             class="dropdown-icon"
           />
         </slot>
-
-        <slot
-          name="append"
-          :clear="clear"
-        />
       </div>
     </template>
 

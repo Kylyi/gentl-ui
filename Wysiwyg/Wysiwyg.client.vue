@@ -11,6 +11,7 @@ import { Color } from '@tiptap/extension-color'
 import { Mention } from '@tiptap/extension-mention'
 import { Image } from '@tiptap/extension-image'
 import { Link } from '@tiptap/extension-link'
+import { Dropcursor } from '@tiptap/extension-dropcursor'
 
 // Types
 import type { ClientRectObject } from '@floating-ui/vue'
@@ -35,12 +36,20 @@ defineEmits<{
 }>()
 
 // Utils
-const { resolveValues } = useWysiwygUtils()
+const { ImageComponent, resolveValues } = useWysiwygUtils()
 const { getInputWrapperProps } = useInputWrapperUtils()
 
 // Layout
+const editorEl = ref<any>()
 const model = defineModel()
 const isFocused = ref(false)
+useDropZone(editorEl, {
+  onDrop: handleAddFiles,
+  dataTypes: ['image/*'],
+})
+const providedData = reactive<IItem>({})
+
+provide('providedData', providedData)
 
 const mentionItems = injectStrict(mentionItemsKey, toRef(props, 'mentionItems'))
 
@@ -119,6 +128,9 @@ const LinkExt = Link.extend({
   },
 })
 
+// Dropcursor https://tiptap.dev/api/extensions/dropcursor
+const DropcursorExt = Dropcursor.configure()
+
 // Mention https://tiptap.dev/api/nodes/mention
 const mentionEl = ref<InstanceType<typeof WysiwygMention>>()
 const selectFnc = ref<Function>(() => {})
@@ -194,8 +206,9 @@ const editor = useEditor({
     Underline,
     TextStyle,
     ColorExt,
+    DropcursorExt,
     ...(toValue(mentionItems) ? [MentionExt] : []),
-    ...(props.image ? [ImageExt] : []),
+    ...(props.image ? [ImageExt, ImageComponent()] : []),
     ...(props.allowLink ? [LinkExt] : []),
   ],
   editable: !props.readonly && !props.disabled,
@@ -218,6 +231,14 @@ const editor = useEditor({
   onBlur() {
     isFocused.value = false
   },
+})
+
+const isSinkVisible = computed(() => {
+  const isEditable = !props.readonly && !props.disabled
+
+  return (isFocused.value || props.sinkAlwaysVisible)
+    && isEditable
+    && !props.noSink
 })
 
 // Editor commands
@@ -287,6 +308,30 @@ watch(
   }
 )
 
+async function handleAddFiles(files: File[] | null) {
+  // Create base64 string from file
+  const file = files?.[0]
+
+  if (!file) {
+    return
+  }
+
+  const buffer = await file.arrayBuffer()
+  const base64 = btoa(new Uint8Array(buffer)
+    .reduce((data, byte) => data + String.fromCharCode(byte), ''))
+  const src = `data:${file.type};base64,${base64}`
+
+  console.log('Log ~ handleAddFiles ~ src:', src)
+  const uuid = generateUUID()
+  providedData[uuid] = {
+    src
+  }
+
+  editor.value?.chain().focus().insertContent(`
+        <wysiwyg-image uuid="${uuid}" data-type="draggable-item" />
+      `).run()
+}
+
 onMounted(() => {
   nextTick(() => {
     if (props.mentionReplace && editor.value) {
@@ -313,11 +358,13 @@ defineExpose({
     @mousedown="focusEditor"
   >
     <EditorContent
+      ref="editorEl"
       class="control"
       :editor="editor"
       min-h="50"
       :class="editorClass"
       :style="editorStyle"
+      @drop.stop.prevent="$log"
     />
 
     <WysiwygMention
@@ -333,13 +380,7 @@ defineExpose({
         v-bind="transitionProps"
       >
         <WysiwygSink
-          v-if="
-            (isFocused || sinkAlwaysVisible) &&
-            editor &&
-            !readonly &&
-            !disabled &&
-            !noSink
-          "
+          v-if="isSinkVisible && editor"
           :editor="editor"
           class="wysiwyg-sink"
           :allow-link="allowLink"

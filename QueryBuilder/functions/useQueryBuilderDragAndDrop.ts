@@ -42,12 +42,12 @@ export function useQueryBuilderDragAndDrop() {
 
     // When no query builder row is found, we don't really do anything
     // We also do nothing when we're dragging over the same row
-    // We also do nothing when we're dragging over descendants of the dragged item
+    // We also do nothing when we're dragging over descendants of the dragged item (only if nested)
     if (
       !qbRow ||
       qbRow.classList.contains('no-dragover') ||
       qbRowPath === draggedItem.value?.row.path ||
-      qbRowPath?.startsWith(draggedItem.value?.row.path || '')
+      (qbRowPath?.includes('.') && qbRowPath?.startsWith(draggedItem.value?.row.path || ''))
     ) {
       return
     }

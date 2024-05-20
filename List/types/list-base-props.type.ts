@@ -11,5 +11,5 @@ export interface IListBaseProps {
   noSelect?: boolean
   rowClass?: ClassType
   truncate?: boolean
-  reorderable?: boolean
+  reorderable?: boolean | ((item: any) => boolean)
 }

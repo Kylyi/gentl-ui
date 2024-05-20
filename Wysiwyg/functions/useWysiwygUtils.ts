@@ -1,3 +1,5 @@
+import { mergeAttributes, Node } from '@tiptap/core'
+import { VueNodeViewRenderer } from '@tiptap/vue-3'
 import { type SuggestionKeyDownProps } from '@tiptap/suggestion'
 
 // Functions
@@ -8,6 +10,9 @@ import { mentionEntityKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
 
 // Constants
 import { mentionItemsMap } from '~/components/Wysiwyg/constants/resolve-values.map'
+
+// Components
+import WysiwygImage from '~/components/Wysiwyg/WysiwygImage.vue'
 
 export function useWysiwygUtils() {
   const { formatValue } = useValueFormatterUtils()
@@ -42,7 +47,39 @@ export function useWysiwygUtils() {
     })
   }
 
+  function ImageComponent() {
+    return Node.create({
+      name: 'wisywigImage',
+      group: 'block',
+      // content: 'block*',
+      draggable: true,
+      atom: true,
+      parseHTML() {
+        return [
+          { tag: 'wysiwyg-image' },
+        ]
+      },
+      renderHTML({ HTMLAttributes }) {
+        return [
+          'wysiwyg-image',
+          mergeAttributes(HTMLAttributes, { 'data-type': 'draggable-item' })
+        ]
+      },
+      addAttributes() {
+        return {
+          uuid: {
+            default: '',
+          },
+        }
+      },
+      addNodeView() {
+        return VueNodeViewRenderer(WysiwygImage)
+      },
+    })
+  }
+
   return {
     resolveValues,
+    ImageComponent
   }
 }

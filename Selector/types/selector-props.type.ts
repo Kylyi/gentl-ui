@@ -130,4 +130,9 @@ export type ISelectorProps = IInputProps & {
    * The props that should be passed to the input tag (<input>)
    */
   inputProps?: Record<string, any>
+
+  /**
+   * The function to use for transforming the added item
+   */
+  transformAddedItem?: (item: any) => any
 }

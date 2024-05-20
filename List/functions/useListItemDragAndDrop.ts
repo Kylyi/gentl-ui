@@ -1,14 +1,24 @@
 // Types
 import type { IListItem } from '~/components/List/types/list-item.type'
 
+// Functions
+import { useListUtils } from '~/components/List/functions/useListUtils'
+
 // Injections
 import {
-  listContainerKey, listDraggedItemKey, listItemsKey, listEmitDragEndEventKey, listEmitDragStartEventKey } from '~/components/List/provide/list.provide'
+  listContainerKey,
+  listDraggedItemKey,
+  listItemsKey,
+  listEmitDragEndEventKey,
+  listEmitDragStartEventKey
+} from '~/components/List/provide/list.provide'
 
 // Constants
 const ITEM_ROW_LEFT_MARGIN = 0
 
 export function useListItemDragAndDrop(itemRef: MaybeRefOrGetter<IListItem>) {
+  const { handleMoveItem, updatePaths } = useListUtils()
+
   // Injections
   const scrollContainer = injectStrict(listContainerKey)
   const draggedItem = injectStrict(listDraggedItemKey)
@@ -16,11 +26,43 @@ export function useListItemDragAndDrop(itemRef: MaybeRefOrGetter<IListItem>) {
   const emitDragStartEvent = injectStrict(listEmitDragStartEventKey)
   const emitDragEndEvent = injectStrict(listEmitDragEndEventKey)
 
+  // Scrolling
+useScroll(scrollContainer, {
+  onScroll: updateDropIndicator
+})
+const scrollBy = ref({ speedX: 0, speedY: 0 })
+
+const { pause, resume, isActive } = useIntervalFn(
+  () => {
+    const { speedX, speedY } = scrollBy.value
+    scrollContainer.value?.scrollBy(speedX, speedY)
+
+    updateDropIndicator()
+  },
+  5,
+  { immediate: false }
+)
+
+  function updateDropIndicator() {
+    if (!lastEv) {
+      return
+    }
+
+    // We update the position of the dragged item
+    const isMouseEvent = lastEv instanceof MouseEvent
+
+    if (isMouseEvent) {
+      handleMouseMove(lastEv as MouseEvent)
+    } else {
+      handleTouchMove(lastEv as TouchEvent)
+    }
+  }
+
     // D'n'D
   const draggableEl = ref<HTMLElement>()
   let clonedElement: HTMLElement | null = null
   let mouseOffset = { x: 0, y: 0 }
-
+  let lastEv: MouseEvent | TouchEvent | null = null
   const draggableElement = computed(() => unrefElement(draggableEl) as HTMLElement)
 
   // Mouse
@@ -74,6 +116,7 @@ export function useListItemDragAndDrop(itemRef: MaybeRefOrGetter<IListItem>) {
       }
     }
 
+    lastEv = event
     calculateScroll(event)
   }
 
@@ -128,6 +171,7 @@ export function useListItemDragAndDrop(itemRef: MaybeRefOrGetter<IListItem>) {
       }
     }
 
+    lastEv = event
     calculateScroll(event)
   }
 
@@ -145,37 +189,10 @@ export function useListItemDragAndDrop(itemRef: MaybeRefOrGetter<IListItem>) {
 
     // Handle the drag result
     if (draggedItem.value) {
-      const { newPath, dropDirection, newPathIsGroup } = draggedItem.value
+      const { row, target, direction } = draggedItem.value
 
-      if (newPath && dropDirection) {
-        let _items = toValue(items)
-        const item = toValue(itemRef)
-
-        // Get current row info
-        const currentPath = draggedItem.value.path
-        // const currentParentPath = currentPath.split('.').slice(0, -2).join('.')
-
-        // TODO: Refactor this
-        // SECTION: Temporary solution
-        const currentIndex = +currentPath.slice(-1)
-        const newIndex = +newPath.slice(-1)
-
-        const splicedItem = _items[currentIndex]
-        _items = _items.toSpliced(currentIndex, 1, { path: '_moved' } as any)
-        _items = _items.toSpliced(dropDirection === 'below' ? newIndex + 1 : newIndex, 0, splicedItem)
-
-        // @ts-expect-error Fuck
-        const _tempItemIdx = _items.findIndex(item => item.path === '_moved')
-        if (_tempItemIdx > -1) {
-          _items = _items.toSpliced(_tempItemIdx, 1)
-        }
-
-        items.value = _items
-
-        updatePaths()
-        // !SECTION
-
-
+      if (row && target) {
+        handleMoveItem({ id: row.id, targetId: target.id, direction, itemsRef: items })
 
         // const currentParent =
         //   props.parent ?? get(toValue(items), currentParentPath)
@@ -187,14 +204,14 @@ export function useListItemDragAndDrop(itemRef: MaybeRefOrGetter<IListItem>) {
         //   : newPath.split('.').slice(0, -2).join('.')
         // const parent = get(toValue(items), parentPath) as IListGro
         // const index = newPathIsGroup
-        //   ? dropDirection === 'below'
+        //   ? direction === 'below'
         //     ? parent.children.length
         //     : 0
         //   : +newPath.slice(-1)
 
         // // In case we're moving the item within its parent
         // if (parent === currentParent) {
-        //   if (dropDirection === 'below') {
+        //   if (direction === 'below') {
         //     parent.children.splice(index + 1, 0, {
         //       ...props.item,
         //       path: '_moved',
@@ -214,7 +231,7 @@ export function useListItemDragAndDrop(itemRef: MaybeRefOrGetter<IListItem>) {
         // else {
         //   const itemExtracted = currentParent.children.splice(currentIndex, 1)[0]
 
-        //   if (dropDirection === 'below') {
+        //   if (direction === 'below') {
         //     parent.children.splice(index + 1, 0, itemExtracted)
         //   } else {
         //     parent.children.splice(index, 0, itemExtracted)
@@ -233,8 +250,8 @@ export function useListItemDragAndDrop(itemRef: MaybeRefOrGetter<IListItem>) {
     }
 
     // Reset scrolling
-    // scrollBy.value = { speedX: 0, speedY: 0 }
-    // pause()
+    scrollBy.value = { speedX: 0, speedY: 0 }
+    pause()
   }
 
   /**
@@ -266,7 +283,7 @@ export function useListItemDragAndDrop(itemRef: MaybeRefOrGetter<IListItem>) {
 
       draggedItem.value = {
         path: toValue(itemRef).path,
-        row: toValue(itemRef).ref,
+        row: toValue(itemRef),
         pos: { x: clientX, y: clientY },
       }
     }
@@ -310,22 +327,12 @@ export function useListItemDragAndDrop(itemRef: MaybeRefOrGetter<IListItem>) {
       speedY = Math.max(1, (threshold - (containerRect.bottom - clientY)) / 10)
     }
 
-    // scrollBy.value = { speedX, speedY }
-    // if (speedX === 0 && speedY === 0) {
-    //   pause()
-    // } else if (!isActive.value) {
-    //   resume()
-    // }
-  }
-
-  /**
-   * Update paths of the items structure
-   */
-  function updatePaths() {
-    toValue(items).forEach((item, idx) => {
-      // @ts-expect-error Groups
-      item.path = `${idx}`
-    })
+    scrollBy.value = { speedX, speedY }
+    if (speedX === 0 && speedY === 0) {
+      pause()
+    } else if (!isActive.value) {
+      resume()
+    }
   }
 
   watchThrottled(items, updatePaths, { throttle: 100 })
@@ -334,6 +341,5 @@ export function useListItemDragAndDrop(itemRef: MaybeRefOrGetter<IListItem>) {
     draggableEl,
     handleMouseDown,
     handleTouchStart,
-    updatePaths,
   }
 }
