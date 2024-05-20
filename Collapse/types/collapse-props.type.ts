@@ -54,6 +54,11 @@ export interface ICollapseProps {
   noHeader?: boolean
 
   /**
+   * When true, the collapse icon will not be shown
+   */
+  noExpandIcon?: boolean
+
+  /**
    * When true, the collapse will not have the separator line when open
    */
   noSeparator?: boolean

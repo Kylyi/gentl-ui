@@ -159,7 +159,7 @@ useResizeObserver(headerEl, entries => {
         />
       </slot>
 
-      <slot name="expand-icon">
+      <slot v-if="!noExpandIcon" name="expand-icon">
         <div
           i-majesticons:chevron-right
           transition="duration-150"
