@@ -1,62 +1,63 @@
 <script setup lang="ts">
-import { Editor } from '@tiptap/vue-3'
+// Injections
+import { editorKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
 
-type IProps = {
-  editor: Editor
+// Layout
+const editor = inject(editorKey)
+
+const textAlignment = computed(() => {
+  return {
+    left: toValue(editor)?.isActive({ textAlign: 'left' }),
+    center: toValue(editor)?.isActive({ textAlign: 'center' }),
+    right: toValue(editor)?.isActive({ textAlign: 'right' }),
+    justify: toValue(editor)?.isActive({ textAlign: 'justify' }),
+  }
+})
+
+function handleTextAlign(align: string) {
+  toValue(editor)?.chain().focus().setTextAlign(align).run()
 }
-
-const props = defineProps<IProps>()
-defineEmits<{
-  (e: 'text-align', value: string): void
-}>()
-
-// TEXT ALIGNMENT
-const isAlignedLeft = computed(() =>
-  props.editor.isActive({ textAlign: 'left' })
-)
-const isAlignedCenter = computed(() =>
-  props.editor.isActive({ textAlign: 'center' })
-)
-const isAlignedRight = computed(() =>
-  props.editor.isActive({ textAlign: 'right' })
-)
-const isAlignedJustify = computed(() =>
-  props.editor.isActive({ textAlign: 'justify' })
-)
 </script>
 
 <template>
   <div flex="~">
+    <!-- Left -->
     <Btn
       icon="i-material-symbols:format-align-left-rounded"
       size="sm"
       color="ca"
-      :class="{ 'is-active': isAlignedLeft }"
-      @click.stop.prevent="$emit('text-align', 'left')"
+      :class="{ 'is-active': textAlignment.left }"
+      @click.stop.prevent="handleTextAlign('left')"
       @mousedown.stop.prevent
     />
+
+    <!-- Center -->
     <Btn
       icon="i-material-symbols:format-align-center-rounded"
       size="sm"
       color="ca"
-      :class="{ 'is-active': isAlignedCenter }"
-      @click.stop.prevent="$emit('text-align', 'center')"
+      :class="{ 'is-active': textAlignment.center }"
+      @click.stop.prevent="handleTextAlign('center')"
       @mousedown.stop.prevent
     />
+
+    <!-- Right -->
     <Btn
       icon="i-material-symbols:format-align-right-rounded"
       size="sm"
       color="ca"
-      :class="{ 'is-active': isAlignedRight }"
-      @click.stop.prevent="$emit('text-align', 'right')"
+      :class="{ 'is-active': textAlignment.right }"
+      @click.stop.prevent="handleTextAlign('right')"
       @mousedown.stop.prevent
     />
+
+    <!-- Justify -->
     <Btn
       icon="i-material-symbols:format-align-justify-rounded"
       size="sm"
       color="ca"
-      :class="{ 'is-active': isAlignedJustify }"
-      @click.stop.prevent="$emit('text-align', 'justify')"
+      :class="{ 'is-active': textAlignment.justify }"
+      @click.stop.prevent="handleTextAlign('justify')"
       @mousedown.stop.prevent
     />
   </div>

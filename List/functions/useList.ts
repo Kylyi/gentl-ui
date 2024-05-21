@@ -139,10 +139,11 @@ export function useList(
     new SortItem<any>({
       name: '_label',
       sort: 'asc',
-      format: row =>
-        typeof props.itemLabel === 'function'
+      format: row => {
+        return typeof props.itemLabel === 'function'
           ? props.itemLabel(row)
-          : get(row, props.itemLabel),
+          : get(row, props.itemLabel)
+      }
     }),
   ]
 
@@ -447,22 +448,23 @@ export function useList(
     })
 
     const shouldNotSort =
-    props.noSort ||
-    (fuseOptions.fuseOptions?.shouldSort &&
-      highlightedItems.length !== items.value.length)
+      props.noSort ||
+      (fuseOptions.fuseOptions?.shouldSort &&
+        highlightedItems.length !== items.value.length)
+
 
     const resultsSorted = shouldNotSort
       ? highlightedItems
       : await sortData(
-          highlightedItems,
-          (props.sortBy || defaultSortBy).map(s => {
-            return new SortItem({
-              ...s,
-              format: ({ ref }) => s.format?.(ref) || get(ref, s.field),
-            })
-          }),
-          groupBy
-        )
+        highlightedItems,
+        (props.sortBy || defaultSortBy).map(s => {
+          return new SortItem({
+            ...s,
+            format: ({ ref }) => s.format?.(ref) || get(ref, s.field),
+          })
+        }),
+        groupBy
+      )
 
     const groupedArray = await groupData(
       resultsSorted,

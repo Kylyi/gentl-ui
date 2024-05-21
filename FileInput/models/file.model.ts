@@ -5,6 +5,13 @@ export class FileModel {
   file: File
   uploadProgress: number
   hasError = false
+  uploadedFile?: {
+    filepath: string
+    newFilename: string
+    originalFilename: string
+    mimetype: string
+    size: number
+  }
 
   get name() {
     return this.file.name
@@ -62,7 +69,37 @@ export class FileModel {
       }
     )
 
+    this.uploadedFile = data?.[0]
+
     return data
+  }
+
+  async delete(
+    requestHandler: any,
+    options?: {
+      ignoreWhenFoundInDb?: boolean
+      onError?: (error: any) => void
+      notifyError?: boolean
+    }
+  ) {
+    const { onError, notifyError, ignoreWhenFoundInDb = true } = options ?? {}
+    if (!this.uploadedFile) {
+      return
+    }
+
+    const filesHost = useRuntimeConfig().public.FILES_HOST ?? '/api/files'
+
+    await requestHandler(
+      () => $fetch(filesHost, {
+        method: 'DELETE',
+        body: { path: this.uploadedFile?.filepath, ignoreWhenFoundInDb },
+      }),
+      {
+        onError,
+        notifyError,
+        logging: { operationName: 'file.delete' },
+      }
+    )
   }
 
   constructor(obj: Required<Partial<FileModel>, 'file'>) {

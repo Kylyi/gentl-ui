@@ -12,7 +12,7 @@ import { mentionEntityKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
 import { mentionItemsMap } from '~/components/Wysiwyg/constants/resolve-values.map'
 
 // Components
-import WysiwygImage from '~/components/Wysiwyg/WysiwygImage.vue'
+import WysiwygFile from '~/components/Wysiwyg/WysiwygFile.vue'
 
 export function useWysiwygUtils() {
   const { formatValue } = useValueFormatterUtils()
@@ -47,22 +47,25 @@ export function useWysiwygUtils() {
     })
   }
 
-  function ImageComponent() {
+  function FileComponent() {
     return Node.create({
-      name: 'wisywigImage',
-      group: 'block',
-      // content: 'block*',
+      name: 'wysiwygFile',
+      group: 'inline', // Change this to inline
+      inline: true, // Ensure the node is inline
       draggable: true,
       atom: true,
       parseHTML() {
         return [
-          { tag: 'wysiwyg-image' },
+          { tag: 'wysiwyg-file' },
         ]
       },
       renderHTML({ HTMLAttributes }) {
         return [
-          'wysiwyg-image',
-          mergeAttributes(HTMLAttributes, { 'data-type': 'draggable-item' })
+          'wysiwyg-file',
+          mergeAttributes(
+            HTMLAttributes,
+            { 'data-type': 'draggable-item' }
+          )
         ]
       },
       addAttributes() {
@@ -70,16 +73,19 @@ export function useWysiwygUtils() {
           uuid: {
             default: '',
           },
+          files: {
+            default: '',
+          }
         }
       },
       addNodeView() {
-        return VueNodeViewRenderer(WysiwygImage)
+        return VueNodeViewRenderer(WysiwygFile)
       },
     })
   }
 
   return {
     resolveValues,
-    ImageComponent
+    FileComponent
   }
 }

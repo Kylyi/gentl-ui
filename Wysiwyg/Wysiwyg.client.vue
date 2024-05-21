@@ -18,6 +18,9 @@ import type { ClientRectObject } from '@floating-ui/vue'
 import type { IWysiwygProps } from '~/components/Wysiwyg/types/wysiwyg-props.type'
 import type { IWysiwygMentionItem } from '~/components/Wysiwyg/types/wysiwyg-mention-item.type'
 
+// Models
+import { FileModel } from '~/components/FileInput/models/file.model'
+
 // Functions
 import { useWysiwygUtils } from '~/components/Wysiwyg/functions/useWysiwygUtils'
 import { useInputWrapperUtils } from '~/components/Inputs/functions/useInputWrapperUtils'
@@ -26,27 +29,33 @@ import { useInputWrapperUtils } from '~/components/Inputs/functions/useInputWrap
 import WysiwygMention from '~/components/Wysiwyg/WysiwygMention.vue'
 
 // Injections
-import { mentionItemsKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
+import { editorKey, filesByFilepathKey, mentionItemsKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
 
 const props = withDefaults(defineProps<IWysiwygProps>(), {
+  autoResolveFiles: true,
   errorVisible: true,
 })
+
 defineEmits<{
   (e: 'update:modelValue', value: string): void
 }>()
 
+defineExpose({
+  resolveValues: () => {
+    if (editor.value) {
+      resolveValues(editor.value.view)
+    }
+  }
+})
+
 // Utils
-const { ImageComponent, resolveValues } = useWysiwygUtils()
+const { FileComponent, resolveValues } = useWysiwygUtils()
 const { getInputWrapperProps } = useInputWrapperUtils()
 
 // Layout
 const editorEl = ref<any>()
 const model = defineModel()
 const isFocused = ref(false)
-useDropZone(editorEl, {
-  onDrop: handleAddFiles,
-  dataTypes: ['image/*'],
-})
 const providedData = reactive<IItem>({})
 
 provide('providedData', providedData)
@@ -86,7 +95,7 @@ const ColorExt = Color.configure({
 })
 
 // Image https://tiptap.dev/api/extensions/image
-const ImageExt = Image.configure(props.image)
+const ImageExt = Image.configure(typeof props.image === 'boolean' ? {} : props.image)
 
 // Link https://tiptap.dev/api/marks/link
 const LinkExt = Link.extend({
@@ -121,7 +130,7 @@ const LinkExt = Link.extend({
     }
   },
 }).configure({
-  openOnClick: true,
+  openOnClick: 'whenNotEditable',
   protocols: ['ftp', 'mailto'],
   HTMLAttributes: {
     class: 'link',
@@ -208,7 +217,8 @@ const editor = useEditor({
     ColorExt,
     DropcursorExt,
     ...(toValue(mentionItems) ? [MentionExt] : []),
-    ...(props.image ? [ImageExt, ImageComponent()] : []),
+    ...(props.fileUpload ? [FileComponent()] : []),
+    ...(props.image ? [ImageExt] : []),
     ...(props.allowLink ? [LinkExt] : []),
   ],
   editable: !props.readonly && !props.disabled,
@@ -233,6 +243,11 @@ const editor = useEditor({
   },
 })
 
+function removeElement(el: HTMLElement | null) {
+  el?.remove()
+}
+
+
 const isSinkVisible = computed(() => {
   const isEditable = !props.readonly && !props.disabled
 
@@ -241,66 +256,59 @@ const isSinkVisible = computed(() => {
     && !props.noSink
 })
 
-// Editor commands
-function handleToggleBold() {
-  editor.value?.chain().focus().toggleBold().run()
-}
+const filesById = computed(() => {
+  return props.files?.reduce((agg, file) => {
+    agg[file.path] = file
 
-function handleToggleUnderline() {
-  editor.value?.chain().focus().toggleUnderline().run()
-}
+    return agg
+  }, {} as Record<IFile['path'], IFile>)
+})
 
-function handleToggleItalic() {
-  editor.value?.chain().focus().toggleItalic().run()
-}
-
-function handleTextAlign(align: string) {
-  editor.value?.chain().focus().setTextAlign(align).run()
-}
-
-function handleSetHeading(payload: { isHeading: boolean; level?: number }) {
-  const { isHeading, level } = payload
-
-  if (isHeading) {
-    editor.value
-      ?.chain()
-      .focus()
-      .setHeading({ level: (level as any) ?? 6 })
-      .run()
-  } else {
-    editor.value?.chain().focus().setParagraph().run()
+function syncFilesHTML() {
+  if (!editor.value) {
+    return ''
   }
+
+  const parser = new DOMParser()
+  const doc = parser.parseFromString(editor.value?.getHTML(), 'text/html')
+
+  const fileNodes = doc.querySelectorAll('wysiwyg-file')
+  const newFileNodes = Array.from(fileNodes).filter(node => {
+    return providedData[node.getAttribute('uuid') ?? '']
+  })
+
+  newFileNodes.forEach(node => {
+    node.setAttribute(
+      'files',
+      providedData[node.getAttribute('uuid') ?? ''].files
+        ?.map((file: FileModel) => file.uploadedFile?.filepath).join('__|__')
+    )
+  })
+
+  model.value = doc.body.innerHTML
+  editor.value?.chain().setContent(doc.body.innerHTML).run()
 }
 
-function handleToggleBullettedList() {
-  editor.value?.chain().focus().toggleBulletList().run()
-}
+provide(editorKey, editor)
+provide(filesByFilepathKey, filesById)
+provide('removeElement', removeElement)
+provide('syncFilesHTML', syncFilesHTML)
 
-function handleToggleNumberedList() {
-  editor.value?.chain().focus().toggleOrderedList().run()
-}
-
-function handleSetColor(color?: string | null) {
-  color
-    ? editor.value?.chain().focus().setColor(color).run()
-    : editor.value?.chain().focus().unsetColor().run()
-}
-
+// Editor commands
 function focusEditor() {
   if (!editor.value?.isFocused) {
     editor.value?.chain().focus().run()
   }
 }
 
+// Watch model to update editor content (only if not focused)
 watch(model, model => {
   if (!isFocused.value) {
-    editor.value
-      ?.chain()
-      .setContent(model ?? '')
-      .run()
+    editor.value?.chain().setContent(model ?? '').run()
   }
 })
 
+// Watch readonly prop and set editor editable
 watch(
   () => props.readonly,
   isReadonly => {
@@ -308,44 +316,37 @@ watch(
   }
 )
 
-async function handleAddFiles(files: File[] | null) {
-  // Create base64 string from file
-  const file = files?.[0]
-
-  if (!file) {
-    return
-  }
-
-  const buffer = await file.arrayBuffer()
-  const base64 = btoa(new Uint8Array(buffer)
-    .reduce((data, byte) => data + String.fromCharCode(byte), ''))
-  const src = `data:${file.type};base64,${base64}`
-
-  console.log('Log ~ handleAddFiles ~ src:', src)
-  const uuid = generateUUID()
-  providedData[uuid] = {
-    src
-  }
-
-  editor.value?.chain().focus().insertContent(`
-        <wysiwyg-image uuid="${uuid}" data-type="draggable-item" />
-      `).run()
-}
-
 onMounted(() => {
   nextTick(() => {
     if (props.mentionReplace && editor.value) {
       resolveValues(editor.value.view)
     }
-  })
-})
 
-defineExpose({
-  resolveValues: () => {
-    if (editor.value) {
-      resolveValues(editor.value.view)
-    }
-  },
+    // Handle files drop
+    editor.value?.view.dom.addEventListener('drop', event => {
+      event.preventDefault()
+
+      const droppedFiles = Array.from(event.dataTransfer?.files || [])
+
+      if (droppedFiles.length) {
+        const files = droppedFiles.map(file => new FileModel({ file }))
+
+        const uuid = generateUUID()
+        providedData[uuid] = { files }
+
+        const pos = editor.value?.view.posAtCoords({
+          left: event.clientX,
+          top: event.clientY,
+        })
+
+        if (pos) {
+          editor.value?.chain().focus()
+            .insertContentAt(pos.pos, `<wysiwyg-file uuid="${uuid}" />`)
+            .run()
+        }
+      }
+    })
+  })
 })
 </script>
 
@@ -364,7 +365,7 @@ defineExpose({
       min-h="50"
       :class="editorClass"
       :style="editorStyle"
-      @drop.stop.prevent="$log"
+      @drop.stop.prevent
     />
 
     <WysiwygMention
@@ -384,14 +385,6 @@ defineExpose({
           :editor="editor"
           class="wysiwyg-sink"
           :allow-link="allowLink"
-          @toggle-bold="handleToggleBold"
-          @toggle-italic="handleToggleItalic"
-          @toggle-underline="handleToggleUnderline"
-          @text-align="handleTextAlign"
-          @set-heading="handleSetHeading"
-          @toggle-bulleted-list="handleToggleBullettedList"
-          @toggle-numbered-list="handleToggleNumberedList"
-          @text-color="handleSetColor"
         />
       </Transition>
     </template>
@@ -421,5 +414,13 @@ defineExpose({
   [data-type="mention"] {
     --apply: italic;
   }
+}
+
+:deep(.wysiwyg-file) {
+  // @apply w-fit;
+}
+
+:deep(.ProseMirror-selectednode) {
+  @apply outline-2 outline-solid outline-primary rounded-custom;
 }
 </style>

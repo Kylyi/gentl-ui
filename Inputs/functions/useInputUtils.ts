@@ -1,7 +1,7 @@
 import { useIMask } from 'vue-imask'
+import { createMask } from 'imask'
 
 // Types
-import { createMask } from 'imask'
 import type { IInputUtilsOptions } from '~/components/Inputs/types/input-utils-options.type'
 
 // Functions

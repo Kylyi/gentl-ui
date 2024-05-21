@@ -1,12 +1,8 @@
 <script setup lang="ts">
-import { Editor } from '@tiptap/vue-3'
-
-// Components
-import MenuProxy from '~/components/MenuProxy/MenuProxy.vue'
+import { editorKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
 
 type IProps = {
   allowLink?: boolean
-  editor: Editor
   textSize?: string
 }
 
@@ -25,16 +21,11 @@ const emits = defineEmits<{
 }>()
 
 // Layout
-const colorMenuEl = ref<InstanceType<typeof MenuProxy>>()
+const editor = inject(editorKey)
 
-const canUseImage = computedEager(() => {
-  return props.editor.options.extensions.find(ext => ext.name === 'mage')
+const canUseImage = computed(() => {
+  return toValue(editor)?.options.extensions.find(ext => ext.name === 'mage')
 })
-
-function handleColorChange(color?: string | null) {
-  colorMenuEl.value?.hide()
-  emits('text-color', color)
-}
 </script>
 
 <template>
@@ -42,42 +33,21 @@ function handleColorChange(color?: string | null) {
     class="wysiwyg-sink"
     content-class="gap-x-1 p-1"
   >
-    <WysiwygTextSizeSimpleCommands
-      :editor="editor"
-      @set-heading="$emit('set-heading', $event)"
-    />
+    <WysiwygTextSizeSimpleCommands />
 
     <Separator
       vertical
       inset
     />
 
-    <Btn
-      size="sm"
-      icon="i-material-symbols:format-color-text-rounded"
-      @click.stop.prevent
-      @mousedown.stop.prevent
-    >
-      <MenuProxy ref="colorMenuEl">
-        <ColorBrandingPicker
-          @update:model-value="handleColorChange"
-          @click.stop.prevent
-          @mousedown.stop.prevent
-        />
-      </MenuProxy>
-    </Btn>
+    <WysiwygTextColorCommands />
 
     <Separator
       vertical
       inset
     />
 
-    <WysiwygTextStyleCommands
-      :editor="editor"
-      @toggle-bold="$emit('toggle-bold')"
-      @toggle-italic="$emit('toggle-italic')"
-      @toggle-underline="$emit('toggle-underline')"
-    />
+    <WysiwygTextStyleCommands />
 
     <Separator
       vertical
@@ -85,10 +55,7 @@ function handleColorChange(color?: string | null) {
       inset
     />
 
-    <WysiwygTextAlignmentCommands
-      :editor="editor"
-      @text-align="$emit('text-align', $event)"
-    />
+    <WysiwygTextAlignmentCommands />
 
     <Separator
       vertical
@@ -96,11 +63,7 @@ function handleColorChange(color?: string | null) {
       inset
     />
 
-    <WysiwygListCommands
-      :editor="editor"
-      @toggle-bulleted-list="$emit('toggle-bulleted-list')"
-      @toggle-numbered-list="$emit('toggle-numbered-list')"
-    />
+    <WysiwygListCommands />
 
     <template v-if="allowLink">
       <Separator
@@ -109,7 +72,9 @@ function handleColorChange(color?: string | null) {
         inset
       />
 
-      <WysiwygLink :editor="editor" />
+      <WysiwygLink />
+
+      <WysiwygFileCommandBtn />
     </template>
 
     <template v-if="canUseImage">
