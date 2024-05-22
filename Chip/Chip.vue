@@ -97,7 +97,7 @@ function handleClick() {
 
 <style lang="scss" scoped>
 .chip {
-  --apply: flex flex-gap-1 p-y-3px p-l-2 border-px rounded truncate relative
+  --apply: flex gap-2 p-y-3px p-l-2 border-px rounded truncate relative
     leading-tight items-center self-center font-rem-14;
 
   &-label {
