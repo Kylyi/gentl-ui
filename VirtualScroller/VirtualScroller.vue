@@ -349,7 +349,7 @@ function rerenderVisibleRows(payload?: {
   })
 
   if (triggerScrollEvent) {
-    handleScrollEvent(lastScrollEvent.value, { noEmit: !emitScrollEvent, force: true })
+    handleScrollEvent(lastScrollEvent.value, { noEmit: false, force: true })
   }
 }
 
