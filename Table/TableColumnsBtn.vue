@@ -48,8 +48,16 @@ const { getBtnProps } = useBtnUtils()
 const dialogEl = ref<InstanceType<typeof Dialog>>()
 const columns = useVModel(props, 'columns', emits)
 
-const { cloned: clonedColumns } = useCloned(columns, {
-  clone: cols => cols.map((col: TableColumn) => new TableColumn(col)),
+const { model: clonedColumns, reset } = useRefReset(columns, {
+  modifyFnc: cols => cols.map((col: TableColumn) => new TableColumn(col)),
+})
+
+const isModified = computed(() => {
+  return clonedColumns.value
+    .some((col, idx) => !isEqual(
+      pick(col, ['field', 'hidden']),
+      pick(columns.value[idx], 'field', 'hidden')
+    ))
 })
 
 const nonHelperCols = computed({
@@ -344,6 +352,16 @@ async function handleApplyChanges() {
             </SlickItem>
           </SlickList>
         </div>
+
+        <template
+          v-if="isModified"
+          #submit-before
+        >
+          <Btn
+            :label="$t('general.resetChanges')"
+            @click="reset"
+          />
+        </template>
       </Form>
     </Dialog>
   </Btn>
