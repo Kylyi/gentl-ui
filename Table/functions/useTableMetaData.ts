@@ -128,7 +128,13 @@ export async function useTableMetaData(props: ITableProps) {
             : await fnc?.()
         }
 
-        tableStore.setTableState(getStorageKey(), { meta: result })
+        tableStore.setTableState(
+          getStorageKey(),
+          {
+            meta: result,
+            pageSize: stateMetaData.value.pageSize ??props.paginationOptions?.pageSize
+          }
+        )
 
         const _layout = get(
           result,

@@ -74,7 +74,7 @@ defineExpose({
   scrollToTop: () => scrollTo(0),
   scrollTo,
   focus: () => virtualScrollEl.value?.focus(),
-  rerender: (noEmit?: boolean) => rerenderVisibleRows(noEmit),
+  rerender: (noEmit?: boolean) => rerenderVisibleRows({ triggerScrollEvent: !noEmit }),
   renderOnlyVisible,
   updateRowHeight,
 })
@@ -330,7 +330,12 @@ async function handleMountedRow(node: any, row: IRow) {
   })
 }
 
-function rerenderVisibleRows(noScrollEvent?: boolean) {
+function rerenderVisibleRows(payload?: {
+  triggerScrollEvent?: boolean
+  emitScrollEvent?: boolean
+}) {
+  const { triggerScrollEvent = true, emitScrollEvent } = payload ?? {}
+
   const renderedRowsByIdx = renderedRows.value.rows.reduce((agg, row) => {
     agg[row.idx] = row
     return agg
@@ -343,8 +348,8 @@ function rerenderVisibleRows(noScrollEvent?: boolean) {
     handleMountedRow(el, row)
   })
 
-  if (!noScrollEvent) {
-    handleScrollEvent(lastScrollEvent.value, { noEmit: true, force: true })
+  if (triggerScrollEvent) {
+    handleScrollEvent(lastScrollEvent.value, { noEmit: !emitScrollEvent, force: true })
   }
 }
 
@@ -352,7 +357,7 @@ watchThrottled(
   width,
   () => {
     pauseRowHeightWatcher()
-    rerenderVisibleRows()
+    rerenderVisibleRows({ triggerScrollEvent: true, emitScrollEvent: true })
     virtualScrollerRect.value = virtualScrollEl.value?.getBoundingClientRect()
 
     nextTick(resumeRowHeightWatcher)
@@ -380,7 +385,7 @@ watch(rows, (rows, rowsOld) => {
     heights.value = [...heights.value, ...newHeights]
 
     nextTick(() => {
-      rerenderVisibleRows()
+      rerenderVisibleRows({ triggerScrollEvent: true, emitScrollEvent: true })
     })
   }
 
@@ -394,7 +399,7 @@ watch(rows, (rows, rowsOld) => {
     renderedRows.value = getRenderedRows(0, INITIAL_ROWS_RENDER_COUNT)
 
     nextTick(() => {
-      rerenderVisibleRows()
+      rerenderVisibleRows({ triggerScrollEvent: true, emitScrollEvent: true })
     })
   }
 
@@ -419,7 +424,7 @@ const { pause: pauseRowHeightWatcher, resume: resumeRowHeightWatcher } =
       pauseRowHeightWatcher()
 
       nextTick(() => {
-        rerenderVisibleRows(true)
+        rerenderVisibleRows({ triggerScrollEvent: false })
         resumeRowHeightWatcher()
       })
 
