@@ -5,6 +5,12 @@ import { type ImageOptions } from '@tiptap/extension-image'
 import type { IInputWrapperProps } from '~/components/Inputs/types/input-wrapper-props.type'
 import type { IWysiwygMentionItem } from '~/components/Wysiwyg/types/wysiwyg-mention-item.type'
 
+type IFile = {
+  id: string | number
+  name: string
+  path: string
+}
+
 export interface IWysiwygProps extends IInputWrapperProps {
   allowLink?: boolean
   image?: Partial<ImageOptions> | boolean
@@ -35,7 +41,7 @@ export interface IWysiwygProps extends IInputWrapperProps {
   /**
    * The files that are part of the editor
    */
-  files?: IFile[]
+  files?: Array<Pick<IFile, 'id' | 'name' | 'path'>> | null
 
   /**
    * When true, the editor will replace the mention with whatever value it finds

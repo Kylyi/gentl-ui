@@ -256,12 +256,13 @@ const isSinkVisible = computed(() => {
     && !props.noSink
 })
 
+// Uploaded files that the Wysiwyg must have access to, by their path
 const filesById = computed(() => {
   return props.files?.reduce((agg, file) => {
     agg[file.path] = file
 
     return agg
-  }, {} as Record<IFile['path'], IFile>)
+  }, {} as Record<IFile['path'], Pick<IFile, 'id' | 'path' | 'name'>>)
 })
 
 function syncFilesHTML() {

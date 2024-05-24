@@ -7,7 +7,7 @@ import { type IWysiwygMentionItem } from '~/components/Wysiwyg/types/wysiwyg-men
 export const editorKey: InjectionKey<Ref<Editor | null | undefined> | undefined>
   = Symbol('editor')
 
-export const filesByFilepathKey: InjectionKey<Ref<Record<IFile['path'], IFile> | undefined>>
+export const filesByFilepathKey: InjectionKey<Ref<Record<IFile['path'], Pick<IFile, 'id' | 'path' | 'name'>> | undefined>>
   = Symbol('filesById')
 
 export const mentionItemsKey: InjectionKey<
