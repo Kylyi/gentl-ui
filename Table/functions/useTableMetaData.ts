@@ -222,7 +222,7 @@ export async function useTableMetaData(props: ITableProps) {
 
             // We extend the column with the data from the API when found
             if (foundColumn) {
-              foundColumn.setDataType(col.type)
+              foundColumn.setDataType(col.type, foundColumn.comparator)
 
               EXTENDABLE_COLUMN_PROPERTIES.forEach(prop => {
                 if (col[prop] !== undefined) {
@@ -254,7 +254,7 @@ export async function useTableMetaData(props: ITableProps) {
             )
 
             if (foundColumn) {
-              col.setDataType(foundColumn.type)
+              col.setDataType(foundColumn.type, foundColumn.comparator)
             }
 
             return col
