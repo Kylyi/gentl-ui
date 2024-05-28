@@ -98,6 +98,7 @@ defineExpose({
       totalRowsRef: Ref<number | undefined>
       tableRowHeight: typeof tableRowHeight.value
       scrollerEl: typeof scrollerEl.value
+      refreshData: () => void
     }) => void
   ) => {
     fnc({
@@ -106,6 +107,7 @@ defineExpose({
       totalRowsRef: totalRows,
       tableRowHeight: tableRowHeight.value,
       scrollerEl: scrollerEl.value,
+      refreshData: () => refreshData(true)
     })
   },
 })
