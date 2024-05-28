@@ -254,7 +254,7 @@ const isSinkVisible = computed(() => {
 })
 
 // Uploaded files that the Wysiwyg must have access to, by their path
-const filesById = computed(() => {
+const filesByPath = computed(() => {
   return props.files?.reduce((agg, file) => {
     agg[file.path] = file
 
@@ -288,7 +288,7 @@ function syncFilesHTML() {
 }
 
 provide(editorKey, editor)
-provide(filesByFilepathKey, filesById)
+provide(filesByFilepathKey, filesByPath)
 provide('removeElement', removeElement)
 provide('syncFilesHTML', syncFilesHTML)
 

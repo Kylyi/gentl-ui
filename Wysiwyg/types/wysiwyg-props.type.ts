@@ -1,17 +1,11 @@
 import type { CSSProperties } from 'vue'
-import { type ImageOptions } from '@tiptap/extension-image'
+import type { ImageOptions } from '@tiptap/extension-image'
 
 // Types
 import type { IInputWrapperProps } from '~/components/Inputs/types/input-wrapper-props.type'
 import type { IWysiwygMentionItem } from '~/components/Wysiwyg/types/wysiwyg-mention-item.type'
 
-type IFile = {
-  id: string | number
-  name: string
-  path: string
-}
-
-export interface IWysiwygProps extends IInputWrapperProps {
+export type IWysiwygProps = {
   allowLink?: boolean
   image?: Partial<ImageOptions> | boolean
   debounce?: number
@@ -41,7 +35,7 @@ export interface IWysiwygProps extends IInputWrapperProps {
   /**
    * The files that are part of the editor
    */
-  files?: Array<Pick<IFile, 'id' | 'name' | 'path'>> | null
+  files?: Pick<IFile, 'id' | 'name' | 'path'>[] | null
 
   /**
    * When true, the editor will replace the mention with whatever value it finds
@@ -49,4 +43,4 @@ export interface IWysiwygProps extends IInputWrapperProps {
    */
   mentionReplace?: boolean
 
-}
+} & IInputWrapperProps
