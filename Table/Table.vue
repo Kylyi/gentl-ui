@@ -307,6 +307,7 @@ onMounted(() => {
       :small-screen="!isBreakpoint"
       :no-lock="noLock"
       :class="{ 'shadow-lg shadow-ca': isScrolled }"
+      :selection-options="selectionOptions"
       @scrolled="handleScrollLeft"
       @resized="scrollerEl?.rerender"
     >

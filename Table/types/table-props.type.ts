@@ -367,7 +367,7 @@ export interface ITableProps {
     /**
      * Whether the table rows have the selection disabled
      */
-    disabled?: boolean
+    disabled?: boolean | ((row: any) => boolean)
   }
 
   /**
