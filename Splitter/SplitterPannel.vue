@@ -10,6 +10,7 @@ const props = defineProps<ISplitterPanelProps>()
 // Layout
 const component = ref<HTMLElement>()
 const slots = useSlots()
+const minSize = toRef(props, 'minSize')
 
 const nestedState = ref<boolean | null>(null)
 const isNested = computed(() => {
@@ -27,16 +28,9 @@ const splitterPanelClass = computed(() => {
   ]
 })
 
-const splitterPanelStyle = computed(() => {
-  const basis = props.size ? `calc(${props.size}% - 4px)` : '1 1 auto'
-  return {
-    flexBasis: basis,
-    minWidth: props.minSize ? `${props.minSize}px` : '0',
-  }
-})
-
 defineExpose({
   getElement: () => component.value,
+  getPanelMinSize: () => minSize.value,
 })
 </script>
 
@@ -44,7 +38,6 @@ defineExpose({
   <div
     ref="component"
     :class="splitterPanelClass"
-    :style="splitterPanelStyle"
   >
     <slot></slot>
   </div>
@@ -52,7 +45,7 @@ defineExpose({
 
 <style scoped lang="scss">
 .splitter-panel {
-  --apply: rounded-custom grow overflow-hidden;
+  --apply: grow overflow-hidden;
 }
 
 .splitter-panel-nested {

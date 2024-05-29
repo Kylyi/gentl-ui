@@ -12,6 +12,7 @@ import SplitterPanel from '~/components/Splitter/SplitterPannel.vue'
 
 // Utils
 import { useDomUtils } from '~/components/Splitter/functions/useDomUtils'
+import { useSplitterUtils } from '~/components/Splitter/functions/useSplitterUtils'
 
 const props = withDefaults(defineProps<ISplitterProps>(), {
   gutterSize: 4,
@@ -22,6 +23,7 @@ const emits = defineEmits<ISplitterEmit>()
 // Utils
 const slots = useSlots()
 const { getOuterHeight, getOuterWidth } = useDomUtils()
+const { validatePanelReszie } = useSplitterUtils()
 
 // Layout
 const panels = computed(() => {
@@ -66,6 +68,7 @@ const gutterStyle = computed<CSSProperties>(() => ({
   [horizontal.value ? 'width' : 'height']: `${props.gutterSize}px`,
 }))
 
+// Listeners
 const mouseMoveListener = ref<(event: MouseEvent) => void>()
 const mouseUpListener = ref<(event: MouseEvent) => void>()
 
@@ -181,23 +184,30 @@ function onResize(
   }
 
   // TODO: Validate before resizing
-  if (prevPanelEl.value) {
-    prevPanelEl.value.style.flexBasis = `calc(${newPrevPanelSize}% -
+  if (
+    validatePanelReszie(
+      newPrevPanelSize,
+      newNextPanelSize,
+      prevPanelIndex.value,
+      panels.value
+    )
+  ) {
+    if (prevPanelEl.value && nextPanelEl.value) {
+      prevPanelEl.value.style.flexBasis = `calc(${newPrevPanelSize}% -
     ${(panels.value.length - 1) * props.gutterSize}px)`
-  }
 
-  if (nextPanelEl.value) {
-    nextPanelEl.value.style.flexBasis = `calc(${newNextPanelSize}% -
+      nextPanelEl.value.style.flexBasis = `calc(${newNextPanelSize}% -
      ${(panels.value.length - 1) * props.gutterSize}px)`
-  }
+    }
 
-  if (!isNil(newPrevPanelSize) && !isNil(newNextPanelSize)) {
-    panelSizes.value[prevPanelIndex.value] = newPrevPanelSize
-    panelSizes.value[prevPanelIndex.value + 1] = newNextPanelSize
-    prevSize.value = Number.parseFloat(newPrevPanelSize.toString()).toFixed(4)
-  }
+    if (!isNil(newPrevPanelSize) && !isNil(newNextPanelSize)) {
+      panelSizes.value[prevPanelIndex.value] = newPrevPanelSize
+      panelSizes.value[prevPanelIndex.value + 1] = newNextPanelSize
+      prevSize.value = Number.parseFloat(newPrevPanelSize.toString()).toFixed(4)
+    }
 
-  emits('resize', { originalEvent: event, sizes: panelSizes.value })
+    emits('resize', { originalEvent: event, sizes: panelSizes.value })
+  }
 }
 
 function onResizeEnd(event: TouchEvent | MouseEvent) {
@@ -235,7 +245,17 @@ function bindMouseListeners() {
   }
 }
 
-function unbindMouseListeners() {}
+function unbindMouseListeners() {
+  if (mouseMoveListener.value) {
+    document.removeEventListener('mousemove', mouseMoveListener.value)
+    mouseMoveListener.value = undefined
+  }
+
+  if (mouseUpListener.value) {
+    document.removeEventListener('mouseup', mouseUpListener.value)
+    mouseUpListener.value = undefined
+  }
+}
 
 function clear() {
   // Clear dragging state
@@ -261,6 +281,10 @@ function clear() {
   // Clear previous panel index
   prevPanelIndex.value = 0
 }
+
+// Lifecycle
+onMounted(() => {})
+onUnmounted(() => {})
 </script>
 
 <template>
@@ -301,17 +325,17 @@ function clear() {
 
 <style scoped lang="scss">
 .p-splitter {
-  --apply: flex flex-row flex-nowrap gap-x-1;
+  --apply: flex flex-row flex-nowrap;
 }
 
 .p-splitter-vertical {
-  --apply: flex flex-col gap-y-1;
+  --apply: flex flex-col;
 }
 
 // Splitter gutter
 .p-splitter-gutter {
   --apply: flex shrink-0 grow-0 items-center justify-center cursor-col-resize
-    bg-gray-600 rounded-custom;
+    bg-gray-600;
 }
 
 .p-splitter-horizontal.p-splitter-resizing {
