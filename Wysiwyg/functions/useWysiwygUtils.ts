@@ -1,3 +1,5 @@
+import { mergeAttributes, Node } from '@tiptap/core'
+import { VueNodeViewRenderer } from '@tiptap/vue-3'
 import { type SuggestionKeyDownProps } from '@tiptap/suggestion'
 
 // Functions
@@ -8,6 +10,9 @@ import { mentionEntityKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
 
 // Constants
 import { mentionItemsMap } from '~/components/Wysiwyg/constants/resolve-values.map'
+
+// Components
+import WysiwygFile from '~/components/Wysiwyg/WysiwygFile.vue'
 
 export function useWysiwygUtils() {
   const { formatValue } = useValueFormatterUtils()
@@ -42,7 +47,45 @@ export function useWysiwygUtils() {
     })
   }
 
+  function FileComponent() {
+    return Node.create({
+      name: 'wysiwygFile',
+      group: 'inline', // Change this to inline
+      inline: true, // Ensure the node is inline
+      draggable: true,
+      atom: true,
+      parseHTML() {
+        return [
+          { tag: 'wysiwyg-file' },
+        ]
+      },
+      renderHTML({ HTMLAttributes }) {
+        return [
+          'wysiwyg-file',
+          mergeAttributes(
+            HTMLAttributes,
+            { 'data-type': 'draggable-item' }
+          )
+        ]
+      },
+      addAttributes() {
+        return {
+          uuid: {
+            default: '',
+          },
+          files: {
+            default: '',
+          }
+        }
+      },
+      addNodeView() {
+        return VueNodeViewRenderer(WysiwygFile)
+      },
+    })
+  }
+
   return {
     resolveValues,
+    FileComponent
   }
 }

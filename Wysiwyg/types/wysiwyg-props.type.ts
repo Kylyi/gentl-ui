@@ -1,17 +1,18 @@
 import type { CSSProperties } from 'vue'
-import { type ImageOptions } from '@tiptap/extension-image'
+import type { ImageOptions } from '@tiptap/extension-image'
 
-// TYPES
+// Types
 import type { IInputWrapperProps } from '~/components/Inputs/types/input-wrapper-props.type'
 import type { IWysiwygMentionItem } from '~/components/Wysiwyg/types/wysiwyg-mention-item.type'
 
-export interface IWysiwygProps extends IInputWrapperProps {
+export type IWysiwygProps = {
   allowLink?: boolean
-  image?: Partial<ImageOptions>
+  image?: Partial<ImageOptions> | boolean
   debounce?: number
   editorClass?: ClassType
   editorStyle?: CSSProperties
   emptyValue?: any
+  fileUpload?: boolean
   hint?: string
   name?: string
   noSink?: boolean
@@ -27,9 +28,19 @@ export interface IWysiwygProps extends IInputWrapperProps {
   autoResolveMentions?: boolean
 
   /**
+   * When true, editor will automatically upload the files and adjust the html
+   */
+  autoResolveFiles?: boolean
+
+  /**
+   * The files that are part of the editor
+   */
+  files?: Pick<IFile, 'id' | 'name' | 'path'>[] | null
+
+  /**
    * When true, the editor will replace the mention with whatever value it finds
    * This will override the mention value!
    */
   mentionReplace?: boolean
 
-}
+} & IInputWrapperProps

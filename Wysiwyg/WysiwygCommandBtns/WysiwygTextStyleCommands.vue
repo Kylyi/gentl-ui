@@ -1,48 +1,56 @@
 <script setup lang="ts">
-import { Editor } from '@tiptap/vue-3'
+import { editorKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
 
-type IProps = {
-  editor: Editor
+// Layout
+const editor = inject(editorKey)
+
+// Bold & Italic & Underline
+const isBold = computed(() => toValue(editor)?.isActive('bold'))
+const isItalic = computed(() => toValue(editor)?.isActive('italic'))
+const isUnderline = computed(() => toValue(editor)?.isActive('underline'))
+
+function handleToggleBold() {
+  toValue(editor)?.chain().focus().toggleBold().run()
 }
 
-const props = defineProps<IProps>()
-defineEmits<{
-  (e: 'set-heading', value: boolean): void
-  (e: 'toggle-bold'): void
-  (e: 'toggle-italic'): void
-  (e: 'toggle-underline'): void
-}>()
+function handleToggleUnderline() {
+  toValue(editor)?.chain().focus().toggleUnderline().run()
+}
 
-// BOLD & ITALIC & UNDERLINE
-const isBold = computed(() => props.editor.isActive('bold'))
-const isItalic = computed(() => props.editor.isActive('italic'))
-const isUnderline = computed(() => props.editor.isActive('underline'))
+function handleToggleItalic() {
+  toValue(editor)?.chain().focus().toggleItalic().run()
+}
 </script>
 
 <template>
   <div flex="~">
+    <!-- Bold -->
     <Btn
       icon="i-material-symbols:format-bold-rounded"
       size="sm"
       color="ca"
       :class="{ 'is-active': isBold }"
-      @click.stop.prevent="$emit('toggle-bold')"
+      @click.stop.prevent="handleToggleBold"
       @mousedown.stop.prevent
     />
+
+    <!-- Italic -->
     <Btn
       icon="i-material-symbols:format-italic-rounded !w-5 !h-5 m-b-1px"
       size="sm"
       color="ca"
       :class="{ 'is-active': isItalic }"
-      @click="$emit('toggle-italic')"
+      @click.stop.prevent="handleToggleItalic"
       @mousedown.stop.prevent
     />
+
+    <!-- Underline -->
     <Btn
       icon="i-material-symbols:format-underlined-rounded"
       size="sm"
       color="ca"
       :class="{ 'is-active': isUnderline }"
-      @click="$emit('toggle-underline')"
+      @click.stop.prevent="handleToggleUnderline"
       @mousedown.stop.prevent
     />
   </div>

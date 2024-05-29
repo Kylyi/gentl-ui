@@ -5,6 +5,7 @@ import { config } from '~/components/config/components-config'
 import type { IListProps } from '~/components/List/types/list-props.type'
 import type { IListFetchOptions } from '~/components/List/types/list-fetch.type'
 import type { IItemToBeAdded } from '~/components/List/types/list-item-to-add.type'
+import type { IListDraggedItem } from '~/components/List/types/list-dragged-item.type'
 
 // Functions
 import { useList } from '~/components/List/functions/useList'
@@ -16,6 +17,7 @@ import { useListDragAndDrop } from '~/components/List/functions/useListDragAndDr
 // Components
 import ListVirtualContainer from '~/components/List/ListVirtualContainer.vue'
 import ListContainer from '~/components/List/ListContainer.vue'
+import { useListUtils } from '~/components/List/functions/useListUtils'
 
 const props = withDefaults(defineProps<IListProps>(), {
   clearable: true,
@@ -40,13 +42,18 @@ defineEmits<{
     e: 'before-search',
     payload: { hasExactMatch: boolean; search: string }
   ): void
+  (e: 'drag:start', item: IListDraggedItem): void
+  (e: 'drag:end', item: IListDraggedItem): void
 }>()
+
+// Utils
+const { handleMoveItem, handleMoveItems } = useListUtils()
 
 // Layout
 const containerEl = ref<InstanceType<typeof ListVirtualContainer>>()
 const items =
   props.items !== undefined
-    ? (useVModel(props, 'items') as Ref<any>)
+    ? (useVModel(props, 'items') as Ref<any[]>)
     : ref<any[]>([])
 
 const ContainerComponent = computed(() => {
@@ -67,13 +74,15 @@ defineExpose({
     searchEl.value?.clear()
     search.value = ''
   },
-  loadData: (search?: string, options?: IListFetchOptions) =>
-    loadData(search, options),
+  loadData: (search?: string, options?: IListFetchOptions) => loadData(search, options),
   refresh: () => refresh(),
   handleKey: (
     ev: KeyboardEvent,
     options?: { force?: boolean; repeated?: boolean }
   ) => handleKey(ev, options),
+  moveItem: handleMoveListItemById,
+  moveItems: handleMoveListItemsById,
+  getListItems: () => items
 })
 
 const {
@@ -96,11 +105,30 @@ const {
 } = useList(items, props, containerEl)
 
 // D'n'D
-const { listElRect } = useListDragAndDrop(listEl as Ref<HTMLDivElement>)
+const { draggedItem, listElRect } = useListDragAndDrop(listEl as Ref<HTMLDivElement>)
 
 useResizeObserver(listEl, entries => {
   listElRect.value = listEl.value?.getBoundingClientRect()
 })
+
+// Move item(s)
+function handleMoveListItemById(payload: {
+  id: string | number
+  targetId: string | number
+  direction: 'above' | 'below'
+}) {
+  handleMoveItem({ itemsRef: items, ...payload })
+}
+
+function handleMoveListItemsById(
+  payload: {
+    ids: Array<string | number>
+    targetId: string | number
+    direction: 'above' | 'below'
+  }
+) {
+  handleMoveItems({ itemsRef: items, ...payload })
+}
 
 // When `noSearch` is used, we fake the focus on the container to allow
 // keyboard navigation
@@ -197,6 +225,7 @@ onMounted(() => {
               v-else
               name="option-group"
               :item="option"
+              :idx="index"
             />
           </template>
         </ListRow>
@@ -217,12 +246,33 @@ onMounted(() => {
     />
 
     <slot name="below" />
+
+    <!-- Drop indicator -->
+    <div
+      v-if="draggedItem?.dropIndicatorPos"
+      class="drop-indicator"
+      :style="{
+        left: `${draggedItem.dropIndicatorPos.x ?? 0}px`,
+        top: `${draggedItem.dropIndicatorPos.y ?? 0}px`,
+        width: `${draggedItem.dropIndicatorPos.width ?? 0}px`,
+      }"
+    >
+      <div
+        class="drop-indicator__icon"
+        :class="{
+          'rotate-y-180 -top-3': draggedItem.direction === 'below',
+          'rotate-180 -top-7px': draggedItem.direction === 'above',
+        }"
+      >
+        <div i-tabler:arrow-back />
+      </div>
+    </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .list {
-  --apply: flex flex-col overflow-auto;
+  --apply: relative flex flex-col overflow-auto;
 
   &.is-bordered {
     --apply: border-1 border-ca rounded-3;
@@ -258,6 +308,14 @@ onMounted(() => {
 .selector {
   .no-data {
     --apply: p-x-3;
+  }
+}
+
+.drop-indicator {
+  --apply: fixed h-2px bg-primary w-full rounded-full pointer-events-none z-$zMax;
+
+  &__icon {
+    --apply: w-5 h-5 relative -left-5 color-primary bg-white dark:bg-darker rounded-custom;
   }
 }
 </style>

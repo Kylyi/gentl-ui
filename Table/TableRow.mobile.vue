@@ -5,7 +5,10 @@ import { NuxtLink } from '#components'
 import { type ITableProps } from '~/components/Table/types/table-props.type'
 
 // Injections
-import { tableIsSelectedRowKey } from '~/components/Table/provide/table.provide'
+import {
+  tableIsSelectedRowKey,
+  tableSelectRowKey,
+} from '~/components/Table/provide/table.provide'
 
 type IProps = Pick<
   ITableProps,
@@ -26,6 +29,7 @@ const props = withDefaults(defineProps<IProps>(), {
 })
 
 // Injections
+const handleSelectRow = injectStrict(tableSelectRowKey, () => {})
 const isSelectedRow = injectStrict(tableIsSelectedRowKey, () => false)
 
 // Layout
@@ -33,9 +37,15 @@ const dataColumns = computed(() => {
   return props.columns?.filter(col => !col.isHelperCol && !col.hidden) ?? []
 })
 
-const isEditable = computedEager(() => {
+const isEditable = computed(() => {
   return props.editable === true || props.editable === 'cards'
 })
+
+function selectRow(row: any) {
+  if (!props.selectionOptions?.disabled) {
+    handleSelectRow(row)
+  }
+}
 </script>
 
 <template>
@@ -58,6 +68,7 @@ const isEditable = computedEager(() => {
       ]"
       :data-split-row-idx="idx"
       :to="to?.(row)"
+      @click="selectRow(row)"
     >
       <slot :row="row">
         <slot

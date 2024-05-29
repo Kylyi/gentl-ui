@@ -1,16 +1,12 @@
 <script setup lang="ts">
-import { Editor } from '@tiptap/vue-3'
+// Injections
+import { editorKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
 
 // Components
 import Menu from '~/components/Menu/Menu.vue'
 
-type IProps = {
-  editor: Editor
-}
-
-const props = defineProps<IProps>()
-
 // Layout
+const editor = inject(editorKey)
 const menuEl = ref<InstanceType<typeof Menu>>()
 const link = ref({
   url: '',
@@ -25,22 +21,28 @@ function reset() {
 }
 
 function createLink() {
-  const { href } = props.editor.getAttributes('link') ?? {}
-  const { selection } = props.editor.state
-  const linkNode = props.editor.view.state.doc.nodeAt(selection.$from.pos)
+  const _editor = toValue(editor)
+
+  if (!_editor) {
+    return
+  }
+
+  const { href } = _editor.getAttributes('link') ?? {}
+  const { selection } = _editor.state
+  const linkNode = _editor.view.state.doc.nodeAt(selection.$from.pos)
 
   link.value.url = href ?? ''
   link.value.text = linkNode?.text ?? ''
 }
 
 function unlink() {
-  props.editor.chain().focus().unsetLink().run()
+  toValue(editor)?.chain().focus().unsetLink().run()
   menuEl.value?.hide()
 }
 
 function handleSubmit() {
-  props.editor
-    .chain()
+  toValue(editor)
+    ?.chain()
     .focus()
     .insertContent(
       `<a href="${link.value.url}" class="link">${link.value.text}</a>&nbsp;`,
@@ -61,7 +63,7 @@ function handleSubmit() {
     icon="i-ph:link"
     size="sm"
     color="ca"
-    :class="{ 'is-active': editor.isActive('link') }"
+    :class="{ 'is-active': editor?.isActive('link') }"
     @click.stop.prevent="createLink"
     @mousedown.stop.prevent
   >
@@ -79,7 +81,7 @@ function handleSubmit() {
       >
         <template #submit-start>
           <Btn
-            v-if="editor.isActive('link')"
+            v-if="editor?.isActive('link')"
             preset="CLOSE"
             :label="$t('general.cancel')"
             @click="unlink"

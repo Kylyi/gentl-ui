@@ -2,7 +2,11 @@
 import type { IListDraggedItem } from '~/components/List/types/list-dragged-item.type'
 
 // Injections
-import { listDraggedItemKey } from '~/components/List/provide/list.provide'
+import {
+  listDraggedItemKey,
+  listEmitDragEndEventKey,
+  listEmitDragStartEventKey
+} from '~/components/List/provide/list.provide'
 
 // Constants
 const GROUP_ROW_TITLE_HEIGHT = 38
@@ -11,10 +15,14 @@ const GROUP_ROW_CONTROLS_HEIGHT = -38
 export function useListDragAndDrop(
   listEl: Ref<HTMLDivElement>
 ) {
+  const self = getCurrentInstance()!
   const draggedItem = ref<IListDraggedItem>()
   const listElRect = ref<DOMRect>()
 
+
   provide(listDraggedItemKey, draggedItem)
+  provide(listEmitDragStartEventKey, payload => self.emit('drag:start', payload))
+  provide(listEmitDragEndEventKey, payload => self.emit('drag:end', payload))
 
   const { y: scrollY } = useScroll(listEl, {
     onScroll: () => handleDragging(),
@@ -36,15 +44,14 @@ export function useListDragAndDrop(
     const els = document.elementsFromPoint(posX, posY)
     const listRow = els.find(el => el.classList.contains('list-row')) as HTMLElement
     const listRowPath = listRow?.dataset.path
-
     // When no list row is found, we don't really do anything
     // We also do nothing when we're dragging over the same row
-    // We also do nothing when we're dragging over descendants of the dragged item
+    // We also do nothing when we're dragging over descendants of the dragged item (only if nested)
     if (
       !listRow ||
       listRow.classList.contains('no-dragover') ||
-      listRowPath === draggedItem.value?.row.path ||
-      listRowPath?.startsWith(draggedItem.value?.path || '')
+      listRowPath === draggedItem.value?.path ||
+      (listRowPath?.includes('.') && listRowPath?.startsWith(draggedItem.value?.path || ''))
     ) {
       return
     }
@@ -52,6 +59,10 @@ export function useListDragAndDrop(
     // When hovering over group, we need to adjust the position of drop
     // indicator a bit because the group also has a controls row and the title row
     const isGroup = listRow?.classList.contains('list-group')
+
+    // @ts-expect-error - TS doesn't know about our custom functions
+    const draggedOverItem = listRow?.getItem()
+    draggedItem.value!.target = draggedOverItem
 
     const {
       x: rowX,
@@ -71,12 +82,14 @@ export function useListDragAndDrop(
       }
 
       draggedItem.value!.dropIndicatorPos = {
-        x: rowX + offset.x - (listElRect.value?.x ?? 0),
-        y: rowY + offset.y + scrollY.value - (listElRect.value?.y ?? 0),
+        // x: rowX + offset.x - (listElRect.value?.x ?? 0),
+        // y: rowY + offset.y + scrollY.value - (listElRect.value?.y ?? 0),
+        x: rowX + offset.x,
+        y: rowY + offset.y + scrollY.value,
         width: rowWidth,
       }
 
-      draggedItem.value!.dropDirection = 'above'
+      draggedItem.value!.direction = 'above'
     }
 
     // When we hover in bottom side of the item, we indicate that we want to
@@ -88,17 +101,14 @@ export function useListDragAndDrop(
       }
 
       draggedItem.value!.dropIndicatorPos = {
-        x: rowX + offset.x - (listElRect.value?.x ?? 0),
-        y:
-          rowY +
-          offset.y +
-          scrollY.value +
-          rowHeight -
-          (listElRect.value?.y ?? 0),
+        // x: rowX + offset.x - (listElRect.value?.x ?? 0),
+        // y: rowY + offset.y + scrollY.value + rowHeight - (listElRect.value?.y ?? 0),
+        x: rowX + offset.x,
+        y: rowY + offset.y + scrollY.value + rowHeight,
         width: rowWidth,
       }
 
-      draggedItem.value!.dropDirection = 'below'
+      draggedItem.value!.direction = 'below'
     }
 
     draggedItem.value!.newPathIsGroup = isGroup

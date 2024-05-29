@@ -200,6 +200,17 @@ export interface ITableProps {
    */
   nonSavableSettings?: Array<'columns' | 'filters' | 'sorting' | 'public'>
 
+  paginationOptions?: {
+    pageSize?: number
+    page?: number
+
+    /**
+     * When scrolling to the bottom of the table, this amount of rows
+     * will trigger the `loadMore` event
+     */
+    rowsCountTrigger?: number
+  }
+
   /**
    * Defines visuals for the separators in the table
    */
@@ -356,7 +367,7 @@ export interface ITableProps {
     /**
      * Whether the table rows have the selection disabled
      */
-    disabled?: boolean
+    disabled?: boolean | ((row: any) => boolean)
   }
 
   /**

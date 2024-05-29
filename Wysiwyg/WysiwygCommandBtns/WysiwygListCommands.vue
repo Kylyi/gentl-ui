@@ -1,38 +1,41 @@
 <script setup lang="ts">
-import { Editor } from '@tiptap/vue-3'
+// Injections
+import { editorKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
 
-type IProps = {
-  editor: Editor
+// Layout
+const editor = inject(editorKey)
+
+const isBulletedList = computed(() => toValue(editor)?.isActive('bulletList'))
+const isNumberedList = computed(() => toValue(editor)?.isActive('orderedList'))
+
+function handleToggleBullettedList() {
+  toValue(editor)?.chain().focus().toggleBulletList().run()
 }
 
-const props = defineProps<IProps>()
-
-defineEmits<{
-  (e: 'toggle-bulleted-list'): void
-  (e: 'toggle-numbered-list'): void
-}>()
-
-// List
-const isBulletedList = computed(() => props.editor.isActive('bulletList'))
-const isNumberedList = computed(() => props.editor.isActive('orderedList'))
+function handleToggleNumberedList() {
+  toValue(editor)?.chain().focus().toggleOrderedList().run()
+}
 </script>
 
 <template>
   <div flex="~">
+    <!-- Bullet list -->
     <Btn
       icon="i-material-symbols:format-list-bulleted-rounded"
       size="sm"
       color="ca"
       :class="{ 'is-active': isBulletedList }"
-      @click.stop.prevent="$emit('toggle-bulleted-list')"
+      @click.stop.prevent="handleToggleBullettedList"
       @mousedown.stop.prevent
     />
+
+    <!-- Numbered list -->
     <Btn
       icon="i-material-symbols:format-list-numbered-rounded"
       size="sm"
       color="ca"
       :class="{ 'is-active': isNumberedList }"
-      @click.stop.prevent="$emit('toggle-numbered-list')"
+      @click.stop.prevent="handleToggleNumberedList"
       @mousedown.stop.prevent
     />
   </div>

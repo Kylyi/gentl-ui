@@ -76,7 +76,7 @@ export function useList(
     isSelected: (option: any) => {
       const key = getKey(option)
 
-      return selectedByKey.value[key]
+      return !!selectedByKey.value[key]
     }
   }
 
@@ -108,7 +108,7 @@ export function useList(
     const itemsCloned = [...items.value, ...addedItems.value]
 
     return itemsCloned.map(item => {
-      const itemPartial: Record<string, any> = {
+      const itemPartial: IItem = {
         _ref: item,
       }
 
@@ -139,10 +139,11 @@ export function useList(
     new SortItem<any>({
       name: '_label',
       sort: 'asc',
-      format: row =>
-        typeof props.itemLabel === 'function'
+      format: row => {
+        return typeof props.itemLabel === 'function'
           ? props.itemLabel(row)
-          : get(row, props.itemLabel),
+          : get(row, props.itemLabel)
+      }
     }),
   ]
 
@@ -243,6 +244,12 @@ export function useList(
     if ('_isNew' in option.ref && option.ref._isNew) {
       !props.noLocalAdd && addItem(option.ref)
 
+      if (!props.noLocalAdd) {
+        addItem(option.ref)
+      } else {
+        self.emit('update:addedItems', [option.ref])
+      }
+
       option.ref._isNew = false
       option.ref._isCreate = true
 
@@ -338,7 +345,7 @@ export function useList(
   const arr = ref<Array<IGroupRow | IListItem>>([])
   const isPreventFetchData = refAutoReset(false, 150)
 
-  provide(listItemsKey, arr)
+  provide(listItemsKey, items)
 
   // Extended search
   const extendedSearch = computed(() => {
@@ -445,18 +452,19 @@ export function useList(
       (fuseOptions.fuseOptions?.shouldSort &&
         highlightedItems.length !== items.value.length)
 
+
     const resultsSorted = shouldNotSort
       ? highlightedItems
       : await sortData(
-          highlightedItems,
-          (props.sortBy || defaultSortBy).map(s => {
-            return new SortItem({
-              ...s,
-              format: ({ ref }) => s.format?.(ref) || get(ref, s.field),
-            })
-          }),
-          groupBy
-        )
+        highlightedItems,
+        (props.sortBy || defaultSortBy).map(s => {
+          return new SortItem({
+            ...s,
+            format: ({ ref }) => s.format?.(ref) || get(ref, s.field),
+          })
+        }),
+        groupBy
+      )
 
     const groupedArray = await groupData(
       resultsSorted,
@@ -631,6 +639,7 @@ export function useList(
     listRowProps,
     search,
     selectedByKey,
+    itemsExtended,
     isSelected,
     handleKey,
     handleMouseOver,

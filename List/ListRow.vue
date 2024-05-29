@@ -13,23 +13,25 @@ const props = withDefaults(defineProps<IListRowProps>(), {
 
 const DEFAULT_ROW_HEIGHT = 40
 
+const item = toRef(props, 'item')
 const rowInfo = computed(() => {
   const data = props.item
   const ref = typeof data.ref === 'object' ? data.ref || {} : {}
   const isGroup = 'isGroup' in data
+  const isReorderable = typeof props.reorderable === 'function'
+    ? props.reorderable(ref)
+    : props.reorderable
 
   return {
     isGroup,
     isNew: '_isNew' in ref && ref._isNew,
     isCreate: '_isCreate' in ref && ref._isCreate,
+    isReorderable,
     _style: {
       minHeight: `${props.rowHeight || DEFAULT_ROW_HEIGHT}px`,
       paddingLeft: isGroup
         ? `${props.basePadding + data.groupIdx * props.paddingByLevel}px`
-        : `${
-            props.basePadding +
-            (props.groupBy || []).length * props.paddingByLevel
-          }px`,
+        : `${props.basePadding + (props.groupBy || []).length * props.paddingByLevel}px`,
     },
   }
 })
@@ -39,8 +41,11 @@ const {
   draggableEl,
   handleMouseDown,
   handleTouchStart
-} = useListItemDragAndDrop(props.item)
+} = useListItemDragAndDrop(item)
 
+function getItem() {
+  return item.value
+}
 </script>
 
 <template>
@@ -62,12 +67,17 @@ const {
         'item--new': rowInfo.isNew,
         'item--create': rowInfo.isCreate,
         'is-disabled': isDisabled,
+        'no-dragover': !rowInfo.isReorderable
       },
     ]"
     @mousedown="handleMouseDown"
     @touchstart="handleTouchStart"
+    .getItem="getItem"
   >
-    <ListMoveHandler v-if="reorderable" />
+    <ListMoveHandler
+      v-if="rowInfo.isReorderable"
+      class="self-start m-t-2.5"
+    />
 
     <slot :option="item">
       <div

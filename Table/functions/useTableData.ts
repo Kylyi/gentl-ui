@@ -180,8 +180,9 @@ export function useTableData(
 
     // When using split rows, we need to adjust the `visibleEndItem` index
     const modifier = props.splitRow ?? 1
+    const rowsCountTrigger = props.paginationOptions?.rowsCountTrigger ?? 20
 
-    const isAtBottom = visibleEndItem.index * modifier >= rows.value.length - 20
+    const isAtBottom = visibleEndItem.index * modifier >= rows.value.length - rowsCountTrigger
 
     if (hasMore.value && isAtBottom && !fetchMore.value) {
       fetchMore.value = true
@@ -191,7 +192,10 @@ export function useTableData(
 
   // Data fetching
   const pagination = computed(() => {
-    const { page, pageSize } = config.table.defaultPagination
+    const {
+      page = config.table.defaultPagination.page,
+      pageSize = config.table.defaultPagination.pageSize,
+    } = props.paginationOptions ?? {}
 
     const take = tableState.value.pageSize || pageSize
     const skip = ((tableState.value.page || page) - 1) * take
