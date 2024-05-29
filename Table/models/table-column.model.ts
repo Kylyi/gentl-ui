@@ -542,7 +542,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     // @ts-expect-error - defaultComparators aren't supported for all dataTypes
     this.comparators = col.comparators ?? defaultComparatorsByDataType[this.dataType]
     // @ts-expect-error - defaultComparators aren't supported for all dataTypes
-    this.comparator = col.comparator ?? defaultComparatorByDataType[this.dataType]
+    this.comparator = col.comparator ?? defaultComparatorByDataType[this.dataType] ?? this.comparator
     this.extraComparators = col.extraComparators
     this.noFilterSort = col.noFilterSort ?? false
     this.customDbQueryFnc = col.customDbQueryFnc
