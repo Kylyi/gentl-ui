@@ -148,7 +148,7 @@ export async function useTableMetaData(props: ITableProps) {
         layout.value =
           _layout && !localStorageLayoutSchema
             ? { ..._layout, preventLayoutReset: true }
-            : undefined
+            : localStorageLayoutSchema ? { schema: localStorageLayoutSchema } : undefined
 
         // Project specific
         if (_layout?.viewCode) {
