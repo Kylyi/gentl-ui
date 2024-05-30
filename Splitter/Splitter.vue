@@ -56,7 +56,7 @@ const startPos = ref<number>(0)
 const dragging = ref(false)
 
 const splitterEl = ref<HTMLElement>()
-const gutterEl = ref<HTMLElement[]>()
+const gutterEls = ref<HTMLElement[]>()
 const gutterElement = ref<HTMLElement>()
 
 const splitterClasses = computed(() => {
@@ -143,8 +143,8 @@ function onResizeStart(
   // [7]- Emit event
   emits('resizestart', { originalEvent: event, sizes: panelSizes.value })
 
-  if (gutterEl.value) {
-    gutterEl.value[index].setAttribute('data-p-gutter-resizing', 'true')
+  if (gutterEls.value) {
+    gutterEls.value[index].setAttribute('data-p-gutter-resizing', 'true')
   }
 
   splitterEl.value?.setAttribute('data-p-resizing', 'true')
@@ -165,15 +165,13 @@ function onResize(
       newPrevPanelSize = (100 * (prevPanelSize?.value - step)) / size.value
       newNextPanelSize = (100 * (nextPanelSize?.value + step)) / size.value
     }
-  } else {
-    if (event instanceof MouseEvent) {
-      if (horizontal.value) {
-        newPos =
-          (event.pageX * 100) / size.value - (startPos.value * 100) / size.value
-      } else {
-        newPos =
-          (event.pageY * 100) / size.value - (startPos.value * 100) / size.value
-      }
+  } else if (event instanceof MouseEvent) {
+    if (horizontal.value) {
+      newPos =
+        (event.pageX * 100) / size.value - (startPos.value * 100) / size.value
+    } else {
+      newPos =
+        (event.pageY * 100) / size.value - (startPos.value * 100) / size.value
     }
 
     if (!isNil(newPos)) {
@@ -185,8 +183,8 @@ function onResize(
   // TODO: Validate before resizing
   if (
     validatePanelReszie(
-      newPrevPanelSize,
-      newNextPanelSize,
+      newPrevPanelSize as number,
+      newNextPanelSize as number,
       prevPanelIndex.value,
       panels.value
     )
@@ -214,7 +212,7 @@ function onResizeEnd(event: TouchEvent | MouseEvent) {
   // [2]- Emit event
   emits('resizeend', { originalEvent: event, sizes: panelSizes.value })
   // [3]- For each gutter, set the resizing state to false
-  gutterEl.value?.forEach(gutter =>
+  gutterEls.value?.forEach(gutter =>
     gutter.setAttribute('data-p-gutter-resizing', 'false')
   )
   // [4]- For the splitter, set the resizing state to false
@@ -339,7 +337,7 @@ onUnmounted(() => {})
       <!-- Gutter (the handler to resise) -->
       <div
         v-if="i !== panels.length - 1"
-        ref="gutterEl"
+        ref="gutterEls"
         role="separator"
         tabindex="-1"
         class="splitter-gutter"
