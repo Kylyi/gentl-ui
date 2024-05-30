@@ -19,7 +19,6 @@ export function useSplitterUtils() {
     }
 
     const prevPanelProps = panels[prevPanelIndex].props
-    console.log('prevPanelProps', prevPanelProps['min-size'])
 
     if (
       prevPanelProps &&
@@ -30,7 +29,6 @@ export function useSplitterUtils() {
     }
 
     const newPanelProps = panels[prevPanelIndex + 1].props
-    console.log('newPanelProps', newPanelProps['min-size'])
 
     if (
       newPanelProps &&

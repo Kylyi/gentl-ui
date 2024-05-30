@@ -1,4 +1,3 @@
-<!-- eslint-disable unused-imports/no-unused-vars -->
 <script setup lang="ts">
 // Types
 import { type CSSProperties } from 'vue'
@@ -8,7 +7,7 @@ import type {
 } from '~/components/Splitter/types/splitter.type'
 
 // Components
-import SplitterPanel from '~/components/Splitter/SplitterPannel.vue'
+import SplitterPanel from '~/components/Splitter/SplitterPanel.vue'
 
 // Utils
 import { useDomUtils } from '~/components/Splitter/functions/useDomUtils'
@@ -27,7 +26,7 @@ const { validatePanelReszie } = useSplitterUtils()
 
 // Layout
 const panels = computed(() => {
-  const panels: any[] = []
+  const panels: VNode[] = []
 
   slots.default?.().forEach((child: any) => {
     if (isSplitterPanel(child)) {
@@ -61,7 +60,7 @@ const gutterEl = ref<HTMLElement[]>()
 const gutterElement = ref<HTMLElement>()
 
 const splitterClasses = computed(() => {
-  return ['p-splitter', `p-splitter-${props.layout}`]
+  return ['splitter', `splitter-${props.layout}`]
 })
 
 const gutterStyle = computed<CSSProperties>(() => ({
@@ -283,7 +282,41 @@ function clear() {
 }
 
 // Lifecycle
-onMounted(() => {})
+onMounted(() => {
+  // TODO: Local storage
+  if (panels.value && panels.value.length) {
+    const initialized = false
+
+    if (!initialized) {
+      if (splitterEl.value) {
+        // [1]- Get all current splitter panels of the main splitter
+        const children = [...splitterEl.value.children].filter(child =>
+          (child as HTMLElement).classList.contains('splitter-panel')
+        ) as HTMLElement[]
+
+        const _panelSizes: number[] = []
+        /**
+         * [2]- Setting the size of each panel
+         */
+        panels.value.forEach((panel, i) => {
+          const panelInitialSize =
+            panel.props && panel.props.size ? panel.props.size : null
+
+          const panelSize = panelInitialSize || 100 / panels.value.length
+
+          _panelSizes[i] = panelSize
+          children[i].style.flexBasis = `calc(${panelSize}% - ${
+            (panels.value.length - 1) * props.gutterSize
+          }px)`
+        })
+
+        panelSizes.value = _panelSizes
+        prevSize.value = Number.parseFloat(_panelSizes[0].toString()).toFixed(4)
+      }
+    }
+  }
+})
+
 onUnmounted(() => {})
 </script>
 
@@ -309,12 +342,12 @@ onUnmounted(() => {})
         ref="gutterEl"
         role="separator"
         tabindex="-1"
-        class="p-splitter-gutter"
+        class="splitter-gutter"
         :data-p-gutter-resizing="false"
         @mousedown="onGutterMouseDown($event, i)"
       >
         <div
-          class="p-splitter-gutter-handle"
+          class="splitter-gutter-handle"
           tabindex="0"
           :style="[gutterStyle]"
         ></div>
@@ -324,41 +357,41 @@ onUnmounted(() => {})
 </template>
 
 <style scoped lang="scss">
-.p-splitter {
+.splitter {
   --apply: flex flex-row flex-nowrap;
 }
 
-.p-splitter-vertical {
+.splitter-vertical {
   --apply: flex flex-col;
 }
 
 // Splitter gutter
-.p-splitter-gutter {
-  --apply: flex shrink-0 grow-0 items-center justify-center cursor-col-resize
-    bg-gray-600;
+.splitter-gutter {
+  --apply: flex shrink-0 flex-grow-0 items-center justify-center
+    cursor-col-resize bg-gray-600;
 }
 
-.p-splitter-horizontal.p-splitter-resizing {
+.splitter-horizontal.splitter-resizing {
   --apply: cursor-col-resize select-none;
 }
 
-.p-splitter-horizontal > .p-splitter-gutter > .p-splitter-gutter-handle {
+.splitter-horizontal > .splitter-gutter > .splitter-gutter-handle {
   --apply: w-full h-6;
 }
 
-.p-splitter-horizontal > .p-splitter-gutter {
+.splitter-horizontal > .splitter-gutter {
   --apply: cursor-col-resize;
 }
 
-.p-splitter-vertical.p-splitter-resizing {
+.splitter-vertical.splitter-resizing {
   --apply: cursor-row-resize select-none;
 }
 
-.p-splitter-vertical > .p-splitter-gutter {
+.splitter-vertical > .splitter-gutter {
   --apply: cursor-row-resize w-full bg-gray-600;
 }
 
-.p-splitter-vertical > .p-splitter-gutter > .p-splitter-gutter-handle {
+.splitter-vertical > .splitter-gutter > .splitter-gutter-handle {
   --apply: h-full w-6;
 }
 </style>

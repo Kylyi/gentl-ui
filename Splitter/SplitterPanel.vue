@@ -43,16 +43,16 @@ defineExpose({
   </div>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss">
 .splitter-panel {
-  --apply: grow overflow-hidden;
+  --apply: flex flex-grow overflow-hidden;
 }
 
 .splitter-panel-nested {
-  --apply: flex-col;
+  --apply: flex flex-col;
 }
 
 .splitter-panel .splitter {
-  --apply: grow border-0;
+  --apply: flex-grow border-0;
 }
 </style>
