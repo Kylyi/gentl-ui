@@ -1,30 +1,19 @@
 <script setup lang="ts">
-import { editorKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
+// Functions
+import { useWysiwygInjections } from '~/components/Wysiwyg/functions/useWysiwygInjections'
 
 type IProps = {
   allowLink?: boolean
   textSize?: string
 }
 
-const props = defineProps<IProps>()
-const emits = defineEmits<{
-  (e: 'set-heading', payload: { isHeading: boolean; level?: 4 | 5 | 6 }): void
-  (e: 'toggle-bold'): void
-  (e: 'toggle-italic'): void
-  (e: 'toggle-underline'): void
-  (e: 'text-align', value: string): void
-  (e: 'text-color', value?: string | null): void
-  (e: 'toggle-bulleted-list'): void
-  (e: 'toggle-numbered-list'): void
-  (e: 'insert-gallery'): void
-  (e: 'toggle-task-list'): void
-}>()
+defineProps<IProps>()
 
-// Layout
-const editor = inject(editorKey)
+// Utils
+const { wysiwygEditor } = useWysiwygInjections()
 
 const canUseImage = computed(() => {
-  return toValue(editor)?.options.extensions.find(ext => ext.name === 'mage')
+  return toValue(wysiwygEditor)?.options.extensions.find(ext => ext.name === 'mage')
 })
 </script>
 
@@ -91,7 +80,7 @@ const canUseImage = computed(() => {
 
 <style lang="scss" scoped>
 .wysiwyg-sink {
-  --apply: z-$zLogo dark:bg-darker bg-white;
+  --apply: z-$zLogo dark: bg-darker bg-white;
 
   :deep(.btn) {
     --apply: border-1 border-transparent;
