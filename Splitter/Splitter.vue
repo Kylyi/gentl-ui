@@ -67,6 +67,22 @@ const gutterStyle = computed<CSSProperties>(() => ({
   [horizontal.value ? 'width' : 'height']: `${props.gutterSize}px`,
 }))
 
+const gutterHandlerCollapsePreviousClasses = computed(() => [
+  'splitter-gutter-handle-previous',
+  { 'i-mdi:arrow-down ': !horizontal.value },
+  {
+    'i-material-symbols:arrow-forward-rounded': horizontal.value,
+  },
+])
+
+const gutterHandlerCollapseNextClasses = computed(() => [
+  'splitter-gutter-handle-next',
+  { 'i-mdi:arrow-up': !horizontal.value },
+  {
+    'i-material-symbols:arrow-back-rounded': horizontal.value,
+  },
+])
+
 // Listeners
 const mouseMoveListener = ref<(event: MouseEvent) => void>()
 const mouseUpListener = ref<(event: MouseEvent) => void>()
@@ -81,37 +97,43 @@ function onResizeStart(
   index: number,
   isKeyDown?: boolean
 ) {
-  // [1]- Get the gutter element
+  // Get the gutter element
   const eventCurrentTarget = event.currentTarget as HTMLElement
   const eventTarget = event.target as HTMLElement
 
   gutterElement.value = eventCurrentTarget || eventTarget.parentElement
 
-  // [2]- Set the size of the splitter
+  // Set the size of the splitter
   if (splitterEl.value) {
     size.value = horizontal.value
       ? splitterEl.value.clientWidth
       : splitterEl.value.clientHeight
   }
 
-  // [3]- Set the start position and dragging state
+  // Set the start position and dragging state
   if (!isKeyDown) {
     dragging.value = true
-    startPos.value =
-      props.layout === 'horizontal'
-        ? event instanceof MouseEvent
-          ? event.pageX
-          : event.changedTouches[0].pageX
-        : event instanceof MouseEvent
-        ? event.pageY
-        : event.changedTouches[0].pageY
+
+    if (horizontal.value) {
+      if (event instanceof MouseEvent) {
+        startPos.value = event.pageX
+      } else {
+        startPos.value = event.changedTouches[0].pageX
+      }
+    } else {
+      if (event instanceof MouseEvent) {
+        startPos.value = event.pageY
+      } else {
+        startPos.value = event.changedTouches[0].pageY
+      }
+    }
   }
 
-  // [4]- Set the previous and next panel [because we need to resize them]
+  // Set the previous and next panel [because we need to resize them]
   prevPanelEl.value = gutterElement.value?.previousElementSibling as HTMLElement
   nextPanelEl.value = gutterElement.value?.nextElementSibling as HTMLElement
 
-  // [5]- Set the previous and next panel size [because we need to resize them]
+  // Set the previous and next panel size [because we need to resize them]
   // If key is down means we are resizing with the keyboard, otherwise we are resizing with the mouse or touch
   if (isKeyDown) {
     prevPanelSize.value = horizontal.value
@@ -137,10 +159,10 @@ function onResizeStart(
       size.value
   }
 
-  // [6]- Set the previous panel index
+  // Set the previous panel index
   prevPanelIndex.value = index
 
-  // [7]- Emit event
+  // Emit event
   emits('resizestart', { originalEvent: event, sizes: panelSizes.value })
 
   if (gutterEls.value) {
@@ -208,14 +230,11 @@ function onResize(
 }
 
 function onResizeEnd(event: TouchEvent | MouseEvent) {
-  // [1]- Things about state
-  // [2]- Emit event
+  // TODO: State management (local storage)
   emits('resizeend', { originalEvent: event, sizes: panelSizes.value })
-  // [3]- For each gutter, set the resizing state to false
   gutterEls.value?.forEach(gutter =>
     gutter.setAttribute('data-p-gutter-resizing', 'false')
   )
-  // [4]- For the splitter, set the resizing state to false
   splitterEl.value?.setAttribute('data-p-resizing', 'false')
 
   clear()
@@ -281,20 +300,22 @@ function clear() {
 
 // Lifecycle
 onMounted(() => {
-  // TODO: Local storage
+  // TODO: State management (local storage)
   if (panels.value && panels.value.length) {
     const initialized = false
 
     if (!initialized) {
       if (splitterEl.value) {
-        // [1]- Get all current splitter panels of the main splitter
+        // Get all current splitter panels of the main splitter
         const children = [...splitterEl.value.children].filter(child =>
           (child as HTMLElement).classList.contains('splitter-panel')
         ) as HTMLElement[]
 
         const _panelSizes: number[] = []
         /**
-         * [2]- Setting the size of each panel
+         * - Setting the size of each panel
+         * - If the panel has a size prop, we use it
+         * - Otherwise, we set the size of each panel to 100 / number of panels, because we want to make them equal
          */
         panels.value.forEach((panel, i) => {
           const panelInitialSize =
@@ -348,7 +369,14 @@ onUnmounted(() => {})
           class="splitter-gutter-handle"
           tabindex="0"
           :style="[gutterStyle]"
-        ></div>
+        >
+          <!-- Gutter hover arrows hint -->
+          <template v-if="!ui?.noResizeArrowHint">
+            <div :class="gutterHandlerCollapsePreviousClasses" />
+
+            <div :class="gutterHandlerCollapseNextClasses" />
+          </template>
+        </div>
       </div>
     </template>
   </div>
@@ -366,7 +394,15 @@ onUnmounted(() => {})
 // Splitter gutter
 .splitter-gutter {
   --apply: flex shrink-0 flex-grow-0 items-center justify-center
-    cursor-col-resize bg-gray-600;
+    cursor-col-resize bg-gray-600 transition-all duration-0.25s;
+
+  &:hover {
+    --apply: bg-primary;
+  }
+}
+
+.splitter-gutter-handle {
+  --apply: relative;
 }
 
 .splitter-horizontal.splitter-resizing {
@@ -379,6 +415,50 @@ onUnmounted(() => {})
 
 .splitter-horizontal > .splitter-gutter {
   --apply: cursor-col-resize;
+
+  .splitter-gutter-handle-previous,
+  .splitter-gutter-handle-next {
+    --apply: invisible opacity-0;
+    transition: visibility 0s, opacity 0.5s linear;
+  }
+
+  &:hover {
+    .splitter-gutter-handle-previous {
+      --apply: absolute top-0.5 left-2;
+      visibility: visible;
+      opacity: 0.7;
+    }
+
+    .splitter-gutter-handle-next {
+      --apply: absolute bottom-0.5 right-2;
+      visibility: visible;
+      opacity: 0.7;
+    }
+  }
+}
+
+.splitter-vertical > .splitter-gutter {
+  --apply: cursor-row-resize;
+
+  .splitter-gutter-handle-previous,
+  .splitter-gutter-handle-next {
+    --apply: invisible opacity-0;
+    transition: visibility 0s, opacity 0.5s linear;
+  }
+
+  &:hover {
+    .splitter-gutter-handle-previous {
+      --apply: absolute top-2 left-0.5;
+      visibility: visible;
+      opacity: 0.7;
+    }
+
+    .splitter-gutter-handle-next {
+      --apply: absolute bottom-2 right-0.5;
+      visibility: visible;
+      opacity: 0.7;
+    }
+  }
 }
 
 .splitter-vertical.splitter-resizing {
@@ -386,7 +466,7 @@ onUnmounted(() => {})
 }
 
 .splitter-vertical > .splitter-gutter {
-  --apply: cursor-row-resize w-full bg-gray-600;
+  --apply: cursor-row-resize w-full;
 }
 
 .splitter-vertical > .splitter-gutter > .splitter-gutter-handle {
