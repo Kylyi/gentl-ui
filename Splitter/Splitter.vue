@@ -68,7 +68,7 @@ const gutterStyle = computed<CSSProperties>(() => ({
 }))
 
 const gutterHandlerCollapsePreviousClasses = computed(() => [
-  'splitter-gutter-handle-previous',
+  'splitter-gutter-handle-previous color-ca',
   { 'i-mdi:arrow-down ': !horizontal.value },
   {
     'i-material-symbols:arrow-forward-rounded': horizontal.value,
@@ -76,7 +76,7 @@ const gutterHandlerCollapsePreviousClasses = computed(() => [
 ])
 
 const gutterHandlerCollapseNextClasses = computed(() => [
-  'splitter-gutter-handle-next',
+  'splitter-gutter-handle-next color-ca',
   { 'i-mdi:arrow-up': !horizontal.value },
   {
     'i-material-symbols:arrow-back-rounded': horizontal.value,
