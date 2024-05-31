@@ -15,6 +15,9 @@ import { useSplitterUtils } from '~/components/Splitter/functions/useSplitterUti
 
 const props = withDefaults(defineProps<ISplitterProps>(), {
   gutterSize: 4,
+  ui: () => ({
+    noResizeArrowHint: true,
+  }),
 })
 
 const emits = defineEmits<ISplitterEmit>()
