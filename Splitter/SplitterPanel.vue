@@ -5,7 +5,9 @@ import Splitter from '~/components/Splitter/Splitter.vue'
 // Types
 import type { ISplitterPanelProps } from '~/components/Splitter/types/splitter-panel.type'
 
-const props = defineProps<ISplitterPanelProps>()
+const props = withDefaults(defineProps<ISplitterPanelProps>(), {
+  collapsedSize: 2,
+})
 
 // Layout
 const component = ref<HTMLElement>()
@@ -46,6 +48,10 @@ defineExpose({
 <style lang="scss">
 .splitter-panel {
   --apply: flex flex-grow overflow-hidden;
+}
+
+.splitter-panel:not(.splitter-panel-nested) {
+  --apply: bg-ca rounded-custom;
 }
 
 .splitter-panel-nested {

@@ -12,4 +12,10 @@ export type ISplitterPanelProps = {
    * Whether the panel is collapsible or not.
    */
   collapsible?: boolean
+
+  /**
+   * Size of the panel when collapsed relative to 100%.
+   * @defaultValue 2
+   */
+  collapsedSize?: number
 }

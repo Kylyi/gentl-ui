@@ -5,10 +5,10 @@ export function useSplitterUtils() {
     prevPanelIndex: number,
     panels: any[]
   ) {
-    console.log('newPrevPanelSize', newPrevPanelSize)
-    console.log('newNextPanelSize', newNextPanelSize)
-    console.log('prevPanelIndex', prevPanelIndex)
-    console.log('panels', panels)
+    // console.log('newPrevPanelSize', newPrevPanelSize)
+    // console.log('newNextPanelSize', newNextPanelSize)
+    // console.log('prevPanelIndex', prevPanelIndex)
+    // console.log('panels', panels)
 
     if (newPrevPanelSize > 100 || newPrevPanelSize < 0) {
       return false

@@ -103,6 +103,8 @@ function onResizeStart(
   // Get the gutter element
   const eventCurrentTarget = event.currentTarget as HTMLElement
   const eventTarget = event.target as HTMLElement
+  console.log('eventCurrentTarget', eventCurrentTarget)
+  console.log('eventTarget', eventTarget)
 
   gutterElement.value = eventCurrentTarget || eventTarget.parentElement
 
@@ -229,6 +231,34 @@ function onResize(
     }
 
     emits('resize', { originalEvent: event, sizes: panelSizes.value })
+  }
+
+  // Else we check for the collapsing state and we collapse the panels if needed
+  // TODO: Default collapsed size optimization
+  const prevPanelProps = panels.value[prevPanelIndex.value].props
+  const nextPanelProps = panels.value[prevPanelIndex.value + 1].props
+
+  const isPrevPanelCollapsible = prevPanelProps && prevPanelProps.collapsible
+  const isNextPanelCollapsible = nextPanelProps && nextPanelProps.collapsible
+
+  if (isPrevPanelCollapsible && newPrevPanelSize < prevPanelProps['min-size']) {
+    const collapsedSize = prevPanelProps['collapsed-size'] || 2
+
+    if (prevPanelEl.value) {
+      prevPanelEl.value.style.flexBasis = `calc(${collapsedSize}% - ${
+        (panels.value.length - 1) * props.gutterSize
+      }px)`
+    }
+  }
+
+  if (isNextPanelCollapsible && newNextPanelSize < nextPanelProps['min-size']) {
+    const collapsedSize = nextPanelProps['collapsed-size'] || 2
+
+    if (nextPanelEl.value) {
+      nextPanelEl.value.style.flexBasis = `calc(${collapsedSize}% - ${
+        (panels.value.length - 1) * props.gutterSize
+      }px)`
+    }
   }
 }
 
@@ -397,7 +427,7 @@ onUnmounted(() => {})
 // Splitter gutter
 .splitter-gutter {
   --apply: flex shrink-0 flex-grow-0 items-center justify-center
-    cursor-col-resize bg-gray-600 transition-all duration-0.25s;
+    cursor-col-resize transition-all duration-0.25s;
 
   &:hover {
     --apply: bg-primary;
