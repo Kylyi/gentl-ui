@@ -1,12 +1,14 @@
 <script setup lang="ts">
-// Injections
-import { editorKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
+// Functions
+import { useWysiwygInjections } from '~/components/Wysiwyg/functions/useWysiwygInjections'
 
 // Components
 import Menu from '~/components/Menu/Menu.vue'
 
+// Utils
+const { wysiwygEditor } = useWysiwygInjections()
+
 // Layout
-const editor = inject(editorKey)
 const menuEl = ref<InstanceType<typeof Menu>>()
 const link = ref({
   url: '',
@@ -21,7 +23,7 @@ function reset() {
 }
 
 function createLink() {
-  const _editor = toValue(editor)
+  const _editor = toValue(wysiwygEditor)
 
   if (!_editor) {
     return
@@ -36,12 +38,12 @@ function createLink() {
 }
 
 function unlink() {
-  toValue(editor)?.chain().focus().unsetLink().run()
+  toValue(wysiwygEditor)?.chain().focus().unsetLink().run()
   menuEl.value?.hide()
 }
 
 function handleSubmit() {
-  toValue(editor)
+  toValue(wysiwygEditor)
     ?.chain()
     .focus()
     .insertContent(
@@ -50,7 +52,7 @@ function handleSubmit() {
         parseOptions: {
           preserveWhitespace: true,
         },
-      }
+      },
     )
     .run()
 
@@ -63,7 +65,7 @@ function handleSubmit() {
     icon="i-ph:link"
     size="sm"
     color="ca"
-    :class="{ 'is-active': editor?.isActive('link') }"
+    :class="{ 'is-active': wysiwygEditor?.isActive('link') }"
     @click.stop.prevent="createLink"
     @mousedown.stop.prevent
   >
@@ -81,7 +83,7 @@ function handleSubmit() {
       >
         <template #submit-start>
           <Btn
-            v-if="editor?.isActive('link')"
+            v-if="wysiwygEditor?.isActive('link')"
             preset="CLOSE"
             :label="$t('general.cancel')"
             @click="unlink"

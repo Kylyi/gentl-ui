@@ -1,6 +1,6 @@
-import { mergeAttributes, Node } from '@tiptap/core'
+import { Node, mergeAttributes } from '@tiptap/core'
 import { VueNodeViewRenderer } from '@tiptap/vue-3'
-import { type SuggestionKeyDownProps } from '@tiptap/suggestion'
+import type { SuggestionKeyDownProps } from '@tiptap/suggestion'
 
 // Functions
 import { useValueFormatterUtils } from '~/components/ValueFormatter/functions/useValueFormatterUtils'
@@ -32,12 +32,12 @@ export function useWysiwygUtils() {
           return ''
         }
 
-        const value =
-          definition.format?.(entity) ??
-          formatValue(get(entity || {}, definition.id), undefined, {
+        const value
+          = definition.format?.(entity)
+          ?? formatValue(get(entity || {}, definition.id), undefined, {
             dataType: definition.dataType,
-          }) ??
-          `\${${attrValue}}`
+          })
+          ?? `\${${attrValue}}`
 
         const spanEl = document.createElement('span')
         spanEl.innerText = value
@@ -53,39 +53,38 @@ export function useWysiwygUtils() {
       group: 'inline', // Change this to inline
       inline: true, // Ensure the node is inline
       draggable: true,
-      atom: true,
+      // atom: true,
+
       parseHTML() {
         return [
-          { tag: 'wysiwyg-file' },
+          {
+            tag: 'span[data-type="wysiwyg-file"]',
+          },
         ]
       },
+
       renderHTML({ HTMLAttributes }) {
-        return [
-          'wysiwyg-file',
-          mergeAttributes(
-            HTMLAttributes,
-            { 'data-type': 'draggable-item' }
-          )
-        ]
+        return ['span', mergeAttributes({ 'data-type': 'wysiwyg-file', 'uuid': HTMLAttributes.uuid })]
       },
       addAttributes() {
         return {
           uuid: {
             default: '',
           },
-          files: {
+          filepath: {
             default: '',
-          }
+          },
         }
       },
       addNodeView() {
         return VueNodeViewRenderer(WysiwygFile)
       },
+
     })
   }
 
   return {
     resolveValues,
-    FileComponent
+    FileComponent,
   }
 }

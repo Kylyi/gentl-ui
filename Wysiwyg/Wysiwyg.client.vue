@@ -29,7 +29,8 @@ import { useInputWrapperUtils } from '~/components/Inputs/functions/useInputWrap
 import WysiwygMention from '~/components/Wysiwyg/WysiwygMention.vue'
 
 // Injections
-import { editorKey, filesByFilepathKey, mentionItemsKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
+import { mentionItemsKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
+import { useWysiwygInjections } from '~/components/Wysiwyg/functions/useWysiwygInjections'
 
 const props = withDefaults(defineProps<IWysiwygProps>(), {
   autoResolveFiles: true,
@@ -57,8 +58,6 @@ const editorEl = ref<any>()
 const model = defineModel()
 const isFocused = ref(false)
 const providedData = reactive<IItem>({})
-
-provide('providedData', providedData)
 
 const mentionItems = injectStrict(mentionItemsKey, toRef(props, 'mentionItems'))
 
@@ -262,6 +261,40 @@ const filesByPath = computed(() => {
   }, {} as Record<IFile['path'], Pick<IFile, 'id' | 'path' | 'name'>>)
 })
 
+function handleUploadFiles(files: File[], dropEvent?: MouseEvent) {
+  const _files = files.map(file => new FileModel({ file }))
+
+  _files.forEach(file => {
+    const uuid = generateUUID()
+    providedData[uuid] = { file }
+
+    // If the files are added through D'n'D, insert them at the cursor position
+    if (dropEvent) {
+      const pos = editor.value?.view.posAtCoords({
+        left: dropEvent.clientX,
+        top: dropEvent.clientY,
+      })
+
+      if (pos) {
+        editor.value?.chain().focus()
+          .insertContentAt(pos.pos, `<span uuid="${uuid}" data-type="wysiwyg-file" />`)
+          .run()
+      }
+    }
+
+    // Otherwise, insert the files at the current location in editor
+    else {
+      editor.value?.chain().focus()
+        .insertContent(`<span uuid="${uuid}" data-type="wysiwyg-file" />`)
+        .run()
+    }
+  })
+}
+
+/**
+ * Once files are uploaded, its path needs to be updated in the editor,
+ * this method does exactly that
+ */
 function syncFilesHTML() {
   if (!editor.value) {
     return ''
@@ -277,20 +310,14 @@ function syncFilesHTML() {
 
   newFileNodes.forEach(node => {
     node.setAttribute(
-      'files',
-      providedData[node.getAttribute('uuid') ?? ''].files
-        ?.map((file: FileModel) => file.uploadedFile?.filepath).join('__|__'),
+      'file',
+      providedData[node.getAttribute('uuid') ?? '']?.file.uploadedFile?.filepath,
     )
   })
 
   model.value = doc.body.innerHTML
   editor.value?.chain().setContent(doc.body.innerHTML).run()
 }
-
-provide(editorKey, editor)
-provide(filesByFilepathKey, filesByPath)
-provide('removeElement', removeElement)
-provide('syncFilesHTML', syncFilesHTML)
 
 // Editor commands
 function focusEditor() {
@@ -314,6 +341,15 @@ watch(
   },
 )
 
+useWysiwygInjections({
+  editor,
+  filesByPath,
+  providedData,
+  addFiles: handleUploadFiles,
+  removeElement,
+  syncFilesHTML,
+})
+
 onMounted(() => {
   nextTick(() => {
     if (props.mentionReplace && editor.value) {
@@ -327,21 +363,7 @@ onMounted(() => {
       const droppedFiles = Array.from(event.dataTransfer?.files || [])
 
       if (droppedFiles.length) {
-        const files = droppedFiles.map(file => new FileModel({ file }))
-
-        const uuid = generateUUID()
-        providedData[uuid] = { files }
-
-        const pos = editor.value?.view.posAtCoords({
-          left: event.clientX,
-          top: event.clientY,
-        })
-
-        if (pos) {
-          editor.value?.chain().focus()
-            .insertContentAt(pos.pos, `<wysiwyg-file uuid="${uuid}" />`)
-            .run()
-        }
+        handleUploadFiles(droppedFiles, event)
       }
     })
   })

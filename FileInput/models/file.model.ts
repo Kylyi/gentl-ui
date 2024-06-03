@@ -13,6 +13,8 @@ export class FileModel {
     size: number
   }
 
+  abortController?: AbortController
+
   get name() {
     return this.file.name
   }
@@ -34,13 +36,15 @@ export class FileModel {
     options?: {
       onError?: (error: any) => void
       notifyError?: boolean
-    }
+    },
   ) {
     const { onError, notifyError } = options ?? {}
+
     if (this.uploadProgress === 100 && !this.hasError) {
       return
     }
 
+    this.abortController = new AbortController()
     const filesHost = useRuntimeConfig().public.FILES_HOST ?? '/api/files'
     const formData = new FormData()
     formData.append('files', this.file)
@@ -52,21 +56,26 @@ export class FileModel {
           onUploadProgress: progressEvent => {
             const { loaded, total } = progressEvent
 
-            this.uploadProgress = Math.min(
-              Math.round((loaded / (total || 1)) * 100),
-              99
-            )
+            if (!this.isUploaded) {
+              this.uploadProgress = Math.min(
+                Math.round((loaded / (total || 1)) * 100),
+                99,
+              )
+            }
           },
+          signal: this.abortController?.signal,
         }),
       {
-        onComplete: () => (this.uploadProgress = 100),
+        onComplete: () => {
+          this.uploadProgress = 100
+        },
         onError: (error: any) => {
           this.hasError = true
           onError?.(error)
         },
         notifyError,
         logging: { operationName: 'file.upload' },
-      }
+      },
     )
 
     this.uploadedFile = data?.[0]
@@ -80,7 +89,7 @@ export class FileModel {
       ignoreWhenFoundInDb?: boolean
       onError?: (error: any) => void
       notifyError?: boolean
-    }
+    },
   ) {
     const { onError, notifyError, ignoreWhenFoundInDb = true } = options ?? {}
     if (!this.uploadedFile) {
@@ -98,8 +107,14 @@ export class FileModel {
         onError,
         notifyError,
         logging: { operationName: 'file.delete' },
-      }
+      },
     )
+  }
+
+  async cancelUpload() {
+    this.abortController?.abort()
+    this.uploadProgress = 0
+    this.uploadedFile = undefined
   }
 
   constructor(obj: Required<Partial<FileModel>, 'file'>) {

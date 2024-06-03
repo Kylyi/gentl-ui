@@ -1,86 +1,69 @@
 <script lang="ts">
-import { nodeViewProps, NodeViewWrapper } from '@tiptap/vue-3'
+import { NodeViewWrapper, nodeViewProps } from '@tiptap/vue-3'
+
+// Functions
+import { useWysiwygInjections } from '~/components/Wysiwyg/functions/useWysiwygInjections'
 
 // Models
-import type { FileModel } from '~/components/FileInput/models/file.model';
-import { filesByFilepathKey } from '~/components/Wysiwyg/provide/wysiwyg.provide';
+import { FileModel } from '~/components/FileInput/models/file.model'
 
 export default {
   components: { NodeViewWrapper },
   props: nodeViewProps,
 
   setup(props) {
-    const { files: deepFiles } = useFiles()
+    // Utils
+    const {
+      wysiwygRemoveElement,
+      wysiwygSyncFilesHTML,
+      wysiwygProvidedData,
+      wysiwygFilesByPath,
+    } = useWysiwygInjections()
+
+    const { files } = useFiles()
     const { handleRequest } = useRequest()
     const uuid = props.node.attrs.uuid
     const self = getCurrentInstance()
-    const providedData = inject<IItem>('providedData')
-    const removeElement = inject<Function>('removeElement')
-    const syncFilesHTML = inject<Function>('syncFilesHTML')
-
-    // Files provided through the Wysiwyg component
-    const injectedFiles = inject(filesByFilepathKey, ref({}))
 
     // New files uploaded through and grouped by the `uuid`
-    const componentData = providedData?.[uuid]
+    const componentData = wysiwygProvidedData?.[uuid]
 
-    const files = computed(() => {
-      const uploadedFilesPaths = props.node.attrs.files
-        ?.split('__|__')
-        .map(trim)
-        .filter(Boolean) as string[]
+    const file = computed(() => {
+      const uploadedFile = wysiwygFilesByPath.value?.[props.node.attrs.filepath as keyof typeof wysiwygFilesByPath.value]
+      const providedFile = componentData?.file as FileModel | undefined
 
-      const uploadedFiles = uploadedFilesPaths
-        .map(id => injectedFiles.value?.[id])
-        .filter(Boolean) as IFile[]
-
-      return [
-        ...(componentData?.files?.filter(Boolean) ?? []),
-        ...uploadedFiles
-      ] as Array<IFile | FileModel>
+      return uploadedFile || providedFile
     })
 
-    function handleRemoveElement(idx: number) {
-      const file = files.value?.[idx] as FileModel
-
-      if (!file) {
-        return
-      }
-
-      componentData!.files = files.value?.filter((_, i: number) => i !== idx)
-
-      file.delete(handleRequest)
-
-      if (!providedData![uuid].files.length) {
-        removeElement?.(self?.vnode.el)
-      }
-
+    function handleRemove() {
+      wysiwygRemoveElement?.(self?.vnode.el as HTMLElement)
     }
 
     // When this component is mounted (~ an image is inserted into the Wysiwyg editor, upload the files)
     onMounted(() => {
       nextTick(() => {
-        files.value.forEach(file => {
-          if ('id' in file) {
-            return
-          }
-
-          file.upload?.(handleRequest).then(() => syncFilesHTML?.())
-        })
+        if (file.value instanceof FileModel && !file.value.isUploaded) {
+          file.value.upload?.(handleRequest).then(() => wysiwygSyncFilesHTML?.())
+        }
       })
     })
 
-    syncRef(files, deepFiles, { direction: 'both', deep: true })
+    whenever(file, file => {
+      files.value = [file]
+    }, { deep: true, immediate: true })
 
-    // onBeforeUnmount(() => {
-    //   files.value.forEach((file: FileModel) => file.delete(handleRequest))
-    // })
+    onBeforeUnmount(() => {
+      if (file.value instanceof FileModel && file.value.isUploaded) {
+        file.value?.delete(handleRequest)
+      } else if (file.value instanceof FileModel && !file.value.isUploaded) {
+        file.value?.cancelUpload?.()
+      }
+    })
 
     return {
-      files,
-      removeElement,
+      file,
       componentData,
-      handleRemoveElement,
+      handleRemove,
     }
   },
 }
@@ -89,24 +72,17 @@ export default {
 <template>
   <NodeViewWrapper class="wysiwyg-file">
     <FilePreview
-      v-for="(file, idx) in files"
-      :key="idx"
+      v-if="file"
       :file="file"
       data-drag-handle
       :editable="!('id' in file)"
-      @remove="handleRemoveElement(idx)"
+      @remove="handleRemove"
     />
   </NodeViewWrapper>
 </template>
 
 <style lang="scss" scoped>
 .wysiwyg-file {
-  @apply cursor-default grid gap-2;
-
-  @apply border-2 border-dashed p-2 rounded-3 relative overflow-auto;
-  @apply dark:border-true-gray-600/50 border-true-gray-300/80;
-  @apply dark:bg-darker bg-white;
-
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  @apply inline-block cursor-default m-r-1;
 }
 </style>

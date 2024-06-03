@@ -1,19 +1,20 @@
 <script setup lang="ts">
-// Injections
-import { editorKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
+// Functions
+import { useWysiwygInjections } from '~/components/Wysiwyg/functions/useWysiwygInjections'
+
+// Utils
+const { wysiwygEditor } = useWysiwygInjections()
 
 // Layout
-const editor = inject(editorKey)
-
-const isBulletedList = computed(() => toValue(editor)?.isActive('bulletList'))
-const isNumberedList = computed(() => toValue(editor)?.isActive('orderedList'))
+const isBulletedList = computed(() => toValue(wysiwygEditor)?.isActive('bulletList'))
+const isNumberedList = computed(() => toValue(wysiwygEditor)?.isActive('orderedList'))
 
 function handleToggleBullettedList() {
-  toValue(editor)?.chain().focus().toggleBulletList().run()
+  toValue(wysiwygEditor)?.chain().focus().toggleBulletList().run()
 }
 
 function handleToggleNumberedList() {
-  toValue(editor)?.chain().focus().toggleOrderedList().run()
+  toValue(wysiwygEditor)?.chain().focus().toggleOrderedList().run()
 }
 </script>
 

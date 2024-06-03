@@ -1,24 +1,25 @@
 <script setup lang="ts">
-import { editorKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
+// Functions
+import { useWysiwygInjections } from '~/components/Wysiwyg/functions/useWysiwygInjections'
 
-// Layout
-const editor = inject(editorKey)
+// Utils
+const { wysiwygEditor } = useWysiwygInjections()
 
-// Bold & Italic & Underline
-const isBold = computed(() => toValue(editor)?.isActive('bold'))
-const isItalic = computed(() => toValue(editor)?.isActive('italic'))
-const isUnderline = computed(() => toValue(editor)?.isActive('underline'))
+// Bold & Italic & Underline
+const isBold = computed(() => toValue(wysiwygEditor)?.isActive('bold'))
+const isItalic = computed(() => toValue(wysiwygEditor)?.isActive('italic'))
+const isUnderline = computed(() => toValue(wysiwygEditor)?.isActive('underline'))
 
 function handleToggleBold() {
-  toValue(editor)?.chain().focus().toggleBold().run()
+  toValue(wysiwygEditor)?.chain().focus().toggleBold().run()
 }
 
 function handleToggleUnderline() {
-  toValue(editor)?.chain().focus().toggleUnderline().run()
+  toValue(wysiwygEditor)?.chain().focus().toggleUnderline().run()
 }
 
 function handleToggleItalic() {
-  toValue(editor)?.chain().focus().toggleItalic().run()
+  toValue(wysiwygEditor)?.chain().focus().toggleItalic().run()
 }
 </script>
 
