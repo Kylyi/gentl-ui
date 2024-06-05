@@ -47,7 +47,7 @@ defineExpose({
 
 <style lang="scss">
 .splitter-panel {
-  --apply: flex flex-grow overflow-hidden;
+  --apply: flex flex-grow;
 }
 
 .splitter-panel:not(.splitter-panel-nested) {
