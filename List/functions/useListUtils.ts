@@ -1,6 +1,6 @@
 // Types
 import type { IListItem } from '~/components/List/types/list-item.type'
-import { type IListProps } from '~/components/List/types/list-props.type'
+import type { IListProps } from '~/components/List/types/list-props.type'
 
 export function useListUtils() {
   function getListProps(props: IListProps) {
@@ -32,7 +32,7 @@ export function useListUtils() {
       'noSort',
       'search',
       'sortBy',
-      'transformAddedItem'
+      'transformAddedItem',
     ])
   }
 
@@ -41,7 +41,7 @@ export function useListUtils() {
     itemsRef: Ref<Array<IGroupRow | IListItem>>
     id: number | string
     targetId: number | string
-    direction?: 'above' | 'below',
+    direction?: 'above' | 'below'
   }) {
     const { id, targetId, direction, itemsRef } = payload
 
@@ -55,7 +55,7 @@ export function useListUtils() {
     items = items.toSpliced(
       direction === 'below' ? targetIdx + 1 : targetIdx,
       0,
-      splicedItem
+      splicedItem,
     )
 
     // @ts-expect-error Moved item
@@ -67,7 +67,7 @@ export function useListUtils() {
     itemsRef: Ref<Array<IGroupRow | IListItem>>
     ids: Array<number | string>
     targetId: number | string
-    direction?: 'above' | 'below',
+    direction?: 'above' | 'below'
   }) {
     const { ids, targetId, direction, itemsRef } = payload
 
@@ -86,7 +86,7 @@ export function useListUtils() {
     items = items.toSpliced(
       direction === 'below' ? targetIdx + 1 : targetIdx,
       0,
-      ...splicedItems
+      ...splicedItems,
     )
 
     // @ts-expect-error Moved items
