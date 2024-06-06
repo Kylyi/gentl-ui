@@ -34,6 +34,7 @@ export function useDomUtils() {
 
     return 0
   }
+
   return {
     getOuterWidth,
     getOuterHeight,

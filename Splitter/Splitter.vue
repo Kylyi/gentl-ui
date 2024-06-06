@@ -1,6 +1,5 @@
 <script setup lang="ts">
 // Types
-import { type CSSProperties } from 'vue'
 import type {
   ISplitterEmit,
   ISplitterProps,
@@ -12,6 +11,7 @@ import SplitterPanel from '~/components/Splitter/SplitterPanel.vue'
 // Utils
 import { useDomUtils } from '~/components/Splitter/functions/useDomUtils'
 import { useSplitterUtils } from '~/components/Splitter/functions/useSplitterUtils'
+import { useSplitterLayout } from '~/components/Splitter/functions/useSplitterLayout'
 
 const props = withDefaults(defineProps<ISplitterProps>(), {
   gutterSize: 4,
@@ -25,7 +25,15 @@ const emits = defineEmits<ISplitterEmit>()
 // Utils
 const slots = useSlots()
 const { getOuterHeight, getOuterWidth } = useDomUtils()
-const { validatePanelReszie } = useSplitterUtils()
+const { validatePanelReszie } = useSplitterUtils(props)
+const {
+  horizontal,
+  intersectHorizontal,
+  gutterHandlerCollapseNextClasses,
+  gutterHandlerCollapsePreviousClasses,
+  gutterStyle,
+  splitterClasses,
+} = useSplitterLayout(props)
 
 // Layout
 const panels = computed(() => {
@@ -45,9 +53,6 @@ const panels = computed(() => {
 
   return panels
 })
-
-const horizontal = computed(() => props.layout === 'horizontal')
-const intersectHorizontal = computed(() => !horizontal.value)
 
 const size = ref<number>(0)
 const prevSize = ref<string>('0')
@@ -70,43 +75,15 @@ const multiDirectionParentSplitterSize = ref<number>(0)
 const parentPanelEl = ref<HTMLElement>()
 const prevParentPanelEl = ref<HTMLElement>()
 const prevParentPanelSize = ref<number>(0)
+const nextParentPanelEl = ref<HTMLElement>()
+const nextParentPanelSize = ref<number>(0)
 const isMultidirectionalResizing = ref(false)
 const intersectStartPos = ref<number>(0)
 const intersectionParentPanelSize = ref<number>(0)
 
+// Gutter
 const gutterEls = ref<HTMLElement[]>()
 const gutterElement = ref<HTMLElement>()
-
-const splitterClasses = computed(() => {
-  return ['splitter', `splitter-${props.layout}`]
-})
-
-const gutterStyle = computed<CSSProperties>(() => ({
-  [horizontal.value ? 'width' : 'height']: `${props.gutterSize}px`,
-}))
-
-const gutterHandlerCollapsePreviousClasses = computed(() => [
-  'splitter-gutter-handle-previous color-ca',
-  { 'i-mdi:arrow-down ': !horizontal.value },
-  {
-    'i-material-symbols:arrow-forward-rounded': horizontal.value,
-  },
-])
-
-const gutterHandlerCollapseNextClasses = computed(() => [
-  'splitter-gutter-handle-next color-ca',
-  { 'i-mdi:arrow-up': !horizontal.value },
-  {
-    'i-material-symbols:arrow-back-rounded': horizontal.value,
-  },
-])
-
-// TODO: Better way for values...
-const gutterHandlerInterSectionClasses = computed(() => [
-  'splitter-gutter-intersection',
-  { 'top-[-7px]': horizontal.value },
-  { 'left-[-7px]': !horizontal.value },
-])
 
 // Listeners
 const mouseMoveListener = ref<(event: MouseEvent) => void>()
@@ -150,23 +127,37 @@ function onResizeStart(
         parentPanelEl.value = splitterEl.value?.parentElement
         prevParentPanelEl.value = parentPanelEl.value?.previousElementSibling
           ?.previousElementSibling as HTMLElement
+        nextParentPanelEl.value = parentPanelEl.value?.nextElementSibling
+          ?.nextElementSibling as HTMLElement
 
         if (prevParentPanelEl.value?.parentElement) {
           multidirectionalParentSplitter.value =
             prevParentPanelEl.value.parentElement
+        } else if (nextParentPanelEl.value?.parentElement) {
+          multidirectionalParentSplitter.value =
+            nextParentPanelEl.value.parentElement
         }
+
+        console.log('Parent panel: ', parentPanelEl.value)
+        console.log('Prev parent panel: ', prevParentPanelEl.value)
+        console.log('Next parent panel: ', nextParentPanelEl.value)
+        console.log(
+          'Parent splitter for multidimention: ',
+          multidirectionalParentSplitter.value
+        )
       }
     } else {
       isMultidirectionalResizing.value = false
     }
   }
 
-  // Set the size of the splitter - according to the layout
+  // Set the size of the splitter (that have panels inside it) - according to the layout
   if (splitterEl.value) {
     size.value = horizontal.value
       ? splitterEl.value.clientWidth
       : splitterEl.value.clientHeight
 
+    // For multidirectional resizing
     if (
       isMultidirectionalResizing.value &&
       multidirectionalParentSplitter.value
@@ -175,18 +166,6 @@ function onResizeStart(
         ? multidirectionalParentSplitter.value.clientWidth
         : multidirectionalParentSplitter.value.clientHeight
     }
-
-    console.log('Parent splitter: ', parentPanelEl.value)
-    console.log(
-      'Multidirectional parent splitter: ',
-      multidirectionalParentSplitter.value
-    )
-
-    console.log('Size of the current splitter: ', size.value)
-    console.log(
-      'Size of the parent splitter: ',
-      multiDirectionParentSplitterSize.value
-    )
   }
 
   // Set the start position and dragging state
@@ -249,6 +228,7 @@ function onResizeStart(
     // For multidirectional resizing
     if (isMultidirectionalResizing.value) {
       // For the previous panel
+
       prevParentPanelSize.value =
         (100 *
           (intersectHorizontal.value
@@ -262,6 +242,14 @@ function onResizeStart(
           (intersectHorizontal.value
             ? getOuterWidth(parentPanelEl.value, true)
             : getOuterHeight(parentPanelEl.value, true))) /
+        multiDirectionParentSplitterSize.value
+
+      // For the next panel
+      nextParentPanelSize.value =
+        (100 *
+          (intersectHorizontal.value
+            ? getOuterWidth(nextParentPanelEl.value, true)
+            : getOuterHeight(nextParentPanelEl.value, true))) /
         multiDirectionParentSplitterSize.value
     }
 
@@ -338,9 +326,24 @@ function onResize(
       }
 
       if (!isNil(newIntersectPos)) {
-        newPrevParentPanelSize = prevParentPanelSize.value + newIntersectPos
-        newParentSplitterPanelSize =
-          intersectionParentPanelSize.value - newIntersectPos
+        /**
+         * If prev parent panel does not exists:
+         * - Consider parent panel as the previous panel
+         * - Consider the next panel as next parent panel
+         * If prev parent panel exists:
+         * - Consider the previous panel as the previous parent panel
+         * - Consider the parent panel as the next parent panel
+         */
+        if (!prevParentPanelEl.value) {
+          newPrevParentPanelSize =
+            intersectionParentPanelSize.value + newIntersectPos
+          newParentSplitterPanelSize =
+            nextParentPanelSize.value - newIntersectPos
+        } else {
+          newPrevParentPanelSize = prevParentPanelSize.value + newIntersectPos
+          newParentSplitterPanelSize =
+            intersectionParentPanelSize.value - newIntersectPos
+        }
       }
     }
   }
@@ -363,12 +366,27 @@ function onResize(
 
       // In case of multidirectional resizing
       if (isMultidirectionalResizing.value) {
-        // YEAH
-        prevParentPanelEl.value.style.flexBasis = `calc(${newPrevParentPanelSize}% -
-    ${(panels.value.length - 1) * props.gutterSize}px)`
+        /**
+         * If prev parent panel does not exists:
+         * - Consider parent panel as the previous panel
+         * - Consider the next panel as next parent panel
+         * If prev parent panel exists:
+         * - Consider the previous panel as the previous parent panel
+         * - Consider the parent panel as the next parent panel
+         */
+        if (!prevParentPanelEl.value) {
+          parentPanelEl.value.style.flexBasis = `calc(${newPrevParentPanelSize}% -
+          ${(panels.value.length - 1) * props.gutterSize}px)`
 
-        parentPanelEl.value.style.flexBasis = `calc(${newParentSplitterPanelSize}% -
-    ${(panels.value.length - 1) * props.gutterSize}px)`
+          nextParentPanelEl.value.style.flexBasis = `calc(${newParentSplitterPanelSize}% -
+          ${(panels.value.length - 1) * props.gutterSize}px)`
+        } else {
+          prevParentPanelEl.value.style.flexBasis = `calc(${newPrevParentPanelSize}% -
+          ${(panels.value.length - 1) * props.gutterSize}px)`
+
+          parentPanelEl.value.style.flexBasis = `calc(${newParentSplitterPanelSize}% -
+          ${(panels.value.length - 1) * props.gutterSize}px)`
+        }
       }
     }
 
@@ -385,6 +403,8 @@ function onResize(
   // TODO: Default collapsed size optimization
   const prevPanelProps = panels.value[prevPanelIndex.value].props
   const nextPanelProps = panels.value[prevPanelIndex.value + 1].props
+
+  console.log('Prev panel props: ', panels.value[prevPanelIndex.value])
 
   const isPrevPanelCollapsible = prevPanelProps && prevPanelProps.collapsible
   const isNextPanelCollapsible = nextPanelProps && nextPanelProps.collapsible
@@ -463,11 +483,22 @@ function unbindMouseListeners() {
   }
 }
 
-function hasIntersectingGutter(): boolean {
+function hasIntersectingTopGutter(): boolean {
   const mainParentOfSplitter = splitterEl.value?.parentElement
   const previousSibiling = mainParentOfSplitter?.previousElementSibling
 
   if (previousSibiling?.classList.contains('splitter-gutter')) {
+    return true
+  }
+
+  return false
+}
+
+function hasIntersectingBottomGutter(): boolean {
+  const mainParentOfSplitter = splitterEl.value?.parentElement
+  const nextSibiling = mainParentOfSplitter?.nextElementSibling
+
+  if (nextSibiling?.classList.contains('splitter-gutter')) {
     return true
   }
 
@@ -499,9 +530,21 @@ function clear() {
   prevPanelIndex.value = 0
 }
 
+const gutterHandlerBotttomInterSectionClasses = computed(() => [
+  'splitter-gutter-intersection',
+  { 'top-[-7px]': horizontal.value },
+  { 'left-[-7px]': !horizontal.value },
+])
+
+const gutterHandlerTopInterSectionClasses = computed(() => [
+  'splitter-gutter-intersection',
+  { 'bottom-[-7px]': horizontal.value },
+  { 'right-[-7px]': !horizontal.value },
+])
+
 // Lifecycle
 onMounted(() => {
-  // TODO: State management (local storage)
+  // TODO: State management (local storage) (if needed)
   if (panels.value && panels.value.length) {
     const initialized = false
 
@@ -567,8 +610,13 @@ onUnmounted(() => {})
         @mousedown="onGutterMouseDown($event, i)"
       >
         <div
-          v-if="hasIntersectingGutter()"
-          :class="gutterHandlerInterSectionClasses"
+          v-if="hasIntersectingTopGutter()"
+          :class="gutterHandlerBotttomInterSectionClasses"
+        />
+
+        <div
+          v-if="hasIntersectingBottomGutter()"
+          :class="gutterHandlerTopInterSectionClasses"
         />
 
         <div
@@ -603,7 +651,7 @@ onUnmounted(() => {})
     cursor-col-resize transition-all duration-0.25s pointer-events-auto;
 
   &:hover {
-    --apply: bg-primary;
+    --apply: ;
   }
 }
 
@@ -673,7 +721,7 @@ onUnmounted(() => {})
   right: 0;
   width: 10px;
   height: 10px;
-  background: green;
+
   z-index: 10;
   cursor: move;
 }
