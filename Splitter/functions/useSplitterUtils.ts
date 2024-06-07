@@ -1,3 +1,5 @@
+// Types
+import type { VNode } from 'vue'
 import type { ISplitterProps } from '~/components/Splitter/types/splitter.type'
 
 export function useSplitterUtils(props: ISplitterProps) {
@@ -5,14 +7,9 @@ export function useSplitterUtils(props: ISplitterProps) {
   function validatePanelReszie(
     newPrevPanelSize: number,
     newNextPanelSize: number,
-    prevPanelIndex: number,
-    panels: any[]
+    prevPanelMinSize: number,
+    nextPanelMinSize: number
   ) {
-    // console.log('newPrevPanelSize', newPrevPanelSize)
-    // console.log('newNextPanelSize', newNextPanelSize)
-    // console.log('prevPanelIndex', prevPanelIndex)
-    // console.log('panels', panels)
-
     if (newPrevPanelSize > 100 || newPrevPanelSize < 0) {
       return false
     }
@@ -21,23 +18,11 @@ export function useSplitterUtils(props: ISplitterProps) {
       return false
     }
 
-    const prevPanelProps = panels[prevPanelIndex].props
-
-    if (
-      prevPanelProps &&
-      prevPanelProps['min-size'] &&
-      prevPanelProps['min-size'] > newPrevPanelSize
-    ) {
+    if (prevPanelMinSize && prevPanelMinSize > newPrevPanelSize) {
       return false
     }
 
-    const newPanelProps = panels[prevPanelIndex + 1].props
-
-    if (
-      newPanelProps &&
-      newPanelProps['min-size'] &&
-      newPanelProps['min-size'] > newNextPanelSize
-    ) {
+    if (nextPanelMinSize && nextPanelMinSize > newNextPanelSize) {
       return false
     }
 

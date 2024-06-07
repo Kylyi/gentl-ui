@@ -40,6 +40,10 @@ defineExpose({
   <div
     ref="component"
     :class="splitterPanelClass"
+    .getPanelMinSize="() => minSize"
+    .isCollapsiblePanel="() => collapsible"
+    .getCollapsedSize="() => collapsedSize"
+    .getPanelProps="() => props"
   >
     <slot></slot>
   </div>

@@ -1,3 +1,4 @@
+// @unocss-include
 // Types
 import { type CSSProperties } from 'vue'
 import type { ISplitterProps } from '~/components/Splitter/types/splitter.type'
@@ -6,6 +7,20 @@ export function useSplitterLayout(props: ISplitterProps) {
   // Layout
   const horizontal = computed(() => props.layout === 'horizontal')
   const intersectHorizontal = computed(() => !horizontal.value)
+
+  // Functions
+  function isIntersectionArea(event: MouseEvent) {
+    const elementFromPoint = document.elementFromPoint(event.pageX, event.pageY)
+    const isIntersectionEl = elementFromPoint?.classList.contains(
+      'splitter-gutter-intersection'
+    )
+
+    if (isIntersectionEl) {
+      return true
+    }
+
+    return false
+  }
 
   // Styling and classes
   const splitterClasses = computed(() => {
@@ -32,9 +47,15 @@ export function useSplitterLayout(props: ISplitterProps) {
     },
   ])
 
-  const gutterHandlerInterSectionClasses = computed(() => [
-    'splitter-gutter-intersection',
+  const gutterHandlerTopInterSectionClasses = computed(() => [
+    'splitter-gutter-intersection top',
     { 'top-[-7px]': horizontal.value },
+    { 'left-[-7px]': !horizontal.value },
+  ])
+
+  const gutterHandlerBottomInterSectionClasses = computed(() => [
+    'splitter-gutter-intersection bottom',
+    { 'bottom-[-7px]': horizontal.value },
     { 'left-[-7px]': !horizontal.value },
   ])
 
@@ -43,11 +64,15 @@ export function useSplitterLayout(props: ISplitterProps) {
     horizontal,
     intersectHorizontal,
 
+    // Functions
+    isIntersectionArea,
+
     // Styling and classes
     splitterClasses,
     gutterStyle,
     gutterHandlerCollapsePreviousClasses,
     gutterHandlerCollapseNextClasses,
-    gutterHandlerInterSectionClasses,
+    gutterHandlerTopInterSectionClasses,
+    gutterHandlerBottomInterSectionClasses,
   }
 }
