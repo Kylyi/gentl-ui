@@ -21,6 +21,11 @@ export type IWysiwygProps = {
   sinkAlwaysVisible?: boolean
 
   /**
+   * When true, the WysiwygSink will NOT be floating -> will be `relative` instead of `absolute`
+   */
+  noSinkFloat?: boolean
+
+  /**
    * When true, the editor will automatically resolve mentions as the user types
    * So there will be no {{mention}} in the editor, it will just resolve to the value
    * It will not override the mentions though!

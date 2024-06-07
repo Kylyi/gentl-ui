@@ -75,7 +75,7 @@ defineExpose({
 // Lifecycle
 onMounted(() => {
   menuReferenceTarget.value = self?.proxy?.$el.querySelector(
-    '.input-wrapper-border'
+    '.input-wrapper-border',
   )
 })
 
@@ -85,10 +85,10 @@ watch(
   () => {
     nextTick(() => {
       menuReferenceTarget.value = self?.proxy?.$el.querySelector(
-        '.input-wrapper-border'
+        '.input-wrapper-border',
       )
     })
-  }
+  },
 )
 
 // Utils
@@ -229,7 +229,7 @@ const optionsExtended = computed(() => {
     opt =>
       typeof opt === 'object'
         ? opt
-        : { [props.optionKey]: opt, [props.optionLabel as string]: opt }
+        : { [props.optionKey]: opt, [props.optionLabel as string]: opt },
   )
 
   return optionsAdjusted
@@ -366,9 +366,9 @@ if (props.loadData?.immediate) {
 
 // Preselect on init
 if (
-  props.preselectFirst &&
-  (props.modelValue === props.emptyValue || isNil(props.modelValue)) &&
-  props.options.length > 0
+  props.preselectFirst
+  && (props.modelValue === props.emptyValue || isNil(props.modelValue))
+  && props.options.length > 0
 ) {
   if (props.emitKey) {
     handleSelect(getKey(options.value[0]))
@@ -667,7 +667,6 @@ function getData() {
     --apply: h-4 w-4;
   }
 }
-
 
 .is-active {
   :deep(.label) {

@@ -50,7 +50,7 @@ export function useWysiwygUtils() {
   function FileComponent() {
     return Node.create({
       name: 'wysiwygFile',
-      group: 'inline', // Change this to inline
+      group: 'inline',
       inline: true, // Ensure the node is inline
       draggable: true,
       // atom: true,
@@ -64,8 +64,9 @@ export function useWysiwygUtils() {
       },
 
       renderHTML({ HTMLAttributes }) {
-        return ['span', mergeAttributes({ 'data-type': 'wysiwyg-file', 'uuid': HTMLAttributes.uuid })]
+        return ['span', mergeAttributes(HTMLAttributes, { 'data-type': 'wysiwyg-file' })]
       },
+
       addAttributes() {
         return {
           uuid: {

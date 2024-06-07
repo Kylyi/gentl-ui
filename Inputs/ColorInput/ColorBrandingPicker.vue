@@ -5,6 +5,7 @@ import { colors } from '@unocss/preset-mini'
 import type { ISelectorProps } from '~/components/Selector/types/selector-props.type'
 
 type IProps = {
+  disallowedColors?: string[]
   modelValue?: string
   rgba?: boolean
 }
@@ -51,6 +52,13 @@ const { getColor, hexToRgb } = useColors()
 const model = defineModel<string>()
 const { isSupported, open: openEyeDropper, sRGBHex } = useEyeDropper()
 
+const standardColors = computed(() => {
+  return {
+    black: !props.disallowedColors?.includes('black'),
+    white: !props.disallowedColors?.includes('white'),
+  }
+})
+
 const standardColorsByColumn = computed(() => {
   const _colors = pick(colors, relevantColors)
 
@@ -96,10 +104,10 @@ watch(sRGBHex, value => {
 function setColor(color: string, isThemeColor = false) {
   if (!props.rgba) {
     if (isThemeColor) {
-    model.value = getColor(color, undefined, true)
+      model.value = getColor(color, undefined, true)
 
-    return
-  }
+      return
+    }
 
     model.value = color
 
@@ -140,6 +148,7 @@ function setColor(color: string, isThemeColor = false) {
           </div>
 
           <div
+            v-if="standardColors.white"
             class="color-block"
             bg="white"
             border="1 ca"
@@ -148,6 +157,7 @@ function setColor(color: string, isThemeColor = false) {
           />
 
           <div
+            v-if="standardColors.black"
             class="color-block"
             bg="black"
             text="center"
@@ -228,6 +238,6 @@ function setColor(color: string, isThemeColor = false) {
 
 <style lang="scss" scoped>
 .color-block {
-  --apply: h-6 w-6 hover:shadow-consistent shadow-ca hover:z-1 cursor-pointer;
+  @apply h-6 w-6 hover:shadow-consistent shadow-ca hover:z-1 cursor-pointer;
 }
 </style>

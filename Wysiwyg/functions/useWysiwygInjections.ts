@@ -7,8 +7,8 @@ export function useWysiwygInjections(options?: {
   // mentionItems?: Ref<IWysiwygMentionItem[]>
   // mentionEntity?: Ref<IItem>
   providedData?: IItem
-  addFiles?: (files: File[], ev?: MouseEvent) => void
-  removeElement?: (element: HTMLElement | null) => void
+  addFiles?: (files: File[] | IFile[], ev?: MouseEvent) => void
+  removeElement?: (selector: string) => void
   syncFilesHTML: () => void
 }) {
   const {

@@ -49,7 +49,11 @@ const classes = computed(() => {
       </div>
 
       <!-- Input -->
-      <div class="input-wrapper__inline-input-input">
+      <div
+        class="input-wrapper__inline-input-input"
+        :class="ui?.inputInnerContainerClass"
+        :style="ui?.inputInnerContainerStyle"
+      >
         <slot name="input" />
       </div>
 

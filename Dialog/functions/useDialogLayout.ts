@@ -35,7 +35,7 @@ export function useDialogLayout(model: Ref<boolean>, props: IDialogProps) {
       if (!props.manual && triggerEl.value instanceof HTMLElement) {
         triggerEl.value?.addEventListener(props.trigger ?? 'click', toggle)
       }
-    }
+    },
   )
 
   // Lifecycle
@@ -60,6 +60,7 @@ export function useDialogLayout(model: Ref<boolean>, props: IDialogProps) {
   })
 
   return {
+    triggerEl,
     contentEl,
     dialogWrapperEl,
     floatingEl,

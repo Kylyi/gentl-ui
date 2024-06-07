@@ -23,7 +23,7 @@ const emits = defineEmits<{
 // Lifcecycle
 onMounted(() => {
   referenceEl.value = unrefElement(fieldEl as any)?.querySelector(
-    '.wrapper__body'
+    '.wrapper__body',
   ) as HTMLDivElement
 })
 
@@ -85,6 +85,7 @@ const fieldProps = getFieldProps(props)
       <ColorBrandingPicker
         v-model="model"
         :rgba="rgba"
+        :disallowed-colors="disallowedColors"
         @update:model-value="handlePickColor"
       />
     </MenuProxy>

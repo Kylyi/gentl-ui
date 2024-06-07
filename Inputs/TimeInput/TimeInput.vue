@@ -274,12 +274,12 @@ defineExpose({
       @focus="handleFocusOrClick"
       @input="handleInput"
       @blur="handleBlur"
-    />
+    >
 
     <template #append>
       <div
         v-if="$slots.append || hasClearableBtn || (!readonly && !disabled)"
-        flex="~ gap-x-2 center"
+        flex="~ gap-x-1 center"
         @click="handleFocusOrClick"
       >
         <slot

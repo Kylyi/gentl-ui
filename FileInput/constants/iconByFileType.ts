@@ -1,16 +1,16 @@
 // @unocss-include
 
 export const ICON_BY_FILE_TYPE = {
-  'application/pdf': 'i-bi:filetype-pdf', // PDF
-  'text/csv': 'i-bi:filetype-csv', // CSV
+  'application/pdf': 'i-vscode-icons:file-type-pdf2', // PDF
+  'text/csv': 'i-hugeicons:csv-02', // CSV
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
-    'i-bi:filetype-xlsx', // XLSX
+    'i-vscode-icons:file-type-excel', // XLSX
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
-    'i-bi:filetype-docx', // DOCX
+    'i-vscode-icons:file-type-word', // DOCX
   'application/vnd.openxmlformats-officedocument.presentationml.presentation':
-    'i-bi:filetype-pptx', // PPTX
-  'application/vnd.ms-excel': 'i-bi:filetype-xls', // XLS
-  'application/msword': 'i-bi:filetype-doc', // DOC
-  'application/vnd.ms-powerpoint': 'i-bi:filetype-ppt', // PPT
-  'text/plain': 'i-bi:filetype-txt', // TXT
+    'vscode-icons:file-type-powerpoint', // PPTX
+  'application/vnd.ms-excel': 'vscode-icons:file-type-excel2', // XLS
+  'application/msword': 'vscode-icons:file-type-word2', // DOC
+  'application/vnd.ms-powerpoint': 'vscode-icons:file-type-powerpoint2', // PPT
+  'text/plain': 'hugeicons:txt-01', // TXT
 } as const

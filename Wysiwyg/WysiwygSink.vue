@@ -18,76 +18,94 @@ const canUseImage = computed(() => {
 </script>
 
 <template>
-  <HorizontalScroller
-    class="wysiwyg-sink"
-    content-class="gap-x-1 p-1"
+  <div
+    flex="~ gap-2 items-center"
+    @click.stop.prevent
+    @mousedown.stop.prevent
   >
-    <WysiwygTextSizeSimpleCommands />
+    <slot name="prepend" />
 
-    <Separator
-      vertical
-      inset
-    />
+    <HorizontalScroller
+      class="wysiwyg-sink"
+      content-class="gap-x-1 p-1"
+    >
+      <WysiwygTextSizeSimpleCommands />
 
-    <WysiwygTextColorCommands />
+      <Separator
+        vertical
+        inset
+      />
 
-    <Separator
-      vertical
-      inset
-    />
+      <WysiwygTextColorCommands />
 
-    <WysiwygTextStyleCommands />
+      <Separator
+        vertical
+        inset
+      />
 
-    <Separator
-      vertical
-      spaced
-      inset
-    />
+      <WysiwygTextStyleCommands />
 
-    <WysiwygTextAlignmentCommands />
-
-    <Separator
-      vertical
-      spaced
-      inset
-    />
-
-    <WysiwygListCommands />
-
-    <template v-if="allowLink">
       <Separator
         vertical
         spaced
         inset
       />
 
-      <WysiwygLink />
+      <WysiwygTextAlignmentCommands />
 
-      <WysiwygFileCommandBtn />
-    </template>
-
-    <template v-if="canUseImage">
       <Separator
         vertical
         spaced
         inset
       />
 
-      <WysiwygImg />
-    </template>
-  </HorizontalScroller>
+      <WysiwygListCommands />
+
+      <template v-if="allowLink">
+        <Separator
+          vertical
+          spaced
+          inset
+        />
+
+        <WysiwygLink />
+
+        <WysiwygFileCommandBtn />
+      </template>
+
+      <Separator
+        vertical
+        spaced
+        inset
+      />
+
+      <WysiwygDetailsCommandBtn />
+
+      <template v-if="canUseImage">
+        <Separator
+          vertical
+          spaced
+          inset
+        />
+
+        <WysiwygImg />
+      </template>
+    </HorizontalScroller>
+
+    <slot name="append" />
+  </div>
 </template>
 
 <style lang="scss" scoped>
 .wysiwyg-sink {
-  --apply: z-$zLogo dark: bg-darker bg-white;
+  @apply z-$zLogo dark:bg-darker bg-white;
 
   :deep(.btn) {
-    --apply: border-1 border-transparent;
+    @apply border-1 border-transparent;
   }
 
   :deep(.is-active) {
-    --apply: border-primary color-primary;
+    @apply border-primary color-primary;
   }
 }
 </style>
