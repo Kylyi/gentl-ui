@@ -590,6 +590,10 @@ export function useList(
       // We need to wait for the previous `abort`
       setTimeout(async () => {
         if (props.loadData?.onSearch) {
+          if (props.allowAdd) {
+            handleSearchedResults(results.value)
+          }
+
           await fetchAndSetData(search)
         } else {
           if (isInitialized.value) {
