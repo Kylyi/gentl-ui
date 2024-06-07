@@ -576,7 +576,6 @@ export function useList(
         isLoading.value = false
       } catch (error) {
         isLoading.value = false
-        console.error(error)
       }
     }
   }
