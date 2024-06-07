@@ -12,6 +12,11 @@ import { Mention } from '@tiptap/extension-mention'
 import { Image } from '@tiptap/extension-image'
 import { Link } from '@tiptap/extension-link'
 import { Dropcursor } from '@tiptap/extension-dropcursor'
+import { Details } from '@tiptap-pro/extension-details'
+import { DetailsSummary } from '@tiptap-pro/extension-details-summary'
+import { DetailsContent } from '@tiptap-pro/extension-details-content'
+import { TaskItem } from '@tiptap/extension-task-item'
+import { TaskList } from '@tiptap/extension-task-list'
 
 // Types
 import type { ClientRectObject } from '@floating-ui/vue'
@@ -27,6 +32,7 @@ import { useInputWrapperUtils } from '~/components/Inputs/functions/useInputWrap
 
 // Components
 import WysiwygMention from '~/components/Wysiwyg/WysiwygMention.vue'
+import WysiwygSink from '~/components/Wysiwyg/WysiwygSink.vue'
 
 // Injections
 import { mentionItemsKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
@@ -37,11 +43,14 @@ const props = withDefaults(defineProps<IWysiwygProps>(), {
   errorVisible: true,
 })
 
-defineEmits<{
+const emits = defineEmits<{
   (e: 'update:modelValue', value: string): void
+  (e: 'focus'): void
+  (e: 'blur'): void
 }>()
 
 defineExpose({
+  focus: focusEditor,
   resolveValues: () => {
     if (editor.value) {
       resolveValues(editor.value.view)
@@ -57,6 +66,7 @@ const { getInputWrapperProps } = useInputWrapperUtils()
 const editorEl = ref<any>()
 const model = defineModel()
 const isFocused = ref(false)
+const hasActiveMenu = ref(false)
 const providedData = reactive<IItem>({})
 
 const mentionItems = injectStrict(mentionItemsKey, toRef(props, 'mentionItems'))
@@ -139,6 +149,21 @@ const LinkExt = Link.extend({
 // Dropcursor https://tiptap.dev/api/extensions/dropcursor
 const DropcursorExt = Dropcursor.configure()
 
+// Details https://tiptap.dev/docs/editor/api/nodes/details
+const DetailsExt = Details.configure({ persist: true, HTMLAttributes: { class: 'details' } })
+
+// Details Summary https://tiptap.dev/docs/editor/api/nodes/details-summary
+const DetailsSummaryExt = DetailsSummary.configure({})
+
+// Details Content https://tiptap.dev/docs/editor/api/nodes/details-content
+const DetailsContentExt = DetailsContent.configure({})
+
+// TaskList https://tiptap.dev/docs/editor/api/nodes/task-list
+const TaskListExt = TaskList.configure({})
+
+// TaskItem https://tiptap.dev/docs/editor/api/nodes/task-item
+const TaskItemExt = TaskItem.configure({ nested: true })
+
 // Mention https://tiptap.dev/api/nodes/mention
 const mentionEl = ref<InstanceType<typeof WysiwygMention>>()
 const selectFnc = ref<Function>(() => {})
@@ -202,6 +227,7 @@ const MentionExt = Mention.configure({
 })
 
 // Editor
+const sinkEl = ref<ComponentInstance<typeof WysiwygSink>>()
 const editor = useEditor({
   content: props.modelValue,
   extensions: [
@@ -213,6 +239,11 @@ const editor = useEditor({
     TextStyle,
     ColorExt,
     DropcursorExt,
+    DetailsExt,
+    DetailsSummaryExt,
+    DetailsContentExt,
+    TaskListExt,
+    TaskItemExt,
     ...(toValue(mentionItems) ? [MentionExt] : []),
     ...(props.fileUpload ? [FileComponent()] : []),
     ...(props.image ? [ImageExt] : []),
@@ -226,6 +257,7 @@ const editor = useEditor({
   },
   onUpdate: ({ editor }) => {
     const text = editor.getText()
+
     if (text.length) {
       model.value = editor.getHTML()
     } else {
@@ -234,20 +266,50 @@ const editor = useEditor({
   },
   onFocus() {
     isFocused.value = true
+
+    emits('focus')
   },
   onBlur() {
     isFocused.value = false
+
+    emits('blur')
   },
 })
 
-function removeElement(el: HTMLElement | null) {
-  el?.remove()
+useMutationObserver(
+  sinkEl,
+  records => {
+    hasActiveMenu.value = records.some(record => {
+      const targetClasslist = (record.target as HTMLElement).classList
+
+      return targetClasslist.contains('is-menu-active') || targetClasslist.contains('is-dialog-active')
+    })
+  },
+  { subtree: true, attributeFilter: ['class'] },
+)
+
+function blurEditor() {
+  editor.value?.commands.blur()
+}
+
+function removeElement(selector: string) {
+  const parser = new DOMParser()
+  const doc = parser.parseFromString(editor.value?.getHTML() ?? '', 'text/html')
+
+  const node = doc.querySelector(selector)
+
+  if (node) {
+    node.remove()
+
+    editor.value?.chain().setContent(doc.body.innerHTML).run()
+    model.value = doc.body.innerHTML
+  }
 }
 
 const isSinkVisible = computed(() => {
   const isEditable = !props.readonly && !props.disabled
 
-  return (isFocused.value || props.sinkAlwaysVisible)
+  return (isFocused.value || props.sinkAlwaysVisible || hasActiveMenu.value)
     && isEditable
     && !props.noSink
 })
@@ -261,34 +323,48 @@ const filesByPath = computed(() => {
   }, {} as Record<IFile['path'], Pick<IFile, 'id' | 'path' | 'name'>>)
 })
 
-function handleUploadFiles(files: File[], dropEvent?: MouseEvent) {
-  const _files = files.map(file => new FileModel({ file }))
+function handleUploadFiles(files: File[] | IFile[], dropEvent?: MouseEvent) {
+  const isExistingFiles = 'id' in files[0]
 
-  _files.forEach(file => {
-    const uuid = generateUUID()
-    providedData[uuid] = { file }
+  if (isExistingFiles) {
+    files.forEach(file => {
+      const uuid = generateUUID()
+      const _file = file as IFile
+      providedData[uuid] = { file: _file }
 
-    // If the files are added through D'n'D, insert them at the cursor position
-    if (dropEvent) {
-      const pos = editor.value?.view.posAtCoords({
-        left: dropEvent.clientX,
-        top: dropEvent.clientY,
-      })
+      editor.value?.chain().focus()
+        .insertContent(`<span uuid="${uuid}" filepath="${_file.path}" data-type="wysiwyg-file" />`)
+        .run()
+    })
+  } else {
+    const _files = files.map(file => new FileModel({ file: file as File }))
 
-      if (pos) {
+    _files.forEach(file => {
+      const uuid = generateUUID()
+      providedData[uuid] = { file }
+
+      // If the files are added through D'n'D, insert them at the cursor position
+      if (dropEvent) {
+        const pos = editor.value?.view.posAtCoords({
+          left: dropEvent.clientX,
+          top: dropEvent.clientY,
+        })
+
+        if (pos) {
+          editor.value?.chain().focus()
+            .insertContentAt(pos.pos, `<span uuid="${uuid}" data-type="wysiwyg-file" />`)
+            .run()
+        }
+      }
+
+      // Otherwise, insert the files at the current location in editor
+      else {
         editor.value?.chain().focus()
-          .insertContentAt(pos.pos, `<span uuid="${uuid}" data-type="wysiwyg-file" />`)
+          .insertContent(`<span uuid="${uuid}" data-type="wysiwyg-file" />`)
           .run()
       }
-    }
-
-    // Otherwise, insert the files at the current location in editor
-    else {
-      editor.value?.chain().focus()
-        .insertContent(`<span uuid="${uuid}" data-type="wysiwyg-file" />`)
-        .run()
-    }
-  })
+    })
+  }
 }
 
 /**
@@ -303,16 +379,17 @@ function syncFilesHTML() {
   const parser = new DOMParser()
   const doc = parser.parseFromString(editor.value?.getHTML(), 'text/html')
 
-  const fileNodes = doc.querySelectorAll('wysiwyg-file')
-  const newFileNodes = Array.from(fileNodes).filter(node => {
-    return providedData[node.getAttribute('uuid') ?? '']
-  })
+  const fileNodes = doc.querySelectorAll('[data-type="wysiwyg-file"]')
 
-  newFileNodes.forEach(node => {
-    node.setAttribute(
-      'file',
-      providedData[node.getAttribute('uuid') ?? '']?.file.uploadedFile?.filepath,
-    )
+  Array.from(fileNodes).forEach(node => {
+    const nodeUUID = node.getAttribute('uuid') ?? ''
+
+    const file = providedData[nodeUUID]?.file as FileModel
+    const filepath = file?.uploadedFile?.filepath
+
+    if (filepath) {
+      node.setAttribute('filepath', filepath)
+    }
   })
 
   model.value = doc.body.innerHTML
@@ -402,10 +479,28 @@ onMounted(() => {
       >
         <WysiwygSink
           v-if="isSinkVisible && editor"
-          :editor="editor"
+          ref="sinkEl"
           class="wysiwyg-sink"
+          :class="{ 'is-floating': !noSinkFloat }"
           :allow-link="allowLink"
-        />
+        >
+          <template
+            v-if="$slots['sink-prepend']"
+            #prepend
+          >
+            <slot name="sink-prepend" />
+          </template>
+
+          <template
+            v-if="$slots['sink-append']"
+            #append
+          >
+            <slot
+              name="sink-append"
+              :blur-editor="blurEditor"
+            />
+          </template>
+        </WysiwygSink>
       </Transition>
     </template>
   </InputWrapper>
@@ -413,35 +508,95 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .control {
-  --apply: w-full;
+  @apply: w-full;
 }
 
 .wysiwyg {
   &-sink {
-    --apply: absolute -top-40px right-0 w-full;
+    @apply: right-0 w-full shrink-0;
+
+    &.is-floating {
+      @apply absolute -top-40px;
+    }
   }
 }
 
 :deep(.wysiwyg) {
-  --apply: outline-none fit;
+  @apply: outline-none fit;
 
   p.is-empty:first-child::before {
     content: attr(data-placeholder);
 
-    --apply: color-gray-500 dark: color-gray-400 float-left h-0
+    @apply: color-gray-500 dark: color-gray-400 float-left h-0
       pointer-events-none;
   }
 
   [data-type='mention'] {
-    --apply: italic;
+    @apply: italic;
   }
-}
-
-:deep(.wysiwyg-file) {
-  // @apply w-fit;
 }
 
 :deep(.ProseMirror-selectednode) {
   @apply outline-2 outline-solid outline-primary rounded-custom;
+}
+
+:deep([data-type='details']) {
+  @apply flex border-1 border-ca rounded-custom p-2;
+  list-style: none;
+
+  > button {
+    @apply relative h-6 w-6 cursor-pointer;
+
+    &::before {
+      @apply absolute flex flex-center leading-none top-1 left-2px font-rem-20;
+      content: '\25B6';
+    }
+  }
+
+  &.is-open > button::before {
+    @apply rotate-90;
+  }
+
+  > div {
+    flex: 1 1 auto;
+  }
+
+  :last-child {
+    margin-bottom: 0;
+  }
+}
+
+:deep(ul[data-type='taskList']) {
+  list-style: none;
+  padding: 0;
+
+  p {
+    margin: 0;
+  }
+
+  li {
+    @apply flex;
+
+    > label {
+      @apply shrink-0 select-none m-r-2 m-t-2px;
+
+      input {
+        @apply min-w-4;
+      }
+    }
+
+    > div {
+      flex: 1 1 auto;
+    }
+
+    ul li,
+    ol li {
+      display: list-item;
+    }
+
+    ul[data-type='taskList'] > li {
+      display: flex;
+    }
+  }
 }
 </style>

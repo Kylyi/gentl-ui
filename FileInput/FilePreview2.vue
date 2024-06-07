@@ -21,12 +21,12 @@ defineEmits<{
 }>()
 
 // Utils
-const { handleRequest } = useRequest()
 const { formatNumber, formatBytes } = useNumber()
 const { getLocalImageUrl } = useImages()
 
 const icon = computed(() => {
-  const icon = ICON_BY_FILE_TYPE[props.file.type as keyof typeof ICON_BY_FILE_TYPE]
+  const icon
+    = ICON_BY_FILE_TYPE[props.file.type as keyof typeof ICON_BY_FILE_TYPE]
     || 'i-solar:file-linear'
 
   return icon
@@ -59,7 +59,7 @@ const imageUrl = computed(() => {
   <div class="file-preview">
     <div class="file-preview__header">
       <span class="file-preview__filename">
-        {{ file.name }}
+        {{ file?.name }}
       </span>
 
       <Btn
@@ -72,72 +72,73 @@ const imageUrl = computed(() => {
     </div>
 
     <div class="file-preview__image">
+      <!-- Image preview -->
       <img
         v-if="imageUrl"
         :src="imageUrl"
         :alt="file.name"
-        height="100"
+        h="full"
       >
 
+      <!-- Icon -->
       <div
         v-else
         :class="icon"
         h="10"
         w="10"
       />
-    </div>
 
-    <div
-      v-if="!noDownloadButton"
-      class="file-preview__download rounded-b-2 overflow-hidden"
-    >
-      <!-- Download file -->
-      <Btn
-        v-if="'path' in file"
-        w-full
-        size="sm"
-        class="!rounded-t-0"
-        :label="$t('file.download')"
-        @click.stop.prevent="handleDownloadFile(file, { url: downloadUrl })"
-      />
-
-      <!-- Upload failed -->
-      <Btn
-        v-else-if="file.hasError"
-        :label="$t('file.uploadFailed')"
-        color="negative"
-        bg="negative/15"
-        size="sm"
-        class="!rounded-t-0 w-full"
-      />
-
-      <!-- To be uploaded -->
+      <!-- Upload state -->
       <div
-        v-else-if="!file.isUploading && !file.isUploaded"
-        :label="$t('file.added')"
-        class="flex flex-center rounded-t-0 w-full h-8 bg-blue-50 dark:bg-dark text-caption text-xs rounded-custom"
+        v-if="!('path' in file) && !file.isUploaded"
+        class="file-preview__state"
       >
-        {{ formatBytes(file.file.size) }}
+        <!-- Upload failed -->
+        <template v-if="file.hasError">
+          <div class="i-ion:close color-negative h-12 w-12" />
+
+          <span text="caption center">
+            {{ $t('file.uploadFailed') }}
+          </span>
+
+          <Btn
+            size="xs"
+            color="negative"
+            :label="$t('file.remove')"
+            @click.stop.prevent="$emit('remove')"
+          />
+        </template>
+
+        <!-- To be uploaded -->
+        <template v-else-if="!file.isUploading && !file.isUploaded">
+          <div class="i-ion:cloud-upload color-ca h-12 w-12" />
+
+          <p>
+            {{ $t('file.added') }}
+          </p>
+
+          <span
+            text="xs"
+            m="t--2"
+          >
+            {{ formatBytes(file.file.size) }}
+          </span>
+
+          <Btn
+            size="xs"
+            color="negative"
+            :label="$t('file.remove')"
+            @click.stop.prevent="$emit('remove')"
+          />
+        </template>
+
+        <!-- Uploading -->
+        <CircleProgress
+          v-else
+          :size="80"
+          :progress="file.uploadProgress"
+        />
       </div>
-
-      <!-- Uploaded successfully -->
-      <Btn
-        v-else-if="!file.isUploading"
-        :label="$t('file.uploaded')"
-        color="positive"
-        size="sm"
-        class="!rounded-t-0 w-full"
-      />
-
-      <!-- Uploading - Progress bar -->
-      <ProgressBar
-        v-else
-        :label="
-          progress => `${$t('file.uploading')}... (${formatNumber(progress)}%)`
-        "
-        :progress="file.uploadProgress"
-        rounded="b-2"
-      />
     </div>
   </div>
 </template>
@@ -147,23 +148,27 @@ const imageUrl = computed(() => {
   @apply grid gap-2 fit items-center border-1 border-dotted rounded-3
     border-ca color-ca;
 
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto 1fr;
 
   &__filename {
     @apply self-center text-caption line-clamp-2 m-y-1 break-words;
   }
 
   &__header {
-    @apply flex flex-row gap-x-2 p-x-2 w-full justify-between p-t-1 p-b-2
+    @apply flex flex-row gap-x-2 p-x-2 w-full justify-between p-y-1
       overflow-auto;
   }
 
   &__image {
-    @apply flex flex-center p-b-4 p-x-3;
+    @apply relative flex flex-center p-1 fit overflow-auto;
 
     img {
-      @apply rounded-3 object-cover object-center h-20;
+      @apply rounded-3 object-cover object-center;
     }
+  }
+
+  &__state {
+    @apply absolute inset-0 flex flex-center flex-col gap-2 p-2 rounded-3 bg-ca;
   }
 
   &:hover {

@@ -31,7 +31,11 @@ const classes = computed(() => {
     :style="ui?.inputContainerStyle"
   >
     <!-- Input -->
-    <div class="input-wrapper__inside-input input-wrapper__focusable">
+    <div
+      class="input-wrapper__inside-input input-wrapper__focusable"
+      :class="ui?.inputInnerContainerClass"
+      :style="ui?.inputInnerContainerStyle"
+    >
       <slot name="input" />
     </div>
 

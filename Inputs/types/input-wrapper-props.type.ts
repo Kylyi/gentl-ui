@@ -88,7 +88,7 @@ export type IInputWrapperProps = IInputLabelProps & {
     borderRadius?: string
 
     /**
-     * The class of the input wrapper (including label,...)
+     * The class of the input wrapper (including label, ...)
      */
     contentClass?: ClassType
 
@@ -98,7 +98,7 @@ export type IInputWrapperProps = IInputLabelProps & {
     contentStyle?: CSSProperties
 
     /**
-     * Class of the input container
+     * Class of the input container (excluding label, hint, error container, ...)
      *
      * Note: Primarily used for background color
      */
@@ -110,6 +110,16 @@ export type IInputWrapperProps = IInputLabelProps & {
      * Note: Primarily used for background color
      */
     inputContainerStyle?: CSSProperties
+
+    /**
+     * Class of the inner container around the actual input tag
+     */
+    inputInnerContainerClass?: ClassType
+
+    /**
+     * Style of the inner container around the actual input tag
+     */
+    inputInnerContainerStyle?: CSSProperties
   }
 
   /**
