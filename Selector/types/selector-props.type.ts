@@ -1,5 +1,5 @@
-import { type CSSProperties } from 'vue'
-import { type FuseOptions } from '@vueuse/integrations/useFuse'
+import type { CSSProperties } from 'vue'
+import type { FuseOptions } from '@vueuse/integrations/useFuse'
 import type { RouteLocationRaw } from '#vue-router'
 
 // Types
@@ -135,4 +135,14 @@ export type ISelectorProps = IInputProps & {
    * The function to use for transforming the added item
    */
   transformAddedItem?: (item: any) => any
+
+  /**
+   * The class applied to the `Chip` when using `multi` mode
+   */
+  chipClass?: ClassType | ((item: any) => ClassType)
+
+  /**
+   * The style applied to the `Chip` when using `multi` mode
+   */
+  chipStyle?: CSSProperties | ((item: any) => CSSProperties)
 }
