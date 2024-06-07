@@ -581,6 +581,8 @@ export function useList(
     }
   }
 
+  const debouncedFetchAndSetData = useDebounceFn(fetchAndSetData, props.searchDebounce ?? 0)
+
   // Watchers
   watch(
     search,
@@ -594,7 +596,7 @@ export function useList(
             handleSearchedResults(results.value)
           }
 
-          await fetchAndSetData(search)
+          await debouncedFetchAndSetData(search)
         } else {
           if (isInitialized.value) {
             self.emit('before-search', {
