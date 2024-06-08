@@ -5,11 +5,9 @@ import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-bui
 import type { ITableDataFetchFncInput } from '~/components/Table/types/table-query.type'
 import type { ITableSelection } from '~/components/Table/types/table-selection.type'
 import type { ITableSelectionOptions } from '~/components/Table/types/table-selection-options.type'
+import type { TableColumn } from '~/components/Table/models/table-column.model'
 
-// Models
-import { TableColumn } from '~/components/Table/models/table-column.model'
-
-export interface ITableProps {
+export type ITableProps = {
   /**
    * Whether the table should handle the resize event - performance heavy(-ish)
    */
@@ -372,8 +370,8 @@ export interface ITableProps {
 
   /**
    * The selected rows, can be either:
-   * * Array<string | number> ~ use for `rowKey` selection
-   * * Record<itemKey, item> ~ use for `item` selection
+   * Array<string | number> ~ use for `rowKey` selection
+   * Record<itemKey, item> ~ use for `item` selection
    */
   selected?: ITableSelection
 

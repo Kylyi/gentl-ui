@@ -11,7 +11,7 @@ import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-bui
 import { tableSlotsKey } from '~/components/Table/provide/table.provide'
 
 // Models
-import { TableColumn } from '~/components/Table/models/table-column.model'
+import type { TableColumn } from '~/components/Table/models/table-column.model'
 
 // Functions
 import { useTableData } from '~/components/Table/functions/useTableData'
@@ -48,18 +48,18 @@ defineEmits<{
   (e: 'update:rows', rows: any[]): void
   (e: 'update:totalRows', count: number): void
   (e: 'update:queryBuilder', rows: IQueryBuilderRow[]): void
-  (e: 'row-click', payload: { row: any; el: Element; ev: PointerEvent }): void
+  (e: 'row-click', payload: { row: any, el: Element, ev: PointerEvent }): void
   (e: 'update:loading', loading: boolean): void
   (e: 'update:selected', selection: any): void
 }>()
 
 defineSlots<{
   [key: string]: any
-  dataRow: { columns: any[]; row: any; index: number }
-  inner: { columns: any[]; row: any; index: number }
+  dataRow: { columns: any[], row: any, index: number }
+  inner: { columns: any[], row: any, index: number }
   paginationAppend: { customData: IItem }
   default: IItem
-  rowInside: { columns: any[]; row: any; index: number }
+  rowInside: { columns: any[], row: any, index: number }
   top: IItem
   topLeftPrepend: IItem
   topLeftAppend: IItem
@@ -70,6 +70,7 @@ defineSlots<{
   topBulkActionsMenu: { selection: any[] }
   belowTop: { rows: any[] }
   topBarMiddleStart: IItem
+  topBarMiddleEnd: IItem
 }>()
 
 const slots = useSlots()
@@ -87,7 +88,7 @@ defineExpose({
   getDbQuery: () => dbQuery.value,
   selectRow: (
     row: any,
-    options?: { val?: boolean; clearSelection?: boolean }
+    options?: { val?: boolean, clearSelection?: boolean },
   ) => handleSelectRow(row, options),
   clearSelection: () => clearSelection(),
   handleCancelEditRow: () => handleCancelEditRow(),
@@ -99,7 +100,7 @@ defineExpose({
       tableRowHeight: typeof tableRowHeight.value
       scrollerEl: typeof scrollerEl.value
       refreshData: () => void
-    }) => void
+    }) => void,
   ) => {
     fnc({
       columns: internalColumns.value,
@@ -107,7 +108,7 @@ defineExpose({
       totalRowsRef: totalRows,
       tableRowHeight: tableRowHeight.value,
       scrollerEl: scrollerEl.value,
-      refreshData: () => refreshData(true)
+      refreshData: () => refreshData(true),
     })
   },
 })
@@ -130,7 +131,6 @@ const {
   headerEl,
   scrollbarWidth,
   scrollerElBounds,
-  scrollLeft,
   totalsEl,
   tableEl,
 
@@ -144,7 +144,6 @@ const {
   tableRowHeight,
   rowKey,
   TableRowComponent,
-  handleScrollLeft,
   handleRowClick,
   recreateColumns,
   handleResize,
@@ -180,7 +179,7 @@ const {
   scrollerEl,
   metadataRefetch,
   recreateColumns,
-  handleResize
+  handleResize,
 )
 
 const { handleSelectRow, clearSelection } = useTableSelection(props)
@@ -268,6 +267,13 @@ onMounted(() => {
         </template>
 
         <template
+          v-if="$slots['topbar-middle-end']"
+          #middle-end
+        >
+          <slot name="topbar-middle-end" />
+        </template>
+
+        <template
           v-if="$slots['top-bulk-actions']"
           #bulk-actions="{ selection }"
         >
@@ -308,7 +314,6 @@ onMounted(() => {
       :no-lock="noLock"
       :class="{ 'shadow-lg shadow-ca': isScrolled }"
       :selection-options="selectionOptions"
-      @scrolled="handleScrollLeft"
       @resized="scrollerEl?.rerender"
     >
       <template #default="{ col }">
@@ -351,7 +356,6 @@ onMounted(() => {
               :index="index"
               :mode="mode"
               :bounds="scrollerElBounds"
-              :scroll-left="scrollLeft"
               :scrollbar-width="scrollbarWidth"
             />
           </template>
@@ -408,7 +412,6 @@ onMounted(() => {
       class="table-totals"
       :columns="internalColumns"
       :get-totals-data="getTotalsData"
-      @scrolled="handleScrollLeft"
     />
 
     <TablePagination
