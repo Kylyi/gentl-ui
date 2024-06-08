@@ -189,7 +189,7 @@ export function useTableLayout(
         containerX.value = _totalsX
         headerScrollerX.value = _totalsX
       }
-    })
+    }, { flush: 'pre' })
 
   watch(containerX, val => {
     if (headerScrollerX.value !== val) {
