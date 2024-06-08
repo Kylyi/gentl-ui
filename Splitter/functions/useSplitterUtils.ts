@@ -1,5 +1,4 @@
 // Types
-import type { VNode } from 'vue'
 import type { ISplitterProps } from '~/components/Splitter/types/splitter.type'
 
 export function useSplitterUtils(props: ISplitterProps) {

@@ -15,6 +15,7 @@ import { useSplitterLayout } from '~/components/Splitter/functions/useSplitterLa
 
 const props = withDefaults(defineProps<ISplitterProps>(), {
   gutterSize: 10,
+  step: 5,
   ui: () => ({
     noResizeArrowHint: true,
   }),
@@ -56,6 +57,7 @@ const panels = computed(() => {
 
   return panels
 })
+
 const splitterEl = ref<HTMLElement>()
 
 const size = ref<number>(0)
@@ -70,7 +72,7 @@ const startPos = ref<number>(0)
 const dragging = ref(false)
 
 const multidirectionalParentSplitter = ref<HTMLElement>()
-const multiDirectionParentSplitterSize = ref<number>(0)
+const multidirectionParentSplitterSize = ref<number>(0)
 const parentPanelEl = ref<HTMLElement>()
 const prevParentPanelEl = ref<HTMLElement>()
 const prevParentPanelSize = ref<number>(0)
@@ -107,7 +109,7 @@ function onResizeStart(
   if (event instanceof MouseEvent) {
     if (isIntersectionArea(event)) {
       isMultidirectionalResizing.value = true
-      onResizeIntersectStart(event)
+      onMultiDirectionResizeStart(event)
     } else {
       isMultidirectionalResizing.value = false
     }
@@ -124,7 +126,6 @@ function onResizeStart(
   if (!isKeyDown) {
     dragging.value = true
 
-    // For non-multidirectional resizing
     if (horizontal.value) {
       if (event instanceof MouseEvent) {
         startPos.value = event.pageX
@@ -174,7 +175,7 @@ function onResizeStart(
   prevPanelIndex.value = index
 
   // Emit event
-  emits('resizestart', { originalEvent: event, sizes: panelSizes.value })
+  emits('resizestart', { originalEvent: event })
 
   if (gutterEls.value) {
     gutterEls.value[index].setAttribute('data-p-gutter-resizing', 'true')
@@ -183,8 +184,9 @@ function onResizeStart(
   splitterEl.value?.setAttribute('data-p-resizing', 'true')
 }
 
-function onResizeIntersectStart(event: MouseEvent) {
-  const elementFromPoint = document.elementFromPoint(event.pageX, event.pageY)
+function onMultiDirectionResizeStart(event: MouseEvent) {
+  const { pageX, pageY } = event
+  const elementFromPoint = document.elementFromPoint(pageX, pageY)
   const isIntersectingTop = elementFromPoint?.classList.contains('top')
 
   // Set the previous and next panel elements [because we need to resize them]
@@ -233,16 +235,16 @@ function onResizeIntersectStart(event: MouseEvent) {
 
   // Set the size of the splitter (that have panels inside it) - according to the layout
   if (multidirectionalParentSplitter.value) {
-    multiDirectionParentSplitterSize.value = intersectHorizontal.value
+    multidirectionParentSplitterSize.value = intersectHorizontal.value
       ? multidirectionalParentSplitter.value.clientWidth
       : multidirectionalParentSplitter.value.clientHeight
   }
 
   // Set the start position according to the intersection point
   if (intersectHorizontal.value) {
-    intersectStartPos.value = event.pageX
+    intersectStartPos.value = pageX
   } else {
-    intersectStartPos.value = event.pageY
+    intersectStartPos.value = pageY
   }
 
   // Set the previous and next panel size [because we need to resize them]
@@ -251,7 +253,7 @@ function onResizeIntersectStart(event: MouseEvent) {
       (intersectHorizontal.value
         ? getOuterWidth(prevParentPanelEl.value, true)
         : getOuterHeight(prevParentPanelEl.value, true))) /
-    multiDirectionParentSplitterSize.value
+    multidirectionParentSplitterSize.value
 
   // For the parent panel
   intersectionParentPanelSize.value =
@@ -259,7 +261,7 @@ function onResizeIntersectStart(event: MouseEvent) {
       (intersectHorizontal.value
         ? getOuterWidth(parentPanelEl.value, true)
         : getOuterHeight(parentPanelEl.value, true))) /
-    multiDirectionParentSplitterSize.value
+    multidirectionParentSplitterSize.value
 
   // For the next panel
   nextParentPanelSize.value =
@@ -267,7 +269,7 @@ function onResizeIntersectStart(event: MouseEvent) {
       (intersectHorizontal.value
         ? getOuterWidth(nextParentPanelEl.value, true)
         : getOuterHeight(nextParentPanelEl.value, true))) /
-    multiDirectionParentSplitterSize.value
+    multidirectionParentSplitterSize.value
 
   // Set the resizing state
   multidirectionalParentSplitter.value?.setAttribute('data-p-resizing', 'true')
@@ -275,7 +277,7 @@ function onResizeIntersectStart(event: MouseEvent) {
 
 function onResize(
   event: TouchEvent | MouseEvent,
-  step: number = 5,
+  step: number = 20,
   isKeyDown?: boolean
 ) {
   let newPos, newPrevPanelSize, newNextPanelSize
@@ -303,14 +305,14 @@ function onResize(
     }
 
     if (isMultidirectionalResizing.value) {
-      onIntersectResize(event)
+      onMultidirectionResize(event)
     }
   }
 
   // Validate before resizing
   const prevPanelProps = panels.value[prevPanelIndex.value].props
   const nextPanelProps = panels.value[prevPanelIndex.value + 1].props
-
+  console.log(panels.value[prevPanelIndex.value])
   const prevPanelMinSize = prevPanelProps
     ? prevPanelProps['min-size']
     : undefined
@@ -319,14 +321,14 @@ function onResize(
     ? nextPanelProps['min-size']
     : undefined
 
-  if (
-    validatePanelReszie(
-      newPrevPanelSize as number,
-      newNextPanelSize as number,
-      prevPanelMinSize,
-      nextPanelMinSize
-    )
-  ) {
+  const isValidResize = validatePanelReszie(
+    newPrevPanelSize as number,
+    newNextPanelSize as number,
+    prevPanelMinSize,
+    nextPanelMinSize
+  )
+
+  if (isValidResize) {
     if (prevPanelEl.value && nextPanelEl.value) {
       prevPanelEl.value.style.flexBasis = `calc(${newPrevPanelSize}% -
     ${(panels.value.length - 1) * props.gutterSize}px)`
@@ -341,55 +343,55 @@ function onResize(
       prevSize.value = Number.parseFloat(newPrevPanelSize.toString()).toFixed(4)
     }
 
-    emits('resize', { originalEvent: event, sizes: panelSizes.value })
+    emits('resize', { originalEvent: event })
+  }
 
-    // Handle collapsing
-    // TODO: Default collapsed size optimization
-    const isPrevPanelCollapsible = prevPanelProps && prevPanelProps.collapsible
-    const isNextPanelCollapsible = nextPanelProps && nextPanelProps.collapsible
+  // Handle collapsing
+  // TODO: Default collapsed size optimization and emit event
+  const isPrevPanelCollapsible = prevPanelProps && prevPanelProps.collapsible
+  const isNextPanelCollapsible = nextPanelProps && nextPanelProps.collapsible
 
-    if (
-      isPrevPanelCollapsible &&
-      newPrevPanelSize &&
-      newPrevPanelSize < prevPanelMinSize
-    ) {
-      const collapsedSize = prevPanelProps['collapsed-size'] || 2
+  if (
+    isPrevPanelCollapsible &&
+    newPrevPanelSize &&
+    newPrevPanelSize < prevPanelMinSize
+  ) {
+    const collapsedSize = prevPanelProps['collapsed-size'] || 2
 
-      if (prevPanelEl.value) {
-        prevPanelEl.value.style.flexBasis = `calc(${collapsedSize}% - ${
-          (panels.value.length - 1) * props.gutterSize
-        }px)`
-      }
+    if (prevPanelEl.value) {
+      prevPanelEl.value.style.flexBasis = `calc(${collapsedSize}% - ${
+        (panels.value.length - 1) * props.gutterSize
+      }px)`
     }
+  }
 
-    if (
-      isNextPanelCollapsible &&
-      newNextPanelSize &&
-      newNextPanelSize < nextPanelMinSize
-    ) {
-      const collapsedSize = nextPanelProps['collapsed-size'] || 2
+  if (
+    isNextPanelCollapsible &&
+    newNextPanelSize &&
+    newNextPanelSize < nextPanelMinSize
+  ) {
+    const collapsedSize = nextPanelProps['collapsed-size'] || 2
 
-      if (nextPanelEl.value) {
-        nextPanelEl.value.style.flexBasis = `calc(${collapsedSize}% - ${
-          (panels.value.length - 1) * props.gutterSize
-        }px)`
-      }
+    if (nextPanelEl.value) {
+      nextPanelEl.value.style.flexBasis = `calc(${collapsedSize}% - ${
+        (panels.value.length - 1) * props.gutterSize
+      }px)`
     }
   }
 }
 
-function onIntersectResize(event: MouseEvent) {
+function onMultidirectionResize(event: MouseEvent) {
   let newIntersectPos, newPrevParentPanelSize, newNextParentPanelSize
 
   // Setting panels sizes and intersection points
   if (intersectHorizontal.value) {
     newIntersectPos =
-      (event.pageX * 100) / multiDirectionParentSplitterSize.value -
-      (intersectStartPos.value * 100) / multiDirectionParentSplitterSize.value
+      (event.pageX * 100) / multidirectionParentSplitterSize.value -
+      (intersectStartPos.value * 100) / multidirectionParentSplitterSize.value
   } else {
     newIntersectPos =
-      (event.pageY * 100) / multiDirectionParentSplitterSize.value -
-      (intersectStartPos.value * 100) / multiDirectionParentSplitterSize.value
+      (event.pageY * 100) / multidirectionParentSplitterSize.value -
+      (intersectStartPos.value * 100) / multidirectionParentSplitterSize.value
   }
 
   if (!isNil(newIntersectPos)) {
@@ -417,17 +419,54 @@ function onIntersectResize(event: MouseEvent) {
       nextParentPanelEl.value.style.flexBasis = `calc(${newNextParentPanelSize}% -
           ${(panels.value.length - 1) * props.gutterSize}px)`
     }
+  }
 
-    // TODO: Handle collapsing
+  // TODO: Handle collapsing
+  // TODO: Emit event
+  // @ts-expect-error DOM attribute
+  const isPrevPanelCollapsible = prevParentPanelEl.value?.isCollapsiblePanel()
+  // @ts-expect-error DOM attribute
+  const isNextPanelCollapsible = nextParentPanelEl.value?.isCollapsiblePanel()
+
+  if (
+    isPrevPanelCollapsible &&
+    newPrevParentPanelSize &&
+    newPrevParentPanelSize < prevPanelMinSize
+  ) {
+    // @ts-expect-error DOM attribute
+    const collapsedSize = prevParentPanelEl.value?.getCollapsedSize() || 2
+
+    if (prevParentPanelEl.value) {
+      prevParentPanelEl.value.style.flexBasis = `calc(${collapsedSize}% - ${
+        (panels.value.length - 1) * props.gutterSize
+      }px)`
+    }
+  }
+
+  if (
+    isNextPanelCollapsible &&
+    newNextParentPanelSize &&
+    newNextParentPanelSize < nextPanelMinSize
+  ) {
+    // @ts-expect-error DOM attribute
+    const collapsedSize = nextParentPanelEl.value?.getCollapsedSize() || 2
+
+    if (nextParentPanelEl.value) {
+      nextParentPanelEl.value.style.flexBasis = `calc(${collapsedSize}% - ${
+        (panels.value.length - 1) * props.gutterSize
+      }px)`
+    }
   }
 }
 
 function onResizeEnd(event: TouchEvent | MouseEvent) {
   // TODO: State management (local storage)
-  emits('resizeend', { originalEvent: event, sizes: panelSizes.value })
+  emits('resizeend', { originalEvent: event })
+
   gutterEls.value?.forEach(gutter =>
     gutter.setAttribute('data-p-gutter-resizing', 'false')
   )
+
   splitterEl.value?.setAttribute('data-p-resizing', 'false')
 
   // For multidirectional resizing
@@ -698,7 +737,7 @@ onUnmounted(() => {})
 }
 
 .splitter-gutter-intersection {
-  --apply: absolute w-5 h-5 z-2 cursor-move;
+  --apply: absolute w-3 h-3 z-2 cursor-move;
 }
 
 .splitter-vertical.splitter-resizing {

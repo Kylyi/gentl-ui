@@ -26,11 +26,11 @@ export type ISplitterProps = {
 // Emit
 type IResizeEmitOptions = {
   originalEvent: Event
-  sizes: number[]
 }
 
 export type ISplitterEmit = {
   (e: 'resize', options: IResizeEmitOptions): void
   (e: 'resizestart', options: IResizeEmitOptions): void
   (e: 'resizeend', options: IResizeEmitOptions): void
+  (e: 'collapse', options: IResizeEmitOptions): void
 }
