@@ -304,6 +304,7 @@ function onResize(
       newNextPanelSize = nextPanelSize.value - newPos
     }
 
+    // Multidirectional resizing
     if (isMultidirectionalResizing.value) {
       onMultidirectionResize(event)
     }
@@ -543,17 +544,24 @@ function clear() {
 
   // Clear size
   size.value = 0
+  prevSize.value = '0'
+  multidirectionParentSplitterSize.value = 0
 
   // Clear start position
   startPos.value = 0
+  intersectStartPos.value = 0
 
   // Clear [previous, next] panel
   prevPanelEl.value = undefined
   nextPanelEl.value = undefined
+  prevParentPanelEl.value = undefined
+  nextParentPanelEl.value = undefined
 
   // Clear [previous, next] panel size
   prevPanelSize.value = 0
   nextPanelSize.value = 0
+  prevParentPanelSize.value = 0
+  nextParentPanelSize.value = 0
 
   // Clear gutter element
   gutterElement.value = undefined
@@ -600,7 +608,10 @@ onMounted(() => {
   }
 })
 
-onUnmounted(() => {})
+onBeforeUnmount(() => {
+  clear()
+  unbindMouseListeners()
+})
 </script>
 
 <template>
