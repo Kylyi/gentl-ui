@@ -15,7 +15,7 @@ import { listContainerKey } from '~/components/List/provide/list.provide'
 import { useListDragAndDrop } from '~/components/List/functions/useListDragAndDrop'
 
 // Components
-import ListVirtualContainer from '~/components/List/ListVirtualContainer.vue'
+import type ListVirtualContainer from '~/components/List/ListVirtualContainer.vue'
 import ListContainer from '~/components/List/ListContainer.vue'
 import { useListUtils } from '~/components/List/functions/useListUtils'
 
@@ -37,10 +37,10 @@ defineEmits<{
   (e: 'added', item: any): void
   (e: 'added-multiple', items: any[]): void
   (e: 'removed', item: any): void
-  (e: 'search', payload: { hasExactMatch: boolean; search: string }): void
+  (e: 'search', payload: { hasExactMatch: boolean, search: string }): void
   (
     e: 'before-search',
-    payload: { hasExactMatch: boolean; search: string }
+    payload: { hasExactMatch: boolean, search: string }
   ): void
   (e: 'drag:start', item: IListDraggedItem): void
   (e: 'drag:end', item: IListDraggedItem): void
@@ -51,8 +51,8 @@ const { handleMoveItem, handleMoveItems } = useListUtils()
 
 // Layout
 const containerEl = ref<InstanceType<typeof ListVirtualContainer>>()
-const items =
-  props.items !== undefined
+const items
+  = props.items !== undefined
     ? (useVModel(props, 'items') as Ref<any[]>)
     : ref<any[]>([])
 
@@ -78,11 +78,11 @@ defineExpose({
   refresh: () => refresh(),
   handleKey: (
     ev: KeyboardEvent,
-    options?: { force?: boolean; repeated?: boolean }
+    options?: { force?: boolean, repeated?: boolean },
   ) => handleKey(ev, options),
   moveItem: handleMoveListItemById,
   moveItems: handleMoveListItemsById,
-  getListItems: () => items
+  getListItems: () => items,
 })
 
 const {
@@ -125,7 +125,7 @@ function handleMoveListItemsById(
     ids: Array<string | number>
     targetId: string | number
     direction: 'above' | 'below'
-  }
+  },
 ) {
   handleMoveItems({ itemsRef: items, ...payload })
 }
@@ -155,7 +155,6 @@ onMounted(() => {
           v-model="search"
           :class="{ 'm-2': !dense }"
           grow
-          :debounce="searchDebounce"
           layout="regular"
           class="bg-white dark:bg-darker"
           :loading="isLoading"
@@ -312,10 +311,11 @@ onMounted(() => {
 }
 
 .drop-indicator {
-  --apply: fixed h-2px bg-primary w-full rounded-full pointer-events-none z-$zMax;
+  --apply: fixed h-2px bg-primary w-full rounded-full pointer-events-none
+    z-$zMax;
 
   &__icon {
-    --apply: w-5 h-5 relative -left-5 color-primary bg-white dark:bg-darker rounded-custom;
+    --apply: w-5 h-5 relative -left-5 color-primary bg-white dark: bg-darker rounded-custom;
   }
 }
 </style>

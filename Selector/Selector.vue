@@ -114,6 +114,18 @@ function getKey(option: any): string {
   return typeof option === 'object' ? get(option, props.optionKey) : option
 }
 
+function getChipClass(item: any) {
+  return typeof props.chipClass === 'function'
+    ? props.chipClass(item)
+    : props.chipClass
+}
+
+function getChipStyle(item: any) {
+  return typeof props.chipStyle === 'function'
+    ? props.chipStyle(item)
+    : props.chipStyle
+}
+
 function getLabel(option: any) {
   if (isNil(option)) {
     return ''
@@ -211,11 +223,13 @@ function handleSelect(val: any) {
 function handleSelectAdd(data: any) {
   emits('added', data)
   syncScrollArea()
+  menuProxyEl.value?.recomputePosition()
 }
 
 function handleSelectRemove(data: any) {
   emits('removed', data)
   syncScrollArea()
+  menuProxyEl.value?.recomputePosition()
 }
 
 // List
@@ -479,6 +493,8 @@ function getData() {
           :navigate-to-options="{ open: { target: '_blank' } }"
           min-w="20"
           p="!y-1px"
+          :class="getChipClass(chip)"
+          :style="getChipStyle(chip)"
           :has-remove="!(readonly || disabled)"
           @remove="handleRemove(chip)"
         />
@@ -486,17 +502,24 @@ function getData() {
 
       <!-- Multi -->
       <template v-else-if="multi && model">
-        <Chip
-          v-for="(chip, idx) in modelValue"
-          :key="idx"
-          :label="getLabel(chip)"
-          :to="optionTo?.(chip)"
-          :navigate-to-options="{ open: { target: '_blank' } }"
-          :has-remove="!(readonly || disabled) && !noItemsClear"
-          min-w="20"
-          p="!y-1px"
-          @remove="handleRemove(chip)"
-        />
+        <slot
+          name="selection-chips"
+          :selected-option="getOption(model)"
+        >
+          <Chip
+            v-for="(chip, idx) in modelValue"
+            :key="idx"
+            :label="getLabel(chip)"
+            :to="optionTo?.(chip)"
+            :navigate-to-options="{ open: { target: '_blank' } }"
+            :has-remove="!(readonly || disabled) && !noItemsClear"
+            min-w="20"
+            p="!y-1px"
+            :class="getChipClass(chip)"
+            :style="getChipStyle(chip)"
+            @remove="handleRemove(chip)"
+          />
+        </slot>
       </template>
 
       <!-- Single selection -->
@@ -674,7 +697,7 @@ function getData() {
   }
 
   :deep(.wrapper__body:after) {
-    --apply: border-primary/50 dark:border-primary/50;
+    --apply: border-primary/50 dark: border-primary/50;
   }
 }
 

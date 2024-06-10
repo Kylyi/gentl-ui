@@ -26,7 +26,7 @@ type IProps = {
   /**
    * The overscan (in pixels) for both top and bottom directions
    */
-  overscan?: { top?: number; bottom?: number }
+  overscan?: { top?: number, bottom?: number }
 
   /**
    * The data rows
@@ -93,9 +93,9 @@ function getRowKey(row: T) {
 // Constants
 const VIRTUAL_SCROLL_THRESHOLD = 80
 const OVERSCAN_PX = { top: 200, bottom: 400 }
-const INITIAL_ROWS_RENDER_COUNT =
-  props.initialRowsRenderCount ??
-  (isDesktopOrTablet
+const INITIAL_ROWS_RENDER_COUNT
+  = props.initialRowsRenderCount
+  ?? (isDesktopOrTablet
     ? Math.ceil(2160 / props.rowHeight)
     : Math.ceil(1080 / props.rowHeight))
 
@@ -120,7 +120,7 @@ const overscan = computed(() => {
 })
 
 const heights = ref<number[]>(
-  Array.from({ length: props.rows?.length ?? 0 }, () => props.rowHeight)
+  Array.from({ length: props.rows?.length ?? 0 }, () => props.rowHeight),
 )
 
 const heightsCumulated = computed(() => {
@@ -134,7 +134,7 @@ const heightsCumulated = computed(() => {
 })
 
 const renderedRows = ref(
-  getRenderedRows(0, INITIAL_ROWS_RENDER_COUNT)
+  getRenderedRows(0, INITIAL_ROWS_RENDER_COUNT),
 ) as Ref<IVisibleRows>
 
 const { height, width } = useElementSize(virtualScrollEl)
@@ -168,14 +168,14 @@ const containerStyle = computed<CSSProperties>(() => {
 })
 
 const rowsInViewport = computed(() => {
-  const scrollTop =
-    (lastScrollEvent.value?.target as HTMLElement)?.scrollTop ?? 0
+  const scrollTop
+    = (lastScrollEvent.value?.target as HTMLElement)?.scrollTop ?? 0
 
   const overscanBot = Math.max(
-    height.value +
-      overscan.value.bottom +
-      Math.min(overscan.value.top, scrollTop),
-    0
+    height.value
+    + overscan.value.bottom
+    + Math.min(overscan.value.top, scrollTop),
+    0,
   ) as number
 
   return Math.ceil(overscanBot / rowHeight.value)
@@ -193,7 +193,7 @@ function handleScrollEvent(
      * Force the scrolling event to recalculate the visible rows
      */
     force?: boolean
-  }
+  },
 ) {
   if (preventNextScroll.value) {
     preventNextScroll.value = false
@@ -225,7 +225,7 @@ function handleScrollEvent(
   // Visible rows
   const firstVisibleIdx = heightsCumulated.value.findIndex(h => h >= scrollY)
   let lastVisibleIdx = heightsCumulated.value.findIndex(
-    h => h >= scrollY + (virtualScrollerRect.height.value)
+    h => h >= scrollY + (virtualScrollerRect.height.value),
   )
 
   lastVisibleIdx = lastVisibleIdx === -1 ? rows.value?.length - 1 : lastVisibleIdx
@@ -254,7 +254,7 @@ function handleScrollEvent(
 
 function updateRowHeight(rowKey: keyof T) {
   const row = renderedRows.value.rows.find(
-    row => get(row, props.rowKey!) === rowKey
+    row => get(row, props.rowKey!) === rowKey,
   )
 
   if (row) {
@@ -367,7 +367,7 @@ watchThrottled(
     throttle: 150,
     leading: true,
     trailing: true,
-  }
+  },
 )
 
 watch(rows, (rows, rowsOld) => {
@@ -380,7 +380,7 @@ watch(rows, (rows, rowsOld) => {
     const newRowsCount = (rows.length ?? 0) - (rowsOld.length ?? 0)
     const newHeights = Array.from(
       { length: newRowsCount },
-      () => props.rowHeight
+      () => props.rowHeight,
     )
 
     heights.value = [...heights.value, ...newHeights]
@@ -394,7 +394,7 @@ watch(rows, (rows, rowsOld) => {
   else {
     heights.value = Array.from(
       { length: rows.length ?? 0 },
-      () => props.rowHeight
+      () => props.rowHeight,
     )
 
     renderedRows.value = getRenderedRows(0, INITIAL_ROWS_RENDER_COUNT)
@@ -409,13 +409,13 @@ watch(rows, (rows, rowsOld) => {
   })
 })
 
-// We check for the same height of the `content` and `scroller`
+// We check for the same height of the `content` and `scroller`
 // If they are the same, it means we loaded the full content but it doesn't overflow
 // If that happens, we can assume either
 // * We loaded all the data
 // * The data is not enough to overflow the container, so we need to force the scroll event to possibly load more data
-watch([containerRect.height, virtualScrollerRect.height], async (heights) => {
-  const isZero = heights.some(h => h === 0)
+watch([containerRect.height, virtualScrollerRect.height], async heights => {
+  const isZero = heights.includes(0)
   const isSameHeight = heights[0] === heights[1]
 
   if (isSameHeight && !isZero) {
@@ -430,7 +430,7 @@ const hasJustRerendered = ref(false)
 
 const {
   pause: pauseRowHeightWatcher,
-  resume: resumeRowHeightWatcher
+  resume: resumeRowHeightWatcher,
 } = watchPausable(
   () => renderedRows.value.rows,
   () => {
@@ -449,7 +449,7 @@ const {
 
     hasJustRerendered.value = true
   },
-  { deep: true }
+  { deep: true },
 )
 
 pauseRowHeightWatcher()
@@ -469,7 +469,7 @@ function renderOnlyVisible(
     firstIdx?: number
     lastIdx?: number
     rowHeight?: number
-  }
+  },
 ) {
   const { firstIdx, lastIdx, rowHeight } = options ?? {}
   const { first, last } = visibleItemsIdx.value
@@ -479,7 +479,7 @@ function renderOnlyVisible(
 
   if (rowHeight) {
     const rowsInViewport = Math.ceil(
-      (virtualScrollerRect.height.value) / (rowHeight || props.rowHeight)
+      (virtualScrollerRect.height.value) / (rowHeight || props.rowHeight),
     )
 
     _last = _first + rowsInViewport

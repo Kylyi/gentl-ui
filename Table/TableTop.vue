@@ -70,7 +70,7 @@ const queryBuilder = useVModel(props, 'queryBuilder')
 const queryBuilderInlineEl = ref<InstanceType<typeof QueryBuilderInline>>()
 const search = useVModel(props, 'search')
 
-const hasActionBar = computedEager(() => {
+const hasActionBar = computed(() => {
   return (
     !!slots['left-prepend'] ||
     !!slots['left-append'] ||
@@ -94,7 +94,7 @@ const queryBuilderHeight = computed(() => {
   }
 })
 
-const qbControlsClasses = computedEager(() => {
+const qbControlsClasses = computed(() => {
   const hasQueryBuilder = !!queryBuilder.value
 
   // Search is used
@@ -439,6 +439,8 @@ onKeyStroke(['d', 'D'], (ev: KeyboardEvent) => {
             />
           </slot>
         </slot>
+
+        <slot name="middle-end" />
       </div>
 
       <Separator m="b-1" />

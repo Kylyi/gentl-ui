@@ -5,11 +5,10 @@ import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-bui
 import type { ITableDataFetchFncInput } from '~/components/Table/types/table-query.type'
 import type { ITableSelection } from '~/components/Table/types/table-selection.type'
 import type { ITableSelectionOptions } from '~/components/Table/types/table-selection-options.type'
+import type { TableColumn } from '~/components/Table/models/table-column.model'
+import type { ITableState } from '~/components/Table/types/table-state.type'
 
-// Models
-import { TableColumn } from '~/components/Table/models/table-column.model'
-
-export interface ITableProps {
+export type ITableProps = {
   /**
    * Whether the table should handle the resize event - performance heavy(-ish)
    */
@@ -335,6 +334,16 @@ export interface ITableProps {
   }
 
   /**
+   * Extends the `meta` object in the table state
+   *
+   * NOTE: Must return the entire `meta` object!
+   */
+  metaExtend?: (
+    options: ITableDataFetchFncInput,
+    tableState: MaybeRefOrGetter<ITableState>
+  ) => IItem
+
+  /**
    * Will split the table row into multiple columns
    */
   splitRow?: number
@@ -372,8 +381,8 @@ export interface ITableProps {
 
   /**
    * The selected rows, can be either:
-   * * Array<string | number> ~ use for `rowKey` selection
-   * * Record<itemKey, item> ~ use for `item` selection
+   * Array<string | number> ~ use for `rowKey` selection
+   * Record<itemKey, item> ~ use for `item` selection
    */
   selected?: ITableSelection
 
@@ -388,6 +397,14 @@ export interface ITableProps {
    * Link to the detail from page
    */
   to?: (row: any) => RouteLocationRaw
+
+  /**
+   * Extends the URL
+   */
+  urlExtend?: (
+    options: ITableDataFetchFncInput,
+    tableState: MaybeRefOrGetter<ITableState>
+  ) => IItem
 
   /**
    * Whether to use the url to store the table state
