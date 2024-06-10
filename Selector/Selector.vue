@@ -69,6 +69,7 @@ defineExpose({
     optionsInternal.value = []
   },
   handleSelect,
+  handleRemove,
   clear: () => clear(),
 })
 
