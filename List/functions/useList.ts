@@ -576,10 +576,11 @@ export function useList(
         isLoading.value = false
       } catch (error) {
         isLoading.value = false
-        console.error(error)
       }
     }
   }
+
+  const debouncedFetchAndSetData = useDebounceFn(fetchAndSetData, props.searchDebounce ?? 0)
 
   // Watchers
   watch(
@@ -590,7 +591,11 @@ export function useList(
       // We need to wait for the previous `abort`
       setTimeout(async () => {
         if (props.loadData?.onSearch) {
-          await fetchAndSetData(search)
+          if (props.allowAdd) {
+            handleSearchedResults(results.value)
+          }
+
+          await debouncedFetchAndSetData(search)
         } else {
           if (isInitialized.value) {
             self.emit('before-search', {

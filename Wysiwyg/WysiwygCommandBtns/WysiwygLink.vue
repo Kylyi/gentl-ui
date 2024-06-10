@@ -48,11 +48,7 @@ function handleSubmit() {
     .focus()
     .insertContent(
       `<a href="${link.value.url}" class="link">${link.value.text}</a>&nbsp;`,
-      {
-        parseOptions: {
-          preserveWhitespace: true,
-        },
-      },
+      { parseOptions: { preserveWhitespace: true } },
     )
     .run()
 
@@ -85,7 +81,6 @@ function handleSubmit() {
           <Btn
             v-if="wysiwygEditor?.isActive('link')"
             preset="CLOSE"
-            :label="$t('general.cancel')"
             @click="unlink"
           />
         </template>

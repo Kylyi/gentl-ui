@@ -2,16 +2,40 @@
 // Injections
 import { useWysiwygInjections } from '~/components/Wysiwyg/functions/useWysiwygInjections'
 
+// Functions
+import { useNumber } from '~/components/Inputs/NumberInput/functions/useNumber'
+
 // Utils
-const { wysiwygAddFiles } = useWysiwygInjections()
+const { formatBytes } = useNumber()
+const { wysiwygFilesByPath, wysiwygAddFiles } = useWysiwygInjections()
 
 // Layout
+const selectedFiles = ref<IFile[]>([])
 const files = ref<File[]>([])
 
+const uploadedFiles = computed(() => {
+  if (!wysiwygFilesByPath.value) {
+    return []
+  }
+
+  return Object.values(wysiwygFilesByPath.value)
+})
+
 function handleSubmit() {
-  wysiwygAddFiles(files.value)
+  if (selectedFiles.value.length) {
+    wysiwygAddFiles(selectedFiles.value)
+  }
+
+  if (files.value.length) {
+    wysiwygAddFiles(files.value)
+  }
 
   $hide()
+}
+
+function handleHide() {
+  files.value = []
+  selectedFiles.value = []
 }
 </script>
 
@@ -26,10 +50,36 @@ function handleSubmit() {
     <Dialog
       h="auto"
       w="200"
+      no-transition
       :title="$t('general.uploadFile', 2)"
-      @hide="files = []"
+      @hide="handleHide"
     >
       <Form @submit="handleSubmit">
+        <Selector
+          v-model="selectedFiles"
+          multi
+          :options="uploadedFiles"
+          option-label="name"
+          max-w="100"
+          :label="$t('task.useUploadedFile')"
+        >
+          <template #item="{ item }">
+            <div
+              flex="~ col"
+              p="y-1"
+            >
+              <span>{{ item.name }}</span>
+              <span text="caption">{{ formatBytes(item.size) }}</span>
+            </div>
+          </template>
+        </Selector>
+
+        <div class="separator">
+          <div class="h-px bg-ca" />
+          <span text="caption">{{ $t('queryBuilder.or') }}</span>
+          <div class="h-px bg-ca" />
+        </div>
+
         <FileInput
           v-model="files"
           multi
@@ -38,3 +88,11 @@ function handleSubmit() {
     </Dialog>
   </Btn>
 </template>
+
+<style lang="scss" scoped>
+.separator {
+  @apply grid items-center gap-3;
+
+  grid-template-columns: 1fr auto 1fr;
+}
+</style>

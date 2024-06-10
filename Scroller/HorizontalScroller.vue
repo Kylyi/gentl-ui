@@ -47,14 +47,14 @@ const updateArrows = onOverflow(
       }
     } else {
       arrivedState.left = scrollEl.value!.scrollLeft === 0
-      arrivedState.right =
-        scrollEl.value!.scrollLeft ===
-        scrollEl.value!.scrollWidth - scrollEl.value!.clientWidth
+      arrivedState.right
+        = scrollEl.value!.scrollLeft
+        === scrollEl.value!.scrollWidth - scrollEl.value!.clientWidth
 
       typeof diff === 'object' && (hasArrows.value = diff.xDiff! > 0)
     }
   },
-  { direction: 'horizontal', returnDiff: true }
+  { direction: 'horizontal', returnDiff: true },
 )
 
 const { pause, resume } = useIntervalFn(
@@ -65,7 +65,7 @@ const { pause, resume } = useIntervalFn(
     btnScrollSpeed.value = btnScrollSpeed.value * 1.02
   },
   5,
-  { immediate: false }
+  { immediate: false },
 )
 
 function handleWheel(ev: WheelEvent) {
@@ -170,52 +170,61 @@ defineExpose({
 
 <style lang="scss" scoped>
 .scroller-horizontal {
-  --apply: flex relative overflow-hidden;
+  @apply flex relative overflow-hidden;
 }
 
 .content {
-  --apply: flex flex-1 overflow-auto;
+  @apply flex flex-1 overflow-auto;
 }
 
 .arrow {
-  --apply: color-ca dark:hover:color-white hover:color-black;
+  @apply color-ca dark:hover:color-white hover:color-black;
 }
 
 .arrows-inside {
   .arrow {
-    --apply: absolute w-8 h-full max-h-20 flex z-5 pointer-events-none top-1/2 translate-y--1/2;
+    @apply absolute w-8 h-full max-h-20 flex z-5 pointer-events-none top-1/2 translate-y--1/2;
 
     .btn {
-      --apply: opacity-20 pointer-events-auto;
+      @apply opacity-20 pointer-events-auto;
     }
 
     &:not(.is-active) {
       .btn {
-        --apply: opacity-0 pointer-events-none;
+        @apply opacity-0 pointer-events-none;
       }
     }
 
     &.is-active {
-
       &.arrow--left {
-        background: linear-gradient(to right, rgba(64, 64, 64, 0.2) 0%, rgba(64, 64, 64, 0.2) 8px, transparent);
+        background: linear-gradient(
+          to right,
+          rgba(64, 64, 64, 0.2) 0%,
+          rgba(64, 64, 64, 0.2) 8px,
+          transparent
+        );
       }
 
       &.arrow--right {
-        background: linear-gradient(to left, rgba(64, 64, 64, 0.2) 0%, rgba(64, 64, 64, 0.2) 8px, transparent);
+        background: linear-gradient(
+          to left,
+          rgba(64, 64, 64, 0.2) 0%,
+          rgba(64, 64, 64, 0.2) 8px,
+          transparent
+        );
       }
 
       > .btn {
-        --apply: opacity-85 hover:bg-white dark:hover:bg-black/50;
+        @apply opacity-85 hover:bg-white dark:hover:bg-black/50;
       }
     }
 
     &--right {
-      --apply: right-0 justify-end;
+      @apply right-0 justify-end;
     }
 
     &--left {
-      --apply: left-0 justify-start;
+      @apply left-0 justify-start;
     }
   }
 }
@@ -224,26 +233,36 @@ defineExpose({
   .arrows-inside {
     .is-active.arrow {
       &--left {
-        background: linear-gradient(to right, rgba(64, 64, 64, 0.6) 0%, rgba(64, 64, 64, 0.6) 8px, transparent);
+        background: linear-gradient(
+          to right,
+          rgba(64, 64, 64, 0.6) 0%,
+          rgba(64, 64, 64, 0.6) 8px,
+          transparent
+        );
       }
 
       &--right {
-        background: linear-gradient(to left, rgba(64, 64, 64, 0.6) 0%, rgba(64, 64, 64, 0.6) 8px, transparent);
+        background: linear-gradient(
+          to left,
+          rgba(64, 64, 64, 0.6) 0%,
+          rgba(64, 64, 64, 0.6) 8px,
+          transparent
+        );
       }
     }
   }
 }
 
 .arrows-outside {
-  --apply: gap-x-1;
+  @apply gap-x-1;
 
   .arrow {
-    --apply: relative;
+    @apply relative;
   }
 
   .arrow:not(.is-active) {
     > .btn {
-      --apply: opacity-15 pointer-events-none;
+      @apply opacity-15 pointer-events-none;
     }
   }
 }

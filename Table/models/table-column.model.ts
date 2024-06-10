@@ -1,5 +1,5 @@
-import { type CSSProperties } from 'vue'
-import { type Required } from 'utility-types'
+import type { CSSProperties } from 'vue'
+import type { Required } from 'utility-types'
 import { config } from '~/components/config/components-config'
 
 // Types
@@ -12,7 +12,7 @@ import type {
 
 // Models
 import { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
-import { FilterItem } from '~/libs/Shared/models/filter-item'
+import type { FilterItem } from '~/libs/Shared/models/filter-item'
 
 // Functions
 import { useRenderTemporaryTableCell } from '~/components/Table/functions/useRenderTemporaryTableCell'
@@ -213,7 +213,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
         return filter.comparator && filter.value.length
       }
       const isNonValueComparator = NON_VALUE_COMPARATORS.includes(
-        filter.comparator
+        filter.comparator,
       )
 
       return filter.comparator && (!isNil(filter.value) || isNonValueComparator)
@@ -343,8 +343,8 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
 
     // If the column doesn't support the comparator, we set it to the first one
     if (
-      this.comparators &&
-      !this.comparators.includes(this.comparator as ComparatorEnum)
+      this.comparators
+      && !this.comparators.includes(this.comparator as ComparatorEnum)
     ) {
       this.comparator = this.comparators[0]
     }
@@ -380,13 +380,13 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
 
             return agg
           },
-          { labelChars: 0, row: undefined } as Record<string, any>
+          { labelChars: 0, row: undefined } as Record<string, any>,
         )
 
       maxContentWidth = await getCellWidth(
         maxContentRow.row,
         this,
-        slotRenderFnc
+        slotRenderFnc,
       )
     }
 
@@ -409,9 +409,9 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
         tableMinColWidth,
         this.minWidth || 0,
         config.table.columnAutoFit.considerHeader ? labelChars * 8 + 40 : 0, // These numbers are arbitrary
-        maxContentWidth + CELL_PADDING
+        maxContentWidth + CELL_PADDING,
       ),
-      config.table.columnAutoFit.maxColumnWidthChars * 6 + 20 // When autofitting, we don't want to go over some predefined value
+      config.table.columnAutoFit.maxColumnWidthChars * 6 + 20, // When autofitting, we don't want to go over some predefined value
     )
 
     this.setWidth(`${colMinWidth}px`)

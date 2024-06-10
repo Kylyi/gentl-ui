@@ -8,6 +8,7 @@ const { wysiwygEditor } = useWysiwygInjections()
 // Layout
 const isBulletedList = computed(() => toValue(wysiwygEditor)?.isActive('bulletList'))
 const isNumberedList = computed(() => toValue(wysiwygEditor)?.isActive('orderedList'))
+const isTaskList = computed(() => toValue(wysiwygEditor)?.isActive('taskList'))
 
 function handleToggleBullettedList() {
   toValue(wysiwygEditor)?.chain().focus().toggleBulletList().run()
@@ -15,6 +16,10 @@ function handleToggleBullettedList() {
 
 function handleToggleNumberedList() {
   toValue(wysiwygEditor)?.chain().focus().toggleOrderedList().run()
+}
+
+function handleToggleTaskList() {
+  toValue(wysiwygEditor)?.chain().focus().toggleTaskList().run()
 }
 </script>
 
@@ -37,6 +42,16 @@ function handleToggleNumberedList() {
       color="ca"
       :class="{ 'is-active': isNumberedList }"
       @click.stop.prevent="handleToggleNumberedList"
+      @mousedown.stop.prevent
+    />
+
+    <!-- Task list -->
+    <Btn
+      icon="i-tabler:checkbox"
+      size="sm"
+      color="ca"
+      :class="{ 'is-active': isTaskList }"
+      @click.stop.prevent="handleToggleTaskList"
       @mousedown.stop.prevent
     />
   </div>
