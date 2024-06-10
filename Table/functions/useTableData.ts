@@ -13,8 +13,8 @@ import type {
 } from '~/components/Table/types/table-query.type'
 
 // Models
-import { TableColumn } from '~/components/Table/models/table-column.model'
-import { FilterItem } from '~/libs/Shared/models/filter-item'
+import type { TableColumn } from '~/components/Table/models/table-column.model'
+import type { FilterItem } from '~/libs/Shared/models/filter-item'
 
 // Functions
 import { useTableUtils } from '~/components/Table/functions/useTableUtils'
@@ -51,7 +51,7 @@ export function useTableData(
     options?: { meta?: any }
   ) => Promise<void>,
   recreateColumns?: (shouldRecreate?: boolean) => void,
-  resizeColumns?: (force?: boolean) => void
+  resizeColumns?: (force?: boolean) => void,
 ) {
   // Utils
   const route = useRoute()
@@ -241,10 +241,10 @@ export function useTableData(
     // Column filters are handled manually!
     () => [orderBy.value, search.value, select.value, queryBuilder.value],
     () => {
-      const hasQueryBuilder =
-        queryBuilder.value?.length &&
-        'isGroup' in queryBuilder.value[0] &&
-        queryBuilder.value[0].children.length > 0
+      const hasQueryBuilder
+        = queryBuilder.value?.length
+        && 'isGroup' in queryBuilder.value[0]
+        && queryBuilder.value[0].children.length > 0
 
       // TODO: Type
       // @ts-expect-error wrong type
@@ -288,7 +288,7 @@ export function useTableData(
 
             // Add sorted columns
             ...(tableQuery.orderBy?.map(order => order.field) || []),
-          ])
+          ]),
         ),
       }
 
@@ -300,7 +300,7 @@ export function useTableData(
       }
 
       return fetchInput
-    }
+    },
   )
 
   provide(tableQueryKey, dbQuery)
@@ -327,12 +327,12 @@ export function useTableData(
 
         versionId.value = get(
           result,
-          props.getData.versionKey || config.table.versionKey
+          props.getData.versionKey || config.table.versionKey,
         )
 
         let data = get(
           result,
-          props.getData.payloadKey || config.table.payloadKey
+          props.getData.payloadKey || config.table.payloadKey,
         ) as any[]
 
         if (props.getData.createIdentifier) {
@@ -349,13 +349,13 @@ export function useTableData(
           data,
           totalRows: get(
             result,
-            props.getData.countKey || config.table.countKey
+            props.getData.countKey || config.table.countKey,
           ),
           hashes: extractHashes(result),
           res: result,
         }
       },
-      { noResolve: true }
+      { noResolve: true },
     )
   }
 
@@ -364,7 +364,7 @@ export function useTableData(
    */
   async function fetchAndSetData(
     optionsRef: MaybeRefOrGetter<ITableDataFetchFncInput>,
-    isFetchMore?: boolean
+    isFetchMore?: boolean,
   ) {
     try {
       let options = toValue(optionsRef)
@@ -395,8 +395,8 @@ export function useTableData(
       }
 
       if (
-        'extendTableFetchInput' in config.table &&
-        typeof config.table.extendTableFetchInput === 'function'
+        'extendTableFetchInput' in config.table
+        && typeof config.table.extendTableFetchInput === 'function'
       ) {
         if (isFetchMore) {
           options.fetchTableQuery.skip = rows.value.length
@@ -413,7 +413,7 @@ export function useTableData(
           config.table.extractData(res, {
             externalDataRef: externalData,
             metaRef: tableState.value?.meta,
-          })
+          }),
         )
       }
 
@@ -442,9 +442,9 @@ export function useTableData(
       if (res) {
         rows.value = isFetchMore ? [...rows.value, ...res.data] : res.data
         totalRows.value = isFetchMore ? totalRows.value : res.totalRows
-        hasMore.value =
-          totalRows.value! > rows.value.length &&
-          options.fetchTableQuery.take! === res.data.length
+        hasMore.value
+          = totalRows.value! > rows.value.length
+          && options.fetchTableQuery.take! === res.data.length
 
         instance?.emit('update:rows', rows.value)
         instance?.emit('update:totalRows', totalRows.value)
@@ -482,16 +482,16 @@ export function useTableData(
 
       // ANCHOR: We only refetch data if the query has changed or we forced the refetch
       if (
-        !isForcedRefetch.value &&
-        previousDbQuery.value?.fetchQueryParams.toString() ===
-          dbQuery.fetchQueryParams.toString()
+        !isForcedRefetch.value
+        && previousDbQuery.value?.fetchQueryParams.toString()
+        === dbQuery.fetchQueryParams.toString()
       ) {
         // We might have some columns `alwaysSelected`, so if we add such column into
         // the table, it would actually not trigger the refetch, if that happens,
         // we need to manually adjust the url
-        const hasDifferentVisibleCols =
-          dbQuery.tableQuery.select?.length !==
-          previousDbQuery.value?.tableQuery.select?.length
+        const hasDifferentVisibleCols
+          = dbQuery.tableQuery.select?.length
+          !== previousDbQuery.value?.tableQuery.select?.length
 
         if (!hasDifferentVisibleCols) {
           if (layoutRef.value?.preventLayoutReset) {
@@ -553,9 +553,10 @@ export function useTableData(
               ...(dbQuery.tableQuery.includeDeleted && {
                 includeDeleted: String(dbQuery.tableQuery.includeDeleted),
               }),
+              ...props.urlExtend?.(dbQuery, getTableState(storageKey.value)),
             },
           },
-          { replace: true }
+          { replace: true },
         )
       }
 
@@ -568,6 +569,11 @@ export function useTableData(
           schema: dbQuery.queryParams.toString(),
           columns: internalColumnsRef.value,
           queryBuilder: dbQuery.tableQuery.queryBuilder,
+
+          ...(props.metaExtend && props.metaExtend(
+            dbQuery,
+            getTableState(storageKey.value),
+          )),
         })
       }
 
@@ -576,18 +582,18 @@ export function useTableData(
       // also when user has search input focused, we don't want to refocus
       const shouldFocus = _isInitialized || !props.noFocusOnInit
 
-      if (process.client && shouldFocus) {
+      if (import.meta.client && shouldFocus) {
         const hasFloatingEl = !!document.querySelector('.floating-element')
-        const isSearchInputFocused =
-          activeElement.value?.tagName === 'INPUT' &&
-          activeElement.value?.getAttribute('name') === '_search'
+        const isSearchInputFocused
+          = activeElement.value?.tagName === 'INPUT'
+          && activeElement.value?.getAttribute('name') === '_search'
 
         if (!hasFloatingEl && !isSearchInputFocused) {
           scrollerEl.value?.focus()
         }
       }
     },
-    { immediate: true }
+    { immediate: true },
   )
 
   // Initialize query builder
@@ -604,19 +610,19 @@ export function useTableData(
       fromSchema: !!layoutRef.value?.schema,
     })
 
-    const isUrlUsed =
-      !!urlQueryBuilder?.length ||
-      !!urlColumns?.length ||
-      !!urlFilters?.length ||
-      !!urlSort?.length
+    const isUrlUsed
+      = !!urlQueryBuilder?.length
+      || !!urlColumns?.length
+      || !!urlFilters?.length
+      || !!urlSort?.length
 
     const usedQueryBuilder = isUrlUsed ? urlQueryBuilder : schemaQueryBuilder
 
     // When the query builder is present in the URL, use it
     if (
-      usedQueryBuilder &&
-      usedQueryBuilder.length &&
-      queryBuilder.value !== undefined
+      usedQueryBuilder
+      && usedQueryBuilder.length
+      && queryBuilder.value !== undefined
     ) {
       queryBuilder.value = usedQueryBuilder.length
         ? usedQueryBuilder
@@ -633,9 +639,9 @@ export function useTableData(
 
     // Otherwise, when the query builder is present in the table state, use it
     else if (
-      !isUrlUsed &&
-      tableState.value.queryBuilder?.length &&
-      queryBuilder.value !== undefined
+      !isUrlUsed
+      && tableState.value.queryBuilder?.length
+      && queryBuilder.value !== undefined
     ) {
       queryBuilder.value = tableState.value.queryBuilder
     }

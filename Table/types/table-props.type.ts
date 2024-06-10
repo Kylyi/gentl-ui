@@ -6,6 +6,7 @@ import type { ITableDataFetchFncInput } from '~/components/Table/types/table-que
 import type { ITableSelection } from '~/components/Table/types/table-selection.type'
 import type { ITableSelectionOptions } from '~/components/Table/types/table-selection-options.type'
 import type { TableColumn } from '~/components/Table/models/table-column.model'
+import type { ITableState } from '~/components/Table/types/table-state.type'
 
 export type ITableProps = {
   /**
@@ -333,6 +334,16 @@ export type ITableProps = {
   }
 
   /**
+   * Extends the `meta` object in the table state
+   *
+   * NOTE: Must return the entire `meta` object!
+   */
+  metaExtend?: (
+    options: ITableDataFetchFncInput,
+    tableState: MaybeRefOrGetter<ITableState>
+  ) => IItem
+
+  /**
    * Will split the table row into multiple columns
    */
   splitRow?: number
@@ -386,6 +397,14 @@ export type ITableProps = {
    * Link to the detail from page
    */
   to?: (row: any) => RouteLocationRaw
+
+  /**
+   * Extends the URL
+   */
+  urlExtend?: (
+    options: ITableDataFetchFncInput,
+    tableState: MaybeRefOrGetter<ITableState>
+  ) => IItem
 
   /**
    * Whether to use the url to store the table state
