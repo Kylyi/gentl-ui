@@ -22,6 +22,15 @@ export function useSplitterLayout(props: ISplitterProps) {
     return false
   }
 
+  function getNewPanelFlexBasisSize(
+    newPanelSize: number,
+    panelsLength: number
+  ) {
+    return `calc(${newPanelSize}% - ${
+      (panelsLength - 1) * (props.gutterSize as number)
+    }px)`
+  }
+
   // Styling and classes
   const splitterClasses = computed(() => {
     return ['splitter', `splitter-${props.layout}`]
@@ -66,6 +75,7 @@ export function useSplitterLayout(props: ISplitterProps) {
 
     // Functions
     isIntersectionArea,
+    getNewPanelFlexBasisSize,
 
     // Styling and classes
     splitterClasses,

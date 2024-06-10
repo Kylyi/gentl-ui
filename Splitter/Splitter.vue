@@ -30,6 +30,7 @@ const { validatePanelReszie } = useSplitterUtils(props)
 const {
   horizontal,
   intersectHorizontal,
+  getNewPanelFlexBasisSize,
   gutterHandlerCollapseNextClasses,
   gutterHandlerCollapsePreviousClasses,
   gutterHandlerBottomInterSectionClasses,
@@ -313,7 +314,7 @@ function onResize(
   // Validate before resizing
   const prevPanelProps = panels.value[prevPanelIndex.value].props
   const nextPanelProps = panels.value[prevPanelIndex.value + 1].props
-  console.log(panels.value[prevPanelIndex.value])
+
   const prevPanelMinSize = prevPanelProps
     ? prevPanelProps['min-size']
     : undefined
@@ -331,11 +332,14 @@ function onResize(
 
   if (isValidResize) {
     if (prevPanelEl.value && nextPanelEl.value) {
-      prevPanelEl.value.style.flexBasis = `calc(${newPrevPanelSize}% -
-    ${(panels.value.length - 1) * props.gutterSize}px)`
-
-      nextPanelEl.value.style.flexBasis = `calc(${newNextPanelSize}% -
-     ${(panels.value.length - 1) * props.gutterSize}px)`
+      prevPanelEl.value.style.flexBasis = getNewPanelFlexBasisSize(
+        newPrevPanelSize as number,
+        panels.value.length
+      )
+      nextPanelEl.value.style.flexBasis = getNewPanelFlexBasisSize(
+        newNextPanelSize as number,
+        panels.value.length
+      )
     }
 
     if (!isNil(newPrevPanelSize) && !isNil(newNextPanelSize)) {
@@ -360,9 +364,10 @@ function onResize(
     const collapsedSize = prevPanelProps['collapsed-size'] || 2
 
     if (prevPanelEl.value) {
-      prevPanelEl.value.style.flexBasis = `calc(${collapsedSize}% - ${
-        (panels.value.length - 1) * props.gutterSize
-      }px)`
+      prevPanelEl.value.style.flexBasis = getNewPanelFlexBasisSize(
+        collapsedSize,
+        panels.value.length
+      )
     }
   }
 
@@ -374,9 +379,10 @@ function onResize(
     const collapsedSize = nextPanelProps['collapsed-size'] || 2
 
     if (nextPanelEl.value) {
-      nextPanelEl.value.style.flexBasis = `calc(${collapsedSize}% - ${
-        (panels.value.length - 1) * props.gutterSize
-      }px)`
+      nextPanelEl.value.style.flexBasis = getNewPanelFlexBasisSize(
+        collapsedSize,
+        panels.value.length
+      )
     }
   }
 }
@@ -428,7 +434,8 @@ function onMultidirectionResize(event: MouseEvent) {
   const isPrevPanelCollapsible = prevParentPanelEl.value?.isCollapsiblePanel()
   // @ts-expect-error DOM attribute
   const isNextPanelCollapsible = nextParentPanelEl.value?.isCollapsiblePanel()
-
+  // @ts-expect-error DOM attribute
+  console.log(prevParentPanelEl.value?.getPanelProps())
   if (
     isPrevPanelCollapsible &&
     newPrevParentPanelSize &&
@@ -438,9 +445,10 @@ function onMultidirectionResize(event: MouseEvent) {
     const collapsedSize = prevParentPanelEl.value?.getCollapsedSize() || 2
 
     if (prevParentPanelEl.value) {
-      prevParentPanelEl.value.style.flexBasis = `calc(${collapsedSize}% - ${
-        (panels.value.length - 1) * props.gutterSize
-      }px)`
+      prevParentPanelEl.value.style.flexBasis = getNewPanelFlexBasisSize(
+        collapsedSize,
+        panels.value.length
+      )
     }
   }
 
@@ -453,15 +461,15 @@ function onMultidirectionResize(event: MouseEvent) {
     const collapsedSize = nextParentPanelEl.value?.getCollapsedSize() || 2
 
     if (nextParentPanelEl.value) {
-      nextParentPanelEl.value.style.flexBasis = `calc(${collapsedSize}% - ${
-        (panels.value.length - 1) * props.gutterSize
-      }px)`
+      nextParentPanelEl.value.style.flexBasis = getNewPanelFlexBasisSize(
+        collapsedSize,
+        panels.value.length
+      )
     }
   }
 }
 
 function onResizeEnd(event: TouchEvent | MouseEvent) {
-  // TODO: State management (local storage)
   emits('resizeend', { originalEvent: event })
 
   gutterEls.value?.forEach(gutter =>
@@ -596,9 +604,10 @@ onMounted(() => {
           const panelSize = panelInitialSize || 100 / panels.value.length
 
           _panelSizes[i] = panelSize
-          children[i].style.flexBasis = `calc(${panelSize}% - ${
-            (panels.value.length - 1) * props.gutterSize
-          }px)`
+          children[i].style.flexBasis = getNewPanelFlexBasisSize(
+            panelSize,
+            panels.value.length
+          )
         })
 
         panelSizes.value = _panelSizes
