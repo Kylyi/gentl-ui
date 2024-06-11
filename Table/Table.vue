@@ -5,6 +5,7 @@ import { config } from '~/components/config/components-config'
 
 // Types
 import type { ITableProps } from '~/components/Table/types/table-props.type'
+import type { ITableSelection } from '~/components/Table/types/table-selection.type'
 import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
 
 // Injections
@@ -80,10 +81,9 @@ provide(tableSlotsKey, slots)
 defineExpose({
   rerender: (noEmit?: boolean) => scrollerEl.value?.rerender(noEmit),
   refreshData: () => refreshData(true),
+  refreshSelection: (selection?: ITableSelection) => refreshSelection(selection),
   resizeColumns: (force?: boolean) => handleResize(force),
-  adjustColumns: (fnc: (columns: TableColumn[]) => void) => {
-    fnc(internalColumns.value)
-  },
+  adjustColumns: (fnc: (columns: TableColumn[]) => void) => fnc(internalColumns.value),
   scrollToTop: () => scrollerEl.value?.scrollToTop(),
   getDbQuery: () => dbQuery.value,
   selectRow: (
@@ -182,7 +182,7 @@ const {
   handleResize,
 )
 
-const { handleSelectRow, clearSelection } = useTableSelection(props)
+const { handleSelectRow, clearSelection, refreshSelection } = useTableSelection(props, rows)
 useTableExporting(rows)
 const { handleCancelEditRow } = useTableEditing(props)
 

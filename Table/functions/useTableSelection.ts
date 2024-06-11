@@ -14,7 +14,7 @@ import {
   tableSelectionKey,
 } from '~/components/Table/provide/table.provide'
 
-export function useTableSelection(props: ITableProps) {
+export function useTableSelection(props: ITableProps, rows: Ref<any[]>) {
   // Utils
   const { getRowKey } = useTableUtils()
 
@@ -23,7 +23,7 @@ export function useTableSelection(props: ITableProps) {
     : ref<ITableSelection>({})
 
   const rowKey = computed(
-    () => props.selectionOptions?.selectionKey ?? getRowKey(props)
+    () => props.selectionOptions?.selectionKey ?? getRowKey(props),
   )
 
   const selectionByKey = computed(() => {
@@ -52,7 +52,7 @@ export function useTableSelection(props: ITableProps) {
     const shouldContinue = await props.selectionOptions?.onSelect?.(
       row,
       selection,
-      options
+      options,
     )
 
     if (shouldContinue === false) {
@@ -91,6 +91,33 @@ export function useTableSelection(props: ITableProps) {
     }
   }
 
+  function refreshSelection(_selection?: ITableSelection) {
+    _selection = _selection ?? selection.value
+
+    if (isEmpty(selection.value) || isEmpty(_selection)) {
+      return
+    }
+
+    // When using Array selection, we don't really do anything
+    if (Array.isArray(_selection)) {
+      selection.value = _selection
+    }
+
+    // When using Object selection, we need to find the rows in the table
+    // and replace their current references with the new ones
+    else {
+      Object.keys(_selection).forEach(key => {
+        const row = rows.value.find(row => {
+          console.log('Log ~ Object.keys ~ row:', row)
+          return row[rowKey.value] === key
+        })
+        if (row) {
+          selection.value![key] = row
+        }
+      })
+    }
+  }
+
   function clearSelection() {
     if (Array.isArray(selection.value)) {
       selection.value = []
@@ -110,5 +137,6 @@ export function useTableSelection(props: ITableProps) {
     handleSelectRow,
     isSelected,
     clearSelection,
+    refreshSelection,
   }
 }
