@@ -108,7 +108,6 @@ export function useTableSelection(props: ITableProps, rows: Ref<any[]>) {
     else {
       Object.keys(_selection).forEach(key => {
         const row = rows.value.find(row => {
-          console.log('Log ~ Object.keys ~ row:', row)
           return row[rowKey.value] === key
         })
         if (row) {
