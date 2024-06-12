@@ -195,8 +195,7 @@ export function useInputUtils(options: IInputUtilsOptions) {
   // element, so the `focus` does not get triggered. We need to handle this case manually
   function handleClickWrapper(ev: MouseEvent) {
     const target = ev.target as HTMLElement
-    const isFocusable
-      = target.classList.contains('input-wrapper__focusable')
+    const isFocusable = target.classList.contains('.input-wrapper__focusable')
       || !!target.closest('.input-wrapper__focusable')
 
     if (isFocusable) {

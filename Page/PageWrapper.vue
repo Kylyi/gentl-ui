@@ -148,7 +148,9 @@ onMounted(() => {
   --apply: ease-out grow z-$zPageWrapper p-$PageWrapper-padding;
 
   &.is-mounted {
-    transition: padding 250ms ease-out, margin 250ms ease-out,
+    transition:
+      padding 250ms ease-out,
+      margin 250ms ease-out,
       transform 250ms ease-out;
   }
 

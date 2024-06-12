@@ -1,9 +1,14 @@
 <script setup lang="ts">
+import type { CSSProperties } from 'vue'
+
 // Types
 import type { ICrudBtnProps } from '~/components/Crud/types/crud-btn-props.type'
 import type { IMenuProps } from '~/components/Menu/types/menu-props.type'
 
-defineProps<ICrudBtnProps & { confirmationText?: string; menuProps?: IMenuProps }>()
+defineProps<ICrudBtnProps & {
+  confirmationText?: string
+  menuProps?: IMenuProps & { class?: ClassType, style?: CSSProperties }
+}>()
 defineEmits<{
   (e: 'delete'): void
   (e: 'hide'): void
@@ -20,6 +25,7 @@ defineEmits<{
     :size="size"
     :outlined="outlined"
     :no-uppercase="noUppercase"
+    :align="align"
     :disabled="disabled"
     tabindex="-1"
     data-cy="delete-button"
