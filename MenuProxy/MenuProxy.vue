@@ -15,8 +15,7 @@ import Menu from '~/components/Menu/Menu.vue'
 
 type IProps = {
   breakpoint?: keyof typeof BREAKPOINTS
-} & IDialogProps &
-  IMenuProps
+} & IDialogProps & IMenuProps
 
 const props = withDefaults(defineProps<IProps>(), {
   breakpoint: 'sm',
