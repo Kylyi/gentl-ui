@@ -4,14 +4,19 @@ import type {
   ISplitterEmit,
   ISplitterProps,
 } from '~/components/Splitter/types/splitter.type'
+import type { ISplitterPanelProps } from '~/components/Splitter/types/splitter-panel.type'
 
 // Components
 import SplitterPanel from '~/components/Splitter/SplitterPanel.vue'
+
+// Injections
+import { registerPanelPropsKey } from '~/components/Splitter/provide/splitter.provide'
 
 // Utils
 import { useDomUtils } from '~/components/Splitter/functions/useDomUtils'
 import { useSplitterUtils } from '~/components/Splitter/functions/useSplitterUtils'
 import { useSplitterLayout } from '~/components/Splitter/functions/useSplitterLayout'
+import { useSplitterPanelUtils } from '~/components/Splitter/functions/useSplitterPanelUtils'
 
 const props = withDefaults(defineProps<ISplitterProps>(), {
   gutterSize: 10,
@@ -31,20 +36,27 @@ const {
   horizontal,
   intersectHorizontal,
   getNewPanelFlexBasisSize,
+  isIntersectionArea,
+  getNewInnerMousePosition,
   gutterHandlerCollapseNextClasses,
   gutterHandlerCollapsePreviousClasses,
   gutterHandlerBottomInterSectionClasses,
   gutterHandlerTopInterSectionClasses,
   gutterStyle,
   splitterClasses,
-  isIntersectionArea,
 } = useSplitterLayout(props)
+const { getPanelPropsFromDom } = useSplitterPanelUtils()
 
 // Layout
+provide(registerPanelPropsKey, (props: ISplitterPanelProps) =>
+  panelsProps.value.push(props)
+)
+
+const panelsProps = ref<ISplitterPanelProps[]>([])
 const panels = computed(() => {
   const panels: VNode[] = []
 
-  slots.default?.().forEach((child: any) => {
+  slots.default?.().forEach((child: VNode) => {
     if (isSplitterPanel(child)) {
       panels.push(child)
     } else if (Array.isArray(child.children)) {
@@ -67,8 +79,8 @@ const prevPanelEl = ref<HTMLElement>()
 const nextPanelEl = ref<HTMLElement>()
 const prevPanelSize = ref<number>(0)
 const nextPanelSize = ref<number>(0)
-const panelSizes = ref<number[]>([])
 const prevPanelIndex = ref<number>(0)
+const panelSizes = ref<number[]>([])
 const startPos = ref<number>(0)
 const dragging = ref(false)
 
@@ -276,29 +288,28 @@ function onMultiDirectionResizeStart(event: MouseEvent) {
   multidirectionalParentSplitter.value?.setAttribute('data-p-resizing', 'true')
 }
 
-function onResize(
-  event: TouchEvent | MouseEvent,
-  step: number = 20,
-  isKeyDown?: boolean
-) {
-  let newPos, newPrevPanelSize, newNextPanelSize
+function onResize(event: TouchEvent | MouseEvent, isKeyDown?: boolean) {
+  let newPrevPanelSize, newNextPanelSize
 
   if (isKeyDown) {
     if (horizontal.value) {
-      newPrevPanelSize = (100 * (prevPanelSize?.value + step)) / size.value
-      newNextPanelSize = (100 * (nextPanelSize?.value - step)) / size.value
+      newPrevPanelSize =
+        (100 * (prevPanelSize?.value + props.step)) / size.value
+      newNextPanelSize =
+        (100 * (nextPanelSize?.value - props.step)) / size.value
     } else {
-      newPrevPanelSize = (100 * (prevPanelSize?.value - step)) / size.value
-      newNextPanelSize = (100 * (nextPanelSize?.value + step)) / size.value
+      newPrevPanelSize =
+        (100 * (prevPanelSize?.value - props.step)) / size.value
+      newNextPanelSize =
+        (100 * (nextPanelSize?.value + props.step)) / size.value
     }
   } else if (event instanceof MouseEvent) {
-    if (horizontal.value) {
-      newPos =
-        (event.pageX * 100) / size.value - (startPos.value * 100) / size.value
-    } else {
-      newPos =
-        (event.pageY * 100) / size.value - (startPos.value * 100) / size.value
-    }
+    const newPos = getNewInnerMousePosition(
+      event,
+      startPos.value,
+      size.value,
+      horizontal.value
+    )
 
     if (!isNil(newPos)) {
       newPrevPanelSize = prevPanelSize.value + newPos
@@ -311,27 +322,25 @@ function onResize(
     }
   }
 
-  // Validate before resizing
-  const prevPanelProps = panels.value[prevPanelIndex.value].props
-  const nextPanelProps = panels.value[prevPanelIndex.value + 1].props
+  // Start of resizing/collapsing
+  if (
+    prevPanelEl.value &&
+    nextPanelEl.value &&
+    newPrevPanelSize &&
+    newNextPanelSize
+  ) {
+    const prevPanelProps = panelsProps.value[prevPanelIndex.value]
+    const nextPanelProps = panelsProps.value[prevPanelIndex.value + 1]
 
-  const prevPanelMinSize = prevPanelProps
-    ? prevPanelProps['min-size']
-    : undefined
+    const isValidResize = validatePanelReszie(
+      newPrevPanelSize,
+      newNextPanelSize,
+      prevPanelProps.minSize,
+      nextPanelProps.minSize
+    )
 
-  const nextPanelMinSize = nextPanelProps
-    ? nextPanelProps['min-size']
-    : undefined
-
-  const isValidResize = validatePanelReszie(
-    newPrevPanelSize as number,
-    newNextPanelSize as number,
-    prevPanelMinSize,
-    nextPanelMinSize
-  )
-
-  if (isValidResize) {
-    if (prevPanelEl.value && nextPanelEl.value) {
+    if (isValidResize) {
+      // Resize the panels
       prevPanelEl.value.style.flexBasis = getNewPanelFlexBasisSize(
         newPrevPanelSize as number,
         panels.value.length
@@ -340,130 +349,89 @@ function onResize(
         newNextPanelSize as number,
         panels.value.length
       )
-    }
 
-    if (!isNil(newPrevPanelSize) && !isNil(newNextPanelSize)) {
       panelSizes.value[prevPanelIndex.value] = newPrevPanelSize
       panelSizes.value[prevPanelIndex.value + 1] = newNextPanelSize
       prevSize.value = Number.parseFloat(newPrevPanelSize.toString()).toFixed(4)
-    }
 
-    emits('resize', { originalEvent: event })
-  }
-
-  // Handle collapsing
-  // TODO: Default collapsed size optimization and emit event
-  const isPrevPanelCollapsible = prevPanelProps && prevPanelProps.collapsible
-  const isNextPanelCollapsible = nextPanelProps && nextPanelProps.collapsible
-
-  if (
-    isPrevPanelCollapsible &&
-    newPrevPanelSize &&
-    newPrevPanelSize < prevPanelMinSize
-  ) {
-    const collapsedSize = prevPanelProps['collapsed-size'] || 2
-
-    if (prevPanelEl.value) {
-      prevPanelEl.value.style.flexBasis = getNewPanelFlexBasisSize(
-        collapsedSize,
-        panels.value.length
-      )
-    }
-  }
-
-  if (
-    isNextPanelCollapsible &&
-    newNextPanelSize &&
-    newNextPanelSize < nextPanelMinSize
-  ) {
-    const collapsedSize = nextPanelProps['collapsed-size'] || 2
-
-    if (nextPanelEl.value) {
-      nextPanelEl.value.style.flexBasis = getNewPanelFlexBasisSize(
-        collapsedSize,
-        panels.value.length
+      emits('resize', { originalEvent: event })
+    } else {
+      // Check and update collapsible panels
+      checkAndUpdateCollapsiblePanels(
+        event,
+        {
+          newPrevPanelSize,
+          prevPanelProps,
+          element: prevPanelEl.value,
+        },
+        {
+          newNextPanelSize,
+          nextPanelProps,
+          element: nextPanelEl.value,
+        }
       )
     }
   }
 }
 
 function onMultidirectionResize(event: MouseEvent) {
-  let newIntersectPos, newPrevParentPanelSize, newNextParentPanelSize
+  let newPrevParentPanelSize, newNextParentPanelSize
 
   // Setting panels sizes and intersection points
-  if (intersectHorizontal.value) {
-    newIntersectPos =
-      (event.pageX * 100) / multidirectionParentSplitterSize.value -
-      (intersectStartPos.value * 100) / multidirectionParentSplitterSize.value
-  } else {
-    newIntersectPos =
-      (event.pageY * 100) / multidirectionParentSplitterSize.value -
-      (intersectStartPos.value * 100) / multidirectionParentSplitterSize.value
-  }
+  const newIntersectPos = getNewInnerMousePosition(
+    event,
+    intersectStartPos.value,
+    multidirectionParentSplitterSize.value,
+    intersectHorizontal.value
+  )
 
   if (!isNil(newIntersectPos)) {
     newPrevParentPanelSize = prevParentPanelSize.value + newIntersectPos
     newNextParentPanelSize = nextParentPanelSize.value - newIntersectPos
   }
-  // Validate and resize the panels
-  // @ts-expect-error DOM attribute
-  const prevPanelMinSize = prevParentPanelEl.value?.getPanelMinSize()
-  // @ts-expect-error DOM attribute
-  const nextPanelMinSize = nextParentPanelEl.value?.getPanelMinSize()
 
-  const isValidResize = validatePanelReszie(
-    newPrevParentPanelSize as number,
-    newNextParentPanelSize as number,
-    prevPanelMinSize,
-    nextPanelMinSize
-  )
-
-  if (isValidResize) {
-    if (prevParentPanelEl.value && nextParentPanelEl.value) {
-      prevParentPanelEl.value.style.flexBasis = `calc(${newPrevParentPanelSize}% -
-          ${(panels.value.length - 1) * props.gutterSize}px)`
-
-      nextParentPanelEl.value.style.flexBasis = `calc(${newNextParentPanelSize}% -
-          ${(panels.value.length - 1) * props.gutterSize}px)`
-    }
-  }
-
-  // TODO: Handle collapsing
-  // TODO: Emit event
-  // @ts-expect-error DOM attribute
-  const isPrevPanelCollapsible = prevParentPanelEl.value?.isCollapsiblePanel()
-  // @ts-expect-error DOM attribute
-  const isNextPanelCollapsible = nextParentPanelEl.value?.isCollapsiblePanel()
-  // @ts-expect-error DOM attribute
-  console.log(prevParentPanelEl.value?.getPanelProps())
+  // Start of resizing/collapsing
   if (
-    isPrevPanelCollapsible &&
+    prevParentPanelEl.value &&
+    nextParentPanelEl.value &&
     newPrevParentPanelSize &&
-    newPrevParentPanelSize < prevPanelMinSize
+    newNextParentPanelSize
   ) {
-    // @ts-expect-error DOM attribute
-    const collapsedSize = prevParentPanelEl.value?.getCollapsedSize() || 2
+    const prevParentPanelProps = getPanelPropsFromDom(prevParentPanelEl.value)
+    const nextParentPanelProps = getPanelPropsFromDom(nextParentPanelEl.value)
 
-    if (prevParentPanelEl.value) {
+    const isValidResize = validatePanelReszie(
+      newPrevParentPanelSize,
+      newNextParentPanelSize,
+      prevParentPanelProps.minSize,
+      nextParentPanelProps.minSize
+    )
+
+    if (isValidResize) {
+      // Resize the panels
       prevParentPanelEl.value.style.flexBasis = getNewPanelFlexBasisSize(
-        collapsedSize,
+        newPrevParentPanelSize,
         panels.value.length
       )
-    }
-  }
 
-  if (
-    isNextPanelCollapsible &&
-    newNextParentPanelSize &&
-    newNextParentPanelSize < nextPanelMinSize
-  ) {
-    // @ts-expect-error DOM attribute
-    const collapsedSize = nextParentPanelEl.value?.getCollapsedSize() || 2
-
-    if (nextParentPanelEl.value) {
       nextParentPanelEl.value.style.flexBasis = getNewPanelFlexBasisSize(
-        collapsedSize,
+        newNextParentPanelSize,
         panels.value.length
+      )
+    } else {
+      // Check and update collapsible panels
+      checkAndUpdateCollapsiblePanels(
+        event,
+        {
+          newPrevPanelSize: newPrevParentPanelSize,
+          prevPanelProps: prevParentPanelProps,
+          element: prevParentPanelEl.value!,
+        },
+        {
+          newNextPanelSize: newNextParentPanelSize,
+          nextPanelProps: nextParentPanelProps,
+          element: nextParentPanelEl.value!,
+        }
       )
     }
   }
@@ -546,6 +514,63 @@ function hasIntersectingBottomGutter(): boolean {
   return false
 }
 
+function checkAndUpdateCollapsiblePanels(
+  event: MouseEvent | TouchEvent,
+  prevPanelOptions: {
+    newPrevPanelSize: number
+    prevPanelProps: ISplitterPanelProps
+    element: HTMLElement
+  },
+  nextPanelOptions: {
+    newNextPanelSize: number
+    nextPanelProps: ISplitterPanelProps
+    element: HTMLElement
+  }
+) {
+  const {
+    newPrevPanelSize,
+    prevPanelProps,
+    element: prevPanelEl,
+  } = prevPanelOptions
+
+  const {
+    newNextPanelSize,
+    nextPanelProps,
+    element: nextPanelEl,
+  } = nextPanelOptions
+
+  // Previous panel
+  if (
+    prevPanelProps.collapsible &&
+    prevPanelProps.minSize &&
+    newPrevPanelSize < prevPanelProps.minSize
+  ) {
+    if (prevPanelEl) {
+      prevPanelEl.style.flexBasis = getNewPanelFlexBasisSize(
+        prevPanelProps.collapsedSize!,
+        panels.value.length
+      )
+      emits('collapse', { originalEvent: event })
+    }
+  }
+
+  // Next panel
+  if (
+    nextPanelProps.collapsible &&
+    nextPanelProps.minSize &&
+    newNextPanelSize < nextPanelProps.minSize
+  ) {
+    if (nextPanelEl) {
+      nextPanelEl.style.flexBasis = getNewPanelFlexBasisSize(
+        nextPanelProps.collapsedSize!,
+        panels.value.length
+      )
+
+      emits('collapse', { originalEvent: event })
+    }
+  }
+}
+
 function clear() {
   // Clear dragging state
   dragging.value = false
@@ -580,39 +605,34 @@ function clear() {
 
 // Lifecycle
 onMounted(() => {
-  // TODO: State management (local storage) (if needed)
   if (panels.value && panels.value.length) {
-    const initialized = false
+    if (splitterEl.value) {
+      // Get all current splitter panels of the main splitter
+      const children = [...splitterEl.value.children].filter(child =>
+        (child as HTMLElement).classList.contains('splitter-panel')
+      ) as HTMLElement[]
 
-    if (!initialized) {
-      if (splitterEl.value) {
-        // Get all current splitter panels of the main splitter
-        const children = [...splitterEl.value.children].filter(child =>
-          (child as HTMLElement).classList.contains('splitter-panel')
-        ) as HTMLElement[]
+      const _panelSizes: number[] = []
+      /**
+       * - Setting the size of each panel
+       * - If the panel has a size prop, we use it
+       * - Otherwise, we set the size of each panel to 100 / number of panels, because we want to make them equal
+       */
+      panels.value.forEach((panel, i) => {
+        const panelInitialSize =
+          panel.props && panel.props.size ? panel.props.size : null
 
-        const _panelSizes: number[] = []
-        /**
-         * - Setting the size of each panel
-         * - If the panel has a size prop, we use it
-         * - Otherwise, we set the size of each panel to 100 / number of panels, because we want to make them equal
-         */
-        panels.value.forEach((panel, i) => {
-          const panelInitialSize =
-            panel.props && panel.props.size ? panel.props.size : null
+        const panelSize = panelInitialSize || 100 / panels.value.length
 
-          const panelSize = panelInitialSize || 100 / panels.value.length
+        _panelSizes[i] = panelSize
+        children[i].style.flexBasis = getNewPanelFlexBasisSize(
+          panelSize,
+          panels.value.length
+        )
+      })
 
-          _panelSizes[i] = panelSize
-          children[i].style.flexBasis = getNewPanelFlexBasisSize(
-            panelSize,
-            panels.value.length
-          )
-        })
-
-        panelSizes.value = _panelSizes
-        prevSize.value = Number.parseFloat(_panelSizes[0].toString()).toFixed(4)
-      }
+      panelSizes.value = _panelSizes
+      prevSize.value = Number.parseFloat(_panelSizes[0].toString()).toFixed(4)
     }
   }
 })

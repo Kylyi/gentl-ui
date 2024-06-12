@@ -31,6 +31,30 @@ export function useSplitterLayout(props: ISplitterProps) {
     }px)`
   }
 
+  /**
+   * The function returns the new mouse position in percentage according to the container & layout and the start position
+   * @param event - The MouseEvent triggered by the user's interaction
+   * @param startPos - The initial position of the mouse when the interaction started
+   * @param containerSize - The size of the container within which the mouse is moving
+   * @param horizontal - A boolean indicating if the container is horizontal
+   * @returns delta - The change in mouse position as a percentage of the container size
+   */
+  function getNewInnerMousePosition(
+    event: MouseEvent,
+    startPos: number,
+    containerSize: number,
+    horizontal: boolean
+  ): number {
+    const mouseInnerPosition = horizontal
+      ? (event.clientX * 100) / containerSize
+      : (event.clientY * 100) / containerSize
+
+    const mouseInnerStartPos = (startPos * 100) / containerSize
+    const delta = mouseInnerPosition - mouseInnerStartPos
+
+    return delta
+  }
+
   // Styling and classes
   const splitterClasses = computed(() => {
     return ['splitter', `splitter-${props.layout}`]
@@ -76,6 +100,7 @@ export function useSplitterLayout(props: ISplitterProps) {
     // Functions
     isIntersectionArea,
     getNewPanelFlexBasisSize,
+    getNewInnerMousePosition,
 
     // Styling and classes
     splitterClasses,

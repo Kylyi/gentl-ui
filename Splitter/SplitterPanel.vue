@@ -5,9 +5,20 @@ import Splitter from '~/components/Splitter/Splitter.vue'
 // Types
 import type { ISplitterPanelProps } from '~/components/Splitter/types/splitter-panel.type'
 
+// Injections
+import { registerPanelPropsKey } from '~/components/Splitter/provide/splitter.provide'
+
 const props = withDefaults(defineProps<ISplitterPanelProps>(), {
   collapsedSize: 2,
 })
+
+defineExpose({
+  getElement: () => component.value,
+  getPanelMinSize: () => minSize.value,
+})
+
+// Injections
+const registerPanelProps = injectStrict(registerPanelPropsKey)
 
 // Layout
 const component = ref<HTMLElement>()
@@ -30,9 +41,9 @@ const splitterPanelClass = computed(() => {
   ]
 })
 
-defineExpose({
-  getElement: () => component.value,
-  getPanelMinSize: () => minSize.value,
+// Lifecycle
+onMounted(() => {
+  registerPanelProps(props)
 })
 </script>
 

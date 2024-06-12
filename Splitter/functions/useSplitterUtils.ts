@@ -6,8 +6,8 @@ export function useSplitterUtils(props: ISplitterProps) {
   function validatePanelReszie(
     newPrevPanelSize: number,
     newNextPanelSize: number,
-    prevPanelMinSize: number,
-    nextPanelMinSize: number
+    prevPanelMinSize?: number,
+    nextPanelMinSize?: number
   ) {
     if (newPrevPanelSize > 100 || newPrevPanelSize < 0) {
       return false
