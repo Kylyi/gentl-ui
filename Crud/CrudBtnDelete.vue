@@ -25,6 +25,7 @@ defineEmits<{
     :size="size"
     :outlined="outlined"
     :no-uppercase="noUppercase"
+    :align="align"
     :disabled="disabled"
     tabindex="-1"
     data-cy="delete-button"
