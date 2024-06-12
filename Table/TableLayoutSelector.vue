@@ -32,7 +32,7 @@ import Selector from '~/components/Selector/Selector.vue'
 // Constants
 import { queryBuilderDefault } from '~/components/QueryBuilder/constants/query-builder-default.constant'
 
-const props = defineProps<Pick<ITableProps, 'queryBuilder'>>()
+const props = defineProps<Pick<ITableProps, 'queryBuilder' | 'nonSavableSettings'>>()
 
 // Utils
 const { parseUrlParams } = useTableUtils()
@@ -54,13 +54,13 @@ const queryBuilder = useVModel(props, 'queryBuilder')
 
 function handleLayoutSelect(
   _layout?: ITableLayout,
-  resetColumnWidths?: boolean
+  resetColumnWidths?: boolean,
 ) {
   const storageKey = _getTableStorageKey()
   const tableState = getTableState(storageKey)
   const defaultFilter = get(
     tableState.value.meta,
-    config.table.defaultLayoutKey
+    config.table.defaultLayoutKey,
   ) as any
 
   // NOTE: We unfreeze any frozen column
@@ -75,8 +75,8 @@ function handleLayoutSelect(
       id: 0,
       name: '',
       schema:
-        defaultFilter?.schema ||
-        `select=${columns.value
+        defaultFilter?.schema
+        || `select=${columns.value
           .filter(col => !col.isHelperCol)
           .map(col => col.field)
           .join(',')}`,
@@ -100,8 +100,8 @@ function handleLayoutSelect(
     fromSchema: true,
   })
 
-  const schemaHasAnyFilters =
-    !!schemaFilters?.length || !!schemaQueryBuilder?.length
+  const schemaHasAnyFilters
+    = !!schemaFilters?.length || !!schemaQueryBuilder?.length
 
   // We reset the width, visibility, sorting, order and filters of all columns
   columns.value.forEach(col => {
@@ -144,9 +144,9 @@ function handleLayoutSelect(
   } else if (isReset && props.queryBuilder !== undefined) {
     queryBuilder.value = klona(queryBuilderDefault)
   } else if (
-    schemaHasAnyFilters &&
-    !schemaQueryBuilder?.length &&
-    props.queryBuilder !== undefined
+    schemaHasAnyFilters
+    && !schemaQueryBuilder?.length
+    && props.queryBuilder !== undefined
   ) {
     queryBuilder.value = klona(queryBuilderDefault)
   } else if (props.queryBuilder !== undefined) {
@@ -165,7 +165,7 @@ function handleLayoutSelect(
           comparator: filter.comparator,
           format: column.format,
           dataType: column.dataType,
-        })
+        }),
       )
     }
   })
@@ -204,11 +204,11 @@ function handleLayoutSelect(
 
     // When only filter columns are part of the schema, we manually trigger the
     // table refresh as it is not watched
-    const isOnlyColFilters =
-      schemaFilters.length &&
-      !schemaColumns.length &&
-      !schemaSort.length &&
-      !schemaQueryBuilder.length
+    const isOnlyColFilters
+      = schemaFilters.length
+      && !schemaColumns.length
+      && !schemaSort.length
+      && !schemaQueryBuilder.length
 
     if (isOnlyColFilters) {
       tableRefresh(true)
@@ -226,8 +226,10 @@ function handleLayoutSelect(
     :options="layouts"
     option-label="name"
     size="sm"
-    w="50"
+    w="70"
     layout="regular"
+    no-menu-match-width
+    :menu-props="{ placement: 'bottom-end', class: 'min-w-80' }"
     :placeholder="$t('table.layoutState')"
     data-cy="scheme-search"
     @update:model-value="handleLayoutSelect"
@@ -239,12 +241,17 @@ function handleLayoutSelect(
     <template #above-options>
       <div
         relative
-        flex="~ col"
+        flex="~ gap-2 justify-end"
         overflow="hidden"
+        p="t-1 r-2"
       >
+        <TableLayoutSettingsBtn
+          :non-saveable-settings="nonSavableSettings"
+          size="xs"
+        />
+
         <Btn
-          size="sm"
-          m="x-1 y-0.5"
+          size="xs"
           color="negative"
           no-uppercase
           :label="$t('table.layoutStateReset')"

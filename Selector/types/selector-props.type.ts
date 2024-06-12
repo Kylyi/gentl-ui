@@ -5,6 +5,8 @@ import type { RouteLocationRaw } from '#vue-router'
 // Types
 import type { IInputProps } from '~/components/Inputs/types/input-props.type'
 import type { IListProps } from '~/components/List/types/list-props.type'
+import type { IMenuProps } from '~/components/Menu/types/menu-props.type'
+import type { IDialogProps } from '~/components/Dialog/types/dialog-props.type'
 
 // Models
 import type { GroupItem } from '~/libs/Shared/models/group-item.model'
@@ -145,4 +147,9 @@ export type ISelectorProps = IInputProps & {
    * The style applied to the `Chip` when using `multi` mode
    */
   chipStyle?: CSSProperties | ((item: any) => CSSProperties)
+
+  /**
+   * Props for the picker
+   */
+  menuProps?: IDialogProps & IMenuProps
 }

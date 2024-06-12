@@ -598,6 +598,7 @@ function getData() {
         no-uplift
         max-height="50%"
         :ui="{ contentClass: 'p-0' }"
+        v-bind="menuProps"
         data-cy="drop-down-list"
         @placement="menuPlacement = $event"
         @before-hide="handleBeforeHide"

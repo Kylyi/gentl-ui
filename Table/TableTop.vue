@@ -545,9 +545,9 @@ onKeyStroke(['d', 'D'], (ev: KeyboardEvent) => {
             <TableLayoutSelector v-model:query-builder="queryBuilder" />
 
             <!-- Layout settings -->
-            <TableLayoutSettingsBtn
+            <!-- <TableLayoutSettingsBtn
               :non-saveable-settings="nonSavableSettings"
-            />
+            /> -->
           </template>
         </div>
 
