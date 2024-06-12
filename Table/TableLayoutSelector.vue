@@ -51,12 +51,12 @@ const { getTableState } = useTableStore()
 // Layout
 const layoutSelectorEl = ref<InstanceType<typeof Selector>>()
 const queryBuilder = useVModel(props, 'queryBuilder')
-const isLayoutDialogOpen = ref(false)
+const hasDialogOpen = ref(false)
 
 const menuProps = computed(() => {
   return {
     placement: 'bottom-end',
-    class: ['min-w-80', isLayoutDialogOpen.value ? 'invisible' : ''],
+    class: ['min-w-80', hasDialogOpen.value ? 'invisible' : ''],
   }
 })
 
@@ -256,8 +256,8 @@ function handleLayoutSelect(
         <TableLayoutSettingsBtn
           :non-saveable-settings="nonSavableSettings"
           size="xs"
-          @before-show="isLayoutDialogOpen = true"
-          @before-hide="isLayoutDialogOpen = false"
+          @before-show="hasDialogOpen = true"
+          @before-hide="hasDialogOpen = false"
         />
 
         <Btn
@@ -288,13 +288,3 @@ function handleLayoutSelect(
     </template>
   </Selector>
 </template>
-
-<style scoped lang="scss">
-.x {
-  --apply: relative;
-
-  &::after {
-    --apply: absolute content-empty bottom-0 left-0 w-full h-px bg-ca left--2;
-  }
-}
-</style>

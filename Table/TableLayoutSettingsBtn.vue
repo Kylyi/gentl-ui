@@ -351,7 +351,11 @@ const $z = useZod(
               :readonly="!!currentLayoutId"
               container-class="bg-white dark:bg-darker col-start-1"
               :label="$t('table.saveColumns')"
-            />
+            >
+              <template #prepend>
+                <div class="i-tabler:columns-2 color-blue-500" />
+              </template>
+            </Toggle>
 
             <!-- Filters -->
             <Toggle
@@ -362,6 +366,10 @@ const $z = useZod(
               :label="$t('table.saveFilters')"
               @update:model-value="checkSaveable('filters', $event)"
             >
+              <template #prepend>
+                <div class="i-ic:round-filter-alt color-blue-500" />
+              </template>
+
               <template
                 v-if="!saveableEntities.filters"
                 #append
@@ -394,6 +402,10 @@ const $z = useZod(
               col="start-1"
               @update:model-value="checkSaveable('sorting', $event)"
             >
+              <template #prepend>
+                <div class="i-basil:sort-outline color-blue-500" />
+              </template>
+
               <template
                 v-if="!saveableEntities.sorting"
                 #append
@@ -438,7 +450,11 @@ const $z = useZod(
               v-model="layout.public"
               container-class="bg-white dark:bg-darker"
               :label="$t('table.savePublic')"
-            />
+            >
+              <template #prepend>
+                <div class="i-ic:round-public color-blue-500" />
+              </template>
+            </Toggle>
 
             <!-- Default -->
             <Toggle
@@ -446,7 +462,11 @@ const $z = useZod(
               v-model="layout.default"
               container-class="bg-white dark:bg-darker"
               :label="$t('table.saveDefault')"
-            />
+            >
+              <template #prepend>
+                <div class="i-fluent:book-default-28-filled color-blue-500" />
+              </template>
+            </Toggle>
           </div>
         </div>
 
