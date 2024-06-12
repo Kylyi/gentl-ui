@@ -536,7 +536,7 @@ function getData() {
 
     <template #append>
       <div
-        v-if="$slots.append || (!readonly && !disabled && !noDropdownIcon)"
+        v-if="$slots.append || (!readonly && !disabled)"
         flex="~ gap-x-1 center"
         p="x-2"
         shrink-0
