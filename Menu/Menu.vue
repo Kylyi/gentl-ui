@@ -373,7 +373,7 @@ const isOverlayVisible = computed(() => {
   }
 
   &__arrow {
-    @apply absolute w-2 h-2 rotate-45 bg-white dark: bg-darker z--1;
+    @apply absolute w-2 h-2 rotate-45 bg-white dark:bg-darker z--1;
   }
 
   &__content {
