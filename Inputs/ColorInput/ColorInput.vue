@@ -81,7 +81,6 @@ const fieldProps = getFieldProps(props)
       placement="bottom-start"
       :reference-target="referenceEl"
       no-uplift
-      @before-show="$hide({ all: true })"
     >
       <ColorBrandingPicker
         v-model="model"
