@@ -51,6 +51,14 @@ const { getTableState } = useTableStore()
 // Layout
 const layoutSelectorEl = ref<InstanceType<typeof Selector>>()
 const queryBuilder = useVModel(props, 'queryBuilder')
+const isLayoutDialogOpen = ref(false)
+
+const menuProps = computed(() => {
+  return {
+    placement: 'bottom-end',
+    class: ['min-w-80', isLayoutDialogOpen.value ? 'invisible' : ''],
+  }
+})
 
 function handleLayoutSelect(
   _layout?: ITableLayout,
@@ -229,7 +237,7 @@ function handleLayoutSelect(
     w="70"
     layout="regular"
     no-menu-match-width
-    :menu-props="{ placement: 'bottom-end', class: 'min-w-80' }"
+    :menu-props="menuProps"
     :placeholder="$t('table.layoutState')"
     data-cy="scheme-search"
     @update:model-value="handleLayoutSelect"
@@ -248,6 +256,8 @@ function handleLayoutSelect(
         <TableLayoutSettingsBtn
           :non-saveable-settings="nonSavableSettings"
           size="xs"
+          @before-show="isLayoutDialogOpen = true"
+          @before-hide="isLayoutDialogOpen = false"
         />
 
         <Btn

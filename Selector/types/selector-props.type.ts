@@ -151,5 +151,5 @@ export type ISelectorProps = IInputProps & {
   /**
    * Props for the picker
    */
-  menuProps?: IDialogProps & IMenuProps
+  menuProps?: IDialogProps & IMenuProps & { class?: ClassType, style?: CSSProperties }
 }

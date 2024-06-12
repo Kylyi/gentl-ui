@@ -3,7 +3,7 @@ import { klona } from 'klona/full'
 import { config } from '~/components/config/components-config'
 
 // Types
-import { type ITableLayout } from '~/components/Table/types/table-layout.type'
+import type { ITableLayout } from '~/components/Table/types/table-layout.type'
 
 // Injections
 import {
@@ -27,6 +27,11 @@ type IProps = {
 const props = withDefaults(defineProps<IProps>(), {
   nonSavableSettings: () => [],
 })
+
+const emits = defineEmits<{
+  (e: 'beforeShow'): void
+  (e: 'beforeHide'): void
+}>()
 
 // Store
 const { getTableState, setTableState } = useTableStore()
@@ -75,30 +80,31 @@ const nonSaveableSettingsByName = computed(() => {
 
 const isSaveable = computed(() => {
   return (
-    (layout.value.filters ||
-      layout.value.queryBuilder ||
-      layout.value.sort ||
-      layout.value.columns) &&
-    layout.value.name
+    (layout.value.filters
+    || layout.value.queryBuilder
+    || layout.value.sort
+    || layout.value.columns)
+    && layout.value.name
   )
 })
 
 const hasSaveLayoutOptions = computed(() => {
   return (
-    config.table.canSaveLayoutAsPublic &&
-    !nonSaveableSettingsByName.value.public
+    config.table.canSaveLayoutAsPublic
+    && !nonSaveableSettingsByName.value.public
   )
 })
 
 function handleDialogBeforeShow() {
-  layout.value.name =
-    currentLayout.value?.name !== $t('table.layoutStateNoLayout')
-      ? currentLayout.value?.name || ''
-      : ''
+  layout.value.name = currentLayout.value?.name !== $t('table.layoutStateNoLayout')
+    ? currentLayout.value?.name || ''
+    : ''
   currentLayoutId.value = currentLayout.value?.id
 
   setDefaults(currentLayout.value)
   layoutClone.value = klona(layout.value)
+
+  emits('beforeShow')
 }
 
 function setDefaults(_layout?: ITableLayout) {
@@ -109,9 +115,9 @@ function setDefaults(_layout?: ITableLayout) {
   const layoutSearchParams = new URLSearchParams(_layout.schema)
 
   layout.value.columns = layoutSearchParams.has('select')
-  layout.value.sort =
-    layoutSearchParams.has('paging') &&
-    !layoutSearchParams.get('paging')?.toString().startsWith('(sort($key.asc)')
+  layout.value.sort
+    = layoutSearchParams.has('paging')
+    && !layoutSearchParams.get('paging')?.toString().startsWith('(sort($key.asc)')
   layout.value.filters = layoutSearchParams.has('and')
 
   checkSaveable('filters', layout.value.filters)
@@ -124,7 +130,7 @@ function setDefaults(_layout?: ITableLayout) {
 
 function checkSaveable(
   entity: 'columns' | 'filters' | 'sorting',
-  value?: boolean | null
+  value?: boolean | null,
 ) {
   if (!value) {
     saveableEntities.value[entity] = true
@@ -134,14 +140,14 @@ function checkSaveable(
 
   switch (entity) {
     case 'filters':
-      saveableEntities.value.filters =
-        !!tableQuery.value.fetchTableQuery.filters?.length
+      saveableEntities.value.filters
+        = !!tableQuery.value.fetchTableQuery.filters?.length
 
       return saveableEntities.value.filters
 
     case 'sorting':
-      saveableEntities.value.sorting =
-        !!tableQuery.value.fetchTableQuery.orderBy?.length
+      saveableEntities.value.sorting
+        = !!tableQuery.value.fetchTableQuery.orderBy?.length
 
       return saveableEntities.value.sorting
   }
@@ -184,10 +190,10 @@ async function handleSaveLayout() {
           tableName: _tableStorageKey.value,
         },
         toSave,
-        { mode, tableQuery: tableQuery.value }
+        { mode, tableQuery: tableQuery.value },
       )
     },
-    { $z, notifySuccess: true, logging: { operationName: 'table.layoutSave' } }
+    { $z, notifySuccess: true, logging: { operationName: 'table.layoutSave' } },
   )
 
   // When we create a new layout, we add it to the layouts array
@@ -241,7 +247,7 @@ async function handleDeleteLayoutState() {
       notifySuccess: true,
       noResolve: true,
       logging: { operationName: 'table.layoutDelete' },
-    }
+    },
   )
 
   layouts.value = layouts.value.filter(l => l.id !== deletedFilterId)
@@ -275,7 +281,7 @@ const $z = useZod(
       name: z.string(),
     }),
   },
-  { layout }
+  { layout },
 )
 </script>
 
@@ -297,6 +303,7 @@ const $z = useZod(
       h="122"
       @hide="reset"
       @before-show="handleDialogBeforeShow"
+      @before-hide="$emit('beforeHide')"
     >
       <Form
         p="2"
@@ -425,8 +432,8 @@ const $z = useZod(
             <!-- Public -->
             <Toggle
               v-if="
-                !nonSaveableSettingsByName.public &&
-                config.table.canSaveLayoutAsPublic
+                !nonSaveableSettingsByName.public
+                  && config.table.canSaveLayoutAsPublic
               "
               v-model="layout.public"
               container-class="bg-white dark:bg-darker"
