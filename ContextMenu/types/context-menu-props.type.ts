@@ -8,7 +8,13 @@ type IContextPropsTeleport = {
 }
 
 export type IContextMenuProps = {
+  /** Menu items (instead of slots) */
+  menuItems?: IContextMenuItemProps[]
+
+  /** <Teleport /> settings */
   teleport?: IContextPropsTeleport
+
+  /** is menu NOT the top level menu  */
   isSub?: boolean
 
   /** CSS classes for ContextMenu window */
@@ -28,6 +34,9 @@ export type IContextMenuItemProps = {
 
   /** props for `KeyboardShortcut` */
   shortcut?: IKeyboardShortcutProps
+
+  /** click handler */
+  onClick?: () => void
 }
 
 export type IContextMenuItemSubProps = {

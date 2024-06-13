@@ -12,7 +12,10 @@ export function useContextMenuUtils() {
     // Calculations for the main context menu by event coordinates
     if (!rootDiv) {
       return {
-        x: listWidth + x.value > innerWidth ? x.value - listWidth : x.value,
+        x:
+          listWidth + x.value > innerWidth
+            ? ((x.value - listWidth) / innerWidth) * 100
+            : (x.value / innerWidth) * 100,
         y: listHeight + y.value > innerHeight ? y.value - listHeight : y.value,
       }
     }
@@ -36,8 +39,8 @@ export function useContextMenuUtils() {
       Number(rootUlParent?.getBoundingClientRect()?.y) > rootY
 
     // Coordinates to shift by axes
-    const leftSide = rootX - listWidth
-    const bottomSide = rootY - listHeight + rootHeight
+    const toLeft = ((rootX - listWidth) / innerWidth) * 100
+    const toBottom = ((rootY - listHeight + rootHeight) / innerHeight) * 100
 
     // Conditions for shifting by axes
     const needShiftByX =
@@ -46,12 +49,25 @@ export function useContextMenuUtils() {
       rootHeight + listHeight + rootY > innerHeight || isShiftedParentY
 
     return {
-      x: needShiftByX ? leftSide : rootX + rootWidth,
-      y: needShiftByY ? bottomSide : rootY,
+      x: needShiftByX ? toLeft : ((rootX + rootWidth) / innerWidth) * 100,
+      y: needShiftByY ? toBottom : rootY,
     }
+  }
+
+  function getScrollableListHeight(
+    list: HTMLUListElement,
+    y: number
+  ): number | false {
+    if (y < 0) {
+      const { height: listHeight } = list.getBoundingClientRect()
+      return listHeight - Math.abs(y) - 5
+    }
+
+    return false
   }
 
   return {
     getCoordsForMenu,
+    getScrollableListHeight,
   }
 }

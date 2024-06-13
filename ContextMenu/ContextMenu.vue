@@ -1,4 +1,7 @@
 <script setup lang="ts">
+// Utils
+import { useContextMenuUtils } from '~/components/ContextMenu/functions/useContextMenuUtils'
+
 // Types
 import type { IContextMenuProps } from '~/components/ContextMenu/types/context-menu-props.type'
 
@@ -14,9 +17,14 @@ const emits = defineEmits<{
   (e: 'closeMenu'): void
 }>()
 
+// Utils
+const { getScrollableListHeight } = useContextMenuUtils()
+
 // Layout
 const list = ref<HTMLUListElement>()
 const isOpen = ref(false)
+const scrollable = ref(false)
+const listHeight = ref(0)
 const coords = reactive({
   x: 0,
   y: 0,
@@ -24,20 +32,32 @@ const coords = reactive({
 
 watch(isOpen, value => {
   if (value) {
+    const height = getScrollableListHeight(list.value!, coords.y)
+
+    if (height) {
+      listHeight.value = height
+      scrollable.value = true
+    }
+
     emits('openMenu')
   } else {
+    listHeight.value = 0
+    scrollable.value = false
+
     emits('closeMenu')
   }
 })
 
 // Functions
-function closeMenu() {
+function closeMenu(ev: MouseEvent) {
   const { innerWidth, innerHeight } = window
 
-  isOpen.value = false
+  if (ev.button !== 2) {
+    isOpen.value = false
 
-  coords.x = innerWidth
-  coords.y = innerHeight
+    coords.x = innerWidth
+    coords.y = innerHeight
+  }
 }
 
 // Binding event listeners
@@ -62,7 +82,7 @@ onUnmounted(() => {
       v-if="teleport && !teleport.disabled"
       :to="teleport.to"
     >
-      <ul
+      <div
         ref="list"
         class="context-menu-list bg-dark light:bg-gray-100"
         :class="[
@@ -71,15 +91,28 @@ onUnmounted(() => {
             : 'opacity-0 pointer-events-none',
           menuClasses,
         ]"
-        :style="`top: ${coords.y}px; left: ${coords.x}px;`"
+        :style="`
+          left: ${coords.x}%;
+          top: ${scrollable ? 5 : coords.y}px;
+          height: ${scrollable ? `${listHeight}px` : 'auto'};
+          overflow-y: ${scrollable ? 'scroll' : 'auto'};
+        `"
         @mouseenter="isOpen = true"
       >
-        <slot />
-      </ul>
+        <slot>
+          <template v-if="menuItems?.length">
+            <ContextMenuItem
+              v-for="(menuItem, index) in menuItems"
+              :key="`${menuItem.label}_${index}`"
+              v-bind="menuItem"
+            />
+          </template>
+        </slot>
+      </div>
     </Teleport>
 
     <template v-else>
-      <ul
+      <div
         ref="list"
         class="context-menu-list bg-dark light:bg-gray-100"
         :class="[
@@ -88,18 +121,39 @@ onUnmounted(() => {
             : 'opacity-0 pointer-events-none',
           menuClasses,
         ]"
-        :style="`top: ${coords.y}px; left: ${coords.x}px;`"
+        :style="`
+          left: ${scrollable && isSub ? coords.x - 1 : coords.x}%;
+          top: ${scrollable ? 5 : coords.y}px;
+          height: ${scrollable ? `${listHeight}px` : 'auto'};
+          overflow-y: ${scrollable ? 'scroll' : 'auto'};
+        `"
         @mouseenter="isOpen = true"
       >
-        <slot />
-      </ul>
+        <slot>
+          <template v-if="menuItems?.length">
+            <ContextMenuItem
+              v-for="(menuItem, index) in menuItems"
+              :key="`${menuItem.label}_${index}`"
+              v-bind="menuItem"
+            />
+          </template>
+        </slot>
+      </div>
     </template>
   </ContextMenuRoot>
 </template>
 
 <style lang="scss" scoped>
 .context-menu-list {
-  --apply: fixed h-max min-w-max p-1 rounded text-xs flex flex-col gap-2
+  --apply: fixed h-max min-w-20 p-1 rounded text-xs flex flex-col gap-2
     shadow-lg z-9999;
+
+  &::-webkit-scrollbar {
+    --apply: w-[3px];
+
+    &-thumb {
+      --apply: bg-gray rounded-full;
+    }
+  }
 }
 </style>

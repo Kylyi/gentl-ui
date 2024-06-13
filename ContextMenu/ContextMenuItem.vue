@@ -7,19 +7,33 @@ const props = withDefaults(defineProps<IContextMenuItemProps>(), {
   hoverTextColor: 'light.500',
 })
 
+const emits = defineEmits<{
+  (e: 'click'): void
+}>()
+
 // Utils
 const { getColor } = useColors()
 
 // Layout
 const hoverBgColorComputed = computed(() => getColor(props.hoverBgColor))
 const hoverTextColorComputed = computed(() => getColor(props.hoverTextColor))
+
+// Functions
+function clickHandler() {
+  if (props.onClick) {
+    props.onClick()
+    return
+  }
+
+  emits('click')
+}
 </script>
 
 <template>
-  <li
-    class="context-menu-item"
+  <div
+    class="context-menu-item !text-xs"
     :class="{ 'disabled-item': disabled }"
-    @click.stop
+    @click.stop="clickHandler"
   >
     <!-- Label -->
     <slot name="label">
@@ -46,7 +60,7 @@ const hoverTextColorComputed = computed(() => getColor(props.hoverTextColor))
 
     <!-- Sub menu -->
     <slot name="sub" />
-  </li>
+  </div>
 </template>
 
 <style lang="scss" scoped>
