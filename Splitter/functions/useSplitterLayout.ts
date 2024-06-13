@@ -32,25 +32,33 @@ export function useSplitterLayout(props: ISplitterProps) {
   }
 
   /**
-   * The function returns the new mouse position in percentage according to the container & layout and the start position
-   * @param event - The MouseEvent triggered by the user's interaction
-   * @param startPos - The initial position of the mouse when the interaction started
+   * The function returns the change in mouse/touch position as a percentage of the container size
+   * @param event - The mouse or touch event
+   * @param startPos - The initial position of the mouse or touch event
    * @param containerSize - The size of the container within which the mouse is moving
    * @param horizontal - A boolean indicating if the container is horizontal
-   * @returns delta - The change in mouse position as a percentage of the container size
+   * @returns delta - The change in mouse/touch position as a percentage of the container size
    */
-  function getNewInnerMousePosition(
-    event: MouseEvent,
+  function getNewInnerMouseOrTouchPosition(
+    event: MouseEvent | TouchEvent,
     startPos: number,
     containerSize: number,
     horizontal: boolean
   ): number {
-    const mouseInnerPosition = horizontal
-      ? (event.clientX * 100) / containerSize
-      : (event.clientY * 100) / containerSize
+    let innerPosition
+
+    if (event instanceof MouseEvent) {
+      innerPosition = horizontal
+        ? (event.pageX * 100) / containerSize
+        : (event.pageY * 100) / containerSize
+    } else {
+      innerPosition = horizontal
+        ? (event.touches[0].pageX * 100) / containerSize
+        : (event.touches[0].pageY * 100) / containerSize
+    }
 
     const mouseInnerStartPos = (startPos * 100) / containerSize
-    const delta = mouseInnerPosition - mouseInnerStartPos
+    const delta = innerPosition - mouseInnerStartPos
 
     return delta
   }
@@ -100,7 +108,7 @@ export function useSplitterLayout(props: ISplitterProps) {
     // Functions
     isIntersectionArea,
     getNewPanelFlexBasisSize,
-    getNewInnerMousePosition,
+    getNewInnerMouseOrTouchPosition,
 
     // Styling and classes
     splitterClasses,

@@ -30,14 +30,14 @@ const emits = defineEmits<ISplitterEmit>()
 
 // Utils
 const slots = useSlots()
-const { getOuterHeight, getOuterWidth } = useDomUtils()
+const { getOuterHeight, getOuterWidth, getWidth, getHeight } = useDomUtils()
 const { validatePanelReszie } = useSplitterUtils(props)
 const {
   horizontal,
   intersectHorizontal,
   getNewPanelFlexBasisSize,
   isIntersectionArea,
-  getNewInnerMousePosition,
+  getNewInnerMouseOrTouchPosition,
   gutterHandlerCollapseNextClasses,
   gutterHandlerCollapsePreviousClasses,
   gutterHandlerBottomInterSectionClasses,
@@ -101,6 +101,8 @@ const gutterElement = ref<HTMLElement>()
 // Listeners
 const mouseMoveListener = ref<(event: MouseEvent) => void>()
 const mouseUpListener = ref<(event: MouseEvent) => void>()
+const touchMoveListener = ref<(event: TouchEvent) => void>()
+const touchEndListener = ref<(event: TouchEvent) => void>()
 
 // Functions
 function isSplitterPanel(child: VNode) {
@@ -131,26 +133,20 @@ function onResizeStart(
   // Set the size of the splitter (that have panels inside it) - according to the layout
   if (splitterEl.value) {
     size.value = horizontal.value
-      ? splitterEl.value.clientWidth
-      : splitterEl.value.clientHeight
+      ? getWidth(splitterEl.value)
+      : getHeight(splitterEl.value)
   }
 
   // Set the start position and dragging state
   if (!isKeyDown) {
     dragging.value = true
 
-    if (horizontal.value) {
-      if (event instanceof MouseEvent) {
-        startPos.value = event.pageX
-      } else {
-        startPos.value = event.changedTouches[0].pageX
-      }
-    } else {
-      if (event instanceof MouseEvent) {
-        startPos.value = event.pageY
-      } else {
-        startPos.value = event.changedTouches[0].pageY
-      }
+    if (event instanceof MouseEvent) {
+      startPos.value = horizontal.value ? event.pageX : event.pageY
+    } else if (event instanceof TouchEvent) {
+      startPos.value = horizontal.value
+        ? event.changedTouches[0].pageX
+        : event.changedTouches[0].pageY
     }
   }
 
@@ -291,6 +287,7 @@ function onMultiDirectionResizeStart(event: MouseEvent) {
 function onResize(event: TouchEvent | MouseEvent, isKeyDown?: boolean) {
   let newPrevPanelSize, newNextPanelSize
 
+  // Keybord resizing
   if (isKeyDown) {
     if (horizontal.value) {
       newPrevPanelSize =
@@ -303,22 +300,24 @@ function onResize(event: TouchEvent | MouseEvent, isKeyDown?: boolean) {
       newNextPanelSize =
         (100 * (nextPanelSize?.value + props.step)) / size.value
     }
-  } else if (event instanceof MouseEvent) {
-    const newPos = getNewInnerMousePosition(
-      event,
-      startPos.value,
-      size.value,
-      horizontal.value
-    )
+  } else {
+    // Mouse and touch resizing
+    if (event instanceof MouseEvent || event instanceof TouchEvent) {
+      const newPos = getNewInnerMouseOrTouchPosition(
+        event,
+        startPos.value,
+        size.value,
+        horizontal.value
+      )
+      if (!isNil(newPos)) {
+        newPrevPanelSize = prevPanelSize.value + newPos
+        newNextPanelSize = nextPanelSize.value - newPos
+      }
 
-    if (!isNil(newPos)) {
-      newPrevPanelSize = prevPanelSize.value + newPos
-      newNextPanelSize = nextPanelSize.value - newPos
-    }
-
-    // Multidirectional resizing
-    if (isMultidirectionalResizing.value) {
-      onMultidirectionResize(event)
+      // Multidirectional resizing (applicable only for mouse events)
+      if (isMultidirectionalResizing.value && event instanceof MouseEvent) {
+        onMultidirectionResize(event)
+      }
     }
   }
 
@@ -356,7 +355,7 @@ function onResize(event: TouchEvent | MouseEvent, isKeyDown?: boolean) {
 
       emits('resize', { originalEvent: event })
     } else {
-      // Check and update collapsible panels
+      // Check and update collapsible panels only if the resizing is not valid
       checkAndUpdateCollapsiblePanels(
         event,
         {
@@ -378,7 +377,7 @@ function onMultidirectionResize(event: MouseEvent) {
   let newPrevParentPanelSize, newNextParentPanelSize
 
   // Setting panels sizes and intersection points
-  const newIntersectPos = getNewInnerMousePosition(
+  const newIntersectPos = getNewInnerMouseOrTouchPosition(
     event,
     intersectStartPos.value,
     multidirectionParentSplitterSize.value,
@@ -464,6 +463,24 @@ function onGutterMouseDown(event: MouseEvent, index: number) {
   bindMouseListeners()
 }
 
+function onGutterTouchStart(event: TouchEvent, index: number) {
+  onResizeStart(event, index)
+  bindTouchListeners()
+  event.preventDefault()
+}
+
+function onGutterTouchMove(event: TouchEvent) {
+  console.log('Touch move')
+  onResize(event)
+  event.preventDefault()
+}
+
+function onGutterTouchEnd(event: TouchEvent) {
+  onResizeEnd(event)
+  unbindTouchListeners()
+  event.preventDefault()
+}
+
 function bindMouseListeners() {
   if (!mouseMoveListener.value) {
     mouseMoveListener.value = (event: MouseEvent) => onResize(event)
@@ -489,6 +506,34 @@ function unbindMouseListeners() {
   if (mouseUpListener.value) {
     document.removeEventListener('mouseup', mouseUpListener.value)
     mouseUpListener.value = undefined
+  }
+}
+
+function bindTouchListeners() {
+  if (!touchMoveListener.value) {
+    touchMoveListener.value = (event: TouchEvent) => onResize(event)
+    document.addEventListener('touchmove', touchMoveListener.value)
+  }
+
+  if (!touchEndListener.value) {
+    touchEndListener.value = (event: TouchEvent) => {
+      onResizeEnd(event)
+      unbindTouchListeners()
+    }
+
+    document.addEventListener('touchend', touchEndListener.value)
+  }
+}
+
+function unbindTouchListeners() {
+  if (touchMoveListener.value) {
+    document.removeEventListener('touchmove', touchMoveListener.value)
+    touchMoveListener.value = undefined
+  }
+
+  if (touchEndListener.value) {
+    document.removeEventListener('touchend', touchEndListener.value)
+    touchEndListener.value = undefined
   }
 }
 
@@ -668,6 +713,9 @@ onBeforeUnmount(() => {
         class="splitter-gutter"
         :data-p-gutter-resizing="false"
         @mousedown="onGutterMouseDown($event, i)"
+        @touchstart="onGutterTouchStart($event, i)"
+        @touchmove="onGutterTouchMove"
+        @touchcancel="onGutterTouchEnd"
       >
         <!-- Intersection points [Top and bottom] (multi-directional resizing) -->
         <div

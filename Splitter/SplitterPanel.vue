@@ -14,7 +14,6 @@ const props = withDefaults(defineProps<ISplitterPanelProps>(), {
 
 defineExpose({
   getElement: () => component.value,
-  getPanelMinSize: () => minSize.value,
 })
 
 // Injections
@@ -23,7 +22,6 @@ const registerPanelProps = injectStrict(registerPanelPropsKey)
 // Layout
 const component = ref<HTMLElement>()
 const slots = useSlots()
-const minSize = toRef(props, 'minSize')
 
 const nestedState = ref<boolean | null>(null)
 const isNested = computed(() => {
@@ -51,9 +49,6 @@ onMounted(() => {
   <div
     ref="component"
     :class="splitterPanelClass"
-    .getPanelMinSize="() => minSize"
-    .isCollapsiblePanel="() => collapsible"
-    .getCollapsedSize="() => collapsedSize"
     .getPanelProps="() => props"
   >
     <slot></slot>
@@ -66,7 +61,7 @@ onMounted(() => {
 }
 
 .splitter-panel:not(.splitter-panel-nested) {
-  --apply: bg-ca rounded-custom;
+  --apply: bg-ca;
 }
 
 .splitter-panel-nested {
