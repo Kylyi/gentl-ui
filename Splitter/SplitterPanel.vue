@@ -57,18 +57,18 @@ onMounted(() => {
 
 <style lang="scss">
 .splitter-panel {
-  --apply: flex flex-grow;
+  @apply flex flex-grow;
 }
 
 .splitter-panel:not(.splitter-panel-nested) {
-  --apply: bg-ca;
+  @apply bg-ca;
 }
 
 .splitter-panel-nested {
-  --apply: flex flex-col;
+  @apply flex flex-col;
 }
 
 .splitter-panel .splitter {
-  --apply: flex-grow border-0;
+  @apply flex-grow border-0;
 }
 </style>

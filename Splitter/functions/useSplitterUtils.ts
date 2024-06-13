@@ -1,7 +1,4 @@
-// Types
-import type { ISplitterProps } from '~/components/Splitter/types/splitter.type'
-
-export function useSplitterUtils(props: ISplitterProps) {
+export function useSplitterUtils() {
   // Functions
   function validatePanelReszie(
     newPrevPanelSize: number,

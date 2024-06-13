@@ -31,7 +31,7 @@ const emits = defineEmits<ISplitterEmit>()
 // Utils
 const slots = useSlots()
 const { getOuterHeight, getOuterWidth, getWidth, getHeight } = useDomUtils()
-const { validatePanelReszie } = useSplitterUtils(props)
+const { validatePanelReszie } = useSplitterUtils()
 const {
   horizontal,
   intersectHorizontal,
@@ -748,52 +748,52 @@ onBeforeUnmount(() => {
 
 <style scoped lang="scss">
 .splitter {
-  --apply: flex flex-row flex-nowrap;
+  @apply flex flex-row flex-nowrap;
 }
 
 .splitter-vertical {
-  --apply: flex flex-col;
+  @apply flex flex-col;
 }
 
 .splitter-gutter {
-  --apply: relative flex shrink-0 flex-grow-0 items-center justify-center
+  @apply relative flex shrink-0 flex-grow-0 items-center justify-center
     cursor-col-resize transition-all duration-0.25s pointer-events-auto;
 
   &:hover {
-    --apply: ;
+    @apply;
   }
 }
 
 .splitter-gutter-handle {
-  --apply: relative;
+  @apply relative;
 }
 
 .splitter-horizontal.splitter-resizing {
-  --apply: cursor-col-resize select-none;
+  @apply cursor-col-resize select-none;
 }
 
 .splitter-horizontal > .splitter-gutter > .splitter-gutter-handle {
-  --apply: w-full h-6;
+  @apply w-full h-6;
 }
 
 .splitter-horizontal > .splitter-gutter {
-  --apply: cursor-col-resize;
+  @apply cursor-col-resize;
 
   .splitter-gutter-handle-previous,
   .splitter-gutter-handle-next {
-    --apply: invisible opacity-0;
+    @apply invisible opacity-0;
     transition: visibility 0s, opacity 0.5s linear;
   }
 
   &:hover {
     .splitter-gutter-handle-previous {
-      --apply: absolute top-0.5 left-2;
+      @apply absolute top-0.5 left-2;
       visibility: visible;
       opacity: 0.7;
     }
 
     .splitter-gutter-handle-next {
-      --apply: absolute bottom-0.5 right-2;
+      @apply absolute bottom-0.5 right-2;
       visibility: visible;
       opacity: 0.7;
     }
@@ -801,23 +801,23 @@ onBeforeUnmount(() => {
 }
 
 .splitter-vertical > .splitter-gutter {
-  --apply: cursor-row-resize;
+  @apply cursor-row-resize;
 
   .splitter-gutter-handle-previous,
   .splitter-gutter-handle-next {
-    --apply: invisible opacity-0;
+    @apply invisible opacity-0;
     transition: visibility 0s, opacity 0.5s linear;
   }
 
   &:hover {
     .splitter-gutter-handle-previous {
-      --apply: absolute top-2 left-0.5;
+      @apply absolute top-2 left-0.5;
       visibility: visible;
       opacity: 0.7;
     }
 
     .splitter-gutter-handle-next {
-      --apply: absolute bottom-2 right-0.5;
+      @apply absolute bottom-2 right-0.5;
       visibility: visible;
       opacity: 0.7;
     }
@@ -825,18 +825,18 @@ onBeforeUnmount(() => {
 }
 
 .splitter-gutter-intersection {
-  --apply: absolute w-3 h-3 z-2 cursor-move;
+  @apply absolute w-3 h-3 z-2 cursor-move;
 }
 
 .splitter-vertical.splitter-resizing {
-  --apply: cursor-row-resize select-none;
+  @apply cursor-row-resize select-none;
 }
 
 .splitter-vertical > .splitter-gutter {
-  --apply: cursor-row-resize w-full;
+  @apply cursor-row-resize w-full;
 }
 
 .splitter-vertical > .splitter-gutter > .splitter-gutter-handle {
-  --apply: h-full w-6;
+  @apply h-full w-6;
 }
 </style>
