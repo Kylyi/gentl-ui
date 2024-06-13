@@ -114,6 +114,7 @@ function handleRemoveCondition() {
 
       parentOfParent.children = parentOfParent.children.toSpliced(selfIdx, 1)
     }
+    tableRefresh()
 
     return
   }
