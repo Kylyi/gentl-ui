@@ -49,7 +49,12 @@ const {
   onMultidirectionResizeEnd,
   isIntersectionArea,
   clearMultidirectionalResizingState,
-} = useSplitterMultidirectionResizeLayout(props, splitterEl, horizontal, emits)
+} = useSplitterMultidirectionResizeLayout({
+  props,
+  activeSplitter: splitterEl,
+  isHorizontalLayout: horizontal,
+  emits,
+})
 
 const { getNewPanelFlexBasisSize } = useSplitterUtils(props)
 

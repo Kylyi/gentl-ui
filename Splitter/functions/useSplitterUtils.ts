@@ -69,7 +69,8 @@ export function useSplitterUtils(props: ISplitterProps, emits?: ISplitterEmit) {
           // TODO: fIX THIS  panels.value.length
           2
         )
-        emits('collapse', { originalEvent: event })
+
+        emits!('collapse', { originalEvent: event })
       }
     }
 
@@ -86,7 +87,7 @@ export function useSplitterUtils(props: ISplitterProps, emits?: ISplitterEmit) {
           2
         )
 
-        emits('collapse', { originalEvent: event })
+        emits!('collapse', { originalEvent: event })
       }
     }
   }

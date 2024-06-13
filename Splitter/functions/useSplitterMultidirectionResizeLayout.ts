@@ -9,12 +9,14 @@ import { useSplitterDomUtils } from '~/components/Splitter/functions/useSplitter
 import { useSplitterUtils } from '~/components/Splitter/functions/useSplitterUtils'
 import { useSplitterPanelUtils } from '~/components/Splitter/functions/useSplitterPanelUtils'
 
-export function useSplitterMultidirectionResizeLayout(
-  props: ISplitterProps,
-  parentSplitter: Ref<HTMLElement | undefined>,
-  horizontal: Ref<boolean>,
+export function useSplitterMultidirectionResizeLayout(options: {
+  props: ISplitterProps
+  activeSplitter: Ref<HTMLElement | undefined>
+  isHorizontalLayout: Ref<boolean>
   emits: ISplitterEmit
-) {
+}) {
+  const { props, activeSplitter, isHorizontalLayout, emits } = options
+
   // Utils
   const {
     getOuterWidth,
@@ -23,6 +25,7 @@ export function useSplitterMultidirectionResizeLayout(
     getWidth,
     getNewInnerMouseOrTouchPosition,
   } = useSplitterDomUtils()
+
   const {
     validatePanelReszie,
     checkAndUpdateCollapsiblePanels,
@@ -33,7 +36,7 @@ export function useSplitterMultidirectionResizeLayout(
   // Layout
   const multidirectionalParentPanels = ref<Element[]>([])
 
-  const intersectHorizontal = computed(() => !horizontal.value)
+  const intersectHorizontal = computed(() => !isHorizontalLayout.value)
   const multidirectionalParentSplitter = ref<HTMLElement>()
   const multidirectionParentSplitterSize = ref<number>(0)
   const parentPanelEl = ref<HTMLElement>()
@@ -46,7 +49,7 @@ export function useSplitterMultidirectionResizeLayout(
   const isMultidirectionalResizing = ref(false)
 
   const hasIntersectingTopGutter = computed(() => {
-    const mainParentOfSplitter = parentSplitter?.value?.parentElement
+    const mainParentOfSplitter = activeSplitter?.value?.parentElement
     const previousSibiling = mainParentOfSplitter?.previousElementSibling
 
     if (previousSibiling?.classList.contains('splitter-gutter')) {
@@ -57,7 +60,7 @@ export function useSplitterMultidirectionResizeLayout(
   })
 
   const hasIntersectingBottomGutter = computed(() => {
-    const mainParentOfSplitter = parentSplitter?.value?.parentElement
+    const mainParentOfSplitter = activeSplitter?.value?.parentElement
     const nextSibiling = mainParentOfSplitter?.nextElementSibling
 
     if (nextSibiling?.classList.contains('splitter-gutter')) {
@@ -75,9 +78,9 @@ export function useSplitterMultidirectionResizeLayout(
 
     // Set the previous and next panel elements [because we need to resize them]
     if (
-      parentSplitter.value?.parentElement?.classList.contains('splitter-panel')
+      activeSplitter.value?.parentElement?.classList.contains('splitter-panel')
     ) {
-      parentPanelEl.value = parentSplitter.value?.parentElement
+      parentPanelEl.value = activeSplitter.value?.parentElement
 
       // Identify previous parent panel respect to the intersection
       prevParentPanelEl.value =
