@@ -1,4 +1,4 @@
-export function useDomUtils() {
+export function useSplitterDomUtils() {
   function getOuterWidth(el?: HTMLElement, includeMargin?: boolean) {
     if (el) {
       let width = el.offsetWidth
@@ -79,10 +79,43 @@ export function useDomUtils() {
     return 0
   }
 
+  /**
+   * The function returns the change in mouse/touch position as a percentage of the container size
+   * @param event - The mouse or touch event
+   * @param startPos - The initial position of the mouse or touch event
+   * @param containerSize - The size of the container within which the mouse is moving
+   * @param horizontal - A boolean indicating if the container is horizontal
+   * @returns delta - The change in mouse/touch position as a percentage of the container size
+   */
+  function getNewInnerMouseOrTouchPosition(
+    event: MouseEvent | TouchEvent,
+    startPos: number,
+    containerSize: number,
+    horizontal: boolean
+  ): number {
+    let innerPosition
+
+    if (event instanceof MouseEvent) {
+      innerPosition = horizontal
+        ? (event.pageX * 100) / containerSize
+        : (event.pageY * 100) / containerSize
+    } else {
+      innerPosition = horizontal
+        ? (event.touches[0].pageX * 100) / containerSize
+        : (event.touches[0].pageY * 100) / containerSize
+    }
+
+    const mouseInnerStartPos = (startPos * 100) / containerSize
+    const delta = innerPosition - mouseInnerStartPos
+
+    return delta
+  }
+
   return {
     getOuterWidth,
     getOuterHeight,
     getHeight,
     getWidth,
+    getNewInnerMouseOrTouchPosition,
   }
 }
