@@ -1,12 +1,12 @@
 <script setup lang="ts">
 // Types
-import {
-  type IQueryBuilderGroup,
-  type IQueryBuilderGroupProps,
+import type {
+  IQueryBuilderGroup,
+  IQueryBuilderGroupProps,
 } from '~/components/QueryBuilder/types/query-builder-group-props.type'
 
 // Models
-import { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
+import type { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
 
 // Injections
 import {
@@ -196,59 +196,57 @@ const collapseProps = computed(() => {
 
 <style scoped lang="scss">
 .qb-group {
-  --apply: relative flex flex-col rounded-custom p-r-0 p-l-2 m-l-5
-    border-1 border-transparent;
+  @apply relative flex flex-col rounded-custom p-r-0 p-l-2 m-l-5 border-1
+    border-transparent;
 
   transition:
     background-color 0.3s ease-in-out,
-  shadow 0.3s ease-in-out;
+    shadow 0.3s ease-in-out;
 
   &.is-hovered {
-    --apply: bg-white dark:bg-darker shadow-consistent shadow-ca;
+    @apply bg-white dark:bg-darker shadow-consistent shadow-ca;
 
     & > li {
-      --apply: border-1 border-ca border-dashed;
+      @apply border-1 border-ca border-dashed;
     }
   }
 
   &-row {
-    --apply: flex gap-2 flex-wrap min-h-10 items-center;
+    @apply flex gap-2 flex-wrap min-h-10 items-center;
   }
 
   &-condition {
-    --apply: flex gap-1 items-center grow;
+    @apply flex gap-1 items-center grow;
 
     .is-active {
-      --apply: bg-primary color-white;
+      @apply bg-primary color-white;
     }
   }
 
   &-actions {
-    --apply: flex gap-1 items-center p-r-4;
+    @apply flex gap-1 items-center p-r-4;
   }
 
   &-controls {
-    --apply: flex gap-2 m-l-9 p-y-1;
+    @apply flex gap-2 m-l-9 p-y-1;
   }
 }
 
 .qb-group:not(.is-base) {
   &::before {
-    --apply: absolute content-empty -left-3 top-0 h-full
-      border-l-1 border-ca border-dashed;
+    @apply absolute content-empty -left-3 top-0 h-full border-l-1 border-ca border-dashed;
   }
 
   &::after {
-    --apply: absolute content-empty -left-3 w-3
-      border-b-1 border-ca border-dashed;
+    @apply absolute content-empty -left-3 w-3 border-b-1 border-ca border-dashed;
 
-      // This is kinda specific but it shouldn't really cause issues if we
-      // don't mess with input sizes
-    --apply: top-19.5px;
+    // This is kinda specific but it shouldn't really cause issues if we
+    // don't mess with input sizes
+    @apply top-19.5px;
   }
 }
 
 .qb-group:not(.is-base).is-last-child::before {
-  --apply: h-19.5px;
+  @apply h-19.5px;
 }
 </style>

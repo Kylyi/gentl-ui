@@ -25,8 +25,8 @@ const emits = defineEmits<{
 }>()
 
 // Utils
-const { draggedItem, queryBuilderEl, queryBuilderElRect } =
-  useQueryBuilderDragAndDrop()
+const { draggedItem, queryBuilderEl, queryBuilderElRect }
+  = useQueryBuilderDragAndDrop()
 
 // Layout
 const items = useVModel(props, 'items', emits)
@@ -64,8 +64,7 @@ useResizeObserver(queryBuilderEl, entries => {
 })
 
 // Column filters
-const { qbColumnFilters, syncFilters, removeItem } =
-  useQueryBuilderColumnFilters(props)
+const { qbColumnFilters, syncFilters, removeItem } = useQueryBuilderColumnFilters(props)
 
 // Provide
 const columns = toRef(props, 'columns')
@@ -159,14 +158,14 @@ defineExpose({
 
 <style scoped lang="scss">
 .query-builder {
-  --apply: relative bg-ca p-1 rounded-custom overflow-auto;
+  @apply relative bg-ca p-1 rounded-custom overflow-auto;
 }
 
 .drop-indicator {
-  --apply: absolute h-2px bg-primary w-full rounded-full pointer-events-none z-2;
+  @apply absolute h-2px bg-primary w-full rounded-full pointer-events-none z-2;
 
   &__icon {
-    --apply: w-5 h-5 relative -left-5 color-primary;
+    @apply w-5 h-5 relative -left-5 color-primary;
   }
 }
 </style>

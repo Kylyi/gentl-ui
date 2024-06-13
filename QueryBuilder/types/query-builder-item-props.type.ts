@@ -4,7 +4,7 @@ import type { IQueryBuilderGroup } from '~/components/QueryBuilder/types/query-b
 import type { IQueryBuilderRowProps } from '~/components/QueryBuilder/types/query-builder-row-props.type'
 
 // Models
-import { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
+import type { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
 
 export type IQueryBuilderItem<T = IItem> = {
   id: string

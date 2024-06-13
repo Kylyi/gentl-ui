@@ -42,7 +42,7 @@ const { getColor } = useColors()
 const columns = injectStrict(qbColumnsKey)
 const isActivelyModifyingValues = injectStrict(
   qbIsActivelyModifyingValuesKey,
-  ref(false)
+  ref(false),
 )
 const tableRefresh = injectStrict(tableRefreshKey, () => {})
 const noItemOverlay = inject('noItemOverlay', ref(false))
@@ -105,6 +105,19 @@ function handleRemoveCondition() {
 
   parent.children.splice(idx, 1)
 
+  if (!parent.children.length) {
+    const parentOfParent = get(toValue(items), parentPath.split('.').slice(0, -2).join('.'))
+
+    if (parentOfParent) {
+      const selfIdx = parentOfParent.children
+        .findIndex((child: IQueryBuilderItem) => item.value.path === child.path)
+
+      parentOfParent.children = parentOfParent.children.toSpliced(selfIdx, 1)
+    }
+
+    return
+  }
+
   parent.children = [...parent.children]
 
   emits('delete:row', item.value)
@@ -126,9 +139,9 @@ async function handleItemEditMenuBeforeHide() {
   await nextTick()
 
   if (
-    !item.value.comparator ||
-    (Array.isArray(item.value.value) && !item.value.value.length) ||
-    (item.value.value === undefined && !isNonValueComparator.value)
+    !item.value.comparator
+    || (Array.isArray(item.value.value) && !item.value.value.length)
+    || (item.value.value === undefined && !isNonValueComparator.value)
   ) {
     handleRemoveCondition()
   } else {
@@ -165,7 +178,7 @@ const $z = useZod({ scope: 'qb' })
     >
       {{
         $t(
-          `comparator.${item.comparator?.replaceAll('.', '|')}`
+          `comparator.${item.comparator?.replaceAll('.', '|')}`,
         ).toLocaleLowerCase()
       }}
     </span>
@@ -247,33 +260,33 @@ const $z = useZod({ scope: 'qb' })
 
 <style scoped lang="scss">
 .qb-item {
-  --apply: relative flex gap-1 bg-ca border-1 border-dashed border-ca
+  @apply relative flex gap-1 bg-ca border-1 border-dashed border-ca
     rounded-custom p-l-1.5 items-center cursor-pointer;
 
-  --apply: min-h-26px; // Arbitrary number that looks good...
+  @apply min-h-26px; // Arbitrary number that looks good...
 
   &:hover {
-    --apply: shadow-consistent-xs shadow-ca;
+    @apply shadow-consistent-xs shadow-ca;
   }
 
   &.is-first-child {
-    --apply: m-l-3;
+    @apply m-l-3;
   }
 
   &.is-last-child {
-    --apply: m-r-3;
+    @apply m-r-3;
   }
-
 }
 
 :deep(.qb-item__value) {
---apply: rounded-custom p-1 leading-none min-w-5 min-h-5 text-xs text-center font-bold
-  bg-white dark:bg-darker color-black dark:color-white max-w-70 truncate;
+  @apply rounded-custom p-1 leading-none min-w-5 min-h-5 text-xs text-center
+    font-bold bg-white dark:bg-darker color-black dark:color-white max-w-70
+    truncate;
 }
 
 .qb-item.is-first-child {
   &::before {
-    --apply: absolute -left-2.5 text-6 leading-none;
+    @apply absolute -left-2.5 text-6 leading-none;
 
     content: '\2772';
     color: var(--bracketColor);
@@ -281,10 +294,10 @@ const $z = useZod({ scope: 'qb' })
 }
 
 .is-last-child {
-  --apply: relative;
+  @apply relative;
 
   &::after {
-    --apply: absolute -right-2 text-6 leading-none font-normal;
+    @apply absolute -right-2 text-6 leading-none font-normal;
 
     content: '\2773';
     color: var(--bracketColor);
@@ -292,6 +305,6 @@ const $z = useZod({ scope: 'qb' })
 }
 
 .close-bracket {
-  --apply: m-r-2 self-center;
+  @apply m-r-2 self-center;
 }
 </style>

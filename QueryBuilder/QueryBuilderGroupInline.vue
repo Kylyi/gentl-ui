@@ -6,7 +6,7 @@ import type {
 } from '~/components/QueryBuilder/types/query-builder-group-props.type'
 
 // Models
-import { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
+import type { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
 
 // Injections
 import {
@@ -80,7 +80,7 @@ function handleAddCondition(useParent?: boolean) {
 
   nextTick(() => {
     const addedEl = container.value?.querySelector(
-      `[data-path="${newPath}"]`
+      `[data-path="${newPath}"]`,
     ) as HTMLElement
 
     setTimeout(() => {
@@ -105,9 +105,7 @@ function handleRemoveGroup() {
 <template>
   <!-- Condition -->
   <Btn
-    :label="
-      item.condition === 'AND' ? $t('queryBuilder.and') : $t('queryBuilder.or')
-    "
+    :label="item.condition === 'AND' ? $t('queryBuilder.and') : $t('queryBuilder.or')"
     size="xs"
     class="condition-btn color-blue-500 self-center"
     :class="{
@@ -204,7 +202,7 @@ function handleRemoveGroup() {
     @click="handleAddCondition(true)"
   />
 
-  <!-- Close bracket (When no add buttom is present) -->
+  <!-- Close bracket (When no add button is present) -->
   <div
     v-else-if="isLastChild"
     class="last-child-bracket"
@@ -218,10 +216,10 @@ function handleRemoveGroup() {
 <style scoped lang="scss">
 .condition-btn {
   &.is-first-child {
-    --apply: m-l-2;
+    @apply m-l-2;
 
     &::before {
-      --apply: absolute -left-2.5 text-6 leading-none font-normal;
+      @apply absolute -left-2.5 text-6 leading-none font-normal;
 
       content: '\2772';
       color: var(--bracketColor);
@@ -230,10 +228,10 @@ function handleRemoveGroup() {
 }
 
 .last-child-bracket {
-  --apply: relative self-center m-r-2;
+  @apply relative self-center m-r-2;
 
   &::after {
-    --apply: absolute -right-2 text-6 leading-none font-normal;
+    @apply absolute -right-2 text-6 leading-none font-normal;
 
     content: '\2773';
     color: var(--bracketColor);
