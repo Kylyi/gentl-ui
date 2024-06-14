@@ -11,8 +11,9 @@ import { useSplitterMultidirectionResizeLayout } from '~/components/Splitter/fun
 import { useSplitterUtils } from '~/components/Splitter/functions/useSplitterUtils'
 
 const props = withDefaults(defineProps<ISplitterProps>(), {
-  gutterSize: 10,
+  gutterSize: 4,
   step: 5,
+  layout: 'horizontal',
   ui: () => ({
     noResizeArrowHint: true,
   }),
@@ -175,7 +176,6 @@ function unbindTouchListeners() {
 onMounted(() => {
   if (panels.value && panels.value.length) {
     if (splitterEl.value) {
-      // Get all current splitter panels of the main splitter
       const children = [...splitterEl.value.children].filter(child =>
         (child as HTMLElement).classList.contains('splitter-panel')
       ) as HTMLElement[]

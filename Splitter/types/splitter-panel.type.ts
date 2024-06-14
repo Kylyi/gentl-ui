@@ -3,6 +3,7 @@ export type ISplitterPanelProps = {
    * Size of the pannel relative to 100%.
    */
   size?: number
+
   /**
    * Minimum size of the pannel relative to 100%.
    */
@@ -15,7 +16,6 @@ export type ISplitterPanelProps = {
 
   /**
    * Size of the panel when collapsed relative to 100%.
-   * @defaultValue 2
    */
   collapsedSize?: number
 }
