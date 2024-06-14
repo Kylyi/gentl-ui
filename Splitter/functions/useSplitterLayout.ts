@@ -221,6 +221,7 @@ export function useSplitterLayout(props: ISplitterProps, emits: ISplitterEmit) {
         // Check and update collapsible panels only if the resizing is not valid
         checkAndUpdateCollapsiblePanels(
           event,
+          panels.value.length,
           {
             newPrevPanelSize,
             prevPanelProps,

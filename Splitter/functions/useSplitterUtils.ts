@@ -34,6 +34,7 @@ export function useSplitterUtils(props: ISplitterProps, emits?: ISplitterEmit) {
 
   function checkAndUpdateCollapsiblePanels(
     event: MouseEvent | TouchEvent,
+    panelsLength: number,
     prevPanelOptions: {
       newPrevPanelSize: number
       prevPanelProps: ISplitterPanelProps
@@ -66,8 +67,7 @@ export function useSplitterUtils(props: ISplitterProps, emits?: ISplitterEmit) {
       if (prevPanelEl) {
         prevPanelEl.style.flexBasis = getNewPanelFlexBasisSize(
           prevPanelProps.collapsedSize!,
-          // TODO: fIX THIS  panels.value.length
-          2
+          panelsLength
         )
 
         emits!('collapse', { originalEvent: event })
@@ -83,8 +83,7 @@ export function useSplitterUtils(props: ISplitterProps, emits?: ISplitterEmit) {
       if (nextPanelEl) {
         nextPanelEl.style.flexBasis = getNewPanelFlexBasisSize(
           nextPanelProps.collapsedSize!,
-          // TODO: fIX THIS panels.value.length
-          2
+          panelsLength
         )
 
         emits!('collapse', { originalEvent: event })

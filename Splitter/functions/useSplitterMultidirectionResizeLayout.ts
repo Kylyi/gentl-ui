@@ -1,3 +1,4 @@
+// @unocss-include
 // Types
 import type {
   ISplitterEmit,
@@ -222,6 +223,7 @@ export function useSplitterMultidirectionResizeLayout(options: {
         // Check and update collapsible panels
         checkAndUpdateCollapsiblePanels(
           event,
+          multidirectionalParentPanels.value.length,
           {
             newPrevPanelSize: newPrevParentPanelSize,
             prevPanelProps: prevParentPanelProps,
