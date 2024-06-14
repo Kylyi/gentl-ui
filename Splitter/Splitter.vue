@@ -33,12 +33,10 @@ const {
   onResize,
   onResizeEnd,
   clearResizingState,
+  splitterClasses,
+  gutterStyle,
   gutterHandlerCollapseNextClasses,
   gutterHandlerCollapsePreviousClasses,
-  gutterHandlerBottomInterSectionClasses,
-  gutterHandlerTopInterSectionClasses,
-  gutterStyle,
-  splitterClasses,
 } = useSplitterLayout(props, emits)
 
 const {
@@ -50,6 +48,8 @@ const {
   onMultidirectionResizeEnd,
   isIntersectionArea,
   clearMultidirectionalResizingState,
+  gutterHandlerTopInterSectionClasses,
+  gutterHandlerBottomInterSectionClasses,
 } = useSplitterMultidirectionResizeLayout({
   props,
   activeSplitter: splitterEl,

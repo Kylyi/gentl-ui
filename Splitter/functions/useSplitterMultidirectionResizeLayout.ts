@@ -276,6 +276,19 @@ export function useSplitterMultidirectionResizeLayout(options: {
     multidirectionalParentPanels.value = []
   }
 
+  // Styling and classes
+  const gutterHandlerTopInterSectionClasses = computed(() => [
+    'splitter-gutter-intersection top',
+    { 'top-[-7px]': isHorizontalLayout.value },
+    { 'left-[-7px]': !isHorizontalLayout.value },
+  ])
+
+  const gutterHandlerBottomInterSectionClasses = computed(() => [
+    'splitter-gutter-intersection bottom',
+    { 'bottom-[-7px]': isHorizontalLayout.value },
+    { 'left-[-7px]': !isHorizontalLayout.value },
+  ])
+
   return {
     // Layout
     isMultidirectionalResizing,
@@ -289,5 +302,9 @@ export function useSplitterMultidirectionResizeLayout(options: {
     onMultidirectionResize,
     onMultidirectionResizeEnd,
     clearMultidirectionalResizingState,
+
+    // Styling and classes
+    gutterHandlerTopInterSectionClasses,
+    gutterHandlerBottomInterSectionClasses,
   }
 }

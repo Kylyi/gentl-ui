@@ -144,6 +144,7 @@ export function useSplitterLayout(props: ISplitterProps, emits: ISplitterEmit) {
     if (gutterEls.value) {
       gutterEls.value[index].setAttribute('data-p-gutter-resizing', 'true')
     }
+
     // Set the resizing state
     splitterEl.value?.setAttribute('data-p-resizing', 'true')
   }
@@ -173,6 +174,7 @@ export function useSplitterLayout(props: ISplitterProps, emits: ISplitterEmit) {
           size.value,
           horizontal.value
         )
+
         if (!isNil(newPos)) {
           newPrevPanelSize = prevPanelSize.value + newPos
           newNextPanelSize = nextPanelSize.value - newPos
@@ -301,18 +303,6 @@ export function useSplitterLayout(props: ISplitterProps, emits: ISplitterEmit) {
     },
   ])
 
-  const gutterHandlerTopInterSectionClasses = computed(() => [
-    'splitter-gutter-intersection top',
-    { 'top-[-7px]': horizontal.value },
-    { 'left-[-7px]': !horizontal.value },
-  ])
-
-  const gutterHandlerBottomInterSectionClasses = computed(() => [
-    'splitter-gutter-intersection bottom',
-    { 'bottom-[-7px]': horizontal.value },
-    { 'left-[-7px]': !horizontal.value },
-  ])
-
   return {
     // Layout
     horizontal,
@@ -335,7 +325,5 @@ export function useSplitterLayout(props: ISplitterProps, emits: ISplitterEmit) {
     gutterStyle,
     gutterHandlerCollapsePreviousClasses,
     gutterHandlerCollapseNextClasses,
-    gutterHandlerTopInterSectionClasses,
-    gutterHandlerBottomInterSectionClasses,
   }
 }
