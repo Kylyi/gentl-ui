@@ -6,4 +6,5 @@ export type ICrudBtnProps = IBtnProps & {
   loaderType?: 'inline' | 'block'
   loading?: boolean
   noConfirm?: boolean
+  disabled?: boolean
 }
