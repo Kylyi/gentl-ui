@@ -3,7 +3,7 @@ import type { DistinctData } from '~/components/Table/types/distinct-data.type'
 import type { ITableProps } from '~/components/Table/types/table-props.type'
 
 // Models
-import { TableColumn } from '~/components/Table/models/table-column.model'
+import type { TableColumn } from '~/components/Table/models/table-column.model'
 import { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
 
 // Injections
@@ -54,7 +54,7 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
       field?: string
       distinct?: string[]
       include?: string[]
-    } = {}
+    } = {},
   ): Promise<DistinctData[]> {
     const {
       includeDeleted = false,
@@ -95,7 +95,7 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
       includeSelectorComparators?: boolean
       allowedComparators?: ComparatorEnum[]
       extraComparators?: ComparatorEnum[]
-    } = {}
+    } = {},
   ): ComparatorEnum[] {
     const {
       includeSelectorComparators,
@@ -110,8 +110,8 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
     if (allowedComparators) {
       return uniq(
         comparators.filter(comparator =>
-          allowedComparators.includes(comparator)
-        )
+          allowedComparators.includes(comparator),
+        ),
       )
     } else if (!includeSelectorComparators) {
       return uniq([
@@ -132,7 +132,7 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
    */
   function canUseSelectorComparator(
     comparator: ComparatorEnum,
-    col: TableColumn
+    col: TableColumn,
   ) {
     const comparators = col.getDistinctData
       ? [
@@ -157,8 +157,8 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
    */
   function isEmptyComparator(comparator: ComparatorEnum) {
     return (
-      comparator === ComparatorEnum.IS_EMPTY ||
-      comparator === ComparatorEnum.NOT_IS_EMPTY
+      comparator === ComparatorEnum.IS_EMPTY
+      || comparator === ComparatorEnum.NOT_IS_EMPTY
     )
   }
 
@@ -167,10 +167,10 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
    */
   function isDateAgoComparator(comparator: ComparatorEnum) {
     return (
-      comparator === ComparatorEnum.AGO ||
-      comparator === ComparatorEnum.NOT_AGO ||
-      comparator === ComparatorEnum.UNTIL ||
-      comparator === ComparatorEnum.NOT_UNTIL
+      comparator === ComparatorEnum.AGO
+      || comparator === ComparatorEnum.NOT_AGO
+      || comparator === ComparatorEnum.UNTIL
+      || comparator === ComparatorEnum.NOT_UNTIL
     )
   }
 
@@ -237,17 +237,17 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
 
     return extendParseUrlParams
       ? extendParseUrlParams({
-          searchParams: params,
-          tableColumns: columns,
-          columns: visibleColumns,
-          filters,
-          sort,
-          schemaSort,
-          queryBuilder,
-          allowAnyNonStandardFilter,
-          fromSchema,
-          parseUrlFnc: parseUrlParams,
-        })
+        searchParams: params,
+        tableColumns: columns,
+        columns: visibleColumns,
+        filters,
+        sort,
+        schemaSort,
+        queryBuilder,
+        allowAnyNonStandardFilter,
+        fromSchema,
+        parseUrlFnc: parseUrlParams,
+      })
       : {
           sort,
           schemaSort,

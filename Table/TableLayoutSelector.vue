@@ -51,14 +51,6 @@ const { getTableState } = useTableStore()
 // Layout
 const layoutSelectorEl = ref<InstanceType<typeof Selector>>()
 const queryBuilder = useVModel(props, 'queryBuilder')
-const hasDialogOpen = ref(false)
-
-const menuProps = computed(() => {
-  return {
-    placement: 'bottom-end',
-    class: ['min-w-80', hasDialogOpen.value ? 'invisible' : ''],
-  }
-})
 
 function handleLayoutSelect(
   _layout?: ITableLayout,
@@ -225,6 +217,20 @@ function handleLayoutSelect(
 
   layoutSelectorEl.value?.blur()
 }
+
+// Dialogs
+const isSettingsDialogOpen = ref(false)
+const isOptionsDialogOpen = ref(false)
+
+function handleOpenDialog(dialogName: string) {
+  if (dialogName === 'layoutSettings') {
+    $hide({ all: true })
+    isSettingsDialogOpen.value = true
+  } else if (dialogName === 'tableOptions') {
+    $hide({ all: true })
+    isOptionsDialogOpen.value = true
+  }
+}
 </script>
 
 <template>
@@ -237,13 +243,23 @@ function handleLayoutSelect(
     w="70"
     layout="regular"
     no-menu-match-width
-    :menu-props="menuProps"
+    :menu-props="{ placement: 'bottom-end' }"
     :placeholder="$t('table.layoutState')"
     data-cy="scheme-search"
     @update:model-value="handleLayoutSelect"
   >
     <template #prepend>
       <div class="i-solar:eye-linear m-l-2 color-ca" />
+
+      <TableLayoutSettingsDialog
+        v-model="isSettingsDialogOpen"
+        manual
+      />
+
+      <TableOptionsDialog
+        v-model="isOptionsDialogOpen"
+        manual
+      />
     </template>
 
     <template #above-options>
@@ -253,17 +269,31 @@ function handleLayoutSelect(
         overflow="hidden"
         p="t-1 r-2"
       >
-        <TableLayoutSettingsBtn
-          :non-saveable-settings="nonSavableSettings"
+        <Btn
+          icon="i-solar:settings-linear"
           size="xs"
-          @before-show="hasDialogOpen = true"
-          @before-hide="hasDialogOpen = false"
+          color="ca"
+          no-uppercase
+          :label="$t('general.option', 2)"
+          @click="handleOpenDialog('tableOptions')"
+        />
+
+        <!-- Layout settings -->
+        <Btn
+          icon="i-material-symbols:save"
+          size="xs"
+          color="positive"
+          no-uppercase
+          :label="$t('general.save')"
+          data-cy="settings"
+          @click="handleOpenDialog('layoutSettings')"
         />
 
         <Btn
           size="xs"
           color="negative"
           no-uppercase
+          icon="i-carbon:reset"
           :label="$t('table.layoutStateReset')"
           @click="handleLayoutSelect(undefined, true)"
         />

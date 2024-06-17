@@ -543,11 +543,6 @@ onKeyStroke(['d', 'D'], (ev: KeyboardEvent) => {
           <template v-if="!tableTopFunctionality?.noLayout">
             <!-- Layout selector -->
             <TableLayoutSelector v-model:query-builder="queryBuilder" />
-
-            <!-- Layout settings -->
-            <!-- <TableLayoutSettingsBtn
-              :non-saveable-settings="nonSavableSettings"
-            /> -->
           </template>
         </div>
 

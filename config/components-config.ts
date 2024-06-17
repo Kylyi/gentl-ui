@@ -399,6 +399,16 @@ export const config = merge(
       allowCaseInsensitiveColumns: false,
 
       /**
+       * When true, the columns will be auto-fit after the first data load
+       */
+      autoFitColumns: false,
+
+      /**
+       * When true, the columns will be auto-stretched after the first data load
+       */
+      autoStretchColumns: false,
+
+      /**
        * When true, the scheme can be saved as default
        */
       canSaveLayoutAsDefault: false,

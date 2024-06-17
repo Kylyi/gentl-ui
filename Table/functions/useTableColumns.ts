@@ -7,7 +7,7 @@ import type { ITableLayout } from '~/components/Table/types/table-layout.type'
 // Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
 import { FilterItem } from '~/libs/Shared/models/filter-item'
-import { GroupItem } from '~/libs/Shared/models/group-item.model'
+import type { GroupItem } from '~/libs/Shared/models/group-item.model'
 
 // Functions
 import { useTableUtils } from '~/components/Table/functions/useTableUtils'
@@ -38,7 +38,7 @@ type Options = {
 function calculateColWidth(
   colWidth: number,
   colsTotalWidth: number,
-  componentWidth: number
+  componentWidth: number,
 ) {
   return (componentWidth / colsTotalWidth) * colWidth
 }
@@ -46,7 +46,7 @@ function calculateColWidth(
 export function useTableColumns(
   props: ITableProps,
   columnsRef: Ref<TableColumn[]>,
-  layoutRef: Ref<ITableLayout | undefined>
+  layoutRef: Ref<ITableLayout | undefined>,
 ) {
   // Utils
   const route = useRoute()
@@ -56,12 +56,12 @@ export function useTableColumns(
 
   // Store
   const appStore = useAppStore()
-  const { getTableState } = useTableStore()
+  const { getTableState, setTableState } = useTableStore()
   const tableState = getTableState(getStorageKey())
 
   // Layout
   const originalColumns = columnsRef.value.map(
-    (col: any) => new TableColumn(col)
+    (col: any) => new TableColumn(col),
   )
   const internalColumns = ref<TableColumn[]>([])
   createInternalColumns()
@@ -161,11 +161,11 @@ export function useTableColumns(
     const { columns: stateColumns } = tableState.value
     const shouldUrlBeUsed = props.useUrl
 
-    const isUrlUsed =
-      !!urlSort.length ||
-      !!urlFilters.length ||
-      !!urlVisibleColumns?.length ||
-      !!urlQueryBuilder?.length
+    const isUrlUsed
+      = !!urlSort.length
+      || !!urlFilters.length
+      || !!urlVisibleColumns?.length
+      || !!urlQueryBuilder?.length
 
     // When something is present in the URL, we just use that,
     // otherwise we use the schema
@@ -177,7 +177,7 @@ export function useTableColumns(
     if (sort?.length) {
       _columns.forEach(col => {
         const sortInUrlIdx = sort.findIndex(
-          sortItem => sortItem.field === col.field
+          sortItem => sortItem.field === col.field,
         )
         const sortInUrl = sort[sortInUrlIdx]
 
@@ -207,13 +207,13 @@ export function useTableColumns(
         // We check if it is one of the predefined filters and eventually merge
         // it together with the filter from the URL
         const predefinedFilter = col.filters.find(
-          f => f.comparator === filter.comparator
+          f => f.comparator === filter.comparator,
         )
 
         const filterValue = Array.isArray(filter.value)
           ? filter.value.map(val =>
-              parseValue(val, col.dataType, { dateFormat: 'YYYY-MM-DD' })
-            )
+            parseValue(val, col.dataType, { dateFormat: 'YYYY-MM-DD' }),
+          )
           : parseValue(filter.value, col.dataType, { dateFormat: 'YYYY-MM-DD' })
 
         if (predefinedFilter) {
@@ -227,7 +227,7 @@ export function useTableColumns(
               format: col.format,
               dataType: col.dataType,
               value: filterValue,
-            })
+            }),
           )
         }
       }
@@ -311,8 +311,8 @@ export function useTableColumns(
             width: `${idx ? groupExpandWidth / 1.5 : groupExpandWidth}px`,
             hideLabel: true,
             isHelperCol: true,
-          })
-      )
+          }),
+      ),
     )
 
     // Selection
@@ -325,7 +325,7 @@ export function useTableColumns(
           isHelperCol: true,
           label: t('table.selectable'),
           headerClasses: 'flex-center',
-        })
+        }),
       )
     }
 
@@ -336,7 +336,7 @@ export function useTableColumns(
     containerElRef: MaybeRefOrGetter<Element>,
     wrapperElRef: MaybeRefOrGetter<Element>,
     internalColumnsRef: MaybeRefOrGetter<TableColumn[]>,
-    options: Options = {}
+    options: Options = {},
   ) {
     const container = toValue(containerElRef)
     const wrapper = toValue(wrapperElRef)
@@ -348,14 +348,14 @@ export function useTableColumns(
     const { minColWidthRef = 64 } = options
     const minColWidth = toValue(minColWidthRef)
 
-    const contentWidth =
-      containerWidth - Number(isWrapperOverflownVertically) * scrollbarWidth - 1
+    const contentWidth
+      = containerWidth - Number(isWrapperOverflownVertically) * scrollbarWidth - 1
 
     const cols = toValue(internalColumnsRef)
 
     // We split the columns into strictly defined (~ with fixed width)
     // and relative (~ with relative width)
-    const colsTotalWidth = cols.reduce<{ relative: number; fixed: number }>(
+    const colsTotalWidth = cols.reduce<{ relative: number, fixed: number }>(
       (agg, col) => {
         if (!col.hidden) {
           if (typeof col.width === 'string') {
@@ -374,14 +374,14 @@ export function useTableColumns(
 
         return agg
       },
-      { relative: 0, fixed: 0 }
+      { relative: 0, fixed: 0 },
     )
 
     // We can stretch the columns if the total width of the columns is smaller
     // than the width of the table
     const totalWidth = colsTotalWidth.fixed + colsTotalWidth.relative
-    const canStretchCols =
-      totalWidth < contentWidth && Math.abs(totalWidth - contentWidth) > 1
+    const canStretchCols
+      = totalWidth < contentWidth && Math.abs(totalWidth - contentWidth) > 1
 
     // We check if we need to adjust the columns
     // Adjusting the columns mean that we stretch the columns that have relative width
@@ -405,7 +405,7 @@ export function useTableColumns(
     containerElRef: MaybeRefOrGetter<Element>,
     wrapperElRef: MaybeRefOrGetter<Element>,
     internalColumnsRef: MaybeRefOrGetter<TableColumn[]>,
-    options: Options = {}
+    options: Options = {},
   ) {
     const {
       cols,
@@ -418,7 +418,7 @@ export function useTableColumns(
       containerElRef,
       wrapperElRef,
       internalColumnsRef,
-      options
+      options,
     )
 
     // When stretching the columns, we use some rounding. This rounding may add
@@ -430,7 +430,7 @@ export function useTableColumns(
       (col: TableColumn) =>
         typeof col.width === 'string'
           ? 9999 * +(stringToFloat(col.width) || 0)
-          : col.width
+          : col.width,
     ) as TableColumn[]
 
     let wExtra = 0
@@ -453,7 +453,7 @@ export function useTableColumns(
 
           col.adjustedWidth = Math.max(
             columnLabelCharsLength * 8 + 20,
-            col.minWidth || 0
+            col.minWidth || 0,
           ) // These numbers are arbitrary
         } else {
           col.adjustedWidth = col.name.startsWith('_')
@@ -465,10 +465,10 @@ export function useTableColumns(
           calculateColWidth(
             col.width || 1,
             colsTotalWidth.relative,
-            contentWidth - colsTotalWidth.fixed
+            contentWidth - colsTotalWidth.fixed,
           ),
           minColWidth,
-          colMinWidth || 0
+          colMinWidth || 0,
         )
         wExtra += widthN - Math.floor(widthN)
 
@@ -485,9 +485,9 @@ export function useTableColumns(
     }
 
     if (
-      !colsTotalWidth.relative &&
-      isWrapperOverflownVertically &&
-      !shouldAdjustCols
+      !colsTotalWidth.relative
+      && isWrapperOverflownVertically
+      && !shouldAdjustCols
     ) {
       const nonHelperColsSortedDesc = [...colsSortedByWidth]
         .reverse()
@@ -496,12 +496,12 @@ export function useTableColumns(
 
       const nonHelperColsTotalWidth = nonHelperColsSortedDesc.reduce(
         (agg, col) => agg + col.adjustedWidth,
-        0
+        0,
       )
 
       nonHelperColsSortedDesc.forEach(col => {
         col.adjustedWidth -= Math.floor(
-          (scrollbarWidth / nonHelperColsTotalWidth) * col.adjustedWidth
+          (scrollbarWidth / nonHelperColsTotalWidth) * col.adjustedWidth,
         )
       })
 
@@ -519,8 +519,8 @@ export function useTableColumns(
 
       return agg
     }, 0)
-    const isWrapperOverflownHorizontally =
-      totalVisibleColumnsWidth > contentWidth
+    const isWrapperOverflownHorizontally
+      = totalVisibleColumnsWidth > contentWidth
 
     if (isWrapperOverflownHorizontally && isWrapperOverflownVertically) {
       const lastVisibleNonHelperCol = cols
@@ -547,7 +547,7 @@ export function useTableColumns(
     containerElRef: MaybeRefOrGetter<Element>,
     wrapperElRef: MaybeRefOrGetter<Element>,
     internalColumnsRef: MaybeRefOrGetter<TableColumn[]>,
-    options: Options = {}
+    options: Options = {},
   ) {
     const {
       canStretchCols,
@@ -559,7 +559,7 @@ export function useTableColumns(
       containerElRef,
       wrapperElRef,
       internalColumnsRef,
-      options
+      options,
     )
 
     if (canStretchCols) {
@@ -575,7 +575,7 @@ export function useTableColumns(
             : col.adjustedWidth
 
           return w
-        }
+        },
       ) as TableColumn[]
 
       const helperColsWidth = colsSortedByWidth.reduce((agg, col) => {
@@ -586,13 +586,9 @@ export function useTableColumns(
         return agg
       }, 0)
 
-      const _scrollbarWidth =
-        Number(isWrapperOverflownVertically) * scrollbarWidth
-
+      const _scrollbarWidth = Number(isWrapperOverflownVertically) * scrollbarWidth
       const _contentWidth = contentWidth + _scrollbarWidth - 1 - helperColsWidth
-
-      const _colsTotalWidth =
-        colsTotalWidth.relative + colsTotalWidth.fixed - helperColsWidth
+      const _colsTotalWidth = colsTotalWidth.relative + colsTotalWidth.fixed - helperColsWidth
 
       let wExtra = 0
       colsSortedByWidth.forEach(col => {
@@ -626,7 +622,7 @@ export function useTableColumns(
     }
 
     internalColumns.value = handleColumnsData(
-      handleColumnsVisibility(extendColumns(columnsRef.value))
+      handleColumnsVisibility(extendColumns(columnsRef.value)),
     )
   }
 

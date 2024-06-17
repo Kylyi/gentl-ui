@@ -286,211 +286,199 @@ const $z = useZod(
 </script>
 
 <template>
-  <Btn
-    icon="i-solar:settings-linear"
-    size="sm"
-    color="ca"
-    no-uppercase
-    :label="$t('general.settings')"
-    data-cy="settings"
+  <Dialog
+    ref="dialogEl"
+    dense
+    header-class="p-l-3 p-r-1"
+    :title="$t('table.layoutSave')"
+    w="150"
+    h="122"
+    @hide="reset"
+    @before-show="handleDialogBeforeShow"
+    @before-hide="$emit('beforeHide')"
   >
-    <Dialog
-      ref="dialogEl"
-      dense
-      header-class="p-l-3 p-r-1"
-      :title="$t('table.layoutSave')"
-      w="150"
-      h="122"
-      @hide="reset"
-      @before-show="handleDialogBeforeShow"
-      @before-hide="$emit('beforeHide')"
+    <Form
+      p="2"
+      :label="$t('general.save')"
+      :submit-disabled="!isSaveable || !hasLayoutChanged"
+      :ui="{ submitClass: 'w-40' }"
+      :loading="isLoading"
+      :submit-confirmation="false"
+      focus-first-input
+      no-shortcuts
+      @submit="handleSaveLayout"
     >
-      <Form
-        p="2"
-        :label="$t('general.save')"
-        :submit-disabled="!isSaveable || !hasLayoutChanged"
-        :ui="{ submitClass: 'w-40' }"
-        :loading="isLoading"
-        :submit-confirmation="false"
-        focus-first-input
-        no-shortcuts
-        @submit="handleSaveLayout"
+      <TextInput
+        v-model="layout.name"
+        :label="$t('table.layoutName')"
+        layout="regular"
+        :validation="$z.layout?.name"
+      />
+
+      <Separator spaced />
+
+      <div
+        bg="dark:darker white"
+        grid="~ md:cols-2 gap-1"
+        rounded="custom"
+        p="1 t-2"
       >
-        <TextInput
-          v-model="layout.name"
-          :label="$t('table.layoutName')"
-          layout="regular"
-          :validation="$z.layout?.name"
-        />
-
-        <Separator spaced />
-
-        <div
-          bg="dark:darker white"
-          grid="~ md:cols-2 gap-1"
-          rounded="custom"
-          p="1 t-2"
-        >
-          <!-- Left side -->
-          <div flex="~ col gap-1">
-            <span
-              text="caption"
-              font="bold"
-            >
-              {{
-                currentLayoutId
-                  ? $t('table.layoutSavedEntities')
-                  : $t('table.layoutSaveEntities')
-              }}
-            </span>
-
-            <!-- Columns -->
-            <Toggle
-              v-if="!nonSaveableSettingsByName.columns"
-              v-model="layout.columns"
-              :readonly="!!currentLayoutId"
-              container-class="bg-white dark:bg-darker col-start-1"
-              :label="$t('table.saveColumns')"
-            >
-              <template #prepend>
-                <div class="i-tabler:columns-2 color-blue-500" />
-              </template>
-            </Toggle>
-
-            <!-- Filters -->
-            <Toggle
-              v-if="!nonSaveableSettingsByName.filters"
-              v-model="layout.filters"
-              :readonly="!!currentLayoutId"
-              container-class="bg-white dark:bg-darker col-start-1"
-              :label="$t('table.saveFilters')"
-              @update:model-value="checkSaveable('filters', $event)"
-            >
-              <template #prepend>
-                <div class="i-ic:round-filter-alt color-blue-500" />
-              </template>
-
-              <template
-                v-if="!saveableEntities.filters"
-                #append
-              >
-                <div>
-                  <div class="i-clarity:warning-solid color-amber-500" />
-
-                  <Tooltip
-                    :offset="8"
-                    flex="~ col center"
-                  >
-                    <span color="amber-500">
-                      {{ $t('table.emptyFilters') }}
-                    </span>
-                    <span text="caption xs">
-                      {{ $t('general.willBeIgnored') }}
-                    </span>
-                  </Tooltip>
-                </div>
-              </template>
-            </Toggle>
-
-            <!-- Sort -->
-            <Toggle
-              v-if="!nonSaveableSettingsByName.sorting"
-              v-model="layout.sort"
-              :readonly="!!currentLayoutId"
-              container-class="col-start-1 bg-white dark:bg-darker"
-              :label="$t('table.saveSort')"
-              col="start-1"
-              @update:model-value="checkSaveable('sorting', $event)"
-            >
-              <template #prepend>
-                <div class="i-basil:sort-outline color-blue-500" />
-              </template>
-
-              <template
-                v-if="!saveableEntities.sorting"
-                #append
-              >
-                <div>
-                  <div class="i-clarity:warning-solid color-amber-500" />
-
-                  <Tooltip
-                    :offset="8"
-                    flex="~ col center"
-                  >
-                    <span color="amber-500">
-                      {{ $t('table.emptySorting') }}
-                    </span>
-                    <span text="caption xs">
-                      {{ $t('general.willBeIgnored') }}
-                    </span>
-                  </Tooltip>
-                </div>
-              </template>
-            </Toggle>
-          </div>
-
-          <!-- Right side -->
-          <div
-            v-if="hasSaveLayoutOptions"
-            flex="~ col gap-1"
+        <!-- Left side -->
+        <div flex="~ col gap-1">
+          <span
+            text="caption"
+            font="bold"
           >
-            <span
-              text="caption"
-              font="bold"
-            >
-              {{ $t('table.layoutSaveOptions') }}
-            </span>
+            {{
+              currentLayoutId
+                ? $t('table.layoutSavedEntities')
+                : $t('table.layoutSaveEntities')
+            }}
+          </span>
 
-            <!-- Public -->
-            <Toggle
-              v-if="
-                !nonSaveableSettingsByName.public
-                  && config.table.canSaveLayoutAsPublic
-              "
-              v-model="layout.public"
-              container-class="bg-white dark:bg-darker"
-              :label="$t('table.savePublic')"
-            >
-              <template #prepend>
-                <div class="i-ic:round-public color-blue-500" />
-              </template>
-            </Toggle>
+          <!-- Columns -->
+          <Toggle
+            v-if="!nonSaveableSettingsByName.columns"
+            v-model="layout.columns"
+            :readonly="!!currentLayoutId"
+            container-class="bg-white dark:bg-darker col-start-1"
+            :label="$t('table.saveColumns')"
+          >
+            <template #prepend>
+              <div class="i-tabler:columns-2 color-blue-500" />
+            </template>
+          </Toggle>
 
-            <!-- Default -->
-            <Toggle
-              v-if="config.table.canSaveLayoutAsDefault"
-              v-model="layout.default"
-              container-class="bg-white dark:bg-darker"
-              :label="$t('table.saveDefault')"
+          <!-- Filters -->
+          <Toggle
+            v-if="!nonSaveableSettingsByName.filters"
+            v-model="layout.filters"
+            :readonly="!!currentLayoutId"
+            container-class="bg-white dark:bg-darker col-start-1"
+            :label="$t('table.saveFilters')"
+            @update:model-value="checkSaveable('filters', $event)"
+          >
+            <template #prepend>
+              <div class="i-ic:round-filter-alt color-blue-500" />
+            </template>
+
+            <template
+              v-if="!saveableEntities.filters"
+              #append
             >
-              <template #prepend>
-                <div class="i-fluent:book-default-28-filled color-blue-500" />
-              </template>
-            </Toggle>
-          </div>
+              <div>
+                <div class="i-clarity:warning-solid color-amber-500" />
+
+                <Tooltip
+                  :offset="8"
+                  flex="~ col center"
+                >
+                  <span color="amber-500">
+                    {{ $t('table.emptyFilters') }}
+                  </span>
+                  <span text="caption xs">
+                    {{ $t('general.willBeIgnored') }}
+                  </span>
+                </Tooltip>
+              </div>
+            </template>
+          </Toggle>
+
+          <!-- Sort -->
+          <Toggle
+            v-if="!nonSaveableSettingsByName.sorting"
+            v-model="layout.sort"
+            :readonly="!!currentLayoutId"
+            container-class="col-start-1 bg-white dark:bg-darker"
+            :label="$t('table.saveSort')"
+            col="start-1"
+            @update:model-value="checkSaveable('sorting', $event)"
+          >
+            <template #prepend>
+              <div class="i-basil:sort-outline color-blue-500" />
+            </template>
+
+            <template
+              v-if="!saveableEntities.sorting"
+              #append
+            >
+              <div>
+                <div class="i-clarity:warning-solid color-amber-500" />
+
+                <Tooltip
+                  :offset="8"
+                  flex="~ col center"
+                >
+                  <span color="amber-500">
+                    {{ $t('table.emptySorting') }}
+                  </span>
+                  <span text="caption xs">
+                    {{ $t('general.willBeIgnored') }}
+                  </span>
+                </Tooltip>
+              </div>
+            </template>
+          </Toggle>
         </div>
 
-        <!-- Filler -->
-        <div grow />
-
-        <Banner
-          v-if="!isSaveable"
-          type="info"
-          outlined
-          :label="$t('table.layoutStateAtLeastOneEntityToSave')"
-        />
-
-        <template
-          v-if="currentLayoutId"
-          #submit-before
+        <!-- Right side -->
+        <div
+          v-if="hasSaveLayoutOptions"
+          flex="~ col gap-1"
         >
-          <CrudBtnDelete
-            :label="$t('table.layoutStateDelete')"
-            labels
-            @delete="handleDeleteLayoutState"
-          />
-        </template>
-      </Form>
-    </Dialog>
-  </Btn>
+          <span
+            text="caption"
+            font="bold"
+          >
+            {{ $t('table.layoutSaveOptions') }}
+          </span>
+
+          <!-- Public -->
+          <Toggle
+            v-if=" !nonSaveableSettingsByName.public && config.table.canSaveLayoutAsPublic "
+            v-model="layout.public"
+            container-class="bg-white dark:bg-darker"
+            :label="$t('table.savePublic')"
+          >
+            <template #prepend>
+              <div class="i-ic:round-public color-blue-500" />
+            </template>
+          </Toggle>
+
+          <!-- Default -->
+          <Toggle
+            v-if="config.table.canSaveLayoutAsDefault"
+            v-model="layout.default"
+            container-class="bg-white dark:bg-darker"
+            :label="$t('table.saveDefault')"
+          >
+            <template #prepend>
+              <div class="i-fluent:book-default-28-filled color-blue-500" />
+            </template>
+          </Toggle>
+        </div>
+      </div>
+
+      <!-- Filler -->
+      <div grow />
+
+      <Banner
+        v-if="!isSaveable"
+        type="info"
+        outlined
+        :label="$t('table.layoutStateAtLeastOneEntityToSave')"
+      />
+
+      <template
+        v-if="currentLayoutId"
+        #submit-before
+      >
+        <CrudBtnDelete
+          :label="$t('table.layoutStateDelete')"
+          labels
+          @delete="handleDeleteLayoutState"
+        />
+      </template>
+    </Form>
+  </Dialog>
 </template>

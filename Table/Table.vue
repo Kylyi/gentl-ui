@@ -119,9 +119,10 @@ const { getTableTopProps } = useTableTopUtils()
 // Layout
 const tableTopProps = getTableTopProps(props)
 const queryBuilderOriginal = useVModel(props, 'queryBuilder')
-const { cloned: queryBuilder } = useCloned(queryBuilderOriginal, {
-  clone: klona,
-})
+const { cloned: queryBuilder } = useCloned(
+  queryBuilderOriginal,
+  { clone: klona },
+)
 
 const { columns, layout, metadataRefetch } = await useTableMetaData(props)
 

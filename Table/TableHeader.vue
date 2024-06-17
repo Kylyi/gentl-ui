@@ -13,9 +13,14 @@ import {
 
 // Injections
 import {
+  tableRowsKey,
   tableSelectRowKey,
   tableSelectionKey,
+  tableStretchColumnsKey,
 } from '~/components/Table/provide/table.provide'
+
+// Store
+import { useAppStore } from '~/libs/App/app.store'
 
 // Components
 import HorizontalScroller from '~/components/Scroller/HorizontalScroller.vue'
@@ -35,14 +40,24 @@ const emits = defineEmits<{
   (e: 'resized', col: TableColumn): void
 }>()
 
+// Store
+const appStore = useAppStore()
+
 // Utils
 const { scrollbarWidth } = useOverflow()
-const { headerEl, activeSplitter, columnSplitters, handleSplitterPointerDown }
-  = useTableColumnResizing(props)
+const {
+  headerEl,
+  activeSplitter,
+  columnSplitters,
+  fitColumns,
+  handleSplitterPointerDown,
+} = useTableColumnResizing(props)
 
 // Injections
 const selection = injectStrict(tableSelectionKey)
+const tableRows = injectStrict(tableRowsKey)
 const handleSelectRow = injectStrict(tableSelectRowKey)
+const tableStretchColumns = injectStrict(tableStretchColumnsKey)
 
 // Layout
 const columns = toRef(props, 'columns')
@@ -88,6 +103,15 @@ watch(
   () => visibleColumns.value.length,
   () => nextTick(() => headerEl.value?.updateArrows()),
 )
+
+// Auto-fitting and auto-stretching columns
+watchOnce(tableRows, () => {
+  if (appStore.appState.table?.autoFitColumns) {
+    nextTick(fitColumns)
+  } else if (appStore.appState.table?.autoStretchColumns) {
+    nextTick(tableStretchColumns)
+  }
+})
 
 function handleScroll(x: number) {
   scrollX.value = x
@@ -163,9 +187,7 @@ defineExpose({
           :key="splitter.field"
           class="splitter"
           :style="{ left: getSplitterLeft(splitter) }"
-          @pointerdown.stop.prevent="
-            handleSplitterPointerDown(splitter, $event)
-          "
+          @pointerdown.stop.prevent="handleSplitterPointerDown(splitter, $event)"
         />
       </template>
     </template>
