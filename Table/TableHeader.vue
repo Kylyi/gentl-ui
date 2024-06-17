@@ -57,7 +57,6 @@ const {
 const selection = injectStrict(tableSelectionKey)
 const tableRows = injectStrict(tableRowsKey)
 const handleSelectRow = injectStrict(tableSelectRowKey)
-const tableStretchColumns = injectStrict(tableStretchColumnsKey)
 
 // Layout
 const columns = toRef(props, 'columns')
@@ -105,11 +104,11 @@ watch(
 )
 
 // Auto-fitting and auto-stretching columns
-watchOnce(tableRows, () => {
+watchOnce(tableRows, async () => {
   if (appStore.appState.table?.autoFitColumns) {
     nextTick(fitColumns)
   } else if (appStore.appState.table?.autoStretchColumns) {
-    nextTick(tableStretchColumns)
+    nextTick(() => fitColumns(true))
   }
 })
 

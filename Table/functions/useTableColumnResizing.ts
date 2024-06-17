@@ -14,6 +14,7 @@ import {
   tableRowsKey,
   tableSlotsKey,
   tableStorageKey,
+  tableStretchColumnsKey,
 } from '~/components/Table/provide/table.provide'
 
 // Components
@@ -44,6 +45,7 @@ export function useTableColumnResizing(props: {
   const storageKey = injectStrict(tableStorageKey)
   const tableSlots = injectStrict(tableSlotsKey)
   const tableRows = injectStrict(tableRowsKey)
+  const tableStretchColumns = injectStrict(tableStretchColumnsKey)
 
   // Store
   const { setTableState } = useTableStore()
@@ -231,9 +233,9 @@ export function useTableColumnResizing(props: {
   /**
    * Fits the columns based on their content
    */
-  function fitColumns() {
+  function fitColumns(stretch?: boolean) {
     const fittableColumns = props.columns.filter(
-      col => col.resizable && !col.hidden && !col.isHelperCol
+      col => col.resizable && !col.hidden && !col.isHelperCol,
     )
 
     // We unfreeze any frozen column
@@ -248,8 +250,13 @@ export function useTableColumnResizing(props: {
         await col.autoFit(
           tableRows.value,
           slotRenderFnc,
-          props.minimumColumnWidth
+          props.minimumColumnWidth,
         )
+      }
+
+      // We stretch the columns
+      if (stretch) {
+        tableStretchColumns()
       }
 
       // We freeze the column again
