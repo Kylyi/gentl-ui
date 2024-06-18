@@ -13,10 +13,10 @@ import {
 
 // Injections
 import {
+  tableResizeKey,
   tableRowsKey,
   tableSelectRowKey,
   tableSelectionKey,
-  tableStretchColumnsKey,
 } from '~/components/Table/provide/table.provide'
 
 // Store
@@ -49,7 +49,7 @@ const {
   headerEl,
   activeSplitter,
   columnSplitters,
-  fitColumns,
+  handleFitColumns,
   handleSplitterPointerDown,
 } = useTableColumnResizing(props)
 
@@ -105,11 +105,8 @@ watch(
 
 // Auto-fitting and auto-stretching columns
 watchOnce(tableRows, async () => {
-  if (appStore.appState.table?.autoFitColumns) {
-    nextTick(fitColumns)
-  } else if (appStore.appState.table?.autoStretchColumns) {
-    nextTick(() => fitColumns(true))
-  }
+  await nextTick()
+  handleFitColumns()
 })
 
 function handleScroll(x: number) {

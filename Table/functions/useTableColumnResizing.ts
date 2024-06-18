@@ -3,14 +3,16 @@ import { klona } from 'klona/full'
 // Models
 import type { TableColumn } from '~/components/Table/models/table-column.model'
 
-// Models
-import { useTableStore } from '~/components/Table/table.store'
-
 // Functions
 import { stringToFloat } from '~/libs/Shared/regex/string-to-float.regex'
 
+// Store
+import { useAppStore } from '~/libs/App/app.store'
+import { useTableStore } from '~/components/Table/table.store'
+
 // Injections
 import {
+  tableResizeKey,
   tableRowsKey,
   tableSlotsKey,
   tableStorageKey,
@@ -45,9 +47,11 @@ export function useTableColumnResizing(props: {
   const storageKey = injectStrict(tableStorageKey)
   const tableSlots = injectStrict(tableSlotsKey)
   const tableRows = injectStrict(tableRowsKey)
+  const tableResize = injectStrict(tableResizeKey)
   const tableStretchColumns = injectStrict(tableStretchColumnsKey)
 
   // Store
+  const appStore = useAppStore()
   const { setTableState } = useTableStore()
 
   // Layout
@@ -266,10 +270,27 @@ export function useTableColumnResizing(props: {
     }, 0)
   }
 
+  function handleFitColumns() {
+    if (appStore.appState.table?.fit === 'content') {
+      nextTick(fitColumns)
+    } else if (appStore.appState.table?.fit === 'stretch') {
+      nextTick(() => fitColumns(true))
+    } else if (appStore.appState.table?.fit === 'auto') {
+      nextTick(() => {
+        props.columns.forEach(col => {
+          col.width = col.originalWidth
+        })
+
+        tableResize()
+      })
+    }
+  }
+
   return {
     headerEl,
     activeSplitter,
     columnSplitters,
+    handleFitColumns,
     fitColumns,
     handleSplitterPointerDown,
   }

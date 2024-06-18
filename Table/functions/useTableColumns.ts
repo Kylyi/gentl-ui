@@ -349,7 +349,9 @@ export function useTableColumns(
     const minColWidth = toValue(minColWidthRef)
 
     const contentWidth
-      = containerWidth - Number(isWrapperOverflownVertically) * scrollbarWidth - 1
+      = containerWidth
+      - Number(isWrapperOverflownVertically) * scrollbarWidth
+      - 1
 
     const cols = toValue(internalColumnsRef)
 
@@ -380,8 +382,7 @@ export function useTableColumns(
     // We can stretch the columns if the total width of the columns is smaller
     // than the width of the table
     const totalWidth = colsTotalWidth.fixed + colsTotalWidth.relative
-    const canStretchCols
-      = totalWidth < contentWidth && Math.abs(totalWidth - contentWidth) > 1
+    const canStretchCols = totalWidth < contentWidth && Math.abs(totalWidth - contentWidth) > 1
 
     // We check if we need to adjust the columns
     // Adjusting the columns mean that we stretch the columns that have relative width

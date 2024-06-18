@@ -9,6 +9,7 @@ import type { TableColumn } from '~/components/Table/models/table-column.model'
 import {
   tableFocusKey,
   tableResizeKey,
+  tableScrollerEl,
   tableStretchColumnsKey,
 } from '~/components/Table/provide/table.provide'
 
@@ -80,6 +81,9 @@ export function useTableLayout(
     return isOverflown.value ? _scrollbarWidth : 0
   })
 
+  // Provide the scroller element
+  provide(tableScrollerEl, scrollerEl as any)
+
   // CSS variables
   const rowHeight = useCssVar('--rowHeight', tableEl)
   const mobileRowHeight = useCssVar('--mobileRowHeight', tableEl)
@@ -100,9 +104,7 @@ export function useTableLayout(
    * Handles the resize of the table
    */
   function handleResize(force?: boolean) {
-    const { width } = unrefElement(
-      scrollerEl.value as any,
-    ).getBoundingClientRect()
+    const { width } = unrefElement(scrollerEl.value as any).getBoundingClientRect()
 
     if (
       scrollerEl.value
@@ -132,14 +134,14 @@ export function useTableLayout(
    */
   function handleStretchColumns() {
     const table = toValue(tableEl)
-    const scroller = toValue(scrollerEl)
+    const scrollerDomEl = unrefElement(scrollerEl)
 
     const { width } = unrefElement(scrollerEl as any).getBoundingClientRect()
 
-    if (scroller && table) {
+    if (scrollerDomEl && table) {
       internalColumns.value = stretchColumns(
         table,
-        scroller.$el,
+        scrollerDomEl,
         toValue(internalColumns),
         {
           groupsRef: [],

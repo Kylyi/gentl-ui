@@ -22,6 +22,7 @@ import {
 
 // Functions
 import { useTableUtils } from '~/components/Table/functions/useTableUtils'
+import { useTableColumnResizing } from '~/components/Table/functions/useTableColumnResizing'
 
 // Store
 import { useTableStore } from '~/components/Table/table.store'
@@ -34,9 +35,6 @@ import { queryBuilderDefault } from '~/components/QueryBuilder/constants/query-b
 
 const props = defineProps<Pick<ITableProps, 'queryBuilder' | 'nonSavableSettings'>>()
 
-// Utils
-const { parseUrlParams } = useTableUtils()
-
 // Injections
 const columns = injectStrict(tableColumnsKey)
 const layouts = injectStrict(tableLayoutsKey)
@@ -44,6 +42,10 @@ const layout = injectStrict(tableLayoutKey)
 const _getTableStorageKey = injectStrict(getTableStorageKey)
 const tableResize = injectStrict(tableResizeKey)
 const tableRefresh = injectStrict(tableRefreshKey)
+
+// Utils
+const { parseUrlParams } = useTableUtils()
+const { handleFitColumns } = useTableColumnResizing({ columns: columns.value })
 
 // Store
 const { getTableState } = useTableStore()
@@ -200,10 +202,10 @@ function handleLayoutSelect(
 
   // Refresh
   setTimeout(() => {
-    tableResize()
+    handleFitColumns()
 
     // When only filter columns are part of the schema, we manually trigger the
-    // table refresh as it is not watched
+    // table refresh as they are not watched
     const isOnlyColFilters
       = schemaFilters.length
       && !schemaColumns.length
