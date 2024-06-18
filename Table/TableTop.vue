@@ -23,6 +23,7 @@ import { useAppStore } from '~/libs/App/app.store'
 // Components
 import QueryBuilderInline from '~/components/QueryBuilder/QueryBuilderInline.vue'
 import TableExportBtn from '~/components/Table/TableExportBtn.vue'
+import { useTableColumnResizing } from '~/components/Table/functions/useTableColumnResizing'
 
 const props = defineProps<
   Pick<
@@ -64,6 +65,9 @@ const tableRows = injectStrict(tableRowsKey)
 const tableRefresh = injectStrict(tableRefreshKey)
 const tableSlots = injectStrict(tableSlotsKey)
 const tableStretchColumns = injectStrict(tableStretchColumnsKey)
+
+// Utils
+const { handleFitColumns } = useTableColumnResizing({ columns: columns.value })
 
 // Layout
 const queryBuilder = useVModel(props, 'queryBuilder')
@@ -218,39 +222,50 @@ function handleClearSorting() {
   })
 }
 
-function handleFitColumns(ev?: MouseEvent) {
+function fitColumns(ev?: MouseEvent) {
   const isShiftKey = !!ev?.shiftKey
+  const isCtrlKey = ev?.ctrlKey || ev?.metaKey
 
-  const fittableColumns = columns.value.filter(
-    col => col.resizable && !col.hidden && !col.isHelperCol
-  )
+  let mode: 'content' | 'auto' | 'stretch' = 'content'
 
-  // We unfreeze any frozen column
-  const frozenColumn = fittableColumns.find(col => col.frozen)
-  frozenColumn?.freeze(fittableColumns)
+  if (isShiftKey) {
+    mode = 'stretch'
+  } else if (isCtrlKey) {
+    mode = 'auto'
+  }
 
-  setTimeout(async () => {
-    // We autofit the columns
-    for await (const col of fittableColumns) {
-      const slotRenderFnc = tableSlots[col.field]
-      await col.autoFit(
-        tableRows.value,
-        slotRenderFnc,
-        props.minimumColumnWidth
-      )
-    }
+  handleFitColumns(mode)
 
-    // We stretch the columns
-    if (isShiftKey) {
-      tableStretchColumns()
-    }
+  // const fittableColumns = columns.value.filter(
+  //   col => col.resizable && !col.hidden && !col.isHelperCol
+  // )
 
-    // We freeze the column again
-    frozenColumn?.freeze(fittableColumns)
+  // // We unfreeze any frozen column
+  // const frozenColumn = fittableColumns.find(col => col.frozen)
+  // frozenColumn?.freeze(fittableColumns)
 
-    setTableState(storageKey.value, { columns: columns.value })
-    emits('update:columnsWidth')
-  }, 0)
+  // setTimeout(async () => {
+  //   // We autofit the columns
+  //   for await (const col of fittableColumns) {
+  //     const slotRenderFnc = tableSlots[col.field]
+  //     await col.autoFit(
+  //       tableRows.value,
+  //       slotRenderFnc,
+  //       props.minimumColumnWidth
+  //     )
+  //   }
+
+  //   // We stretch the columns
+  //   if (isShiftKey) {
+  //     tableStretchColumns()
+  //   }
+
+  //   // We freeze the column again
+  //   frozenColumn?.freeze(fittableColumns)
+
+  //   setTableState(storageKey.value, { columns: columns.value })
+  //   emits('update:columnsWidth')
+  // }, 0)
 }
 
 // Keyboard shortcuts
@@ -537,7 +552,7 @@ onKeyStroke(['d', 'D'], (ev: KeyboardEvent) => {
             icon="i-material-symbols:fit-width"
             color="ca"
             :label="$t('table.fitColumns')"
-            @click="handleFitColumns"
+            @click="fitColumns"
           />
 
           <template v-if="!tableTopFunctionality?.noLayout">

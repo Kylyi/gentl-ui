@@ -270,12 +270,18 @@ export function useTableColumnResizing(props: {
     }, 0)
   }
 
-  function handleFitColumns() {
-    if (appStore.appState.table?.fit === 'content') {
+  function handleFitColumns(fit?: 'content' | 'stretch' | 'auto') {
+    let mode = fit
+
+    if (!mode) {
+      mode = appStore.appState.table?.fit
+    }
+
+    if (mode === 'content') {
       nextTick(fitColumns)
-    } else if (appStore.appState.table?.fit === 'stretch') {
+    } else if (mode === 'stretch') {
       nextTick(() => fitColumns(true))
-    } else if (appStore.appState.table?.fit === 'auto') {
+    } else if (mode === 'auto') {
       nextTick(() => {
         props.columns.forEach(col => {
           col.width = col.originalWidth
