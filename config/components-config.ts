@@ -199,7 +199,7 @@ export const config = merge(
       /**
        * When the form is submitted and no errors are present, this function will be called
        */
-      onSubmitSuccess: () => {},
+      onSubmitSuccess: () => { },
     },
 
     // Input block
@@ -401,12 +401,7 @@ export const config = merge(
       /**
        * When true, the columns will be auto-fit after the first data load
        */
-      autoFitColumns: false,
-
-      /**
-       * When true, the columns will be auto-stretched after the first data load
-       */
-      autoStretchColumns: false,
+      fitMode: 'auto' as 'auto' | 'content' | 'stretch',
 
       /**
        * When true, the scheme can be saved as default
