@@ -249,6 +249,7 @@ function handleOpenDialog(dialogName: string) {
     :placeholder="$t('table.layoutState')"
     data-cy="scheme-search"
     @update:model-value="handleLayoutSelect"
+    @picker-hide="search = ''"
   >
     <template #prepend>
       <div class="i-solar:eye-linear m-l-2 color-ca" />
