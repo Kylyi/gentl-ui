@@ -245,7 +245,7 @@ function handleOpenDialog(dialogName: string) {
     w="70"
     layout="regular"
     no-menu-match-width
-    :menu-props="{ placement: 'bottom-end' }"
+    :menu-props="{ placement: 'bottom-end', class: 'w-90' }"
     :placeholder="$t('table.layoutState')"
     data-cy="scheme-search"
     @update:model-value="handleLayoutSelect"
