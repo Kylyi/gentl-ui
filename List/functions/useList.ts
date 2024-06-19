@@ -96,8 +96,7 @@ export function useList(
     },
   }
 
-  const useToBoldLatin
-    = props.useToBoldLatin ?? config.list.props.useToBoldLatin
+  const useToBoldLatin = props.useToBoldLatin ?? config.list.props.useToBoldLatin
 
   // List
   const isLoading = ref(false)
@@ -348,7 +347,7 @@ export function useList(
   // Extended search
   const extendedSearch = computed(() => {
     if (!search.value) {
-      return search.value
+      return search.value ?? ''
     }
 
     const searchBoldLatin = useToBoldLatin
@@ -361,25 +360,25 @@ export function useList(
 
     switch (props.fuseExtendedSearchToken) {
       case "'":
-        return `'${searchBoldLatin}`
+        return `'"${searchBoldLatin}"`
 
       case '=':
-        return `=${searchBoldLatin}`
+        return `="${searchBoldLatin}"`
 
       case '!':
-        return `!${searchBoldLatin}`
+        return `!"${searchBoldLatin}"`
 
       case '^':
-        return `^${searchBoldLatin}`
+        return `^"${searchBoldLatin}"`
 
       case '!^':
-        return `!^${searchBoldLatin}`
+        return `!^"${searchBoldLatin}"`
 
       case '$':
-        return `${searchBoldLatin}$`
+        return `"${searchBoldLatin}"$`
 
       case '!$':
-        return `!${searchBoldLatin}$`
+        return `!"${searchBoldLatin}"$`
 
       default:
         return searchBoldLatin
@@ -471,7 +470,7 @@ export function useList(
     )
 
     const preAddedItem = handleAddOnSearch({
-      search: search.value,
+      search: search.value ?? '',
       hasExactMatch: _hasExactMatch,
     })
 
