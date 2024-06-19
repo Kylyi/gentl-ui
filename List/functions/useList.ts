@@ -338,7 +338,7 @@ export function useList(
 
   // Searching
   const searchEl = ref<InstanceType<typeof SearchInput>>()
-  const search = props.search ? useVModel(props, 'search') : ref('')
+  const search = isNil(props.search) ? ref('') : useVModel(props, 'search')
   const hasExactMatch = ref(false)
   const arr = ref<Array<IGroupRow | IListItem>>([])
   const isPreventFetchData = refAutoReset(false, 150)

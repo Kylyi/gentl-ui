@@ -51,10 +51,9 @@ const { handleMoveItem, handleMoveItems } = useListUtils()
 
 // Layout
 const containerEl = ref<InstanceType<typeof ListVirtualContainer>>()
-const items
-  = props.items !== undefined
-    ? (useVModel(props, 'items') as Ref<any[]>)
-    : ref<any[]>([])
+const items = props.items !== undefined
+  ? (useVModel(props, 'items') as Ref<any[]>)
+  : ref<any[]>([])
 
 const ContainerComponent = computed(() => {
   return ListContainer
