@@ -17,7 +17,6 @@ import {
   tableLayoutKey,
   tableLayoutsKey,
   tableRefreshKey,
-  tableResizeKey,
 } from '~/components/Table/provide/table.provide'
 
 // Functions
@@ -40,7 +39,6 @@ const columns = injectStrict(tableColumnsKey)
 const layouts = injectStrict(tableLayoutsKey)
 const layout = injectStrict(tableLayoutKey)
 const _getTableStorageKey = injectStrict(getTableStorageKey)
-const tableResize = injectStrict(tableResizeKey)
 const tableRefresh = injectStrict(tableRefreshKey)
 
 // Utils
@@ -53,6 +51,7 @@ const { getTableState } = useTableStore()
 // Layout
 const layoutSelectorEl = ref<InstanceType<typeof Selector>>()
 const queryBuilder = useVModel(props, 'queryBuilder')
+const search = ref('')
 
 function handleLayoutSelect(
   _layout?: ITableLayout,
@@ -238,6 +237,7 @@ function handleOpenDialog(dialogName: string) {
 <template>
   <Selector
     ref="layoutSelectorEl"
+    v-model:search="search"
     :model-value="layout?.id === 0 ? undefined : layout"
     :options="layouts"
     option-label="name"
@@ -255,6 +255,7 @@ function handleOpenDialog(dialogName: string) {
 
       <TableLayoutSettingsDialog
         v-model="isSettingsDialogOpen"
+        :search="search"
         manual
       />
 

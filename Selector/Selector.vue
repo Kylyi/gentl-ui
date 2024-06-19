@@ -238,6 +238,7 @@ const listEl = ref<InstanceType<typeof List>>()
 const options = toRef(props, 'options')
 const optionsInternal = ref<any[]>([])
 const listProps = getListProps(props)
+const search = defineModel<ISelectorProps['search']>('search')
 
 const optionsExtended = computed(() => {
   const optionsAdjusted = [...options.value, ...optionsInternal.value].map(
@@ -611,6 +612,7 @@ function getData() {
             ref="listEl"
             v-model:added-items="addedItems"
             v-model:items="listOptions"
+            v-model:search="search"
             :selected="modelValue || []"
             :item-key="optionKey"
             :item-label="optionLabel"

@@ -22,6 +22,7 @@ import Dialog from '~/components/Dialog/Dialog.vue'
 
 type IProps = {
   nonSavableSettings?: Array<'columns' | 'filters' | 'sorting' | 'public'>
+  search?: string
 }
 
 const props = withDefaults(defineProps<IProps>(), {
@@ -56,7 +57,7 @@ const saveableEntities = ref<Record<string, boolean>>({
 })
 
 const layout = ref({
-  name: currentLayout.value?.name || '',
+  name: currentLayout.value?.name || props.search || '',
   columns: false,
   sort: false,
   filters: false,
@@ -97,7 +98,7 @@ const hasSaveLayoutOptions = computed(() => {
 
 function handleDialogBeforeShow() {
   layout.value.name = currentLayout.value?.name !== $t('table.layoutStateNoLayout')
-    ? currentLayout.value?.name || ''
+    ? currentLayout.value?.name || props.search || ''
     : ''
   currentLayoutId.value = currentLayout.value?.id
 

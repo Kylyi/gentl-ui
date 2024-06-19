@@ -30,7 +30,6 @@ export function useListUtils() {
       'reorderable',
       'searchDebounce',
       'noSort',
-      'search',
       'sortBy',
       'transformAddedItem',
     ])
