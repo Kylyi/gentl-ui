@@ -82,6 +82,8 @@ const opacity = computed({
     if (model.value?.startsWith('rgba')) {
       return Number(model.value.split(', ')[3].replace(')', '')) * 100
     }
+
+    return undefined
   },
   set(val) {
     if (model.value?.startsWith('rgba')) {
