@@ -55,7 +55,7 @@ export function useMenuLayout(model: Ref<boolean>, props: IMenuProps) {
   })
 
   // Methods
-  function toggle(ev?: MouseEvent) {
+  function toggle(ev?: Event) {
     const isContextMenu = ev?.type === 'contextmenu'
 
     if (isContextMenu) {

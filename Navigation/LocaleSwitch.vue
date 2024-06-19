@@ -10,7 +10,7 @@ const switchLocalePath = useSwitchLocalePath()
 const localeCookie = useCookie('lang', {
   path: '/',
   sameSite: 'lax',
-  domain: rC.public.VITE_COOKIE_DOMAIN,
+  domain: rC.public.VITE_COOKIE_DOMAIN ?? undefined,
 })
 
 const _locales = computed(() => locales.value as LocaleObject[])
