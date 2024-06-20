@@ -245,7 +245,7 @@ function handleOpenDialog(dialogName: string) {
     w="70"
     layout="regular"
     no-menu-match-width
-    :menu-props="{ placement: 'bottom-end', class: 'w-90' }"
+    :menu-props="{ placement: 'bottom-end', class: 'w-120' }"
     :placeholder="$t('table.layoutState')"
     data-cy="scheme-search"
     @update:model-value="handleLayoutSelect"
@@ -269,20 +269,11 @@ function handleOpenDialog(dialogName: string) {
     <template #above-options>
       <div
         relative
-        flex="~ gap-2 justify-end"
+        flex="~ gap-2 justify-between"
         overflow="hidden"
-        p="t-1 r-2"
+        p="t-1 x-2"
       >
-        <Btn
-          icon="i-solar:settings-linear"
-          size="xs"
-          color="ca"
-          no-uppercase
-          :label="$t('general.option', 2)"
-          @click="handleOpenDialog('tableOptions')"
-        />
-
-        <!-- Layout settings -->
+        <!-- Save -->
         <Btn
           icon="i-material-symbols:save"
           size="xs"
@@ -293,14 +284,27 @@ function handleOpenDialog(dialogName: string) {
           @click="handleOpenDialog('layoutSettings')"
         />
 
-        <Btn
-          size="xs"
-          color="negative"
-          no-uppercase
-          icon="i-carbon:reset"
-          :label="$t('table.layoutStateReset')"
-          @click="handleLayoutSelect(undefined, true)"
-        />
+        <div flex="~ gap-2">
+          <!-- Layout settings -->
+          <Btn
+            icon="i-solar:settings-linear"
+            size="xs"
+            color="ca"
+            no-uppercase
+            :label="$t('general.option', 2)"
+            @click="handleOpenDialog('tableOptions')"
+          />
+
+          <!-- Reset -->
+          <Btn
+            size="xs"
+            color="negative"
+            no-uppercase
+            icon="i-carbon:reset"
+            :label="$t('table.layoutStateReset')"
+            @click="handleLayoutSelect(undefined, true)"
+          />
+        </div>
       </div>
 
       <Separator spaced />

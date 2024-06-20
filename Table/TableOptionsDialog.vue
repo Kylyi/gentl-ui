@@ -27,6 +27,7 @@ function setFitColumns(mode: 'auto' | 'content' | 'stretch') {
   <Dialog
     header-class="p-l-3 p-r-1"
     h="!auto"
+    w="200"
     :ui="{ contentClass: 'p-3' }"
     :title="$t('table.options')"
   >
@@ -41,7 +42,7 @@ function setFitColumns(mode: 'auto' | 'content' | 'stretch') {
       {{ $t('app.autoSaveLayoutExplain') }}
     </span>
 
-    <Separator m="y-4" />
+    <Separator m="y-2" />
 
     <!-- Auto-fit columns -->
     <Checkbox
@@ -54,7 +55,7 @@ function setFitColumns(mode: 'auto' | 'content' | 'stretch') {
       {{ $t('app.autoFitColumnsExplain') }}
     </span>
 
-    <Separator m="y-4" />
+    <Separator m="y-2" />
 
     <!-- Auto-justify columns -->
     <Checkbox
@@ -71,7 +72,7 @@ function setFitColumns(mode: 'auto' | 'content' | 'stretch') {
       {{ $t('app.autoJustifyColumnsExplain2') }}
     </span>
 
-    <Separator m="y-4" />
+    <Separator m="y-2" />
 
     <!-- Auto-stretch columns -->
     <Checkbox
