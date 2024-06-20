@@ -531,13 +531,6 @@ onKeyStroke(['d', 'D'], (ev: KeyboardEvent) => {
 
         <!-- Layout & Columns -->
         <div class="table-top__layout">
-          <span
-            v-if="!tableTopFunctionality?.noLayout"
-            class="table-top__layout-label"
-          >
-            {{ $t('table.layoutState') }}:
-          </span>
-
           <!-- Columns -->
           <TableColumnsBtn
             v-if="!tableTopFunctionality?.noColumnSelection"
