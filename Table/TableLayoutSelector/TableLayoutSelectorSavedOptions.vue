@@ -40,7 +40,7 @@ const layoutInfo = computed(() => {
 
 <template>
   <div
-    flex="~ row-reverse gap-0.5 self-start wrap"
+    flex="~ col gap-0.5"
     color="blue-100"
     p="r-1"
   >
@@ -69,10 +69,13 @@ const layoutInfo = computed(() => {
 
     <!-- Layout settings -->
     <div flex="~ gap-0.5">
+      <!-- Public -->
       <div
         v-if="layoutInfo.isPublic"
         class="layout-info-icon i-ic:round-public color-blue-500"
       />
+
+      <!-- Default -->
       <div
         v-if="layoutInfo.isDefault"
         class="layout-info-icon i-fluent:book-default-28-filled color-blue-500"
