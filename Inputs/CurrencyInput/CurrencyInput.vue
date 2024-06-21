@@ -15,7 +15,7 @@ import { useInputValidationUtils } from '~/components/Inputs/functions/useInputV
 // Components
 import Btn from '~/components/Button/Btn.vue'
 
-const props = withDefaults(defineProps<INumberInputProps>(), {
+const props = withDefaults(defineProps<Omit<INumberInputProps, 'mask'>>(), {
   debounce: 0,
   errorTakesSpace: true,
   errorVisible: true,
@@ -38,10 +38,7 @@ defineEmits<{
 // Utils
 const { path } = useInputValidationUtils(props)
 
-const mask = computed<MaskedNumber>(() => {
-  return new MaskedNumber()
-})
-
+const mask = ref<MaskedNumber>(new MaskedNumber())
 const {
   inputId,
   wrapperProps,
