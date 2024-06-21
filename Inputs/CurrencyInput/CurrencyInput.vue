@@ -15,20 +15,21 @@ import { useInputValidationUtils } from '~/components/Inputs/functions/useInputV
 // Components
 import Btn from '~/components/Button/Btn.vue'
 
-const props = withDefaults(defineProps<Omit<INumberInputProps, 'mask'>>(), {
-  debounce: 0,
-  errorTakesSpace: true,
-  errorVisible: true,
-  fractionDigits: 2,
-  inline: undefined,
-  labelInside: undefined,
-  required: undefined,
-  size: 'md',
-  stackLabel: undefined,
-  step: 'auto',
-  min: Number.NEGATIVE_INFINITY,
-  max: Number.POSITIVE_INFINITY,
-})
+const props = withDefaults(
+  defineProps<Omit<INumberInputProps, 'mask' | 'step' | 'fractionDigits'>>(),
+  {
+    debounce: 0,
+    errorTakesSpace: true,
+    errorVisible: true,
+    inline: undefined,
+    labelInside: undefined,
+    required: undefined,
+    size: 'md',
+    stackLabel: undefined,
+    min: Number.NEGATIVE_INFINITY,
+    max: Number.POSITIVE_INFINITY,
+  }
+)
 
 defineEmits<{
   (e: 'update:modelValue', val?: number | undefined | null): void
