@@ -104,7 +104,7 @@ export function useTableLayout(
    * Handles the resize of the table
    */
   function handleResize(force?: boolean) {
-    const { width } = unrefElement(scrollerEl.value as any).getBoundingClientRect()
+    const { width } = unrefElement(scrollerEl.value as any)?.getBoundingClientRect() || {}
 
     if (
       scrollerEl.value
