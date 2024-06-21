@@ -213,10 +213,12 @@ export function useInputUtils(options: IInputUtilsOptions) {
     const isFocusEvent = ev instanceof FocusEvent
 
     if (!props.disabled && !props.readonly) {
-      if (isFocusEvent || isSelectEvent) {
+      const shouldHideFloating = !props.noHideFloating
+
+      if (shouldHideFloating && (isFocusEvent || isSelectEvent)) {
         const inputMenu = inputElement.value?.closest('.floating-element')
 
-        $hide({ all: true, ignoreUntilEl: inputMenu })
+        $hide({ all: true, ignoreUntilEl: props.hideUntilEl ?? inputMenu })
       }
 
       nextTick(() => {

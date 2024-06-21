@@ -1,5 +1,5 @@
 import type { FactoryOpts } from 'imask'
-import { type CSSProperties } from 'vue'
+import type { CSSProperties } from 'vue'
 
 // Types
 import type { IInputWrapperProps } from '~/components/Inputs/types/input-wrapper-props.type'
@@ -75,5 +75,5 @@ export type IInputProps = IInputWrapperProps & {
   /**
    * The props that should be passed to the input tag (<input>)
    */
-  inputProps?: Record<string, any>
+  inputProps?: IItem
 }

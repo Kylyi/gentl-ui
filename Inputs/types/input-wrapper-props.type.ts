@@ -28,6 +28,12 @@ export type IInputWrapperProps = IInputLabelProps & {
   errorVisible?: boolean
 
   /**
+   * By default, when focusing the input, menus/dialogs that are not in the same context
+   * will be hidden. We can provide the element that actually sets the context
+   */
+  hideUntilEl?: Element
+
+  /**
    * The hint that will be shown below the input
    */
   hint?: string
@@ -46,6 +52,12 @@ export type IInputWrapperProps = IInputLabelProps & {
    * Whether the input has no border
    */
   noBorder?: boolean
+
+  /**
+   * By default, when focusing the input, menus/dialogs that are not in the same context
+   * When this prop is true, the floating will not be hidden
+   */
+  noHideFloating?: boolean
 
   /**
    * The original value of the input
@@ -69,7 +81,7 @@ export type IInputWrapperProps = IInputLabelProps & {
 
   /**
    * When clicking into the input, the tooltip will be shown
-   * Note: Currently works only for TextInput
+   * NOTE: Currently works only for TextInput
    */
   tooltip?: string
 
