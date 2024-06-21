@@ -75,7 +75,9 @@ const isVisible = computed(() => {
       />
     </div>
 
-    <div v-if="hasAnyModifier">+</div>
+    <div v-if="hasAnyModifier">
+      +
+    </div>
 
     <!-- Key -->
     <div class="keyboard-shortcut__wrapper">
@@ -91,14 +93,14 @@ const isVisible = computed(() => {
 
 <style scoped lang="scss">
 .keyboard-shortcut {
-  --apply: flex gap-1 items-center font-mono color-ca leading-none;
+  @apply flex gap-1 items-center font-mono color-ca leading-none;
 
   &__wrapper {
-    --apply: flex flex-center border-1 border-ca rounded-1 w-4.5 h-4.5
+    @apply flex flex-center border-1 border-ca rounded-1 w-4.5 h-4.5
       bg-white color-darker dark:(bg-darker color-white);
 
     & > .icon {
-      --apply: h-4 w-4;
+      @apply h-4 w-4;
     }
   }
 }

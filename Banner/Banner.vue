@@ -2,7 +2,7 @@
 // Parent component should handle `dismiss` event and remove Banner from the DOM
 
 // Types
-import { type IBannerProps } from '~/components/Banner/types/banner-props.type'
+import type { IBannerProps } from '~/components/Banner/types/banner-props.type'
 
 const props = defineProps<IBannerProps>()
 
@@ -22,15 +22,15 @@ const bannerEl = ref<HTMLDivElement>()
 const icon = computed(() => {
   switch (props.type) {
     case 'warning':
-      return `i-clarity:warning-solid h-6 w-6`
+      return 'i-clarity:warning-solid h-6 w-6'
     case 'info':
-      return `i-bi:info-lg h-6 w-6`
+      return 'i-bi:info-lg h-6 w-6'
     case 'success':
-      return `i-akar-icons:circle-check-fill h-6 w-6`
+      return 'i-akar-icons:circle-check-fill h-6 w-6'
     case 'error':
-      return `i-ci:error h-6 w-6`
+      return 'i-ci:error h-6 w-6'
     default:
-      return `i-bi:info-lg h-6 w-6`
+      return 'i-bi:info-lg h-6 w-6'
   }
 })
 
@@ -104,64 +104,64 @@ watch(counter, () => {
 
 <style lang="scss" scoped>
 .banner {
-  --apply: flex flex-gap-x-2 items-center rounded-custom p-x-2 relative
+  @apply flex flex-gap-x-2 items-center rounded-custom p-x-2 relative
     min-h-12 color-true-gray;
 
   &-icon {
-    --apply: flex flex-start min-h-12 shrink-0 p-y-3;
+    @apply flex flex-start min-h-12 shrink-0 p-y-3;
   }
 
   &-text {
-    --apply: flex-grow p-y-2 p-r-2;
+    @apply flex-grow p-y-2 p-r-2;
   }
 
   &.is-dismissable {
-    --apply: cursor-pointer;
+    @apply cursor-pointer;
   }
 
   &-counter {
-    --apply: absolute flex flex-center top--2 right--2 bg-inherit color-inherit
+    @apply absolute flex flex-center top--2 right--2 bg-inherit color-inherit
      rounded-2 border-current border-2 text-sm p-x-1 h-5.5 min-w-6 z-1;
   }
 
   &--warning {
-    --apply: bg-warning color-white;
+    @apply bg-warning color-white;
   }
 
   &--error {
-    --apply: bg-negative color-white;
+    @apply bg-negative color-white;
   }
 
   &--success {
-    --apply: bg-positive color-white;
+    @apply bg-positive color-white;
   }
 
   &--info {
-    --apply: bg-info color-white;
+    @apply bg-info color-white;
   }
 }
 
 .is-outlined.banner {
-  --apply: bg-inherit border-true-gray color-true-gray border-2;
+  @apply bg-inherit border-true-gray color-true-gray border-2;
 
   .banner-counter {
-    --apply: dark:bg-darker bg-white;
+    @apply dark:bg-darker bg-white;
   }
 
   &--warning {
-    --apply: color-warning border-warning bg-warning/15;
+    @apply color-warning border-warning bg-warning/15;
   }
 
   &--error {
-    --apply: color-negative border-negative bg-negative/15;
+    @apply color-negative border-negative bg-negative/15;
   }
 
   &--success {
-    --apply: color-positive border-positive bg-positive/15;
+    @apply color-positive border-positive bg-positive/15;
   }
 
   &--info {
-    --apply: color-info border-info bg-info/15;
+    @apply color-info border-info bg-info/15;
   }
 }
 
@@ -172,11 +172,11 @@ watch(counter, () => {
 }
 
 .v-enter-from {
-  --apply: opacity-0 scale-0;
+  @apply opacity-0 scale-0;
 }
 
 .v-leave-to {
-  --apply: opacity-0 translate-x--100%;
+  @apply opacity-0 translate-x--100%;
 }
 
 // Bounce
