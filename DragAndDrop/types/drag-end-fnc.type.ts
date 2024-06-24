@@ -1,4 +1,4 @@
-import type { IDraggedItem } from '~/components/DragAndDrop/functions/useDragAndDrop'
+import type { IDraggedItem } from '~/components/DragAndDrop/types/dragged-item.type'
 
 /**
  * We can prevent comitting the actual change to the data to handle some special cases

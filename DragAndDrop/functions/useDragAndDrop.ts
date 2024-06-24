@@ -1,5 +1,6 @@
 // Types
 import type { DragEndFnc } from '~/components/DragAndDrop/types/drag-end-fnc.type'
+import type { DragStartFnc } from '~/components/DragAndDrop/types/drag-start-fnc.type'
 import type { IDraggedItem } from '~/components/DragAndDrop/types/dragged-item.type'
 
 const draggedItemKey = Symbol('draggedItem')
@@ -43,8 +44,9 @@ function getDraggableContainerEl(el: HTMLElement) {
 export function useDragAndDrop<T = IItem>(
   options?: {
     direction?: 'vertical' | 'horizontal'
-    onDragStartFnc?: (item: IDraggedItem<T>) => void
+    onDragStartFnc?: DragStartFnc<T>
     canDrop?: (item: IDraggedItem<T>) => boolean
+    preventDragFnc?: (payload: { el: HTMLElement, item: T }) => boolean
 
     onDragEndFnc?: DragEndFnc<T>
   },
@@ -58,7 +60,7 @@ export function useDragAndDrop<T = IItem>(
   // Provide/Inject
   const draggedItem = injectStrict<Ref<IDraggedItem<T> | undefined>>(draggedItemKey, ref(undefined))
   const dndState = injectStrict<IDndState>(dndStateKey, reactive({}))
-  const onDragStart = injectStrict<(item: IDraggedItem<T>) => void>(onDragStartKey, onDragStartFnc)
+  const onDragStart = injectStrict<DragStartFnc<T>>(onDragStartKey, onDragStartFnc)
   const onDragEnd = injectStrict<DragEndFnc<T>>(onDragEndKey, onDragEndFnc)
 
   provide(draggedItemKey, draggedItem)
@@ -110,6 +112,15 @@ export function useDragAndDrop<T = IItem>(
       return
     }
 
+    // @ts-expect-error DOM functions
+    const item: T = dndState.draggedEl?.['get-item']?.()
+
+    const shouldPrevent = onDragStart({ el: dndState.draggedEl!, item })
+
+    if (shouldPrevent === true) {
+      return
+    }
+
     dndState.draggedElInitialIdx = Array.from(dndState.draggedContainerEl.children).indexOf(dndState.draggedEl)
 
     event.preventDefault()
@@ -130,7 +141,6 @@ export function useDragAndDrop<T = IItem>(
     document.addEventListener('keyup', handleKeyPress)
 
     lastEv = event
-    onDragStart(draggedItem.value!)
   }
 
   function handleMouseMove(event: MouseEvent) {
@@ -174,6 +184,15 @@ export function useDragAndDrop<T = IItem>(
       return
     }
 
+    // @ts-expect-error DOM functions
+    const item: T = dndState.draggedEl?.['get-item']?.()
+
+    const shouldPrevent = onDragStart({ el: dndState.draggedEl!, item })
+
+    if (shouldPrevent === true) {
+      return
+    }
+
     event.preventDefault()
     event.stopPropagation()
 
@@ -189,7 +208,6 @@ export function useDragAndDrop<T = IItem>(
     document.addEventListener('touchend', handleDragEnd)
 
     lastEv = event
-    onDragStart(draggedItem.value!)
   }
 
   function handleTouchMove(event: TouchEvent) {
