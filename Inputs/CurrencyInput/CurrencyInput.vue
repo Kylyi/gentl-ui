@@ -62,6 +62,7 @@ const inputElement = ref<HTMLInputElement>()
 const maskOptions = computed<ICurrencyOptions>(() => ({
   min: props.min,
   max: props.max,
+  init: true,
   maskOpts: {
     empty: true,
     locale: 'sr-RS',
