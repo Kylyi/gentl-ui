@@ -43,7 +43,6 @@ const mask = ref<MaskedNumber>(new MaskedNumber())
 const {
   inputId,
   wrapperProps,
-  hasClearableBtn,
   focus,
   select,
   blur,
@@ -69,6 +68,14 @@ const maskOptions = computed<ICurrencyOptions>(() => ({
     digits: 2,
   },
 }))
+
+const hasClearableBtn = computed(
+  () =>
+    !props.readonly &&
+    !props.disabled &&
+    props.clearable &&
+    !!model.value.toString().length
+)
 
 // Functions
 function clear() {
@@ -141,7 +148,7 @@ defineExpose({
       #append
     >
       <div
-        v-if="step || hasClearableBtn || $slots.append"
+        v-if="hasClearableBtn || $slots.append"
         class="number-input__step"
         @click="handleFocusOrClick"
       >
@@ -152,7 +159,7 @@ defineExpose({
         />
 
         <Btn
-          v-if="!readonly && !disabled && clearable"
+          v-if="hasClearableBtn"
           icon="i-eva:close-fill h-6 w-6"
           color="ca"
           size="auto"
