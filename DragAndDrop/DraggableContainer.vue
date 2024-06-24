@@ -1,15 +1,9 @@
-<script setup lang="ts" generic="T">
+<script setup lang="ts" generic="T extends IItem">
 // Functions
 import { useDragAndDrop } from '~/components/DragAndDrop/functions/useDragAndDrop'
+import type { IDragAndDropProps } from '~/components/DragAndDrop/types/drag-and-drop-props.type'
 
-type IProps = {
-  direction?: 'horizontal' | 'vertical'
-  items?: T[]
-  parent?: IItem
-  itemKey?: ObjectKey<T> | ((item: T) => ObjectKey<T>)
-}
-
-const props = withDefaults(defineProps<IProps>(), {
+const props = withDefaults(defineProps<IDragAndDropProps<T>>(), {
   direction: 'vertical',
   itemKey: 'id' as ObjectKey<T>,
 })
@@ -21,7 +15,7 @@ const emits = defineEmits<{
 }>()
 
 // Utils
-const { handleMouseDown, handleTouchStart } = useDragAndDrop({ direction: props.direction })
+const { handleMouseDown, handleTouchStart } = useDragAndDrop(props)
 
 // Layout
 const { model } = useRefReset(() => props.items, { autoSyncFromParent: true })

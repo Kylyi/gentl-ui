@@ -51,6 +51,7 @@ const emits = defineEmits<{
 
 defineExpose({
   focus: focusEditor,
+  blur: blurEditor,
   resolveValues: () => {
     if (editor.value) {
       resolveValues(editor.value.view)
@@ -227,7 +228,7 @@ const MentionExt = Mention.configure({
 })
 
 // Editor
-const sinkEl = ref<ComponentInstance<typeof WysiwygSink>>()
+const sinkEl = ref<InstanceType<typeof WysiwygSink>>()
 const editor = useEditor({
   content: props.modelValue,
   extensions: [

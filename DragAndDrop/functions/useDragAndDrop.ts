@@ -1,44 +1,37 @@
-export type IDraggedItem<T = IItem> = {
-  ref: T
-  pos: { x: number, y: number }
-}
+// Types
+import type { DragEndFnc } from '~/components/DragAndDrop/types/drag-end-fnc.type'
+import type { IDraggedItem } from '~/components/DragAndDrop/types/dragged-item.type'
 
 const draggedItemKey = Symbol('draggedItem')
 const onDragStartKey = Symbol('onDragStart')
 const onDragEndKey = Symbol('onDragEnd')
+const dndStateKey = Symbol('dndState')
 
-type DragEndFnc<T> = (payload: {
-  /**
-   * The dragged item
-   */
-  item: IDraggedItem<T>
-
-  /**
-   * The item that is preceeding the dragged item (in the DOM)
-   */
-  previousItem?: T
-
-  /**
-   * The container the item was dragged from
-   */
-  from: IItem
-
-  /**
-   * The container the item was dragged to
-   */
-  to: IItem
-
-  /**
-   * The index the item was dragged to
-   */
-  toIdx: number
-}) => void
+type IDndState = {
+  isDragging?: boolean
+  draggedEl?: HTMLElement | null
+  draggedElInitialIdx?: number
+  draggedContainerEl?: HTMLElement | null
+  targetContainerEl?: HTMLElement | null
+  toIdx?: number
+}
 
 // Helpers
 function getDraggableEl(el: HTMLElement) {
   return el?.getAttribute('data-draggable-item')
     ? el
     : el?.closest('[data-draggable-item]') as HTMLElement
+}
+
+function getContainersFromPosition(pos: { x: number, y: number }) {
+  const containers = Array.from(document.querySelectorAll('.draggable-container'))
+
+  return containers.filter(container => {
+    const rect = container.getBoundingClientRect()
+
+    return (rect.x <= pos.x && rect.x + rect.width >= pos.x)
+      && (rect.y <= pos.y && rect.y + rect.height >= pos.y)
+  })
 }
 
 function getDraggableContainerEl(el: HTMLElement) {
@@ -64,12 +57,14 @@ export function useDragAndDrop<T = IItem>(
 
   // Provide/Inject
   const draggedItem = injectStrict<Ref<IDraggedItem<T> | undefined>>(draggedItemKey, ref(undefined))
+  const dndState = injectStrict<IDndState>(dndStateKey, reactive({}))
   const onDragStart = injectStrict<(item: IDraggedItem<T>) => void>(onDragStartKey, onDragStartFnc)
   const onDragEnd = injectStrict<DragEndFnc<T>>(onDragEndKey, onDragEndFnc)
 
-  // We only want to provide if we get the values from the options
   provide(draggedItemKey, draggedItem)
+  provide(dndStateKey, dndState)
 
+  // We only want to provide if we get the values from the options
   if (options?.onDragStartFnc) {
     provide(onDragStartKey, onDragStart)
   }
@@ -103,32 +98,26 @@ export function useDragAndDrop<T = IItem>(
   } = useRafFn(handleDrag, { immediate: false })
 
   // D'n'D
-  let draggedEl: HTMLElement | null = null
-  let draggedElInitialIdx = 0
-  let draggedContainerEl: HTMLElement | null = null
   let mouseOffset = { x: 0, y: 0 }
-  let lastTarget: HTMLElement | null = null
-  let targetContainerEl: HTMLElement | null = null
-  let lastPlacement: 'up' | 'down' | 'left' | 'right' | null = null
 
   // Mouse
   function handleMouseDown(event: MouseEvent) {
     const target = event.target as HTMLElement
-    draggedEl = getDraggableEl(target)
-    draggedContainerEl = getDraggableContainerEl(target)
+    dndState.draggedEl = getDraggableEl(target)
+    dndState.draggedContainerEl = getDraggableContainerEl(target)
 
-    if (!draggedEl || !draggedContainerEl) {
+    if (!dndState.draggedEl || !dndState.draggedContainerEl) {
       return
     }
 
-    draggedElInitialIdx = Array.from(draggedContainerEl.children).indexOf(draggedEl)
+    dndState.draggedElInitialIdx = Array.from(dndState.draggedContainerEl.children).indexOf(dndState.draggedEl)
 
     event.preventDefault()
     event.stopPropagation()
 
     startMousePosition = { x: event.clientX, y: event.clientY }
 
-    const rect = draggedEl.getBoundingClientRect()
+    const rect = dndState.draggedEl.getBoundingClientRect()
 
     mouseOffset = {
       x: rect.left - event.clientX,
@@ -138,6 +127,7 @@ export function useDragAndDrop<T = IItem>(
     cloneElement(event)
     document.addEventListener('mousemove', handleMouseMove)
     document.addEventListener('mouseup', handleDragEnd)
+    document.addEventListener('keyup', handleKeyPress)
 
     lastEv = event
     onDragStart(draggedItem.value!)
@@ -152,7 +142,7 @@ export function useDragAndDrop<T = IItem>(
       return
     }
 
-    draggedEl?.classList.add('is-dragged')
+    dndState.draggedEl?.classList.add('is-dragged')
     clonedElement!.style.visibility = 'visible'
 
     if (clonedElement) {
@@ -178,16 +168,16 @@ export function useDragAndDrop<T = IItem>(
   // Touch
   function handleTouchStart(event: TouchEvent) {
     const target = event.target as HTMLElement
-    draggedEl = getDraggableEl(target)
+    dndState.draggedEl = getDraggableEl(target)
 
-    if (!draggedEl) {
+    if (!dndState.draggedEl) {
       return
     }
 
     event.preventDefault()
     event.stopPropagation()
 
-    const rect = draggedEl.getBoundingClientRect()
+    const rect = dndState.draggedEl.getBoundingClientRect()
 
     mouseOffset = {
       x: rect.left - event.touches[0].clientX,
@@ -226,19 +216,28 @@ export function useDragAndDrop<T = IItem>(
     calculateScroll(event)
   }
 
+  function handleKeyPress(event: KeyboardEvent) {
+    if (event.key === 'Escape') {
+      cancelDrag()
+    }
+  }
+
   // Shared
-  function handleDragEnd() {
+  async function handleDragEnd() {
     document.removeEventListener('mousemove', handleMouseMove)
     document.removeEventListener('mouseup', handleDragEnd)
     document.removeEventListener('touchmove', handleTouchMove)
     document.removeEventListener('touchend', handleDragEnd)
+    document.removeEventListener('keyup', handleKeyPress)
 
-    if (!draggedEl || !draggedContainerEl) {
+    if (!dndState.draggedEl || !dndState.draggedContainerEl) {
       return
     }
 
-    let isSamePosition = draggedContainerEl === targetContainerEl
-    isSamePosition = isSamePosition && draggedElInitialIdx === Array.from(draggedContainerEl.children).indexOf(draggedEl)
+    let isSamePosition = dndState.draggedContainerEl === dndState.targetContainerEl
+    const selfIdx = Array.from(dndState.draggedContainerEl.children).indexOf(dndState.draggedEl)
+
+    isSamePosition = isSamePosition && dndState.draggedElInitialIdx === selfIdx
 
     hasMoved = hasMoved && !isSamePosition
 
@@ -249,34 +248,41 @@ export function useDragAndDrop<T = IItem>(
 
     // Handle the drag result
     if (draggedItem.value && hasMoved) {
-      const idx = Array.from(targetContainerEl!.children).indexOf(draggedEl!)
+      dndState.toIdx = Array.from(dndState.targetContainerEl!.children).indexOf(dndState.draggedEl!)
 
-      // @ts-expect-error ...
-      draggedContainerEl?.['remove-item'](draggedItem.value.ref)
-
-      // @ts-expect-error ...
-      targetContainerEl?.['insert-item'](idx, draggedItem.value.ref)
-
-      const previousItemEl = targetContainerEl?.children[idx - 1] as HTMLElement | undefined
+      const previousItemEl = dndState.targetContainerEl?.children[dndState.toIdx - 1] as HTMLElement | undefined
       // @ts-expect-error ...
       const previousItem = previousItemEl?.['get-item']?.()
 
-      onDragEnd({
-        previousItem,
+      const nextItemEl = dndState.targetContainerEl?.children[dndState.toIdx + 1] as HTMLElement | undefined
+      // @ts-expect-error ...
+      const nextItem = nextItemEl?.['get-item']?.()
+
+      const continueDrag = await onDragEnd({
+        siblingItem: previousItem ?? nextItem,
         item: draggedItem.value,
-        toIdx: idx,
+        toIdx: dndState.toIdx,
 
         // @ts-expect-error ...
-        from: draggedContainerEl?.['get-parent']?.() ?? undefined,
+        from: dndState.draggedContainerEl?.['get-parent']?.() ?? undefined,
 
         // @ts-expect-error ...
-        to: targetContainerEl?.['get-parent']?.() ?? undefined,
+        to: dndState.targetContainerEl?.['get-parent']?.() ?? undefined,
+
+        moveDirection: previousItem ? 'down' : 'up',
+
+        cancelDrag,
       })
+
+      if (continueDrag === false) {
+        return
+      }
+
+      commitDrag()
     }
 
     // Reset
-    draggedItem.value = undefined
-    draggedEl?.classList.remove('is-dragged')
+    dndState.draggedEl?.classList.remove('is-dragged')
     lastEv = null
     hasMoved = false
     startMousePosition = { x: 0, y: 0 }
@@ -293,97 +299,30 @@ export function useDragAndDrop<T = IItem>(
       return
     }
 
-    const targetDraggableEl = getDraggableEl(target)
-    targetContainerEl = getDraggableContainerEl(target)
+    // const targetDraggableEl = getDraggableEl(target)
+    dndState.targetContainerEl = getDraggableContainerEl(target) ?? dndState.targetContainerEl
 
-    if (targetDraggableEl && targetContainerEl) {
-      handleDragOverItem(_draggedItem, targetDraggableEl)
-    } else if (targetContainerEl) {
-      handleDragOverContainer(_draggedItem)
-    }
-  }
-
-  function handleDragOverItem(
-    draggedItem: IDraggedItem<T>,
-    targetDraggableEl: HTMLElement,
-  ) {
-    // @ts-expect-error - TS doesn't know about our custom functions
-    const targetDraggableItem = targetDraggableEl?.['get-item']?.()
-    const isSelf = draggedItem.ref === targetDraggableItem
-
-    if (isSelf || !targetDraggableItem) {
-      lastTarget = targetDraggableEl
-
-      return
-    }
-
-    let placement: 'up' | 'down' | 'left' | 'right' | null = null
-    const {
-      x = 0,
-      y = 0,
-      width = 1,
-      height = 1,
-    } = targetDraggableEl?.getBoundingClientRect() ?? {}
-
-    if (direction === 'horizontal') {
-      const relativeX = (draggedItem.pos.x - x) / width
-      placement = relativeX < 0.5 ? 'left' : 'right'
-    } else {
-      const relativeY = (draggedItem.pos.y - y) / height
-      placement = relativeY < 0.5 ? 'up' : 'down'
-    }
-
-    if (lastPlacement !== placement || lastTarget !== targetDraggableEl) {
-      lastPlacement = placement
-      lastTarget = targetDraggableEl
-
-      // Remove from old container
-      // draggedContainerEl?.['remove-item'](draggedItem.ref)
-
-      if (placement === 'up' || placement === 'left') {
-        // DOM manipulation
-        targetDraggableEl.insertAdjacentElement(
-          'beforebegin',
-          draggedEl!,
-        )
-
-        // IMMEDIATE
-        // Add to new container
-        // const idx = Array.from(targetContainerEl.children).indexOf(targetDraggableEl)
-        // targetContainerEl?.['insert-item'](idx, draggedItem.ref)
-      } else if (placement === 'down' || placement === 'right') {
-        // DOM manipulation
-        targetDraggableEl.insertAdjacentElement(
-          'afterend',
-          draggedEl!,
-        )
-
-        // IMMEDIATE
-        // Add to new container
-        // const idx = Array.from(targetContainerEl.children).indexOf(targetDraggableEl)
-        // targetContainerEl?.['insert-item'](idx + 1, draggedItem.ref)
-      }
-
-      // draggedContainerEl = targetContainerEl
-    }
+    handleDragOverContainer(_draggedItem)
+    // if (targetDraggableEl && dndState.targetContainerEl) {
+    //   // handleDragOverItem(_draggedItem, targetDraggableEl)
+    // } else if (dndState.targetContainerEl) {
+    //   handleDragOverContainer(_draggedItem)
+    // }
   }
 
   function handleDragOverContainer(
     draggedItem: IDraggedItem<T>,
   ) {
     if (
-      !targetContainerEl
-      || !draggedContainerEl
-      || lastTarget === targetContainerEl
+      !dndState.targetContainerEl
+      || !dndState.draggedContainerEl
     ) {
       return
     }
 
-    lastTarget = targetContainerEl
-
     // IMMEDIATE
     // // @ts-expect-error - TS doesn't know about our custom functions
-    // const items = targetContainerEl?.['get-items']?.() ?? []
+    // const items = dndState.targetContainerEl?.['get-items']?.() ?? []
     // const isItemAlreadyInContainer = items.includes(draggedItem.ref)
 
     // if (isItemAlreadyInContainer) {
@@ -391,34 +330,137 @@ export function useDragAndDrop<T = IItem>(
     // }
 
     // DOM manipulation
-    const firstItemTop = targetContainerEl.firstElementChild?.getBoundingClientRect()?.top ?? 0
-    const lastItemBottom = targetContainerEl.lastElementChild?.getBoundingClientRect()?.bottom ?? 0
-    const isBelowLastItem = draggedItem.pos.y > lastItemBottom
-    const isAboveFirstItem = draggedItem.pos.y < firstItemTop
+    const children = Array.from(dndState.targetContainerEl.children).map(el => {
+      const rect = el.getBoundingClientRect()
 
-    if (isBelowLastItem) {
-      targetContainerEl.append(draggedEl!)
-    } else if (isAboveFirstItem) {
-      targetContainerEl.prepend(draggedEl!)
+      return { el, rect }
+    })
+
+    // Horizontal
+    if (direction === 'horizontal') {
+      // Hovering over self
+      const {
+        x: draggedElX = 0,
+        width: draggedElWidth = 0,
+        y: draggedElY = 0,
+        height: draggedElHeight = 0,
+      } = dndState.draggedEl?.getBoundingClientRect() ?? {}
+
+      const isInsideSelf = draggedItem.pos.y > draggedElY && draggedItem.pos.y < draggedElY + draggedElHeight
+        && draggedItem.pos.x > draggedElX && draggedItem.pos.x < draggedElX + draggedElWidth
+
+      if (isInsideSelf) {
+        return
+      }
+
+      // Find the index of the dragged item in the container
+      let idx = children.findIndex(child => draggedItem.pos.x < (child.rect.x + child.rect.width / 2))
+      idx = idx === -1 ? children.length - 1 : idx
+
+      if (dndState.draggedEl) {
+        const isLast = idx === children.length - 1
+        const isMoreRightThanLast = children[idx].rect.x + (children[idx].rect.width / 2) < draggedItem.pos.x
+
+        if (isLast && isMoreRightThanLast) {
+          dndState.targetContainerEl.append(dndState.draggedEl)
+        } else {
+          dndState.targetContainerEl.insertBefore(dndState.draggedEl, children[idx].el)
+        }
+      }
     }
 
+    // Vertical
+    else if (direction === 'vertical') {
+      // Hovering over self
+      const {
+        x: draggedElX = 0,
+        width: draggedElWidth = 0,
+        y: draggedElY = 0,
+        height: draggedElHeight = 0,
+      } = dndState.draggedEl?.getBoundingClientRect() ?? {}
+
+      const isInsideSelf = draggedItem.pos.y > draggedElY && draggedItem.pos.y < draggedElY + draggedElHeight
+        && draggedItem.pos.x > draggedElX && draggedItem.pos.x < draggedElX + draggedElWidth
+
+      if (isInsideSelf) {
+        return
+      }
+
+      // Find the index of the dragged item in the container
+      let idx = children.findIndex(child => draggedItem.pos.y < (child.rect.y + child.rect.height / 2))
+      idx = idx === -1 ? children.length - 1 : idx
+
+      if (dndState.draggedEl) {
+        const isLast = idx === children.length - 1
+        const isLowerThanLast = children.length === 0 || children[idx].rect.y + (children[idx].rect.height / 2) < draggedItem.pos.y
+
+        if (isLast && isLowerThanLast) {
+          dndState.targetContainerEl.append(dndState.draggedEl)
+        } else {
+          dndState.targetContainerEl.insertBefore(dndState.draggedEl, children[idx].el)
+        }
+      }
+    }
+
+    // IMMEDIATE
     // Remove from old container
     // draggedContainerEl?.['remove-item'](draggedItem.ref)
 
     // Add to new container
-    // targetContainerEl?.['insert-item'](items.length, draggedItem.ref)
+    // dndState.targetContainerEl?.['insert-item'](items.length, draggedItem.ref)
 
-    // draggedContainerEl = targetContainerEl
+    // draggedContainerEl = dndState.targetContainerEl
+  }
+
+  function commitDrag() {
+    if (draggedItem.value) {
+      // @ts-expect-error ...
+      dndState.draggedContainerEl?.['remove-item'](draggedItem.value.ref)
+
+      // @ts-expect-error ...
+      dndState.targetContainerEl?.['insert-item'](dndState.toIdx, draggedItem.value.ref)
+    }
+
+    draggedItem.value = undefined
+  }
+
+  function cancelDrag() {
+    document.removeEventListener('mousemove', handleMouseMove)
+    document.removeEventListener('mouseup', handleDragEnd)
+    document.removeEventListener('touchmove', handleTouchMove)
+    document.removeEventListener('touchend', handleDragEnd)
+    document.removeEventListener('keyup', handleKeyPress)
+
+    const { draggedEl, draggedElInitialIdx = 0, draggedContainerEl } = dndState
+
+    if (draggedItem.value && draggedEl) {
+      if (draggedElInitialIdx === 0) {
+        draggedContainerEl?.append(draggedEl)
+      } else {
+        draggedContainerEl?.insertBefore(draggedEl, draggedContainerEl.children[draggedElInitialIdx])
+      }
+
+      clonedElement?.remove()
+    }
+
+    draggedItem.value = undefined
+    dndState.draggedEl?.classList.remove('is-dragged')
+    lastEv = null
+    hasMoved = false
+    startMousePosition = { x: 0, y: 0 }
+    scrollBy.value = { speedX: 0, speedY: 0 }
+    pause()
+    pauseRaf()
   }
 
   // Cloning
   let clonedElement: HTMLElement | null = null
 
   function cloneElement(event: MouseEvent | TouchEvent) {
-    clonedElement = draggedEl?.cloneNode(true) as HTMLElement
+    clonedElement = dndState.draggedEl?.cloneNode(true) as HTMLElement
 
     // @ts-expect-error - TS doesn't know about our custom functions
-    const item: T = draggedEl?.['get-item']?.()
+    const item: T = dndState.draggedEl?.['get-item']?.()
 
     if (clonedElement) {
       let clientX: number, clientY: number
@@ -434,8 +476,8 @@ export function useDragAndDrop<T = IItem>(
       clonedElement.style.position = 'absolute'
       clonedElement.style.left = `${clientX + mouseOffset.x}px`
       clonedElement.style.top = `${clientY + mouseOffset.y}px`
-      clonedElement.style.width = `${draggedEl!.offsetWidth}px`
-      clonedElement.style.height = `${draggedEl!.offsetHeight}px`
+      clonedElement.style.width = `${dndState.draggedEl!.offsetWidth}px`
+      clonedElement.style.height = `${dndState.draggedEl!.offsetHeight}px`
       clonedElement.style.zIndex = '9999'
       clonedElement.style.opacity = '0.8'
       clonedElement.style.pointerEvents = 'none'
@@ -457,53 +499,61 @@ export function useDragAndDrop<T = IItem>(
     const target = event.target as HTMLElement
     scrollContainerEl = getDraggableContainerEl(target)
 
-    if (!scrollContainerEl || !clonedElement) {
+    const x = event instanceof MouseEvent ? event.clientX : event.touches[0].clientX
+    const y = event instanceof MouseEvent ? event.clientY : event.touches[0].clientY
+    const containers = getContainersFromPosition({ x, y })
+
+    if (!clonedElement) {
       return
     }
 
-    const containerRect = scrollContainerEl.getBoundingClientRect()
-    const threshold = 40 // Distance from edge of container in px
-    let speedX = 0
-    let speedY = 0
+    containers.forEach(scrollContainerEl => {
+      const containerRect = scrollContainerEl.getBoundingClientRect()
+      const threshold = 40 // Distance from edge of container in px
+      let speedX = 0
+      let speedY = 0
 
-    let clientX: number, clientY: number
-    if (event instanceof MouseEvent) {
-      clientX = event.clientX
-      clientY = event.clientY
-    } else {
-      clientX = event.touches[0].clientX
-      clientY = event.touches[0].clientY
-    }
+      let clientX: number, clientY: number
+      if (event instanceof MouseEvent) {
+        clientX = event.clientX
+        clientY = event.clientY
+      } else {
+        clientX = event.touches[0].clientX
+        clientY = event.touches[0].clientY
+      }
 
-    if (clientX < containerRect.left + threshold) {
-      // Scroll left
-      speedX = -Math.max(1, (threshold - (clientX - containerRect.left)) / 10)
-    } else if (clientX > containerRect.right - threshold) {
-      // Scroll right
-      speedX = Math.max(1, (threshold - (containerRect.right - clientX)) / 10)
-    }
+      if (clientX < containerRect.left + threshold) {
+        // Scroll left
+        speedX = -Math.max(1, (threshold - (clientX - containerRect.left)) / 10)
+      } else if (clientX > containerRect.right - threshold) {
+        // Scroll right
+        speedX = Math.max(1, (threshold - (containerRect.right - clientX)) / 10)
+      }
 
-    if (clientY < containerRect.top + threshold) {
-      // Scroll up
-      speedY = -Math.max(1, (threshold - (clientY - containerRect.top)) / 10)
-    } else if (clientY > containerRect.bottom - threshold) {
-      // Scroll down
-      speedY = Math.max(1, (threshold - (containerRect.bottom - clientY)) / 10)
-    }
+      if (clientY < containerRect.top + threshold) {
+        // Scroll up
+        speedY = -Math.max(1, (threshold - (clientY - containerRect.top)) / 10)
+      } else if (clientY > containerRect.bottom - threshold) {
+        // Scroll down
+        speedY = Math.max(1, (threshold - (containerRect.bottom - clientY)) / 10)
+      }
 
-    scrollBy.value = { speedX, speedY }
+      scrollBy.value = { speedX, speedY }
 
-    if (speedX === 0 && speedY === 0) {
-      pause()
-    } else if (!isActive.value) {
-      resume()
-    }
+      if (speedX === 0 && speedY === 0) {
+        pause()
+      } else if (!isActive.value) {
+        resume()
+      }
+    })
   }
 
   return {
     draggedItem,
     onDragStart,
     onDragEnd,
+    cancelDrag,
+    commitDrag,
 
     // Events
     handleMouseDown,
