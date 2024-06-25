@@ -25,7 +25,10 @@ function getDraggableEl(el: HTMLElement) {
 }
 
 function getContainersFromPosition(pos: { x: number, y: number }) {
-  const containers = Array.from(document.querySelectorAll('.draggable-container'))
+  const dragContainers = Array.from(document.querySelectorAll('.draggable-container'))
+  const scrollers = Array.from(document.querySelectorAll('.scroller-horizontal .content'))
+
+  const containers = [...dragContainers, ...scrollers]
 
   return containers.filter(container => {
     const rect = container.getBoundingClientRect()
@@ -81,14 +84,14 @@ export function useDragAndDrop<T = IItem>(
   let hasMoved = false
 
   // Scrolling
-  let scrollContainerEl: HTMLElement | null = null
+  const containersToScroll = ref<{ container: HTMLElement, speedX: number, speedY: number }[]>([])
   const scrollBy = ref({ speedX: 0, speedY: 0 })
 
-  const { pause, resume, isActive } = useIntervalFn(
+  const { pause, resume } = useIntervalFn(
     () => {
-      const { speedX, speedY } = scrollBy.value
-
-      scrollContainerEl?.scrollBy(speedX, speedY)
+      containersToScroll.value.forEach(({ container, speedX, speedY }) => {
+        container.scrollBy(speedX, speedY)
+      })
     },
     5,
     { immediate: false },
@@ -111,6 +114,9 @@ export function useDragAndDrop<T = IItem>(
     if (!dndState.draggedEl || !dndState.draggedContainerEl) {
       return
     }
+
+    // Remove horizontal scroll from the html
+    document.documentElement.style.overflowX = 'hidden'
 
     // @ts-expect-error DOM functions
     const item: T = dndState.draggedEl?.['get-item']?.()
@@ -301,6 +307,7 @@ export function useDragAndDrop<T = IItem>(
 
     // Reset
     dndState.draggedEl?.classList.remove('is-dragged')
+    document.documentElement.style.overflowX = ''
     lastEv = null
     hasMoved = false
     startMousePosition = { x: 0, y: 0 }
@@ -463,6 +470,7 @@ export function useDragAndDrop<T = IItem>(
 
     draggedItem.value = undefined
     dndState.draggedEl?.classList.remove('is-dragged')
+    document.documentElement.style.overflowX = ''
     lastEv = null
     hasMoved = false
     startMousePosition = { x: 0, y: 0 }
@@ -514,9 +522,6 @@ export function useDragAndDrop<T = IItem>(
 
   // Scrolling
   function calculateScroll(event: MouseEvent | TouchEvent) {
-    const target = event.target as HTMLElement
-    scrollContainerEl = getDraggableContainerEl(target)
-
     const x = event instanceof MouseEvent ? event.clientX : event.touches[0].clientX
     const y = event instanceof MouseEvent ? event.clientY : event.touches[0].clientY
     const containers = getContainersFromPosition({ x, y })
@@ -525,9 +530,11 @@ export function useDragAndDrop<T = IItem>(
       return
     }
 
+    containersToScroll.value = []
+
     containers.forEach(scrollContainerEl => {
       const containerRect = scrollContainerEl.getBoundingClientRect()
-      const threshold = 40 // Distance from edge of container in px
+      const threshold = 250 // Distance from edge of container in px
       let speedX = 0
       let speedY = 0
 
@@ -540,30 +547,42 @@ export function useDragAndDrop<T = IItem>(
         clientY = event.touches[0].clientY
       }
 
+      // Scroll left
       if (clientX < containerRect.left + threshold) {
-        // Scroll left
         speedX = -Math.max(1, (threshold - (clientX - containerRect.left)) / 10)
-      } else if (clientX > containerRect.right - threshold) {
-        // Scroll right
+      }
+
+      // Scroll right
+      else if (clientX > containerRect.right - threshold) {
         speedX = Math.max(1, (threshold - (containerRect.right - clientX)) / 10)
       }
 
+      // Scroll up
       if (clientY < containerRect.top + threshold) {
-        // Scroll up
         speedY = -Math.max(1, (threshold - (clientY - containerRect.top)) / 10)
-      } else if (clientY > containerRect.bottom - threshold) {
-        // Scroll down
+      }
+
+      // Scroll down
+      else if (clientY > containerRect.bottom - threshold) {
         speedY = Math.max(1, (threshold - (containerRect.bottom - clientY)) / 10)
       }
 
       scrollBy.value = { speedX, speedY }
 
-      if (speedX === 0 && speedY === 0) {
-        pause()
-      } else if (!isActive.value) {
-        resume()
+      if (speedX !== 0 || speedY !== 0) {
+        containersToScroll.value.push({
+          container: scrollContainerEl as HTMLElement,
+          speedX,
+          speedY,
+        })
       }
     })
+
+    if (containersToScroll.value.length) {
+      resume()
+    } else {
+      pause()
+    }
   }
 
   return {
