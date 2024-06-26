@@ -26,6 +26,7 @@ const props = withDefaults(defineProps<ICurrencyInputProps>(), {
   max: Number.POSITIVE_INFINITY,
   locale: 'sr-RS',
   currency: 'RSD',
+  step: 'auto',
 })
 
 const emits = defineEmits<{
@@ -38,6 +39,10 @@ const model = defineModel<number | null>()
 // Utils
 const { path } = useInputValidationUtils(props)
 const { separators } = useNumber()
+const { pause, resume } = useIntervalFn(() => handleStep(), 120, {
+  immediate: false,
+  immediateCallback: true,
+})
 
 const mask = computed<MaskedNumber>(() => {
   return new MaskedNumber({
@@ -77,27 +82,71 @@ const {
 
 // Layout
 const inputElement = ref<HTMLInputElement>()
+const increment = ref<InstanceType<typeof Btn>>()
+const decrement = ref<InstanceType<typeof Btn>>()
+const modifier = ref<-1 | 1>(1)
 
-const { inputValue, clear, init, masking } = useCurrencyInputLayout(
-  props,
-  emits,
-  inputElement
-)
+const { inputValue, unmaskedInputValue, clear, init, masking } =
+  useCurrencyInputLayout(props, emits, inputElement)
 
-const hasClearableBtn = computed(
-  () =>
-    !props.readonly &&
-    !props.disabled &&
-    props.clearable &&
-    props.modelValue &&
-    !!props.modelValue.toString().length
-)
+const hasClearableBtn = computed(() => !props.readonly && !props.disabled)
 
 watch(inputElement, init)
 
 watch(model, val => {
   inputValue.value = masking(val?.toFixed(2).toString() ?? '0,00')
 })
+
+// Functions
+function startStep(_: PointerEvent, increment = true) {
+  modifier.value = increment ? 1 : -1
+  window.addEventListener('pointerup', stopStep)
+  window.addEventListener('mouseup', stopStep)
+  window.addEventListener('touchend', stopStep)
+  window.addEventListener('touchmove', stopStep)
+  window.addEventListener('touchcancel', stopStep)
+  resume()
+}
+
+function stopStep() {
+  pause()
+  window.removeEventListener('pointerup', stopStep)
+  window.removeEventListener('mouseup', stopStep)
+  window.removeEventListener('touchend', stopStep)
+  window.removeEventListener('touchmove', stopStep)
+  window.removeEventListener('touchcancel', stopStep)
+}
+
+const stepAdjusted = computed(() => {
+  if (!model.value) {
+    return typeof props.step === 'number' ? props.step : 1
+  }
+
+  if (props.step !== 'auto') {
+    return props.step || 0
+  }
+
+  if (+model.value <= 200) {
+    return 1
+  } else if (+model.value <= 20000) {
+    return 100
+  } else {
+    return 1000
+  }
+})
+
+function handleStep() {
+  let currentValue = model.value
+
+  if (isNil(currentValue) || currentValue === 0) {
+    currentValue = 0
+  }
+
+  const nextValue = +currentValue! + stepAdjusted.value * modifier.value
+  inputValue.value = masking(nextValue?.toFixed(2).toString() ?? '0,00')
+
+  model.value = unmaskedInputValue.value
+}
 
 defineExpose({
   focus,
@@ -163,7 +212,7 @@ defineExpose({
         />
 
         <Btn
-          v-if="hasClearableBtn"
+          v-if="unmaskedInputValue > 0"
           icon="i-eva:close-fill h-6 w-6"
           color="ca"
           size="auto"
@@ -179,6 +228,38 @@ defineExpose({
             {{ clearConfirmation }}
           </MenuConfirmation>
         </Btn>
+
+        <!-- Step -->
+        <div
+          v-if="step && !readonly && !disabled"
+          flex="~ col shrink"
+          w="4"
+        >
+          <Btn
+            ref="increment"
+            tabindex="-1"
+            size="auto"
+            icon="i-bi:caret-up-fill w-4 h-4"
+            color="ca"
+            no-hover-effect
+            touch-none
+            @pointerdown="startStep($event, true)"
+            @mousedown.stop.prevent
+            @click.stop.prevent
+          />
+          <Btn
+            ref="decrement"
+            tabindex="-1"
+            size="auto"
+            icon="i-bi:caret-up-fill rotate-180 w-4 h-4"
+            color="ca"
+            no-hover-effect
+            touch-none
+            @pointerdown="startStep($event, false)"
+            @mousedown.stop.prevent
+            @click.stop.prevent
+          />
+        </div>
       </div>
     </template>
   </InputWrapper>

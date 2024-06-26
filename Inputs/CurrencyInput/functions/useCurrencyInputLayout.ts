@@ -56,36 +56,18 @@ export function useCurrencyInputLayout(
 
   /** Mask a numeric value */
   function masking(value: string) {
-    const {
-      digits = 2,
-      viaInput = false,
-      locale,
-      options,
-    } = currencyOptions.value!.maskOpts!
+    const { digits = 2, locale, options } = currencyOptions.value!.maskOpts!
 
-    let maskingValue =
+    const maskingValue =
       unmasking(value) > currencyOptions.value!.max ||
       unmasking(value) < currencyOptions.value!.min
         ? prevValue.value
         : value
 
-    const numberValue = Number(maskingValue)
-    const isNumber = !Number.isNaN(numberValue)
-
-    if (isNumber && !viaInput) {
-      maskingValue = new Intl.NumberFormat('en-US', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }).format(numberValue)
-    }
-
     const { minus, decimal, integer } = getParts(maskingValue, digits)
-
     const amount = `${minus}${integer}.${decimal}`
 
-    return new Intl.NumberFormat(locale, options).format(
-      Number(amount)
-    )
+    return new Intl.NumberFormat(locale, options).format(Number(amount))
   }
 
   /** Unmask a numeric value */
@@ -132,7 +114,7 @@ export function useCurrencyInputLayout(
       cc++
     }
 
-    return String(value).length - cc - 1
+    return String(value).length - cc
   }
 
   /** Handle masking on input event */
@@ -147,9 +129,6 @@ export function useCurrencyInputLayout(
 
     inputValue.value = masking(input.value!.value)
     prevValue.value = inputValue.value
-
-    const pos = getPosition(input.value!.value)
-    input.value!.setSelectionRange(pos, pos)
 
     emits('update:modelValue', unmaskedInputValue.value)
   }
