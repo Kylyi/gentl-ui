@@ -1,45 +1,65 @@
 <script setup lang="ts">
 import { MaskedNumber } from 'imask'
 
-// Models
-import { CurrencyModel } from '~/components/Inputs/CurrencyInput/models/currency.model'
-
 // Types
-import type { ICurrencyOptions } from '~/components/Inputs/CurrencyInput/types/currency-options.type'
-import type { INumberInputProps } from '~/components/Inputs/NumberInput/types/number-input-props.type'
+import type { ICurrencyInputProps } from '~/components/Inputs/CurrencyInput/types/currency-input-props.type'
 
 // Functions
 import { useInputUtils } from '~/components/Inputs/functions/useInputUtils'
 import { useInputValidationUtils } from '~/components/Inputs/functions/useInputValidationUtils'
+import { useCurrencyInputLayout } from '~/components/Inputs/CurrencyInput/functions/useCurrencyInputLayout'
 
 // Components
 import Btn from '~/components/Button/Btn.vue'
+import { useNumber } from '~/components/Inputs/NumberInput/functions/useNumber'
 
-const props = withDefaults(
-  defineProps<Omit<INumberInputProps, 'mask' | 'step' | 'fractionDigits'>>(),
-  {
-    debounce: 0,
-    errorTakesSpace: true,
-    errorVisible: true,
-    inline: undefined,
-    labelInside: undefined,
-    required: undefined,
-    size: 'md',
-    stackLabel: undefined,
-    min: Number.NEGATIVE_INFINITY,
-    max: Number.POSITIVE_INFINITY,
-  }
-)
+const props = withDefaults(defineProps<ICurrencyInputProps>(), {
+  debounce: 0,
+  errorTakesSpace: true,
+  errorVisible: true,
+  inline: undefined,
+  labelInside: undefined,
+  required: undefined,
+  size: 'md',
+  stackLabel: undefined,
+  min: Number.NEGATIVE_INFINITY,
+  max: Number.POSITIVE_INFINITY,
+  locale: 'sr-RS',
+  currency: 'RSD',
+})
 
-defineEmits<{
+const emits = defineEmits<{
   (e: 'update:modelValue', val?: number | undefined | null): void
   (e: 'blur'): void
 }>()
 
+const model = defineModel<number | null>()
+
 // Utils
 const { path } = useInputValidationUtils(props)
+const { separators } = useNumber()
 
-const mask = ref<MaskedNumber>(new MaskedNumber())
+const mask = computed<MaskedNumber>(() => {
+  return new MaskedNumber({
+    thousandsSeparator: props.noGrouping
+      ? ''
+      : separators.value.thousandSeparator,
+    radix: separators.value.decimalSeparator,
+    mapToRadix: ['.', ','],
+    scale: props.fractionDigits,
+    mask: Number,
+    min: props.min,
+    max: props.max,
+    format: (value: any) => {
+      if (isNil(value)) {
+        return ''
+      }
+
+      return value.toString()
+    },
+  })
+})
+
 const {
   inputId,
   wrapperProps,
@@ -56,44 +76,27 @@ const {
 })
 
 // Layout
-const model = defineModel<number | string>({ required: true })
-const currencyModel = ref<CurrencyModel>()
 const inputElement = ref<HTMLInputElement>()
-const maskOptions = computed<ICurrencyOptions>(() => ({
-  min: props.min,
-  max: props.max,
-  init: true,
-  maskOpts: {
-    empty: true,
-    locale: 'sr-RS',
-    digits: 2,
-  },
-}))
+
+const { inputValue, clear, init, masking } = useCurrencyInputLayout(
+  props,
+  emits,
+  inputElement
+)
 
 const hasClearableBtn = computed(
   () =>
     !props.readonly &&
     !props.disabled &&
     props.clearable &&
-    !!model.value.toString().length
+    props.modelValue &&
+    !!props.modelValue.toString().length
 )
 
-// Functions
-function clear() {
-  currencyModel.value?.clear()
-  model.value = ''
-}
+watch(inputElement, init)
 
-// Lifecycle
-onMounted(() => {
-  currencyModel.value = new CurrencyModel(
-    inputElement.value!,
-    maskOptions.value
-  )
-})
-
-onUnmounted(() => {
-  currencyModel.value?.destroy()
+watch(model, val => {
+  inputValue.value = masking(val?.toFixed(2).toString() ?? '0,00')
 })
 
 defineExpose({
@@ -109,7 +112,7 @@ defineExpose({
   <InputWrapper
     v-bind="wrapperProps"
     :id="inputId"
-    :has-content="!!model.toString().length"
+    :has-content="!!inputValue.toString().length"
     .focus="focus"
     @click="handleClickWrapper"
   >
@@ -127,7 +130,7 @@ defineExpose({
     <input
       :id="inputId"
       ref="inputElement"
-      v-model.number="model"
+      v-model="inputValue"
       flex="1"
       inputmode="numeric"
       :placeholder="placeholder"

@@ -4,8 +4,9 @@ export type ICurrencyMaskOptions = {
   empty?: boolean
   locale?: string
   options?: {
-    currency: string
+    currency?: string
     minimumFractionDigits?: number
     maximumFractionDigits?: number
+    style?: 'currency'
   }
 }
