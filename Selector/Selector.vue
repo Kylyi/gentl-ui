@@ -132,6 +132,14 @@ function getLabel(option: any) {
     return ''
   }
 
+  // We provided the `selectionLabel` prop
+  if (typeof props.selectionLabel === 'function') {
+    return typeof option !== 'object'
+      ? props.selectionLabel(optionsByKey.value[option]) || option
+      : props.selectionLabel(option)
+  }
+
+  // We provided the `optionLabel` prop
   if (typeof props.optionLabel === 'function') {
     return typeof option !== 'object'
       ? props.optionLabel(optionsByKey.value[option]) || option

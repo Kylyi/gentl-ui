@@ -495,7 +495,7 @@ onKeyStroke(['d', 'D'], (ev: KeyboardEvent) => {
                 </MenuProxy>
 
                 <div
-                  class="i-line-md:chevron-small-right rotate-90 h-4 w-4 m-l--1"
+                  class="i-flowbite:chevron-right-outline rotate-90 h-4 w-4 m-l--1"
                 />
               </Btn>
             </slot>

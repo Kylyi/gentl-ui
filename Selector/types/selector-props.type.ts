@@ -152,4 +152,10 @@ export type ISelectorProps = IInputProps & {
    * Props for the picker
    */
   menuProps?: IDialogProps & IMenuProps & { class?: ClassType, style?: CSSProperties }
+
+  /**
+   * Defines how the label of the item looks like while selected
+   * Takes priority over the `optionLabel` prop
+   */
+  selectionLabel?: ((opt: any) => string) | string
 }

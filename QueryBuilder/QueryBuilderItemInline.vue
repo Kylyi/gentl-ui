@@ -230,6 +230,7 @@ const $z = useZod({ scope: 'qb' })
           m="!0"
           p="!x-1"
           min-w="70"
+          max-w="82.5"
           @delete:row="tableRefresh"
           @update:comparator="itemEditMenuEl?.recomputePosition"
         />

@@ -75,11 +75,11 @@ const collapseProps = computed(() => {
   return collapsed.value[props.item.id]
     ? {
         label: t('queryBuilder.expand'),
-        icon: 'i-line-md:chevron-small-right order-2',
+        icon: 'i-flowbite:chevron-right-outline !w-6 !h-6',
       }
     : {
         label: t('queryBuilder.collapse'),
-        icon: 'i-line-md:chevron-small-right rotate-90 order-2',
+        icon: 'i-flowbite:chevron-right-outline rotate-90 !w-6 !h-6',
       }
 })
 </script>
@@ -122,18 +122,56 @@ const collapseProps = computed(() => {
         />
       </div>
 
+      <Separator vertical />
+
+      <!-- Controls -->
+      <div
+        v-if="!noAdd"
+        class="qb-group-controls"
+      >
+        <!-- Add condition -->
+        <Btn
+          icon="i-eva:plus-fill"
+          color="ca"
+          bg="white dark:darker"
+          no-uppercase
+          size="sm"
+          @click="handleAddCondition"
+        >
+          <Tooltip>
+            {{ $t('queryBuilder.addCondition') }}
+          </Tooltip>
+        </Btn>
+
+        <!-- Add group -->
+        <Btn
+          icon="i-formkit:add"
+          bg="white dark:darker"
+          color="ca"
+          no-uppercase
+          size="sm"
+          @click="handleAddGroup"
+        >
+          <Tooltip>
+            {{ $t('queryBuilder.addGroup') }}
+          </Tooltip>
+        </Btn>
+      </div>
+
       <!-- Actions -->
       <div class="qb-group-actions">
         <!-- Collapse -->
         <Btn
-          size="xs"
+          size="auto"
           no-uppercase
-          v-bind="collapseProps"
-          w="22"
-          align="right"
+          :icon="collapseProps.icon"
           border="1 ca"
           @click="collapsed[item.id] = !collapsed[item.id]"
-        />
+        >
+          <Tooltip>
+            {{ collapseProps.label }}
+          </Tooltip>
+        </Btn>
 
         <!-- Remove group -->
         <Btn
@@ -142,14 +180,14 @@ const collapseProps = computed(() => {
           color="negative"
           size="xs"
           m="l-2"
-          :class="{ invisible: !level }"
+          :disabled="!level"
           @click="handleRemoveGroup"
         />
       </div>
     </div>
 
+    <!-- Children rows -->
     <template v-if="!collapsed[item.id]">
-      <!-- Children rows -->
       <QueryBuilderRow
         v-for="(child, idx) in item.children"
         :key="child.path"
@@ -160,36 +198,6 @@ const collapseProps = computed(() => {
         :editable="editable"
         :is-last-child="idx === item.children.length - 1"
       />
-
-      <!-- Controls -->
-      <div
-        v-if="!noAdd"
-        class="qb-group-controls"
-      >
-        <!-- Add row -->
-        <Btn
-          :label="$t('queryBuilder.addCondition')"
-          icon="i-eva:plus-fill"
-          color="ca"
-          bg="white dark:darker"
-          no-uppercase
-          size="sm"
-          border="ca 1 dashed"
-          @click="handleAddCondition"
-        />
-
-        <!-- Add group -->
-        <Btn
-          :label="$t('queryBuilder.addGroup')"
-          icon="i-formkit:add"
-          bg="white dark:darker"
-          color="ca"
-          no-uppercase
-          size="sm"
-          border="ca 1 dashed"
-          @click="handleAddGroup"
-        />
-      </div>
     </template>
   </ul>
 </template>
@@ -216,7 +224,7 @@ const collapseProps = computed(() => {
   }
 
   &-condition {
-    @apply flex gap-1 items-center grow;
+    @apply flex gap-1 items-center;
 
     .is-active {
       @apply bg-primary color-white;
@@ -224,21 +232,23 @@ const collapseProps = computed(() => {
   }
 
   &-actions {
-    @apply flex gap-1 items-center p-r-4;
+    @apply flex gap-1 items-center p-r-4 m-l-auto;
   }
 
   &-controls {
-    @apply flex gap-2 m-l-9 p-y-1;
+    @apply flex gap-px;
   }
 }
 
 .qb-group:not(.is-base) {
   &::before {
-    @apply absolute content-empty -left-3 top-0 h-full border-l-1 border-ca border-dashed;
+    @apply absolute content-empty -left-3 top-0 h-full;
+    @apply border-l-1 border-dark dark:border-ca border-dashed;
   }
 
   &::after {
-    @apply absolute content-empty -left-3 w-3 border-b-1 border-ca border-dashed;
+    @apply absolute content-empty -left-3 w-3;
+    @apply border-b-1 border-dark dark:border-ca border-dashed;
 
     // This is kinda specific but it shouldn't really cause issues if we
     // don't mess with input sizes

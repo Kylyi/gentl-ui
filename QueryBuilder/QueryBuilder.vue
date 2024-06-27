@@ -25,8 +25,11 @@ const emits = defineEmits<{
 }>()
 
 // Utils
-const { draggedItem, queryBuilderEl, queryBuilderElRect }
-  = useQueryBuilderDragAndDrop()
+const {
+  draggedItem,
+  queryBuilderEl,
+  queryBuilderElRect,
+} = useQueryBuilderDragAndDrop()
 
 // Layout
 const items = useVModel(props, 'items', emits)
@@ -59,7 +62,7 @@ function clearFilter() {
 useResizeObserver(queryBuilderEl, entries => {
   const { contentRect } = entries[0]
 
-  isSmallerScreen.value = contentRect.width < 768
+  isSmallerScreen.value = contentRect.width < 1024
   queryBuilderElRect.value = queryBuilderEl.value?.getBoundingClientRect()
 })
 

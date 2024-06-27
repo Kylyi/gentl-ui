@@ -39,7 +39,7 @@ async function handleExport(exportFormat: 'xlsx' | 'csv') {
     <div class="export-btn__label">
       {{ $t('table.export', 1) }}
 
-      <div class="i-line-md:chevron-small-right rotate-90" />
+      <div class="i-flowbite:chevron-right-outline rotate-90" />
     </div>
 
     <Menu>

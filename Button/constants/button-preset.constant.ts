@@ -10,11 +10,11 @@ export const BUTTON_PRESET = {
     color: 'color-primary',
   },
   CHEVRON_RIGHT: {
-    icon: 'i-line-md:chevron-small-right',
+    icon: 'i-flowbite:chevron-right-outline',
     color: 'color-ca',
   },
   CHEVRON_DOUBLE_RIGHT: {
-    icon: 'i-line-md:chevron-small-double-right',
+    icon: 'i-flowbite:chevron-double-right-outline',
     color: 'color-ca',
   },
   DONE: {

@@ -92,7 +92,7 @@ const $z = useZod({ scope: 'qb' })
     <Dialog
       ref="dialogEl"
       :title="$t('queryBuilder.self')"
-      w="220"
+      w="280"
       max-h="90%"
       min-h="100"
       h="auto"
