@@ -497,7 +497,7 @@ const $z = useZod(
     }
 
     &-value {
-      @apply min-w-60 w-80;
+      @apply min-w-60;
     }
   }
 
