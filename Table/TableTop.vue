@@ -54,17 +54,12 @@ const QUERY_BUILDER_INLINE_GAP = 2
 
 // Store
 const appStore = useAppStore()
-const { setTableState } = useTableStore()
 
 // Injections
 const selection = injectStrict(tableSelectionKey)
 const columns = injectStrict(tableColumnsKey)
 const nonHelperColumns = injectStrict(tableNonHelperColumnsKey)
-const storageKey = injectStrict(tableStorageKey)
-const tableRows = injectStrict(tableRowsKey)
 const tableRefresh = injectStrict(tableRefreshKey)
-const tableSlots = injectStrict(tableSlotsKey)
-const tableStretchColumns = injectStrict(tableStretchColumnsKey)
 
 // Utils
 const { handleFitColumns } = useTableColumnResizing({ columns: columns.value })
@@ -76,24 +71,24 @@ const search = useVModel(props, 'search')
 
 const hasActionBar = computed(() => {
   return (
-    !!slots['left-prepend'] ||
-    !!slots['left-append'] ||
-    !!slots['right-prepend'] ||
-    !!slots['right-append']
+    !!slots['left-prepend']
+    || !!slots['left-append']
+    || !!slots['right-prepend']
+    || !!slots['right-append']
   )
 })
 
 const queryBuilderHeight = computed(() => {
   return {
     minHeight: `${
-      MIN_VISIBLE_QUERY_BUILDER_ROWS * 26 +
-      QUERY_BUILDER_INLINE_PADDING +
-      QUERY_BUILDER_INLINE_GAP
+      MIN_VISIBLE_QUERY_BUILDER_ROWS * 26
+      + QUERY_BUILDER_INLINE_PADDING
+      + QUERY_BUILDER_INLINE_GAP
     }px`,
     maxHeight: `${
-      MAX_VISIBLE_QUERY_BUILDER_ROWS * 26 +
-      QUERY_BUILDER_INLINE_PADDING +
-      QUERY_BUILDER_INLINE_GAP
+      MAX_VISIBLE_QUERY_BUILDER_ROWS * 26
+      + QUERY_BUILDER_INLINE_PADDING
+      + QUERY_BUILDER_INLINE_GAP
     }px`,
   }
 })
@@ -169,7 +164,7 @@ const tableSorting = computed(() => {
       col =>
         `${col.label} (<span>${
           col.direction === 'asc' ? '&#8593;' : '&#8595;'
-        }</span>)`
+        }</span>)`,
     )
     .join(', ')
 })
@@ -417,9 +412,9 @@ onKeyStroke(['d', 'D'], (ev: KeyboardEvent) => {
           <!-- Subscriptions -->
           <template
             v-if="
-              !tableTopFunctionality?.noSubscription &&
-              'subscriptionComponent' in config &&
-              config.subscriptionComponent
+              !tableTopFunctionality?.noSubscription
+                && 'subscriptionComponent' in config
+                && config.subscriptionComponent
             "
           >
             <Separator
@@ -470,9 +465,8 @@ onKeyStroke(['d', 'D'], (ev: KeyboardEvent) => {
         <!-- Selection & Sorting -->
         <div class="table-top__selection">
           <template
-            v-if="
-              selectionOptions?.selectable &&
-              ($slots['bulk-actions'] || $slots['bulk-actions-menu'])
+            v-if="selectionOptions?.selectable
+              && ($slots['bulk-actions'] || $slots['bulk-actions-menu'])
             "
           >
             <!-- Selection actions -->
@@ -569,42 +563,42 @@ onKeyStroke(['d', 'D'], (ev: KeyboardEvent) => {
 
 <style scoped lang="scss">
 .table-top {
-  --apply: flex flex-col;
+  @apply flex flex-col;
 
   &__actionbar {
-    --apply: flex flex-wrap gap-2 items-center p-x-2 p-y-1;
+    @apply flex flex-wrap gap-2 items-center p-x-2 p-y-1;
   }
 
   &__qb {
-    --apply: flex gap-1 items-start p-x-2 p-y-1;
+    @apply flex gap-1 items-start p-x-2 p-y-1;
 
     &-remove-filters {
-      --apply: shrink-0 w-20 min-h-10 dark:bg-darker bg-white color-ca
-        border-2 border-transparent hover:border-negative;
+      @apply shrink-0 w-20 min-h-10 dark:bg-darker bg-white color-ca border-2
+        border-transparent hover:border-negative;
 
-      --apply: "!hover:color-negative !p-y-0";
+      @apply '!hover:color-negative !p-y-0';
     }
   }
 
   &__subbar {
-    --apply: flex gap-2 items-center justify-between p-x-2 p-y-1;
+    @apply flex gap-2 items-center justify-between p-x-2 p-y-1;
   }
 
   &__layout {
-    --apply: flex gap-2 items-center grow justify-end;
+    @apply flex gap-2 items-center grow justify-end;
 
     &-label {
-      --apply: text-caption text-xs font-bold;
-      --apply: '!lt-md:hidden';
+      @apply text-caption text-xs font-semibold;
+      @apply '!lt-md:hidden';
     }
   }
 
   &__selection {
-    --apply: flex grow gap-2 items-center;
-    --apply: '!lt-md:hidden';
+    @apply flex grow gap-2 items-center;
+    @apply '!lt-md:hidden';
 
     &-info {
-      --apply: flex gap-1 items-center leading-none text-caption text-xs;
+      @apply flex gap-1 items-center leading-none text-caption text-xs;
     }
   }
 }
