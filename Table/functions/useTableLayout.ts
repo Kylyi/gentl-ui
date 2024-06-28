@@ -136,7 +136,7 @@ export function useTableLayout(
     const table = toValue(tableEl)
     const scrollerDomEl = unrefElement(scrollerEl)
 
-    const { width } = unrefElement(scrollerEl as any).getBoundingClientRect()
+    const { width } = unrefElement(scrollerEl as any)?.getBoundingClientRect() ?? {}
 
     if (scrollerDomEl && table) {
       internalColumns.value = stretchColumns(
