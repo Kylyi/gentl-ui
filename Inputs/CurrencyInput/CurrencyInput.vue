@@ -2,14 +2,18 @@
 import { MaskedNumber } from 'imask'
 
 // Types
-import type { INumberInputProps } from '~/components/Inputs/NumberInput/types/number-input-props.type'
+import type { ICurrencyInputProps } from '~/components/Inputs/CurrencyInput/types/currency-input-props.type'
+
+// Constants
+import { CURRENCY_DEFAULT } from '~/utils/i18n'
 
 // Functions
 import { useInputUtils } from '~/components/Inputs/functions/useInputUtils'
 import { useNumber } from '~/components/Inputs/NumberInput/functions/useNumber'
 import { useInputValidationUtils } from '~/components/Inputs/functions/useInputValidationUtils'
 
-const props = withDefaults(defineProps<INumberInputProps>(), {
+const props = withDefaults(defineProps<ICurrencyInputProps>(), {
+  currencyPosition: 'prepend',
   debounce: 0,
   errorTakesSpace: true,
   errorVisible: true,
@@ -32,6 +36,7 @@ defineEmits<{
 }>()
 
 // Utils
+const { currentLocale } = useLocale()
 const { separators } = useNumber()
 
 // Mask
@@ -119,8 +124,37 @@ const {
 
 const { path } = useInputValidationUtils(props)
 
+const isEditable = computed(() => !props.readonly && !props.disabled)
+
 // Input handling
 const ALLOWED_CHARS = /[0-9-]/
+
+const currency = computed(() => {
+  if (props.noCurrency) {
+    return undefined
+  }
+
+  if (props.currency || !currentLocale.value) {
+    return props.currency ?? CURRENCY_DEFAULT
+  }
+
+  return new Intl.NumberFormat(
+    currentLocale.value.iso,
+    { style: 'currency', currency: currentLocale.value.currency },
+  )
+    .formatToParts(1)
+    .find(part => part.type === 'currency')?.value ?? CURRENCY_DEFAULT
+})
+
+const currencyVisibility = computed(() => {
+  if (!currency.value) {
+    return false
+  }
+
+  return props.currencyPosition === 'prepend'
+    ? 'prepend'
+    : 'append'
+})
 
 function handleBeforeInput(ev: Event) {
   const input = el.value as HTMLInputElement
@@ -215,9 +249,16 @@ defineExpose({
     @click="handleClickWrapper"
   >
     <template
-      v-if="$slots.prepend"
+      v-if="$slots.prepend || currencyVisibility === 'prepend'"
       #prepend
     >
+      <span
+        v-if="currencyVisibility === 'prepend'"
+        class="currency-input__symbol prepended"
+      >
+        {{ currency }}
+      </span>
+
       <slot
         name="prepend"
         :clear="clear"
@@ -247,22 +288,29 @@ defineExpose({
     >
 
     <template
-      v-if="$slots.append || hasClearableBtn || (!readonly && !disabled)"
+      v-if="$slots.append || hasClearableBtn || currencyVisibility === 'append'"
       #append
     >
       <div
-        v-if="step || hasClearableBtn || $slots.append"
-        class="number-input__append"
+        class="currency-input__append"
         @click="handleFocusOrClick"
       >
+        <span
+          v-if="currencyVisibility === 'append'"
+          class="currency-input__symbol appended"
+        >
+          {{ currency }}
+        </span>
+
         <slot
           name="append"
           :clear="clear"
           :focus="focus"
         />
 
+        <!-- Clear button -->
         <Btn
-          v-if="hasClearableBtn"
+          v-if="hasClearableBtn && isEditable"
           icon="i-eva:close-fill h-6 w-6"
           color="ca"
           size="auto"
@@ -281,7 +329,7 @@ defineExpose({
 
         <!-- Step -->
         <NumberInputStep
-          v-if="step && !readonly && !disabled"
+          v-if="step && isEditable"
           v-bind="props"
           v-model="model"
         />
@@ -291,7 +339,19 @@ defineExpose({
 </template>
 
 <style lang="scss" scoped>
-.number-input__append {
+.currency-input__append {
   @apply flex gap-x-2 flex-center p-x-2;
+}
+
+.currency-input__symbol {
+  @apply text-caption font-semibold pointer-events-none;
+
+  &.prepended {
+    @apply m-l-3;
+  }
+
+  &.appended {
+    @apply m-r-3;
+  }
 }
 </style>
