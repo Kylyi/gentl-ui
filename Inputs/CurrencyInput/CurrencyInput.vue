@@ -288,7 +288,7 @@ defineExpose({
     >
 
     <template
-      v-if="$slots.append || hasClearableBtn || currencyVisibility === 'append'"
+      v-if="$slots.append || hasClearableBtn || step || currencyVisibility === 'append'"
       #append
     >
       <div
