@@ -9,6 +9,9 @@ import { useInputUtils } from '~/components/Inputs/functions/useInputUtils'
 import { useNumber } from '~/components/Inputs/NumberInput/functions/useNumber'
 import { useInputValidationUtils } from '~/components/Inputs/functions/useInputValidationUtils'
 
+// Components
+import Btn from '~/components/Button/Btn.vue'
+
 const props = withDefaults(defineProps<INumberInputProps>(), {
   debounce: 0,
   errorTakesSpace: true,
@@ -16,7 +19,7 @@ const props = withDefaults(defineProps<INumberInputProps>(), {
   fractionDigits: 2,
   inline: undefined,
   labelInside: undefined,
-  // @ts-expect-error Wrong IMask type
+  // @ts-expect-error Wrong IMask type, will be overriden anyway
   mask: () => ({ mask: String }),
   required: undefined,
   size: 'md',
@@ -42,7 +45,6 @@ const mask = computed<MaskedNumber>(() => {
       : separators.value.thousandSeparator,
     radix: separators.value.decimalSeparator,
     mapToRadix: ['.', ','],
-    padFractionalZeros: true,
     scale: props.fractionDigits,
     mask: Number,
     min: props.min,
@@ -52,21 +54,18 @@ const mask = computed<MaskedNumber>(() => {
         return ''
       }
 
-      return value.toFixed(props.fractionDigits)
+      return value.toString()
     },
   })
 })
 
-// Layout
 const {
   el,
   inputId,
   model,
   masked,
-  typed,
   wrapperProps,
   hasNoValue,
-  lastValidValue,
   hasClearableBtn,
   focus,
   select,
@@ -79,80 +78,9 @@ const {
 } = useInputUtils({
   props,
   maskRef: mask,
-  maskEventHandlers: {
-    onAccept: (_, ev, refs) => {
-      if (!ev) {
-        return
-      }
-
-      const input = el.value as HTMLInputElement
-
-      if (!input) {
-        return
-      }
-
-      if (refs) {
-        const [_, decimals] = refs.masked.value.split(separators.value.decimalSeparator)
-
-        if (!decimals || decimals?.length < props.fractionDigits) {
-          const digits = decimals ? props.fractionDigits - decimals.length : props.fractionDigits
-
-          const val = (refs?.typed.value ?? 0).toFixed(digits).replace(/\./g, '')
-          const typedValue = Number(`${val.slice(0, -1 * props.fractionDigits)}.${val.slice(-1 * props.fractionDigits)}`)
-
-          refs.typed.value = typedValue
-
-          // When no decimals are provided, we need to reset the input focus for mask to refresh
-          if (!decimals) {
-            blur()
-            nextTick(() => focus())
-          }
-        }
-      }
-    },
-  },
 })
 
 const { path } = useInputValidationUtils(props)
-
-function handleBeforeInput(ev: Event) {
-  const input = el.value as HTMLInputElement
-
-  if (!input || !(ev instanceof InputEvent)) {
-    return
-  }
-
-  const isAllSelected = input.selectionStart === 0
-    && input.selectionEnd === input.value.length
-    && input.value.length > 0
-
-  const isAtEnd = input.selectionStart === input.value.length
-
-  // When the entire text is selected and we're adding a digit, we need to
-  // initialize the value to `0.0` and add the digit
-  if (isAllSelected && ev.data) {
-    if (ev.data.length === 1) {
-      typed.value = Number(`0.0${ev.data}`)
-    }
-  }
-
-  // When the entire text is selected and we're not providing any data (backspace/delete),
-  // we reset the value to the `emptyValue`
-  else if (isAllSelected) {
-    typed.value = props.emptyValue
-  }
-
-  // When we're providing data, we need to make sure we have the correct number of fraction digits
-  else if (ev.data && isAtEnd) {
-    let val = (lastValidValue.value ?? 0).toFixed(props.fractionDigits).replace(/\./g, '')
-    val += ev.data
-
-    typed.value = Number(`${val.slice(0, -1 * props.fractionDigits)}.${val.slice(-1 * props.fractionDigits)}`)
-    ev.preventDefault()
-    ev.stopPropagation()
-    ev.stopImmediatePropagation()
-  }
-}
 
 defineExpose({
   focus,
@@ -200,7 +128,6 @@ defineExpose({
       v-bind="inputProps"
       @focus="handleFocusOrClick"
       @blur="handleBlur"
-      @beforeinput="handleBeforeInput"
     >
 
     <template

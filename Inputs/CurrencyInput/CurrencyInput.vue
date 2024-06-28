@@ -64,6 +64,7 @@ const {
   model,
   masked,
   typed,
+  unmasked,
   wrapperProps,
   hasNoValue,
   lastValidValue,
@@ -97,10 +98,11 @@ const {
         // We make sure we have the correct number of fraction digits
         // and recalculate the typed value
         if (!decimals || decimals?.length < props.fractionDigits) {
+          const sliceRange = -1 * props.fractionDigits
           const digits = decimals ? props.fractionDigits - decimals.length : props.fractionDigits
 
           const val = (refs?.typed.value ?? 0).toFixed(digits).replace(/\./g, '')
-          const typedValue = Number(`${val.slice(0, -1 * props.fractionDigits)}.${val.slice(-1 * props.fractionDigits)}`)
+          const typedValue = Number(`${val.slice(0, sliceRange)}.${val.slice(sliceRange)}`)
 
           refs.typed.value = typedValue
 
@@ -116,6 +118,9 @@ const {
 })
 
 const { path } = useInputValidationUtils(props)
+
+// Input handling
+const ALLOWED_CHARS = /[0-9-]/
 
 function handleBeforeInput(ev: Event) {
   const input = el.value as HTMLInputElement
@@ -133,23 +138,59 @@ function handleBeforeInput(ev: Event) {
   // When the entire text is selected and we're adding a digit, we need to
   // initialize the value to `0.0` and add the digit
   if (isAllSelected && ev.data) {
-    if (ev.data.length === 1) {
+    if (ev.data.length === 1 && isNumeric(ev.data)) {
       typed.value = Number(`0.0${ev.data}`)
+    } else if (ev.data.length === 1 && ev.data === '-') {
+      typed.value = typed.value * -1
     }
   }
 
-  // When the entire text is selected and we're not providing any data (backspace/delete),
+  // When the entire text is selected and we're not providing any data (for example backspace/delete),
   // we reset the value to the `emptyValue`
   else if (isAllSelected) {
     typed.value = props.emptyValue
   }
 
-  // When we're providing data, we need to make sure we have the correct number of fraction digits
+  // When providing data (typing or pasting) while we are at the end of the input,
+  // we "shift" the value to the right and add the new digit
   else if (ev.data && isAtEnd) {
-    let val = (lastValidValue.value ?? 0).toFixed(props.fractionDigits).replace(/\./g, '')
-    val += ev.data
+    if (!ALLOWED_CHARS.test(ev.data)) {
+      return
+    }
 
-    typed.value = Number(`${val.slice(0, -1 * props.fractionDigits)}.${val.slice(-1 * props.fractionDigits)}`)
+    const isValNumeric = isNumeric(ev.data)
+    const sliceRange = -1 * props.fractionDigits
+    let val = (lastValidValue.value ?? 0).toFixed(props.fractionDigits).replace(/\./g, '')
+
+    if (isValNumeric) {
+      val += ev.data
+    }
+
+    val = Number(`${val.slice(0, sliceRange)}.${val.slice(sliceRange)}`)
+
+    // Handle negative values
+    const isMinus = ev.data === '-'
+
+    // When the `masked` value has been preset to `-0.00` and the input is a numeric value,
+    // we set the value and negate it
+    if (unmasked.value === '-0' && isValNumeric) {
+      val = val * -1
+    }
+
+    // When input is `-` and the value is `0`, we preset the `masked` value to `-0.00`
+    else if (val === 0 && isMinus) {
+      masked.value = '-0.00'
+
+      return
+    }
+
+    // When input is `-` and the value is not `0`, we negate the value
+    else if (val !== 0 && isMinus) {
+      val = val * -1
+    }
+
+    typed.value = val
+
     ev.preventDefault()
     ev.stopPropagation()
     ev.stopImmediatePropagation()
