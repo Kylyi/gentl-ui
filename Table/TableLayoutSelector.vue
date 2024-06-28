@@ -269,7 +269,7 @@ function handleOpenDialog(dialogName: string) {
     <template #above-options>
       <div
         relative
-        flex="~ gap-2 justify-between"
+        flex="~ gap-2 justify-between shrink-0"
         overflow="hidden"
         p="t-1 x-2"
       >
