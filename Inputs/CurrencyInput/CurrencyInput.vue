@@ -8,10 +8,10 @@ import type { ICurrencyInputProps } from '~/components/Inputs/CurrencyInput/type
 import { useInputUtils } from '~/components/Inputs/functions/useInputUtils'
 import { useInputValidationUtils } from '~/components/Inputs/functions/useInputValidationUtils'
 import { useCurrencyInputLayout } from '~/components/Inputs/CurrencyInput/functions/useCurrencyInputLayout'
+import { useNumber } from '~/components/Inputs/NumberInput/functions/useNumber'
 
 // Components
 import Btn from '~/components/Button/Btn.vue'
-import { useNumber } from '~/components/Inputs/NumberInput/functions/useNumber'
 
 const props = withDefaults(defineProps<ICurrencyInputProps>(), {
   debounce: 0,
@@ -24,9 +24,9 @@ const props = withDefaults(defineProps<ICurrencyInputProps>(), {
   stackLabel: undefined,
   min: Number.NEGATIVE_INFINITY,
   max: Number.POSITIVE_INFINITY,
-  locale: 'sr-RS',
   currency: 'RSD',
   step: 'auto',
+  fractionDigits: 2,
 })
 
 const emits = defineEmits<{
@@ -86,15 +86,33 @@ const increment = ref<InstanceType<typeof Btn>>()
 const decrement = ref<InstanceType<typeof Btn>>()
 const modifier = ref<-1 | 1>(1)
 
-const { inputValue, unmaskedInputValue, clear, init, masking } =
-  useCurrencyInputLayout(props, emits, inputElement)
+const { inputValue, unmaskedInputValue, clear, masking, getPosition, onMasking, onClick }
+  = useCurrencyInputLayout(props, emits)
 
 const hasClearableBtn = computed(() => !props.readonly && !props.disabled)
 
-watch(inputElement, init)
+watch(inputElement, () => {
+  const initialValue = model.value ? model.value.toFixed(props.fractionDigits).toString() : ''
+  inputValue.value = masking(initialValue)
+})
 
 watch(model, val => {
-  inputValue.value = masking(val?.toFixed(2).toString() ?? '0,00')
+  if (isNil(val)) {
+    inputValue.value = ''
+  } else {
+    // eslint-disable-next-line no-compare-neg-zero
+    if (val === -0) {
+      inputValue.value = `-${masking(val.toFixed(props.fractionDigits).toString())}`
+    } else {
+      inputValue.value = masking(val.toFixed(props.fractionDigits).toString())
+    }
+  }
+
+  // Set cursor position
+  nextTick(() => {
+    const pos = inputValue.value?.length ? getPosition(inputValue.value) : 0
+    inputElement.value!.setSelectionRange(pos, pos)
+  })
 })
 
 // Functions
@@ -143,7 +161,7 @@ function handleStep() {
   }
 
   const nextValue = +currentValue! + stepAdjusted.value * modifier.value
-  inputValue.value = masking(nextValue?.toFixed(2).toString() ?? '0,00')
+  inputValue.value = masking(nextValue?.toFixed(props.fractionDigits).toString() ?? '')
 
   model.value = unmaskedInputValue.value
 }
@@ -161,7 +179,7 @@ defineExpose({
   <InputWrapper
     v-bind="wrapperProps"
     :id="inputId"
-    :has-content="!!inputValue.toString().length"
+    :has-content="!!inputValue?.toString().length"
     .focus="focus"
     @click="handleClickWrapper"
   >
@@ -192,9 +210,11 @@ defineExpose({
       :class="[inputClass]"
       :style="inputStyle"
       v-bind="inputProps"
+      @input="onMasking($event)"
+      @click="onClick"
       @focus="handleFocusOrClick"
       @blur="handleBlur"
-    />
+    >
 
     <template
       v-if="$slots.append || hasClearableBtn || (!readonly && !disabled)"
@@ -202,7 +222,7 @@ defineExpose({
     >
       <div
         v-if="hasClearableBtn || $slots.append"
-        class="number-input__step"
+        class="flex gap-x-2 flex-center p-x-2"
         @click="handleFocusOrClick"
       >
         <slot
@@ -212,7 +232,7 @@ defineExpose({
         />
 
         <Btn
-          v-if="unmaskedInputValue > 0"
+          v-if="inputValue?.length"
           icon="i-eva:close-fill h-6 w-6"
           color="ca"
           size="auto"
@@ -264,9 +284,3 @@ defineExpose({
     </template>
   </InputWrapper>
 </template>
-
-<style lang="scss" scoped>
-.number-input__step {
-  --apply: flex gap-x-2 flex-center p-x-2;
-}
-</style>

@@ -1,66 +1,61 @@
-import type { Ref } from 'vue'
 import type { ICurrencyInputProps } from '~/components/Inputs/CurrencyInput/types/currency-input-props.type'
 import type { ICurrencyOptions } from '~/components/Inputs/CurrencyInput/types/currency-options.type'
 
 export function useCurrencyInputLayout(
   props: ICurrencyInputProps,
   emits: (e: 'update:modelValue', val?: number | null | undefined) => void,
-  input: Ref<HTMLInputElement | undefined>
 ) {
   // Layout
-  const inputValue = ref('0,00')
-  const unmaskedInputValue = computed<number>(() => unmasking(inputValue.value))
+  const inputValue = ref<undefined | string>(undefined)
+
+  const unmaskedInputValue = computed<number | null>(() =>
+    inputValue.value?.length ? unmasking(inputValue.value) : null,
+  )
   const prevValue = ref(props.min?.toString() ?? 0)
 
-  const currencyOptions = ref<ICurrencyOptions>()
+  const currencyOptions = ref<ICurrencyOptions>({
+    min: props.min!,
+    max: props.max!,
+    init: true,
+    triggerOnBlur: false,
+    backspace: true,
+    maskOpts: {
+      empty: true,
+      digits: 2,
+      locale: props.locale,
+      options: {
+        currency: props.currency,
+        style: 'currency',
+        minimumFractionDigits: props.fractionDigits,
+        maximumFractionDigits: props.fractionDigits,
+      },
+    },
+  })
 
   // Functions
   function init() {
-    currencyOptions.value = {
-      keyEvent: 'input',
-      min: props.min!,
-      max: props.max!,
-      init: true,
-      triggerOnBlur: false,
-      backspace: false,
-      maskOpts: {
-        empty: true,
-        digits: 2,
-        locale: props.locale,
-        options: {
-          currency: props.currency,
-          style: 'currency',
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        },
-      },
-    }
-
-    currencyOptions.value.maskOpts!.viaInput = true
-    inputValue.value = masking(props.modelValue?.toString() ?? '0,00')
-
-    // Listener
-    input.value!.addEventListener('input', onMasking)
-    input.value!.addEventListener('click', onClick)
-
-    if (currencyOptions.value.triggerOnBlur) {
-      input.value!.addEventListener('blur', onMasking)
-    }
+    currencyOptions.value.maskOpts.viaInput = true
+    inputValue.value = masking(props.modelValue ? props.modelValue?.toString() : '')
   }
 
   /** Clear input value */
   function clear() {
-    inputValue.value = '0,00'
+    inputValue.value = ''
     emits('update:modelValue', undefined)
   }
 
   /** Mask a numeric value */
   function masking(value: string) {
-    const { digits = 2, locale, options } = currencyOptions.value!.maskOpts!
+    if (!value.length) {
+      clear()
+      return
+    }
 
-    const maskingValue =
-      unmasking(value) > currencyOptions.value!.max ||
-      unmasking(value) < currencyOptions.value!.min
+    const { digits, locale, options } = currencyOptions.value.maskOpts!
+
+    const maskingValue
+      = unmasking(value) > currencyOptions.value!.max
+      || unmasking(value) < currencyOptions.value!.min
         ? prevValue.value
         : value
 
@@ -79,12 +74,12 @@ export function useCurrencyInputLayout(
   /** Get part of a masked input value */
   function getParts(
     value: string | number,
-    digits = 2
+    digits = 2,
   ): {
-    minus: string
-    decimal: string
-    integer: string
-  } {
+      minus: string
+      decimal: string
+      integer: string
+    } {
     const strValue = String(value)
     const minus = /-/.test(strValue) ? '-' : ''
 
@@ -114,30 +109,31 @@ export function useCurrencyInputLayout(
       cc++
     }
 
-    return String(value).length - cc
+    return value.length - cc
   }
 
   /** Handle masking on input event */
-  function onMasking(event: Event) {
-    if (
-      currencyOptions.value!.backspace &&
-      'inputType' in event &&
-      event.inputType === 'deleteContentBackward'
-    ) {
-      return
+  function onMasking({ target }: Event) {
+    // target: HTMLInputElement
+    // @ts-expect-error Property value does not exist on type EventTarget
+    inputValue.value = masking(target.value)
+
+    if (inputValue.value) {
+      const unmaskedValue = unmasking(inputValue.value ?? '0,00')
+      prevValue.value = inputValue.value || 0
+      emits('update:modelValue', unmaskedValue)
     }
-
-    inputValue.value = masking(input.value!.value)
-    prevValue.value = inputValue.value
-
-    emits('update:modelValue', unmaskedInputValue.value)
   }
 
   /** Handle click event */
-  function onClick() {
-    const pos = getPosition(input.value!.value)
-    input.value!.focus()
-    input.value!.setSelectionRange(pos, pos)
+  function onClick({ target }: Event) {
+    // target: HTMLInputElement
+    // @ts-expect-error Property value does not exist on type EventTarget
+    const pos = getPosition(target!.value)
+    // @ts-expect-error Property focus does not exist on type EventTarget
+    target!.focus()
+    // @ts-expect-error Property setSelectionRange does not exist on type EventTarget
+    target!.setSelectionRange(pos, pos)
   }
 
   return {
@@ -146,5 +142,8 @@ export function useCurrencyInputLayout(
     clear,
     init,
     masking,
+    getPosition,
+    onMasking,
+    onClick,
   }
 }
