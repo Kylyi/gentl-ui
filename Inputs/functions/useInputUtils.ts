@@ -41,7 +41,16 @@ export function useInputUtils(options: IInputUtilsOptions) {
   const { el, mask, masked, unmasked, typed } = useIMask(maskRef, {
     onAccept: ev => {
       nextTick(() => {
-        maskEventHandlers?.onAccept?.(lastValidValue.value, ev)
+        const val = maskEventHandlers?.onAccept?.(
+          lastValidValue.value,
+          ev,
+          { typed, unmasked, masked },
+        )
+
+        if (!isNil(val)) {
+          typed.value = val
+        }
+
         syncTypedWithModel()
       })
     },
@@ -139,9 +148,7 @@ export function useInputUtils(options: IInputUtilsOptions) {
       = lastTarget?.classList.contains('input-wrapper__focusable')
       || !!lastTarget?.closest('.input-wrapper__focusable')
 
-    const isSameWrapper
-      = inputElement.value?.closest('.wrapper__body')
-      === lastTarget?.closest('.wrapper__body')
+    const isSameWrapper = inputElement.value?.closest('.wrapper__body') === lastTarget?.closest('.wrapper__body')
 
     // `Tab` handling
     const relatedTargetWrapper = relatedTarget?.closest('.wrapper__body')
@@ -306,12 +313,15 @@ export function useInputUtils(options: IInputUtilsOptions) {
     inputId,
     model,
     masked,
+    typed,
+    unmasked,
     hasBeenTouched,
     isBlurred,
     wrapperProps,
     hasNoValue: isEmpty,
     hasClearableBtn,
     hasContent,
+    lastValidValue,
     handleBlur,
     clear,
     focus,
