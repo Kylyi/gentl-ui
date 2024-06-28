@@ -113,10 +113,9 @@ export function useCurrencyInputLayout(
   }
 
   /** Handle masking on input event */
-  function onMasking({ target }: Event) {
-    // target: HTMLInputElement
-    // @ts-expect-error Property value does not exist on type EventTarget
-    inputValue.value = masking(target.value)
+  function onMasking(event: Event) {
+    const targetElement = event.target as HTMLInputElement
+    inputValue.value = masking(targetElement.value)
 
     if (inputValue.value) {
       const unmaskedValue = unmasking(inputValue.value ?? '0,00')
@@ -126,14 +125,11 @@ export function useCurrencyInputLayout(
   }
 
   /** Handle click event */
-  function onClick({ target }: Event) {
-    // target: HTMLInputElement
-    // @ts-expect-error Property value does not exist on type EventTarget
-    const pos = getPosition(target!.value)
-    // @ts-expect-error Property focus does not exist on type EventTarget
-    target!.focus()
-    // @ts-expect-error Property setSelectionRange does not exist on type EventTarget
-    target!.setSelectionRange(pos, pos)
+  function onClick(event: MouseEvent) {
+    const targetElement = event.target as HTMLInputElement
+    const pos = getPosition(targetElement!.value)
+    targetElement!.focus()
+    targetElement!.setSelectionRange(pos, pos)
   }
 
   return {
