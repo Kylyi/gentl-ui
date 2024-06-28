@@ -71,9 +71,9 @@ export function useInputUtils(options: IInputUtilsOptions) {
 
   const isEmpty = computed(() => {
     return (
-      typed.value === unref(emptyValue)
-      || isNil(typed.value)
-      || unmasked.value === ''
+      typed.value === unref(emptyValue) ||
+      isNil(typed.value) ||
+      unmasked.value === ''
     )
   })
 
@@ -135,27 +135,27 @@ export function useInputUtils(options: IInputUtilsOptions) {
     const lastTarget = appStore.lastPointerDownEl
     const isProgrammatic = appStore.activeElement === document.body
 
-    const isFocusable
-      = lastTarget?.classList.contains('input-wrapper__focusable')
-      || !!lastTarget?.closest('.input-wrapper__focusable')
+    const isFocusable =
+      lastTarget?.classList.contains('input-wrapper__focusable') ||
+      !!lastTarget?.closest('.input-wrapper__focusable')
 
-    const isSameWrapper
-      = inputElement.value?.closest('.wrapper__body')
-      === lastTarget?.closest('.wrapper__body')
+    const isSameWrapper =
+      inputElement.value?.closest('.wrapper__body') ===
+      lastTarget?.closest('.wrapper__body')
 
     // `Tab` handling
     const relatedTargetWrapper = relatedTarget?.closest('.wrapper__body')
-    const isRelatedTargetFocusable
-      = !relatedTargetWrapper
-      || relatedTargetWrapper === inputElement.value?.closest('.wrapper__body')
+    const isRelatedTargetFocusable =
+      !relatedTargetWrapper ||
+      relatedTargetWrapper === inputElement.value?.closest('.wrapper__body')
 
     // We prevent the blur event when clicking on focusable elements
     // in the same wrapper
     if (
-      isFocusable
-      && isSameWrapper
-      && isRelatedTargetFocusable
-      && !isProgrammatic
+      isFocusable &&
+      isSameWrapper &&
+      isRelatedTargetFocusable &&
+      !isProgrammatic
     ) {
       ev.preventDefault()
       focus()
@@ -170,9 +170,9 @@ export function useInputUtils(options: IInputUtilsOptions) {
 
     if (!isSame) {
       // We need to reset the iMask placeholder
-      const isModelEmpty
-        = isNil(originalModel.value)
-        || toValue(originalModel) === toValue(emptyValue)
+      const isModelEmpty =
+        isNil(originalModel.value) ||
+        toValue(originalModel) === toValue(emptyValue)
 
       if (isModelEmpty) {
         unmasked.value = ''
@@ -195,8 +195,9 @@ export function useInputUtils(options: IInputUtilsOptions) {
   // element, so the `focus` does not get triggered. We need to handle this case manually
   function handleClickWrapper(ev: MouseEvent) {
     const target = ev.target as HTMLElement
-    const isFocusable = target.classList.contains('.input-wrapper__focusable')
-      || !!target.closest('.input-wrapper__focusable')
+    const isFocusable =
+      target.classList.contains('.input-wrapper__focusable') ||
+      !!target.closest('.input-wrapper__focusable')
 
     if (isFocusable) {
       handleFocusOrClick(ev)
@@ -237,10 +238,10 @@ export function useInputUtils(options: IInputUtilsOptions) {
     // We need to manually focus the input when necessary, ie. when the event
     // would not focus the input automatically
     if (
-      !isFocusEvent
-      && !isSelectEvent
-      && !isInputFocused
-      && !isFocusPrevented
+      !isFocusEvent &&
+      !isSelectEvent &&
+      !isInputFocused &&
+      !isFocusPrevented
     ) {
       focus(true)
     }
