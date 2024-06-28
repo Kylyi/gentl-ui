@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { MaskedNumber } from 'imask'
+import { MaskedNumber, createMask } from 'imask'
 
 // Types
 import type { INumberInputProps } from '~/components/Inputs/NumberInput/types/number-input-props.type'
@@ -10,7 +10,7 @@ import { useNumber } from '~/components/Inputs/NumberInput/functions/useNumber'
 import { useInputValidationUtils } from '~/components/Inputs/functions/useInputValidationUtils'
 
 // Components
-import Btn from '~/components/Button/Btn.vue'
+import type Btn from '~/components/Button/Btn.vue'
 
 const props = withDefaults(defineProps<INumberInputProps>(), {
   debounce: 0,
@@ -19,7 +19,7 @@ const props = withDefaults(defineProps<INumberInputProps>(), {
   fractionDigits: 2,
   inline: undefined,
   labelInside: undefined,
-  // @ts-expect-error Wrong IMask type, will be overriden anyway
+  // @ts-expect-error Wrong IMask type
   mask: () => ({ mask: String }),
   required: undefined,
   size: 'md',
@@ -45,6 +45,7 @@ const mask = computed<MaskedNumber>(() => {
       : separators.value.thousandSeparator,
     radix: separators.value.decimalSeparator,
     mapToRadix: ['.', ','],
+    padFractionalZeros: true,
     scale: props.fractionDigits,
     mask: Number,
     min: props.min,
@@ -54,7 +55,7 @@ const mask = computed<MaskedNumber>(() => {
         return ''
       }
 
-      return value.toString()
+      return value.toFixed(props.fractionDigits)
     },
   })
 })
@@ -64,8 +65,10 @@ const {
   inputId,
   model,
   masked,
+  typed,
   wrapperProps,
   hasNoValue,
+  lastValidValue,
   hasClearableBtn,
   focus,
   select,
@@ -78,6 +81,25 @@ const {
 } = useInputUtils({
   props,
   maskRef: mask,
+  maskEventHandlers: {
+    onAccept: (lastValidValue, ev, refs) => {
+      console.log('Log ~ lastValidValue:', lastValidValue)
+      console.log('Log ~ ev:', ev)
+
+      if (!ev?.data) {
+        return
+      }
+
+      let val = (lastValidValue ?? 0).toFixed(2).replace(/\./g, '')
+      val += ev.data
+
+      if (refs) {
+        const typedValue = Number(`${val.slice(0, -2)}.${val.slice(-2)}`)
+
+        refs.typed.value = typedValue
+      }
+    },
+  },
 })
 
 const { path } = useInputValidationUtils(props)
@@ -114,9 +136,9 @@ function handleStep() {
   let currentValue = model.value
 
   if (
-    isNil(currentValue) ||
-    currentValue === '' ||
-    currentValue === props.emptyValue
+    isNil(currentValue)
+    || currentValue === ''
+    || currentValue === props.emptyValue
   ) {
     currentValue = 0
   }
@@ -143,6 +165,53 @@ function stopStep() {
   window.removeEventListener('touchend', stopStep)
   window.removeEventListener('touchmove', stopStep)
   window.removeEventListener('touchcancel', stopStep)
+}
+
+function getValue(ev: InputEvent) {
+  if (!ev.data) {
+    return
+  }
+
+  let val = (lastValidValue.value ?? 0).toFixed(2).replace(/\./g, '')
+  val += ev.data
+  typed.value = Number(`${val.slice(0, -2)}.${val.slice(-2)}`)
+
+  // console.log('Log ~ getValue ~ ev:', ev)
+  // if (!ev) {
+  //   return
+  // }
+
+  // // Initialize the value, making sure we have the fraction digits part
+  // let val = lastValidValue.value || '0.00'
+  // console.log('Log ~ getValue ~ val:', val)
+
+  // // Make sure we have the correct number of fraction digits
+  // const [_, decimals] = val.split('.')
+
+  // if (decimals?.length < props.fractionDigits) {
+  //   val = Number(val).toFixed(props.fractionDigits)
+  //   console.log('Log ~ getValue ~ val:', val)
+  // }
+
+  // // Replace the non-numeric characters (also remove the decimal point)
+  // val = val.replace(/[.,_\s]/g, '')
+  // console.log('Log ~ getValue ~ val:', val)
+
+  // // Append the new value to the end of the string
+  // if (!Number.isNaN(Number(ev.data))) {
+  //   val += ev.data
+  //   console.log('Log ~ getValue ~ val:', val)
+  // }
+
+  // // Construct the typed value
+  // const typedValue = Number(`${val.slice(0, -2)}.${val.slice(-2)}`)
+
+  // console.log('Log ~ getValue ~ typedValue:', typedValue)
+  // // Put it through the mask to get the formatted value
+  // const temporaryMask = createMask(mask.value)
+  // temporaryMask.typedValue = typedValue
+
+  // masked.value = temporaryMask.value
 }
 
 defineExpose({
@@ -191,79 +260,13 @@ defineExpose({
       v-bind="inputProps"
       @focus="handleFocusOrClick"
       @blur="handleBlur"
-    />
-
-    <template
-      v-if="$slots.append || hasClearableBtn || (!readonly && !disabled)"
-      #append
+      @input="getValue"
     >
-      <div
-        v-if="step || hasClearableBtn || $slots.append"
-        class="number-input__step"
-        @click="handleFocusOrClick"
-      >
-        <slot
-          name="append"
-          :clear="clear"
-          :focus="focus"
-        />
-
-        <Btn
-          v-if="hasClearableBtn"
-          icon="i-eva:close-fill h-6 w-6"
-          color="ca"
-          size="auto"
-          h="7"
-          w="7"
-          tabindex="-1"
-          @click.stop.prevent="!clearConfirmation && clear()"
-        >
-          <MenuConfirmation
-            v-if="clearConfirmation"
-            @ok="clear"
-          >
-            {{ clearConfirmation }}
-          </MenuConfirmation>
-        </Btn>
-
-        <!-- Step -->
-        <div
-          v-if="step && !readonly && !disabled"
-          flex="~ col shrink"
-          w="4"
-        >
-          <Btn
-            ref="increment"
-            tabindex="-1"
-            size="auto"
-            icon="i-bi:caret-up-fill w-4 h-4"
-            color="ca"
-            no-hover-effect
-            touch-none
-            @pointerdown="startStep($event, true)"
-            @mousedown.stop.prevent
-            @click.stop.prevent
-          />
-          <Btn
-            ref="decrement"
-            tabindex="-1"
-            size="auto"
-            icon="i-bi:caret-up-fill rotate-180 w-4 h-4"
-            color="ca"
-            no-hover-effect
-            touch-none
-            @pointerdown="startStep($event, false)"
-            @mousedown.stop.prevent
-            @click.stop.prevent
-          />
-        </div>
-      </div>
-    </template>
   </InputWrapper>
 </template>
 
 <style lang="scss" scoped>
 .number-input__step {
-  --apply: flex gap-x-2 flex-center p-x-2;
+  @apply flex gap-x-2 flex-center p-x-2;
 }
 </style>
