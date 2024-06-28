@@ -23,10 +23,7 @@ export function useNumber(localeRef?: MaybeRefOrGetter<string>) {
   const summaryMetricOptions = computed(() => {
     return [
       { id: SummaryEnum.SUM, label: t(`summaryEnum.${SummaryEnum.SUM}`) },
-      {
-        id: SummaryEnum.AVERAGE,
-        label: t(`summaryEnum.${SummaryEnum.AVERAGE}`),
-      },
+      { id: SummaryEnum.AVERAGE, label: t(`summaryEnum.${SummaryEnum.AVERAGE}`) },
       { id: SummaryEnum.MEDIAN, label: t(`summaryEnum.${SummaryEnum.MEDIAN}`) },
       { id: SummaryEnum.COUNT, label: t(`summaryEnum.${SummaryEnum.COUNT}`) },
     ]
@@ -34,6 +31,8 @@ export function useNumber(localeRef?: MaybeRefOrGetter<string>) {
 
   /**
    * Parses a number from a string
+   *
+   * Respects locale (thousand separator, decimal separator)
    */
   const parseNumber = (valueRef?: MaybeRefOrGetter<string | number | null>) => {
     const val = String(toValue(valueRef))
@@ -58,7 +57,7 @@ export function useNumber(localeRef?: MaybeRefOrGetter<string>) {
    */
   const formatNumber = (
     valueRef?: MaybeRefOrGetter<number | string | null>,
-    options: INumberOptions = {}
+    options: INumberOptions = {},
   ) => {
     const val = toValue(valueRef)
     if (val === null || val === undefined) {

@@ -94,6 +94,8 @@ const {
       if (refs) {
         const [_, decimals] = refs.masked.value.split(separators.value.decimalSeparator)
 
+        // We make sure we have the correct number of fraction digits
+        // and recalculate the typed value
         if (!decimals || decimals?.length < props.fractionDigits) {
           const digits = decimals ? props.fractionDigits - decimals.length : props.fractionDigits
 
