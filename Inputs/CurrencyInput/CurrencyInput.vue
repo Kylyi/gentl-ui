@@ -28,7 +28,7 @@ const props = withDefaults(defineProps<ICurrencyInputProps>(), {
   required: undefined,
   size: 'md',
   stackLabel: undefined,
-  step: isUndefined(config.currencyInput?.props?.step) ? 'auto' : config.currencyInput?.props?.step,
+  step: config.currencyInput?.props?.step,
   min: Number.NEGATIVE_INFINITY,
   max: Number.POSITIVE_INFINITY,
 })

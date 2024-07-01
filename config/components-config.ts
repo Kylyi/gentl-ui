@@ -213,7 +213,9 @@ export const config = merge(
 
     // Input - Currency input
     currencyInput: {
-      props: {} as ICurrencyInputProps,
+      props: {
+        step: 'auto',
+      } as ICurrencyInputProps,
     },
 
     // Input - Date input
