@@ -72,6 +72,31 @@ export function useNumber(localeRef?: MaybeRefOrGetter<string>) {
   }
 
   /**
+   * Formats currency
+   */
+  function formatCurrency(
+    valueRef?: MaybeRefOrGetter<number | string | null>,
+    currency?: string,
+    options: INumberOptions = {},
+  ) {
+    const val = toValue(valueRef)
+
+    if (val === null || val === undefined) {
+      return ''
+    }
+
+    const formattedNumber = formatNumber(valueRef, {
+      ...options,
+      intlOptions: {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      },
+    })
+
+    return currency ? `${formattedNumber} ${currency}` : formattedNumber
+  }
+
+  /**
    * Formats bytes into more readable format
    */
   function formatBytes(bytes: number): string {
@@ -107,5 +132,6 @@ export function useNumber(localeRef?: MaybeRefOrGetter<string>) {
     parseNumber,
     formatNumber,
     formatBytes,
+    formatCurrency,
   }
 }
