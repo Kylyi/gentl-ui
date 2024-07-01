@@ -132,7 +132,7 @@ export function useTableLayout(
   /**
    * Will stretch the columns to the full width of the table
    */
-  function handleStretchColumns() {
+  function handleStretchColumns(retry = true) {
     const table = toValue(tableEl)
     const scrollerDomEl = unrefElement(scrollerEl)
 
@@ -152,6 +152,8 @@ export function useTableLayout(
       )
 
       containerWidth = width
+    } else if (retry) {
+      setTimeout(() => handleStretchColumns(false), 500)
     }
   }
 

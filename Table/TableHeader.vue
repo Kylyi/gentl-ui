@@ -13,14 +13,10 @@ import {
 
 // Injections
 import {
-  tableResizeKey,
   tableRowsKey,
   tableSelectRowKey,
   tableSelectionKey,
 } from '~/components/Table/provide/table.provide'
-
-// Store
-import { useAppStore } from '~/libs/App/app.store'
 
 // Components
 import HorizontalScroller from '~/components/Scroller/HorizontalScroller.vue'
@@ -28,6 +24,7 @@ import HorizontalScroller from '~/components/Scroller/HorizontalScroller.vue'
 type IProps = {
   columns: TableColumn<any>[]
   minimumColumnWidth?: number
+  noAutofit?: boolean
   noLock?: boolean
   rows: any[]
   smallScreen?: boolean
@@ -39,9 +36,6 @@ const emits = defineEmits<{
   (e: 'scrolled', left: number): void
   (e: 'resized', col: TableColumn): void
 }>()
-
-// Store
-const appStore = useAppStore()
 
 // Utils
 const { scrollbarWidth } = useOverflow()
@@ -104,10 +98,12 @@ watch(
 )
 
 // Auto-fitting and auto-stretching columns
-watchOnce(tableRows, async () => {
-  await nextTick()
-  handleFitColumns()
-})
+if (!props.noAutofit) {
+  watchOnce(tableRows, async () => {
+    await nextTick()
+    handleFitColumns()
+  })
+}
 
 function handleScroll(x: number) {
   scrollX.value = x

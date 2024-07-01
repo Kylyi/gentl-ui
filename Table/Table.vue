@@ -314,6 +314,7 @@ onMounted(() => {
       :minimum-column-width="minimumColumnWidth"
       :small-screen="!isBreakpoint"
       :no-lock="noLock"
+      :no-autofit="noAutofit"
       :class="{ 'shadow-lg shadow-ca': isScrolled }"
       :selection-options="selectionOptions"
       @resized="scrollerEl?.rerender"

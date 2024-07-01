@@ -556,7 +556,6 @@ export function useTableColumns(
       cols,
       colsTotalWidth,
       contentWidth,
-      isWrapperOverflownVertically,
     } = getColumnSizes(
       containerElRef,
       wrapperElRef,

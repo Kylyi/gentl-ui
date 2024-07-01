@@ -137,6 +137,12 @@ export type ITableProps = {
   noPagination?: boolean | null
 
   /**
+   * By default, the table will call the `handleFitColumns` function when the
+   * table is initialized. This can be disabled by setting this prop to `true`
+   */
+  noAutofit?: boolean
+
+  /**
    * Whether the search should be hidden
    */
   noSearch?: boolean

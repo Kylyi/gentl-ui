@@ -4,26 +4,23 @@ import { config } from '~/components/config/components-config'
 // Types
 import type { ITableProps } from '~/components/Table/types/table-props.type'
 
+// Functions
+import { useTableColumnResizing } from '~/components/Table/functions/useTableColumnResizing'
+
 // Injections
 import {
   tableColumnsKey,
   tableNonHelperColumnsKey,
   tableRefreshKey,
-  tableRowsKey,
   tableSelectionKey,
-  tableSlotsKey,
-  tableStorageKey,
-  tableStretchColumnsKey,
 } from '~/components/Table/provide/table.provide'
 
 // Store
-import { useTableStore } from '~/components/Table/table.store'
 import { useAppStore } from '~/libs/App/app.store'
 
 // Components
 import QueryBuilderInline from '~/components/QueryBuilder/QueryBuilderInline.vue'
 import TableExportBtn from '~/components/Table/TableExportBtn.vue'
-import { useTableColumnResizing } from '~/components/Table/functions/useTableColumnResizing'
 
 const props = defineProps<
   Pick<
@@ -230,37 +227,6 @@ function fitColumns(ev?: MouseEvent) {
   }
 
   handleFitColumns(mode)
-
-  // const fittableColumns = columns.value.filter(
-  //   col => col.resizable && !col.hidden && !col.isHelperCol
-  // )
-
-  // // We unfreeze any frozen column
-  // const frozenColumn = fittableColumns.find(col => col.frozen)
-  // frozenColumn?.freeze(fittableColumns)
-
-  // setTimeout(async () => {
-  //   // We autofit the columns
-  //   for await (const col of fittableColumns) {
-  //     const slotRenderFnc = tableSlots[col.field]
-  //     await col.autoFit(
-  //       tableRows.value,
-  //       slotRenderFnc,
-  //       props.minimumColumnWidth
-  //     )
-  //   }
-
-  //   // We stretch the columns
-  //   if (isShiftKey) {
-  //     tableStretchColumns()
-  //   }
-
-  //   // We freeze the column again
-  //   frozenColumn?.freeze(fittableColumns)
-
-  //   setTableState(storageKey.value, { columns: columns.value })
-  //   emits('update:columnsWidth')
-  // }, 0)
 }
 
 // Keyboard shortcuts
