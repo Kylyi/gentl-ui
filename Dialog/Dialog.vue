@@ -13,7 +13,7 @@ const props = withDefaults(defineProps<IDialogProps>(), {
   maxHeight: 99999,
   position: 'center',
   transitionDuration: 300,
-  noTransition: appConfig.dialog.props.noTransition ?? undefined,
+  noTransition: appConfig.dialog?.props.noTransition ?? undefined,
 })
 
 const emits = defineEmits<{
