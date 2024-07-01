@@ -109,8 +109,12 @@ export async function useTableMetaData(props: ITableProps) {
 
     await handleRequest(
       async () => {
-        const { fnc, columnsKey, defaultLayoutKey, layoutsKey }
-          = props.getMetaData ?? getGenericMetaData ?? {}
+        const {
+          fnc,
+          columnsKey,
+          defaultLayoutKey,
+          layoutsKey,
+        } = props.getMetaData ?? getGenericMetaData ?? {}
 
         let result: any
 

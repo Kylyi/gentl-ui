@@ -1,4 +1,4 @@
-import { type FuseOptions } from '@vueuse/integrations/useFuse'
+import type { FuseOptions } from '@vueuse/integrations/useFuse'
 
 // Types
 import type { IListBaseProps } from '~/components/List/types/list-base-props.type'
@@ -6,7 +6,7 @@ import type { IListFetchFnc } from '~/components/List/types/list-fetch.type'
 import type { IItemToBeAdded } from '~/components/List/types/list-item-to-add.type'
 
 // Models
-import { SortItem } from '~/libs/Shared/models/sort-item.model'
+import type { SortItem } from '~/libs/Shared/models/sort-item.model'
 
 export type IListProps = IListBaseProps & {
   bordered?: boolean

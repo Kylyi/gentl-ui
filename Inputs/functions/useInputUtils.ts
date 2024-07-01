@@ -137,6 +137,8 @@ export function useInputUtils(options: IInputUtilsOptions) {
     if (shouldFocusAfterClear || !isBlurred.value) {
       setTimeout(() => focus(), 0)
     }
+
+    setTimeout(() => instance?.emit('clear'), 0)
   }
 
   function handleBlur(ev: FocusEvent) {

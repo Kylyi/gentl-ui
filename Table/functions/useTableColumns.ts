@@ -225,6 +225,7 @@ export function useTableColumns(
               filterField: col.filterField,
               comparator: filter.comparator,
               format: col.format,
+              filterFormat: col.filterFormat,
               dataType: col.dataType,
               value: filterValue,
             }),
