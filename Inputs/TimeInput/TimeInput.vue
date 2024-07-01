@@ -30,6 +30,7 @@ defineEmits<{
   (e: 'update:modelValue', val?: Datetime): void
   (e: 'validation-reset', val?: string | undefined | null): void
   (e: 'blur'): void
+  (e: 'clear'): void
 }>()
 
 // Utils

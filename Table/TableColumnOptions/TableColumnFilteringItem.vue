@@ -2,8 +2,8 @@
 import { config } from '~/components/config/components-config'
 
 // Models
-import { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
-import { FilterItem } from '~/libs/Shared/models/filter-item'
+import type { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
+import type { FilterItem } from '~/libs/Shared/models/filter-item'
 
 // Functions
 import { useTableUtils } from '~/components/Table/functions/useTableUtils'
@@ -19,7 +19,7 @@ import {
 } from '~/components/Table/constants/comparator-categories.const'
 
 // Components
-import { TableColumn } from '~/components/Table/models/table-column.model'
+import type { TableColumn } from '~/components/Table/models/table-column.model'
 
 type IProps = {
   column: TableColumn<any>
@@ -82,7 +82,7 @@ const customValueComputed = computed({
   get() {
     if (customFilterComponent.value?.valueFormatter) {
       return customFilterComponent.value.valueFormatter.getter(
-        filter.value.value
+        filter.value.value,
       )
     }
 
@@ -90,8 +90,8 @@ const customValueComputed = computed({
   },
   set(value) {
     if (customFilterComponent.value?.valueFormatter) {
-      filter.value.value =
-        customFilterComponent.value.valueFormatter.setter(value)
+      filter.value.value
+        = customFilterComponent.value.valueFormatter.setter(value)
 
       return
     }
@@ -135,8 +135,8 @@ const comparatorOptions = computed(() => {
 })
 
 const customFilterComponent = computed(() => {
-  const isCustomFilterComponent =
-    column.value.filterComponent?.comparators.includes(filter.value.comparator)
+  const isCustomFilterComponent
+    = column.value.filterComponent?.comparators.includes(filter.value.comparator)
 
   return isCustomFilterComponent
     ? column.value.filterComponent
@@ -152,7 +152,7 @@ const hiddenComparators = computed(() => {
 
   const columnComparators = column.value.filters.flatMap(filter => {
     const isBooleanishComparator = BOOLEANISH_COMPARATORS.includes(
-      filter.comparator
+      filter.comparator,
     )
 
     return isBooleanishComparator ? BOOLEANISH_COMPARATORS : [filter.comparator]
@@ -169,7 +169,7 @@ const hiddenComparators = computed(() => {
 
 function handleRemoveFilter() {
   column.value.filters = column.value.filters.filter(
-    filter => filter.comparator !== props.filter.comparator
+    filter => filter.comparator !== props.filter.comparator,
   )
 
   // Refresh the table if the filter actually had a value OR the comparator was
@@ -235,7 +235,7 @@ const tableRefreshDebounced = useDebounceFn(() => {
 
 function handleValueChange(
   val: any,
-  options?: { set?: boolean; debounce?: boolean }
+  options?: { set?: boolean, debounce?: boolean },
 ) {
   const { set, debounce } = options ?? {}
 
@@ -308,8 +308,8 @@ defineExpose({
     <!-- Selector for `Comparator.IN` and `Comparator.NOT_IN` for simple string cases -->
     <TextInput
       v-else-if="
-        canUseSelectorComparator(filter.comparator, column) &&
-        !column.getDistinctData
+        canUseSelectorComparator(filter.comparator, column)
+          && !column.getDistinctData
       "
       ref="valueInputEl"
       v-model="customValue"

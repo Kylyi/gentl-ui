@@ -483,15 +483,13 @@ export function useTableData(
       // ANCHOR: We only refetch data if the query has changed or we forced the refetch
       if (
         !isForcedRefetch.value
-        && previousDbQuery.value?.fetchQueryParams.toString()
-        === dbQuery.fetchQueryParams.toString()
+        && previousDbQuery.value?.fetchQueryParams.toString() === dbQuery.fetchQueryParams.toString()
       ) {
         // We might have some columns `alwaysSelected`, so if we add such column into
         // the table, it would actually not trigger the refetch, if that happens,
         // we need to manually adjust the url
         const hasDifferentVisibleCols
-          = dbQuery.tableQuery.select?.length
-          !== previousDbQuery.value?.tableQuery.select?.length
+          = dbQuery.tableQuery.select?.length !== previousDbQuery.value?.tableQuery.select?.length
 
         if (!hasDifferentVisibleCols) {
           if (layoutRef.value?.preventLayoutReset) {

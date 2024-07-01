@@ -1,10 +1,10 @@
-import { type MaybeElementRef } from '@vueuse/core'
+import type { MaybeElementRef } from '@vueuse/core'
 
 // Types
 import type { IGroupRow } from '~/libs/Shared/functions/data/useGrouping'
 
 // Components
-import ListVirtualContainer from '~/components/List/ListVirtualContainer.vue'
+import type ListVirtualContainer from '~/components/List/ListVirtualContainer.vue'
 
 export function useListKeyboardNavigation(options: {
   listContainerRef: MaybeElementRef<
@@ -14,7 +14,12 @@ export function useListKeyboardNavigation(options: {
   selectedRef: Ref<IItem | null>
   handleSelectItem: (item: any) => void
 }) {
-  const { listContainerRef, itemsRef, selectedRef, handleSelectItem } = options
+  const {
+    listContainerRef,
+    itemsRef,
+    selectedRef,
+    handleSelectItem,
+  } = options
 
   // Utils
   const self = getCurrentInstance()
@@ -29,12 +34,18 @@ export function useListKeyboardNavigation(options: {
   const modifier = ref<number>(0) // negative ~ above, positive ~ below
 
   const firstNonGroupItemIndex = computed(() =>
-    toValue(itemsRef).findIndex(item => !('isGroup' in item))
+    toValue(itemsRef).findIndex(item => !('isGroup' in item)),
   )
 
   watchEffect(() => {
-    if (firstNonGroupItemIndex.value > -1) {
+    if (firstNonGroupItemIndex.value > -1 && isFocused.value && hoveredIdx.value === -1) {
       hoveredIdx.value = firstNonGroupItemIndex.value
+    }
+  })
+
+  watch(isFocused, isFocused => {
+    if (!isFocused && !selectedRef.value) {
+      hoveredIdx.value = -1
     }
   })
 
@@ -52,14 +63,14 @@ export function useListKeyboardNavigation(options: {
       }
 
       if (intersectionRect.height > 0) {
-        containerEl.scrollTop +=
-          modifier.value * (boundingClientRect.height - intersectionRect.height)
+        containerEl.scrollTop
+          += modifier.value * (boundingClientRect.height - intersectionRect.height)
       } else {
-        containerEl.scrollTop +=
-          modifier.value * boundingClientRect.height * groupsJumped.value
+        containerEl.scrollTop
+          += modifier.value * boundingClientRect.height * groupsJumped.value
         groupsJumped.value = 1
       }
-    }
+    },
   )
 
   function handleMouseOver(item: any, index: number) {
@@ -74,7 +85,7 @@ export function useListKeyboardNavigation(options: {
 
   function handleKey(
     ev: KeyboardEvent,
-    options?: { force?: boolean; repeated?: boolean }
+    options?: { force?: boolean, repeated?: boolean },
   ) {
     // NOTE: When we get a `repeated` event, it means the user got under or above the list
     // In that case, we need to adjust situations that would lead to stack overflow,
@@ -157,8 +168,8 @@ export function useListKeyboardNavigation(options: {
 
     // Got to first non-group item
     else if (
-      hoveredIdx.value === firstNonGroupItemIndex.value &&
-      modifier.value === -1
+      hoveredIdx.value === firstNonGroupItemIndex.value
+      && modifier.value === -1
     ) {
       scrollTo(0)
     }
@@ -167,7 +178,7 @@ export function useListKeyboardNavigation(options: {
     else {
       nextTick(() => {
         hoveredEl.value = listEl.value?.querySelector(
-          '.item--hovered'
+          '.item--hovered',
         ) as HTMLDivElement
       })
     }
@@ -177,7 +188,7 @@ export function useListKeyboardNavigation(options: {
 
   onKeyStroke(
     ['ArrowUp', 'ArrowDown', 'Enter', 'Tab', 'PageUp', 'PageDown'],
-    handleKey
+    handleKey,
   )
 
   return {

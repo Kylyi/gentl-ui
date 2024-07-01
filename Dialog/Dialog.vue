@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { appConfig } from '~/config'
+
 // Types
 import type { IDialogProps } from '~/components/Dialog/types/dialog-props.type'
 
@@ -11,6 +13,7 @@ const props = withDefaults(defineProps<IDialogProps>(), {
   maxHeight: 99999,
   position: 'center',
   transitionDuration: 300,
+  noTransition: appConfig.dialog.props.noTransition ?? undefined,
 })
 
 const emits = defineEmits<{
@@ -236,6 +239,7 @@ const isOverlayVisible = computed(() => {
 
               <slot name="header-right" />
 
+              <!-- Close button -->
               <Btn
                 v-if="!noClose"
                 preset="CLOSE"

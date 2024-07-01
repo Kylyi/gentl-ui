@@ -200,7 +200,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   /**
    * Miscellanous data that can be used for anything
    */
-  misc?: Record<string, any>
+  misc?: IItem
 
   get filterDbQuery() {
     if (!this.filters.length) {
@@ -335,8 +335,14 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
 
         break
 
-      default:
+      case 'string':
+      case 'stringSimple':
         this.comparator = defaultComparator ?? ComparatorEnum.STARTS_WITH
+
+        break
+
+      default:
+        this.comparator = defaultComparator ?? ComparatorEnum.EQUAL
 
         break
     }

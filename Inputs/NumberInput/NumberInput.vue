@@ -32,6 +32,7 @@ const props = withDefaults(defineProps<INumberInputProps>(), {
 defineEmits<{
   (e: 'update:modelValue', val?: number | undefined | null): void
   (e: 'blur'): void
+  (e: 'clear'): void
 }>()
 
 // Utils
@@ -114,9 +115,9 @@ function handleStep() {
   let currentValue = model.value
 
   if (
-    isNil(currentValue) ||
-    currentValue === '' ||
-    currentValue === props.emptyValue
+    isNil(currentValue)
+    || currentValue === ''
+    || currentValue === props.emptyValue
   ) {
     currentValue = 0
   }
@@ -191,7 +192,7 @@ defineExpose({
       v-bind="inputProps"
       @focus="handleFocusOrClick"
       @blur="handleBlur"
-    />
+    >
 
     <template
       v-if="$slots.append || hasClearableBtn || (!readonly && !disabled)"

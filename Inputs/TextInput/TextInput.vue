@@ -25,6 +25,7 @@ defineEmits<{
   (e: 'validation-reset', val?: string | undefined | null): void
   (e: 'blur', ev: FocusEvent): void
   (e: 'enter', event: KeyboardEvent): void
+  (e: 'clear'): void
 }>()
 
 const {

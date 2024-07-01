@@ -57,6 +57,7 @@ export function useList(
     addedItems,
     preAddedItem,
     addItem,
+    resetAddedItems,
   } = useItemAdding(props)
 
   const { getKey, getLabel, getOption, getEmitValue, isSelected } = {
@@ -205,6 +206,8 @@ export function useList(
   function reset() {
     hasMore.value = true
     totalRows.value = 0
+
+    resetAddedItems()
   }
 
   // Data handling
@@ -654,6 +657,7 @@ export function useList(
     refresh: () => {
       handleSearchedResults(results.value)
     },
+    resetAddedItems,
     reset,
   }
 }
