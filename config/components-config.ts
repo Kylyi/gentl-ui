@@ -60,6 +60,7 @@ import type { IVirtualScrollerProps } from '~/components/VirtualScroller/types/v
 import type { IWysiwygProps } from '~/components/Wysiwyg/types/wysiwyg-props.type'
 import type { IYearMonthSelectorProps } from '~/components/YearMonthSelector/types/year-month-selector-props.type'
 import type { IYearSelectorProps } from '~/components/YearSelector/types/year-selector-props.type'
+import type { ICurrencyInputProps } from '~/components/Inputs/CurrencyInput/types/currency-input-props.type'
 import type {
   ITableDataFetchFncInput,
   ITableQuery,
@@ -208,6 +209,11 @@ export const config = merge(
     // Input - Color input
     colorInput: {
       props: {} as IColorProps,
+    },
+
+    // Input - Currency input
+    currencyInput: {
+      props: {} as ICurrencyInputProps,
     },
 
     // Input - Date input

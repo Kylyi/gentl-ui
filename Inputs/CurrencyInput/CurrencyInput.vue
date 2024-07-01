@@ -23,6 +23,7 @@ const props = withDefaults(defineProps<ICurrencyInputProps>(), {
   labelInside: undefined,
   // @ts-expect-error Wrong IMask type
   mask: () => ({ mask: String }),
+  noCurrency: config.currencyInput?.props.noCurrency,
   placeholder: config.currencyInput?.props?.placeholder,
   required: undefined,
   size: 'md',
