@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { appConfig } from '~/config'
+import { config } from '~/components/config/components-config'
 
 // Types
 import type { IDialogProps } from '~/components/Dialog/types/dialog-props.type'
@@ -13,7 +13,7 @@ const props = withDefaults(defineProps<IDialogProps>(), {
   maxHeight: 99999,
   position: 'center',
   transitionDuration: 300,
-  noTransition: appConfig.dialog?.props.noTransition ?? undefined,
+  noTransition: config.dialog.props?.noTransition ?? undefined,
 })
 
 const emits = defineEmits<{

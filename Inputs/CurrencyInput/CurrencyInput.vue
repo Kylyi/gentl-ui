@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { MaskedNumber } from 'imask'
+import { config } from '~/components/config/components-config'
 
 // Types
 import type { ICurrencyInputProps } from '~/components/Inputs/CurrencyInput/types/currency-input-props.type'
@@ -22,10 +23,11 @@ const props = withDefaults(defineProps<ICurrencyInputProps>(), {
   labelInside: undefined,
   // @ts-expect-error Wrong IMask type
   mask: () => ({ mask: String }),
+  placeholder: config.currencyInput?.props?.placeholder,
   required: undefined,
   size: 'md',
   stackLabel: undefined,
-  step: 'auto',
+  step: () => isUndefined(config.numberInput?.props?.step) ? 'auto' : config.numberInput?.props?.step,
   min: Number.NEGATIVE_INFINITY,
   max: Number.POSITIVE_INFINITY,
 })
