@@ -25,7 +25,7 @@ const props = withDefaults(defineProps<INumberInputProps>(), {
   required: undefined,
   size: 'md',
   stackLabel: undefined,
-  step: () => isUndefined(config.numberInput?.props?.step) ? 'auto' : config.numberInput?.props?.step,
+  step: isUndefined(config.numberInput?.props?.step) ? 'auto' : config.numberInput?.props?.step,
   min: Number.NEGATIVE_INFINITY,
   max: Number.POSITIVE_INFINITY,
 })
