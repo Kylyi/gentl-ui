@@ -8,6 +8,7 @@ import DateInput from '~/components/Inputs/DateInput/DateInput.vue'
 import Toggle from '~/components/Toggle/Toggle.vue'
 import TimeInput from '~/components/Inputs/TimeInput/TimeInput.vue'
 import DurationInput from '~/components/Inputs/DurationInput/DurationInput.vue'
+import CurrencyInput from '~/components/Inputs/CurrencyInput/CurrencyInput.vue'
 
 const TEXT_INPUT = {
   component: markRaw(TextInput),
@@ -19,6 +20,12 @@ const NUMBER_INPUT = {
   component: markRaw(NumberInput),
   props: {} as ComponentProps<typeof NumberInput>,
   icon: 'i-ant-design:number-outlined',
+}
+
+const CURRENCY_INPUT = {
+  component: markRaw(CurrencyInput),
+  props: {} as ComponentProps<typeof CurrencyInput>,
+  icon: 'i-grommet-icons:currency',
 }
 
 const DURATION_INPUT = {
@@ -66,6 +73,9 @@ const INPUT_BY_DATATYPE = {
   long: NUMBER_INPUT,
   double: NUMBER_INPUT,
 
+  // Currency
+  currency: CURRENCY_INPUT,
+
   // Duration
   duration: DURATION_INPUT,
 
@@ -98,6 +108,9 @@ const INPUT_BY_DATATYPE = {
   longSimple: NUMBER_INPUT,
   doubleSimple: NUMBER_INPUT,
 
+  // Currency
+  currencySimple: CURRENCY_INPUT,
+
   // Duration
   durationSimple: DURATION_INPUT,
 
@@ -127,7 +140,7 @@ export function getInputByDataType<T extends ExtendedDataType>(
   dataType: T,
   options?: {
     props?: Partial<ComponentProps<(typeof INPUT_BY_DATATYPE)[T]['component']>>
-  }
+  },
 ) {
   const { props } = options ?? {}
 

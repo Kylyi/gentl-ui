@@ -40,7 +40,7 @@ export function useValueFormatterUtils() {
       emptyValue?: any
       predictDataType?: IValueFormatter['predictDataType']
       resolveEnums?: IValueFormatter['resolveEnums']
-    } = {}
+    } = {},
   ): any {
     const {
       format,
@@ -58,10 +58,10 @@ export function useValueFormatterUtils() {
       // Enums resolving makes sense only for strings and numbers
       if (typeof value === 'string' || typeof value === 'number') {
         const { translationKey } = resolveEnums
-        const i18n =
-          get(
+        const i18n
+          = get(
             messages[locale.value as keyof typeof messages],
-            translationKey
+            translationKey,
           ) || {}
 
         const enumKeys = Object.keys(i18n).filter(key => {
@@ -75,7 +75,7 @@ export function useValueFormatterUtils() {
           undefined,
           undefined,
           undefined,
-          enumKeys.map(enumKey => `${translationKey}.${enumKey}`)
+          enumKeys.map(enumKey => `${translationKey}.${enumKey}`),
         )
 
         if (resolvedEnum !== value.toString()) {
@@ -112,6 +112,9 @@ export function useValueFormatterUtils() {
       case 'numberSimple':
       case 'intSimple':
         return formatNumber(value)
+
+      case 'currency':
+        return formatNumber(value, { intlOptions: { minimumFractionDigits: 2, maximumFractionDigits: 2 } })
 
       case 'duration':
       case 'durationSimple':
