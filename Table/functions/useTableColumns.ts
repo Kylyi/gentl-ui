@@ -588,8 +588,7 @@ export function useTableColumns(
         return agg
       }, 0)
 
-      const _scrollbarWidth = Number(isWrapperOverflownVertically) * scrollbarWidth
-      const _contentWidth = contentWidth + _scrollbarWidth - 1 - helperColsWidth
+      const _contentWidth = contentWidth - 1 - helperColsWidth
       const _colsTotalWidth = colsTotalWidth.relative + colsTotalWidth.fixed - helperColsWidth
 
       let wExtra = 0
