@@ -200,7 +200,7 @@ defineExpose({
     >
       <div
         v-if="step || hasClearableBtn || $slots.append"
-        class="number-input__step"
+        class="number-input__append"
         @click="handleFocusOrClick"
       >
         <slot
@@ -228,43 +228,18 @@ defineExpose({
         </Btn>
 
         <!-- Step -->
-        <div
+        <NumberInputStep
           v-if="step && !readonly && !disabled"
-          flex="~ col shrink"
-          w="4"
-        >
-          <Btn
-            ref="increment"
-            tabindex="-1"
-            size="auto"
-            icon="i-bi:caret-up-fill w-4 h-4"
-            color="ca"
-            no-hover-effect
-            touch-none
-            @pointerdown="startStep($event, true)"
-            @mousedown.stop.prevent
-            @click.stop.prevent
-          />
-          <Btn
-            ref="decrement"
-            tabindex="-1"
-            size="auto"
-            icon="i-bi:caret-up-fill rotate-180 w-4 h-4"
-            color="ca"
-            no-hover-effect
-            touch-none
-            @pointerdown="startStep($event, false)"
-            @mousedown.stop.prevent
-            @click.stop.prevent
-          />
-        </div>
+          v-bind="props"
+          v-model="model"
+        />
       </div>
     </template>
   </InputWrapper>
 </template>
 
 <style lang="scss" scoped>
-.number-input__step {
-  --apply: flex gap-x-2 flex-center p-x-2;
+.number-input__append {
+  @apply flex gap-x-2 flex-center p-x-2;
 }
 </style>
