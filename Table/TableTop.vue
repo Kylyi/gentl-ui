@@ -37,10 +37,6 @@ const props = defineProps<
     smallScreen?: boolean
   }
 >()
-const emits = defineEmits<{
-  (e: 'update:columnsWidth'): void
-  (e: 'update:search', search: string): void
-}>()
 const slots = useSlots()
 
 // Constants
@@ -59,7 +55,7 @@ const nonHelperColumns = injectStrict(tableNonHelperColumnsKey)
 const tableRefresh = injectStrict(tableRefreshKey)
 
 // Utils
-const { handleFitColumns } = useTableColumnResizing({ columns: columns.value })
+const { handleFitColumns } = useTableColumnResizing({ columns })
 
 // Layout
 const queryBuilder = useVModel(props, 'queryBuilder')

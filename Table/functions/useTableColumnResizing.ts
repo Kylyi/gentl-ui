@@ -36,10 +36,12 @@ type IActiveSplitter = ISplitter & {
   adjustedWidth: number
 }
 
-export function useTableColumnResizing(props: {
-  columns: TableColumn[]
+export function useTableColumnResizing(options: {
+  columns: Ref<TableColumn[]>
   minimumColumnWidth?: number
 }) {
+  const { columns, minimumColumnWidth = 0 } = options
+
   // Utils
   const self = getCurrentInstance()
 
@@ -66,13 +68,13 @@ export function useTableColumnResizing(props: {
   const columnSplitters = computed(() => {
     const splitters: ISplitter[] = []
 
-    if (!props.columns.length) {
+    if (!columns.value.length) {
       return splitters
     }
 
     let lastLeftPosition = 0
 
-    props.columns
+    columns.value
       .filter(col => !col.hidden && col.resizable)
       .forEach(col => {
         lastLeftPosition += col.adjustedWidth
@@ -90,7 +92,7 @@ export function useTableColumnResizing(props: {
 
     // We need to move the last splitter a bit to the left so it doesn't create overflow
     // But only in case the last column is actually resizable
-    const lastCol = props.columns[props.columns.length - 1]
+    const lastCol = columns.value[columns.value.length - 1]
 
     if (lastCol.resizable && splitters.length) {
       splitters[splitters.length - 1].left -= 4
@@ -103,7 +105,7 @@ export function useTableColumnResizing(props: {
     splitter: ISplitter,
     ev: PointerEvent,
   ) {
-    const col = props.columns.find(c => c.field === splitter.field)
+    const col = columns.value.find(c => c.field === splitter.field)
 
     // Handle double-click ~ resize to fit
     if (col && splitterJustClicked.value) {
@@ -112,10 +114,10 @@ export function useTableColumnResizing(props: {
       await col.autoFit(
         tableRows.value,
         slotRenderFnc,
-        props.minimumColumnWidth,
+        minimumColumnWidth,
       )
 
-      setTableState(storageKey.value, { columns: props.columns })
+      setTableState(storageKey.value, { columns: columns.value })
       self?.emit('resized', col)
 
       return
@@ -135,7 +137,7 @@ export function useTableColumnResizing(props: {
     activeSplitter.value = {
       ...splitterCopy,
       left: pageX,
-      minLeft: ev.pageX - col!.adjustedWidth + (props.minimumColumnWidth || 0) - 4, // 4px is the middle of the splitter
+      minLeft: ev.pageX - col!.adjustedWidth + minimumColumnWidth - 4, // 4px is the middle of the splitter
       top: headerY,
       height: headerHeight + tableHeight,
       column: col!,
@@ -184,15 +186,15 @@ export function useTableColumnResizing(props: {
       activeSplitter.value!.column.semiFrozen
       && !activeSplitter.value!.column.frozen
     ) {
-      const colIdx = props.columns.findIndex(
+      const colIdx = columns.value.findIndex(
         col => col.field === activeSplitter.value!.column.field,
       )
-      column = props.columns[colIdx]
-      const lastSemiFrozenColIdx = props.columns
+      column = columns.value[colIdx]
+      const lastSemiFrozenColIdx = columns.value
         .slice(colIdx)
         .findIndex(col => !col.semiFrozen)
 
-      const semiFrozenColumns = props.columns.slice(
+      const semiFrozenColumns = columns.value.slice(
         colIdx + 1,
         colIdx + lastSemiFrozenColIdx,
       )
@@ -223,14 +225,13 @@ export function useTableColumnResizing(props: {
       handleSplitterPointerUp,
     )
 
-    setTableState(storageKey.value, { columns: props.columns })
+    setTableState(storageKey.value, { columns: columns.value })
 
     nextTick(() => {
       document.documentElement.style.cursor = ''
       document.documentElement.style.userSelect = ''
 
       headerEl.value?.updateArrows()
-      self?.emit('resized', column)
     })
   }
 
@@ -238,7 +239,7 @@ export function useTableColumnResizing(props: {
    * Fits the columns based on their content
    */
   function fitColumns(stretch?: boolean) {
-    const fittableColumns = props.columns.filter(
+    const fittableColumns = columns.value.filter(
       col => col.resizable && !col.hidden && !col.isHelperCol,
     )
 
@@ -254,7 +255,7 @@ export function useTableColumnResizing(props: {
         await col.autoFit(
           tableRows.value,
           slotRenderFnc,
-          props.minimumColumnWidth,
+          minimumColumnWidth,
         )
       }
 
@@ -266,7 +267,7 @@ export function useTableColumnResizing(props: {
       // We freeze the column again
       frozenColumn?.freeze(fittableColumns)
 
-      setTableState(storageKey.value, { columns: props.columns })
+      setTableState(storageKey.value, { columns: columns.value })
     }, 0)
   }
 
@@ -278,12 +279,12 @@ export function useTableColumnResizing(props: {
     }
 
     if (mode === 'content') {
-      nextTick(fitColumns)
+      nextTick(() => fitColumns())
     } else if (mode === 'stretch') {
       nextTick(() => fitColumns(true))
     } else if (mode === 'auto') {
       nextTick(() => {
-        props.columns.forEach(col => {
+        columns.value.forEach(col => {
           col.width = col.originalWidth
         })
 

@@ -13,6 +13,7 @@ import {
 
 // Injections
 import {
+  tableColumnsKey,
   tableRowsKey,
   tableSelectRowKey,
   tableSelectionKey,
@@ -22,7 +23,6 @@ import {
 import HorizontalScroller from '~/components/Scroller/HorizontalScroller.vue'
 
 type IProps = {
-  columns: TableColumn<any>[]
   minimumColumnWidth?: number
   noAutofit?: boolean
   noLock?: boolean
@@ -39,21 +39,25 @@ const emits = defineEmits<{
 
 // Utils
 const { scrollbarWidth } = useOverflow()
+
+// Injections
+const selection = injectStrict(tableSelectionKey)
+const tableRows = injectStrict(tableRowsKey)
+const columns = injectStrict(tableColumnsKey)
+const handleSelectRow = injectStrict(tableSelectRowKey)
+
 const {
   headerEl,
   activeSplitter,
   columnSplitters,
   handleFitColumns,
   handleSplitterPointerDown,
-} = useTableColumnResizing(props)
-
-// Injections
-const selection = injectStrict(tableSelectionKey)
-const tableRows = injectStrict(tableRowsKey)
-const handleSelectRow = injectStrict(tableSelectRowKey)
+} = useTableColumnResizing({
+  columns,
+  minimumColumnWidth: props.minimumColumnWidth,
+})
 
 // Layout
-const columns = toRef(props, 'columns')
 const scrollX = ref(0)
 
 const selectedCount = computed(() => {

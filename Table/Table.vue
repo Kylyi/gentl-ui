@@ -309,7 +309,6 @@ onMounted(() => {
       v-if="!noHeader"
       ref="headerEl"
       class="table-header"
-      :columns="internalColumns"
       :rows="rows"
       :minimum-column-width="minimumColumnWidth"
       :small-screen="!isBreakpoint"

@@ -43,7 +43,7 @@ const tableRefresh = injectStrict(tableRefreshKey)
 
 // Utils
 const { parseUrlParams } = useTableUtils()
-const { handleFitColumns } = useTableColumnResizing({ columns: columns.value })
+const { handleFitColumns } = useTableColumnResizing({ columns })
 
 // Store
 const { getTableState } = useTableStore()
