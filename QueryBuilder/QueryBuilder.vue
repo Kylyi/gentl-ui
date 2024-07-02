@@ -13,13 +13,17 @@ import {
   qbHoveredItemKey,
   qbIsSmallerScreenKey,
   qbItemsKey,
+  qbMaxLevelKey,
 } from '~/components/QueryBuilder/provide/query-builder.provide'
 
 // Functions
 import { useQueryBuilderDragAndDrop } from '~/components/QueryBuilder/functions/useQueryBuilderDragAndDrop'
 import { useQueryBuilderColumnFilters } from '~/components/QueryBuilder/functions/useQueryBuilderColumnFilters'
 
-const props = defineProps<IQueryBuilderProps>()
+const props = withDefaults(defineProps<IQueryBuilderProps>(), {
+  maxLevel: Number.POSITIVE_INFINITY,
+})
+
 const emits = defineEmits<{
   (e: 'update:items', items: IQueryBuilderRow[]): void
 }>()
@@ -80,6 +84,7 @@ provide(qbHoveredItemKey, hoveredRow)
 provide(qbContainerKey, queryBuilderEl)
 provide(qbCollapsedKey, collapsed)
 provide(qbIsSmallerScreenKey, isSmallerScreen)
+provide(qbMaxLevelKey, props.maxLevel)
 
 // Lifecycle
 // When no items are provided, initialize the items with a group
@@ -99,11 +104,7 @@ defineExpose({
     class="query-builder"
     :class="{ 'is-collapsed': isSmallerScreen }"
   >
-    <template
-      v-if="
-        config.table.queryBuilder.showColumnFilters && qbColumnFilters?.length
-      "
-    >
+    <template v-if="config.table.queryBuilder.showColumnFilters && qbColumnFilters?.length">
       <!-- Column filters -->
       <div
         text="sm"
@@ -112,6 +113,7 @@ defineExpose({
       >
         {{ $t('table.columnFilters') }}
       </div>
+
       <QueryBuilderRow
         v-for="item in qbColumnFilters"
         :key="item.path"

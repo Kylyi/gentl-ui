@@ -21,6 +21,11 @@ export type IQueryBuilderProps = {
   items: IQueryBuilderRow[]
 
   /**
+   * The maximum level of the query builder
+   */
+  maxLevel?: number
+
+  /**
    * Whether to initialize the query builder with and empty group
    */
   noInitialization?: boolean

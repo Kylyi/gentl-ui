@@ -5,6 +5,7 @@ import type { IQueryBuilderItem } from '~/components/QueryBuilder/types/query-bu
 type IProps = {
   item: Pick<IQueryBuilderItem, 'value' | 'comparator'>
   noDelete?: boolean
+  readonly?: boolean
 }
 
 const props = defineProps<IProps>()
@@ -33,13 +34,13 @@ const model = computed({
 
 const positiveBtnClass = computed(() => {
   return model.value
-    ? ['bg-positive', 'border-green-800', 'color-white']
+    ? ['!bg-positive', '!border-green-800', '!color-white']
     : ['color-positive', 'border-positive']
 })
 
 const negativeBtnClass = computed(() => {
   return model.value === false
-    ? ['bg-negative', 'border-red-800', 'color-white']
+    ? ['!bg-negative', '!border-red-800', '!color-white']
     : ['color-negative', 'border-negative']
 })
 </script>
@@ -56,6 +57,7 @@ const negativeBtnClass = computed(() => {
       border="l-4"
       :class="positiveBtnClass"
       :label="$t('general.yes')"
+      :disabled="readonly"
       @click="model = true"
     />
     <Btn
@@ -65,6 +67,7 @@ const negativeBtnClass = computed(() => {
       border="r-4"
       :class="negativeBtnClass"
       :label="$t('general.no')"
+      :disabled="readonly"
       @click="model = false"
     />
 

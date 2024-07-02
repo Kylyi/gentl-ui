@@ -305,7 +305,7 @@ const $z = useZod(
   >
     <!-- Move handler -->
     <QueryBuilderMoveHandler
-      v-if="!noDraggable && !item.isNotDraggable"
+      v-if="!noDraggable && !item.isNotDraggable && editable"
       self-start
       m="t-2.5"
     />
@@ -320,6 +320,7 @@ const $z = useZod(
         size="sm"
         option-key="field"
         preselect-first
+        :readonly="!editable"
         class="qb-item__content-field"
         :validation="$z.item.field"
         data-cy="qb-item__content-field"
@@ -362,6 +363,7 @@ const $z = useZod(
           :options="comparators"
           emit-key
           size="sm"
+          :readonly="!editable"
           class="qb-item__content-comparator"
           :validation="$z.item.comparator"
           data-cy="comparator"
@@ -375,6 +377,7 @@ const $z = useZod(
             v-if="customFilterComponent?.comparators.includes(item.comparator)"
             ref="valueInputEl"
             v-model="customValue"
+            :readonly="!editable"
             v-bind="
               typeof customFilterComponent.props === 'function'
                 ? customFilterComponent.props(customValue, item)
@@ -396,6 +399,7 @@ const $z = useZod(
             size="sm"
             :placeholder="`${$t('table.filterValue')}...`"
             empty-value=""
+            :readonly="!editable"
             :validation="$z.item.value"
             data-cy="qb-item__content-value"
           />
@@ -411,6 +415,7 @@ const $z = useZod(
               local: true,
               immediate: true,
             }"
+            :readonly="!editable"
             :multi="isSelectorComparator(item.comparator)"
             emit-key
             class="qb-item__content-value"
@@ -425,6 +430,7 @@ const $z = useZod(
             v-else-if="isDateAgoComparator(item.comparator)"
             ref="valueInputEl"
             v-model:item="item"
+            :readonly="!editable"
             :validation="$z.item.value"
           />
 
@@ -433,6 +439,7 @@ const $z = useZod(
             v-else-if="isBooleanishComparator"
             :item="item"
             no-delete
+            :readonly="!editable"
             @remove:item="handleRemoveCondition"
           />
 
@@ -446,6 +453,7 @@ const $z = useZod(
             :class="{
               'qb-item__content-value': colSelected.dataType !== 'boolean',
             }"
+            :readonly="!editable"
             v-bind="component.props"
             :placeholder="$t('queryBuilder.value')"
             :validation="$z.item.value"
@@ -457,7 +465,7 @@ const $z = useZod(
     </div>
 
     <Btn
-      v-if="!noRemove"
+      v-if="!noRemove && editable"
       size="xs"
       preset="TRASH"
       m="t-2 r-2"

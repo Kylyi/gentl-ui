@@ -13,6 +13,7 @@ import {
   qbCollapsedKey,
   qbHoveredItemKey,
   qbItemsKey,
+  qbMaxLevelKey,
 } from '~/components/QueryBuilder/provide/query-builder.provide'
 
 const props = defineProps<IQueryBuilderGroupProps>()
@@ -24,6 +25,7 @@ const emits = defineEmits<{
 const items = injectStrict(qbItemsKey)
 const hoveredRow = injectStrict(qbHoveredItemKey)
 const collapsed = injectStrict(qbCollapsedKey)
+const maxLevel = injectStrict(qbMaxLevelKey)
 
 // Utils
 const { t } = useI18n()
@@ -100,7 +102,7 @@ const collapseProps = computed(() => {
   >
     <!-- Group row -->
     <div class="qb-group-row">
-      <QueryBuilderMoveHandler v-if="level && !item.isNotDraggable" />
+      <QueryBuilderMoveHandler v-if="level && !item.isNotDraggable && editable" />
 
       <!-- Condition -->
       <div class="qb-group-condition">
@@ -122,11 +124,14 @@ const collapseProps = computed(() => {
         />
       </div>
 
-      <Separator vertical />
+      <Separator
+        v-if="editable"
+        vertical
+      />
 
       <!-- Controls -->
       <div
-        v-if="!noAdd"
+        v-if="!noAdd && editable"
         class="qb-group-controls"
       >
         <!-- Add condition -->
@@ -145,6 +150,7 @@ const collapseProps = computed(() => {
 
         <!-- Add group -->
         <Btn
+          v-if="maxLevel > level"
           icon="i-formkit:add"
           bg="white dark:darker"
           color="ca"
@@ -175,6 +181,7 @@ const collapseProps = computed(() => {
 
         <!-- Remove group -->
         <Btn
+          v-if="editable"
           class="on-hover"
           icon="i-material-symbols:delete-sweep-rounded !w-5 !h-5"
           color="negative"
