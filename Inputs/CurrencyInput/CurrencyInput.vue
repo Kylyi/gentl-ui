@@ -226,6 +226,13 @@ function handleBeforeInput(ev: Event) {
       val = val * -1
     }
 
+    // When inputting an actual 0
+    else if (val === 0) {
+      masked.value = '0.00'
+
+      return
+    }
+
     typed.value = val
 
     ev.preventDefault()
