@@ -55,7 +55,10 @@ const nonHelperColumns = injectStrict(tableNonHelperColumnsKey)
 const tableRefresh = injectStrict(tableRefreshKey)
 
 // Utils
-const { handleFitColumns } = useTableColumnResizing({ columns })
+const { handleFitColumns } = useTableColumnResizing({
+  columns,
+  minimumColumnWidth: props.minimumColumnWidth,
+})
 
 // Layout
 const queryBuilder = useVModel(props, 'queryBuilder')
