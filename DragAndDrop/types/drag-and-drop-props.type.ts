@@ -6,6 +6,7 @@ export type IDragAndDropProps<T = IItem> = {
   direction?: 'horizontal' | 'vertical'
   group?: string
   items?: T[]
+  noDrop?: boolean
   parent?: IItem
   itemKey?: ObjectKey<T> | ((item: T) => ObjectKey<T>)
 

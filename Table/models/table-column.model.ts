@@ -186,7 +186,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   /**
    * When filtering in the filter dropdown, we can use different formatting than in the table
    */
-  filterFormat?: (row: T) => string | number
+  filterFormat?: (row: T) => any
 
   /**
    * Whether to sort options in the filter dropdown

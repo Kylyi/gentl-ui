@@ -7,7 +7,7 @@ import type { ITreeProps } from '~/components/Tree/types/tree-props.type'
 
 // Functions
 import { useSearching } from '~/libs/Shared/functions/data/useSearching'
-import { useTraversing } from '~/libs/Shared/functions/useTraversing'
+import { useTraversing } from '~/utils/helpers/useTraversing'
 import { useTreeUtils } from '~/components/Tree/functions/useTreeUtils'
 
 // Components

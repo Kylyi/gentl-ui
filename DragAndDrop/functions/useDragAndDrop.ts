@@ -6,6 +6,7 @@ import type { IDraggedItem } from '~/components/DragAndDrop/types/dragged-item.t
 const draggedItemKey = Symbol('draggedItem')
 const onDragStartKey = Symbol('onDragStart')
 const onDragEndKey = Symbol('onDragEnd')
+const onDragCancelKey = Symbol('onDragCancel')
 const dndStateKey = Symbol('dndState')
 
 type IDndState = {
@@ -52,12 +53,14 @@ export function useDragAndDrop<T = IItem>(
     preventDragFnc?: (payload: { el: HTMLElement, item: T }) => boolean
 
     onDragEndFnc?: DragEndFnc<T>
+    onDragCancelFnc?: () => void
   },
 ) {
   const {
     direction = 'vertical',
     onDragStartFnc = () => {},
     onDragEndFnc = () => {},
+    onDragCancelFnc = () => {},
   } = options ?? {}
 
   // Provide/Inject
@@ -65,6 +68,7 @@ export function useDragAndDrop<T = IItem>(
   const dndState = injectStrict<IDndState>(dndStateKey, reactive({}))
   const onDragStart = injectStrict<DragStartFnc<T>>(onDragStartKey, onDragStartFnc)
   const onDragEnd = injectStrict<DragEndFnc<T>>(onDragEndKey, onDragEndFnc)
+  const onDragCancel = injectStrict<() => void>(onDragCancelKey, onDragCancelFnc)
 
   provide(draggedItemKey, draggedItem)
   provide(dndStateKey, dndState)
@@ -76,6 +80,10 @@ export function useDragAndDrop<T = IItem>(
 
   if (options?.onDragEndFnc) {
     provide(onDragEndKey, onDragEnd)
+  }
+
+  if (options?.onDragCancelFnc) {
+    provide(onDragCancelKey, onDragCancel)
   }
 
   // Layout
@@ -263,6 +271,14 @@ export function useDragAndDrop<T = IItem>(
 
     isSamePosition = isSamePosition && dndState.draggedElInitialIdx === selfIdx
 
+    const isNoDrop = dndState.targetContainerEl?.classList.contains('no-drop')
+
+    if (isNoDrop || isSamePosition) {
+      setTimeout(() => cancelDrag())
+
+      return
+    }
+
     hasMoved = hasMoved && !isSamePosition
 
     if (clonedElement) {
@@ -342,6 +358,12 @@ export function useDragAndDrop<T = IItem>(
       !dndState.targetContainerEl
       || !dndState.draggedContainerEl
     ) {
+      return
+    }
+
+    const isNoDrop = dndState.targetContainerEl?.classList.contains('no-drop')
+
+    if (isNoDrop) {
       return
     }
 
@@ -457,6 +479,8 @@ export function useDragAndDrop<T = IItem>(
     document.removeEventListener('keyup', handleKeyPress)
 
     const { draggedEl, draggedElInitialIdx = 0, draggedContainerEl } = dndState
+
+    onDragCancel?.()
 
     if (draggedItem.value && draggedEl) {
       if (draggedElInitialIdx === 0) {

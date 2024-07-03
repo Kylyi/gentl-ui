@@ -1,14 +1,11 @@
-import { type Required } from 'utility-types'
+import type { Required } from 'utility-types'
 
-// TYPES
+// Types
 import type { ITreeNode } from '~/components/Tree/types/tree-node.type'
 import type { ITreeProps } from '~/components/Tree/types/tree-props.type'
 
-// COMPOSITION FUNCTIONS
-import { useTraversing } from '~/libs/Shared/functions/useTraversing'
-
 export function useTreeUtils(props: ITreeProps) {
-  // UTILS
+  // Utils
   const { flattenTree } = useTraversing()
 
   const nodes = useVModel(props, 'nodes')
@@ -28,11 +25,11 @@ export function useTreeUtils(props: ITreeProps) {
 
   function addNode(
     node: Required<Partial<ITreeNode>, 'name'>,
-    parentNode?: ITreeNode | string
+    parentNode?: ITreeNode | string,
   ): void {
     if (parentNode) {
-      const _parentNode =
-        typeof parentNode === 'string' ? getNodeById(parentNode) : parentNode
+      const _parentNode
+        = typeof parentNode === 'string' ? getNodeById(parentNode) : parentNode
 
       const nodeId = node.id || uuid()
       const newNode: ITreeNode = {
@@ -62,11 +59,11 @@ export function useTreeUtils(props: ITreeProps) {
 
     if (parentNode?.children) {
       parentNode.children = parentNode.children.filter(
-        (child: ITreeNode) => child.id !== node.id
+        (child: ITreeNode) => child.id !== node.id,
       )
     } else if (nodes.value) {
       nodes.value = nodes.value.filter(
-        (child: ITreeNode) => child.id !== node.id
+        (child: ITreeNode) => child.id !== node.id,
       )
     }
   }
@@ -76,7 +73,7 @@ export function useTreeUtils(props: ITreeProps) {
     nodes => {
       flattenedNodes.value = flattenTree(nodes)
     },
-    { deep: true, immediate: true }
+    { deep: true, immediate: true },
   )
 
   return {

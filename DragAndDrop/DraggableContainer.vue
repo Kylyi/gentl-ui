@@ -18,12 +18,14 @@ const emits = defineEmits<{
 const { handleMouseDown, handleTouchStart } = useDragAndDrop(props)
 
 // Layout
+const isNoDrop = defineModel<boolean>('noDrop', { default: false })
 const { model } = useRefReset(() => props.items, { autoSyncFromParent: true })
 
 const classes = computed(() => {
   return {
     'flex-row': props.direction === 'horizontal',
     'flex-col': props.direction === 'vertical',
+    'no-drop': isNoDrop.value,
   }
 })
 
@@ -55,6 +57,14 @@ function removeItem(item: T) {
   debouncedSync()
 }
 
+function disableDrop() {
+  isNoDrop.value = true
+}
+
+function enableDrop() {
+  isNoDrop.value = false
+}
+
 const debouncedSync = useDebounceFn(() => {
   emits('update:items', model.value!)
 }, 50)
@@ -69,6 +79,8 @@ const debouncedSync = useDebounceFn(() => {
     .remove-item="removeItem"
     .insert-item="insertItem"
     .get-parent="getParent"
+    .disable-drop="disableDrop"
+    .enable-drop="enableDrop"
     @mousedown="handleMouseDown"
     @touchstart="handleTouchStart"
   >
@@ -88,6 +100,10 @@ const debouncedSync = useDebounceFn(() => {
 <style lang="scss" scoped>
 .draggable-container {
   @apply relative flex overflow-y-auto overflow-x-hidden;
+
+  &.no-drop {
+    @apply opacity-25;
+  }
 }
 
 /* 1. declare transition */
