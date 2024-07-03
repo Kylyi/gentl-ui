@@ -232,6 +232,7 @@ export function useTableColumnResizing(options: {
       document.documentElement.style.userSelect = ''
 
       headerEl.value?.updateArrows()
+      self?.emit('resized', column)
     })
   }
 
@@ -268,6 +269,7 @@ export function useTableColumnResizing(options: {
       frozenColumn?.freeze(fittableColumns)
 
       setTableState(storageKey.value, { columns: columns.value })
+      nextTick(() => self?.emit('resized'))
     }, 0)
   }
 

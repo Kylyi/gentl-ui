@@ -225,6 +225,7 @@ onMounted(() => {
         v-bind="tableTopProps"
         :small-screen="!isBreakpoint"
         @update:columns-width="handleColumnsWidthChange"
+        @resized="scrollerEl?.rerender"
       >
         <template
           v-if="$slots['top-left-prepend']"
