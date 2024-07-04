@@ -1,3 +1,4 @@
+import type { IDndState } from '~/components/DragAndDrop/types/drag-and-drop-state.type'
 import type { IDraggedItem } from '~/components/DragAndDrop/types/dragged-item.type'
 
 /**
@@ -9,6 +10,11 @@ import type { IDraggedItem } from '~/components/DragAndDrop/types/dragged-item.t
  * handle the confirmation first, and then commit the change manually (via `commitDrag`)
  */
 export type DragEndFnc<T> = (payload: {
+  /**
+   * The drag and drop state
+   */
+  dndState: IDndState
+
   /**
    * The dragged item
    */

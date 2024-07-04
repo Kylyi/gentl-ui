@@ -1,4 +1,5 @@
 // Types
+import type { IDndState } from '~/components/DragAndDrop/types/drag-and-drop-state.type'
 import type { DragEndFnc } from '~/components/DragAndDrop/types/drag-end-fnc.type'
 import type { DragStartFnc } from '~/components/DragAndDrop/types/drag-start-fnc.type'
 import type { IDraggedItem } from '~/components/DragAndDrop/types/dragged-item.type'
@@ -8,15 +9,6 @@ const onDragStartKey = Symbol('onDragStart')
 const onDragEndKey = Symbol('onDragEnd')
 const onDragCancelKey = Symbol('onDragCancel')
 const dndStateKey = Symbol('dndState')
-
-type IDndState = {
-  isDragging?: boolean
-  draggedEl?: HTMLElement | null
-  draggedElInitialIdx?: number
-  draggedContainerEl?: HTMLElement | null
-  targetContainerEl?: HTMLElement | null
-  toIdx?: number
-}
 
 // Helpers
 function getDraggableEl(el: HTMLElement) {
@@ -50,7 +42,6 @@ export function useDragAndDrop<T = IItem>(
     direction?: 'vertical' | 'horizontal'
     onDragStartFnc?: DragStartFnc<T>
     canDrop?: (item: IDraggedItem<T>) => boolean
-    preventDragFnc?: (payload: { el: HTMLElement, item: T }) => boolean
 
     onDragEndFnc?: DragEndFnc<T>
     onDragCancelFnc?: () => void
@@ -129,7 +120,7 @@ export function useDragAndDrop<T = IItem>(
     // @ts-expect-error DOM functions
     const item: T = dndState.draggedEl?.['get-item']?.()
 
-    const shouldPrevent = onDragStart({ el: dndState.draggedEl!, item })
+    const shouldPrevent = onDragStart({ el: dndState.draggedEl!, item, dndState })
 
     if (shouldPrevent === true) {
       return
@@ -201,7 +192,7 @@ export function useDragAndDrop<T = IItem>(
     // @ts-expect-error DOM functions
     const item: T = dndState.draggedEl?.['get-item']?.()
 
-    const shouldPrevent = onDragStart({ el: dndState.draggedEl!, item })
+    const shouldPrevent = onDragStart({ el: dndState.draggedEl!, item, dndState })
 
     if (shouldPrevent === true) {
       return
@@ -312,6 +303,8 @@ export function useDragAndDrop<T = IItem>(
         moveDirection: previousItem ? 'down' : 'up',
 
         cancelDrag,
+
+        dndState,
       })
 
       if (continueDrag === false) {

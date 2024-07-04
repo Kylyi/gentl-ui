@@ -1,7 +1,7 @@
 // Models
-import { GroupItem } from '~/libs/Shared/models/group-item.model'
+import type { GroupItem } from '~/libs/Shared/models/group-item.model'
 
-export interface IListBaseProps {
+export type IListBaseProps = {
   basePadding?: number
   paddingByLevel?: number
   groupBy?: GroupItem[]
