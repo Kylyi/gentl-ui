@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Types
-import { type IMiniCardProps } from '~/components/Card/types/mini-card-props.type'
+import type { IMiniCardProps } from '~/components/Card/types/mini-card-props.type'
 
 // Functions
 import { useValueFormatterUtils } from '~/components/ValueFormatter/functions/useValueFormatterUtils'
@@ -93,6 +93,8 @@ const isModified = computed(() => {
               </span>
             </NuxtLink>
           </slot>
+
+          <slot name="value-append" />
         </template>
 
         <!-- Previous Value -->
@@ -175,7 +177,8 @@ const isModified = computed(() => {
   }
 
   &-label {
-    --apply: text-caption color-$MiniCard-label-color font-size-$MiniCard-label-font-size p-b-1;
+    --apply: text-caption color-$MiniCard-label-color
+      font-size-$MiniCard-label-font-size p-b-1;
   }
 
   &__value {
@@ -207,17 +210,23 @@ const isModified = computed(() => {
       }
 
       &:hover {
-        --apply: color-blue-500 dark:color-blue-700;
+        --apply: color-blue-500 dark: color-blue-700;
 
-        background-image: linear-gradient(to bottom, transparent 0%, transparent calc(100% - 1px), theme('colors.blue.500') calc(100% - 1px), theme('colors.blue.500') 100%);
+        background-image: linear-gradient(
+          to bottom,
+          transparent 0%,
+          transparent calc(100% - 1px),
+          theme('colors.blue.500') calc(100% - 1px),
+          theme('colors.blue.500') 100%
+        );
         background-size: 100% 100%;
         background-repeat: no-repeat;
         background-position: 0% 100%;
       }
 
-      &-icon{
+      &-icon {
         // top-0.4 makes the icon align with text, no deeper meaning
-        --apply: i-ph:link min-h-4 h-4 min-w-4 w-4 absolute left-0 top-0.4;
+        --apply: i-ph: link min-h-4 h-4 min-w-4 w-4 absolute left-0 top-0.4;
       }
     }
 
@@ -227,16 +236,22 @@ const isModified = computed(() => {
   }
 }
 
-.dark{
-    .link {
-      &__label {
-        &:hover {
-          background-image: linear-gradient(to bottom, transparent 0%, transparent calc(100% - 1px), theme('colors.blue.700') calc(100% - 1px), theme('colors.blue.700') 100%);
-          background-size: 100% 100%;
-          background-repeat: no-repeat;
-          background-position: 0% 100%;
-        }
+.dark {
+  .link {
+    &__label {
+      &:hover {
+        background-image: linear-gradient(
+          to bottom,
+          transparent 0%,
+          transparent calc(100% - 1px),
+          theme('colors.blue.700') calc(100% - 1px),
+          theme('colors.blue.700') 100%
+        );
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+        background-position: 0% 100%;
       }
     }
   }
+}
 </style>
