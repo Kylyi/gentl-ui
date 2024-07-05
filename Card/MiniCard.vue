@@ -92,9 +92,9 @@ const isModified = computed(() => {
                 <OriginalValueBtn v-if="isModified" />
               </span>
             </NuxtLink>
-          </slot>
 
-          <slot name="value-append" />
+            <slot name="value-append" />
+          </slot>
         </template>
 
         <!-- Previous Value -->
@@ -170,47 +170,46 @@ const isModified = computed(() => {
 
 <style scoped lang="scss">
 .value-container-card {
-  --apply: flex rounded-custom p-x-2 p-y-1 flex-gap-2;
+  @apply flex rounded-custom p-x-2 p-y-1 flex-gap-2;
 
   &__icon {
-    --apply: shrink-0 m-t-.5;
+    @apply shrink-0 m-t-.5;
   }
 
   &-label {
-    --apply: text-caption color-$MiniCard-label-color
-      font-size-$MiniCard-label-font-size p-b-1;
+    @apply text-caption color-$MiniCard-label-color font-size-$MiniCard-label-font-size p-b-1;
   }
 
   &__value {
-    --apply: text-sm font-size-$MiniCard-value-font-size;
+    @apply text-sm font-size-$MiniCard-value-font-size;
     overflow-wrap: break-word;
     font-weight: var(--MiniCard-value-font-weight);
     white-space: pre-line;
 
     &.is-modified {
-      --apply: p-l-1 rounded-custom;
+      @apply p-l-1 rounded-custom;
     }
   }
 
   &__content {
-    --apply: w-full leading-4.5;
+    @apply w-full leading-4.5;
   }
 
   .link {
-    --apply: decoration-none font-size-$MiniCard-value-font-size text-sm;
+    @apply decoration-none font-size-$MiniCard-value-font-size text-sm;
     overflow-wrap: break-word;
     white-space: pre-line;
     font-weight: var(--MiniCard-value-font-weight);
 
     &__label {
-      --apply: relative;
+      @apply relative;
 
       &::before {
-        --apply: content-empty inline-block w-4 min-w-4;
+        @apply content-empty inline-block w-4 min-w-4;
       }
 
       &:hover {
-        --apply: color-blue-500 dark: color-blue-700;
+        @apply color-blue-500 dark:color-blue-700;
 
         background-image: linear-gradient(
           to bottom,
@@ -226,12 +225,12 @@ const isModified = computed(() => {
 
       &-icon {
         // top-0.4 makes the icon align with text, no deeper meaning
-        --apply: i-ph: link min-h-4 h-4 min-w-4 w-4 absolute left-0 top-0.4;
+        @apply i-ph:link min-h-4 h-4 min-w-4 w-4 absolute left-0 top-0.4;
       }
     }
 
     &.is-modified {
-      --apply: p-l-1 rounded-custom;
+      @apply p-l-1 rounded-custom;
     }
   }
 }
