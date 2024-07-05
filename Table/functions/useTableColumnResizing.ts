@@ -240,6 +240,10 @@ export function useTableColumnResizing(options: {
    * Fits the columns based on their content
    */
   function fitColumns(stretch?: boolean) {
+    if (!tableRows.value?.length) {
+      return
+    }
+
     const fittableColumns = columns.value.filter(
       col => col.resizable && !col.hidden && !col.isHelperCol,
     )
@@ -274,6 +278,10 @@ export function useTableColumnResizing(options: {
   }
 
   function handleFitColumns(fit?: 'content' | 'stretch' | 'auto') {
+    if (!tableRows.value?.length) {
+      return
+    }
+
     let mode = fit
 
     if (!mode) {
