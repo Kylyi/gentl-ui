@@ -134,7 +134,6 @@ const {
   scrollerElBounds,
   totalsEl,
   tableEl,
-  scrollLeft,
 
   // Columns
   internalColumns,
@@ -360,7 +359,6 @@ onMounted(() => {
               :mode="mode"
               :bounds="scrollerElBounds"
               :scrollbar-width="scrollbarWidth"
-              :scroll-left="scrollLeft"
             />
           </template>
 

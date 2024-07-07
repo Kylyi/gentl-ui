@@ -275,7 +275,6 @@ export function useTableLayout(
     tableRowHeight,
     TableRowComponent,
     rowKey,
-    scrollLeft: containerX,
 
     // Element refs
     scrollerEl,
