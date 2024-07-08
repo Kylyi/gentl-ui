@@ -61,4 +61,8 @@ export const BUTTON_PRESET = {
     icon: 'i-ic:round-filter-alt',
     color: 'color-ca',
   },
+  MORE: {
+    icon: 'i-mdi:dots-vertical',
+    color: 'color-ca',
+  },
 }

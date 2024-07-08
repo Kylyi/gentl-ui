@@ -62,9 +62,10 @@ defineExpose({
   <Component
     :is="isMenu ? Menu : Dialog"
     ref="menuProxyEl"
-    v-model:no-overlay="isMenu"
     v-bind="$props"
     v-model="model"
+    :no-overlay="isMenu"
+    h="auto"
     @hide="emits('hide')"
     @show="emits('show')"
     @before-hide="emits('beforeHide')"

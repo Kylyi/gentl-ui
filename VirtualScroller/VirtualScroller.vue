@@ -535,14 +535,14 @@ function renderOnlyVisible(
 
 <style lang="scss" scoped>
 .virtual-scroll {
-  --apply: relative overflow-auto grow outline-none;
+  @apply relative overflow-auto grow outline-none;
 
   &__container {
-    --apply: relative rounded-custom;
+    @apply relative rounded-custom;
   }
 
   &__row {
-    --apply: flex w-full min-h-$rowHeight;
+    @apply flex w-full min-h-$rowHeight;
 
     will-change: transform;
   }
@@ -550,7 +550,7 @@ function renderOnlyVisible(
 
 .virtual-scroll.is-virtual {
   .virtual-scroll__row {
-    --apply: absolute;
+    @apply absolute;
 
     transform: translateY(calc(var(--translateY) * 1px));
   }

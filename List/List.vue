@@ -295,9 +295,9 @@ onMounted(() => {
   }
 }
 
-.list-search {
-  @apply flex-wrap;
-}
+// .list-search {
+//   @apply flex-wrap;
+// }
 
 .no-data {
   @apply flex italic color-ca text-caption p-t-2 p-x-3;

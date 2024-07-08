@@ -19,12 +19,12 @@ const { handleMouseDown, handleTouchStart } = useDragAndDrop(props)
 
 // Layout
 const isNoDrop = defineModel<boolean>('noDrop', { default: false })
-const { model } = useRefReset(() => props.items, { autoSyncFromParent: true })
+const model = defineModel<T[]>('items')
 
 const classes = computed(() => {
   return {
-    'flex-row': props.direction === 'horizontal',
-    'flex-col': props.direction === 'vertical',
+    'is-horizontal': props.direction === 'horizontal',
+    'is-vertical': props.direction === 'vertical',
     'no-drop': isNoDrop.value,
   }
 })
@@ -47,14 +47,16 @@ function insertItem(idx: number, item: T) {
   model.value = model.value?.toSpliced(idx, 0, item)
 
   emits('insert:item', { item, idx })
-  debouncedSync()
 }
 
 function removeItem(item: T) {
   model.value = model.value?.filter(i => i !== item)
 
   emits('remove:item', item)
-  debouncedSync()
+}
+
+function handleMoveItem(fromIdx: number, toIdx: number) {
+  model.value = moveItem(model.value || [], fromIdx, toIdx)
 }
 
 function disableDrop() {
@@ -64,34 +66,33 @@ function disableDrop() {
 function enableDrop() {
   isNoDrop.value = false
 }
-
-const debouncedSync = useDebounceFn(() => {
-  emits('update:items', model.value!)
-}, 50)
 </script>
 
 <template>
   <div
     class="draggable-container"
-    data-draggable-container
+    data-draggable-container="true"
     :class="classes"
-    .get-items="getItems"
-    .remove-item="removeItem"
-    .insert-item="insertItem"
-    .get-parent="getParent"
-    .disable-drop="disableDrop"
-    .enable-drop="enableDrop"
+    .getItems="getItems"
+    .removeItem="removeItem"
+    .insertItem="insertItem"
+    .moveItem="handleMoveItem"
+    .getParent="getParent"
+    .disableDrop="disableDrop"
+    .enableDrop="enableDrop"
     @mousedown="handleMouseDown"
     @touchstart="handleTouchStart"
   >
     <DraggableItem
-      v-for="(item) in model"
+      v-for="(item, idx) in model"
       :key="getItemKey(item)"
-      :item="item"
-      @remove:item="removeItem(item)"
+      :item
     >
       <template #default>
-        <slot :item="item" />
+        <slot
+          :item
+          :idx
+        />
       </template>
     </DraggableItem>
   </div>
@@ -99,30 +100,22 @@ const debouncedSync = useDebounceFn(() => {
 
 <style lang="scss" scoped>
 .draggable-container {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+
   @apply relative flex overflow-y-auto overflow-x-hidden;
+  touch-action: auto;
+
+  &.is-vertical {
+    @apply flex-col;
+  }
+
+  &.is-horizontal {
+    @apply flex-row;
+  }
 
   &.no-drop {
     @apply opacity-25;
   }
-}
-
-/* 1. declare transition */
-.fade-move,
-.fade-enter-active,
-.fade-leave-active {
-  // transition: all 0.25s cubic-bezier(0.55, 0, 0.1, 1);
-}
-
-/* 2. declare enter from and leave to state */
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-  transform: scale(0.1);
-}
-
-/* 3. ensure leaving items are taken out of layout flow so that moving
-      animations can be calculated correctly. */
-.fade-leave-active {
-  position: absolute;
 }
 </style>

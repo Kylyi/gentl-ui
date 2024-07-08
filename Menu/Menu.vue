@@ -214,7 +214,7 @@ function handleClickOutside(ev: Event) {
   const isPartOfFloatingUI = floatingEl.value?.contains(targetEl)
   const isPartOfReferenceEl = !props.virtual && (floatingReferenceEl.value as any)!.contains(targetEl)
 
-  const lastFloatingElement = document.querySelector('.floating-element:last-child')
+  const lastFloatingElement = Array.from(document.querySelectorAll('.floating-element')).pop()
   const isNotifications = !!targetEl.closest('.notifications')
 
   if (
@@ -334,10 +334,12 @@ const isOverlayVisible = computed(() => {
 
             <slot name="header-right" />
 
+            <!-- Close -->
             <Btn
               v-if="!noClose"
               preset="CLOSE"
               size="sm"
+              self="start"
               @click="hide"
             />
           </div>
