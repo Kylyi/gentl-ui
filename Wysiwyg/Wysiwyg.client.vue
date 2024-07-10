@@ -11,7 +11,6 @@ import { Color } from '@tiptap/extension-color'
 import { Mention } from '@tiptap/extension-mention'
 import { Image } from '@tiptap/extension-image'
 import { Link } from '@tiptap/extension-link'
-import { Dropcursor } from '@tiptap/extension-dropcursor'
 import { Details } from '@tiptap-pro/extension-details'
 import { DetailsSummary } from '@tiptap-pro/extension-details-summary'
 import { DetailsContent } from '@tiptap-pro/extension-details-content'
@@ -147,9 +146,6 @@ const LinkExt = Link.extend({
   },
 })
 
-// Dropcursor https://tiptap.dev/api/extensions/dropcursor
-const DropcursorExt = Dropcursor.configure()
-
 // Details https://tiptap.dev/docs/editor/api/nodes/details
 const DetailsExt = Details.configure({ persist: true, HTMLAttributes: { class: 'details' } })
 
@@ -239,7 +235,6 @@ const editor = useEditor({
     Underline,
     TextStyle,
     ColorExt,
-    DropcursorExt,
     DetailsExt,
     DetailsSummaryExt,
     DetailsContentExt,
