@@ -92,59 +92,59 @@ const pageDrawerClasses = computed(() => {
 <style lang="scss" scoped>
 header.is-hidden ~ .page-drawer {
   .page-drawer-filler {
-    --apply: bg-light dark:bg-dark;
+    @apply bg-light dark:bg-dark;
   }
 }
 
 .page-drawer {
-  --apply: h-100% fixed flex flex-col z-$zLayoutDrawer pointer-events-none
+  @apply h-full fixed flex flex-col z-$zLayoutDrawer pointer-events-none
     ease-out;
 
-  --apply: print:hidden;
+  @apply print:hidden;
 
   transition-property: width transform;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
 
   &-filler {
-    --apply: relative shrink-0 border-b-1 border-true-gray/10;
+    @apply relative shrink-0 border-b-1 border-true-gray/10;
 
     height: max(52px, var(--navHeight));
   }
 
   &.is-absolute {
     .drawer-filler {
-      --apply: shrink-0;
+      @apply shrink-0;
     }
   }
 
   &.is-absolute-full-width {
-    --apply: w-full;
+    @apply w-full;
   }
 
   &-content {
-    --apply: flex flex-col flex-grow overflow-auto pointer-events-auto;
-    --apply: bg-$PageDrawer-content-bg;
+    @apply flex flex-col flex-grow overflow-auto pointer-events-auto;
+    @apply bg-$PageDrawer-content-bg;
   }
 
   &-bottom {
-    --apply: flex shrink-0 overflow-auto pointer-events-auto;
-    --apply: bg-$PageDrawer-content-bg;
+    @apply flex shrink-0 overflow-auto pointer-events-auto;
+    @apply bg-$PageDrawer-content-bg;
   }
 
   &--left {
-    --apply: translate-x--100%;
+    @apply translate-x--100%;
 
     &.is-open {
-      --apply: translate-x-0;
+      @apply translate-x-0;
     }
   }
 
   &--right {
-    --apply: right-0 order-2 translate-x-100%;
+    @apply right-0 order-2 translate-x-100%;
 
     &.is-open {
-      --apply: translate-x-0;
+      @apply translate-x-0;
     }
 
     @screen page {
