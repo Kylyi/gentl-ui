@@ -9,6 +9,7 @@ const { wysiwygEditor } = useWysiwygInjections()
 const isBold = computed(() => toValue(wysiwygEditor)?.isActive('bold'))
 const isItalic = computed(() => toValue(wysiwygEditor)?.isActive('italic'))
 const isUnderline = computed(() => toValue(wysiwygEditor)?.isActive('underline'))
+const isStrikethrough = computed(() => toValue(wysiwygEditor)?.isActive('strike'))
 
 function handleToggleBold() {
   toValue(wysiwygEditor)?.chain().focus().toggleBold().run()
@@ -20,6 +21,10 @@ function handleToggleUnderline() {
 
 function handleToggleItalic() {
   toValue(wysiwygEditor)?.chain().focus().toggleItalic().run()
+}
+
+function handleToggleStrikethrough() {
+  toValue(wysiwygEditor)?.chain().focus().toggleStrike().run()
 }
 </script>
 
@@ -52,6 +57,16 @@ function handleToggleItalic() {
       color="ca"
       :class="{ 'is-active': isUnderline }"
       @click.stop.prevent="handleToggleUnderline"
+      @mousedown.stop.prevent
+    />
+
+    <!-- Strikethrough -->
+    <Btn
+      icon="i-material-symbols:format-strikethrough-rounded"
+      size="sm"
+      color="ca"
+      :class="{ 'is-active': isStrikethrough }"
+      @click.stop.prevent="handleToggleStrikethrough"
       @mousedown.stop.prevent
     />
   </div>
