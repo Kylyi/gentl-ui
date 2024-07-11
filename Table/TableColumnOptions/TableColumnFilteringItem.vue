@@ -47,11 +47,11 @@ const valueInputEl = ref<any>()
 const filter = toRef(props, 'filter')
 const column = toRef(props, 'column')
 
-const isBooleanishComparator = computedEager(() => {
+const isBooleanishComparator = computed(() => {
   return BOOLEANISH_COMPARATORS.includes(filter.value.comparator)
 })
 
-const isNonValueComparator = computedEager(() => {
+const isNonValueComparator = computed(() => {
   return NON_VALUE_COMPARATORS.includes(filter.value.comparator)
 })
 
@@ -366,16 +366,14 @@ defineExpose({
       size="sm"
       layout="regular"
       :placeholder="`${$t('table.filterValue')}...`"
-      @update:model-value="
-        handleValueChange($event, { set: true, debounce: true })
-      "
+      @update:model-value="handleValueChange($event, { set: true, debounce: true })"
     />
   </div>
 </template>
 
 <style lang="scss" scoped>
 .table-column-filtering-item {
-  --apply: flex flex-col flex-gap-y-1 rounded-custom border border-ca
+  @apply flex flex-col flex-gap-y-1 rounded-custom border border-ca
     border-dotted p-1 bg-ca;
 }
 </style>
