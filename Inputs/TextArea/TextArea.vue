@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { InputMask } from 'imask'
-import { type MaybeElementRef } from '@vueuse/core'
+import type { InputMask } from 'imask'
+import type { MaybeElementRef } from '@vueuse/core'
 
 // Types
 import type { ITextAreaInputProps } from '~/components/Inputs/TextArea/types/text-area-props.type'

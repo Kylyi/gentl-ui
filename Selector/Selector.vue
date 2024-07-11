@@ -73,6 +73,8 @@ defineExpose({
   clear: () => clear(),
 })
 
+const slots = useSlots()
+
 // Lifecycle
 onMounted(() => {
   menuReferenceTarget.value = self?.proxy?.$el.querySelector(
@@ -361,6 +363,14 @@ const isLoading = computed(() => {
   return props.loading || isLoadingInternal.value
 })
 
+const hasAppendSlot = computed(() => {
+  if (props.noAppend) {
+    return false
+  }
+
+  return slots.append || (!props.readonly && !props.disabled)
+})
+
 const ui = computed(() => {
   return {
     ...props.ui,
@@ -545,7 +555,7 @@ function getData() {
 
     <template #append>
       <div
-        v-if="$slots.append || (!readonly && !disabled)"
+        v-if="hasAppendSlot"
         flex="~ gap-x-1 center"
         p="x-2"
         shrink-0
@@ -683,63 +693,63 @@ function getData() {
 
 <style lang="scss" scoped>
 .placeholder {
-  --apply: truncate max-w-9/10%;
+  @apply truncate max-w-9/10%;
   color: #9ca3af;
 }
 
 .dropdown-icon {
-  --apply: shrink-0 color-ca inline cursor-pointer;
+  @apply shrink-0 color-ca inline cursor-pointer;
 }
 
 .wrapper--sm {
   .dropdown-icon {
-    --apply: h-3.5 w-3.5;
+    @apply h-3.5 w-3.5;
   }
 }
 
 .wrapper--md {
   .dropdown-icon {
-    --apply: h-4 w-4;
+    @apply h-4 w-4;
   }
 }
 
 .is-active {
   :deep(.label) {
-    --apply: color-$InputLabel-active-color;
+    @apply color-$InputLabel-active-color;
   }
 
   :deep(.wrapper__body:after) {
-    --apply: border-primary/50 dark: border-primary/50;
+    @apply border-primary/50 dark:border-primary/50;
   }
 }
 
 @screen md {
   .is-active.is-menu-width-matched.has-menu-bottom {
     :deep(.wrapper__body:after) {
-      --apply: rounded-b-0;
+      @apply rounded-b-0;
     }
 
     :deep(.input-wrapper-border) {
-      --apply: rounded-b-0 border-primary/40;
+      @apply rounded-b-0 border-primary/40;
     }
   }
 
   .is-active.is-menu-width-matched.has-menu-top {
     :deep(.wrapper__body:after) {
-      --apply: rounded-t-0;
+      @apply rounded-t-0;
     }
 
     :deep(.input-wrapper-border) {
-      --apply: rounded-t-0 border-primary/40;
+      @apply rounded-t-0 border-primary/40;
     }
   }
 }
 
 .control {
-  --apply: flex;
+  @apply flex;
 
   &::after {
-    --apply: color-transparent w-0;
+    @apply color-transparent w-0;
     content: '_';
   }
 }

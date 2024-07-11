@@ -34,6 +34,11 @@ export type ISelectorProps = IInputProps & {
   controlClass?: ClassType
 
   /**
+   * When true, the `append` slot will not be shown
+   */
+  noAppend?: boolean
+
+  /**
    * Whether to hide clear buttons for selected items
    */
   noItemsClear?: boolean

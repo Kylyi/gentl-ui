@@ -260,6 +260,7 @@ export function useInputUtils(options: IInputUtilsOptions) {
 
     isBlurred.value = false
 
+    instance?.emit('focus')
     onFocus?.(isTouchEvent ? 'touch' : 'mouse', ev)
   }
 
