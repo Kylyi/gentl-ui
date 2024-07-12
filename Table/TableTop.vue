@@ -189,15 +189,18 @@ function handleFilterClear(filters?: 'queryBuilder' | 'columns') {
     })
 
     // Reset query builder
-    queryBuilder.value = [
-      {
-        id: generateUUID(),
-        isGroup: true,
-        children: [],
-        condition: 'AND',
-        path: '0',
-      },
-    ]
+    if (queryBuilder.value) {
+      queryBuilder.value = [
+        {
+          id: generateUUID(),
+          isGroup: true,
+          children: [],
+          condition: 'AND',
+          path: '0',
+        },
+      ]
+    }
+
     search.value = ''
 
     if (!queryBuilderInlineEl.value && !search.value) {
