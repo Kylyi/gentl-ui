@@ -579,9 +579,9 @@ export const config = merge(
      * them to the components we want to use for them
      */
     dataTypes: {
-      comparators: {} as Partial<Record<ExtendedDataType, ComparatorEnum[]>>,
+      comparators: {},
       inputs: {},
-      defaultComparator: {} as Partial<Record<ExtendedDataType, ComparatorEnum>>,
+      defaultComparator: {},
 
       // We can also extend some of the predefined categories of data types
       selectorComparators: [],
