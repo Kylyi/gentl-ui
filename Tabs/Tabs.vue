@@ -138,7 +138,7 @@ watch(model, model => {
             ...(tab.id === activeTab?.id ? [labelActiveClass] : []),
             { 'is-active': tab.id === activeTab?.id },
           ]"
-          v-bind=tabBtnProps
+          v-bind="tabBtnProps"
           @click="handleTabChange(tab.id)"
         />
       </slot>
