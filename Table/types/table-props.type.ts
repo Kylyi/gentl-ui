@@ -38,6 +38,11 @@ export type ITableProps = {
      */
     useDefault?: boolean
 
+    /**
+     * Function to format the export filename
+     */
+    formatName?: () => string
+
     [key: string]: any
   }
 

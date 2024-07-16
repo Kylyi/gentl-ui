@@ -112,6 +112,7 @@ export const tableExportKey: InjectionKey<
     rows?: any[]
     columns?: any[]
     exportFormat?: 'xlsx' | 'csv'
+    formatName?: () => string
   }) => void | Promise<void>
 > = Symbol('tableExport')
 
