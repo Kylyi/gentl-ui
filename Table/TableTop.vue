@@ -122,7 +122,9 @@ const qbControlsClasses = computed(() => {
 })
 
 const ExportBtn = computed(() => {
-  if ('exportComponent' in config.table && config.table.exportComponent) {
+  const hasCustomExport = 'exportComponent' in config.table && !!config.table.exportComponent
+
+  if (!props.exportProps?.useDefault && hasCustomExport) {
     return config.table.exportComponent
   }
 
