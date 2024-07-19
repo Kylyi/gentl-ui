@@ -67,7 +67,7 @@ import type {
 } from '~/components/Table/types/table-query.type'
 
 // Models
-import type { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
+import { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
 
 export const config = merge(
   {
@@ -581,6 +581,7 @@ export const config = merge(
     dataTypes: {
       comparators: {},
       inputs: {},
+      defaultComparator: {},
 
       // We can also extend some of the predefined categories of data types
       selectorComparators: [],
@@ -590,6 +591,7 @@ export const config = merge(
       selectorComparators: ComparatorEnum[]
       nonValueComparators: ComparatorEnum[]
       booleanishComparators: ComparatorEnum[]
+      defaultComparator: Partial<Record<ExtendedDataType, ComparatorEnum>>
       comparators: Partial<Record<ExtendedDataType, ComparatorEnum[]>>
       inputs: Partial<
         Record<
