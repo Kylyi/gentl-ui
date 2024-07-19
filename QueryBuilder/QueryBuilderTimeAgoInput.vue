@@ -40,7 +40,7 @@ const units = computed(() => [
 // ComapratorEnum.AGO, CoparatorEnum.NOT_AGO, ComparatorEnum.UNTIL, ComparatorEnum.NOT_UNTIL
 const agoValue = computed({
   get() {
-    const matches = (item.value.value || '').match(/(\d+\.\d+|\d+)([a-zA-Z]+)/)
+    const matches = (item.value.value || '').match(/(\d+\.\d+|\d+)([a-z]+)/i)
     let value: number | undefined
     let unit: string
     const unitShortName = matches?.[2] as string
@@ -120,6 +120,7 @@ function setUnit(unitShortName: string) {
           color="ca"
           tabindex="-1"
           w="16"
+          @click.stop.prevent
           @mousedown.stop.prevent
         >
           <Menu

@@ -307,10 +307,7 @@ defineExpose({
 
     <!-- Selector for `Comparator.IN` and `Comparator.NOT_IN` for simple string cases -->
     <TextInput
-      v-else-if="
-        canUseSelectorComparator(filter.comparator, column)
-          && !column.getDistinctData
-      "
+      v-else-if="canUseSelectorComparator(filter.comparator, column) && !column.getDistinctData"
       ref="valueInputEl"
       v-model="customValue"
       size="sm"
