@@ -16,9 +16,7 @@ function setAutoSaveLayout(value: boolean | undefined | null) {
 
 function setFitColumns(mode: 'auto' | 'content' | 'stretch') {
   appStore.setAppState({
-    table: {
-      fit: mode,
-    },
+    table: { fit: mode },
   })
 }
 </script>
