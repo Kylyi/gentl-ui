@@ -37,9 +37,10 @@ export class FileModel {
       onComplete?: (model: any) => void
       onError?: (error: any) => void
       notifyError?: boolean
+      $z?: any
     },
   ) {
-    const { onComplete, onError, notifyError } = options ?? {}
+    const { onComplete, onError, notifyError, $z } = options ?? {}
 
     if (this.uploadProgress === 100 && !this.hasError) {
       return
@@ -67,6 +68,7 @@ export class FileModel {
           signal: this.abortController?.signal,
         }),
       {
+        $z,
         onComplete: () => {
           this.uploadProgress = 100
 

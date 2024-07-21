@@ -27,6 +27,7 @@ defineEmits<{
   (e: 'update:modelValue', val?: string | undefined | null): void
   (e: 'validation-reset', val?: string | undefined | null): void
   (e: 'blur'): void
+  (e: 'focus'): void
 }>()
 
 const {

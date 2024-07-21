@@ -432,6 +432,8 @@ onKeyStroke(['d', 'D'], (ev: KeyboardEvent) => {
         v-if="!tableTopFunctionality?.noSubbar"
         class="table-top__subbar"
       >
+        <slot name="subbar-left" />
+
         <!-- Selection & Sorting -->
         <div class="table-top__selection">
           <template

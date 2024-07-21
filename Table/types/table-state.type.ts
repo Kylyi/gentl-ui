@@ -16,6 +16,7 @@ export type ITableColumnState = Pick<
   | 'dataType'
   | 'originalWidth'
   | 'filterField'
+  | 'local'
 > & {
   filters: Pick<
     TableColumn['filters'][number],

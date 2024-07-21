@@ -223,7 +223,7 @@ export function useTableData(
     const columns = toValue(internalColumnsRef)
 
     return columns
-      .filter(col => !col.isHelperCol && !col.hidden)
+      .filter(col => !col.isHelperCol && !col.hidden && !col.local)
       .flatMap(col => [col.field, ...(col.needsFields ?? [])])
   })
 
@@ -529,7 +529,7 @@ export function useTableData(
         const filters = serializeFilterString(dbQuery.tableQuery.columnFilters)
         const order = serializeOrderByString(dbQuery.tableQuery.orderBy)
         const select = internalColumnsRef.value
-          .filter(col => !col.hidden && !col.isHelperCol)
+          .filter(col => !col.hidden && !col.isHelperCol && !col.local)
           .map(col => col.field)
           .join(',')
 

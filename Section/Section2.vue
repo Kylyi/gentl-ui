@@ -62,20 +62,20 @@ withDefaults(defineProps<ISectionProps>(), {
 <style scoped lang="scss">
 .section {
   // Theme
-  --apply: max-w-$Section-max-w p-$Section-padding;
+  @apply max-w-$Section-max-w p-$Section-padding;
 
-  --apply: flex flex-col;
+  @apply flex flex-col;
 
   &__title {
-    --apply: font-semibold m-b-0 p-b-0.5;
+    @apply font-semibold m-b-0 p-b-0.5;
   }
 
   &__subtitle {
-    --apply: font-rem-14 font-400;
+    @apply font-rem-14 font-400;
   }
 
   &__content {
-    --apply: gap-$Section-content-gap p-t-3;
+    @apply gap-$Section-content-gap p-t-3;
   }
 }
 </style>

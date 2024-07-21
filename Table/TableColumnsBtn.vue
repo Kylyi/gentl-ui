@@ -60,9 +60,13 @@ const nonHelperCols = computed({
     )
   },
   set(columns: TableColumn[]) {
-    const helpersCols = clonedColumns.value.filter(col => col.isHelperCol)
+    const helpersCols = clonedColumns.value.filter(col => col.isHelperCol || !col.selectable)
 
-    clonedColumns.value = [...helpersCols, ...columns]
+    helpersCols.forEach(col => {
+      columns = columns.toSpliced(col._internalSort ?? 0, 0, col)
+    })
+
+    clonedColumns.value = columns
     setTableState(storageKey.value, { columns: clonedColumns.value })
   },
 })

@@ -2,7 +2,7 @@
 import { NuxtLink } from '#components'
 
 // Types
-import { type ITableProps } from '~/components/Table/types/table-props.type'
+import type { ITableProps } from '~/components/Table/types/table-props.type'
 
 // Injections
 import {
@@ -42,7 +42,7 @@ const isEditable = computed(() => {
 })
 
 function selectRow(row: any) {
-  if (!props.selectionOptions?.disabled) {
+  if (!props.selectionOptions?.disabled && props.selectionOptions?.selectable) {
     handleSelectRow(row)
   }
 }
@@ -88,6 +88,7 @@ function selectRow(row: any) {
           <slot
             :name="col.name"
             :row="row"
+            :idx="idx"
           />
         </TableCellMobile>
       </slot>
@@ -100,11 +101,11 @@ function selectRow(row: any) {
 
 <style lang="scss" scoped>
 .tr__mobile {
-  --apply: relative grid p-y-3 p-l-1 p-r-2 rounded-custom overflow-auto
-  border-1 border-ca gap-x-3 hover:shadow-ca shadow-sm w-full dark:bg-darker bg-white;
+  @apply relative grid p-y-3 p-l-1 p-r-2 rounded-custom overflow-auto border-1
+    border-ca gap-x-3 hover:shadow-ca shadow-sm w-full dark:bg-darker bg-white;
 
   &-container {
-    --apply: relative w-full grid p-x-2 p-y-1 gap-2;
+    @apply relative w-full grid p-x-2 p-y-1 gap-2;
 
     grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
   }
@@ -113,23 +114,23 @@ function selectRow(row: any) {
   // grid-template-rows: repeat(auto-fit, var(--mobileRowHeight));
 
   &.is-deleted {
-    --apply: line-through color-ca;
+    @apply line-through color-ca;
   }
 
   &.is-selectable {
-    --apply: cursor-pointer border-2;
+    @apply cursor-pointer border-2;
   }
 
   &.is-selected {
-    --apply: dark:bg-blue-900/30 bg-blue-100/30 border-primary dark:border-blue-600 border-2;
+    @apply dark:bg-blue-900/30 bg-blue-100/30 border-primary dark:border-blue-600 border-2;
   }
 }
 
 .tr__mobile:hover {
-  --apply: bg-blue-500/10;
+  @apply bg-blue-500/10;
 }
 
 .tr__mobile:hover {
-  --apply: bg-blue-500/10;
+  @apply bg-blue-500/10;
 }
 </style>

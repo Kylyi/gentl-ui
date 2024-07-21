@@ -40,6 +40,16 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   sortable = true
 
   /**
+   * Whether the column is local (ie. not part of the database)
+   */
+  local?: boolean
+
+  /**
+   * When true, the column will always be visible in the table
+   */
+  alwaysVisible?: boolean
+
+  /**
    * When provided, the `select` will be extended with these fields
    */
   needsFields?: string[]
@@ -508,6 +518,8 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     this.autofitLongestText = col.autofitLongestText ?? true
     this.selectable = col.selectable ?? true
     this.needsFields = col.needsFields
+    this.local = col.local ?? false
+    this.alwaysVisible = col.alwaysVisible ?? false
 
     // Editing
     this.noEdit = col.noEdit

@@ -1,7 +1,7 @@
 <!-- eslint-disable no-case-declarations -->
 <script setup lang="ts">
 // Models
-import { TableColumn } from '~/components/Table/models/table-column.model'
+import type { TableColumn } from '~/components/Table/models/table-column.model'
 
 // Injections
 import { tableInlineEditKey } from '~/components/Table/provide/table.provide'
@@ -28,7 +28,7 @@ const {
 // Utils
 function focusSiblingCell(
   direction: 'previous' | 'next',
-  lastEl?: HTMLElement
+  lastEl?: HTMLElement,
 ) {
   const el = lastEl ?? self?.vnode?.el
   let siblingCell = el?.[`${direction}ElementSibling`] as
@@ -37,7 +37,7 @@ function focusSiblingCell(
     | undefined
   const isLastCell = !siblingCell || !siblingCell?.classList?.contains?.('cell')
   const parentRowEl = self?.vnode.el?.closest(
-    '.virtual-scroll__row'
+    '.virtual-scroll__row',
   ) as HTMLElement
 
   let parentRowElSibling: HTMLElement | null = null
@@ -50,7 +50,7 @@ function focusSiblingCell(
   }
 
   const isLastParentRow = !parentRowElSibling?.classList?.contains?.(
-    'virtual-scroll__row'
+    'virtual-scroll__row',
   )
   if (isLastCell && isLastParentRow) {
     return
@@ -58,11 +58,11 @@ function focusSiblingCell(
 
   siblingCell = isLastCell
     ? parentRowElSibling?.querySelector?.(
-        `.cell${direction === 'previous' ? ':last-child' : ''}`
-      )
+        `.cell${direction === 'previous' ? ':last-child' : ''}`,
+    )
     : siblingCell
   const siblingCellEditBtn = siblingCell?.querySelector?.(
-    '.cell-edit-btn'
+    '.cell-edit-btn',
   ) as HTMLButtonElement
 
   if (siblingCellEditBtn) {
@@ -80,7 +80,7 @@ function focusFieldInNextRow(field?: string) {
   const _field = field ?? props.column.field
 
   const parentRowEl = self?.vnode.el?.closest(
-    '.virtual-scroll__row'
+    '.virtual-scroll__row',
   ) as HTMLElement
   const nextRowEditBtnEl = (parentRowEl?.nextElementSibling as HTMLElement)
     ?.querySelector(`.cell[data-field="${_field}"]`)
@@ -90,7 +90,7 @@ function focusFieldInNextRow(field?: string) {
     nextRowEditBtnEl.click()
 
     const virtualScroller = parentRowEl.closest(
-      '.virtual-scroll'
+      '.virtual-scroll',
     ) as HTMLElement
 
     const scrollTop = parentRowEl.style.getPropertyValue('--translateY')
@@ -115,7 +115,7 @@ const { pause, resume } = useIntersectionObserver(
 
     pause()
   },
-  { immediate: false }
+  { immediate: false },
 )
 
 const isEditable = computed(() => {
@@ -123,19 +123,18 @@ const isEditable = computed(() => {
     return false
   }
 
-  const isCellEditable =
-    typeof col.value.noEdit === 'function'
-      ? !col.value.noEdit(props.row)
-      : !col.value.noEdit
+  const isCellEditable = typeof col.value.noEdit === 'function'
+    ? !col.value.noEdit(props.row)
+    : !col.value.noEdit
 
   return isCellEditable
 })
 
 const isEditingField = computed(() => {
   return (
-    isEditing.value &&
-    editRow.value?.row === props.row &&
-    (editRow.value?.column === col.value || !editRow.value?.column)
+    isEditing.value
+    && editRow.value?.row === props.row
+    && (editRow.value?.column === col.value || !editRow.value?.column)
   )
 })
 
@@ -241,7 +240,7 @@ function selectSelf(self: any) {
     <!-- Value -->
     <div
       class="cell-value"
-      :class="{ 'col-span-2': col.hideLabel }"
+      :class="[col.classes, { 'col-span-2': col.hideLabel }]"
     >
       <!-- Edit mode -->
       <div
@@ -315,40 +314,42 @@ function selectSelf(self: any) {
 
 <style lang="scss" scoped>
 .cell {
-  --apply: grid col-span-2 leading-tight items-center
+  @apply grid col-span-2 leading-tight items-center
     p-l-2 p-r-1 rounded-custom;
 
   grid-template-columns: subgrid;
 
-  // --apply: h-$mobileRowHeight;
+  // @apply h-$mobileRowHeight;
 
   &.is-editable:hover,
   &.is-editing {
-    --apply: shadow-consistent-xs shadow-primary bg-white dark:bg-darker;
+    @apply shadow-consistent-xs shadow-primary bg-white dark:bg-darker;
   }
 
   &-label,
   &-value {
-    --apply: flex relative truncate;
+    @apply flex relative truncate;
   }
 
   &-label {
-    --apply: flex items-center font-rem-14 font-bold min-h-8;
+    @apply flex items-center font-rem-14 font-semibold min-h-8;
+
+    @apply lt-md:font-rem-12;
   }
 
   &-value {
-    --apply: flex-col;
+    @apply flex-col;
   }
 
   &-edit-btn {
-    --apply: top-0 right-0 hidden m-t-1;
-    --apply: '!absolute';
+    @apply top-0 right-0 hidden m-t-1;
+    @apply '!absolute';
   }
 
   &:hover,
   &.is-editing {
     .cell-edit-btn {
-      --apply: flex;
+      @apply flex;
     }
   }
 }

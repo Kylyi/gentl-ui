@@ -431,6 +431,10 @@ onMounted(() => {
 
     // Handle files drop
     editor.value?.view.dom.addEventListener('drop', event => {
+      if (!props.fileUpload) {
+        return
+      }
+
       event.preventDefault()
 
       const droppedFiles = Array.from(event.dataTransfer?.files || [])
@@ -479,6 +483,7 @@ onMounted(() => {
           class="wysiwyg-sink"
           :class="{ 'is-floating': !noSinkFloat }"
           :allow-link="allowLink"
+          :file-upload="fileUpload"
         >
           <template
             v-if="$slots['sink-prepend']"

@@ -150,7 +150,7 @@ function getLabel(option: any) {
 
   return typeof option !== 'object'
     ? get(optionsByKey.value[option], props.optionLabel) ?? option
-    : get(option, props.optionLabel)
+    : get(option, props.optionLabel) ?? get(optionsByKey.value[getKey(option)], props.optionLabel)
 }
 
 function getOption(option: any): any {

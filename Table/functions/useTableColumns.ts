@@ -56,7 +56,7 @@ export function useTableColumns(
 
   // Store
   const appStore = useAppStore()
-  const { getTableState, setTableState } = useTableStore()
+  const { getTableState } = useTableStore()
   const tableState = getTableState(getStorageKey())
 
   // Layout
@@ -106,7 +106,7 @@ export function useTableColumns(
     // When columns are provided in the URL or in the layout schema, we set
     //  visibility for the columns that are present and reset it for the others
     if (visibleColumns?.length || schemaVisibleColumns?.length) {
-      _columns.forEach(col => {
+      _columns.forEach((col, idx) => {
         const colField = config.table.allowCaseInsensitiveColumns
           ? col.field.toLowerCase()
           : col.field
@@ -115,8 +115,11 @@ export function useTableColumns(
         if ((colInUrl > -1 || col.isHelperCol) && !col.nonInteractive) {
           col.hidden = false
           col._internalSort = col.isHelperCol ? -1 : colInUrl
-        } else {
+        } else if (!col.alwaysVisible) {
           col.hidden = true
+          col._internalSort = idx
+        } else {
+          col._internalSort = idx
         }
       })
 

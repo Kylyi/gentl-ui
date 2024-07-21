@@ -2,7 +2,7 @@
 import type { NavigateToOptions } from '~/shims'
 
 // Constants
-import { BUTTON_PRESET } from '~/components/Button/constants/button-preset.constant'
+import type { BUTTON_PRESET } from '~/components/Button/constants/button-preset.constant'
 
 export type INavigation = {
   disabled?: boolean

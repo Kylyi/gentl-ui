@@ -5,6 +5,7 @@ import { useWysiwygInjections } from '~/components/Wysiwyg/functions/useWysiwygI
 type IProps = {
   allowLink?: boolean
   textSize?: string
+  fileUpload?: boolean
 }
 
 defineProps<IProps>()
@@ -70,7 +71,7 @@ const canUseImage = computed(() => {
 
         <WysiwygLink />
 
-        <WysiwygFileCommandBtn />
+        <WysiwygFileCommandBtn v-if="fileUpload" />
       </template>
 
       <Separator

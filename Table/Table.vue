@@ -227,6 +227,13 @@ onMounted(() => {
         @resized="scrollerEl?.rerender"
       >
         <template
+          v-if="$slots['middle-center']"
+          #left
+        >
+          <slot name="middle-center" />
+        </template>
+
+        <template
           v-if="$slots['top-left-prepend']"
           #left-prepend
         >
@@ -252,6 +259,13 @@ onMounted(() => {
           #right-append
         >
           <slot name="top-right-append" />
+        </template>
+
+        <template
+          v-if="$slots['subbar-left']"
+          #subbar-left
+        >
+          <slot name="subbar-left" />
         </template>
 
         <template

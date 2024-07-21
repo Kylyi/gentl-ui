@@ -2,7 +2,7 @@
 import { NuxtLink } from '#components'
 
 // Models
-import { type ITableProps } from '~/components/Table/types/table-props.type'
+import type { ITableProps } from '~/components/Table/types/table-props.type'
 
 type IProps = Pick<
   ITableProps,
@@ -68,37 +68,37 @@ const isEditable = computedEager(() => {
 
 <style lang="scss" scoped>
 .tr {
-  --apply: relative;
+  @apply relative;
 
   &.is-deleted {
-    --apply: line-through color-ca;
+    @apply line-through color-ca;
   }
 
   &.is-odd {
-    --apply: bg-$Table-alternate-row-bg;
+    @apply bg-$Table-alternate-row-bg;
   }
 }
 
 .cell {
-  --apply: min-h-inherit flex shrink-0 items-center border-b-1 border-ca;
+  @apply min-h-inherit flex shrink-0 items-center border-b-1 border-ca;
 
   &.has-data {
-    --apply: border-l-1;
+    @apply border-l-1;
   }
 
   &:last-of-type {
-    --apply: border-r-1;
+    @apply border-r-1;
   }
 
   &.is-frozen {
-    --apply: dark:shadow-black/30 shadow-black/10;
+    @apply dark:shadow-black/30 shadow-black/10;
     box-shadow: 8px 0 24px -2px var(--un-shadow-color);
   }
 }
 
 .tr:hover {
   .cell {
-    --apply: bg-blue-500/10;
+    @apply bg-blue-500/10;
   }
 }
 </style>

@@ -3,7 +3,7 @@
 import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
 
 // Models
-import { TableColumn } from '~/components/Table/models/table-column.model'
+import type { TableColumn } from '~/components/Table/models/table-column.model'
 
 type IProps = {
   columns: TableColumn[]
@@ -38,6 +38,8 @@ const searchableColumnLabels = computed(() => {
         <MiniCard
           :label="$t('table.searchPossibleInColumns')"
           :value="searchableColumnLabels?.join(', ')"
+          value-class="!font-rem-12 color-ca"
+          label-class="!font-rem-14"
         />
 
         <p class="non-searchable-info">
@@ -50,7 +52,7 @@ const searchableColumnLabels = computed(() => {
 
 <style lang="scss" scoped>
 .non-searchable-info {
-  --apply: text-caption text-xs m-t-4 p-2 rounded-custom bg-ca text-justify
+  @apply text-caption text-xs m-t-4 p-2 rounded-custom bg-ca text-justify
     text-last-center;
 }
 </style>

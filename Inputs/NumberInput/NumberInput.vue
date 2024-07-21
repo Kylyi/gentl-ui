@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { MaskedNumber } from 'imask'
+import { config } from '~/components/config/components-config'
 
 // Types
 import type { INumberInputProps } from '~/components/Inputs/NumberInput/types/number-input-props.type'
@@ -26,11 +27,13 @@ const props = withDefaults(defineProps<INumberInputProps>(), {
   stackLabel: undefined,
   min: Number.NEGATIVE_INFINITY,
   max: Number.POSITIVE_INFINITY,
+  step: config.numberInput.props.step,
 })
 
 defineEmits<{
   (e: 'update:modelValue', val?: number | undefined | null): void
   (e: 'blur'): void
+  (e: 'focus'): void
   (e: 'clear'): void
 }>()
 

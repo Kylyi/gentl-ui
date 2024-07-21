@@ -19,6 +19,8 @@ const emits = defineEmits<{
   (e: 'update:modelValue', value: Array<FileModel | IFile>): void
   (e: 'filesAdded', value: Array<FileModel | IFile>): void
   (e: 'filesRemoved', value: Array<FileModel | IFile>): void
+  (e: 'focus'): void
+  (e: 'blur'): void
 }>()
 
 // Utils
