@@ -4,6 +4,9 @@ import { config } from '~/components/config/components-config'
 // Types
 import type { IFileInputProps } from '~/components/FileInput/types/file-input-props.type'
 
+// Models
+import { FileModel } from '~/components/FileInput/models/file.model'
+
 // Functions
 import { useFieldUtils } from '~/components/Field/functions/useFieldUtils'
 import { useNumber } from '~/components/Inputs/NumberInput/functions/useNumber'
@@ -16,10 +19,13 @@ const props = withDefaults(defineProps<IFileInputProps>(), {
   maxChipsRows: 3,
   downloadUrl: config.fileInput.props.downloadUrl,
 })
+
 const emits = defineEmits<{
-  (e: 'update:modelValue', value: Array<File | IFile>): void
-  (e: 'filesAdded', value: Array<File | IFile>): void
-  (e: 'filesRemoved', value: Array<File | IFile>): void
+  (e: 'update:modelValue', value: Array<FileModel | IFile>): void
+  (e: 'filesAdded', value: Array<FileModel | IFile>): void
+  (e: 'filesRemoved', value: Array<FileModel | IFile>): void
+  (e: 'focus'): void
+  (e: 'blur'): void
 }>()
 
 // Utils
@@ -29,10 +35,12 @@ const { getFieldProps } = useFieldUtils()
 // Layout
 const fileInputEl = ref<InstanceType<typeof Field>>()
 const optionsContainerEl = ref<any>()
-const model = useVModel(props, 'modelValue', emits)
+const model = defineModel<Array<FileModel | IFile>>({
+  default: [],
+})
 const fieldProps = getFieldProps(props)
 
-// File handling
+// FileModel handling
 const { open, onChange, reset } = useFileDialog({
   accept: props.accept,
   multiple: props.multi,
@@ -41,15 +49,17 @@ const { open, onChange, reset } = useFileDialog({
 const { isOverDropZone } = useDropZone(
   // @ts-expect-error wrong html tag type
   () => unrefElement(fileInputEl),
-  handleAdd
+  handleAdd,
 )
 
-const maxHeight = computedEager(() => {
+const maxHeight = computed(() => {
   return props.maxChipsRows * 26
 })
 
-function getFileLabel(file: File | IFile) {
-  return `${file.name} (${formatBytes(file.size)})`
+function getFileLabel(file: FileModel | IFile) {
+  const size = file instanceof FileModel ? file.file.size : file.size
+
+  return `${file.name} (${formatBytes(size)})`
 }
 
 function handleOpen() {
@@ -63,14 +73,15 @@ function handleAdd(files: FileList | File[] | null) {
     return
   }
 
-  const filesArray = Array.from(files)
-  emits('filesAdded', filesArray)
+  const filesArray = Array.from(files).map(file => new FileModel({ file }))
 
   if (props.multi) {
     model.value = [...(model.value || []), ...filesArray]
   } else {
     model.value = filesArray
   }
+
+  emits('filesAdded', filesArray)
 
   reset()
 }
@@ -80,9 +91,8 @@ function handleRemove(idx: number) {
     return
   }
 
-  const removed = model.value.splice(idx, 1)
-  emits('filesRemoved', removed)
-  emits('update:modelValue', [...model.value])
+  emits('filesRemoved', [model.value[idx]])
+  model.value = model.value.toSpliced(idx, 1)
 }
 
 onChange(handleAdd)
@@ -170,10 +180,13 @@ onChange(handleAdd)
             h="4"
             self-center
             icon="i-material-symbols:download"
+            class="!rounded-1"
             @click.stop.prevent="handleDownloadFile(chip, { url: downloadUrl })"
             @mousedown.stop.prevent
           >
-            <Tooltip :offset="10"> {{ $t('general.downloadFile') }} </Tooltip>
+            <Tooltip :offset="10">
+              {{ $t('general.downloadFile') }}
+            </Tooltip>
           </Btn>
 
           <span truncate>

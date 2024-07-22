@@ -4,13 +4,20 @@ import { config } from '~/components/config/components-config'
 // Types
 import type { ISectionProps } from '~/components/Section/types/section-props.type'
 
+// Components
+import Heading from '~/components/Typography/Heading.vue'
+
 defineOptions({
   inheritAttrs: false,
 })
 
-withDefaults(defineProps<ISectionProps>(), {
-  titleElement: 'h6',
+const props = withDefaults(defineProps<ISectionProps>(), {
   ui: () => config.section2.props.ui ?? {},
+})
+
+// Layout
+const titleElement = computed(() => {
+  return props.titleElement ?? Heading
 })
 </script>
 
@@ -67,7 +74,7 @@ withDefaults(defineProps<ISectionProps>(), {
   @apply flex flex-col;
 
   &__title {
-    @apply font-semibold m-b-0 p-b-0.5;
+    @apply relative font-semibold m-b-0 p-b-0.5;
   }
 
   &__subtitle {

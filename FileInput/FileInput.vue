@@ -15,6 +15,7 @@ const props = withDefaults(defineProps<IFileInputProps>(), {
   downloadUrl: config.fileInput.props.downloadUrl,
   multi: config.fileInput.props.multi,
 })
+
 const emits = defineEmits<{
   (e: 'update:modelValue', value: Array<FileModel | IFile>): void
   (e: 'filesAdded', value: Array<FileModel | IFile>): void

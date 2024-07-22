@@ -79,7 +79,7 @@ const transitionProps = computed(() => ({
 const ui = computed(() => {
   return {
     ...props.ui,
-    contentClass: [props.ui?.contentClass, 'selector-wrapper'],
+    contentClass: [props.ui?.contentClass],
   } as typeof props.ui
 })
 
@@ -453,7 +453,8 @@ onMounted(() => {
     :has-content="!!modelValue"
     class="relative"
     :ui="ui"
-    @mousedown="focusEditor"
+    .focus="focusEditor"
+    @click="focusEditor"
   >
     <EditorContent
       ref="editorEl"
