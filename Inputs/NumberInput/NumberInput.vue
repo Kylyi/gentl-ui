@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { MaskedNumber } from 'imask'
-import { config } from '~/components/config/components-config'
 
 // Types
 import type { INumberInputProps } from '~/components/Inputs/NumberInput/types/number-input-props.type'
@@ -38,7 +37,7 @@ defineEmits<{
 }>()
 
 // Utils
-const { separators } = useNumber()
+const { separators, parseNumber } = useNumber()
 
 // Mask
 const mask = computed<MaskedNumber>(() => {
@@ -83,7 +82,18 @@ const {
   maskRef: mask,
 })
 
+// Validation
 const { path } = useInputValidationUtils(props)
+
+// Layout
+function handlePaste(ev: ClipboardEvent) {
+  const pastedText = ev.clipboardData?.getData('text')
+  const parsedValue = parseNumber(pastedText)
+
+  if (!isNil(parsedValue)) {
+    model.value = parsedValue
+  }
+}
 
 defineExpose({
   focus,
@@ -131,6 +141,7 @@ defineExpose({
       v-bind="inputProps"
       @focus="handleFocusOrClick"
       @blur="handleBlur"
+      @paste.stop.prevent="handlePaste"
     >
 
     <template
