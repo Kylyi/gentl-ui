@@ -509,6 +509,8 @@ onMounted(() => {
 </template>
 
 <style lang="scss" scoped>
+@import url('style/wysiwyg.style.scss');
+
 .control {
   @apply: w-full;
 }

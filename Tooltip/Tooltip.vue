@@ -10,11 +10,11 @@ defineOptions({
 
 const props = withDefaults(
   defineProps<ITooltipProps & { noInheritFontStyle?: boolean }>(),
-  { noInheritFontStyle: true, offset: 8 }
+  { noInheritFontStyle: true, offset: 8 },
 )
 
 function getTargetElement(target: any): any {
-  if (!process.client) {
+  if (!import.meta.client) {
     return
   }
 
@@ -61,7 +61,7 @@ const { floatingStyles, placement, middlewareData } = useFloating(
     placement: props.placement,
     middleware,
     strategy: 'fixed',
-  }
+  },
 )
 
 const tooltipClass = computed(() => {
@@ -90,8 +90,8 @@ onMounted(() => {
       referenceEl.value && referenceEl.value.classList.add('tooltip-hovered')
 
       setTimeout(() => {
-        const isStillInside =
-          referenceEl.value?.classList.contains('tooltip-hovered')
+        const isStillInside
+          = referenceEl.value?.classList.contains('tooltip-hovered')
 
         if (isStillInside) {
           model.value = true
@@ -103,8 +103,8 @@ onMounted(() => {
       referenceEl.value && referenceEl.value.classList.remove('tooltip-hovered')
 
       setTimeout(() => {
-        const isStillInside =
-          referenceEl.value?.classList.contains('tooltip-hovered')
+        const isStillInside
+          = referenceEl.value?.classList.contains('tooltip-hovered')
 
         if (!isStillInside) {
           model.value = false
@@ -141,31 +141,31 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .tooltip {
-  --apply: dark:bg-darker bg-white border-ca border-custom rounded-custom
+  @apply dark:bg-darker bg-white border-ca border-custom rounded-custom
     z-$zMenu;
 }
 
 .arrow {
-  --apply: absolute w-2 h-2 rotate-45 dark:bg-darker bg-white;
+  @apply absolute w-2 h-2 rotate-45 dark:bg-darker bg-white;
 
   &.has-header {
-    --apply: bg-white dark:bg-darker;
+    @apply bg-white dark:bg-darker;
   }
 }
 
 .tooltip[placement^='top'] > .arrow {
-  --apply: bottom--5px border-b-custom border-r-custom border-ca;
+  @apply bottom--5px border-b-custom border-r-custom border-ca;
 }
 
 .tooltip[placement^='bottom'] > .arrow {
-  --apply: top--5px border-t-custom border-l-custom border-ca;
+  @apply top--5px border-t-custom border-l-custom border-ca;
 }
 
 .tooltip[placement^='left'] > .arrow {
-  --apply: right--5px border-r-custom border-t-custom border-ca;
+  @apply right--5px border-r-custom border-t-custom border-ca;
 }
 
 .tooltip[placement^='right'] > .arrow {
-  --apply: left--5px border-l-custom border-b-custom border-ca;
+  @apply left--5px border-l-custom border-b-custom border-ca;
 }
 </style>
