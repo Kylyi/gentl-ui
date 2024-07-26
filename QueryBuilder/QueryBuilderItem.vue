@@ -370,7 +370,10 @@ const $z = useZod(
           @update:model-value="handleComparatorChange"
         />
 
-        <div flex="~">
+        <div
+          :key="colSelected.field"
+          flex="~"
+        >
           <!-- Custom component -->
           <Component
             :is="customFilterComponent.component"
