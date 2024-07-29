@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Models
-import type { FileModel } from '~/components/FileInput/models/file.model'
+import { FileModel } from '~/components/FileInput/models/file.model'
 
 // Functions
 import { useNumber } from '~/components/Inputs/NumberInput/functions/useNumber'
@@ -21,15 +21,21 @@ defineEmits<{
 }>()
 
 // Utils
-const { formatNumber, formatBytes } = useNumber()
+const { formatBytes } = useNumber()
 const { getLocalImageUrl } = useImages()
+const { createDialog } = useDialog()
 
 const icon = computed(() => {
-  const icon
-    = ICON_BY_FILE_TYPE[props.file.type as keyof typeof ICON_BY_FILE_TYPE]
+  const icon = ICON_BY_FILE_TYPE[props.file.type as keyof typeof ICON_BY_FILE_TYPE]
     || 'i-solar:file-linear'
 
   return icon
+})
+
+const size = computed(() => {
+  return props.file instanceof FileModel
+    ? formatBytes(props.file.file.size)
+    : formatBytes(props.file.size)
 })
 
 const imageUrl = computed(() => {
@@ -53,14 +59,86 @@ const imageUrl = computed(() => {
 
   return null
 })
+
+const videoUrl = computed(() => {
+  const isUploadedFile = 'id' in props.file
+  const PREVIEWABLE_VIDEO_TYPES = [
+    'video/mp4',
+    'video/webm',
+    'video/ogg',
+    'video/quicktime',
+  ]
+
+  const isVideoFile = PREVIEWABLE_VIDEO_TYPES.includes(props.file.type)
+
+  if (isUploadedFile && isVideoFile) {
+    return getLocalImageUrl(props.file.path)
+  } else if (!isUploadedFile && isVideoFile) {
+    return URL.createObjectURL(props.file.file)
+  }
+
+  return null
+})
+
+const downloadUrl = computedAsync(async () => {
+  if (!('path' in props.file)) {
+    return
+  }
+
+  return await handleDownloadFile(props.file, { returnUrlOnly: true })
+})
+
+function handleImageClick(url: string) {
+  createDialog({
+    class: '!w-auto !h-auto',
+  }, {
+    children: {
+      default: () => {
+        return h('img', {
+          src: url,
+          width: 'auto',
+          height: 'auto',
+          class: 'w-auto h-auto',
+        })
+      },
+    },
+  })
+}
 </script>
 
 <template>
   <div class="file-preview">
     <div class="file-preview__header">
-      <span class="file-preview__filename">
-        {{ file?.name }}
-      </span>
+      <!-- Icon -->
+      <div class="i-material-symbols:attachment color-ca shrink-0" />
+
+      <div flex="~ col grow">
+        <!-- Filename -->
+        <span class="file-preview__filename">
+          {{ file?.name }}
+        </span>
+
+        <!-- Meta -->
+        <div class="file-preview__meta">
+          <!-- Size -->
+          <span>{{ size }}</span>
+
+          <Separator vertical />
+
+          <!-- Download -->
+          <NuxtLink
+            v-if="'path' in file"
+            class="link"
+            :to="downloadUrl"
+            external
+            download
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {{ $t('general.download') }}
+          </NuxtLink>
+        </div>
+      </div>
 
       <Btn
         v-if="editable"
@@ -77,8 +155,24 @@ const imageUrl = computed(() => {
         v-if="imageUrl"
         :src="imageUrl"
         :alt="file.name"
-        h="full"
+        max-w="60"
+        aspect-ratio="16/9"
+        cursor="pointer"
+        object="contain"
+        @click.stop.prevent="handleImageClick(imageUrl)"
+        @mousedown.stop.prevent
       >
+
+      <!-- Video preview -->
+      <video
+        v-else-if="videoUrl"
+        :src="videoUrl"
+        controls
+        muted
+        loop
+        playsinline
+        class="file-preview__video"
+      />
 
       <!-- Icon -->
       <div
@@ -139,6 +233,14 @@ const imageUrl = computed(() => {
           :progress="file.uploadProgress"
         />
       </div>
+
+      <!-- Overlay -->
+      <div
+        v-if="imageUrl"
+        class="file-preview__overlay"
+      >
+        <div class="i-ph:eye-bold font-rem-24" />
+      </div>
     </div>
   </div>
 </template>
@@ -151,7 +253,11 @@ const imageUrl = computed(() => {
   grid-template-rows: auto 1fr;
 
   &__filename {
-    @apply self-center text-caption line-clamp-2 m-y-1 break-words;
+    @apply text-caption font-rem-12 line-clamp-2 break-words leading-tight;
+  }
+
+  &__meta {
+    @apply flex gap-1 items-center text-caption font-rem-11 line-clamp-2 break-words leading-tight;
   }
 
   &__header {
@@ -160,19 +266,31 @@ const imageUrl = computed(() => {
   }
 
   &__image {
-    @apply relative flex flex-center p-1 fit overflow-auto;
+    @apply relative flex flex-center p-1 fit overflow-auto min-h-20;
 
     img {
       @apply rounded-3 object-cover object-center;
     }
   }
 
+  &__video {
+    @apply rounded-custom w-100;
+  }
+
   &__state {
     @apply absolute inset-0 flex flex-center flex-col gap-2 p-2 rounded-3 bg-ca;
   }
 
+  &__overlay {
+    @apply absolute flex flex-center gap-2 inset-0 rounded-custom invisible pointer-events-none;
+  }
+
   &:hover {
     @apply shadow-consistent-xs shadow-ca color-dark dark:color-light;
+
+    .file-preview__overlay {
+      @apply visible bg-darker/15;
+    }
   }
 }
 </style>

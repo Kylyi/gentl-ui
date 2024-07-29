@@ -27,7 +27,7 @@ export type IMenuProps = {
   /**
    * When true, the `Menu` will try to fit the width of the reference element
    *
-   * * NOTE: Difference between `fit` and `matchWidth` is that `fit` will try to fit the
+   * NOTE: Difference between `fit` and `matchWidth` is that `fit` will try to fit the
    * width of the reference element but it can go over it, while `matchWidth` will
    * try to match the width of the reference element exactly
    */

@@ -132,9 +132,7 @@ const imageUrl = computed(() => {
       <!-- Uploading - Progress bar -->
       <ProgressBar
         v-else
-        :label="
-          progress => `${$t('file.uploading')}... (${formatNumber(progress)}%)`
-        "
+        :label="progress => `${$t('file.uploading')}... (${formatNumber(progress)}%)`"
         :progress="file.uploadProgress"
         rounded="b-2"
       />

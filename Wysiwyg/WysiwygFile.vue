@@ -83,16 +83,16 @@ export default {
 
 <template>
   <NodeViewWrapper class="wysiwyg-file">
+    <!-- File preview -->
     <FilePreview2
       v-if="file"
       :file="file"
       data-drag-handle
-      w="!52"
-      h="!52"
       :editable="isEditable"
       @remove="handleRemove"
     />
 
+    <!-- Removed file -->
     <div
       v-else
       data-drag-handle
