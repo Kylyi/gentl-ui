@@ -58,14 +58,14 @@ function isElementInViewport(el: Element) {
   const rect = el.getBoundingClientRect()
 
   return (
-    rect.top >= 0 &&
-    rect.left >= 0 &&
-    rect.bottom <=
-      (window.innerHeight ||
-        document.documentElement.clientHeight) /* or $(window).height() */ &&
-    rect.right <=
-      (window.innerWidth ||
-        document.documentElement.clientWidth) /* or $(window).width() */
+    rect.top >= 0
+    && rect.left >= 0
+    && rect.bottom
+    <= (window.innerHeight
+    || document.documentElement.clientHeight)
+    && /* or $(window).height() */ rect.right
+    <= (window.innerWidth
+    || document.documentElement.clientWidth) /* or $(window).width() */
   )
 }
 
@@ -191,30 +191,30 @@ const throttledSubmit = useThrottleFn(
   },
   500,
   false,
-  true
+  true,
 )
 
 function focusFirstInput() {
   // We only focus the first input if the last pointer down type was a mouse
   // because on touch devices, it would most likely open a virtual keyboard
   // which might take unnecessary space on the screen
-  const shouldFocus =
-    lastPointerDownType?.value === 'mouse' ||
-    (isDesktop && !lastPointerDownType.value)
+  const shouldFocus
+    = lastPointerDownType?.value === 'mouse'
+    || (isDesktop && !lastPointerDownType.value)
   if (shouldFocus && props.focusFirstInput) {
-    const inputElements =
-      formEl?.value?.querySelectorAll('.wrapper__body') || []
+    const inputElements
+      = formEl?.value?.querySelectorAll('.wrapper__body') || []
 
     const firstEditableField = Array.from(inputElements).find(el => {
       const inputChild = el.querySelector(
-        '.control:not([readonly]):not([disabled])'
+        '.control:not([readonly]):not([disabled])',
       ) as HTMLElement
 
       return !!inputChild
     }) as HTMLElement
 
     const firstEditableInput = firstEditableField?.querySelector(
-      '.control:not([readonly]):not([disabled])'
+      '.control:not([readonly]):not([disabled])',
     ) as HTMLElement
 
     if (firstEditableInput) {
@@ -230,16 +230,16 @@ function focusFirstInput() {
 function handleEnter(ev: KeyboardEvent) {
   const isCtrlKey = ev.ctrlKey || ev.metaKey
   const isInput = activeElement.value?.tagName === 'INPUT'
-  const hasCustomEnterHandler =
-    activeElement.value?.classList.contains('custom-enter')
+  const hasCustomEnterHandler
+    = activeElement.value?.classList.contains('custom-enter')
 
   const isInputWithCustomEnterHandler = isInput && hasCustomEnterHandler
 
   if (
-    preventSubmitOnEnter.value &&
-    isInput &&
-    !isCtrlKey &&
-    !isInputWithCustomEnterHandler
+    preventSubmitOnEnter.value
+    && isInput
+    && !isCtrlKey
+    && !isInputWithCustomEnterHandler
   ) {
     ev.preventDefault()
   } else if (isCtrlKey && !props.submitDisabled) {
@@ -417,28 +417,28 @@ onMounted(() => {
 <style lang="scss" scoped>
 .form {
   &-content {
-    --apply: flex-gap-2 border-ca;
+    @apply flex-gap-2 border-ca;
   }
 
   > .form-content {
-    --apply: p-$Form-content-padding;
+    @apply p-$Form-content-padding;
   }
 
   &.is-grown {
-    --apply: contents;
+    @apply contents;
 
     > .form-content {
-      --apply: flex-grow;
+      @apply flex-grow;
     }
   }
 
   &.is-bordered {
     > .form-content {
-      --apply: border-x-2 border-t-2 border-ca;
+      @apply border-x-2 border-t-2 border-ca;
     }
 
     > #form-controls {
-      --apply: border-x-2 border-b-2 border-ca rounded-b-custom;
+      @apply border-x-2 border-b-2 border-ca rounded-b-custom;
 
       z-index: calc(var(--zDrawer) - 1);
     }
@@ -446,13 +446,12 @@ onMounted(() => {
 
   &:not(.is-label-forced-visible) {
     :deep(#form-controls .btn-label) {
-      --apply: lt-lg:hidden;
+      @apply lt-lg:hidden;
     }
 
     :deep(#form-controls .btn) {
-      --apply: lt-lg:p-x-0;
+      @apply lt-lg:p-x-0;
     }
   }
-
 }
 </style>
