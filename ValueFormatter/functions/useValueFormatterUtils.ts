@@ -3,6 +3,9 @@ import { config } from '~/components/config/components-config'
 // Types
 import type { IValueFormatter } from '~/components/ValueFormatter/types/value-formatter-props.type'
 
+// Models
+import { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
+
 // Functions
 import { useNumber } from '~/components/Inputs/NumberInput/functions/useNumber'
 import { useDuration } from '~/components/Inputs/DurationInput/functions/useDuration'
@@ -40,6 +43,7 @@ export function useValueFormatterUtils() {
       emptyValue?: any
       predictDataType?: IValueFormatter['predictDataType']
       resolveEnums?: IValueFormatter['resolveEnums']
+      comparator?: ComparatorEnum
     } = {},
   ): any {
     const {
@@ -47,6 +51,7 @@ export function useValueFormatterUtils() {
       emptyValue,
       predictDataType: _predictDataType,
       resolveEnums,
+      comparator,
     } = options
 
     if (emptyValue === value) {
@@ -104,6 +109,17 @@ export function useValueFormatterUtils() {
     // When value is null or undefined, we return empty string
     if (isNil(value)) {
       return ''
+    }
+
+    // Special case for `ComparatorEnum.AGO` or `ComparatorEnum.For`
+    const isSpecialDateComparator
+      = comparator === ComparatorEnum.AGO
+      || comparator === ComparatorEnum.NOT_AGO
+      || comparator === ComparatorEnum.UNTIL
+      || comparator === ComparatorEnum.NOT_UNTIL
+
+    if (isSpecialDateComparator) {
+      return value
     }
 
     switch (options.dataType) {

@@ -177,11 +177,7 @@ const $z = useZod({ scope: 'qb' })
       text="caption xs"
       shrink-0
     >
-      {{
-        $t(
-          `comparator.${item.comparator?.replaceAll('.', '|')}`,
-        ).toLocaleLowerCase()
-      }}
+      {{ $t(`comparator.${item.comparator?.replaceAll('.', '|')}`).toLocaleLowerCase() }}
     </span>
 
     <!-- Value -->
@@ -190,6 +186,7 @@ const $z = useZod({ scope: 'qb' })
       :value="item.value"
       :data-type="getDataType()"
       :format="colSelected?.format"
+      :comparator="item.comparator"
       class="qb-item__value"
     />
 

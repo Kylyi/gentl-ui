@@ -213,11 +213,11 @@ export function useTableColumns(
           f => f.comparator === filter.comparator,
         )
 
+        const parseValueOptions = { dateFormat: 'YYYY-MM-DD', comparator: filter.comparator }
+
         const filterValue = Array.isArray(filter.value)
-          ? filter.value.map(val =>
-            parseValue(val, col.dataType, { dateFormat: 'YYYY-MM-DD' }),
-          )
-          : parseValue(filter.value, col.dataType, { dateFormat: 'YYYY-MM-DD' })
+          ? filter.value.map(val => parseValue(val, col.dataType, parseValueOptions))
+          : parseValue(filter.value, col.dataType, parseValueOptions)
 
         if (predefinedFilter) {
           predefinedFilter.value = filterValue
@@ -236,6 +236,8 @@ export function useTableColumns(
         }
       }
     })
+
+    console.log('Log ~ columns', _columns)
 
     // When columns are present in the table state, we set the appropriate data
     // based on used mode (server or local)
