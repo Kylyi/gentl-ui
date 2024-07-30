@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Models
-import type { FileModel } from '~/components/FileInput/models/file.model'
+import { FileModel } from '~/components/FileInput/models/file.model'
 
 // Functions
 import { useNumber } from '~/components/Inputs/NumberInput/functions/useNumber'
@@ -21,7 +21,6 @@ defineEmits<{
 }>()
 
 // Utils
-const { handleRequest } = useRequest()
 const { formatNumber, formatBytes } = useNumber()
 const { getLocalImageUrl } = useImages()
 
@@ -33,7 +32,6 @@ const icon = computed(() => {
 })
 
 const imageUrl = computed(() => {
-  const isUploadedFile = 'id' in props.file
   const PREVIEWABLE_IMAGE_TYPES = [
     'image/jpeg',
     'image/jpg',
@@ -45,13 +43,15 @@ const imageUrl = computed(() => {
   ]
   const isImageFile = PREVIEWABLE_IMAGE_TYPES.includes(props.file.type)
 
-  if (isUploadedFile && isImageFile) {
-    return getLocalImageUrl(props.file.path)
-  } else if (!isUploadedFile && isImageFile) {
-    return URL.createObjectURL(props.file.file)
+  if (!isImageFile) {
+    return null
   }
 
-  return null
+  if (props.file instanceof FileModel) {
+    return URL.createObjectURL(props.file.file)
+  } else {
+    return getLocalImageUrl(props.file.path)
+  }
 })
 </script>
 

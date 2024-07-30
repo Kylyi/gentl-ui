@@ -106,8 +106,7 @@ const isPaginationRightVisible = computed(() => {
             <span
               font="bold"
               data-cy="total-rows"
-              >{{ totalRows }}</span
-            >
+            >{{ totalRows }}</span>
             {{ $t('general.row', totalRows || 0) }}
           </template>
 
@@ -182,7 +181,9 @@ const isPaginationRightVisible = computed(() => {
             :class="{ 'is-active': page === currentPage }"
             @click="currentPage = page"
           />
-          <div v-else>...</div>
+          <div v-else>
+            ...
+          </div>
         </template>
 
         <!-- Next page -->
@@ -234,15 +235,15 @@ const isPaginationRightVisible = computed(() => {
 
 <style scoped lang="scss">
 .table-pagination {
-  --apply: relative flex flex-center flex-gap-x-1 p-y-1 min-h-10;
+  @apply relative flex flex-center flex-gap-x-1 p-y-1 min-h-10;
 
   .btn.is-active {
-    --apply: bg-primary color-white;
+    @apply bg-primary color-white;
   }
 
   &__page-size {
-    --apply: absolute right-2 flex flex-center flex-gap-x-2;
-    --apply: 'lt-sm:hidden';
+    @apply absolute right-2 flex flex-center flex-gap-x-2;
+    @apply 'lt-sm:hidden';
   }
 }
 </style>
