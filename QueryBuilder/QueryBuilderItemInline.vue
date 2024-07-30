@@ -228,7 +228,7 @@ const $z = useZod({ scope: 'qb' })
           p="!x-1"
           min-w="70"
           @delete:row="tableRefresh"
-          @update:comparator="itemEditMenuEl?.recomputePosition"
+          @update:comparator="itemEditMenuEl?.recomputePosition()"
         />
       </Form>
     </Menu>
