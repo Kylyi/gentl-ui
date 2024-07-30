@@ -7,6 +7,8 @@ import { useNumber } from '~/components/Inputs/NumberInput/functions/useNumber'
 
 // Constants
 import { ICON_BY_FILE_TYPE } from '~/components/FileInput/constants/iconByFileType'
+import { IMAGE_TYPES } from '~/components/FileInput/constants/imageTypes'
+import { VIDEO_TYPES } from '~/components/FileInput/constants/videoTypes'
 
 type IProps = {
   downloadUrl?: string
@@ -39,45 +41,31 @@ const size = computed(() => {
 })
 
 const imageUrl = computed(() => {
-  const isUploadedFile = 'id' in props.file
-  const PREVIEWABLE_IMAGE_TYPES = [
-    'image/jpeg',
-    'image/jpg',
-    'image/png',
-    'image/gif',
-    'image/svg+xml',
-    'image/webp',
-    'image/bmp',
-  ]
-  const isImageFile = PREVIEWABLE_IMAGE_TYPES.includes(props.file.type)
+  const isImageFile = IMAGE_TYPES.includes(props.file.type)
 
-  if (isUploadedFile && isImageFile) {
-    return getLocalImageUrl(props.file.path)
-  } else if (!isUploadedFile && isImageFile) {
-    return URL.createObjectURL(props.file.file)
+  if (!isImageFile) {
+    return null
   }
 
-  return null
+  if (props.file instanceof FileModel) {
+    return URL.createObjectURL(props.file.file)
+  } else {
+    return getLocalImageUrl(props.file.path)
+  }
 })
 
 const videoUrl = computed(() => {
-  const isUploadedFile = 'id' in props.file
-  const PREVIEWABLE_VIDEO_TYPES = [
-    'video/mp4',
-    'video/webm',
-    'video/ogg',
-    'video/quicktime',
-  ]
+  const isVideoFile = VIDEO_TYPES.includes(props.file.type)
 
-  const isVideoFile = PREVIEWABLE_VIDEO_TYPES.includes(props.file.type)
-
-  if (isUploadedFile && isVideoFile) {
-    return getLocalImageUrl(props.file.path)
-  } else if (!isUploadedFile && isVideoFile) {
-    return URL.createObjectURL(props.file.file)
+  if (!isVideoFile) {
+    return null
   }
 
-  return null
+  if (props.file instanceof FileModel) {
+    return URL.createObjectURL(props.file.file)
+  } else {
+    return getLocalImageUrl(props.file.path)
+  }
 })
 
 const downloadUrl = computedAsync(async () => {

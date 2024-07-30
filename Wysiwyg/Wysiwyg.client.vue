@@ -443,6 +443,27 @@ onMounted(() => {
         handleUploadFiles(droppedFiles, event)
       }
     })
+
+    // Handle paste
+    editor.value?.view.dom.addEventListener('paste', async event => {
+      if (!props.fileUpload) {
+        event.preventDefault()
+
+        return
+      }
+
+      const items = event.clipboardData?.items || []
+
+      for (const item of items) {
+        const file = item.getAsFile()
+
+        if (file) {
+          handleUploadFiles([file])
+
+          event.preventDefault()
+        }
+      }
+    })
   })
 })
 </script>
