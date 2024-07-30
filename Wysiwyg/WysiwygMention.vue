@@ -36,7 +36,7 @@ const virtualEl = computed<MaybeElement<VirtualElement>>(() => {
   }
 })
 
-const groupBy = computedEager(() => {
+const groupBy = computed(() => {
   return items.value.some(item => item.group)
     ? [{ field: 'group', name: 'group' }]
     : undefined

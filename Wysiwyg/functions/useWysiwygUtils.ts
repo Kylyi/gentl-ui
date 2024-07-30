@@ -20,6 +20,7 @@ export function useWysiwygUtils() {
 
   function resolveValues(view: SuggestionKeyDownProps['view']) {
     const entity = toValue(mentionEntity)
+    console.log('Log ~ resolveValues ~ entity:', entity)
     const elements = view.dom.querySelectorAll('span[data-type="mention"]')
 
     elements.forEach(el => {
@@ -34,11 +35,14 @@ export function useWysiwygUtils() {
 
         const value
           = definition.format?.(entity)
-          ?? formatValue(get(entity || {}, definition.id), undefined, {
-            dataType: definition.dataType,
-          })
+          ?? formatValue(
+            get(entity || {}, definition.id),
+            undefined,
+            { dataType: definition.dataType },
+          )
           ?? `\${${attrValue}}`
 
+        console.log('Log ~ resolveValues ~ value:', value)
         const spanEl = document.createElement('span')
         spanEl.innerText = value
 

@@ -21,7 +21,7 @@ export type IWysiwygProps = {
   sinkAlwaysVisible?: boolean
 
   /**
-   * When true, the WysiwygSink will NOT be floating -> will be `relative` instead of `absolute`
+   * When true, the WysiwygSink will NOT be floating -> will be `relative` instead of `absolute`
    */
   noSinkFloat?: boolean
 

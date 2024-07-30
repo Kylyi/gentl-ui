@@ -299,9 +299,7 @@ onMounted(() => {
       <Section
         v-if="errorsExtended.length"
         flex="~ col gap-y-2"
-        :section-class="{
-          'order--1': !!errorsOnTop,
-        }"
+        :section-class="{ 'order--1': !!errorsOnTop }"
       >
         <Banner
           v-for="error in errorsExtended"
@@ -333,12 +331,13 @@ onMounted(() => {
           <span>&nbsp;</span>
         </slot>
 
-        <!-- Spacer -->
+        <!-- Spacer (will make sure the submit button is always to the right) -->
         <div
           v-if="!ui?.noSpacer"
           grow
         />
 
+        <!-- Controls -->
         <div
           relative
           flex="~ gap-2"
@@ -346,6 +345,7 @@ onMounted(() => {
         >
           <slot name="submit-before" />
 
+          <!-- Cancel button -->
           <CrudBtnCancel
             v-if="editControls?.cancel"
             :class="{ invisible: !isEditing }"
@@ -359,6 +359,7 @@ onMounted(() => {
             />
           </CrudBtnCancel>
 
+          <!-- Submit button -->
           <Btn
             v-if="!noSubmit"
             bg="primary"
@@ -399,6 +400,7 @@ onMounted(() => {
             />
           </Btn>
 
+          <!-- Edit button -->
           <CrudEditBtn v-if="editControls?.edit">
             <KeyboardShortcut
               v-if="hasKeyboardShortcuts"

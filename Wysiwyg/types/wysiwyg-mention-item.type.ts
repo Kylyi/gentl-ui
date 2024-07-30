@@ -1,5 +1,5 @@
 export type IWysiwygMentionItem = {
-  id: string
+  id: string | number
   label: string
   dataType?: DataType
   group?: string
