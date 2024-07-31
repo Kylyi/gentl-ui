@@ -151,6 +151,7 @@ defineExpose({
       <div
         v-if="step || hasClearableBtn || $slots.append"
         class="number-input__append"
+        data-cy="offset-buttons"
         @click="handleFocusOrClick"
       >
         <slot
