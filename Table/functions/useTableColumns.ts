@@ -237,8 +237,6 @@ export function useTableColumns(
       }
     })
 
-    console.log('Log ~ columns', _columns)
-
     // When columns are present in the table state, we set the appropriate data
     // based on used mode (server or local)
     stateColumns?.forEach((stateColumn, idx) => {
