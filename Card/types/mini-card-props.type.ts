@@ -28,9 +28,9 @@ export type IMiniCardProps = IValueFormatter & {
   valueClass?: ClassType
 
   /**
-   * The orginal value class of the card
+   * The previous value class of the card
    */
-  originalValueClass?: ClassType
+  previousValueClass?: ClassType
 
   /**
    * The link we want to redirect to
@@ -38,12 +38,17 @@ export type IMiniCardProps = IValueFormatter & {
   to?: any
 
   /**
-   * The link we want to redirect to orginal value
+   * The link we want to redirect to previous value
    */
-  toOriginalValue?: any
+  toPreviousValue?: any
 
   /**
-   * The orginal value of the field used to compare with current value
+   * The previous value of the field used to compare with current value
    */
-  originalValue?: string
+  previousValue?: any
+
+  /**
+   * The original value ~ the current value for given field
+   */
+  originalValue?: any
 }

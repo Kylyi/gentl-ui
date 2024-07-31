@@ -10,8 +10,8 @@ export function useInputValidationUtils(props: IInputWrapperProps) {
 
   const path = computed(() => {
     return Array.isArray(props.validation)
-      ? props.validation.map(item => item?.path).join('.')
-      : props.validation?.path
+      ? props.validation.map(item => item?.$path).join('.')
+      : props.validation?.$path
   })
 
   const issues = computed(() => {

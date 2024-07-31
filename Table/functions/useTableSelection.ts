@@ -1,6 +1,7 @@
 // Types
 import type { ITableProps } from '~/components/Table/types/table-props.type'
 import type { ITableSelection } from '~/components/Table/types/table-selection.type'
+import type { ITableSelectionOptions } from '~/components/Table/types/table-selection-options.type'
 
 // Functions
 import { useTableUtils } from '~/components/Table/functions/useTableUtils'
@@ -21,7 +22,9 @@ export function useTableSelection(props: ITableProps) {
     ? useVModel(props, 'selected')
     : ref<ITableSelection>({})
 
-  const rowKey = computedEager(() => props.selectionKey ?? getRowKey(props))
+  const rowKey = computed(
+    () => props.selectionOptions?.selectionKey ?? getRowKey(props)
+  )
 
   const selectionByKey = computed(() => {
     if (!selection.value) {
@@ -45,10 +48,17 @@ export function useTableSelection(props: ITableProps) {
     return !!selectionByKey.value?.[key]
   }
 
-  async function handleSelectRow(
-    row: any,
-    options?: { val?: boolean; clearSelection?: boolean }
-  ) {
+  async function handleSelectRow(row: any, options?: ITableSelectionOptions) {
+    const shouldContinue = await props.selectionOptions?.onSelect?.(
+      row,
+      selection,
+      options
+    )
+
+    if (shouldContinue === false) {
+      return
+    }
+
     const { clearSelection: _clearSelection, val } = options ?? {}
 
     if (_clearSelection) {

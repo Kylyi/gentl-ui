@@ -18,7 +18,10 @@ function handleNavigation(val: number, unit: 'month' | 'year') {
 }
 
 function handleSetDate(payload: { idx: number }, unit: 'year' | 'month') {
-  emits('update:model-value', $date(props.modelValue)[unit](payload.idx))
+  const date = $date(props.modelValue)
+  const val = date[unit](payload.idx)
+
+  emits('update:model-value', val as dayjs.Dayjs)
 }
 </script>
 

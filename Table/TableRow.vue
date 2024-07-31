@@ -6,7 +6,7 @@ import { type ITableProps } from '~/components/Table/types/table-props.type'
 
 type IProps = Pick<
   ITableProps,
-  'columns' | 'rowHeight' | 'to' | 'selectable' | 'editable'
+  'columns' | 'rowHeight' | 'to' | 'selectionOptions' | 'editable' | 'rowClass'
 > & {
   index?: number
   row: any
@@ -32,7 +32,10 @@ const isEditable = computedEager(() => {
     flex="~"
     class="tr"
     :style="{ minHeight: `${rowHeight}px` }"
-    :class="{ 'is-odd': index % 2, 'is-deleted': row.deleted }"
+    :class="[
+      { 'is-odd': index % 2, 'is-deleted': row.deleted },
+      rowClass?.(row),
+    ]"
     :to="to?.(row)"
   >
     <slot>
@@ -63,9 +66,7 @@ const isEditable = computedEager(() => {
   }
 
   &.is-odd {
-    .cell {
-      --apply: bg-$Table-alternate-row-bg;
-    }
+    --apply: bg-$Table-alternate-row-bg;
   }
 }
 

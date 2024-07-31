@@ -10,6 +10,7 @@ import type { IItemToBeAdded } from '~/components/List/types/list-item-to-add.ty
 // Functions
 import { useSelectorUtils } from '~/components/Selector/functions/useSelectorUtils'
 import { useInputValidationUtils } from '~/components/Inputs/functions/useInputValidationUtils'
+import { useListUtils } from '~/components/List/functions/useListUtils'
 
 // Components
 import List from '~/components/List/List.vue'
@@ -56,6 +57,7 @@ onMounted(() => {
 // Utils
 const { handleRequest } = useRequest()
 const { path } = useInputValidationUtils(props)
+const { getListProps } = useListUtils()
 const self = getCurrentInstance()
 
 const hasContent = computed(() => {
@@ -181,29 +183,7 @@ const isOptionsInternalLoaded = ref(false)
 const listEl = ref<InstanceType<typeof List>>()
 const options = toRef(props, 'options')
 const optionsInternal = ref<any[]>([])
-const listProps = reactivePick(props, [
-  'allowAdd',
-  'allowSelectAllFiltered',
-  'clearable',
-  'disabledFnc',
-  'emitKey',
-  'fuseExtendedSearchToken',
-  'fuseOptions',
-  'groupBy',
-  'itemHeight',
-  'loadData',
-  'loading',
-  'multi',
-  'noFilter',
-  'noHighlight',
-  'noLocalAdd',
-  'noSearch',
-  'noSort',
-  'inputProps',
-  'search',
-  'searchDebounce',
-  'sortBy',
-])
+const listProps = getListProps(props)
 
 const optionsExtended = computed(() => {
   const optionsAdjusted = [...options.value, ...optionsInternal.value].map(
@@ -284,6 +264,7 @@ function handleHide() {
 
   if (props.loadData?.onSearch) {
     listEl.value?.clearSearch()
+    listEl.value?.reset()
   }
 
   emits('picker-hide')
@@ -306,10 +287,7 @@ const optionsContainerEl = ref<any>()
 const isLoadingInternal = ref(false)
 
 const isLoading = computed(() => {
-  return (
-    (props.loading || isLoadingInternal.value) &&
-    pickerAnimationState.value !== 'hide'
-  )
+  return props.loading || isLoadingInternal.value
 })
 
 function syncScrollArea() {
@@ -406,6 +384,7 @@ defineExpose({
     <span
       v-if="$slots.selection"
       class="control"
+      :class="controlClass"
       @click="handleFocusOrClick"
     >
       <slot

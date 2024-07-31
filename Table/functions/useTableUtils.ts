@@ -99,7 +99,7 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
       extraComparators = [],
     } = options
     const comparators: ComparatorEnum[] =
-      [...COMPARATORS_BY_DATATYPE_MAP[dataType], ...SELECTOR_COMPARATORS] ?? []
+      [...COMPARATORS_BY_DATATYPE_MAP[dataType], ...SELECTOR_COMPARATORS]
 
     if (allowedComparators) {
       return uniq(

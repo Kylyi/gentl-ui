@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Injections
-import { formIsInEditModeKey } from '~/components/Form/provide/form.provide'
+import { isFormEditingKey } from '~/components/Form/provide/form.provide'
 
 // Constants
 import { BUTTON_PRESET } from '~/components/Button/constants/button-preset.constant'
@@ -26,10 +26,20 @@ const emits = defineEmits<{
 }>()
 
 // Injections
-const isInEditMode = injectStrict(formIsInEditModeKey, ref())
+const isFormEditing = injectStrict(isFormEditingKey, ref())
 
 // Layout
-const isEditing = useVModel(props, 'isEditing', emits)
+const isEditingProp = useVModel(props, 'isEditing', emits)
+
+const isEditing = computed({
+  get() {
+    return isEditingProp.value || isFormEditing.value
+  },
+  set(val) {
+    isEditingProp.value = !!val
+    isFormEditing.value = !!val
+  },
+})
 
 const transitionProps = computed(() => ({
   enterActiveClass: 'animate-zoom-in animate-duration-250',
@@ -52,20 +62,6 @@ function handleClick() {
   }
 
   isEditing.value = true
-
-  if (!props.noFormInteraction) {
-    isInEditMode.value = true
-  }
-}
-
-if (!props.noFormInteraction) {
-  watch(isInEditMode, val => {
-    isEditing.value = !!val
-  })
-
-  watch(isEditing, val => {
-    isInEditMode.value = !!val
-  })
 }
 </script>
 

@@ -9,6 +9,7 @@ import { TableColumn } from '~/components/Table/models/table-column.model'
 import {
   tableFocusKey,
   tableResizeKey,
+  tableStretchColumnsKey,
 } from '~/components/Table/provide/table.provide'
 
 // Functions
@@ -20,7 +21,7 @@ import TableRow from '~/components/Table/TableRow.vue'
 import TableRowMobile from '~/components/Table/TableRow.mobile.vue'
 import TableHeader from '~/components/Table/TableHeader.client.vue'
 import TableTotals from '~/components/Table/TableTotals/TableTotals.vue'
-import VirtualScroller from '~/components/VirtualScroller/VirtualScroller_old.vue'
+import VirtualScroller from '~/components/VirtualScroller/VirtualScroller.vue'
 
 export function useTableLayout(
   props: ITableProps,
@@ -37,12 +38,14 @@ export function useTableLayout(
     internalColumns,
     searchableColumnLabels,
     resizeColumns,
+    stretchColumns,
     recreateColumns,
   } = useTableColumns(props, columnsRef, layoutRef)
 
   // Provides
   provide(tableResizeKey, () => handleResize(true))
   provide(tableFocusKey, () => scrollerEl.value?.focus())
+  provide(tableStretchColumnsKey, () => handleStretchColumns())
 
   // Layout
   const scrollerEl = ref<ComponentInstance<typeof VirtualScroller>>()
@@ -77,6 +80,9 @@ export function useTableLayout(
   const isOverflown = ref(false)
   let containerWidth = 0
 
+  /**
+   * Handles the resize of the table
+   */
   function handleResize(force?: boolean) {
     const { width } = unrefElement(
       scrollerEl.value as any
@@ -93,7 +99,7 @@ export function useTableLayout(
         internalColumns.value,
         {
           groupsRef: [],
-          isSelectableRef: props.selectable,
+          isSelectableRef: props.selectionOptions?.selectable,
           groupExpandWidthRef: props.groupExpandWidth,
           minColWidthRef: props.minimumColumnWidth,
         }
@@ -103,6 +109,32 @@ export function useTableLayout(
 
     headerEl.value?.updateArrows()
     totalsEl.value?.updateArrows()
+  }
+
+  /**
+   * Will stretch the columns to the full width of the table
+   */
+  function handleStretchColumns() {
+    const table = toValue(tableEl)
+    const scroller = toValue(scrollerEl)
+
+    const { width } = unrefElement(scrollerEl as any).getBoundingClientRect()
+
+    if (scroller && table) {
+      internalColumns.value = stretchColumns(
+        table,
+        scroller.$el,
+        toValue(internalColumns),
+        {
+          groupsRef: [],
+          isSelectableRef: props.selectionOptions?.selectable,
+          groupExpandWidthRef: props.groupExpandWidth,
+          minColWidthRef: props.minimumColumnWidth,
+        }
+      )
+
+      containerWidth = width
+    }
   }
 
   // Detect overflow
@@ -200,6 +232,7 @@ export function useTableLayout(
 
     // Functions
     handleRowClick,
+    handleStretchColumns,
     throttledHandleResize,
     recreateColumns,
     handleResize,

@@ -13,6 +13,7 @@ import {
   tableSelectionKey,
   tableSlotsKey,
   tableStorageKey,
+  tableStretchColumnsKey,
 } from '~/components/Table/provide/table.provide'
 
 // Store
@@ -27,7 +28,7 @@ const props = defineProps<
     ITableProps,
     | 'tableTopFunctionality'
     | 'queryBuilder'
-    | 'selectable'
+    | 'selectionOptions'
     | 'nonSavableSettings'
     | 'minimumColumnWidth'
     | 'exportProps'
@@ -39,6 +40,7 @@ const props = defineProps<
 >()
 const emits = defineEmits<{
   (e: 'update:columnsWidth'): void
+  (e: 'update:search', search: string): void
 }>()
 const slots = useSlots()
 
@@ -58,6 +60,7 @@ const storageKey = injectStrict(tableStorageKey)
 const tableRows = injectStrict(tableRowsKey)
 const tableRefresh = injectStrict(tableRefreshKey)
 const tableSlots = injectStrict(tableSlotsKey)
+const tableStretchColumns = injectStrict(tableStretchColumnsKey)
 
 // Layout
 const queryBuilder = useVModel(props, 'queryBuilder')
@@ -81,6 +84,38 @@ const queryBuilderHeight = computed(() => {
     maxHeight: `${
       MAX_VISIBLE_QUERY_BUILDER_ROWS * 32 + QUERY_BUILDER_INLINE_PADDING
     }px`,
+  }
+})
+
+const qbControlsClasses = computedEager(() => {
+  const hasQueryBuilder = !!queryBuilder.value
+
+  // Search is used
+  if (!props.noSearch) {
+    return {
+      removeFiltersBtn: 'self-center',
+      exportBtn: 'self-center',
+      separator: 'self-center',
+      queryBuilderBtn: 'self-start m-t-1',
+    }
+  }
+
+  // Chips are used
+  else if (!hasQueryBuilder) {
+    return {
+      removeFiltersBtn: 'self-start',
+      exportBtn: 'm-t-0.5',
+      separator: 'm-t-1.5',
+      queryBuilderBtn: '',
+    }
+  }
+
+  // Query builder is used
+  return {
+    removeFiltersBtn: 'self-start',
+    exportBtn: 'm-t-1',
+    separator: 'm-t-2',
+    queryBuilderBtn: 'self-start m-t-1',
   }
 })
 
@@ -157,7 +192,9 @@ function handleClearSorting() {
   })
 }
 
-function handleFitColumns() {
+function handleFitColumns(ev?: MouseEvent) {
+  const isShiftKey = !!ev?.shiftKey
+
   const fittableColumns = columns.value.filter(
     col => col.resizable && !col.hidden && !col.isHelperCol
   )
@@ -177,6 +214,11 @@ function handleFitColumns() {
       )
     }
 
+    // We stretch the columns
+    if (isShiftKey) {
+      tableStretchColumns()
+    }
+
     // We freeze the column again
     frozenColumn?.freeze(fittableColumns)
 
@@ -193,7 +235,6 @@ function handleFitColumns() {
       v-if="hasActionBar"
       class="table-top__actionbar"
     >
-      <!-- Query builder button -->
       <div
         flex="~ gap-1 items-center"
         grow
@@ -216,9 +257,11 @@ function handleFitColumns() {
         <TableQueryBuilderBtn
           v-if="queryBuilder"
           v-model:query-builder="queryBuilder"
+          :class="qbControlsClasses.queryBuilderBtn"
           self-start
-          m="t-1"
         />
+
+        <slot name="middle-start" />
 
         <slot name="left">
           <!-- Search -->
@@ -232,8 +275,8 @@ function handleFitColumns() {
           <template v-else-if="queryBuilder">
             <Separator
               vertical
-              h="full"
               m="l-1"
+              :class="qbControlsClasses.separator"
             />
 
             <VerticalScroller
@@ -265,7 +308,7 @@ function handleFitColumns() {
 
           <Separator
             vertical
-            h="full"
+            :class="qbControlsClasses.separator"
           />
 
           <!-- Remove filters -->
@@ -277,6 +320,7 @@ function handleFitColumns() {
             stacked
             class="table-top__qb-remove-filters"
             data-cy="remove-filters"
+            :class="qbControlsClasses.removeFiltersBtn"
           >
             <Menu
               placement="left"
@@ -327,7 +371,8 @@ function handleFitColumns() {
           >
             <Separator
               vertical
-              h="full"
+              m="r-1"
+              :class="qbControlsClasses.separator"
             />
 
             <Component
@@ -343,16 +388,15 @@ function handleFitColumns() {
           >
             <Separator
               vertical
-              h="full"
               m="r-1"
+              :class="qbControlsClasses.separator"
             />
 
             <Component
               :is="ExportBtn"
               v-bind="exportProps"
               shrink-0
-              self-start
-              m="t-1"
+              :class="qbControlsClasses.exportBtn"
             />
           </slot>
         </slot>
@@ -371,7 +415,7 @@ function handleFitColumns() {
         <div class="table-top__selection">
           <template
             v-if="
-              selectable &&
+              selectionOptions?.selectable &&
               ($slots['bulk-actions'] || $slots['bulk-actions-menu'])
             "
           >
@@ -409,12 +453,12 @@ function handleFitColumns() {
           <!-- Sorting -->
           <div
             v-if="tableSorting && !tableTopFunctionality?.noSort"
-            flex="~ gap-1"
-            items-center
+            flex="~ gap-1 items-center"
           >
             <span
               text="caption xs"
               font="bold"
+              m="t-0.5"
             >
               {{ $t('table.sortBy') }}:
             </span>
@@ -434,7 +478,7 @@ function handleFitColumns() {
           </div>
         </div>
 
-        <!-- Layout -->
+        <!-- Layout & Columns -->
         <div class="table-top__layout">
           <span
             v-if="!tableTopFunctionality?.noLayout"

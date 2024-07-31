@@ -5,6 +5,7 @@ import type { ITableSelection } from '~/components/Table/types/table-selection.t
 
 // Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
+import type { ITableSelectionOptions } from '~/components/Table/types/table-selection-options.type'
 
 export interface ITableProps {
   /**
@@ -70,6 +71,11 @@ export interface ITableProps {
   noFilters?: boolean
 
   /**
+   * Whether the table should have the lock-column buttons
+   */
+  noLock?: boolean
+
+  /**
    * Whether the table header should be hidden
    */
   noHeader?: boolean
@@ -84,6 +90,12 @@ export interface ITableProps {
    * When provided, the table will be initialized with this schema
    */
   initialLayoutSchema?: string
+
+  /**
+   * The layout schema that will be included in every request but will not be
+   * visible to the user
+   */
+  appendedLayoutSchema?: string
 
   /**
    * Whether the table is in `loading` state
@@ -160,14 +172,14 @@ export interface ITableProps {
   rows?: any[]
 
   /**
+   * The class of the row
+   */
+  rowClass?: (row: any) => ClassType
+
+  /**
    * The settings that are saveable whtin the table
    */
   nonSavableSettings?: Array<'columns' | 'filters' | 'sorting' | 'public'>
-
-  /**
-   * Whether the table rows should be selectable
-   */
-  selectable?: boolean
 
   /**
    * Defines visuals for the separators in the table
@@ -220,7 +232,7 @@ export interface ITableProps {
    * `payloadKey` ~ key in the response that contains the data
    * `countKey` ~ key in the response that contains the total count of rows
    * `urlKey` ~ key in the response that contains the query params for the request
-   * `hashKey` ~ key in the response that contains the hash key for the table
+   * `hashKeys` ~ keys in the response that contains table hashes - used to hydrate the table state
    * `createIdentifier` ~ function to create a unique identifier for each row when the `rowKey` is not unique
    * `errorHandler` ~ function to handle errors that come from fetching the table data
    */
@@ -228,7 +240,7 @@ export interface ITableProps {
     fnc: (options: ITableDataFetchFncInput) => Promise<any> | any
     payloadKey?: string
     countKey?: string
-    hashKey?: string
+    hashKeys?: Record<string, string>
     versionKey?: string
     createIdentifier?: (row: any, idx: number) => string | number
     errorHandler?: (error: any) => void
@@ -300,6 +312,37 @@ export interface ITableProps {
   splitRow?: number
 
   /**
+   * Selection-related props
+   */
+  selectionOptions?: {
+    /**
+     * Function that gets called on row select, returrn `false` to prevent the
+     * selection from happening
+     */
+    onSelect?: (
+      row: any,
+      selection: MaybeRefOrGetter<ITableSelection>,
+      options?: ITableSelectionOptions
+    ) => void | false | Promise<void | false>
+
+    /**
+     * Selection key
+     * The key to use for the selection
+     */
+    selectionKey?: string
+
+    /**
+     * Whether the table rows should be selectable
+     */
+    selectable?: boolean
+
+    /**
+     * Whether the table rows have the selection disabled
+     */
+    disabled?: boolean
+  }
+
+  /**
    * The selected rows, can be either:
    * * Array<string | number> ~ use for `rowKey` selection
    * * Record<itemKey, item> ~ use for `item` selection
@@ -307,17 +350,16 @@ export interface ITableProps {
   selected?: ITableSelection
 
   /**
-   * Selection key
-   * The key to use for the selection
-   */
-  selectionKey?: string
-
-  /**
    * Key for the local storage, if not provided, the key will be generated
    * based on the parent component of the table
    * use `null` to disable this functionality
    */
   storageKey?: string | null
+
+  /**
+   * When true, the table will not save the state in the local storage
+   */
+  noStateSave?: boolean
 
   /**
    * Link to the detail from page

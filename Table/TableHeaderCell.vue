@@ -7,6 +7,7 @@ type IProps = {
   columns: TableColumn<any>[]
   last?: boolean
   smallScreen?: boolean
+  noLock?: boolean
 }
 
 const props = defineProps<IProps>()
@@ -15,7 +16,9 @@ const props = defineProps<IProps>()
 const hasFrozenBtn = computed(() => {
   const col = props.column
 
-  return !col.isHelperCol && !col.noFreeze && !props.smallScreen
+  return (
+    !col.isHelperCol && !col.noFreeze && !props.smallScreen && !props.noLock
+  )
 })
 </script>
 
@@ -55,6 +58,7 @@ const hasFrozenBtn = computed(() => {
         flex="~ items-center"
         relative
       >
+        <!-- Lock -->
         <TableColumnFreezeBtn
           v-if="hasFrozenBtn"
           :column="column"
@@ -68,6 +72,7 @@ const hasFrozenBtn = computed(() => {
           backdrop-blur="sm"
         />
 
+        <!-- Filter -->
         <TableColumnFilterBtn
           v-if="!(column.noFilterSort || column.isHelperCol)"
           :column="column"

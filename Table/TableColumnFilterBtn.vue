@@ -26,7 +26,7 @@ const props = defineProps<IProps>()
 const tableFocus = injectStrict(tableFocusKey)
 
 // Layout
-const menuEl = ref<InstanceType<typeof MenuProxy>>()
+const isMenuShown = ref(false)
 const sortingEl = ref<InstanceType<typeof TableColumnSorting>>()
 const emptyValue = config.table.emptyValue
 const column = toRef(props, 'column')
@@ -56,7 +56,7 @@ function handleMenuShow(ev: PointerEvent) {
   const isShiftKey = ev.shiftKey
 
   if (!isShiftKey) {
-    menuEl.value?.show()
+    isMenuShown.value = true
   } else {
     let sort: TableColumn['sort']
 
@@ -130,7 +130,7 @@ function handleMenuBeforeHide() {
     </template>
 
     <Tooltip
-      v-if="column.filterDbQuery || column.sort"
+      v-if="!isMenuShown && (column.filterDbQuery || column.sort)"
       :offset="8"
     >
       <div
@@ -209,7 +209,7 @@ function handleMenuBeforeHide() {
     </Tooltip>
 
     <MenuProxy
-      ref="menuEl"
+      v-model="isMenuShown"
       manual
       w="90"
       dense

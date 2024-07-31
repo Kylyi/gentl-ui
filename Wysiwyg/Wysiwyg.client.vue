@@ -19,6 +19,7 @@ import type { IWysiwygMentionItem } from '~/components/Wysiwyg/types/wysiwyg-men
 
 // Functions
 import { useWysiwygUtils } from '~/components/Wysiwyg/functions/useWysiwygUtils'
+import { useInputWrapperUtils } from '~/components/Inputs/functions/useInputWrapperUtils'
 
 // Components
 import WysiwygMention from '~/components/Wysiwyg/WysiwygMention.vue'
@@ -35,6 +36,7 @@ const emits = defineEmits<{
 
 // Utils
 const { resolveValues } = useWysiwygUtils()
+const { getInputWrapperProps } = useInputWrapperUtils()
 
 // Layout
 const model = useVModel(props, 'modelValue', emits)
@@ -48,29 +50,7 @@ const transitionProps = computed(() => ({
 }))
 
 // Wrapper
-const wrapperProps = reactivePick(
-  props,
-  'contentClass',
-  'contentStyle',
-  'disabled',
-  'emptyValue',
-  'validation',
-  'errorTakesSpace',
-  'errorVisible',
-  'hint',
-  'inline',
-  'label',
-  'labelClass',
-  'labelInside',
-  'labelStyle',
-  'noBorder',
-  'loading',
-  'placeholder',
-  'readonly',
-  'required',
-  'size',
-  'stackLabel'
-)
+const wrapperProps = getInputWrapperProps(props)
 
 // TipTap Extensions
 // Placeholder https://tiptap.dev/api/extensions/placeholder

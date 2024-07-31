@@ -90,33 +90,27 @@ onMounted(() => {
     referenceEl.value?.addEventListener('mouseenter', () => {
       referenceEl.value && referenceEl.value.classList.add('tooltip-hovered')
 
-      setTimeout(
-        () => {
-          const isStillInside =
-            referenceEl.value?.classList.contains('tooltip-hovered')
+      setTimeout(() => {
+        const isStillInside =
+          referenceEl.value?.classList.contains('tooltip-hovered')
 
-          if (isStillInside) {
-            model.value = true
-          }
-        },
-        props.delay?.[0] || 0
-      )
+        if (isStillInside) {
+          model.value = true
+        }
+      }, props.delay?.[0] || 0)
     })
 
     referenceEl.value?.addEventListener('mouseleave', () => {
       referenceEl.value && referenceEl.value.classList.remove('tooltip-hovered')
 
-      setTimeout(
-        () => {
-          const isStillInside =
-            referenceEl.value?.classList.contains('tooltip-hovered')
+      setTimeout(() => {
+        const isStillInside =
+          referenceEl.value?.classList.contains('tooltip-hovered')
 
-          if (!isStillInside) {
-            model.value = false
-          }
-        },
-        props.delay?.[1] || 0
-      )
+        if (!isStillInside) {
+          model.value = false
+        }
+      }, props.delay?.[1] || 0)
     })
   })
 })

@@ -9,6 +9,7 @@ import type { IInputProps } from '~/components/Inputs/types/input-props.type'
 // Models
 import { GroupItem } from '~/libs/App/data/models/group-item.model'
 import { SortItem } from '~/libs/App/data/models/sort-item.model'
+import type { IListProps } from '~/components/List/types/list-props.type'
 
 export type ISelectorProps = IInputProps & {
   /**
@@ -25,6 +26,11 @@ export type ISelectorProps = IInputProps & {
    * Whether the Selector can be cleared -> will emit `emptyValue`
    */
   clearable?: boolean
+
+  /**
+   * The class applied to the `control` element
+   */
+  controlClass?: ClassType
 
   /**
    * Whether to hide clear buttons for selected items
@@ -47,27 +53,7 @@ export type ISelectorProps = IInputProps & {
   disabledFnc?: (item: any) => boolean
   fuseOptions?: FuseOptions<any>
   groupBy?: GroupItem[]
-  loadData?: {
-    /**
-     * The payload can actually be typed as follows:
-     * payload: { search?: string }
-     * But some queries dont have the search so to prevent TS from complaining, just use any
-     */
-    fnc: (payload: any) => Promise<any> | any
-    mapKey?: string
-    immediate?: boolean
-
-    /**
-     * Use when the data is already loaded and we want to use it
-     * When this is used, the `mapKey` is ignored and array of objects should be provided
-     */
-    local?: boolean
-
-    /**
-     * When true, the `loadData` fnc will be called on every search
-     */
-    onSearch?: boolean
-  }
+  loadData?: IListProps['loadData']
   noDropdownIcon?: boolean
   noTruncate?: boolean
   preselectFirst?: boolean
@@ -105,7 +91,7 @@ export type ISelectorProps = IInputProps & {
   noLocalAdd?: boolean
   sortBy?: SortItem[]
 
-  // LIST
+  // List
   emitKey?: boolean
   itemHeight?: number
   multi?: boolean
@@ -117,6 +103,7 @@ export type ISelectorProps = IInputProps & {
   searchDebounce?: number
   listClass?: ClassType
   search?: string
+  hasInfiniteScroll?: IListProps['hasInfiniteScroll']
 
   /**
    * The extended search token for fuse.js library

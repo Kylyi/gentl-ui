@@ -204,7 +204,9 @@ export function useTableColumnResizing(props: {
     }
 
     // Set the width of the column we're resizing to the new width
-    activeSplitter.value!.column.setWidth(activeSplitter.value!.adjustedWidth)
+    activeSplitter.value!.column.setWidth(
+      `${activeSplitter.value!.adjustedWidth}px`
+    )
 
     // Reset the active splitter
     activeSplitter.value = undefined

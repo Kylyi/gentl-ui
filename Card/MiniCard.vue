@@ -6,7 +6,7 @@ import { type IMiniCardProps } from '~/components/Card/types/mini-card-props.typ
 import { useValueFormatterUtils } from '~/components/ValueFormatter/functions/useValueForamtterUtils'
 
 const props = withDefaults(defineProps<IMiniCardProps>(), {
-  originalValue: undefined,
+  previousValue: undefined,
 })
 
 // Utils
@@ -15,6 +15,8 @@ const { getValueFormatterProps } = useValueFormatterUtils()
 const valueFormatterProps = getValueFormatterProps(props)
 
 // Layout
+const [DefineTemplate, OriginalValueBtn] = createReusableTemplate()
+
 function getShownValue(val: any) {
   if (isNil(val) || val === '' || (Array.isArray(val) && val.length === 0)) {
     return props.emptyValueString
@@ -22,6 +24,14 @@ function getShownValue(val: any) {
 
   return val
 }
+
+const isModified = computed(() => {
+  if (props.originalValue === undefined) {
+    return false
+  }
+
+  return !isEqual(props.originalValue, props.value)
+})
 </script>
 
 <template>
@@ -54,20 +64,30 @@ function getShownValue(val: any) {
             <span
               v-if="!to || !val"
               class="value-container-card__value"
-              :class="[valueClass, { 'font-bold': !noBold }]"
+              :class="[
+                valueClass,
+                { 'font-bold': !noBold, 'is-modified': isModified },
+              ]"
             >
               {{ getShownValue(val) }}
+
+              <OriginalValueBtn v-if="isModified" />
             </span>
 
             <NuxtLink
               v-else
               :to="to"
               class="link"
-              :class="[valueClass, { 'font-bold': !noBold }]"
+              :class="[
+                valueClass,
+                { 'font-bold': !noBold, 'is-modified': isModified },
+              ]"
             >
               <span class="link__label">
                 <span class="link__label-icon" />
                 {{ getShownValue(val) }}
+
+                <OriginalValueBtn v-if="isModified" />
               </span>
             </NuxtLink>
           </slot>
@@ -75,24 +95,24 @@ function getShownValue(val: any) {
 
         <!-- Orginal Value -->
         <template
-          v-if="originalValue !== undefined"
-          #originalValue="{ val }"
+          v-if="previousValue !== undefined"
+          #previousValue="{ val }"
         >
           <div m-t-2>
             <span
-              v-if="!toOriginalValue || !val"
-              class="value-container-card__value text-purple-500"
-              :class="[originalValueClass, { 'font-bold': !noBold }]"
+              v-if="!toPreviousValue || !val"
+              class="value-container-card__value color-purple-500 dark:color-purple-600"
+              :class="[previousValueClass, { 'font-bold': !noBold }]"
             >
               {{ getShownValue(val) }}
             </span>
 
             <NuxtLink
               v-else
-              :to="toOriginalValue"
+              :to="toPreviousValue"
               class="link"
-              :class="[originalValueClass, { 'font-bold': !noBold }]"
-              text-purple-500
+              :class="[previousValueClass, { 'font-bold': !noBold }]"
+              color="color-purple-500 dark:color-purple-600"
             >
               <span class="link__label">
                 <span class="link__label-icon" />
@@ -103,6 +123,43 @@ function getShownValue(val: any) {
         </template>
       </ValueFormatter>
     </div>
+
+    <DefineTemplate>
+      <span
+        inline-block
+        bg="purple-500 dark:purple-600"
+        rounded="full"
+      >
+        <Btn
+          size="xs"
+          round
+          icon="solar:history-outline !h-5 !w-5"
+          color="white"
+          no-dim
+        >
+          <Menu
+            hide-header
+            no-uplift
+          >
+            <span
+              font="bold"
+              text="caption"
+            >
+              {{ $t('version.currentValue') }}
+            </span>
+
+            <ValueFormatter
+              v-bind="valueFormatterProps"
+              :value="originalValue"
+            >
+              <template #default="{ val }">
+                {{ getShownValue(val) }}
+              </template>
+            </ValueFormatter>
+          </Menu>
+        </Btn>
+      </span>
+    </DefineTemplate>
   </div>
 </template>
 
@@ -123,6 +180,10 @@ function getShownValue(val: any) {
     overflow-wrap: break-word;
     font-weight: var(--MiniCard-value-font-weight);
     white-space: pre-line;
+
+    &.is-modified {
+      --apply: p-l-1 rounded-custom;
+    }
   }
 
   &__content {
@@ -133,10 +194,10 @@ function getShownValue(val: any) {
     --apply: decoration-none font-size-$MiniCard-value-font-size text-sm;
     font-weight: var(--MiniCard-value-font-weight);
 
-    &__label{
+    &__label {
       --apply: relative;
 
-      &::before{
+      &::before {
         --apply: content-empty inline-block w-4 min-w-4;
       }
 
@@ -154,13 +215,17 @@ function getShownValue(val: any) {
         --apply: ph:link min-h-4 h-4 min-w-4 w-4 absolute left-0 top-0.4;
       }
     }
+
+    &.is-modified {
+      --apply: p-l-1 rounded-custom;
+    }
   }
 }
 
 .dark{
-    .link{
-      &__label{
-        &:hover{
+    .link {
+      &__label {
+        &:hover {
           background-image: linear-gradient(to bottom, transparent 0%, transparent calc(100% - 1px), theme('colors.blue.700') calc(100% - 1px), theme('colors.blue.700') 100%);
           background-size: 100% 100%;
           background-repeat: no-repeat;

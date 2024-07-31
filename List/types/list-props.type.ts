@@ -2,12 +2,13 @@ import { type FuseOptions } from '@vueuse/integrations/useFuse'
 
 // Types
 import type { IListBaseProps } from '~/components/List/types/list-base-props.type'
+import type { IListFetchFnc } from '~/components/List/types/list-fetch.type'
 import type { IItemToBeAdded } from '~/components/List/types/list-item-to-add.type'
 
 // Models
 import { SortItem } from '~/libs/App/data/models/sort-item.model'
 
-export interface IListProps extends IListBaseProps {
+export type IListProps = IListBaseProps & {
   bordered?: boolean
   clearable?: boolean
   contentClass?: ClassType
@@ -44,6 +45,12 @@ export interface IListProps extends IListBaseProps {
   fuseExtendedSearchToken?: "'" | '=' | '!' | '^' | '!^' | '$' | '!$'
 
   /**
+   * When true, when scrolling to the bottom of the list, the `loadData` fnc will be called
+   * and the list will be extended with the new data
+   */
+  hasInfiniteScroll?: boolean
+
+  /**
    * Can be either
    * Array<string | number | item>
    * Record<itemKey, boolean | item>
@@ -52,13 +59,9 @@ export interface IListProps extends IListBaseProps {
   selected?: any
 
   loadData?: {
-    /**
-     * The payload can actually be typed as follows:
-     * payload: { search?: string }
-     * But some queries dont have the search so to prevent TS from complaining, just use any
-     */
-    fnc: (payload: any) => Promise<any> | any
+    fnc: IListFetchFnc
     mapKey?: string
+    countKey?: string
     immediate?: boolean
 
     /**

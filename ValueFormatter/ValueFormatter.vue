@@ -25,7 +25,7 @@ const formattedValue = computedEager(() => {
 })
 
 const formattedOriginalValue = computedEager(() => {
-  return formatValue(props.originalValue, props.row, {
+  return formatValue(props.previousValue, props.row, {
     dataType: props.dataType,
     format: props.format,
     emptyValue: props.emptyValue,
@@ -43,11 +43,11 @@ const formattedOriginalValue = computedEager(() => {
   </slot>
 
   <slot
-    name="originalValue"
+    name="previousValue"
     :val="formattedOriginalValue"
   >
     <span
-      v-if="originalValue !== undefined"
+      v-if="previousValue !== undefined"
       v-bind="$attrs"
     >
       {{

@@ -71,7 +71,7 @@ export function useInputUtils(options: IInputUtilsOptions) {
     'labelInside',
     'loading',
     'modelValue',
-    'originalValue',
+    'previousValue',
     'placeholder',
     'readonly',
     'required',

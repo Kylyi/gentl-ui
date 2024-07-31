@@ -8,6 +8,7 @@ import { tableInlineEditKey } from '~/components/Table/provide/table.provide'
 
 type IProps = {
   column: TableColumn
+  columnIndex: number
   editable?: boolean
   row: any
 }
@@ -73,6 +74,32 @@ function focusSiblingCell(
   return siblingCell
 }
 
+function focusFieldInNextRow(field?: string) {
+  handleSaveRow(true)
+
+  const _field = field ?? props.column.field
+
+  const parentRowEl = self?.vnode.el?.closest(
+    '.virtual-scroll__row'
+  ) as HTMLElement
+  const nextRowEditBtnEl = (parentRowEl?.nextElementSibling as HTMLElement)
+    ?.querySelector(`.cell[data-field="${_field}"]`)
+    ?.querySelector('.cell-edit-btn') as HTMLButtonElement
+
+  if (nextRowEditBtnEl) {
+    nextRowEditBtnEl.click()
+
+    const virtualScroller = parentRowEl.closest(
+      '.virtual-scroll'
+    ) as HTMLElement
+
+    const scrollTop = parentRowEl.style.getPropertyValue('--translateY')
+    if (scrollTop) {
+      virtualScroller.scrollTop = Number.parseInt(scrollTop)
+    }
+  }
+}
+
 // Layout
 const self = getCurrentInstance()
 const inputEl = ref<any>()
@@ -120,17 +147,11 @@ function handleKeyDown(e: KeyboardEvent) {
 
     case 'Enter':
       setTimeout(() => {
-        handleSaveRow()
-
         if (isControlKey) {
           return
         }
 
-        handleKeyDown({
-          ...e,
-          key: 'ArrowDown',
-          ctrlKey: true,
-        } as KeyboardEvent)
+        focusFieldInNextRow()
       })
 
       e.preventDefault?.()
@@ -180,6 +201,7 @@ function selectSelf(self: any) {
   <div
     class="cell"
     :class="{ 'is-editable': editable, 'is-editing': isEditingField }"
+    :data-field="col.field"
   >
     <!-- Label -->
     <div
@@ -209,6 +231,7 @@ function selectSelf(self: any) {
       <div
         v-if="isEditingField"
         flex="~ gap-1"
+        :class="{ 'm-r-18': columnIndex === 0 }"
       >
         <Component
           :is="col._editComponent.component"
@@ -227,7 +250,7 @@ function selectSelf(self: any) {
           size="sm"
           preset="SAVE"
           tabindex="-1"
-          @click.stop.prevent="handleSaveRow"
+          @click.stop.prevent="focusFieldInNextRow()"
         />
       </div>
 

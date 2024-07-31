@@ -26,6 +26,7 @@ import {
 // Injections
 import {
   tableCustomDataKey,
+  tableExternalDataKey,
   tableQueryBuilderKey,
   tableQueryKey,
   tableRecreateQueryBuilderKey,
@@ -61,6 +62,21 @@ export function useTableData(
     loadingInitialState: !props.rows,
   })
 
+  function extractHashes(data: any) {
+    const hashKeys = props.getData?.hashKeys ?? config.table.hashKeys
+    const hashes: Record<string, string | number> = {}
+
+    Object.keys(hashKeys).forEach(key => {
+      const hash = get(data, hashKeys[key as keyof typeof hashKeys])
+
+      if (hash) {
+        hashes[key] = hash
+      }
+    })
+
+    return hashes
+  }
+
   // Layout
   const isInitialized = ref(false)
   const hasMore = ref(false)
@@ -84,7 +100,9 @@ export function useTableData(
 
   initializeQueryBuilder()
 
-  // Provides
+  // Provides & Injects
+  const externalData = inject(tableExternalDataKey, ref({} as IItem))
+
   provide(tableRefreshKey, (force?: boolean) => refreshData(force))
   provide(tableRecreateQueryBuilderKey, () => initializeQueryBuilder())
   provide(tableStorageKey, storageKey)
@@ -214,6 +232,7 @@ export function useTableData(
         search: search.value,
         select: select.value,
         includeDeleted: tableState.value.includeDeleted,
+        appendedLayoutSchema: props.appendedLayoutSchema,
         count: true,
       }
 
@@ -299,7 +318,7 @@ export function useTableData(
             result,
             props.getData.countKey || config.table.countKey
           ),
-          hash: get(result, props.getData.hashKey || config.table.hashKey),
+          hashes: extractHashes(result),
           res: result,
         }
       },
@@ -356,28 +375,30 @@ export function useTableData(
       if (config.table.extractData) {
         customData.value = Object.assign(
           customData.value,
-          config.table.extractData(res)
+          config.table.extractData(res, externalData)
         )
       }
 
-      // When hash mismatches, we force metadata refetch and data refetch
-      const currentHash = get(
-        tableState.value.meta,
-        props.getData?.hashKey || config.table.hashKey
-      )
-      const newHash = get(res, 'hash')
+      // When any of the hashes mismatches, we force metadata refetch and data refetch
+      if (!dataHasBeenFetched.value) {
+        const resHashes = res.hashes
+        const stateHashes = extractHashes(tableState.value.meta)
 
-      if (
-        !!currentHash &&
-        currentHash !== newHash &&
-        !dataHasBeenFetched.value
-      ) {
-        await metaDataRefetch?.(true)
-        recreateColumns?.(false)
-        initializeQueryBuilder()
-        resizeColumns?.(true)
+        const hasHashMismatch = Object.keys(stateHashes).some(key => {
+          const stateHash = stateHashes[key]
+          const resHash = resHashes[key]
 
-        return
+          return stateHash !== resHash
+        })
+
+        if (hasHashMismatch) {
+          await metaDataRefetch?.(true)
+          recreateColumns?.(false)
+          initializeQueryBuilder()
+          resizeColumns?.(true)
+
+          return
+        }
       }
 
       if (res) {
@@ -497,14 +518,16 @@ export function useTableData(
       }
 
       // NOTE: Save `TableState`
-      setTableState(storageKey.value, {
-        page: dbQuery.tableQuery.skip! / dbQuery.tableQuery.take! + 1,
-        pageSize: dbQuery.tableQuery.take!,
-        includeDeleted: dbQuery.tableQuery.includeDeleted,
-        schema: dbQuery.queryParams.toString(),
-        columns: internalColumnsRef.value,
-        queryBuilder: dbQuery.tableQuery.queryBuilder,
-      })
+      if (!props.noStateSave) {
+        setTableState(storageKey.value, {
+          page: dbQuery.tableQuery.skip! / dbQuery.tableQuery.take! + 1,
+          pageSize: dbQuery.tableQuery.take!,
+          includeDeleted: dbQuery.tableQuery.includeDeleted,
+          schema: dbQuery.queryParams.toString(),
+          columns: internalColumnsRef.value,
+          queryBuilder: dbQuery.tableQuery.queryBuilder,
+        })
+      }
 
       // NOTE: Focus the table so we can use keyboard navigation
       // (but only if no floating element is visible - we don't want to close it by refocusing)
@@ -513,7 +536,7 @@ export function useTableData(
         const hasFloatingEl = !!document.querySelector('.floating-element')
         const isSearchInputFocused =
           activeElement.value?.tagName === 'INPUT' &&
-          activeElement.value?.getAttribute('name') === 'search'
+          activeElement.value?.getAttribute('name') === '_search'
 
         if (!hasFloatingEl && !isSearchInputFocused) {
           scrollerEl.value?.focus()
@@ -583,6 +606,7 @@ export function useTableData(
     search,
     totalRows,
     storageKey,
+    customData,
     refreshData,
 
     // Pagination

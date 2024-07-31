@@ -55,7 +55,9 @@ export function useQueryBuilderColumnFilters(
 
   const qbColumnFilters = ref(columnFilters.value)
   const originalFiltersByField = props.columns.reduce((agg, col) => {
-    agg[col.field] = col.filters.map(filter => new FilterItem(filter))
+    agg[col.field] = col.filters.map(
+      filter => new FilterItem({ ...filter, format: col.format })
+    )
 
     return agg
   }, {} as Record<string | number, FilterItem[]>)

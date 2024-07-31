@@ -35,6 +35,7 @@ const props = withDefaults(defineProps<ITableProps>(), {
   useUrl: true,
   infiniteScroll: config.table.props.infiniteScroll,
   noSearch: config.table.props.noSearch,
+  noLock: config.table.props.noLock,
 })
 
 defineEmits<{
@@ -51,6 +52,7 @@ defineSlots<{
   rowInside: { columns: any[]; row: any; index: number }
   dataRow: { columns: any[]; row: any; index: number }
   inner: { columns: any[]; row: any; index: number }
+  paginationAppend: { customData: IItem }
   top: IItem
   topLeftPrepend: IItem
   topLeftAppend: IItem
@@ -60,6 +62,7 @@ defineSlots<{
   topBulkActions: { selection: any[] }
   topBulkActionsMenu: { selection: any[] }
   belowTop: { rows: any[] }
+  topBarMiddleStart: IItem
 }>()
 
 const slots = useSlots()
@@ -79,6 +82,8 @@ defineExpose({
     row: any,
     options?: { val?: boolean; clearSelection?: boolean }
   ) => handleSelectRow(row, options),
+  clearSelection: () => clearSelection(),
+  handleCancelEditRow: () => handleCancelEditRow(),
   customFnc: (
     fnc: (options: {
       columns: TableColumn[]
@@ -134,9 +139,10 @@ const {
 const {
   isLoading,
   rows,
-  refreshData,
   search,
   dbQuery,
+  customData,
+  refreshData,
 
   // Pagination
   currentPage,
@@ -161,9 +167,9 @@ const {
   handleResize
 )
 
-const { handleSelectRow } = useTableSelection(props)
+const { handleSelectRow, clearSelection } = useTableSelection(props)
 useTableExporting(rows)
-useTableEditing(props)
+const { handleCancelEditRow } = useTableEditing(props)
 
 const overscan = computed(() => {
   return isBreakpoint.value
@@ -237,6 +243,13 @@ onMounted(() => {
         </template>
 
         <template
+          v-if="$slots['topbar-middle-start']"
+          #middle-start
+        >
+          <slot name="topbar-middle-start" />
+        </template>
+
+        <template
           v-if="$slots['top-bulk-actions']"
           #bulk-actions="{ selection }"
         >
@@ -274,6 +287,7 @@ onMounted(() => {
       :rows="rows"
       :minimum-column-width="minimumColumnWidth"
       :small-screen="!isBreakpoint"
+      :no-lock="noLock"
       :class="{ 'shadow-lg shadow-ca': isScrolled }"
       @scrolled="handleScrollLeft"
       @resized="scrollerEl?.rerender"
@@ -283,7 +297,7 @@ onMounted(() => {
       </template>
     </TableHeader>
 
-    <VirtualScrollerOld
+    <VirtualScroller
       v-show="hasVisibleColumn"
       ref="scrollerEl"
       :rows="rows"
@@ -305,7 +319,8 @@ onMounted(() => {
           :row-height="tableRowHeight.current"
           :editable="editable"
           :index="index"
-          :selectable="selectable"
+          :selectable="selectionOptions?.selectable"
+          :row-class="rowClass"
           @click="handleRowClick(row, $event)"
         >
           <template #row-inside="{ mode }">
@@ -350,7 +365,7 @@ onMounted(() => {
           </template>
         </Component>
       </template>
-    </VirtualScrollerOld>
+    </VirtualScroller>
 
     <TableNoData
       :has-no-data="!rows.length && !isLoading"
@@ -386,7 +401,19 @@ onMounted(() => {
       :limit-rows="getData?.limitRows"
       :prev="prev"
       :next="next"
-    />
+    >
+      <template
+        v-if="$slots['pagination-append']"
+        #pagination-append
+      >
+        <slot
+          name="pagination-append"
+          :custom-data="customData"
+        />
+      </template>
+    </TablePagination>
+
+    <slot />
   </div>
 </template>
 
@@ -394,6 +421,8 @@ onMounted(() => {
 .table-container {
   --apply: relative flex flex-col overflow-auto max-h-full max-w-full
     rounded-custom;
+
+  --apply: m-$Table-content-margin;
 
   &__top {
     --apply: flex flex-col shrink-0 gap-1 border-b-1 border-ca p-2 p-l-1
@@ -416,11 +445,5 @@ onMounted(() => {
 
 :deep(.virtual-scroll__content) {
   --apply: font-size-13px;
-}
-
-.table-header,
-.table-totals,
-.scroller {
-  --apply: m-$Table-content-margin;
 }
 </style>

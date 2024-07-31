@@ -24,13 +24,8 @@ const miniCardProps = getMiniCardProps(props)
 <template>
   <MiniCard
     v-if="!editable"
-    v-bind="{
-      ...miniCardProps,
-      ...$attrs,
-    }"
+    v-bind="{ ...miniCardProps, ...$attrs }"
     bg="white dark:darker"
-    :original-value="originalValue"
-    :to-original-value="toOriginalValue"
   >
     <template #default="{ val }">
       <slot
@@ -42,11 +37,8 @@ const miniCardProps = getMiniCardProps(props)
 
   <div
     v-else
-    flex
-    items-center
-    v-bind="{
-      ...$attrs,
-    }"
+    flex="~ items-center"
+    v-bind="$attrs"
   >
     <div
       v-if="miniCardProps.icon"

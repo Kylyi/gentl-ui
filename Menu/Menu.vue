@@ -398,10 +398,12 @@ function show(force?: boolean) {
   isReferenceElTransparent.value =
     referenceElStyle.backgroundColor === 'rgba(0, 0, 0, 0)'
 
-  if (isReferenceElTransparent.value && color.value === 'light') {
-    ;(referenceEl.value as any).style.backgroundColor = 'white'
-  } else if (isReferenceElTransparent.value) {
-    ;(referenceEl.value as any).style.backgroundColor = 'black'
+  if (!props.noUplift) {
+    if (isReferenceElTransparent.value && color.value === 'light') {
+      ;(referenceEl.value as any).style.backgroundColor = 'white'
+    } else if (isReferenceElTransparent.value) {
+      ;(referenceEl.value as any).style.backgroundColor = 'black'
+    }
   }
 
   ;(referenceEl.value as any).classList.add('shadow-consistent-xs')

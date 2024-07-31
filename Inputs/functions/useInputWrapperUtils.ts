@@ -3,7 +3,7 @@ import type { IInputWrapperProps } from '~/components/Inputs/types/input-wrapper
 
 export function useInputWrapperUtils() {
   function getInputWrapperProps(props: IInputWrapperProps) {
-    reactivePick(
+    return reactivePick(
       props,
       'contentClass',
       'disabled',

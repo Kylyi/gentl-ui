@@ -35,15 +35,15 @@ defineExpose({
   focusInput: (input: 'field' | 'comparator' | 'value' = 'value') => {
     switch (input) {
       case 'field':
-        fieldInputEl.value?.focus()
+        fieldInputEl.value?.focus?.()
         break
 
       case 'comparator':
-        comparatorInputEl.value?.focus()
+        comparatorInputEl.value?.focus?.()
         break
 
       case 'value':
-        valueInputEl.value?.focus()
+        valueInputEl.value?.focus?.()
         break
     }
   },
@@ -94,10 +94,8 @@ const component = computed(() => {
  */
 const customValue = computed({
   get() {
-    if (colSelected.value?.filterComponent?.valueFormatter) {
-      return colSelected.value.filterComponent.valueFormatter.getter(
-        item.value.value
-      )
+    if (customFilterComponent.value?.valueFormatter) {
+      return customFilterComponent.value.valueFormatter.getter(item.value.value)
     }
 
     return item.value.value
@@ -105,9 +103,8 @@ const customValue = computed({
   set(value) {
     const val = typeof value === 'string' ? value.trim() : value
 
-    if (colSelected.value?.filterComponent?.valueFormatter) {
-      item.value.value =
-        colSelected.value.filterComponent.valueFormatter.setter(val)
+    if (customFilterComponent.value?.valueFormatter) {
+      item.value.value = customFilterComponent.value.valueFormatter.setter(val)
 
       return
     }
@@ -159,7 +156,14 @@ const customFilterComponent = computed(() => {
     return
   }
 
-  return colSelected.value.filterComponent ?? getCustomFilter(colSelected.value)
+  const isCustomFilterComponent =
+    colSelected.value.filterComponent?.comparators.includes(
+      item.value.comparator
+    )
+
+  return isCustomFilterComponent
+    ? colSelected.value.filterComponent
+    : getCustomFilter(colSelected.value, item.value)
 })
 
 function handleRemoveCondition() {
@@ -366,6 +370,7 @@ const $z = useVuelidate(
           class="qb-item__content-value"
           :placeholder="`${$t('table.filterValue')}...`"
           data-cy="qb-item__content-value"
+          :validation="$z.item.value"
         />
 
         <!-- Selector for `Comparator.IN` and `Comparator.NOT_IN` for simple string cases -->
