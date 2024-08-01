@@ -22,6 +22,7 @@ const hasAnyModifier = computed(() => {
 
 const isVisible = computed(() => {
   return appStore.lastPointerDownType === 'mouse'
+    && appStore.appState.general?.keyboardShortcuts
 })
 </script>
 
