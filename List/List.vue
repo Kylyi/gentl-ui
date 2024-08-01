@@ -229,11 +229,16 @@ onMounted(() => {
       </template>
     </Component>
 
-    <Banner
+    <!-- No data -->
+    <div
       v-else-if="!isLoading && isInitialized"
-      icon-center
-      :label="$t('general.noData')"
-    />
+      flex="~ 1 col"
+    >
+      <Banner
+        icon-center
+        :label="$t('general.noData')"
+      />
+    </div>
 
     <LoaderBlock
       v-else-if="!isInitialized"

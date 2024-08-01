@@ -84,6 +84,6 @@ defineExpose({
 <style scoped lang="scss">
 .mention-items {
   @apply flex flex-gap-2 flex-col rounded-custom z-$zMax max-h-100
-    overflow-auto border-1 border-ca min-w-40;
+    overflow-auto border-1 border-ca min-w-40 bg-white dark:bg-darker;
 }
 </style>
