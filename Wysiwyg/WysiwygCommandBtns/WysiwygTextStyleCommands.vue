@@ -1,30 +1,30 @@
 <script setup lang="ts">
-// Functions
-import { useWysiwygInjections } from '~/components/Wysiwyg/functions/useWysiwygInjections'
+// Store
+import { useWysiwygStore } from '~/components/Wysiwyg/wysiwyg.store'
 
-// Utils
-const { wysiwygEditor } = useWysiwygInjections()
+// Store
+const { editor } = useWysiwygStore()
 
 // Bold & Italic & Underline
-const isBold = computed(() => toValue(wysiwygEditor)?.isActive('bold'))
-const isItalic = computed(() => toValue(wysiwygEditor)?.isActive('italic'))
-const isUnderline = computed(() => toValue(wysiwygEditor)?.isActive('underline'))
-const isStrikethrough = computed(() => toValue(wysiwygEditor)?.isActive('strike'))
+const isBold = computed(() => editor?.isActive('bold'))
+const isItalic = computed(() => editor?.isActive('italic'))
+const isUnderline = computed(() => editor?.isActive('underline'))
+const isStrikethrough = computed(() => editor?.isActive('strike'))
 
 function handleToggleBold() {
-  toValue(wysiwygEditor)?.chain().focus().toggleBold().run()
+  editor?.chain().focus().toggleBold().run()
 }
 
 function handleToggleUnderline() {
-  toValue(wysiwygEditor)?.chain().focus().toggleUnderline().run()
+  editor?.chain().focus().toggleUnderline().run()
 }
 
 function handleToggleItalic() {
-  toValue(wysiwygEditor)?.chain().focus().toggleItalic().run()
+  editor?.chain().focus().toggleItalic().run()
 }
 
 function handleToggleStrikethrough() {
-  toValue(wysiwygEditor)?.chain().focus().toggleStrike().run()
+  editor?.chain().focus().toggleStrike().run()
 }
 </script>
 

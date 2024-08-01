@@ -1,21 +1,21 @@
 <script setup lang="ts">
-// Functions
-import { useWysiwygInjections } from '~/components/Wysiwyg/functions/useWysiwygInjections'
+// Store
+import { useWysiwygStore } from '~/components/Wysiwyg/wysiwyg.store'
 
-// Utils
-const { wysiwygEditor } = useWysiwygInjections()
+// Store
+const { editor } = useWysiwygStore()
 
 const textAlignment = computed(() => {
   return {
-    left: toValue(wysiwygEditor)?.isActive({ textAlign: 'left' }),
-    center: toValue(wysiwygEditor)?.isActive({ textAlign: 'center' }),
-    right: toValue(wysiwygEditor)?.isActive({ textAlign: 'right' }),
-    justify: toValue(wysiwygEditor)?.isActive({ textAlign: 'justify' }),
+    left: editor?.isActive({ textAlign: 'left' }),
+    center: editor?.isActive({ textAlign: 'center' }),
+    right: editor?.isActive({ textAlign: 'right' }),
+    justify: editor?.isActive({ textAlign: 'justify' }),
   }
 })
 
 function handleTextAlign(align: string) {
-  toValue(wysiwygEditor)?.chain().focus().setTextAlign(align).run()
+  editor?.chain().focus().setTextAlign(align).run()
 }
 </script>
 

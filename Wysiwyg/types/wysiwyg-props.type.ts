@@ -4,21 +4,38 @@ import type { ImageOptions } from '@tiptap/extension-image'
 // Types
 import type { IInputWrapperProps } from '~/components/Inputs/types/input-wrapper-props.type'
 import type { IWysiwygMentionItem } from '~/components/Wysiwyg/types/wysiwyg-mention-item.type'
+import type { IWysiwygMentionSetup } from '~/components/Wysiwyg/types/wysiwyg-mention-setup.type'
 
 export type IWysiwygProps = {
+  /**
+   * When true, images will be allowed to be inserted
+   *
+   * TODO: This is not yet implemented
+   */
+  allowImage?: boolean
+
+  /**
+   * When true, links will be allowed to be inserted
+   */
   allowLink?: boolean
+
+  /**
+   * When true, files will be allowed to be inserted
+   */
+  allowFileUpload?: boolean
   image?: Partial<ImageOptions> | boolean
   debounce?: number
   editorClass?: ClassType
   editorStyle?: CSSProperties
   emptyValue?: any
-  fileUpload?: boolean
   hint?: string
   name?: string
   noSink?: boolean
   mentionItems?: IWysiwygMentionItem[]
   modelValue?: any
   sinkAlwaysVisible?: boolean
+
+  mentionSetup?: IWysiwygMentionSetup[]
 
   /**
    * When true, the WysiwygSink will NOT be floating -> will be `relative` instead of `absolute`
@@ -33,14 +50,9 @@ export type IWysiwygProps = {
   autoResolveMentions?: boolean
 
   /**
-   * When true, editor will automatically upload the files and adjust the html
-   */
-  autoResolveFiles?: boolean
-
-  /**
    * The files that are part of the editor
    */
-  files?: Pick<IFile, 'id' | 'name' | 'path'>[] | null
+  files?: IFile[] | null
 
   /**
    * When true, the editor will replace the mention with whatever value it finds

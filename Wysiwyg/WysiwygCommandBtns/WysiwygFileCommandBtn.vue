@@ -1,33 +1,40 @@
 <script setup lang="ts">
-// Injections
-import { useWysiwygInjections } from '~/components/Wysiwyg/functions/useWysiwygInjections'
+// Store
+import { useWysiwygStore } from '~/components/Wysiwyg/wysiwyg.store'
+
+// Models
+import type { FileModel } from '~/components/FileInput/models/file.model'
+import { useWysiwygFile } from '~/components/Wysiwyg/functions/useWysiwygFile'
 
 // Functions
 import { useNumber } from '~/components/Inputs/NumberInput/functions/useNumber'
 
+// Store
+const { filesByPath } = storeToRefs(useWysiwygStore())
+
 // Utils
 const { formatBytes } = useNumber()
-const { wysiwygFilesByPath, wysiwygAddFiles } = useWysiwygInjections()
+const { addFiles } = useWysiwygFile()
 
 // Layout
 const selectedFiles = ref<IFile[]>([])
-const files = ref<File[]>([])
+const files = ref<FileModel[]>([])
 
 const uploadedFiles = computed(() => {
-  if (!wysiwygFilesByPath.value) {
+  if (!filesByPath.value) {
     return []
   }
 
-  return Object.values(wysiwygFilesByPath.value)
+  return Object.values(filesByPath.value)
 })
 
 function handleSubmit() {
   if (selectedFiles.value.length) {
-    wysiwygAddFiles(selectedFiles.value)
+    addFiles(selectedFiles.value)
   }
 
   if (files.value.length) {
-    wysiwygAddFiles(files.value)
+    addFiles(files.value)
   }
 
   $hide()

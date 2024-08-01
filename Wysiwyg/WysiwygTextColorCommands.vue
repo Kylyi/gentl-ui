@@ -1,6 +1,6 @@
 <script setup lang="ts">
-// Functions
-import { useWysiwygInjections } from '~/components/Wysiwyg/functions/useWysiwygInjections'
+// Store
+import { useWysiwygStore } from '~/components/Wysiwyg/wysiwyg.store'
 
 defineEmits<{
   (e: 'set-heading', value: boolean): void
@@ -10,12 +10,12 @@ defineEmits<{
 }>()
 
 // Utils
-const { wysiwygEditor } = useWysiwygInjections()
+const { editor } = useWysiwygStore()
 
 function handleSetColor(color?: string | null) {
   color
-    ? toValue(wysiwygEditor)?.chain().focus().setColor(color).run()
-    : toValue(wysiwygEditor)?.chain().focus().unsetColor().run()
+    ? editor?.chain().focus().setColor(color).run()
+    : editor?.chain().focus().unsetColor().run()
 }
 </script>
 

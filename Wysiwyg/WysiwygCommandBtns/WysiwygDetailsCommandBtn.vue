@@ -1,16 +1,16 @@
 <script setup lang="ts">
-// Functions
-import { useWysiwygInjections } from '~/components/Wysiwyg/functions/useWysiwygInjections'
+// Store
+import { useWysiwygStore } from '~/components/Wysiwyg/wysiwyg.store'
 
-// Utils
-const { wysiwygEditor } = useWysiwygInjections()
+// Store
+const { editor } = useWysiwygStore()
 
 function handleSetDetails() {
-  toValue(wysiwygEditor)?.chain().focus().setDetails().run()
+  editor?.chain().focus().setDetails().run()
 }
 
 function handleUnsetDetails() {
-  toValue(wysiwygEditor)?.chain().focus().unsetDetails().run()
+  editor?.chain().focus().unsetDetails().run()
 }
 </script>
 
@@ -21,7 +21,7 @@ function handleUnsetDetails() {
       icon="i-pajamas:details-block"
       size="sm"
       color="ca"
-      :disabled="!wysiwygEditor?.can().setDetails()"
+      :disabled="!editor?.can().setDetails()"
       @click.stop.prevent="handleSetDetails"
       @mousedown.stop.prevent
     />
@@ -31,7 +31,7 @@ function handleUnsetDetails() {
       icon="i-gg:details-more"
       size="sm"
       color="ca"
-      :disabled="!wysiwygEditor?.can().unsetDetails()"
+      :disabled="!editor?.can().unsetDetails()"
       @click.stop.prevent="handleUnsetDetails"
       @mousedown.stop.prevent
     />

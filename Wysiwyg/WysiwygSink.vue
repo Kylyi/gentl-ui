@@ -1,26 +1,47 @@
 <script setup lang="ts">
-// Functions
-import { useWysiwygInjections } from '~/components/Wysiwyg/functions/useWysiwygInjections'
+// Types
+import type { IWysiwygProps } from '~/components/Wysiwyg/types/wysiwyg-props.type'
 
-type IProps = {
-  allowLink?: boolean
-  textSize?: string
-  fileUpload?: boolean
-}
+// Store
+import { useWysiwygStore } from '~/components/Wysiwyg/wysiwyg.store'
 
-defineProps<IProps>()
+const props = defineProps<IWysiwygProps>()
 
-// Utils
-const { wysiwygEditor } = useWysiwygInjections()
+// Store
+const { isFocused } = storeToRefs(useWysiwygStore())
 
-const canUseImage = computed(() => {
-  return toValue(wysiwygEditor)?.options.extensions.find(ext => ext.name === 'mage')
+// Layout
+const sinkEl = ref<HTMLDivElement>()
+const hasActiveMenu = ref(false)
+
+const isEditable = computed(() => !props.readonly && !props.disabled)
+
+const isSinkVisible = computed(() => {
+  if (props.noSink || !isEditable.value) {
+    return false
+  }
+
+  return isFocused.value || props.sinkAlwaysVisible || hasActiveMenu.value
 })
+
+useMutationObserver(
+  sinkEl,
+  records => {
+    hasActiveMenu.value = records.some(record => {
+      const targetClasslist = (record.target as HTMLElement).classList
+
+      return targetClasslist.contains('is-menu-active') || targetClasslist.contains('is-dialog-active')
+    })
+  },
+  { subtree: true, attributeFilter: ['class'] },
+)
 </script>
 
 <template>
   <div
-    flex="~ gap-2 items-center"
+    v-if="isSinkVisible"
+    ref="sinkEl"
+    class="wysiwyg-sink__wrapper"
     @click.stop.prevent
     @mousedown.stop.prevent
   >
@@ -71,7 +92,7 @@ const canUseImage = computed(() => {
 
         <WysiwygLink />
 
-        <WysiwygFileCommandBtn v-if="fileUpload" />
+        <WysiwygFileCommandBtn v-if="allowFileUpload" />
       </template>
 
       <Separator
@@ -82,7 +103,7 @@ const canUseImage = computed(() => {
 
       <WysiwygDetailsCommandBtn />
 
-      <template v-if="canUseImage">
+      <template v-if="allowImage">
         <Separator
           vertical
           spaced
@@ -100,6 +121,14 @@ const canUseImage = computed(() => {
 <style lang="scss" scoped>
 .wysiwyg-sink {
   @apply z-$zLogo dark:bg-darker bg-white;
+
+  &__wrapper {
+    @apply flex gap-2 items-center right-0 w-full shrink-0;
+
+    &.is-floating {
+      @apply absolute -top-40px;
+    }
+  }
 
   :deep(.btn) {
     @apply border-1 border-transparent;

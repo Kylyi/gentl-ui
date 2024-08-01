@@ -156,7 +156,7 @@ export function useListKeyboardNavigation(options: {
         hoveredIdx.value = -1
       }
 
-      handleKey(ev, { repeated: true })
+      handleKey(ev, { force: options?.force, repeated: true })
     }
 
     // Got to a group

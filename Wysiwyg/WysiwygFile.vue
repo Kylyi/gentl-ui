@@ -1,11 +1,17 @@
 <script lang="ts">
 import { NodeViewWrapper, nodeViewProps } from '@tiptap/vue-3'
 
-// Functions
-import { useWysiwygInjections } from '~/components/Wysiwyg/functions/useWysiwygInjections'
-
 // Models
 import { FileModel } from '~/components/FileInput/models/file.model'
+
+// Injections
+import { wysiwygModelKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
+
+// Functions
+import { useWysiwygUtils } from '~/components/Wysiwyg/functions/useWysiwygUtils'
+
+// Store
+import { useWysiwygStore } from '~/components/Wysiwyg/wysiwyg.store'
 
 export default {
   components: { NodeViewWrapper },
@@ -13,27 +19,26 @@ export default {
 
   setup(props) {
     // Utils
-    const {
-      wysiwygRemoveElement,
-      wysiwygSyncFilesHTML,
-      wysiwygProvidedData,
-      wysiwygFilesByPath,
-      wysiwygEditor,
-    } = useWysiwygInjections()
+    const { removeElement } = useWysiwygUtils()
+    const wysiwygStore = useWysiwygStore()
+    const { editor, filesByPath } = storeToRefs(wysiwygStore)
 
+    // Layout
+    const model = injectStrict(wysiwygModelKey)
     const { files } = useFiles()
     const { handleRequest } = useRequest()
     const uuid = props.node.attrs.uuid
     const filepath = props.node.attrs.filepath
 
     // New files uploaded through and grouped by the `uuid`
-    const componentData = wysiwygProvidedData?.[uuid]
+    const componentData = wysiwygStore.providedData[uuid]
 
-    const isEditable = computed(() => wysiwygEditor.value?.isEditable)
+    const isEditable = computed(() => editor.value?.isEditable)
 
     const file = computed(() => {
-      const uploadedFile = wysiwygFilesByPath.value?.[filepath as keyof typeof wysiwygFilesByPath.value]
-      const providedFile = componentData?.file as FileModel | undefined
+      const _filePath = filepath as keyof typeof filesByPath.value
+      const uploadedFile = filesByPath.value[_filePath]
+      const providedFile = componentData?.file as FileModel | IFile | undefined
 
       return uploadedFile || providedFile
     })
@@ -45,14 +50,44 @@ export default {
         file.value.cancelUpload?.()
       }
 
-      wysiwygRemoveElement?.(`span[uuid="${uuid}"]`)
+      removeElement?.(`span[uuid="${uuid}"]`, model)
+    }
+
+    /**
+     * Once files are uploaded, its path needs to be updated in the editor,
+     * this method does exactly that
+     */
+    function syncFilesHTML() {
+      if (!editor.value) {
+        return ''
+      }
+
+      const parser = new DOMParser()
+      const doc = parser.parseFromString(editor.value?.getHTML(), 'text/html')
+
+      const fileNodes = doc.querySelectorAll('[data-type="wysiwyg-file"]')
+
+      Array.from(fileNodes).forEach(node => {
+        const nodeUUID = node.getAttribute('uuid') ?? ''
+
+        const file = wysiwygStore.providedData[nodeUUID]?.file as FileModel
+        const filepath = file?.uploadedFile?.filepath
+
+        if (filepath) {
+          node.setAttribute('filepath', filepath)
+        }
+      })
+
+      model.value = doc.body.innerHTML
+      editor.value?.chain().setContent(doc.body.innerHTML).run()
     }
 
     // When this component is mounted (~ an image is inserted into the Wysiwyg editor, upload the files)
     onMounted(() => {
       nextTick(() => {
+        console.log(file.value)
         if (file.value instanceof FileModel && !file.value.isUploaded) {
-          file.value.upload?.(handleRequest).then(() => wysiwygSyncFilesHTML?.())
+          file.value.upload?.(handleRequest).then(() => syncFilesHTML?.())
         }
       })
     })
@@ -60,14 +95,6 @@ export default {
     whenever(file, file => {
       files.value = [file]
     }, { deep: true, immediate: true })
-
-    // onBeforeUnmount(() => {
-    //   if (file.value instanceof FileModel && file.value.isUploaded) {
-    //     file.value?.delete(handleRequest)
-    //   } else if (file.value instanceof FileModel && !file.value.isUploaded) {
-    //     file.value?.cancelUpload?.()
-    //   }
-    // })
 
     return {
       isEditable,

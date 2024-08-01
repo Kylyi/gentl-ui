@@ -1,7 +1,3 @@
-import { Node, mergeAttributes } from '@tiptap/core'
-import { VueNodeViewRenderer } from '@tiptap/vue-3'
-import type { SuggestionKeyDownProps } from '@tiptap/suggestion'
-
 // Functions
 import { useValueFormatterUtils } from '~/components/ValueFormatter/functions/useValueFormatterUtils'
 
@@ -10,17 +6,29 @@ import { mentionEntityKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
 
 // Constants
 import { mentionItemsMap } from '~/components/Wysiwyg/constants/resolve-values.map'
-
-// Components
-import WysiwygFile from '~/components/Wysiwyg/WysiwygFile.vue'
+import { useWysiwygStore } from '~/components/Wysiwyg/wysiwyg.store'
 
 export function useWysiwygUtils() {
-  const { formatValue } = useValueFormatterUtils()
+  // Utils
   const mentionEntity = injectStrict(mentionEntityKey, {})
+  const { formatValue } = useValueFormatterUtils()
 
-  function resolveValues(view: SuggestionKeyDownProps['view']) {
+  // Store
+  const wysiwygStore = useWysiwygStore()
+
+  const transitionProps = computed(() => ({
+    enterActiveClass: 'animate-fade-in animate-duration-150',
+    leaveActiveClass: 'animate-fade-out animate-duration-150',
+  }))
+
+  function resolveValues() {
+    const view = wysiwygStore.editor?.view
+
+    if (!view) {
+      return
+    }
+
     const entity = toValue(mentionEntity)
-    console.log('Log ~ resolveValues ~ entity:', entity)
     const elements = view.dom.querySelectorAll('span[data-type="mention"]')
 
     elements.forEach(el => {
@@ -42,7 +50,6 @@ export function useWysiwygUtils() {
           )
           ?? `\${${attrValue}}`
 
-        console.log('Log ~ resolveValues ~ value:', value)
         const spanEl = document.createElement('span')
         spanEl.innerText = value
 
@@ -51,45 +58,24 @@ export function useWysiwygUtils() {
     })
   }
 
-  function FileComponent() {
-    return Node.create({
-      name: 'wysiwygFile',
-      group: 'inline',
-      inline: true, // Ensure the node is inline
-      draggable: true,
-      // atom: true,
+  function removeElement(selector: string, wysiwygModel: Ref<any>) {
+    const parser = new DOMParser()
+    const doc = parser.parseFromString(wysiwygStore.editor?.getHTML() ?? '', 'text/html')
 
-      parseHTML() {
-        return [
-          {
-            tag: 'span[data-type="wysiwyg-file"]',
-          },
-        ]
-      },
+    const node = doc.querySelector(selector)
 
-      renderHTML({ HTMLAttributes }) {
-        return ['span', mergeAttributes(HTMLAttributes, { 'data-type': 'wysiwyg-file' })]
-      },
+    if (node) {
+      node.remove()
 
-      addAttributes() {
-        return {
-          uuid: {
-            default: '',
-          },
-          filepath: {
-            default: '',
-          },
-        }
-      },
-      addNodeView() {
-        return VueNodeViewRenderer(WysiwygFile)
-      },
+      wysiwygStore.editor?.chain().setContent(doc.body.innerHTML).run()
 
-    })
+      wysiwygModel.value = doc.body.innerHTML
+    }
   }
 
   return {
     resolveValues,
-    FileComponent,
+    transitionProps,
+    removeElement,
   }
 }

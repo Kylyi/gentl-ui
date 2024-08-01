@@ -1,25 +1,25 @@
 <script setup lang="ts">
-// Functions
-import { useWysiwygInjections } from '~/components/Wysiwyg/functions/useWysiwygInjections'
+// Store
+import { useWysiwygStore } from '~/components/Wysiwyg/wysiwyg.store'
 
-// Utils
-const { wysiwygEditor } = useWysiwygInjections()
+// Store
+const { editor } = useWysiwygStore()
 
 // Layout
-const isBulletedList = computed(() => toValue(wysiwygEditor)?.isActive('bulletList'))
-const isNumberedList = computed(() => toValue(wysiwygEditor)?.isActive('orderedList'))
-const isTaskList = computed(() => toValue(wysiwygEditor)?.isActive('taskList'))
+const isBulletedList = computed(() => editor?.isActive('bulletList'))
+const isNumberedList = computed(() => editor?.isActive('orderedList'))
+const isTaskList = computed(() => editor?.isActive('taskList'))
 
 function handleToggleBullettedList() {
-  toValue(wysiwygEditor)?.chain().focus().toggleBulletList().run()
+  editor?.chain().focus().toggleBulletList().run()
 }
 
 function handleToggleNumberedList() {
-  toValue(wysiwygEditor)?.chain().focus().toggleOrderedList().run()
+  editor?.chain().focus().toggleOrderedList().run()
 }
 
 function handleToggleTaskList() {
-  toValue(wysiwygEditor)?.chain().focus().toggleTaskList().run()
+  editor?.chain().focus().toggleTaskList().run()
 }
 </script>
 
