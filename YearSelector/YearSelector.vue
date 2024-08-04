@@ -12,6 +12,9 @@ const emits = defineEmits<{
   (e: 'next'): void
 }>()
 
+// Utils
+const { $bp } = useNuxtApp()
+
 // Layout
 const yearInputEl = ref<InstanceType<typeof NumberInput>>()
 const yearSelectorVisible = ref(false)
@@ -89,7 +92,7 @@ function handleMouseWheel(ev: WheelEvent) {
 
 watch(
   () => props.modelValue,
-  model => (internalValue.value = $date(model).year())
+  model => (internalValue.value = $date(model).year()),
 )
 
 defineExpose({ sync })
@@ -133,9 +136,7 @@ defineExpose({ sync })
       :target="yearInputEl"
       :fit="false"
       w="60"
-      :reference-target="
-        $bp.isGreaterOrEqual('xm') ? referenceTarget : undefined
-      "
+      :reference-target="$bp.isGreaterOrEqual('xm') ? referenceTarget : undefined"
       no-uplift
       @before-hide="sync"
       @wheel.passive="handleMouseWheel"

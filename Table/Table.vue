@@ -330,7 +330,7 @@ onMounted(() => {
       :no-autofit="noAutofit"
       :class="{ 'shadow-lg shadow-ca': isScrolled }"
       :selection-options="selectionOptions"
-      @resized="scrollerEl?.rerender"
+      @resized="scrollerEl?.rerender(true)"
     >
       <template #default="{ col }">
         <slot :name="`header-${col.name}`" />

@@ -15,6 +15,7 @@ const emits = defineEmits<{
 }>()
 
 // Utils
+const { $bp } = useNuxtApp()
 const { formatDate } = useDateUtils()
 
 // Layout

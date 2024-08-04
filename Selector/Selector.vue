@@ -95,10 +95,11 @@ watch(
 )
 
 // Utils
+const self = getCurrentInstance()
+const { $bp } = useNuxtApp()
 const { handleRequest } = useRequest()
 const { path } = useInputValidationUtils(props)
 const { getListProps } = useListUtils()
-const self = getCurrentInstance()
 
 const hasContent = computed(() => {
   return Array.isArray(model.value)

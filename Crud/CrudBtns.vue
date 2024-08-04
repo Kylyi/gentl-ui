@@ -41,6 +41,9 @@ const isDeleted = autoResetRef(false, 2000)
 // const isRestored = autoResetRef(false, 2000)
 // const isArchived = autoResetRef(false, 2000)
 
+// Utils
+const route = useRoute()
+
 // Layout
 const loaderType = computedEager(() => {
   return $bp.lg.value && props.labels ? 'inline' : 'block'
@@ -93,7 +96,7 @@ defineExpose({
     <CrudBtnAdd
       v-if="availableActions.add && !availableActions.restore"
       v-bind="crudBtnProps"
-      :to="`${$route.path}/create`"
+      :to="$p(`${route.path}/create`)"
     />
 
     <CrudBtnSave

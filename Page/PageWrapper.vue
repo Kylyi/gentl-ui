@@ -13,6 +13,7 @@ withDefaults(defineProps<IPageWrapperProps>(), {
 })
 
 // Utils
+const route = useRoute()
 const { isMobile } = useMobile()
 
 // Layout
@@ -27,7 +28,7 @@ onMounted(() => {
   <main
     class="page-wrapper"
     :class="{
-      'is-scrollable': $route.meta.isPageScrollable,
+      'is-scrollable': route.meta.isPageScrollable,
       'is-mounted': mounted,
       'is-padded': pad,
       'is-mobile': isMobile,
