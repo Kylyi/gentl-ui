@@ -59,6 +59,10 @@ const currentPath = computed(() => {
 
 <style lang="scss" scoped>
 a.btn:not(.no-underline):hover {
-  --apply: underline;
+  @apply underline;
+}
+
+.no-active {
+  @apply color-black dark:color-white;
 }
 </style>
