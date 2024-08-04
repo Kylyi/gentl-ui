@@ -2,11 +2,16 @@
 import type { IBreadcrumb } from './types/breadcrumb.type'
 import { config } from '~/components/config/components-config'
 
-// Types
+// Injections
+import {
+  breadcrumbsHomePathKey,
+  breadcrumbsKey,
+} from '~/components/Breadcrumbs/provide/breadcrumbs.provide'
 
 // Constants
 import { BUTTON_PRESET } from '~/components/Button/constants/button-preset.constant'
 
+const breadcrumbHomePath = injectStrict(breadcrumbsHomePathKey, ref(''))
 const breadcrumbsInjected = injectStrict(breadcrumbsKey, ref([]))
 
 // Layout
@@ -14,7 +19,7 @@ const breadcrumbs = computed(() => {
   return [
     {
       icon: 'i-lucide:home',
-      to: $p(config.breadcrumbs.homePath || '/'),
+      to: $p(breadcrumbHomePath.value || config.breadcrumbs.homePath || '/'),
     },
     ...breadcrumbsInjected.value,
   ]

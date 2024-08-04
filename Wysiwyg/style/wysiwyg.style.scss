@@ -21,12 +21,17 @@
   [data-type='mention'] {
     @apply italic;
   }
+
+  li:first-child {
+    @apply p-t-1;
+  }
 }
 
 :deep(.ProseMirror-selectednode) {
   @apply outline-2 outline-solid outline-primary rounded-custom;
 }
 
+// Details
 :deep([data-type='details']) {
   @apply flex border-1 border-ca rounded-custom p-2;
   list-style: none;
@@ -36,7 +41,7 @@
   }
 
   > button {
-    @apply relative h-6 w-6 cursor-pointer;
+    @apply relative h-6 w-6 cursor-pointer shrink-0;
 
     &::before {
       @apply absolute flex flex-center leading-none top-1 left-1 font-rem-16 transition-transform;
@@ -57,6 +62,7 @@
   }
 }
 
+// Task list
 :deep(ul[data-type='taskList']) {
   list-style: none;
   padding: 0;

@@ -29,6 +29,23 @@ const classes = computed(() => {
   }
 })
 
+// Scrolling
+const scrollEl = ref<HTMLDivElement>()
+const { arrivedState } = useScroll(scrollEl)
+
+function handleWheel(ev: WheelEvent) {
+  // Scrolling down
+  if (ev.deltaY > 0 && !arrivedState.bottom) {
+    ev.stopPropagation()
+  }
+
+  // Scrolling up
+  else if (ev.deltaY < 0 && !arrivedState.top) {
+    ev.stopPropagation()
+  }
+}
+
+// Items handling
 function getItemKey(item: T) {
   return typeof props.itemKey === 'function'
     ? props.itemKey(item)
@@ -70,6 +87,7 @@ function enableDrop() {
 
 <template>
   <div
+    ref="scrollEl"
     class="draggable-container"
     data-draggable-container="true"
     :class="classes"
@@ -82,6 +100,7 @@ function enableDrop() {
     .enableDrop="enableDrop"
     @mousedown="handleMouseDown"
     @touchstart="handleTouchStart"
+    @wheel="handleWheel"
   >
     <DraggableItem
       v-for="(item, idx) in model"

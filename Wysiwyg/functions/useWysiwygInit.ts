@@ -59,6 +59,16 @@ export function useWysiwygInit(
     editable: isEditable.value,
     editorProps: {
       attributes: { class: 'wysiwyg' },
+      handleKeyDown: (_, event) => {
+        const isCtrl = event.ctrlKey || event.metaKey
+
+        // Custom handling of the `CTRL + Enter`
+        if (isCtrl && event.key === 'Enter') {
+          self?.emit('submit')
+
+          return true
+        }
+      },
     },
     extensions: [
       StarterKit,

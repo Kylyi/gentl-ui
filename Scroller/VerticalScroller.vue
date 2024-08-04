@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// TYPES
+// Types
 import type { IScrollerProps } from '~/components/Scroller/types/scroller-props.type'
 
 const props = withDefaults(defineProps<IScrollerProps>(), {
@@ -47,14 +47,14 @@ const updateArrows = onOverflow(
       }
     } else {
       arrivedState.top = scrollEl.value!.scrollTop === 0
-      arrivedState.bottom =
-        scrollEl.value!.scrollTop ===
-        scrollEl.value!.scrollHeight - scrollEl.value!.clientHeight
+      arrivedState.bottom
+        = scrollEl.value!.scrollTop
+        === scrollEl.value!.scrollHeight - scrollEl.value!.clientHeight
 
       typeof diff === 'object' && (hasArrows.value = diff.yDiff! > 0)
     }
   },
-  { direction: 'vertical', returnDiff: true }
+  { direction: 'vertical', returnDiff: true },
 )
 
 const { pause, resume } = useIntervalFn(
@@ -64,7 +64,7 @@ const { pause, resume } = useIntervalFn(
     btnScrollSpeed.value = btnScrollSpeed.value * 1.02
   },
   5,
-  { immediate: false }
+  { immediate: false },
 )
 
 function handleWheel(ev: WheelEvent) {
@@ -153,54 +153,59 @@ defineExpose({
 
 <style lang="scss" scoped>
 .scroller-vertical {
-  --apply: flex flex-col relative items-center overflow-hidden;
+  @apply flex flex-col relative items-center overflow-hidden;
 }
 
 .content {
-  --apply: flex flex-col flex-1 overflow-auto w-full;
+  @apply flex flex-col flex-1 overflow-auto w-full;
 }
 
 .arrow {
-  --apply: color-ca dark:hover:color-white hover:color-black;
+  @apply color-ca dark:hover:color-white hover:color-black;
 }
 
 .arrows-inside {
   .arrow {
-    --apply: absolute w-16 w-full flex z-5 pointer-events-none;
+    @apply absolute w-16 w-full flex z-5 pointer-events-none;
 
     .btn {
-      --apply: opacity-20 pointer-events-auto;
+      @apply opacity-20 pointer-events-auto;
     }
 
     &:not(.is-active) {
       .btn {
-        --apply: opacity-0 pointer-events-none;
+        @apply opacity-0 pointer-events-none;
       }
     }
 
     &.is-active {
-
       &.arrow--top {
-        background:
-          linear-gradient(to bottom, theme('colors.truegray.200') 0%, transparent);
+        background: linear-gradient(
+          to bottom,
+          theme('colors.truegray.200') 0%,
+          transparent
+        );
       }
 
       &.arrow--bottom {
-        background:
-          linear-gradient(to top, theme('colors.truegray.200') 0%, transparent);
+        background: linear-gradient(
+          to top,
+          theme('colors.truegray.200') 0%,
+          transparent
+        );
       }
 
       > .btn {
-        --apply: opacity-85 hover:bg-white dark:hover:bg-black/50;
+        @apply opacity-85 hover:bg-white dark:hover:bg-black/50;
       }
     }
 
     &--bottom {
-      --apply: bottom-0 justify-center;
+      @apply bottom-0 justify-center;
     }
 
     &--top {
-      --apply: top-0 justify-center;
+      @apply top-0 justify-center;
     }
   }
 }
@@ -209,26 +214,34 @@ defineExpose({
   .arrows-inside {
     .is-active.arrow {
       &--top {
-        background: linear-gradient(to bottom, theme('colors.truegray.800') 0%, transparent);
+        background: linear-gradient(
+          to bottom,
+          theme('colors.truegray.800') 0%,
+          transparent
+        );
       }
 
       &--bottom {
-        background: linear-gradient(to top, theme('colors.truegray.800') 0%, transparent);
+        background: linear-gradient(
+          to top,
+          theme('colors.truegray.800') 0%,
+          transparent
+        );
       }
     }
   }
 }
 
 .arrows-outside {
-  --apply: gap-x-1;
+  @apply gap-x-1;
 
   .arrow {
-    --apply: relative;
+    @apply relative;
   }
 
   .arrow:not(.is-active) {
     > .btn {
-      --apply: opacity-15 pointer-events-none;
+      @apply opacity-15 pointer-events-none;
     }
   }
 }

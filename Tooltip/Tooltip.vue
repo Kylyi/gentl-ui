@@ -143,6 +143,8 @@ onMounted(() => {
 .tooltip {
   @apply dark:bg-darker bg-white border-ca border-custom rounded-custom
     z-$zMenu;
+
+  @apply font-size-$Tooltip-font-size color-$Tooltip-font-color;
 }
 
 .arrow {

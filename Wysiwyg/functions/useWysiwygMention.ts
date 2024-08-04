@@ -35,7 +35,7 @@ export function useWysiwygMention(
             return [
               'span',
               mergeAttributes(options.HTMLAttributes, { 'class': 'mention', 'data-mention-type': mentionType }),
-            `${setup.char} ${label ?? id}${appendedChar}`,
+            `${setup.char}${label ?? id}${appendedChar}`,
             ]
           },
           suggestion: {

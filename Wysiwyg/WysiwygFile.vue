@@ -85,7 +85,6 @@ export default {
     // When this component is mounted (~ an image is inserted into the Wysiwyg editor, upload the files)
     onMounted(() => {
       nextTick(() => {
-        console.log(file.value)
         if (file.value instanceof FileModel && !file.value.isUploaded) {
           file.value.upload?.(handleRequest).then(() => syncFilesHTML?.())
         }
