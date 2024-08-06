@@ -19,8 +19,6 @@ const props = withDefaults(defineProps<INumberInputProps>(), {
   fractionDigits: 2,
   inline: undefined,
   labelInside: undefined,
-  // @ts-expect-error Wrong IMask type, will be overriden anyway
-  mask: () => ({ mask: String }),
   required: undefined,
   size: 'md',
   stackLabel: undefined,
@@ -41,6 +39,10 @@ const { separators, parseNumber } = useNumber()
 
 // Mask
 const mask = computed<MaskedNumber>(() => {
+  if (props.mask) {
+    return props.mask as MaskedNumber
+  }
+
   return new MaskedNumber({
     thousandsSeparator: props.noGrouping
       ? ''

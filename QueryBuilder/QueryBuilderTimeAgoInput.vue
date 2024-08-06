@@ -104,6 +104,7 @@ function setUnit(unitShortName: string) {
     :model-value="agoValue.value"
     size="sm"
     layout="regular"
+    :mask="{ mask: /^\d+$/ }"
     class="qb-item__content-value"
     @update:model-value="agoValue = { value: $event }"
   >
