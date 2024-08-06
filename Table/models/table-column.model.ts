@@ -268,6 +268,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
       field: this.field,
       direction: this.sort,
       sortOrder: this.sortOrder,
+      filterField: this.filterField,
     }
   }
 

@@ -1,4 +1,4 @@
-import { config } from '~/components/config/components-config'
+import type { config } from '~/components/config/components-config'
 
 // Types
 import type { IItem } from '~/libs/Shared/types/item.type'
@@ -10,6 +10,7 @@ export type ITableOrderBy = {
   field: string
   direction: 'asc' | 'desc'
   sortOrder?: number | undefined
+  filterField?: string
 }
 export type ISelect = Record<string, boolean | Record<string, boolean>>
 
