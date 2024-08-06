@@ -30,7 +30,6 @@ const props = withDefaults(defineProps<ITableProps>(), {
   minimumColumnWidth: 80,
   mobileRowHeight: 32,
   rowHeight: 40,
-  rowKey: 'id',
   separator: 'cell',
   totalRows: 0,
   useUrl: true,
