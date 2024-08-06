@@ -481,7 +481,7 @@ export const config = merge(
       /**
        * Creates a query string from the table query object
        */
-      getQuery: (query: ITableQuery) => {
+      getQuery: (query: ITableQuery, options?: { externalData?: IItem }) => {
         return new URLSearchParams()
       },
 

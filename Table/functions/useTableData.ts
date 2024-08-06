@@ -83,7 +83,6 @@ export function useTableData(
   const dataHasBeenFetched = ref(false)
   const isForcedRefetch = ref(false)
   const search = ref('')
-  const customData = ref<IItem>({})
   const rows = (props.rows ? useVModel(props, 'rows') : ref([])) as Ref<any[]>
   const previousDbQuery = ref<ITableDataFetchFncInput>()
   const totalRows = props.totalRows
@@ -128,6 +127,7 @@ export function useTableData(
 
   // Provides & Injects
   const externalData = inject(tableExternalDataKey, ref({} as IItem))
+  const customData = injectLocal(tableCustomDataKey, ref({} as IItem))
 
   provide(tableRefreshKey, (force?: boolean) => refreshData(force))
   provide(tableRecreateQueryBuilderKey, () => initializeQueryBuilder())
@@ -135,7 +135,7 @@ export function useTableData(
   provide(tableRowsKey, rows)
   provide(tableQueryBuilderKey, queryBuilder)
   provide(tableVersionKey, versionId)
-  provide(tableCustomDataKey, customData)
+  provideLocal(tableCustomDataKey, customData)
 
   // Pagination
   const {
@@ -295,8 +295,8 @@ export function useTableData(
       const fetchInput: ITableDataFetchFncInput = {
         tableQuery,
         fetchTableQuery,
-        queryParams: config.table.getQuery(tableQuery),
-        fetchQueryParams: config.table.getQuery(fetchTableQuery),
+        queryParams: config.table.getQuery(tableQuery, { externalData: externalData.value }),
+        fetchQueryParams: config.table.getQuery(fetchTableQuery, { externalData: externalData.value }),
       }
 
       return fetchInput
@@ -388,7 +388,7 @@ export function useTableData(
             rowKey: rowKey.value,
             lastRow: lastRow.value,
           },
-        })
+        }, { externalData: externalData.value })
 
         options.tableQuery.isInitialFetch = false
         options.fetchTableQuery.isInitialFetch = false

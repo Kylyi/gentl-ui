@@ -7,6 +7,7 @@ import type { ITableProps } from '~/components/Table/types/table-props.type'
 // Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
 import {
+  tableCustomDataKey,
   tableLayoutKey,
   tableLayoutsKey,
   tableViewCodeKey,
@@ -72,10 +73,12 @@ export async function useTableMetaData(props: ITableProps) {
   const layout = ref<ITableLayout>()
   const viewCode = ref<string>('L')
   const columns = ref<TableColumn[]>(props.columns || [])
+  const customData = injectLocal(tableCustomDataKey, ref({} as IItem))
 
   provide(tableLayoutKey, layout)
   provide(tableLayoutsKey, layouts)
   provide(tableViewCodeKey, viewCode)
+  provideLocal(tableCustomDataKey, customData)
 
   // Data fetching
   /**

@@ -2,7 +2,7 @@
 import type { ITableProps } from '~/components/Table/types/table-props.type'
 
 // Models
-import { TableColumn } from '~/components/Table/models/table-column.model'
+import type { TableColumn } from '~/components/Table/models/table-column.model'
 
 // Functions
 import { useTableUtils } from '~/components/Table/functions/useTableUtils'
@@ -20,7 +20,7 @@ export function useTableEditing(props: ITableProps) {
   // Utils
   const { getRowKey } = useTableUtils()
 
-  const rowKey = computedEager(() => getRowKey(props))
+  const rowKey = computed(() => getRowKey(props))
 
   const isEditing = ref(false)
   const editRow = ref<ITableEditRow>()
@@ -40,7 +40,7 @@ export function useTableEditing(props: ITableProps) {
     // Get the element
     let el = document.querySelector(`[data-key="${_rowKey}"]`) as HTMLElement
     el = el?.querySelector(
-      `.cell[data-field="${column?.field}"]`
+      `.cell[data-field="${column?.field}"]`,
     ) as HTMLElement
 
     if (el) {

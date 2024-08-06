@@ -341,7 +341,7 @@ onMounted(() => {
       v-show="hasVisibleColumn"
       ref="scrollerEl"
       :rows="rowsSplit"
-      :row-key="rowKey"
+      :row-key
       :row-height="tableRowHeight.current"
       :no-scroll-emit="!infiniteScroll"
       :overscan="overscan"

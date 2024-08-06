@@ -7,7 +7,7 @@ import type { TableColumn } from '~/components/Table/models/table-column.model'
 import { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
 
 // Injections
-import { getTableStorageKey } from '~/components/Table/provide/table.provide'
+import { getTableStorageKey, tableCustomDataKey } from '~/components/Table/provide/table.provide'
 
 // Functions
 import { parseSortingFromUrl } from '~/libs/App/functions/table/extractSortingFromUrl'
@@ -26,6 +26,7 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
   const { t } = useI18n()
   const { extendParseUrlParams } = useTableSpecifics()
 
+  const customData = injectLocal(tableCustomDataKey, ref({} as IItem))
   const instance = getCurrentInstance()
 
   function getRowKey(tableProps: ITableProps) {
@@ -33,13 +34,11 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
       return '_uuid'
     }
 
-    return tableProps.rowKey || 'id'
+    return tableProps.rowKey || customData.value.rowKey || 'id'
   }
 
   function getStorageKey() {
-    return (
-      props?.storageKey || getComponentName(instance?.parent) || generateUUID()
-    )
+    return props?.storageKey || getComponentName(instance?.parent) || generateUUID()
   }
 
   provide(getTableStorageKey, getStorageKey)
