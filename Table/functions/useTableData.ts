@@ -380,7 +380,6 @@ export function useTableData(
       // When fetching more data, we need to manually get the queryParams again as
       // it is not triggered in the `dbQuery` computed
       if (isFetchMore) {
-        console.log(rowKey.value)
         options.fetchQueryParams = config.table.getQuery({
           ...options.fetchTableQuery,
           isInitialFetch: false,
