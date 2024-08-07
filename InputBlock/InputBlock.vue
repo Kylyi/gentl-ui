@@ -69,7 +69,7 @@ const path = computed(() => {
 
 <style scoped>
 .icon {
-  --apply: h-6 w-6 translate-y-2 m-r-3;
-  --apply: color-$Collapse-dropdown-icon-color;
+  @apply h-6 w-6 translate-y-2 m-r-3;
+  @apply color-$Collapse-dropdown-icon-color;
 }
 </style>
