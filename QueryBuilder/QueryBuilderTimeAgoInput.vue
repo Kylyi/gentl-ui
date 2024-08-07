@@ -112,7 +112,7 @@ function setUnit(unitShortName: string) {
       <div flex="~ gap-1">
         <Btn
           flex="shrink"
-          :label="$t(`general.${agoValue.unit}`, Math.round(agoValue.value) || 0).toLowerCase()"
+          :label="$t(`general.${agoValue.unit}`, Math.round(agoValue.value ?? 0) || 0).toLowerCase()"
           size="xs"
           no-uppercase
           no-bold
