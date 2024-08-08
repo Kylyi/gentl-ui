@@ -17,6 +17,11 @@ export type IInputWrapperProps = IInputLabelProps & {
   disabled?: boolean
 
   /**
+   * Custom errors provided by the parent component
+   */
+  errors?: string[]
+
+  /**
    * When true, the error container takes space (~ is relative positioned)
    * WHen false, the error container is absolute positioned
    */

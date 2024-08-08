@@ -343,8 +343,6 @@ onMounted(() => {
           flex="~ gap-2"
           :class="ui?.submitWrapperClass"
         >
-          <slot name="submit-before" />
-
           <!-- Cancel button -->
           <CrudBtnCancel
             v-if="editControls?.cancel"
@@ -358,6 +356,8 @@ onMounted(() => {
               class="!absolute top--1 right-1"
             />
           </CrudBtnCancel>
+
+          <slot name="submit-before" />
 
           <!-- Submit button -->
           <Btn
