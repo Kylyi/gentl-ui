@@ -311,6 +311,8 @@ export function useInputUtils(options: IInputUtilsOptions) {
     })
   })
 
+  provide('inputId', inputId)
+
   return {
     el,
     inputId,

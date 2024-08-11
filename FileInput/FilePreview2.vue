@@ -37,7 +37,7 @@ const icon = computed(() => {
 const size = computed(() => {
   return props.file instanceof FileModel
     ? formatBytes(props.file.file.size)
-    : formatBytes(props.file.size)
+    : formatBytes(props.file.size ?? 0)
 })
 
 const imageUrl = computed(() => {

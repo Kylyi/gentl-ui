@@ -1,85 +1,69 @@
 <script setup lang="ts">
-// // Types
-// import type { IWysiwygProps } from '~/components/Wysiwyg/types/wysiwyg-props.type'
-// import type { IItem } from '~/libs/Shared/types/item.type'
+// Types
+import type { IWysiwygProps } from '~/components/Wysiwyg/types/wysiwyg-props.type'
 
-// // Functions
-// import { useValueFormatterUtils } from '~/components/ValueFormatter/functions/useValueFormatterUtils'
-// import { useInputWrapperUtils } from '~/components/Inputs/functions/useInputWrapperUtils'
+// Functions
+import { useInputWrapperUtils } from '~/components/Inputs/functions/useInputWrapperUtils'
 
-// import { mentionEntityKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
+// Constants
+import { useWysiwygUtils } from '~/components/Wysiwyg/functions/useWysiwygUtils'
 
-// // Constants
-// import { mentionItemsMap } from '~/components/Wysiwyg/constants/resolve-values.map'
+const props = defineProps<IWysiwygProps>()
 
-// const props = defineProps<
-//   IWysiwygProps & { resolveMentionItems?: boolean, mentionEntity?: IItem }
-// >()
-// const self = getCurrentInstance()
+// Utils
+const isServer = !!import.meta.server
+const { getInputWrapperProps } = useInputWrapperUtils()
+const { resolveMentions } = useWysiwygUtils()
 
-// // Utils
-// const { formatValue } = useValueFormatterUtils()
-// const { getInputWrapperProps } = useInputWrapperUtils()
+// Layout
+const el = ref<HTMLParagraphElement>()
+const model = toRef(props, 'modelValue')
 
-// // Layout
-// const model = toRef(props, 'modelValue')
-// const isServer = !!import.meta.server
-// const mentionEntity = injectStrict(
-//   mentionEntityKey,
-//   toRef(props, 'mentionEntity'),
-// )
+// Wrapper
+const wrapperProps = getInputWrapperProps(props)
 
-// // Wrapper
-// const wrapperProps = getInputWrapperProps(props)
+// This only happens when we explicity use the `Wysiwyg.server.vue` component
+// because normally, on server side, we don't have the `onMounted` hook
+onMounted(() => {
+  nextTick(() => {
+    const shouldResolveMentions = props.mentionResolve || props.mentionReplace
 
-// // This only happens when we explicity use the `Wysiwyg.server.vue` component
-// // because normally, on server side, we don't have the `onMounted` hook
-// onMounted(() => {
-//   nextTick(() => {
-//     const entity = toValue(mentionEntity)
-
-//     ;(self?.proxy?.$el?.querySelectorAll('[data-id]') as Element[]).forEach(
-//       el => {
-//         const attrValue = el.getAttribute('data-id')
-
-//         if (attrValue) {
-//           const definition = mentionItemsMap.get(attrValue)
-
-//           if (!definition) {
-//             return ''
-//           }
-
-//           const value
-//             = definition.format?.(entity)
-//             ?? formatValue(get(entity || {}, definition.id), undefined, {
-//               dataType: definition.dataType,
-//             })
-//             ?? `\${${attrValue}}`
-
-//           el.innerHTML = value
-//         }
-//       },
-//     )
-//   })
-// })
+    if (shouldResolveMentions && el.value) {
+      resolveMentions(
+        undefined,
+        props.mentionReplace,
+        { ...props, el: el.value },
+      )
+    }
+  })
+})
 </script>
 
 <template>
-  <div>idk</div>
-  <!-- <Field v-bind="wrapperProps">
+  <Field
+    v-bind="wrapperProps"
+  >
     <ClientOnly>
-      <p v-html="model" />
+      <p
+        ref="el"
+        class="tiptap ProseMirror wysiwyg"
+        v-html="model"
+      />
     </ClientOnly>
 
     <p
       v-if="isServer"
+      ref="el"
+      class="tiptap ProseMirror wysiwyg"
       v-html="model"
     />
-  </Field> -->
+  </Field>
 </template>
 
 <style lang="scss" scoped>
-:deep(.wysiwyg) {
-  @apply outline-none p-x-2;
+@import url('style/wysiwyg.style.scss');
+
+:deep(p:empty) {
+  @apply min-h-26px;
 }
 </style>

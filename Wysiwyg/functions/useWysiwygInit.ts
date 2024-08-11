@@ -35,6 +35,7 @@ export function useWysiwygInit(
   const {
     getRect,
     loadData,
+    listProps,
     selectFnc,
     mentionEl,
     MentionExtensions,
@@ -133,6 +134,7 @@ export function useWysiwygInit(
     mentionEl,
     getRect,
     loadMentionData: loadData,
+    mentionListProps: listProps,
     selectFnc,
   }
 }

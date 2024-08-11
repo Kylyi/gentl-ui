@@ -83,14 +83,14 @@ useMutationObserver(
 
       <WysiwygListCommands />
 
-      <template v-if="allowLink">
+      <template v-if="allowLink || allowFileUpload">
         <Separator
           vertical
           spaced
           inset
         />
 
-        <WysiwygLink />
+        <WysiwygLink v-if="allowLink" />
 
         <WysiwygFileCommandBtn v-if="allowFileUpload" />
       </template>

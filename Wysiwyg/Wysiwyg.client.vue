@@ -31,7 +31,10 @@ defineEmits<{
 defineExpose({
   focus: focusEditor,
   blur: blurEditor,
-  resolveValues: () => resolveValues(),
+  resolveMentions: (
+    fnc?: IWysiwygProps['populateMention'],
+    replace?: boolean,
+  ) => resolveMentions(fnc, replace, props),
 })
 
 // Init
@@ -55,9 +58,10 @@ const {
   getRect,
   loadMentionData,
   selectFnc,
+  mentionListProps,
 } = useWysiwygInit(props, model)
 const { getInputWrapperProps } = useInputWrapperUtils()
-const { transitionProps, resolveValues } = useWysiwygUtils()
+const { transitionProps, resolveMentions } = useWysiwygUtils()
 
 function focusEditor() {
   editor.value?.chain().focus().run()
@@ -82,8 +86,10 @@ useWysiwygInjections({ model })
 // Life cycle
 onMounted(() => {
   nextTick(() => {
-    if (props.mentionReplace && editor.value) {
-      resolveValues()
+    const shouldResolveMentions = props.mentionResolve || props.mentionReplace
+
+    if (shouldResolveMentions && editor.value) {
+      resolveMentions(undefined, props.mentionReplace, props)
     }
 
     // Handle link click
@@ -125,6 +131,7 @@ onBeforeUnmount(wysiwygStore.$dispose)
     <WysiwygMention
       ref="mentionEl"
       :load-data="loadMentionData"
+      :list-props="mentionListProps"
       :get-rect
       :select-fnc
     />

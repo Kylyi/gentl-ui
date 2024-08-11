@@ -41,7 +41,7 @@ const imageUrl = computed(() => {
     'image/webp',
     'image/bmp',
   ]
-  const isImageFile = PREVIEWABLE_IMAGE_TYPES.includes(props.file.type)
+  const isImageFile = PREVIEWABLE_IMAGE_TYPES.includes(props.file.type ?? '')
 
   if (!isImageFile) {
     return null

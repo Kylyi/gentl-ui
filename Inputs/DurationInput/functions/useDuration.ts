@@ -1,5 +1,4 @@
 // Functions
-
 import {
   type INumberOptions,
   useNumber,
@@ -14,6 +13,7 @@ export type DurationUnit =
   | 'week'
   | 'month'
   | 'year'
+
 export type IDurationOptions = INumberOptions & { unit?: DurationUnit }
 
 export const MODIFIER_BY_UNIT: Record<DurationUnit, number> = {

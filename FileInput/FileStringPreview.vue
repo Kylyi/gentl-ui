@@ -38,11 +38,11 @@ const actions = computed(() => ({
 const fileUrl = `${rC.public.FILES_HOST}/files${props.file.path}`
 
 const icon = computed(() => {
-  const ext = getFileExtension(props.file.name)
+  const ext = getFileExtension(props.file.name ?? '')
 
-  const icon =
-    ICON_BY_FILE_EXTENSION[ext as keyof typeof ICON_BY_FILE_EXTENSION] ||
-    'i-bi:file-image'
+  const icon
+    = ICON_BY_FILE_EXTENSION[ext as keyof typeof ICON_BY_FILE_EXTENSION]
+    || 'i-bi:file-image'
 
   return icon
 })
@@ -97,7 +97,7 @@ const imageUrl = computed(() => {
         :src="imageUrl"
         :alt="file.name"
         height="100"
-      />
+      >
 
       <div
         v-else
@@ -125,7 +125,7 @@ const imageUrl = computed(() => {
 .file-preview {
   --apply: flex flex-col gap-4 fit items-center w-full border-1 border-dotted
     rounded-3 border-ca color-ca;
-  --apply: dark:bg-darker bg-white;
+  --apply: dark: bg-darker bg-white;
 
   &--header {
     --apply: flex flex-row gap-x-2 p-x-2 w-full justify-between p-t-1 p-b-2;

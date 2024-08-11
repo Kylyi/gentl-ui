@@ -1,15 +1,12 @@
 // Types
-import type { IItem } from '~/libs/Shared/types/item.type'
-import type { IWysiwygMentionItem } from '~/components/Wysiwyg/types/wysiwyg-mention-item.type'
+import type { IWysiwygMentionSetup } from '~/components/Wysiwyg/types/wysiwyg-mention-setup.type'
 
+// General
 export const wysiwygIdKey: InjectionKey<string> = Symbol('wysiwygId')
 
 export const wysiwygModelKey: InjectionKey<Ref<any>> = Symbol('wysiwygModel')
 
-export const mentionItemsKey: InjectionKey<
-  MaybeRefOrGetter<IWysiwygMentionItem[] | null | undefined> | undefined
-> = Symbol('mentionItems')
+// Mentons
+export const wysiwygMentionSetupKey: InjectionKey<MaybeRefOrGetter<IWysiwygMentionSetup[]>> = Symbol('wysiwygMentionSetup')
 
-export const mentionEntityKey: InjectionKey<
-  MaybeRefOrGetter<IItem | null | undefined> | undefined
-> = Symbol('mentionEntity')
+export const wysiwygMentionPopulateKey: InjectionKey<(id: string | number) => any> = Symbol('wysiwygMentionPopulate')

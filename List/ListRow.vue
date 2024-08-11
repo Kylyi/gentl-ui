@@ -50,27 +50,27 @@ function getItem() {
 
 <template>
   <Component
-  :is="tag"
-  ref="draggableEl"
-  :style="rowInfo._style"
-  class="item"
-  :data-path="item.path"
-  data-cy="item-selectable"
-  :class="[
-    rowClass,
-    rowInfo.isGroup ? 'list-group' : 'list-row',
-    {
-      'item--selectable': !rowInfo.isGroup && !noSelect,
-      'item--group': rowInfo.isGroup,
-      'item--active': !rowInfo.isGroup && isSelected,
-      'item--hovered': isHovered && !noHover,
-      'item--new': rowInfo.isNew,
-      'item--create': rowInfo.isCreate,
-      'is-disabled': isDisabled,
-      'no-dragover': !rowInfo.isReorderable,
-    },
-  ]"
-    .getItem="getItem"
+    :is="tag"
+    ref="draggableEl"
+    :style="rowInfo._style"
+    class="item"
+    :data-path="item.path"
+    data-cy="item-selectable"
+    :class="[
+      rowClass,
+      rowInfo.isGroup ? 'list-group' : 'list-row',
+      {
+        'item--selectable': !rowInfo.isGroup && !noSelect,
+        'item--group': rowInfo.isGroup,
+        'item--active': !rowInfo.isGroup && isSelected,
+        'item--hovered': isHovered && !noHover,
+        'item--new': rowInfo.isNew,
+        'item--create': rowInfo.isCreate,
+        'is-disabled': isDisabled,
+        'no-dragover': !rowInfo.isReorderable,
+      },
+    ]"
+    .get-item="getItem"
     @mousedown="handleMouseDown"
     @touchstart="handleTouchStart"
   >
@@ -80,14 +80,23 @@ function getItem() {
     />
 
     <slot :option="item">
+      <!-- Group -->
       <div
+        v-if="'isGroup' in item"
+        p="y-1"
+      >
+        {{ item.label }}
+      </div>
+
+      <div
+        v-else
         flex="~ col grow"
         p="y-1"
       >
         <span v-html="item._highlighted" />
 
         <div
-          v-if="'_isNew' in item.ref"
+          v-if="item.ref && '_isNew' in item.ref"
           flex="~ gap-1 items-center"
           text="caption xs"
         >

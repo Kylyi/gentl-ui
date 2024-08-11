@@ -9,6 +9,7 @@ import {
 import { type MaybeElement, useFloating } from '@floating-ui/vue'
 
 // Types
+import type { IListProps } from '~/components/List/types/list-props.type'
 import type { IListFetchFnc } from '~/components/List/types/list-fetch.type'
 
 // Components
@@ -17,6 +18,8 @@ import List from '~/components/List/List.vue'
 type IProps = {
   getRect: () => ClientRectObject
   selectFnc: Function
+  listProps?: Partial<IListProps>
+  loadData: IListFetchFnc
 }
 
 const props = defineProps<IProps>()
@@ -25,8 +28,6 @@ const props = defineProps<IProps>()
 const listEl = ref<InstanceType<typeof List>>()
 const mentionEl = ref<HTMLElement>()
 const isMentionOpen = ref(false)
-
-const loadData = ref<IListFetchFnc>() as Ref<IListFetchFnc>
 
 const middleware = ref([offset(4), flip(), shift()])
 
@@ -52,8 +53,7 @@ defineExpose({
   show: () => (isMentionOpen.value = true),
   hide: () => (isMentionOpen.value = false),
   onKeyDown: (event: KeyboardEvent) => listEl.value?.handleKey(event, { force: true }),
-  load: async (loadDataFnc: IListFetchFnc, search?: string) => {
-    loadData.value = loadDataFnc
+  load: async (search?: string) => {
     searchList.value = search ?? ''
   },
 })
@@ -76,6 +76,7 @@ defineExpose({
       no-search
       :load-data="{ fnc: loadData, onSearch: true }"
       row-class="!min-h-8"
+      v-bind="listProps"
       @update:selected="selectFnc($event)"
     />
   </div>

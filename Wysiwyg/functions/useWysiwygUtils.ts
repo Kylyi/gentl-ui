@@ -1,17 +1,15 @@
-// Functions
-import { useValueFormatterUtils } from '~/components/ValueFormatter/functions/useValueFormatterUtils'
+// Types
+import type { IWysiwygProps } from '~/components/Wysiwyg/types/wysiwyg-props.type'
 
 // Injections
-import { mentionEntityKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
+import { wysiwygMentionPopulateKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
 
 // Constants
-import { mentionItemsMap } from '~/components/Wysiwyg/constants/resolve-values.map'
 import { useWysiwygStore } from '~/components/Wysiwyg/wysiwyg.store'
 
 export function useWysiwygUtils() {
-  // Utils
-  const mentionEntity = injectStrict(mentionEntityKey, {})
-  const { formatValue } = useValueFormatterUtils()
+  // Injections
+  const injectedPopulateFnc = inject(wysiwygMentionPopulateKey)
 
   // Store
   const wysiwygStore = useWysiwygStore()
@@ -21,41 +19,42 @@ export function useWysiwygUtils() {
     leaveActiveClass: 'animate-fade-out animate-duration-150',
   }))
 
-  function resolveValues() {
-    const view = wysiwygStore.editor?.view
+  function resolveMentions(
+    populateFnc: IWysiwygProps['populateMention'],
+    replace = false,
+    props?: Pick<IWysiwygProps, 'populateMention' | 'onMentionResolve'>
+    & { el?: HTMLElement },
+  ) {
+    const domEl = props?.el ?? wysiwygStore.editor?.view?.dom
+    const _populateFnc = populateFnc ?? injectedPopulateFnc ?? props?.populateMention
 
-    if (!view) {
+    if (!domEl || !_populateFnc) {
       return
     }
 
-    const entity = toValue(mentionEntity)
-    const elements = view.dom.querySelectorAll('span[data-type="mention"]')
+    const elements = domEl.querySelectorAll('span[data-type="mention"]')
 
     elements.forEach(el => {
-      const attrValue = el.getAttribute('data-id')
+      const attrId = el.getAttribute('data-id')
 
-      if (attrValue) {
-        const definition = mentionItemsMap.get(attrValue)
+      if (attrId) {
+        const value = _populateFnc?.(attrId) ?? ''
 
-        if (!definition) {
-          return ''
+        if (isUndefined(value) || value === '') {
+          return
         }
+        if (replace) {
+          const spanEl = document.createElement('span')
+          spanEl.textContent = value
 
-        const value
-          = definition.format?.(entity)
-          ?? formatValue(
-            get(entity || {}, definition.id),
-            undefined,
-            { dataType: definition.dataType },
-          )
-          ?? `\${${attrValue}}`
-
-        const spanEl = document.createElement('span')
-        spanEl.innerText = value
-
-        el.replaceWith(spanEl)
+          el.replaceWith(spanEl)
+        } else {
+          el.textContent = value
+        }
       }
     })
+
+    props?.onMentionResolve?.(domEl.innerHTML)
   }
 
   function removeElement(selector: string, wysiwygModel: Ref<any>) {
@@ -74,7 +73,7 @@ export function useWysiwygUtils() {
   }
 
   return {
-    resolveValues,
+    resolveMentions,
     transitionProps,
     removeElement,
   }

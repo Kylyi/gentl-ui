@@ -38,6 +38,7 @@ defineExpose({
       v-if="(modelValue || internalValue) && !hidden"
       class="tooltip"
       color="positive"
+      bg="white dark:bg-darker"
       :class="`tooltip--${position}`"
     >
       {{ label }}
@@ -47,28 +48,28 @@ defineExpose({
 
 <style lang="scss" scoped>
 .tooltip {
-  --apply: bg-white dark:bg-darker absolute pointer-events-none
-    rounded-custom p-x-2 text-sm tracking-wide z-10 h-full
+  @apply bg-white dark:bg-darker absolute pointer-events-none
+    rounded-custom p-x-2 text-sm tracking-wide z-$zMax h-full
     flex flex-center;
 
   &--left {
-    --apply: -left-12px translate-x--100% top-0;
+    @apply -left-12px translate-x--100% top-0;
   }
 
   &--right {
-    --apply: -right-12px translate-x-100% top-0;
+    @apply -right-12px translate-x-100% top-0;
   }
 
   &--top {
-    --apply: -top-12px translate-y--100%;
+    @apply -top-12px translate-y--100%;
   }
 
   &--bottom {
-    --apply: -bottom-12px translate-y-100%;
+    @apply -bottom-12px translate-y-100%;
   }
 
   &--center {
-    --apply: top-1/2 left-1/2 translate-x--50% translate-y--50%;
+    @apply top-1/2 left-1/2 translate-x--50% translate-y--50%;
   }
 }
 
@@ -79,26 +80,26 @@ defineExpose({
 
 .v-enter-from,
 .v-leave-to {
-  --apply: opacity-0;
+  @apply opacity-0;
 
   &.tooltip--left {
-    --apply: left-12px;
+    @apply left-12px;
   }
 
   &.tooltip--right {
-    --apply: right-12px;
+    @apply right-12px;
   }
 
   &.tooltip--top {
-    --apply: top-12px;
+    @apply top-12px;
   }
 
   &.tooltip--bottom {
-    --apply: bottom-12px;
+    @apply bottom-12px;
   }
 
   &.tooltip--center {
-    --apply: scale-50;
+    @apply scale-50;
   }
 }
 </style>

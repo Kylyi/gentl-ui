@@ -59,7 +59,7 @@ const maxHeight = computed(() => {
 function getFileLabel(file: FileModel | IFile) {
   const size = file instanceof FileModel ? file.file.size : file.size
 
-  return `${file.name} (${formatBytes(size)})`
+  return `${file.name} (${formatBytes(size ?? 0)})`
 }
 
 function handleOpen() {

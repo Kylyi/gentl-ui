@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Types
-import { type IFieldWithFormatterProps } from '~/components/Field/types/field-with-formatter.type'
+import type { IFieldWithFormatterProps } from '~/components/Field/types/field-with-formatter.type'
 
 // Functions
 import { useFieldUtils } from '~/components/Field/functions/useFieldUtils'
@@ -22,7 +22,9 @@ const fieldProps = getFieldProps(props)
     >
       <template #default="{ val }">
         {{ val }}
-        <template v-if="!val">&nbsp;</template>
+        <template v-if="!val">
+          &nbsp;
+        </template>
       </template>
     </ValueFormatter>
 
@@ -37,6 +39,6 @@ const fieldProps = getFieldProps(props)
 
 <style scoped lang="scss">
 :deep(.wrapper-body__input) {
-  --apply: inline-block w-full p-3;
+  @apply inline-block w-full p-3;
 }
 </style>
