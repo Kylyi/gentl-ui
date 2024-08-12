@@ -41,7 +41,7 @@ const size = computed(() => {
 })
 
 const imageUrl = computed(() => {
-  const isImageFile = IMAGE_TYPES.includes(props.file.type)
+  const isImageFile = IMAGE_TYPES.includes(props.file.type ?? '')
 
   if (!isImageFile) {
     return null
@@ -55,7 +55,7 @@ const imageUrl = computed(() => {
 })
 
 const videoUrl = computed(() => {
-  const isVideoFile = VIDEO_TYPES.includes(props.file.type)
+  const isVideoFile = VIDEO_TYPES.includes(props.file.type ?? '')
 
   if (!isVideoFile) {
     return null

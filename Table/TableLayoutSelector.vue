@@ -166,6 +166,7 @@ function handleLayoutSelect(
           comparator: filter.comparator,
           format: column.format,
           dataType: column.dataType,
+          customDbQueryFnc: column.customDbQueryFnc,
         }),
       )
     }

@@ -231,6 +231,7 @@ export function useTableColumns(
               filterFormat: col.filterFormat,
               dataType: col.dataType,
               value: filterValue,
+              customDbQueryFnc: col.customDbQueryFnc,
             }),
           )
         }
@@ -255,7 +256,7 @@ export function useTableColumns(
             ...nonInteractiveFilters,
             ...stateColumn.filters
               .filter(filter => !filter.nonInteractive)
-              .map(filter => new FilterItem({ ...filter, format: col.format })),
+              .map(filter => new FilterItem({ ...filter, format: col.format, customDbQueryFnc: col.customDbQueryFnc })),
           ]
           col.sort = stateColumn.sort
           col.sortOrder = stateColumn.sortOrder

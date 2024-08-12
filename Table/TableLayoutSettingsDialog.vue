@@ -50,7 +50,7 @@ const { isLoading, handleRequest } = useRequest()
 
 // Layout
 const dialogEl = ref<InstanceType<typeof Dialog>>()
-const currentLayoutId = ref<number | undefined>(currentLayout.value?.id)
+const currentLayoutId = ref<number | string | undefined>(currentLayout.value?.id)
 const saveableEntities = ref<Record<string, boolean>>({
   filters: true,
   sorting: true,

@@ -212,6 +212,11 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
    */
   misc?: IItem
 
+  /**
+   * Function to inject the `filterDbQuery` getter to customize it
+   */
+  customDbQueryFnc?: (filterItem: FilterItem<T>, query: IItem) => IItem | undefined
+
   get filterDbQuery() {
     if (!this.filters.length) {
       return undefined
@@ -540,6 +545,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     this.comparator = col.comparator || this.comparator
     this.extraComparators = col.extraComparators
     this.noFilterSort = col.noFilterSort ?? false
+    this.customDbQueryFnc = col.customDbQueryFnc
     this.filterFormat = col.filterFormat
     this.getDistinctData = col.getDistinctData
     this.valueGetter = col.valueGetter ?? this.valueGetter

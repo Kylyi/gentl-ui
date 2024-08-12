@@ -48,7 +48,7 @@ const icon = computed(() => {
 })
 
 const imageUrl = computed(() => {
-  const isImage = props.file.type.startsWith('image/')
+  const isImage = (props.file.type ?? '').startsWith('image/')
 
   if (isImage) {
     return getLocalImageUrl(props.file.path)

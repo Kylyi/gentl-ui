@@ -4,7 +4,7 @@ import { config } from '~/components/config/components-config'
 // Models
 import { FilterItem } from '~/libs/Shared/models/filter-item'
 import { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
-import { TableColumn } from '~/components/Table/models/table-column.model'
+import type { TableColumn } from '~/components/Table/models/table-column.model'
 
 // Injections
 import { tableRefreshKey } from '~/components/Table/provide/table.provide'
@@ -43,23 +43,23 @@ const interactiveColumns = computed(() => {
 })
 
 const hasUnusedComparator = computed(() => {
-  const availableComparators =
-    column.value.comparators ||
-    getAvailableComparators(column.value.dataType, {
+  const availableComparators
+    = column.value.comparators
+    || getAvailableComparators(column.value.dataType, {
       includeSelectorComparators: !!column.value.getDistinctData,
       extraComparators: column.value.extraComparators,
     })
 
   const columnComparators = column.value.filters.flatMap(filter => {
     const isBooleanishComparator = BOOLEANISH_COMPARATORS.includes(
-      filter.comparator
+      filter.comparator,
     )
 
     return isBooleanishComparator ? BOOLEANISH_COMPARATORS : [filter.comparator]
   })
 
   return availableComparators.some(
-    comparator => !columnComparators.includes(comparator)
+    comparator => !columnComparators.includes(comparator),
   )
 })
 
@@ -77,22 +77,22 @@ function handleAddFilter() {
   isFocusPrevented.value = false
 
   const isDefaultComparatorUsed = column.value.filters.some(
-    filter => filter.comparator === column.value.comparator
+    filter => filter.comparator === column.value.comparator,
   )
 
   if (isDefaultComparatorUsed) {
-    const availableComparators =
-      column.value.comparators ||
-      getAvailableComparators(column.value.dataType, {
+    const availableComparators
+      = column.value.comparators
+      || getAvailableComparators(column.value.dataType, {
         includeSelectorComparators: !!column.value.getDistinctData,
         extraComparators: column.value.extraComparators,
       })
     const columnComparators = column.value.filters.map(
-      filter => filter.comparator
+      filter => filter.comparator,
     )
 
     const firstNonUsedComparator = availableComparators.find(
-      comparator => !columnComparators.includes(comparator)
+      comparator => !columnComparators.includes(comparator),
     )
 
     if (firstNonUsedComparator) {
@@ -161,6 +161,6 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .table-column-filtering-chips {
-  --apply: flex flex-col gap-y-2 p-x-3;
+  @apply flex flex-col gap-y-2 p-x-3;
 }
 </style>
