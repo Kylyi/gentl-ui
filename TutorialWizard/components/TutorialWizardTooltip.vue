@@ -45,7 +45,7 @@ const { floatingStyles, placement, middlewareData } = useFloating(
 
 watch(() => props.step, () => {
   if (tooltipEl.value) {
-    tooltipEl.value.$el.scrollIntoView({
+    tooltipEl.value.scrollIntoView({
       behavior: 'smooth',
       block: 'center',
     })
@@ -111,12 +111,62 @@ onMounted(() => {
         }
       }, props.delay?.[1] || 0)
     })
+
+    highlightedElement.value = referenceEl.value as HTMLElement
+    updateOverlayClip()
+    window.addEventListener('resize', updateOverlayClip)
+  })
+})
+
+const highlightedElement = ref<HTMLElement | null>(null)
+
+function updateOverlayClip() {
+  if (!highlightedElement.value || !referenceEl.value) return
+
+  const rect = referenceEl.value.getBoundingClientRect()
+  const overlay = document.querySelector('.tutorial-overlay') as HTMLElement
+  if (!overlay) return
+
+  overlay.style.clipPath = `
+    polygon(
+      0% 0%,
+      0% 100%,
+      ${rect.left}px 100%,
+      ${rect.left}px ${rect.top}px,
+      ${rect.right}px ${rect.top}px,
+      ${rect.right}px ${rect.bottom}px,
+      ${rect.left}px ${rect.bottom}px,
+      ${rect.left}px 100%,
+      100% 100%,
+      100% 0%
+    )
+  `
+}
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateOverlayClip)
+})
+
+watch(() => props.step, () => {
+  nextTick(() => {
+    referenceEl.value = getTargetElement(props.referenceTarget)
+    highlightedElement.value = referenceEl.value as HTMLElement
+    updateOverlayClip()
   })
 })
 </script>
 
 <template>
   <Teleport to="body">
+    <!-- Add this overlay div -->
+    <div
+      class="tutorial-overlay"
+      @click.self="$emit('skip')"
+      @click.prevent.stop
+      @wheel.prevent.stop
+      @touchmove.prevent.stop
+    />
+
     <div
       ref="tooltipEl"
       :style="floatingStyles"
@@ -138,6 +188,12 @@ onMounted(() => {
 </template>
 
 <style lang="scss" scoped>
+.tutorial-overlay {
+  @apply fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 cursor-not-allowed overflow-hidden touch-none;
+
+  z-index: calc(var(--zMenu) - 1);
+}
+
 .tooltip {
   @apply dark:bg-darker bg-white border-ca border-custom rounded-custom
     z-$zMenu;

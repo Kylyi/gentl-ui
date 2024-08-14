@@ -41,7 +41,7 @@ watch(currentStep, (newStep) => {
     <TutorialWizardTooltip
       v-if="isWizardActive"
       :step="wizard.steps[currentStep]"
-      :placement="wizard.steps[currentStep].tooltipPosition"
+      :placement="wizard.steps[currentStep].placement"
       :referenceTarget="wizard.steps[currentStep].element"
     >
       <template #default>
