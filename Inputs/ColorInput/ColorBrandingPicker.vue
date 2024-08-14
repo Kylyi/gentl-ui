@@ -61,17 +61,23 @@ const standardColors = computed(() => {
 
 const standardColorsByColumn = computed(() => {
   const _colors = pick(colors, relevantColors)
+  const _disallowedColors = props.disallowedColors?.map(color => color.toLocaleLowerCase()) ?? []
 
   return Object.entries(_colors).reduce((agg, [key, value]) => {
     const colorShades = new Set(Object.values(value as any))
 
     agg[key] = Array.from(colorShades)
+
     if (agg[key]) {
       agg[key]?.splice(agg[key]!.length - 2, 1)
     }
 
     // Pick every second color
-    agg[key] = agg[key]?.filter((_, i) => i % 2 === 0)
+    agg[key] = agg[key]
+      ?.filter((_, i) => i % 2 === 0)
+      .filter((color: any) => {
+        return !_disallowedColors?.includes(color)
+      })
 
     return agg
   }, {} as Record<string, ISelectorProps['options']>)
@@ -212,28 +218,28 @@ function setColor(color: string, isThemeColor = false) {
           />
         </div>
       </div>
-    </div>
 
-    <!-- Customize color -->
-    <div
-      v-if="typeof opacity === 'number' && rgba"
-      flex="~ gap-2"
-    >
-      <RangeInput
-        v-model.number="opacity"
-        :step="5"
-        h="10"
-        grow
-      />
+      <!-- Customize color -->
+      <div
+        v-if="typeof opacity === 'number' && rgba"
+        flex="~ gap-2"
+      >
+        <RangeInput
+          v-model.number="opacity"
+          :step="5"
+          h="10"
+          grow
+        />
 
-      <NumberInput
-        v-model="opacity"
-        size="sm"
-        :min="0"
-        :max="100"
-        :step="5"
-        w="!20"
-      />
+        <NumberInput
+          v-model="opacity"
+          size="sm"
+          :min="0"
+          :max="100"
+          :step="5"
+          w="!20"
+        />
+      </div>
     </div>
   </div>
 </template>
