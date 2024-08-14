@@ -28,7 +28,7 @@ const leftDrawer = inject('leftDrawer', ref(false))
 const isInitialized = ref(false)
 const navigationEl = ref<HTMLElement>()
 
-const hasAccountBtn = computed(() => !props.noAccountBtn && (isExt() || isDev()))
+const hasAccountBtn = computed(() => !props.noAccountBtn)
 
 // Scroll utils
 const lastScrollDirection = ref<'up' | 'down'>('down')
