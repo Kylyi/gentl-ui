@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { config } from '~/components/config/components-config'
+
 // Types
 import type { IColorProps } from '~/components/Inputs/ColorInput/types/color-props.type'
 
@@ -15,6 +17,7 @@ const props = withDefaults(defineProps<IColorProps>(), {
   labelInside: undefined,
   required: undefined,
   stackLabel: undefined,
+  disallowedColors: () => config.colorInput?.props?.disallowedColors ?? [],
 })
 const emits = defineEmits<{
   (e: 'update:modelValue', value: any): void
@@ -91,8 +94,8 @@ const fieldProps = getFieldProps(props)
     >
       <ColorBrandingPicker
         v-model="model"
-        :rgba="rgba"
-        :disallowed-colors="disallowedColors"
+        :rgba
+        :disallowed-colors
         @update:model-value="handlePickColor"
       />
     </MenuProxy>
