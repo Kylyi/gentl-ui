@@ -13,7 +13,7 @@ export type ToggleClass = Record<
   }
 >
 
-export interface IToggleProps extends IItemProps {
+export type IToggleProps = {
   /**
    * Whether the toggle allows string values for the check/uncheck values
    * So the string "true" would still be considered as a checked value.
@@ -105,4 +105,4 @@ export interface IToggleProps extends IItemProps {
    * Extra options for the visuals of the toggle.
    */
   visuals?: Partial<ToggleClass>
-}
+} & IItemProps

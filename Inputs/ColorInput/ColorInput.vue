@@ -69,7 +69,14 @@ const fieldProps = getFieldProps(props)
     :no-content="!model"
     @focus="handleFocusOrClick"
   >
-    <span :style="{ color: model }">
+    <template #prepend>
+      <div
+        class="w-6 h-6 rounded-custom border-1 border-ca m-l-2"
+        :style="{ backgroundColor: model }"
+      />
+    </template>
+
+    <span>
       {{ modelLabel || '&nbsp;' }}
     </span>
 
@@ -96,7 +103,6 @@ const fieldProps = getFieldProps(props)
         m="x-2"
         tabindex="-1"
         cursor="pointer"
-        :style="{ color: model }"
       />
     </template>
   </Field>
