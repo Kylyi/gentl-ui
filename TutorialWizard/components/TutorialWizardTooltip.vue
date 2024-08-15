@@ -158,7 +158,6 @@ watch(() => props.step, () => {
 
 <template>
   <Teleport to="body">
-    <!-- Add this overlay div -->
     <div
       class="tutorial-overlay"
       @click.self="$emit('skip')"
