@@ -47,7 +47,10 @@ const { getBtnProps } = useBtnUtils()
 // Layout
 const dialogEl = ref<InstanceType<typeof Dialog>>()
 // const columns = useVModel(props, 'columns', emits)
-const { model: columns, syncToParent, reset } = useRefReset(() => props.columns)
+const { model: columns, syncToParent, reset } = useRefReset(
+  () => props.columns,
+  { autoSyncFromParent: true },
+)
 
 const { cloned: clonedColumns } = useCloned(columns, {
   clone: cols => cols.map((col: TableColumn) => new TableColumn(col)),
