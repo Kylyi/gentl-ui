@@ -14,7 +14,7 @@ import { useAppStore } from '~/libs/App/app.store'
 import MenuConfirmation from '~/components/MenuConfirmation/MenuConfirmation.vue'
 
 // Injections
-import { isFormEditingKey } from '~/components/Form/provide/form.provide'
+import { formSubmitKey, isFormEditingKey } from '~/components/Form/provide/form.provide'
 
 defineOptions({
   inheritAttrs: false,
@@ -45,12 +45,14 @@ const { appState, lastPointerDownType, activeElement } = storeToRefs(appStore)
 const errors = toRef(props, 'errors', [])
 const { errorsExtended, handleDismissError } = useFormErrors(errors, emits)
 
+// Utils
+const { isDesktop } = useDevice()
+
 // Layout
 const formEl = ref<HTMLFormElement>()
 const menuConfirmationEl = ref<InstanceType<typeof MenuConfirmation>>()
 const isSubmitted = ref(false)
 const isEditing = defineModel('isEditing', { default: false })
-const { isDesktop } = useDevice()
 
 provide(isFormEditingKey, isEditing)
 
@@ -60,12 +62,8 @@ function isElementInViewport(el: Element) {
   return (
     rect.top >= 0
     && rect.left >= 0
-    && rect.bottom
-    <= (window.innerHeight
-    || document.documentElement.clientHeight)
-    && /* or $(window).height() */ rect.right
-    <= (window.innerWidth
-    || document.documentElement.clientWidth) /* or $(window).width() */
+    && rect.bottom <= (window.innerHeight || document.documentElement.clientHeight)
+    && rect.right <= (window.innerWidth || document.documentElement.clientWidth)
   )
 }
 
@@ -198,24 +196,18 @@ function focusFirstInput() {
   // We only focus the first input if the last pointer down type was a mouse
   // because on touch devices, it would most likely open a virtual keyboard
   // which might take unnecessary space on the screen
-  const shouldFocus
-    = lastPointerDownType?.value === 'mouse'
-    || (isDesktop && !lastPointerDownType.value)
+  const shouldFocus = lastPointerDownType?.value === 'mouse' || (isDesktop && !lastPointerDownType.value)
+
   if (shouldFocus && props.focusFirstInput) {
-    const inputElements
-      = formEl?.value?.querySelectorAll('.wrapper__body') || []
+    const inputElements = formEl?.value?.querySelectorAll('.wrapper__body') || []
 
     const firstEditableField = Array.from(inputElements).find(el => {
-      const inputChild = el.querySelector(
-        '.control:not([readonly]):not([disabled])',
-      ) as HTMLElement
+      const inputChild = el.querySelector('.control:not([readonly]):not([disabled])') as HTMLElement
 
       return !!inputChild
     }) as HTMLElement
 
-    const firstEditableInput = firstEditableField?.querySelector(
-      '.control:not([readonly]):not([disabled])',
-    ) as HTMLElement
+    const firstEditableInput = firstEditableField?.querySelector('.control:not([readonly]):not([disabled])') as HTMLElement
 
     if (firstEditableInput) {
       const isInViewPort = isElementInViewport(firstEditableInput)
@@ -230,8 +222,7 @@ function focusFirstInput() {
 function handleEnter(ev: KeyboardEvent) {
   const isCtrlKey = ev.ctrlKey || ev.metaKey
   const isInput = activeElement.value?.tagName === 'INPUT'
-  const hasCustomEnterHandler
-    = activeElement.value?.classList.contains('custom-enter')
+  const hasCustomEnterHandler = activeElement.value?.classList.contains('custom-enter')
 
   const isInputWithCustomEnterHandler = isInput && hasCustomEnterHandler
 
@@ -248,6 +239,8 @@ function handleEnter(ev: KeyboardEvent) {
   }
 }
 
+provide(formSubmitKey, throttledSubmit)
+
 defineExpose({
   submit: throttledSubmit,
   fakeSubmit: () => (isSubmitted.value = true),
@@ -260,14 +253,12 @@ whenever(isEditing, () => {
   // We need a timeout to
   // 1. Wait for the form to be rendered
   // 2. Potentially prevent the `e` key being inputted into the input
-  setTimeout(() => {
-    focusFirstInput()
-  })
+  setTimeout(() => focusFirstInput())
 })
 
 // We also try to focus the first input when the form is mounted
 onMounted(() => {
-  focusFirstInput()
+  setTimeout(() => focusFirstInput())
 })
 </script>
 

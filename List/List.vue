@@ -41,6 +41,7 @@ defineEmits<{
   (e: 'before-search', payload: { hasExactMatch: boolean, search: string }): void
   (e: 'drag:start', item: IListDraggedItem): void
   (e: 'drag:end', item: IListDraggedItem): void
+  (e: 'submit', item: any): void
 }>()
 
 // Utils

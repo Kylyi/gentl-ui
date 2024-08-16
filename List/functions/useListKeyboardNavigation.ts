@@ -91,6 +91,7 @@ export function useListKeyboardNavigation(options: {
     // In that case, we need to adjust situations that would lead to stack overflow,
     // for example when PageDown is pressed while there are only few items in the list
     const { force = false, repeated } = options ?? {}
+    const isCtrl = ev.ctrlKey || ev.metaKey
 
     if (!isFocused.value && !force) {
       return
@@ -122,6 +123,13 @@ export function useListKeyboardNavigation(options: {
         break
 
       case 'Enter':
+        if (isCtrl) {
+          ev.preventDefault()
+          self?.emit('submit')
+
+          return
+        }
+
         if (hoveredIdx.value !== -1 && toValue(itemsRef)[hoveredIdx.value]) {
           ev.preventDefault()
           ev.stopPropagation()
