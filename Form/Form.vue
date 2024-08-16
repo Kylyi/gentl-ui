@@ -252,9 +252,7 @@ defineExpose({
   submit: throttledSubmit,
   fakeSubmit: () => (isSubmitted.value = true),
   reset: () => formEl.value?.reset(),
-  recomputeConfirmationMenuPosition: () => {
-    menuConfirmationEl.value?.recomputeMenuPosition()
-  },
+  recomputeConfirmationMenuPosition: () => menuConfirmationEl.value?.recomputeMenuPosition(),
 })
 
 // When triggering the edit mode, we want to focus the first input
@@ -383,6 +381,7 @@ onMounted(() => {
               ref="menuConfirmationEl"
               manual
               :confirmation-text="submitConfirmationText"
+              placement="top"
               @ok="throttledSubmit(true, $event)"
             >
               <template #append>

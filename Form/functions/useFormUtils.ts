@@ -15,6 +15,7 @@ export function useFormUtils() {
       'preventSubmitOnEnter',
       'reset',
       'submitConfirmation',
+      'submitConfirmationText',
       'submitDisabled',
       'ui',
     ])
