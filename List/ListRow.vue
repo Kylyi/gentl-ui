@@ -70,7 +70,7 @@ function getItem() {
         'no-dragover': !rowInfo.isReorderable,
       },
     ]"
-    .get-item="getItem"
+    .getItem="getItem"
     @mousedown="handleMouseDown"
     @touchstart="handleTouchStart"
   >
