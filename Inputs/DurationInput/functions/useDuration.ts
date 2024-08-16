@@ -32,8 +32,8 @@ export function useDuration() {
 
   const formatDuration = (
     valueRef?: MaybeRefOrGetter<number | string | null>,
-    options: IDurationOptions = {}
-  ): { val: number; unit: IDurationOptions['unit']; formatted: string } => {
+    options: IDurationOptions = {},
+  ): { val: number, unit: IDurationOptions['unit'], formatted: string } => {
     let val = toValue(valueRef)
 
     if (isNil(val) || val === '') {
@@ -53,7 +53,7 @@ export function useDuration() {
 
   const getDuration = (
     value: number,
-    unit?: IDurationOptions['unit']
+    unit?: IDurationOptions['unit'],
   ): {
     val: number
     unit: IDurationOptions['unit']
@@ -76,7 +76,7 @@ export function useDuration() {
 
     const val = $duration(value).as(unit)
     const formatted = formatNumber(val)
-    const unitTranslated = $t(`general.${unit}`, val)
+    const unitTranslated = $t(`general.${unit}`, Math.round(val))
 
     return {
       val,
