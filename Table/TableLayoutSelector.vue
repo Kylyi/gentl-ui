@@ -325,5 +325,16 @@ function handleOpenDialog(dialogName: string) {
         <TableLayoutSelectorSavedOptions :layout="item" />
       </div>
     </template>
+
+    <template
+      v-if="config.table.hasHelpButtons"
+      #after-search
+    >
+      <DocumentationBtn
+        path="layoutSelector"
+        self-center
+        m="r-2"
+      />
+    </template>
   </Selector>
 </template>

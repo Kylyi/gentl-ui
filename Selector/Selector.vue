@@ -646,10 +646,13 @@ function getData() {
             @removed="handleSelectRemove"
           >
             <template
-              v-if="$bp.isSmaller('sm')"
+              v-if="$bp.isSmaller('sm') || $slots['after-search']"
               #after-search
             >
+              <slot name="after-search" />
+
               <Btn
+                v-if="$bp.isSmaller('sm')"
                 preset="CLOSE"
                 self-center
                 m="r-2"

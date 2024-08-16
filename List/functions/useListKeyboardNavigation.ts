@@ -3,6 +3,9 @@ import type { MaybeElementRef } from '@vueuse/core'
 // Types
 import type { IGroupRow } from '~/libs/Shared/functions/data/useGrouping'
 
+// Injections
+import { formSubmitKey } from '~/components/Form/provide/form.provide'
+
 // Components
 import type ListVirtualContainer from '~/components/List/ListVirtualContainer.vue'
 
@@ -20,6 +23,9 @@ export function useListKeyboardNavigation(options: {
     selectedRef,
     handleSelectItem,
   } = options
+
+  // Injections
+  const submit = inject(formSubmitKey)
 
   // Utils
   const self = getCurrentInstance()
@@ -126,6 +132,7 @@ export function useListKeyboardNavigation(options: {
         if (isCtrl) {
           ev.preventDefault()
           self?.emit('submit')
+          submit?.()
 
           return
         }
