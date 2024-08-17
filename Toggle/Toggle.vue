@@ -29,15 +29,15 @@ const internalValue = computed<ToggleState>(() => {
     return val === props.checkValue?.toString()
       ? 'checked'
       : val === props.uncheckValue?.toString()
-      ? 'unchecked'
-      : 'indeterminate'
+        ? 'unchecked'
+        : 'indeterminate'
   }
 
   return model.value === props.checkValue
     ? 'checked'
     : model.value === props.uncheckValue
-    ? 'unchecked'
-    : 'indeterminate'
+      ? 'unchecked'
+      : 'indeterminate'
 })
 
 function handleStateChange() {
@@ -125,8 +125,8 @@ const toggleClasses = computed(() => {
     props.rounding === 'full'
       ? 'rounded-full'
       : props.rounding === 'normal'
-      ? 'rounded-custom'
-      : '',
+        ? 'rounded-custom'
+        : '',
     {
       'is-hoverable': props.hoverable,
       'is-readonly': props.readonly,
@@ -141,8 +141,8 @@ const bulletClasses = computed(() => {
     props.rounding === 'full'
       ? 'rounded-full'
       : props.rounding === 'normal'
-      ? 'rounded-custom'
-      : '',
+        ? 'rounded-custom'
+        : '',
     { 'is-contained': props.contained },
     classes.value[internalValue.value].bullet,
   ]
@@ -219,115 +219,117 @@ export default {
 <style lang="scss" scoped>
 .toggle {
   -webkit-tap-highlight-color: transparent;
-  --apply: flex items-center cursor-pointer select-none relative;
+  @apply flex items-center cursor-pointer select-none relative;
 
   &.is-readonly {
-    --apply: border-dotted cursor-default;
+    @apply border-dotted cursor-default;
 
     &.is-checked .bullet {
-      --apply: bg-positive/50 border-2 border-dotted border-positive;
+      @apply bg-positive/50 border-2 border-dotted border-positive;
     }
 
     &.is-unchecked .bullet {
-      --apply: bg-neutral/50 border-2 border-dotted border-neutral;
+      @apply bg-neutral/50 border-2 border-dotted border-neutral;
     }
   }
 
   &-label--xs,
   &-label--sm {
-    --apply: text-sm;
+    @apply text-sm;
   }
 
   &.is-disabled {
-    --apply: cursor-not-allowed disabled;
+    @apply cursor-not-allowed disabled;
   }
 
   &--xs {
-    --apply: w-10 h-6 m-y-1 m-x-2;
+    @apply w-10 h-6 m-y-1 m-x-2;
 
     .bullet {
-      --apply: h-7 w-7;
+      @apply min-h-7 min-w-7;
 
       &.is-contained {
-        --apply: h-4.5 w-4.5;
+        @apply h-4.5 w-4.5;
       }
     }
   }
 
   &--sm {
-    --apply: w-12 h-7 m-y-1.5 m-x-2.5;
+    @apply w-12 h-7 m-y-1.5 m-x-2.5;
 
     .bullet {
-      --apply: h-8 w-8;
+      @apply min-h-8 min-w-8;
 
       &.is-contained {
-        --apply: h-5.5 w-5.5;
+        @apply h-5.5 w-5.5;
       }
     }
   }
 
   &--md {
-    --apply: w-13 h-8 m-y-2 m-x-2.5;
+    @apply w-13 h-8 m-y-2 m-x-2.5;
 
     .bullet {
-      --apply: h-9 w-9;
+      @apply min-h-9 min-
 
       &.is-contained {
-        --apply: h-6.5 w-6.5;
+        @apply h-6.5 w-6.5;
       }
     }
   }
 
   &--lg {
-    --apply: w-15 h-9 m-y-2.5 m-x-3;
+    @apply w-15 h-9 m-y-2.5 m-x-3;
 
     .bullet {
-      --apply: h-10 w-10;
+      @apply min-h-10 min-w-10;
 
       &.is-contained {
-        --apply: h-7.5 w-7.5;
+        @apply h-7.5 w-7.5;
       }
     }
   }
 
   &.is-hoverable:hover {
     .bullet {
-      --apply: shadow-consistent-sm-fill shadow-ca;
+      @apply shadow-consistent-sm-fill shadow-ca;
     }
   }
 
   .bullet {
-    --apply: relative ease-linear flex flex-center;
-    transition: transform 0.25s, box-shadow 0.15s;
+    @apply relative ease-linear flex flex-center;
+    transition:
+      transform 0.25s,
+      box-shadow 0.15s;
   }
 
   &.is-unchecked {
     .bullet {
-      --apply: translate-x--8px;
+      @apply translate-x--8px;
     }
 
     .bullet.is-contained {
-      --apply: translate-x-2px;
+      @apply translate-x-2px;
     }
   }
 
   &.is-checked {
     &.toggle--xs {
       .bullet {
-        --apply: translate-x-18px;
+        @apply translate-x-18px;
       }
     }
 
     &.toggle--sm,
     &.toggle--md {
       .bullet {
-        --apply: translate-x-22px;
+        @apply translate-x-22px;
       }
     }
 
     &.toggle--lg {
       .bullet {
-        --apply: translate-x-26px;
+        @apply translate-x-26px;
       }
     }
   }
@@ -335,32 +337,32 @@ export default {
   &.is-indeterminate {
     &.toggle--xs {
       .bullet {
-        --apply: translate-x-5px;
+        @apply translate-x-5px;
       }
 
       .bullet.is-contained {
-        --apply: translate-x-10px;
+        @apply translate-x-10px;
       }
     }
 
     &.toggle--sm,
     &.toggle--md {
       .bullet {
-        --apply: translate-x-7px;
+        @apply translate-x-7px;
       }
 
       .bullet.is-contained {
-        --apply: translate-x-12px;
+        @apply translate-x-12px;
       }
     }
 
     &.toggle--lg {
       .bullet {
-        --apply: translate-x-9px;
+        @apply translate-x-9px;
       }
 
       .bullet.is-contained {
-        --apply: translate-x-14px;
+        @apply translate-x-14px;
       }
     }
   }
