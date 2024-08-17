@@ -14,10 +14,16 @@ function setAutoSaveLayout(value: boolean | undefined | null) {
   })
 }
 
-function setFitColumns(mode: 'auto' | 'content' | 'stretch') {
-  appStore.setAppState({
-    table: { fit: mode },
-  })
+function setFitColumns(mode: 'auto' | 'content' | 'stretch', unset?: boolean) {
+  if (unset) {
+    appStore.setAppState({
+      table: { fit: undefined },
+    })
+  } else {
+    appStore.setAppState({
+      table: { fit: mode },
+    })
+  }
 }
 </script>
 
@@ -46,7 +52,7 @@ function setFitColumns(mode: 'auto' | 'content' | 'stretch') {
     <Checkbox
       :model-value="appState.table?.fit === 'content'"
       :label="$t('table.autoFitColumns')"
-      @update:model-value="setFitColumns('content')"
+      @update:model-value="setFitColumns('content', appState.table?.fit === 'content')"
     />
 
     <span class="hint">
@@ -59,7 +65,7 @@ function setFitColumns(mode: 'auto' | 'content' | 'stretch') {
     <Checkbox
       :model-value="appState.table?.fit === 'auto'"
       :label="$t('table.autoJustifyColumns')"
-      @update:model-value="setFitColumns('auto')"
+      @update:model-value="setFitColumns('auto', appState.table?.fit === 'auto')"
     />
 
     <span class="hint">
@@ -76,7 +82,7 @@ function setFitColumns(mode: 'auto' | 'content' | 'stretch') {
     <Checkbox
       :model-value="appState.table?.fit === 'stretch'"
       :label="$t('table.autoStretchColumns')"
-      @update:model-value="setFitColumns('stretch')"
+      @update:model-value="setFitColumns('stretch', appState.table?.fit === 'auto')"
     />
 
     <span class="hint">
