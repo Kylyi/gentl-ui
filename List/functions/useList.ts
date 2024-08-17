@@ -635,6 +635,7 @@ export function useList(
     handleSelectItem,
     itemsRef: arr,
     selectedRef: selected,
+    searchEl,
   })
 
   return {

@@ -8,19 +8,20 @@ import { formSubmitKey } from '~/components/Form/provide/form.provide'
 
 // Components
 import type ListVirtualContainer from '~/components/List/ListVirtualContainer.vue'
+import type SearchInput from '~/components/Inputs/SearchInput.vue'
 
 export function useListKeyboardNavigation(options: {
-  listContainerRef: MaybeElementRef<
-    InstanceType<typeof ListVirtualContainer> | undefined
-  >
+  listContainerRef: MaybeElementRef< InstanceType<typeof ListVirtualContainer> | undefined >
   itemsRef: Ref<Array<IGroupRow | IItem>>
   selectedRef: Ref<IItem | null>
   handleSelectItem: (item: any) => void
+  searchEl: Ref<InstanceType<typeof SearchInput> | undefined>
 }) {
   const {
     listContainerRef,
     itemsRef,
     selectedRef,
+    searchEl,
     handleSelectItem,
   } = options
 
@@ -142,6 +143,7 @@ export function useListKeyboardNavigation(options: {
           ev.stopPropagation()
           ev.stopImmediatePropagation()
           handleSelectItem(toValue(itemsRef)[hoveredIdx.value])
+          toValue(searchEl)?.select()
         }
 
         return
