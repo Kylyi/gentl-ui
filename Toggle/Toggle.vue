@@ -249,7 +249,7 @@ export default {
       @apply min-h-7 min-w-7;
 
       &.is-contained {
-        @apply h-4.5 w-4.5;
+        @apply min-h-4.5 min-w-4.5;
       }
     }
   }
@@ -261,7 +261,7 @@ export default {
       @apply min-h-8 min-w-8;
 
       &.is-contained {
-        @apply h-5.5 w-5.5;
+        @apply min-h-5.5 min-w-5.5;
       }
     }
   }
@@ -270,10 +270,10 @@ export default {
     @apply w-13 h-8 m-y-2 m-x-2.5;
 
     .bullet {
-      @apply min-h-9 min-
+      @apply min-h-9 min-w-9;
 
       &.is-contained {
-        @apply h-6.5 w-6.5;
+        @apply min-h-6.5 min-w-6.5;
       }
     }
   }
@@ -285,7 +285,7 @@ export default {
       @apply min-h-10 min-w-10;
 
       &.is-contained {
-        @apply h-7.5 w-7.5;
+        @apply min-h-7.5 min-w-7.5;
       }
     }
   }
