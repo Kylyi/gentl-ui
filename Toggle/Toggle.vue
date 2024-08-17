@@ -16,7 +16,7 @@ const props = withDefaults(defineProps<IToggleProps>(), {
 })
 
 const emits = defineEmits<{
-  (e: 'update:modelValue', val?: boolean | null): void
+  (e: 'update:modelValue', val?: any): void
 }>()
 
 // State
@@ -243,7 +243,7 @@ export default {
   }
 
   &--xs {
-    @apply w-10 h-6 m-y-1 m-x-2;
+    @apply min-w-10 min-h-6 m-y-1 m-x-2;
 
     .bullet {
       @apply min-h-7 min-w-7;
@@ -255,7 +255,7 @@ export default {
   }
 
   &--sm {
-    @apply w-12 h-7 m-y-1.5 m-x-2.5;
+    @apply min-w-12 min-h-7 m-y-1.5 m-x-2.5;
 
     .bullet {
       @apply min-h-8 min-w-8;
@@ -267,7 +267,7 @@ export default {
   }
 
   &--md {
-    @apply w-13 h-8 m-y-2 m-x-2.5;
+    @apply min-w-13 min-h-8 m-y-2 m-x-2.5;
 
     .bullet {
       @apply min-h-9 min-w-9;
@@ -279,7 +279,7 @@ export default {
   }
 
   &--lg {
-    @apply w-15 h-9 m-y-2.5 m-x-3;
+    @apply min-w-15 min-h-9 m-y-2.5 m-x-3;
 
     .bullet {
       @apply min-h-10 min-w-10;

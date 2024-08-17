@@ -2,27 +2,40 @@
 // Types
 import type { ICrudBtnProps } from '~/components/Crud/types/crud-btn-props.type'
 
-type IProps = ICrudBtnProps
+type IProps = ICrudBtnProps & { isArchived?: boolean }
 
-withDefaults(defineProps<IProps>(), {
+const props = withDefaults(defineProps<IProps>(), {
   loaderType: 'block',
 })
+
 defineEmits<{
   (e: 'archive'): void
 }>()
+
+// Layout
+const label = computed(() => {
+  if (!props.labels) {
+    return
+  }
+
+  return props.isArchived
+    ? $t('general.restore')
+    : $t('general.archive')
+})
 </script>
 
 <template>
   <Btn
-    preset="ARCHIVE"
-    :label="labels && $t('general.archive')"
-    :loader-type="loaderType"
-    :loading="loading"
+    :preset="isArchived ? 'RESTORE' : 'ARCHIVE'"
+    :label
+    :loader-type
+    :loading
     no-dim
+    no-uppercase
   >
     <MenuConfirmation
       placement="bottom"
-      :title="$t('general.archive')"
+      :title="label"
       @ok="$emit('archive')"
     >
       <slot name="confirmation" />
