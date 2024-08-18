@@ -248,7 +248,7 @@ function handleComparatorChange(comparator: ComparatorEnum) {
   }
 
   if (!_wasDateAgoComparator && _isDateAgoComparator) {
-    item.value.value = '1m'
+    item.value.value = '1d'
   }
 
   item.value.comparator = comparator

@@ -184,6 +184,7 @@ export default {
       ref="toggleEl"
       class="toggle"
       border="1 ca hover:true-gray-400"
+      shrink-0
       :class="toggleClasses"
       v-bind="$attrs"
       tabindex="0"
@@ -243,49 +244,49 @@ export default {
   }
 
   &--xs {
-    @apply min-w-10 min-h-6 m-y-1 m-x-2;
+    @apply w-10 h-6 m-y-1 m-x-2;
 
     .bullet {
-      @apply min-h-7 min-w-7;
+      @apply h-7 w-7;
 
       &.is-contained {
-        @apply min-h-4.5 min-w-4.5;
+        @apply h-4.5 w-4.5;
       }
     }
   }
 
   &--sm {
-    @apply min-w-12 min-h-7 m-y-1.5 m-x-2.5;
+    @apply w-12 h-7 m-y-1.5 m-x-2.5;
 
     .bullet {
-      @apply min-h-8 min-w-8;
+      @apply h-8 w-8;
 
       &.is-contained {
-        @apply min-h-5.5 min-w-5.5;
+        @apply h-5.5 w-5.5;
       }
     }
   }
 
   &--md {
-    @apply min-w-13 min-h-8 m-y-2 m-x-2.5;
+    @apply w-13 h-8 m-y-2 m-x-2.5;
 
     .bullet {
-      @apply min-h-9 min-w-9;
+      @apply h-9 w-9;
 
       &.is-contained {
-        @apply min-h-6.5 min-w-6.5;
+        @apply h-6.5 w-6.5;
       }
     }
   }
 
   &--lg {
-    @apply min-w-15 min-h-9 m-y-2.5 m-x-3;
+    @apply w-15 h-9 m-y-2.5 m-x-3;
 
     .bullet {
-      @apply min-h-10 min-w-10;
+      @apply h-10 w-10;
 
       &.is-contained {
-        @apply min-h-7.5 min-w-7.5;
+        @apply h-7.5 w-7.5;
       }
     }
   }

@@ -211,7 +211,7 @@ export function useList(
   }
 
   // Data handling
-  const hasMore = ref(true)
+  const hasMore = ref(!props.loadData?.local)
   const totalRows = ref(0)
   const selected = toRef(props, 'selected')
 

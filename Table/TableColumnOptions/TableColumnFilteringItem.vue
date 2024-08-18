@@ -217,7 +217,7 @@ function handleComparatorChange(comparator: ComparatorEnum) {
   }
 
   if (!_wasDateAgoComparator && _isDateAgoComparator) {
-    filter.value.value = '1m'
+    filter.value.value = '1d'
   }
 
   filter.value.comparator = comparator
@@ -325,7 +325,6 @@ defineExpose({
       v-model="filter.value"
       :load-data="{
         fnc: () => column.getDistinctData?.(column),
-        mapKey: 'doesnt-really-matter',
         local: true,
         immediate: true,
       }"
