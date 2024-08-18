@@ -74,6 +74,44 @@ const hasActionBar = computed(() => {
   )
 })
 
+function fitColumns(ev?: MouseEvent) {
+  const isShiftKey = !!ev?.shiftKey
+  const isCtrlKey = ev?.ctrlKey || ev?.metaKey
+
+  let mode: 'content' | 'auto' | 'stretch' = 'content'
+
+  if (isShiftKey) {
+    mode = 'stretch'
+  } else if (isCtrlKey) {
+    mode = 'auto'
+  }
+
+  handleFitColumns(mode)
+}
+
+// Subscription
+const subscriptionEl = ref<any>()
+
+const hasSubscriptionBtn = computed(() => {
+  return !props.tableTopFunctionality?.noSubscription
+    && 'subscriptionComponent' in config
+    && config.subscriptionComponent
+})
+
+// Export
+const exportEl = ref<any>()
+
+const ExportBtn = computed(() => {
+  const hasCustomExport = 'exportComponent' in config.table && !!config.table.exportComponent
+
+  if (!props.exportProps?.useDefault && hasCustomExport) {
+    return config.table.exportComponent
+  }
+
+  return TableExportBtn
+})
+
+// Query builder
 const queryBuilderHeight = computed(() => {
   return {
     minHeight: `${
@@ -121,16 +159,6 @@ const qbControlsClasses = computed(() => {
   }
 })
 
-const ExportBtn = computed(() => {
-  const hasCustomExport = 'exportComponent' in config.table && !!config.table.exportComponent
-
-  if (!props.exportProps?.useDefault && hasCustomExport) {
-    return config.table.exportComponent
-  }
-
-  return TableExportBtn
-})
-
 const selectionCount = computed(() => {
   if (!selection.value) {
     return 0
@@ -141,9 +169,7 @@ const selectionCount = computed(() => {
     : Object.keys(selection.value).length
 })
 
-/**
- * Creates readable sorting string
- */
+// Filtering and sorting
 const tableSorting = computed(() => {
   return columns.value
     .filter(col => col.sort)
@@ -216,21 +242,6 @@ function handleClearSorting() {
     col.sort = undefined
     col.sortOrder = undefined
   })
-}
-
-function fitColumns(ev?: MouseEvent) {
-  const isShiftKey = !!ev?.shiftKey
-  const isCtrlKey = ev?.ctrlKey || ev?.metaKey
-
-  let mode: 'content' | 'auto' | 'stretch' = 'content'
-
-  if (isShiftKey) {
-    mode = 'stretch'
-  } else if (isCtrlKey) {
-    mode = 'auto'
-  }
-
-  handleFitColumns(mode)
 }
 
 // Keyboard shortcuts
@@ -380,14 +391,9 @@ onKeyStroke(['d', 'D'], (ev: KeyboardEvent) => {
           </Btn>
 
           <!-- Subscriptions -->
-          <template
-            v-if="
-              !tableTopFunctionality?.noSubscription
-                && 'subscriptionComponent' in config
-                && config.subscriptionComponent
-            "
-          >
+          <template v-if="hasSubscriptionBtn">
             <Separator
+              v-if="!subscriptionEl?.isHidden?.()"
               vertical
               m="r-1"
               :class="qbControlsClasses.separator"
@@ -395,6 +401,7 @@ onKeyStroke(['d', 'D'], (ev: KeyboardEvent) => {
 
             <Component
               :is="config.subscriptionComponent"
+              ref="subscriptionEl"
               self-start
               m="t-1"
             />
@@ -406,6 +413,7 @@ onKeyStroke(['d', 'D'], (ev: KeyboardEvent) => {
             name="export"
           >
             <Separator
+              v-if="!exportEl?.isHidden?.()"
               vertical
               m="r-1"
               :class="qbControlsClasses.separator"
@@ -413,6 +421,7 @@ onKeyStroke(['d', 'D'], (ev: KeyboardEvent) => {
 
             <Component
               :is="ExportBtn"
+              ref="exportEl"
               v-bind="exportProps"
               shrink-0
               :class="qbControlsClasses.exportBtn"

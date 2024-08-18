@@ -30,7 +30,6 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   dataType: ExtendedDataType = 'string'
   label: string
   width: number | string = 1
-  align: 'left' | 'center' | 'right' = 'left'
   field: ObjectKey<T>
   hideLabel?: boolean
   noFilters?: boolean
@@ -510,7 +509,6 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     this.width = col.width || this.width
     this.originalWidth = col.width || this.width
     this.minWidth = col.minWidth
-    this.align = col.align || this.align
     this.hideLabel = col.hideLabel
     this.noFilters = col.noFilters
     this.sortable = col.sortable ?? true

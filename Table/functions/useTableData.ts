@@ -329,8 +329,6 @@ export function useTableData(
           props.getData.versionKey || config.table.versionKey,
         )
 
-        console.log(versionId.value)
-
         let data = get(
           result,
           props.getData.payloadKey || config.table.payloadKey,
