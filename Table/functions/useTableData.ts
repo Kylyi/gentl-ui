@@ -79,7 +79,6 @@ export function useTableData(
   // Layout
   const isInitialized = ref(false)
   const hasMore = ref(false)
-  const versionId = ref<number>()
   const dataHasBeenFetched = ref(false)
   const isForcedRefetch = ref(false)
   const search = ref('')
@@ -128,13 +127,13 @@ export function useTableData(
   // Provides & Injects
   const externalData = inject(tableExternalDataKey, ref({} as IItem))
   const customData = injectLocal(tableCustomDataKey, ref({} as IItem))
+  const versionId = inject(tableVersionKey, ref(-1))
 
   provide(tableRefreshKey, (force?: boolean) => refreshData(force))
   provide(tableRecreateQueryBuilderKey, () => initializeQueryBuilder())
   provide(tableStorageKey, storageKey)
   provide(tableRowsKey, rows)
   provide(tableQueryBuilderKey, queryBuilder)
-  provide(tableVersionKey, versionId)
   provideLocal(tableCustomDataKey, customData)
 
   // Pagination
@@ -330,6 +329,8 @@ export function useTableData(
           props.getData.versionKey || config.table.versionKey,
         )
 
+        console.log(versionId.value)
+
         let data = get(
           result,
           props.getData.payloadKey || config.table.payloadKey,
@@ -347,10 +348,7 @@ export function useTableData(
 
         return {
           data,
-          totalRows: get(
-            result,
-            props.getData.countKey || config.table.countKey,
-          ),
+          totalRows: get(result, props.getData.countKey || config.table.countKey),
           hashes: extractHashes(result),
           res: result,
         }
