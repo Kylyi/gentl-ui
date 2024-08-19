@@ -158,6 +158,15 @@ watch(() => props.step, () => {
     updateOverlayClip()
   })
 })
+
+// goForwardOn
+if(props.step.goForwardOn) {
+  console.log('goForwardOn', props.step.goForwardOn)
+  const goForwardOnElement = getTargetElement(props.step.goForwardOn.element)
+  console.log('goForwardOnElement', goForwardOnElement)
+
+  goForwardOnElement.addEventListener(props.step.goForwardOn.event, emit('nextStep'))
+}
 </script>
 
 <template>

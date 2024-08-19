@@ -13,8 +13,8 @@ export class TutorialWizardStep {
    * Specifies the event condition for advancing to the next step in the tutorial wizard.
    */
   goForwardOn?: {
-    element: MaybeElement<ReferenceElement> | HTMLElement | string | null
-    event: Event
+    element: MaybeElement<ReferenceElement> | HTMLElement | string | null | Ref<any>
+    event: string
   }
 
   /**
