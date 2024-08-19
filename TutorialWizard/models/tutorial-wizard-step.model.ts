@@ -1,27 +1,52 @@
 import type { MaybeElement } from '@floating-ui/vue'
 import type { ReferenceElement, Placement } from '@floating-ui/dom'
+import type { TutorialWizardModel } from './tutorial-wizard.model'
+import type { Required } from 'utility-types'
 
 export class TutorialWizardStep {
-  id: string
-  element: MaybeElement<ReferenceElement> | HTMLElement | string | null
-  resolveFnc?: () => boolean
+  id: number
+
+  // Target element for the tutorial step
+  element: MaybeElement<ReferenceElement> | HTMLElement | string | null | Ref<any>
+
+  /**
+   * Specifies the event condition for advancing to the next step in the tutorial wizard.
+   */
+  goForwardOn?: {
+    element: MaybeElement<ReferenceElement> | HTMLElement | string | null
+    event: Event
+  }
+
+  /**
+   * Element event that triggers going back a step
+   */
+  goBackOn?: {
+    element: MaybeElement<ReferenceElement> | HTMLElement | string
+    event?: Event
+  }
+
+  // Placement of the tutorial step
   placement: Placement
+  // Whether to adapt the placement of the tutorial step based on avaiable space
+  adaptPlacement: boolean = true
+
   heading?: string
   message?: string
 
 
-  constructor(args: {
-    id: string
-    element: MaybeElement<ReferenceElement> | HTMLElement | string | null
-    resolveFnc?: () => boolean
-    placement?: Placement
-    heading?: string
-    message?: string
-  }) {
-      this.id = args.id
+  constructor(args: Partial<TutorialWizardStep>) {
+      this.id = args.id ?? uuid()
+
+      // Target element
       this.element = args.element
-      this.resolveFnc = args.resolveFnc
+
+      // Advancement
+      this.goForwardOn = args.goForwardOn
+      this.goBackOn = args.goBackOn
+
+      // Layout
       this.placement = args.placement ?? 'top'
+      this.adaptPlacement = args.adaptPlacement ?? this.adaptPlacement
       this.heading = args.heading
       this.message = args.message
   }

@@ -14,11 +14,15 @@ import type {
 
 const props = defineProps<{
   step: TutorialWizardStep
-  referenceTarget: any
-  placement: Placement
   offset?: OffsetOptions
   noArrow?: boolean
   delay?: [number, number]
+  isLastStep?: boolean
+}>()
+
+const emit = defineEmits<{
+  nextStep: [],
+  previousStep: [],
 }>()
 
   // Layout
@@ -37,7 +41,7 @@ const { floatingStyles, placement, middlewareData } = useFloating(
   referenceEl,
   tooltipEl,
   {
-    placement: props.placement,
+    placement: props.step.placement,
     middleware,
     strategy: 'fixed',
   },
@@ -83,7 +87,7 @@ function getTargetElement(target: any): any {
 
 onMounted(() => {
   nextTick(() => {
-    referenceEl.value = getTargetElement(props.referenceTarget)
+    referenceEl.value = getTargetElement(props.step.element)
     referenceEl.value && referenceEl.value.classList.add('has-tooltip')
 
     referenceEl.value?.addEventListener('mouseenter', () => {
@@ -149,7 +153,7 @@ onUnmounted(() => {
 
 watch(() => props.step, () => {
   nextTick(() => {
-    referenceEl.value = getTargetElement(props.referenceTarget)
+    referenceEl.value = getTargetElement(props.step.element)
     highlightedElement.value = referenceEl.value as HTMLElement
     updateOverlayClip()
   })
@@ -160,7 +164,6 @@ watch(() => props.step, () => {
   <Teleport to="body">
     <div
       class="tutorial-overlay"
-      @click.self="$emit('skip')"
       @click.prevent.stop
       @wheel.prevent.stop
       @touchmove.prevent.stop
@@ -181,7 +184,22 @@ watch(() => props.step, () => {
         class="arrow"
       />
 
-      <slot />
+      <slot>
+        <h3>{{ step.heading }}</h3>
+        <p>{{ step.message }}</p>
+        <div>
+          <Btn
+            @click="emit('previousStep')"
+            :disabled="step.id === 0"
+            >
+            Previous
+          </Btn>
+
+          <Btn @click="emit('nextStep')">
+            {{ isLastStep ? 'Finish' : 'Next' }}
+          </Btn>
+        </div>
+        </slot>
     </div>
   </Teleport>
 </template>
