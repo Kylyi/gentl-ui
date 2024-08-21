@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // Functions
 import { arrow, flip, offset, shift, useFloating } from '@floating-ui/vue'
+import { useWizardOverlay } from '../functions/useWizardOverlay';
 
 // Models
 import type { TutorialWizardStep } from '../models/tutorial-wizard-step.model'
@@ -25,8 +26,11 @@ const emit = defineEmits<{
   previousStep: [],
 }>()
 
+// Utils
+const highlightedElement = ref<HTMLElement | null>(null)
+const { updateOverlayClip } = useWizardOverlay(highlightedElement)
+
   // Layout
-const model = defineModel({ default: false })
 const tooltipEl = ref<HTMLElement>()
 const referenceEl = ref<Element>() // Element that menu is attached to
 const arrowEl = ref<HTMLDivElement>()
@@ -88,67 +92,19 @@ function getTargetElement(target: any): any {
 onMounted(() => {
   nextTick(() => {
     referenceEl.value = getTargetElement(props.step.element)
-    referenceEl.value && referenceEl.value.classList.add('has-tooltip')
+    referenceEl.value?.classList.add('has-tooltip')
 
     referenceEl.value?.addEventListener('mouseenter', () => {
-      referenceEl.value && referenceEl.value.classList.add('tooltip-hovered')
-
-      setTimeout(() => {
-        const isStillInside
-          = referenceEl.value?.classList.contains('tooltip-hovered')
-
-        if (isStillInside) {
-          model.value = true
-        }
-      }, props.delay?.[0] || 0)
+      referenceEl.value?.classList.add('tooltip-hovered')
     })
 
     referenceEl.value?.addEventListener('mouseleave', () => {
-      referenceEl.value && referenceEl.value.classList.remove('tooltip-hovered')
-
-      setTimeout(() => {
-        const isStillInside
-          = referenceEl.value?.classList.contains('tooltip-hovered')
-
-        if (!isStillInside) {
-          model.value = false
-        }
-      }, props.delay?.[1] || 0)
+      referenceEl.value?.classList.remove('tooltip-hovered')
     })
 
     highlightedElement.value = referenceEl.value as HTMLElement
     updateOverlayClip()
-    window.addEventListener('resize', updateOverlayClip)
   })
-})
-
-const highlightedElement = ref<HTMLElement | null>(null)
-
-function updateOverlayClip() {
-  if (!highlightedElement.value || !referenceEl.value) return
-
-  const rect = referenceEl.value.getBoundingClientRect()
-  const overlay = document.querySelector('.tutorial-overlay') as HTMLElement
-  if (!overlay) return
-
-  overlay.style.clipPath = `
-    polygon(
-      0% 0%,
-      0% 100%,
-      ${rect.left}px 100%,
-      ${rect.left}px ${rect.top}px,
-      ${rect.right}px ${rect.top}px,
-      ${rect.right}px ${rect.bottom}px,
-      ${rect.left}px ${rect.bottom}px,
-      ${rect.left}px 100%,
-      100% 100%,
-      100% 0%
-    )
-  `
-}
-
-onUnmounted(() => {
-  window.removeEventListener('resize', updateOverlayClip)
 })
 
 watch(() => props.step, () => {
