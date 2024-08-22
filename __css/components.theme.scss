@@ -31,11 +31,18 @@
 
   // Table
   --Table-container-bg: theme('colors.gray.50');
+  // Row
   --Table-alternate-row-bg: theme('colors.white');
+  --Table-row-hover-cell-bg: theme('colors.blue.500/10');
+  // Header
+  --Table-header-bg: theme('colors.wite');
+  // Pagination
+  --Table-pagination-button-active-bg: theme('colors.primary');
 
   &.dark {
     --Table-container-bg: theme('colors.truegray.900');
     --Table-alternate-row-bg: theme('colors.darker');
+    --Table-header-bg: theme('colors.darker');
   }
 
   // Link
@@ -103,6 +110,7 @@
   --PageTitle-max-width: var(--screenLg);
   --PageTitle-padding: 16px 0 16px 16px;
   --PageTitle-margin: 0 0 8px 8px;
+  --PageTitle-weight: 700;
 
   // Input label
   --InputLabel-color: theme('colors.truegray.600');
