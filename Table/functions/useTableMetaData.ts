@@ -24,7 +24,6 @@ import { useAppStore } from '~/libs/App/app.store'
 const EXTENDABLE_COLUMN_PROPERTIES: Array<keyof TableColumn> = [
   'label',
   'width',
-  'align',
   'alwaysSelected',
   'classes',
   'comparator',
