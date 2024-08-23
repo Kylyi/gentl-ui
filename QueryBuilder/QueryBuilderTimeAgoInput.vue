@@ -12,8 +12,14 @@ type IAgoValue = {
   unitShortName: string
 }
 
+type IExactInputProps = {
+  value: boolean
+  buttonDisabled?: boolean
+}
+
 type IProps = {
   item: Pick<IQueryBuilderItem, 'value' | 'comparator'>
+  exactInputOptions?: IExactInputProps
 }
 
 const props = defineProps<IProps>()
@@ -29,6 +35,7 @@ defineExpose({
 const inputEl = ref<InstanceType<typeof NumberInput>>()
 const menuEl = ref<InstanceType<typeof Menu>>()
 const item = toRef(props, 'item')
+const exactInputOptions = toRef(props, 'exactInputOptions')
 
 const units = computed(() => [
   { id: 'd', label: $t('general.day', agoValue.value.value ?? 0) },
@@ -74,7 +81,9 @@ const agoValue = computed({
 
 const isExact = computed({
   get() {
-    return !!agoValue.value?.unitShortName?.endsWith('e')
+    return exactInputOptions.value?.value
+      ? exactInputOptions.value.value
+      : !!agoValue.value?.unitShortName?.endsWith('e')
   },
   set(val: boolean) {
     if (val) {
@@ -96,6 +105,12 @@ function setUnit(unitShortName: string) {
 
   menuEl.value?.hide()
 }
+
+onMounted(() => {
+  if (exactInputOptions?.value !== undefined) {
+    isExact.value = exactInputOptions?.value.value
+  }
+})
 </script>
 
 <template>
@@ -151,6 +166,7 @@ function setUnit(unitShortName: string) {
           no-bold
           no-uppercase
           :label="$t('table.exactFilter')"
+          :disabled="exactInputOptions?.buttonDisabled"
           @click="isExact = !isExact"
         />
       </div>
