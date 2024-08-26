@@ -12,5 +12,5 @@ export const ICON_BY_FILE_TYPE = {
   'application/vnd.ms-excel': 'vscode-icons:file-type-excel2', // XLS
   'application/msword': 'vscode-icons:file-type-word2', // DOC
   'application/vnd.ms-powerpoint': 'vscode-icons:file-type-powerpoint2', // PPT
-  'text/plain': 'hugeicons:txt-01', // TXT
+  'text/plain': 'i-hugeicons:txt-01', // TXT
 } as const
