@@ -48,7 +48,7 @@ export function useTableData(
   scrollerEl: Ref<any>,
   metaDataRefetch?: (
     forceRefetch?: boolean,
-    options?: { meta?: any }
+    options?: { meta?: any, metaFields?: string[] },
   ) => Promise<void>,
   recreateColumns?: (shouldRecreate?: boolean) => void,
   resizeColumns?: (force?: boolean) => void,
@@ -432,6 +432,8 @@ export function useTableData(
           resizeColumns?.(true)
 
           return
+        } else {
+          await metaDataRefetch?.(true, { metaFields: ['subscriptions', 'columns'] })
         }
       }
 

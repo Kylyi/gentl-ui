@@ -86,7 +86,7 @@ export async function useTableMetaData(props: ITableProps) {
    */
   async function fetchAndSetMetaData(
     forceRefetch?: boolean,
-    options?: { meta?: any },
+    options?: { meta?: any, metaFields?: string[] },
   ) {
     const storageKey = getStorageKey()
     const providedMetaData = options?.meta
@@ -128,10 +128,10 @@ export async function useTableMetaData(props: ITableProps) {
         // Otherwise, we decide whether to use the state or fetch from the API
         else {
           result = forceRefetch
-            ? await fnc?.()
+            ? await fnc?.(options?.metaFields)
             : config.table.useLocalStorageForMetaFirst
-              ? stateMetaData.value.meta ?? (await fnc?.())
-              : await fnc?.()
+              ? stateMetaData.value.meta ?? (await fnc?.(options?.metaFields))
+              : await fnc?.(options?.metaFields)
         }
 
         tableStore.setTableState(
@@ -151,10 +151,9 @@ export async function useTableMetaData(props: ITableProps) {
           = !!appStore.appState.table?.autoSaveSchema
           && stateMetaData.value.schema
 
-        layout.value
-          = _layout && !localStorageLayoutSchema
-            ? { ..._layout, preventLayoutReset: true }
-            : localStorageLayoutSchema ? { schema: localStorageLayoutSchema } : undefined
+        layout.value = _layout && !localStorageLayoutSchema
+          ? { ..._layout, preventLayoutReset: true }
+          : localStorageLayoutSchema ? { schema: localStorageLayoutSchema } : undefined
 
         // Project specific
         if (_layout?.viewCode) {

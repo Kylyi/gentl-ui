@@ -307,7 +307,7 @@ export type ITableProps = {
     /**
      * The function to get the metadata
      */
-    fnc: () => any | Promise<any>
+    fnc: (metaFields?: string[]) => any | Promise<any>
 
     /**
      * The key in the response that contains the columns
