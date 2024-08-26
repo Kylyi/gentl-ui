@@ -12,8 +12,20 @@ type IAgoValue = {
   unitShortName: string
 }
 
+type IExactInputProps = {
+  /**
+   * The initial value for `isExact` input
+   */
+  value: boolean
+  /**
+   * Indicates should exact selection button be disabled
+   */
+  isButtonDisabled?: boolean
+}
+
 type IProps = {
   item: Pick<IQueryBuilderItem, 'value' | 'comparator'>
+  exactInputOptions?: IExactInputProps
 }
 
 const props = defineProps<IProps>()
@@ -29,6 +41,7 @@ defineExpose({
 const inputEl = ref<InstanceType<typeof NumberInput>>()
 const menuEl = ref<InstanceType<typeof Menu>>()
 const item = toRef(props, 'item')
+const exactInputOptions = toRef(props, 'exactInputOptions')
 
 const units = computed(() => [
   { id: 'd', label: $t('general.day', agoValue.value.value ?? 0) },
@@ -88,6 +101,11 @@ const isExact = computed({
     }
   },
 })
+
+// Set isExact value from exactInputOptions props, if provided
+if (exactInputOptions.value?.value && exactInputOptions.value.value !== isExact.value) {
+  isExact.value = exactInputOptions.value.value
+}
 
 function setUnit(unitShortName: string) {
   agoValue.value = {
@@ -151,6 +169,7 @@ function setUnit(unitShortName: string) {
           no-bold
           no-uppercase
           :label="$t('table.exactFilter')"
+          :disabled="exactInputOptions?.isButtonDisabled"
           @click="isExact = !isExact"
         />
       </div>
