@@ -24,13 +24,6 @@ export const COMPARATORS_BY_DATATYPE_MAP = defu(
       ComparatorEnum.NOT_IN,
     ],
 
-    stringEnum: [
-      ComparatorEnum.EQUAL,
-      ComparatorEnum.NOT_EQUAL,
-      ComparatorEnum.IN,
-      ComparatorEnum.NOT_IN,
-    ],
-
     // Number
     number: [
       ComparatorEnum.EQUAL,
@@ -224,13 +217,6 @@ export const COMPARATORS_BY_DATATYPE_MAP = defu(
       ComparatorEnum.NOT_ENDS_WITH,
       ComparatorEnum.IS_EMPTY,
       ComparatorEnum.NOT_IS_EMPTY,
-    ],
-
-    stringEnumSimple: [
-      ComparatorEnum.EQUAL,
-      ComparatorEnum.NOT_EQUAL,
-      ComparatorEnum.IN,
-      ComparatorEnum.NOT_IN,
     ],
 
     // Number
