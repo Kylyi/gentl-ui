@@ -31,12 +31,9 @@
 
   // Table
   --Table-container-bg: theme('colors.gray.50');
-  // Row
   --Table-alternate-row-bg: theme('colors.white');
-  --Table-row-hover-cell-bg: theme('colors.blue.500/10');
-  // Header
+  // --Table-row-hover-cell-bg: theme('colors.blue.500/10');
   --Table-header-bg: theme('colors.white');
-  // Pagination
   --Table-pagination-button-active-bg: theme('colors.primary');
 
   &.dark {
