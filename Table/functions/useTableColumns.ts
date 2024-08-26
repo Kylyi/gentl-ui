@@ -179,9 +179,7 @@ export function useTableColumns(
     // that are in the URL and reset it for the others
     if (sort?.length) {
       _columns.forEach(col => {
-        const sortInUrlIdx = sort.findIndex(
-          sortItem => sortItem.field === col.field,
-        )
+        const sortInUrlIdx = sort.findIndex(sortItem => sortItem.field === col.field)
         const sortInUrl = sort[sortInUrlIdx]
 
         if (sortInUrl) {
