@@ -433,7 +433,7 @@ export function useTableData(
 
           return
         } else {
-          await metaDataRefetch?.(true, { metaFields: ['subscriptions', 'columns'] })
+          // await metaDataRefetch?.(true, { metaFields: ['subscriptions', 'columns'] })
         }
       }
 
