@@ -1,3 +1,4 @@
+import defu from 'defu'
 import { config } from '~/components/config/components-config'
 
 // Types
@@ -127,11 +128,13 @@ export async function useTableMetaData(props: ITableProps) {
 
         // Otherwise, we decide whether to use the state or fetch from the API
         else {
+          const _meta = stateMetaData.value.meta ?? {}
+
           result = forceRefetch
-            ? await fnc?.(options?.metaFields)
+            ? defu(_meta, await fnc?.(options?.metaFields))
             : config.table.useLocalStorageForMetaFirst
               ? stateMetaData.value.meta ?? (await fnc?.(options?.metaFields))
-              : await fnc?.(options?.metaFields)
+              : defu(_meta, await fnc?.(options?.metaFields))
         }
 
         tableStore.setTableState(
