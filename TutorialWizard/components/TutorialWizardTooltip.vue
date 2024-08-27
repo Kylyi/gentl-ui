@@ -116,13 +116,22 @@ watch(() => props.step, () => {
 })
 
 // goForwardOn
-if(props.step.goForwardOn) {
+whenever(() => !!props.step.goForwardOn, () => {
   console.log('goForwardOn', props.step.goForwardOn)
-  const goForwardOnElement = getTargetElement(props.step.goForwardOn.element)
+  const goForwardOnElement = getTargetElement(props.step.goForwardOn?.element)
   console.log('goForwardOnElement', goForwardOnElement)
 
-  goForwardOnElement.addEventListener(props.step.goForwardOn.event, emit('nextStep'))
-}
+  const observer = new MutationObserver(args => console.log(args))
+
+  observer.observe(
+    goForwardOnElement,
+    {
+      subtree: true,
+      characterData: true,
+      characterDataOldValue: true,
+    }
+  )
+})
 </script>
 
 <template>
