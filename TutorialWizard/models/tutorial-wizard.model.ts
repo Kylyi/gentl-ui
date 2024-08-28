@@ -29,6 +29,12 @@ export class TutorialWizardModel {
 
 
   constructor(args: Partial<TutorialWizardModel>) {
-    this.steps = args.steps ?? []
+    // Steps
+    this.steps = args.steps?.filter(step => {
+      return step.showOn ? step.showOn() : true
+    }) ?? []
+    this.steps.forEach(step => {
+      step.id = this.steps.indexOf(step)
+    })
   }
 }

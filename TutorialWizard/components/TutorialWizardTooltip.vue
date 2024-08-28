@@ -172,7 +172,7 @@ whenever(() => !!props.step.goForwardOn, () => {
               <!-- Step counter -->
               <slot name="step-counter">
                 <p class="tooltip-step-counter">
-                  {{ step.id }}/{{ wizard.steps.length }}
+                  {{ step.id + 1 }}/{{ wizard.steps.length }}
                 </p>
               </slot>
 

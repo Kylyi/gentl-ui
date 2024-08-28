@@ -4,7 +4,8 @@ import type { TutorialWizardModel } from './tutorial-wizard.model'
 import type { Required } from 'utility-types'
 
 export class TutorialWizardStep {
-  id: number
+  // Relative step number in onboarding
+  id: number = 0
 
   // Target element for the tutorial step
   element: MaybeElement<ReferenceElement> | HTMLElement | string | null | Ref<any>
@@ -33,10 +34,11 @@ export class TutorialWizardStep {
   heading?: string
   message?: string
 
+  // Condition for indlucing the step in the onboarding
+  showOn?: () => boolean
+
 
   constructor(args: Partial<TutorialWizardStep>) {
-      this.id = args.id ?? uuid()
-
       // Target element
       this.element = args.element
 
@@ -49,5 +51,7 @@ export class TutorialWizardStep {
       this.adaptPlacement = args.adaptPlacement ?? this.adaptPlacement
       this.heading = args.heading
       this.message = args.message
+
+      this.showOn = args.showOn
   }
 }
