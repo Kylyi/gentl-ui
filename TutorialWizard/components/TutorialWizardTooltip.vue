@@ -20,21 +20,14 @@ const props = defineProps<{
   offset?: OffsetOptions
   noArrow?: boolean
   delay?: [number, number]
-  isLastStep?: boolean
-}>()
-
-const emit = defineEmits<{
-  nextStep: [],
-  previousStep: [],
 }>()
 
 // Utils
-const highlightedElement = ref<HTMLElement | null>(null)
-const { updateOverlayClip } = useWizardOverlay(highlightedElement)
+const referenceEl = ref<HTMLElement | null>(null)
+const { updateOverlayClip } = useWizardOverlay(referenceEl)
 
   // Layout
 const tooltipEl = ref<HTMLElement>()
-const referenceEl = ref<Element>() // Element that menu is attached to
 const arrowEl = ref<HTMLDivElement>()
 const middleware = ref([
   offset(props.offset),
@@ -52,6 +45,10 @@ const { floatingStyles, placement, middlewareData } = useFloating(
     strategy: 'fixed',
   },
 )
+
+const isLastStep = computed(() => {
+  return props.wizard.currentStep === props.wizard.steps.length - 1
+})
 
 // Arrow placement
 watch(middlewareData, middlewareData => {
@@ -107,17 +104,6 @@ function getTargetElement(target: any): any {
 onMounted(() => {
   nextTick(() => {
     referenceEl.value = getTargetElement(props.step.element)
-    referenceEl.value?.classList.add('has-tooltip')
-
-    referenceEl.value?.addEventListener('mouseenter', () => {
-      referenceEl.value?.classList.add('tooltip-hovered')
-    })
-
-    referenceEl.value?.addEventListener('mouseleave', () => {
-      referenceEl.value?.classList.remove('tooltip-hovered')
-    })
-
-    highlightedElement.value = referenceEl.value as HTMLElement
     updateOverlayClip()
   })
 })
@@ -125,7 +111,6 @@ onMounted(() => {
 watch(() => props.step, () => {
   nextTick(() => {
     referenceEl.value = getTargetElement(props.step.element)
-    highlightedElement.value = referenceEl.value as HTMLElement
     updateOverlayClip()
   })
 })
@@ -133,11 +118,11 @@ watch(() => props.step, () => {
 // goForwardOn
 whenever(() => !!props.step.goForwardOn, () => {
   const goForwardOnElement = getTargetElement(props.step.goForwardOn?.element)
-  console.log('goForwardOnElement', goForwardOnElement)
 
-  useMutationObserver(goForwardOnElement, () => {
-  console.log('Mutation')
-}, { characterData: true, subtree: true})
+  useMutationObserver(
+    goForwardOnElement,
+    () => { console.log('Mutation')},
+    { attributes: true, subtree: true})
 })
 </script>
 
@@ -154,7 +139,6 @@ whenever(() => !!props.step.goForwardOn, () => {
       ref="tooltipEl"
       :style="floatingStyles"
       class="tooltip"
-      p="x-2 y-1"
       :placement="placement"
       v-bind="$attrs"
     >
@@ -210,17 +194,19 @@ whenever(() => !!props.step.goForwardOn, () => {
             :disabled="step.id === 0"
             :label="$t('onboarding.back')"
             :ripple="false"
-            outlined
             color="blue-500"
-            @click="emit('previousStep')"
+            outlined
+            no-uppercase
+            @click="wizard.goToPreviousStep()"
           />
 
           <Btn
-            :label="isLastStep ? $t('onboarding.finish') : $t('onboarding.next')"
+            :label="isLastStep ? $t('general.close') : $t('onboarding.next')"
             :ripple="false"
             color="white"
             bg-blue-500
-            @click="emit('nextStep')"
+            no-uppercase
+            @click="wizard.goToNextStep()"
           />
         </div>
       </slot>
@@ -238,9 +224,7 @@ whenever(() => !!props.step.goForwardOn, () => {
 }
 
 .tooltip {
-  @apply dark:bg-darker bg-white border-ca border-custom rounded-custom z-$zMenu p-x-4;
-
-  @apply font-size-$Tooltip-font-size color-$Tooltip-font-color;
+  @apply dark:bg-darker bg-white border-ca border-custom rounded-custom z-$zMenu p-x-4 p-y-2;
 
   transition: 0.3s ease;
 
@@ -265,7 +249,7 @@ whenever(() => !!props.step.goForwardOn, () => {
   }
 
   &-controls {
-    @apply flex justify-end gap-2 p-t-4 p-b-5;
+    @apply flex justify-end gap-2 p-t-4 p-b-3;
   }
 }
 

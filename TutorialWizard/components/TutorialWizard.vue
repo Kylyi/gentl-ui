@@ -28,9 +28,6 @@ function start() {
       v-if="wizard.isActive"
       :step="wizard.steps[wizard.currentStep]"
       :wizard
-      :isLastStep="wizard.currentStep === wizard.steps.length - 1"
-      @nextStep="wizard.goToNextStep()"
-      @previousStep="wizard.goToPreviousStep()"
     >
     </TutorialWizardTooltip>
   </div>
