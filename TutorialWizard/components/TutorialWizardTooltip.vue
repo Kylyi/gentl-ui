@@ -5,6 +5,7 @@ import { useWizardOverlay } from '../functions/useWizardOverlay';
 
 // Models
 import type { TutorialWizardStep } from '../models/tutorial-wizard-step.model'
+import type { TutorialWizardModel } from '../models/tutorial-wizard.model';
 
 // Types
 import type {
@@ -15,6 +16,7 @@ import type {
 
 const props = defineProps<{
   step: TutorialWizardStep
+  wizard: TutorialWizardModel
   offset?: OffsetOptions
   noArrow?: boolean
   delay?: [number, number]
@@ -51,6 +53,19 @@ const { floatingStyles, placement, middlewareData } = useFloating(
   },
 )
 
+// Arrow placement
+watch(middlewareData, middlewareData => {
+  if (middlewareData.arrow) {
+    const { x, y } = middlewareData.arrow
+
+    Object.assign(arrowEl.value!.style, {
+      left: x != null ? `${x}px` : '',
+      top: y != null ? `${y}px` : '',
+    })
+  }
+})
+
+// Scroll to step
 watch(() => props.step, () => {
   if (tooltipEl.value) {
     tooltipEl.value.scrollIntoView({
@@ -117,20 +132,12 @@ watch(() => props.step, () => {
 
 // goForwardOn
 whenever(() => !!props.step.goForwardOn, () => {
-  console.log('goForwardOn', props.step.goForwardOn)
   const goForwardOnElement = getTargetElement(props.step.goForwardOn?.element)
   console.log('goForwardOnElement', goForwardOnElement)
 
-  const observer = new MutationObserver(args => console.log(args))
-
-  observer.observe(
-    goForwardOnElement,
-    {
-      subtree: true,
-      characterData: true,
-      characterDataOldValue: true,
-    }
-  )
+  useMutationObserver(goForwardOnElement, () => {
+  console.log('Mutation')
+}, { characterData: true, subtree: true})
 })
 </script>
 
@@ -159,28 +166,71 @@ whenever(() => !!props.step.goForwardOn, () => {
       />
 
       <slot>
-        <h3>{{ step.heading }}</h3>
-        <p>{{ step.message }}</p>
-        <div>
-          <Btn
-            @click="emit('previousStep')"
-            :disabled="step.id === 0"
-            >
-            Previous
-          </Btn>
+        <!-- Header -->
+         <slot name="header">
+           <div class="tooltip-header">
+              <!-- Step counter -->
+              <slot name="step-counter">
+                <p class="tooltip-step-counter">
+                  {{ step.id }}/{{ wizard.steps.length }}
+                </p>
+              </slot>
 
-          <Btn @click="emit('nextStep')">
-            {{ isLastStep ? 'Finish' : 'Next' }}
-          </Btn>
-        </div>
+              <!-- Close btn -->
+               <slot name="close-btn">
+                <Btn
+                  icon="i-ion:close"
+                  color="slate-600 dark:white"
+                  size="sm"
+                  no-hover-effect
+                  @click="wizard.endTour()"
+                />
+              </slot>
+          </div>
         </slot>
+
+        <div class="tooltip-content">
+          <!-- Heading -->
+          <slot name="heading">
+            <p class="tooltip-content__heading">
+              {{ step.heading }}
+            </p>
+          </slot>
+
+          <!-- Message -->
+          <slot name="message">
+            <p class="tooltip-content__message">
+              {{ step.message }}
+            </p>
+          </slot>
+        </div>
+
+        <div class="tooltip-controls">
+          <Btn
+            :disabled="step.id === 0"
+            :label="$t('onboarding.back')"
+            :ripple="false"
+            outlined
+            color="blue-500"
+            @click="emit('previousStep')"
+          />
+
+          <Btn
+            :label="isLastStep ? $t('onboarding.finish') : $t('onboarding.next')"
+            :ripple="false"
+            color="white"
+            bg-blue-500
+            @click="emit('nextStep')"
+          />
+        </div>
+      </slot>
     </div>
   </Teleport>
 </template>
 
 <style lang="scss" scoped>
 .tutorial-overlay {
-  @apply fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 cursor-not-allowed overflow-hidden touch-none;
+  @apply fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 cursor-not-allowed overflow-hidden touch-none p-4;
 
   z-index: calc(var(--zMenu) - 1);
 
@@ -188,12 +238,35 @@ whenever(() => !!props.step.goForwardOn, () => {
 }
 
 .tooltip {
-  @apply dark:bg-darker bg-white border-ca border-custom rounded-custom
-    z-$zMenu;
+  @apply dark:bg-darker bg-white border-ca border-custom rounded-custom z-$zMenu p-x-4;
 
   @apply font-size-$Tooltip-font-size color-$Tooltip-font-color;
 
   transition: 0.3s ease;
+
+  &-header {
+    @apply flex justify-between items-center p-y-1
+  }
+
+  &-step-counter {
+    @apply text-xs font-light color-slate-600 dark:color-white;
+  }
+
+  &-content {
+    @apply flex flex-col gap-5;
+
+    &__heading {
+      @apply color-slate-950 dark:color-white font-semibold text-xl;
+    }
+
+    &__message {
+      @apply color-slate-950 dark:color-white font-light text-base;
+    }
+  }
+
+  &-controls {
+    @apply flex justify-end gap-2 p-t-4 p-b-5;
+  }
 }
 
 .arrow {

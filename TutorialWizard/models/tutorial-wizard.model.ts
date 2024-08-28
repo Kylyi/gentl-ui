@@ -8,8 +8,7 @@ export class TutorialWizardModel {
 
   goToStep(step: number) {
     if(step >= this.steps.length) {
-      this.isFinished = true
-      this.isActive = false
+      this.endTour()
     }
 
     this.currentStep = step < 0 ? 0 : step
@@ -21,6 +20,11 @@ export class TutorialWizardModel {
 
   goToPreviousStep() {
     this.goToStep(this.currentStep - 1)
+  }
+
+  endTour() {
+    this.isFinished = true
+    this.isActive = false
   }
 
 
