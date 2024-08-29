@@ -27,7 +27,7 @@ export const BUTTON_PRESET = {
   },
   DONE: {
     icon: 'i-akar-icons:circle-check',
-    color: 'bg-primary color-white',
+    color: 'color-positive',
   },
   EDIT: {
     icon: 'i-material-symbols:edit-rounded',

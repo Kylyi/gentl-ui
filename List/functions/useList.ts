@@ -229,7 +229,9 @@ export function useList(
   }
 
   function handleSelectItem(option: any) {
-    if (props.noSelect) {
+    const isDisabled = props.disabledFnc?.(option)
+
+    if (props.noSelect || isDisabled) {
       return
     }
 

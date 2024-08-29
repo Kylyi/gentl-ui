@@ -137,12 +137,12 @@ function getItem() {
     @apply bg-$List-row-hover-bg;
   }
 
-  &--disabled {
+  &.is-disabled {
     @apply disabled cursor-not-allowed;
   }
 }
 
-.item--active.item--hovered:not(.item--disabled) {
+.item--active.item--hovered:not(.is-disabled) {
   @apply bg-primary/15;
 }
 </style>
