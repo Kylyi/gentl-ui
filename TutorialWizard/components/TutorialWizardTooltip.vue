@@ -70,7 +70,7 @@ watch(() => props.step, () => {
   const el = getTargetElement(props.step.element)
   el.scrollIntoView({
     behavior: 'smooth',
-    block: 'start',
+    block: 'end',
   })
 
   window.addEventListener('scrollend', () => {
