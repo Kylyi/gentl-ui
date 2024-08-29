@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Types
-import { type IBtnProps } from '~/components/Button/types/btn-props.type'
+import type { IBtnProps } from '~/components/Button/types/btn-props.type'
 
 const props = defineProps<
   IBtnProps & {
@@ -37,6 +37,7 @@ function handleCopy() {
   <Btn
     v-if="isSupported"
     :size="copyBtnSize"
+    :tooltip
     bg="white dark:darker"
     no-dim
     no-hover-effect
@@ -71,24 +72,24 @@ function handleCopy() {
 <style lang="scss" scoped>
 .btn {
   .icon {
-    --apply: w-4 h-4 color-ca;
+    @apply w-4 h-4 color-ca;
   }
 
   &--xs {
     .icon {
-      --apply: w-3 h-3 m-x-2px;
+      @apply w-3 h-3 m-x-2px;
     }
   }
 
   &--sm {
     .icon {
-      --apply: w-3.5 h-3.5 m-x-2px;
+      @apply w-3.5 h-3.5 m-x-2px;
     }
   }
 
   &--md {
     .icon {
-      --apply: w-4.5 h-4.5 m-x-2px;
+      @apply w-4.5 h-4.5 m-x-2px;
     }
   }
 }
