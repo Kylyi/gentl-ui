@@ -222,8 +222,8 @@ export function useTableData(
     const columns = toValue(internalColumnsRef)
 
     return columns
-      .filter(col => !col.isHelperCol && !col.hidden && !col.local)
-      .flatMap(col => [col.field, ...(col.needsFields ?? [])])
+      .filter(col => !col.isHelperCol && !col.hidden)
+      .flatMap(col => [...(col.local ? [] : [col.field]), ...(col.needsFields ?? [])])
   })
 
   // Column filters
