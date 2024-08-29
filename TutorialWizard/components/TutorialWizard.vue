@@ -17,7 +17,6 @@ function start() {
   wizard.value.isActive = true
   wizard.value.goToStep(0)
 }
-
 </script>
 
 <template>

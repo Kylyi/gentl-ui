@@ -1,5 +1,5 @@
 import type { MaybeElement } from '@floating-ui/vue'
-import type { ReferenceElement, Placement } from '@floating-ui/dom'
+import type { ReferenceElement, Placement, OffsetOptions } from '@floating-ui/dom'
 import type { TutorialWizardModel } from './tutorial-wizard.model'
 import type { Required } from 'utility-types'
 
@@ -27,7 +27,8 @@ export class TutorialWizardStep {
   }
 
   // Placement of the tutorial step
-  placement: Placement
+  placement: Placement = 'top'
+  offset: OffsetOptions = 10
   // Whether to adapt the placement of the tutorial step based on avaiable space
   adaptPlacement: boolean = true
 
@@ -47,7 +48,8 @@ export class TutorialWizardStep {
       this.goBackOn = args.goBackOn
 
       // Layout
-      this.placement = args.placement ?? 'top'
+      this.placement = args.placement ?? this.placement
+      this.offset = args.offset ?? this.offset
       this.adaptPlacement = args.adaptPlacement ?? this.adaptPlacement
       this.heading = args.heading
       this.message = args.message

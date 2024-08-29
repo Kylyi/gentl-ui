@@ -1,8 +1,18 @@
 export function useWizardOverlay(el: MaybeRefOrGetter<HTMLElement | null>) {
-
   window.addEventListener('resize', updateOverlayClip)
 
+  const {
+    x: pageX,
+    y: pageY,
+  } = useElementBounding(el, { windowResize: true })
+
+  watchThrottled([pageX, pageY], updateOverlayClip, {
+    trailing: true,
+    throttle: 1,
+  })
+
   function updateOverlayClip() {
+
     if (isNil(toValue(el))) {
       return
     }

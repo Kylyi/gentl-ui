@@ -7,17 +7,9 @@ import { useWizardOverlay } from '../functions/useWizardOverlay';
 import type { TutorialWizardStep } from '../models/tutorial-wizard-step.model'
 import type { TutorialWizardModel } from '../models/tutorial-wizard.model';
 
-// Types
-import type {
-  OffsetOptions,
-  Placement,
-  ReferenceElement,
-} from '@floating-ui/dom'
-
 const props = defineProps<{
   step: TutorialWizardStep
   wizard: TutorialWizardModel
-  offset?: OffsetOptions
   noArrow?: boolean
   delay?: [number, number]
 }>()
@@ -29,22 +21,33 @@ const { updateOverlayClip } = useWizardOverlay(referenceEl)
   // Layout
 const tooltipEl = ref<HTMLElement>()
 const arrowEl = ref<HTMLDivElement>()
-const middleware = ref([
-  offset(props.offset),
+const middleware = computed(() => [
+  offset(props.step.offset),
   flip(),
   shift(),
   ...(props.noArrow ? [] : [arrow({ element: arrowEl, padding: 4 })]),
 ])
+const stepPlacement = computed(() => props.step.placement)
 
-const { floatingStyles, placement, middlewareData } = useFloating(
+const { floatingStyles, placement, middlewareData, update } = useFloating(
   referenceEl,
   tooltipEl,
   {
-    placement: props.step.placement,
+    placement: stepPlacement,
     middleware,
     strategy: 'fixed',
   },
 )
+
+// We react to page resize/scroll to reposition the floating UI
+const {
+  x: pageX,
+  y: pageY,
+} = useElementBounding(referenceEl, { windowResize: true })
+
+watchThrottled([pageX, pageY], update, {
+  throttle: 1,
+})
 
 const isLastStep = computed(() => {
   return props.wizard.currentStep === props.wizard.steps.length - 1
@@ -64,12 +67,16 @@ watch(middlewareData, middlewareData => {
 
 // Scroll to step
 watch(() => props.step, () => {
-  if (tooltipEl.value) {
-    tooltipEl.value.scrollIntoView({
-      behavior: 'smooth',
-      block: 'center',
-    })
-  }
+  const el = getTargetElement(props.step.element)
+  el.scrollIntoView({
+    behavior: 'smooth',
+    block: 'start',
+  })
+
+  window.addEventListener('scrollend', () => {
+    updateOverlayClip()
+    window.removeEventListener('scrollend', () => {})
+  });
 }, { immediate: true })
 
 const instance = getCurrentInstance()
@@ -131,15 +138,13 @@ whenever(() => !!props.step.goForwardOn, () => {
     <div
       class="tutorial-overlay"
       @click.prevent.stop
-      @wheel.prevent.stop
-      @touchmove.prevent.stop
     />
 
     <div
       ref="tooltipEl"
       :style="floatingStyles"
       class="tooltip"
-      :placement="placement"
+      :placement
       v-bind="$attrs"
     >
       <!-- Arrow -->
@@ -190,6 +195,7 @@ whenever(() => !!props.step.goForwardOn, () => {
         </div>
 
         <div class="tooltip-controls">
+          <!-- Back -->
           <Btn
             :disabled="step.id === 0"
             :label="$t('onboarding.back')"
@@ -200,6 +206,7 @@ whenever(() => !!props.step.goForwardOn, () => {
             @click="wizard.goToPreviousStep()"
           />
 
+          <!-- Next/Close -->
           <Btn
             :label="isLastStep ? $t('general.close') : $t('onboarding.next')"
             :ripple="false"
