@@ -177,6 +177,8 @@ whenever(() => !!props.step.goForwardOn, () => {
           </slot>
         </div>
 
+        <TutorialWizardStepper :wizard />
+
         <div class="tooltip-controls">
           <!-- Back -->
           <Btn
