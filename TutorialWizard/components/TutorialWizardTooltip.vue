@@ -2,6 +2,7 @@
 // Functions
 import { arrow, flip, offset, shift, useFloating } from '@floating-ui/vue'
 import { useWizardOverlay } from '../functions/useWizardOverlay';
+import { getTargetElement } from '~/components/Tooltip/functions/getTargetElement';
 
 // Models
 import type { TutorialWizardStep } from '../models/tutorial-wizard-step.model'
@@ -28,6 +29,9 @@ const middleware = computed(() => [
   ...(props.noArrow ? [] : [arrow({ element: arrowEl, padding: 4 })]),
 ])
 const stepPlacement = computed(() => props.step.placement)
+const isLastStep = computed(() => {
+  return props.wizard.currentStep === props.wizard.steps.length - 1
+})
 
 const { floatingStyles, placement, middlewareData, update } = useFloating(
   referenceEl,
@@ -49,10 +53,6 @@ watchThrottled([pageX, pageY], update, {
   throttle: 1,
 })
 
-const isLastStep = computed(() => {
-  return props.wizard.currentStep === props.wizard.steps.length - 1
-})
-
 // Arrow placement
 watch(middlewareData, middlewareData => {
   if (middlewareData.arrow) {
@@ -66,55 +66,34 @@ watch(middlewareData, middlewareData => {
 })
 
 // Scroll to step
-watch(() => props.step, () => {
-  const el = getTargetElement(props.step.element)
-  el.scrollIntoView({
-    behavior: 'smooth',
-    block: 'end',
-  })
+watch(() => props.step.id, () => {
+    referenceEl.value = getTargetElement(props.step.element)
+    scrollToElement(),
+    nextTick(() => {
+      updateOverlayClip()
+    })
+  },
+  { immediate: true },
+)
 
-  window.addEventListener('scrollend', () => {
-    updateOverlayClip()
-    window.removeEventListener('scrollend', () => {})
-  });
-}, { immediate: true })
+function scrollToElement() {
+  // Doesn't work without a timeout, not sure why
+  setTimeout(() => {
+    referenceEl.value?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center',
+    })
 
-const instance = getCurrentInstance()
-
-function getTargetElement(target: any): any {
-  if (!import.meta.client) {
-    return
-  }
-
-  // Target is an element
-  if (target instanceof Element) {
-    return target as Element
-  }
-
-  // Target is a selector
-  else if (typeof target === 'string') {
-    return document?.querySelector(target) || document?.body || undefined
-  }
-
-  // Target is Vue component
-  else if (target) {
-    const el = unrefElement(target)
-
-    if (el) {
-      return el
-    }
-  }
-
-  return instance?.vnode.el?.parentNode
+  }, 10)
 }
 
+// Update overlay clip
 onMounted(() => {
   nextTick(() => {
     referenceEl.value = getTargetElement(props.step.element)
     updateOverlayClip()
   })
 })
-
 watch(() => props.step, () => {
   nextTick(() => {
     referenceEl.value = getTargetElement(props.step.element)
@@ -146,6 +125,8 @@ whenever(() => !!props.step.goForwardOn, () => {
       class="tooltip"
       :placement
       v-bind="$attrs"
+      @wheel.prevent.stop
+      @touchmove.prevent.stop
     >
       <!-- Arrow -->
       <div
@@ -181,16 +162,18 @@ whenever(() => !!props.step.goForwardOn, () => {
         <div class="tooltip-content">
           <!-- Heading -->
           <slot name="heading">
-            <p class="tooltip-content__heading">
-              {{ step.heading }}
-            </p>
+              <p class="tooltip-content__heading">
+                {{ step.heading }}
+              </p>
           </slot>
 
           <!-- Message -->
           <slot name="message">
-            <p class="tooltip-content__message">
-              {{ step.message }}
-            </p>
+            <ScrollArea class="tooltip-content__message">
+              <p >
+                {{ step.message }}
+              </p>
+            </ScrollArea>
           </slot>
         </div>
 
@@ -231,7 +214,8 @@ whenever(() => !!props.step.goForwardOn, () => {
 }
 
 .tooltip {
-  @apply dark:bg-darker bg-white border-ca border-custom rounded-custom z-$zMenu p-x-4 p-y-2;
+  @apply dark:bg-darker bg-white border-ca border-custom rounded-custom z-$zMenu p-x-4 p-y-2
+    max-w-100 xl:min-w-100;
 
   transition: 0.3s ease;
 
@@ -251,7 +235,7 @@ whenever(() => !!props.step.goForwardOn, () => {
     }
 
     &__message {
-      @apply color-slate-950 dark:color-white font-light text-base;
+      @apply color-slate-950 dark:color-white font-light text-base max-h-50 grow;
     }
   }
 
