@@ -197,8 +197,9 @@ export function useTableUtils(props?: Pick<ITableProps, 'storageKey'>) {
       columnsRef,
       searchParams,
       fromSchema,
-      allowAnyNonStandardFilter = false,
+      allowAnyNonStandardFilter,
     } = options
+
     const customSearchParams = searchParams
       ? new URLSearchParams(searchParams)
       : undefined
