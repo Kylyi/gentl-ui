@@ -157,7 +157,7 @@ export function useTableColumns(
 
     const { schemaSort, filters: schemaFilters } = parseUrlParams({
       columnsRef: _columns,
-      searchParams: layoutRef.value?.schema ?? ' ',
+      searchParams: layoutRef.value?.schema ?? '',
       fromSchema: !!layoutRef.value?.schema,
     })
 
