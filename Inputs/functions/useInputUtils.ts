@@ -59,9 +59,7 @@ export function useInputUtils(options: IInputUtilsOptions) {
     },
   })
 
-  const originalModel = useVModel(props, 'modelValue', undefined, {
-    defaultValue: props.emptyValue,
-  })
+  const originalModel = useVModel(props, 'modelValue', undefined, { defaultValue: props.emptyValue })
   const model = ref(originalModel.value)
 
   // We also need to create an instance of mask to get the `masked` value
@@ -294,7 +292,11 @@ export function useInputUtils(options: IInputUtilsOptions) {
   // We sync the `model` with the `typed` value from iMask
   watch(model, val => {
     if (val !== typed.value) {
-      typed.value = val
+      if (props.emptyValue === val) {
+        typed.value = ''
+      } else {
+        typed.value = val
+      }
     }
   })
 
