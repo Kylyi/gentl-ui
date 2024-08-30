@@ -1,33 +1,22 @@
 <script setup lang="ts">
-import { TutorialWizardModel } from '../models/tutorial-wizard.model'
-import TutorialWizardTooltip from './TutorialWizardTooltip.vue'
+// Models
+import { TutorialWizardModel } from '~/components/TutorialWizard/models/tutorial-wizard.model'
 
-const props = defineProps<{
-  wizard: TutorialWizardModel
-}>()
-defineEmits<{
-  'update:wizard': [TutorialWizardModel]
-}>()
-const wizard = defineModel<TutorialWizardModel>('wizard', {
-  required: true
+// Store
+import { useOnboardingStore } from '~/components/TutorialWizard/functions/onboarding.store'
+
+
+const { activeOnboarding } = storeToRefs(useOnboardingStore())
+
+const tour = computed(() => {
+  return activeOnboarding.value?.tour
 })
-
-
-function start() {
-  wizard.value.isActive = true
-  wizard.value.goToStep(0)
-}
 </script>
 
 <template>
-  <div>
-    <Btn @click="start" v-if="!wizard.isActive">Start Tutorial</Btn>
-
     <TutorialWizardTooltip
-      v-if="wizard.isActive"
-      :step="wizard.steps[wizard.currentStep]"
-      :wizard
-    >
-    </TutorialWizardTooltip>
-  </div>
+      v-if="tour"
+      :step="tour.steps[tour.currentStep]"
+      :wizard="tour"
+    />
 </template>
