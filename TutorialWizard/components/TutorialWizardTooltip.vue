@@ -212,14 +212,14 @@ whenever(() => !!props.step.goForwardOn, () => {
 
   z-index: calc(var(--zMenu) - 1);
 
-  transition: 0.3s ease;
+  transition: 0.3s linear;
 }
 
 .tooltip {
   @apply dark:bg-darker bg-white border-ca border-custom rounded-custom z-$zMenu p-x-4 p-y-2
     max-w-100 xl:min-w-100;
 
-  transition: 0.3s ease;
+  transition: 0.3s linear;
 
   &-header {
     @apply flex justify-between items-center p-y-1
