@@ -114,6 +114,8 @@ useResizeObserver(headerEl, entries => {
       :style="headerStyle"
       @click="handleToggle"
     >
+      <slot name="left" />
+
       <slot
         name="header"
         :toggle="handleToggle"
