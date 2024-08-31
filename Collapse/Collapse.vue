@@ -123,17 +123,8 @@ useResizeObserver(headerEl, entries => {
       >
         <div flex="~ col grow">
           <slot name="title">
-            <h6
-              text="h6"
-              truncate
-              leading="!tight"
-            >
-              <span
-                tracking="wide"
-                color="$Collapse-header-title-color"
-              >
-                {{ title }}
-              </span>
+            <h6 class="header__title">
+              {{ title }}
             </h6>
           </slot>
 
@@ -201,16 +192,19 @@ useResizeObserver(headerEl, entries => {
   &.is-padded {
     @apply p-t-2 p-b-4 p-x-2;
   }
-
-  // &::before {
-  //   @apply content-empty inset-block-0 absolute bg-primary w-1 transition-width rounded-l-full;
-  // }
 }
 
 .header {
   @apply flex min-h-12 flex-gap-x-2 items-center p-x-4 items-center
     rounded-custom cursor-pointer transition-border-radius duration-100;
+
   @apply bg-$Collapse-header-bg;
+
+  &__title {
+    @apply tracking-wide leading-tight;
+
+    @apply color-$Collapse-header-title-color;
+  }
 
   &.is-expanded {
     @apply rounded-b-0;
