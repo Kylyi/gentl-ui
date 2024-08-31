@@ -98,9 +98,7 @@ useResizeObserver(headerEl, entries => {
 <template>
   <div
     class="collapse"
-    :class="{
-      'is-padded': internalValue && padded,
-    }"
+    :class="{ 'is-padded': internalValue && padded, 'is-open': internalValue }"
   >
     <!-- Header -->
     <div
@@ -119,6 +117,7 @@ useResizeObserver(headerEl, entries => {
       <slot
         name="header"
         :toggle="handleToggle"
+        :is-open="model"
       >
         <div flex="~ col grow">
           <slot name="title">
@@ -161,9 +160,7 @@ useResizeObserver(headerEl, entries => {
 
       <slot v-if="!noExpandIcon" name="expand-icon">
         <div
-          i-majesticons:chevron-right
-          transition="duration-150"
-          color="$Collapse-dropdown-icon-color"
+          class="expand-icon i-majesticons:chevron-right"
           :class="{ 'rotate-90deg': internalValue }"
         />
       </slot>
@@ -192,51 +189,55 @@ useResizeObserver(headerEl, entries => {
 
 <style lang="scss" scoped>
 .transition-active {
-  --apply: transition-all duration-0.25s ease-linear overflow-hidden
+  @apply transition-all duration-0.25s ease-linear overflow-hidden
     will-change-height;
 }
 
 .collapse {
-  --apply: relative flex flex-col rounded-b-custom transition-padding;
+  @apply relative flex flex-col rounded-b-custom transition-padding;
 
   &.is-padded {
-    --apply: p-t-2 p-b-4 p-x-2;
+    @apply p-t-2 p-b-4 p-x-2;
   }
 
   // &::before {
-  //   --apply: content-empty inset-block-0 absolute bg-primary w-1 transition-width rounded-l-full;
+  //   @apply content-empty inset-block-0 absolute bg-primary w-1 transition-width rounded-l-full;
   // }
 }
 
 .header {
-  --apply: flex min-h-12 flex-gap-x-2 items-center p-x-4 items-center
+  @apply flex min-h-12 flex-gap-x-2 items-center p-x-4 items-center
     rounded-custom cursor-pointer transition-border-radius duration-100;
-  --apply: bg-$Collapse-header-bg;
+  @apply bg-$Collapse-header-bg;
 
   &.is-expanded {
-    --apply: rounded-b-0;
+    @apply rounded-b-0;
   }
 
   &.is-expanded:not(.no-separator) {
-    --apply: border-b-1 border-ca;
+    @apply border-b-1 border-ca;
   }
 
   &.has-subtitle {
-    --apply: min-h-16;
+    @apply min-h-16;
   }
 }
 
 .content {
-  --apply: origin-top rounded-b-custom;
+  @apply origin-top rounded-b-custom;
+}
+
+.expand-icon {
+  @apply transition-duration-150 color-$Collapse-dropdown-icon-color;
 }
 
 :slotted(.content > *:last-child) {
-  --apply: rounded-b-custom;
+  @apply rounded-b-custom;
 }
 
 // Transition
 .v-enter-from,
 .v-leave-to {
-  --apply: opacity-0;
+  @apply opacity-0;
 }
 </style>

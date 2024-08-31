@@ -40,18 +40,16 @@ onMounted(() => {
 </script>
 
 <template>
-  <Field
-    v-bind="wrapperProps"
-  >
+  <Field v-bind="wrapperProps">
     <ClientOnly>
-      <p
+      <div
         ref="el"
         class="tiptap ProseMirror wysiwyg"
         v-html="model"
       />
     </ClientOnly>
 
-    <p
+    <div
       v-if="isServer"
       ref="el"
       class="tiptap ProseMirror wysiwyg"

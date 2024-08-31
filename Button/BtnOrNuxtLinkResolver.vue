@@ -12,6 +12,7 @@ const props = defineProps<IBtnNavigationProps>()
 // Utils
 const nuxtApp = useNuxtApp()
 const route = useRoute()
+const localePath = useLocalePath()
 
 const toPathString = computed(() => {
   const to = props.to
@@ -28,7 +29,7 @@ const toPathString = computed(() => {
 })
 
 const currentPath = computed(() => {
-  return $p(route.path, nuxtApp.$i18n.locale.value)
+  return localePath(route.path, nuxtApp.$i18n.locale.value)
 })
 </script>
 

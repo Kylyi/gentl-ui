@@ -13,6 +13,7 @@ type IProps = {
   editable?: boolean
   file: FileModel | IFile
   noDownloadButton?: boolean
+  fileDownloadTitle?: string
 }
 
 const props = defineProps<IProps>()
@@ -97,7 +98,7 @@ const imageUrl = computed(() => {
         w-full
         size="sm"
         class="!rounded-t-0"
-        :label="$t('file.download')"
+        :label="fileDownloadTitle ?? $t('file.download')"
         @click.stop.prevent="handleDownloadFile(file, { url: downloadUrl })"
       />
 
