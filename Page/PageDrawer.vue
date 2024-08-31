@@ -68,6 +68,7 @@ const pageDrawerClasses = computed(() => {
     </div>
 
     <div
+      v-if="!noBottom"
       class="page-drawer-bottom"
       :class="bottomClass"
     >

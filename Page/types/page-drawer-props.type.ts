@@ -1,7 +1,7 @@
 // Types
 import type { BREAKPOINTS } from '~/libs/App/constants/breakpoints.constant'
 
-export interface IPageDrawerProps {
+export type IPageDrawerProps = {
   /**
    * At which breakpoint the drawer becomes absolutely positioned
    * Note: Use `xs` to never go into absolute mode
@@ -44,6 +44,11 @@ export interface IPageDrawerProps {
    * Whether the drawer is currently open
    */
   modelValue?: boolean
+
+  /**
+   * Whether to show the bottom part of the drawer
+   */
+  noBottom?: boolean
 
   /**
    * The side on the page for the drawer
