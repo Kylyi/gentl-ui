@@ -3,6 +3,9 @@ import { config } from '~/components/config/components-config'
 // Types
 import type { IValueFormatter } from '~/components/ValueFormatter/types/value-formatter-props.type'
 
+// Models
+import { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
+
 // Functions
 import { useNumber } from '~/components/Inputs/NumberInput/functions/useNumber'
 import { useDuration } from '~/components/Inputs/DurationInput/functions/useDuration'
@@ -40,13 +43,15 @@ export function useValueFormatterUtils() {
       emptyValue?: any
       predictDataType?: IValueFormatter['predictDataType']
       resolveEnums?: IValueFormatter['resolveEnums']
-    } = {}
+      comparator?: ComparatorEnum
+    } = {},
   ): any {
     const {
       format,
       emptyValue,
       predictDataType: _predictDataType,
       resolveEnums,
+      comparator,
     } = options
 
     if (emptyValue === value) {
@@ -58,10 +63,10 @@ export function useValueFormatterUtils() {
       // Enums resolving makes sense only for strings and numbers
       if (typeof value === 'string' || typeof value === 'number') {
         const { translationKey } = resolveEnums
-        const i18n =
-          get(
+        const i18n
+          = get(
             messages[locale.value as keyof typeof messages],
-            translationKey
+            translationKey,
           ) || {}
 
         const enumKeys = Object.keys(i18n).filter(key => {
@@ -75,7 +80,7 @@ export function useValueFormatterUtils() {
           undefined,
           undefined,
           undefined,
-          enumKeys.map(enumKey => `${translationKey}.${enumKey}`)
+          enumKeys.map(enumKey => `${translationKey}.${enumKey}`),
         )
 
         if (resolvedEnum !== value.toString()) {
@@ -106,12 +111,26 @@ export function useValueFormatterUtils() {
       return ''
     }
 
+    // Special case for `ComparatorEnum.AGO` or `ComparatorEnum.For`
+    const isSpecialDateComparator
+      = comparator === ComparatorEnum.AGO
+      || comparator === ComparatorEnum.NOT_AGO
+      || comparator === ComparatorEnum.UNTIL
+      || comparator === ComparatorEnum.NOT_UNTIL
+
+    if (isSpecialDateComparator) {
+      return value
+    }
+
     switch (options.dataType) {
       case 'number':
       case 'int':
       case 'numberSimple':
       case 'intSimple':
         return formatNumber(value)
+
+      case 'currency':
+        return formatNumber(value, { intlOptions: { minimumFractionDigits: 2, maximumFractionDigits: 2 } })
 
       case 'duration':
       case 'durationSimple':

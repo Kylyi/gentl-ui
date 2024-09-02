@@ -1,12 +1,17 @@
 <script setup lang="ts">
+import type { IBreadcrumb } from './types/breadcrumb.type'
 import { config } from '~/components/config/components-config'
 
-// Types
-import type { IBreadcrumb } from './types/breadcrumb.type';
+// Injections
+import {
+  breadcrumbsHomePathKey,
+  breadcrumbsKey,
+} from '~/components/Breadcrumbs/provide/breadcrumbs.provide'
 
 // Constants
 import { BUTTON_PRESET } from '~/components/Button/constants/button-preset.constant'
 
+const breadcrumbHomePath = injectStrict(breadcrumbsHomePathKey, ref(''))
 const breadcrumbsInjected = injectStrict(breadcrumbsKey, ref([]))
 
 // Layout
@@ -14,7 +19,7 @@ const breadcrumbs = computed(() => {
   return [
     {
       icon: 'i-lucide:home',
-      to: $p(config.breadcrumbs.homePath || '/'),
+      to: $p(breadcrumbHomePath.value || config.breadcrumbs.homePath || '/'),
     },
     ...breadcrumbsInjected.value,
   ]
@@ -71,29 +76,29 @@ function getLabel(breadcrumb: IBreadcrumb) {
 
 <style lang="scss">
 .breadcrumbs {
-  --apply: flex grow flex-gap-x-1 items-center text-sm m-t-2 m-b-1 overflow-auto;
+  @apply flex grow flex-gap-x-1 items-center text-sm m-t-2 m-b-1 overflow-auto;
 
   &-wrapper {
-    --apply: flex flex-gap-x-1 items-center md:p-x-3;
-    --apply: bg-$Breadcrumbs-bg;
+    @apply flex flex-gap-x-1 items-center md:p-x-3;
+    @apply bg-$Breadcrumbs-bg;
   }
 }
 
 .breadcrumb-item {
-  --apply: shrink-0;
+  @apply shrink-0;
 }
 
 @screen lt-lg {
   .breadcrumbs .breadcrumb-item {
-    --apply: hidden;
+    @apply hidden;
 
     &.is-last {
-      --apply: flex;
+      @apply flex;
     }
   }
 }
 
 .main-bar .breadcrumbs {
-  --apply: m-t-0;
+  @apply m-t-0;
 }
 </style>

@@ -3,7 +3,7 @@
 import type { IListRowProps } from '~/components/List/types/list-row-props.type'
 
 // Functions
-import { useListItemDragAndDrop } from './functions/useListItemDragAndDrop'
+import { useListItemDragAndDrop } from '~/components/List/functions/useListItemDragAndDrop'
 
 const props = withDefaults(defineProps<IListRowProps>(), {
   basePadding: 12,
@@ -40,7 +40,7 @@ const rowInfo = computed(() => {
 const {
   draggableEl,
   handleMouseDown,
-  handleTouchStart
+  handleTouchStart,
 } = useListItemDragAndDrop(item)
 
 function getItem() {
@@ -50,8 +50,8 @@ function getItem() {
 
 <template>
   <Component
-    ref="draggableEl"
     :is="tag"
+    ref="draggableEl"
     :style="rowInfo._style"
     class="item"
     :data-path="item.path"
@@ -67,12 +67,12 @@ function getItem() {
         'item--new': rowInfo.isNew,
         'item--create': rowInfo.isCreate,
         'is-disabled': isDisabled,
-        'no-dragover': !rowInfo.isReorderable
+        'no-dragover': !rowInfo.isReorderable,
       },
     ]"
+    .getItem="getItem"
     @mousedown="handleMouseDown"
     @touchstart="handleTouchStart"
-    .getItem="getItem"
   >
     <ListMoveHandler
       v-if="rowInfo.isReorderable"
@@ -80,14 +80,23 @@ function getItem() {
     />
 
     <slot :option="item">
+      <!-- Group -->
       <div
+        v-if="'isGroup' in item"
+        p="y-1"
+      >
+        {{ item.label }}
+      </div>
+
+      <div
+        v-else
         flex="~ col grow"
         p="y-1"
       >
         <span v-html="item._highlighted" />
 
         <div
-          v-if="'_isNew' in item.ref"
+          v-if="item.ref && '_isNew' in item.ref"
           flex="~ gap-1 items-center"
           text="caption xs"
         >
@@ -108,33 +117,32 @@ function getItem() {
 
 <style lang="scss" scoped>
 .item {
-  --apply: relative flex gap-x-2 cursor-default select-none items-center p-r-1;
+  @apply relative flex gap-x-2 cursor-default select-none items-center p-r-1;
 
   &--group {
-    --apply: uppercase color-true-gray text-sm items-end p-b-0.5;
+    @apply uppercase color-true-gray text-sm items-end p-b-0.5;
   }
 
   &--selectable {
-    --apply: cursor-pointer;
+    @apply cursor-pointer;
   }
 
   &--active {
     &::before {
-      --apply: absolute content-empty left-0 inset-block-.5 w-1 bg-primary
-        rounded-l-custom;
+      @apply absolute content-empty left-0 inset-block-.5 w-1 bg-primary rounded-l-custom;
     }
   }
 
   &--hovered {
-    --apply: bg-true-gray/10;
+    @apply bg-$List-row-hover-bg;
   }
 
-  &--disabled {
-    --apply: disabled cursor-not-allowed;
+  &.is-disabled {
+    @apply disabled cursor-not-allowed;
   }
 }
 
-.item--active.item--hovered:not(.item--disabled) {
-  --apply: bg-primary/15;
+.item--active.item--hovered:not(.is-disabled) {
+  @apply bg-primary/15;
 }
 </style>

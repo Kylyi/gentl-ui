@@ -54,7 +54,7 @@ const tabs = computed(() => {
   return vueInstances
     .filter(
       t =>
-        typeof t.type === 'object' && (t.type as any).name?.startsWith('Tab_')
+        typeof t.type === 'object' && (t.type as any).name?.startsWith('Tab_'),
     )
     .map((t: VNode, index) => {
       return createTab(t, index)
@@ -72,7 +72,7 @@ watch(
       .filter(tab => !isNil(tab.props?.['keep-alive']))
       .map(tab => tab.props?.componentName)
   },
-  { immediate: true }
+  { immediate: true },
 )
 
 // Handling tab changes
@@ -82,7 +82,7 @@ const transitionLeave = ref('')
 
 function handleTabChange(id: string | number) {
   const currentIdx = tabs.value.findIndex(
-    tab => tab?.props?.id === oldModel.value
+    tab => tab?.props?.id === oldModel.value,
   )
   const selectedTabIdx = tabs.value.findIndex(tab => tab?.props?.id === id)
 
@@ -141,7 +141,8 @@ watch(model, model => {
               : []),
             { 'is-active': tab?.props?.id === activeTab?.props?.id },
           ]"
-          @click="handleTabChange(tab?.props?.id)"
+          v-bind="tabBtnProps"
+          @click="handleTabChange(tab.props?.id)"
         />
       </slot>
     </HorizontalScroller>
@@ -181,17 +182,17 @@ watch(model, model => {
 <style lang="scss" scoped>
 .tab {
   &-content {
-    --apply: overflow-x-hidden;
+    @apply overflow-x-hidden;
   }
 
   &-label {
-    --apply: min-w-min;
-    --apply: '!lt-lg:p-x-4';
+    @apply min-w-min;
+    @apply '!lt-lg:p-x-4';
   }
 
   &-label.is-active {
     &::after {
-      --apply: content-empty absolute inset-inline-0 bottom-0 h-1 bg-secondary
+      @apply content-empty absolute inset-inline-0 bottom-0 h-1 bg-secondary
         rounded-custom;
     }
   }

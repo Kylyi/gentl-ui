@@ -1,0 +1,145 @@
+:root {
+  // General
+  --contrast-color: theme('colors.darker');
+
+  &.dark {
+    --contrast-color: theme('colors.white');
+  }
+
+  // Collapse
+  --Collapse-header-bg: theme('colors.white');
+  --Collapse-header-title-color: unset;
+  --Collapse-dropdown-icon-color: theme('colors.primary');
+
+  &.dark {
+    --Collapse-header-bg: theme('colors.dark.700');
+    --Collapse-header-title-color: unset;
+    --Collapse-dropdown-icon-color: theme('colors.primary');
+  }
+
+  // MiniCard (InputBlock)
+  --MiniCard-label-color: theme('colors.slate.600');
+  --MiniCard-label-font-size: theme('font.size.md');
+  --MiniCard-value-font-size: theme('font.size.md');
+  --MiniCard-value-font-weight: 500;
+  --MiniCard-icon-color: theme('colors.blue.500');
+
+  &.dark {
+    --MiniCard-label-color: theme('colors.slate.300');
+    --MiniCard-icon-color: theme('colors.blue.700');
+  }
+
+  // Table
+  --Table-container-bg: theme('colors.gray.50');
+  --Table-alternate-row-bg: theme('colors.white');
+  --Table-row-hover-cell-bg: theme('colors.blue.500 / 10%');
+  --Table-header-bg: theme('colors.white');
+  --Table-pagination-button-active-bg: theme('colors.primary');
+
+  &.dark {
+    --Table-container-bg: theme('colors.truegray.900');
+    --Table-alternate-row-bg: theme('colors.darker');
+    --Table-header-bg: theme('colors.darker');
+  }
+
+  // Link
+  --Link-hover-color: theme('colors.blue.500');
+
+  &.dark {
+    --Link-hover-color: theme('colors.blue.700');
+  }
+
+  // List
+  --List-row-hover-bg: theme('colors.blue.50');
+  --List-search-bg: theme('colors.blue.50');
+
+  &.dark {
+    --List-row-hover-bg: theme('colors.truegray.800');
+    --List-search-bg: theme('colors.truegray.800');
+  }
+
+  // Heading
+  --Heading-bg: theme('colors.blue.50');
+
+  &.dark {
+    --Heading-bg: theme('colors.truegray.900');
+  }
+
+  // MainBar
+  --MainBar-bg: theme('colors.blue.50');
+
+  &.dark {
+    --MainBar-bg: theme('colors.truegray.900');
+  }
+
+  // PageDrawer
+  // --PageDrawer-content-bg: theme('colors.truegray.100');
+  --PageDrawer-bottom-bg: theme('colors.truegray.100');
+
+  &.dark {
+    // --PageDrawer-content-bg: theme('colors.truegray.800');
+    --PageDrawer-bottom-bg: theme('colors.truegray.800');
+  }
+
+  // Navigation
+  --Navigation-bg: theme('colors.truegray.200');
+
+  &.dark {
+    --Navigation-bg: theme('colors.truegray.800');
+  }
+
+  // Form
+  --Form-content-padding: 8px;
+
+  // Section
+  --Section-max-w: var(--screenXl);
+  --Section-content-gap: 20px 12px;
+  --Section-padding: 8px;
+
+  @screen md {
+    --Section-padding: 12px;
+  }
+
+  // Page wrapper
+  --PageWrapper-content-padding: 0;
+
+  // Page title
+  --PageTitle-max-width: var(--screenLg);
+  --PageTitle-padding: 16px 0 16px 16px;
+  --PageTitle-margin: 0 0 8px 8px;
+  --PageTitle-font-weight: 700;
+
+  // Input label
+  --InputLabel-color: theme('colors.truegray.600');
+  --InputLabel-active-color: theme('colors.primary');
+
+  &.dark {
+    --InputLabel-color: theme('colors.truegray.300');
+    --InputLabel-active-color: theme('colors.primary');
+  }
+
+  // Menu
+  --Menu-title-bg: theme('colors.slate.100');
+  --Menu-title-color: theme('colors.black');
+
+  &.dark {
+    --Menu-title-bg: theme('colors.dark.700');
+    --Menu-title-color: theme('colors.white');
+  }
+
+  // Dialog
+  --Dialog-title-bg: theme('colors.slate.100');
+  --Dialog-title-color: theme('colors.black');
+
+  &.dark {
+    --Dialog-title-bg: theme('colors.dark.700');
+    --Dialog-title-color: theme('colors.white');
+  }
+
+  // Input wrapper
+  --Input-wrapper-bg: theme('colors.white');
+
+  &.dark {
+    --Input-wrapper-bg: theme('colors.darker');
+  }
+}

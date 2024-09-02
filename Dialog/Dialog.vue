@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { config } from '~/components/config/components-config'
+
 // Types
 import type { IDialogProps } from '~/components/Dialog/types/dialog-props.type'
 
@@ -11,6 +13,7 @@ const props = withDefaults(defineProps<IDialogProps>(), {
   maxHeight: 99999,
   position: 'center',
   transitionDuration: 300,
+  noTransition: config.dialog.props?.noTransition ?? undefined,
 })
 
 const emits = defineEmits<{
@@ -76,9 +79,14 @@ const transitionClass = computed(() => {
   }
 })
 
-const { contentEl, dialogWrapperEl, floatingEl } = useDialogLayout(
+const {
+  contentEl,
+  dialogWrapperEl,
+  floatingEl,
+  triggerEl,
+} = useDialogLayout(
   modelHandler,
-  props
+  props,
 )
 
 function hide(ignorePersistent = true) {
@@ -97,6 +105,8 @@ function commitHide() {
   }
 
   debouncedModel.value = false
+
+  triggerEl.value?.classList.remove('is-dialog-active')
   emits('hide')
 }
 
@@ -104,6 +114,8 @@ function commitHide() {
 // to show the content immediately to trigger the transition
 whenever(model, isVisible => {
   debouncedModel.value = isVisible
+
+  triggerEl.value?.classList.add('is-dialog-active')
 })
 
 // Click outside
@@ -120,16 +132,14 @@ function handleClickOutside(ev: Event) {
 
   const isTargetBody = targetEl === document.body
   const isPartOfFloatingUI = floatingEl.value?.contains(targetEl)
-  const lastFloatingElement = document.querySelector(
-    '.floating-element:last-child'
-  )
+  const lastFloatingElement = Array.from(document.querySelectorAll('.floating-element')).pop()
   const isNotifications = !!targetEl.closest('.notifications')
 
   if (
-    !isTargetBody &&
-    !isPartOfFloatingUI &&
-    !isNotifications &&
-    lastFloatingElement === dialogWrapperEl.value
+    !isTargetBody
+    && !isPartOfFloatingUI
+    && !isNotifications
+    && lastFloatingElement === dialogWrapperEl.value
   ) {
     if (props.persistent) {
       bounce()
@@ -227,10 +237,12 @@ const isOverlayVisible = computed(() => {
 
               <slot name="header-right" />
 
+              <!-- Close button -->
               <Btn
                 v-if="!noClose"
                 preset="CLOSE"
                 size="sm"
+                self-start
                 @click="hide"
               />
             </div>
@@ -253,80 +265,78 @@ const isOverlayVisible = computed(() => {
 
 <style lang="scss" scoped>
 .dialog {
-  --apply: flex flex-col max-w-95vw max-h-95% rounded-custom z-1
-    border-1 border-ca pointer-events-auto
-    bg-white dark:bg-darker;
+  @apply flex flex-col max-w-95vw max-h-95% rounded-custom z-1 border-1
+    border-ca pointer-events-auto bg-white dark:bg-darker;
 
   &__wrapper {
-    --apply: flex fixed inset-0 z-$zDialog pointer-events-none;
+    @apply flex fixed inset-0 z-$zDialog pointer-events-none;
   }
 
   &__header {
-    --apply: flex items-center gap-2 p-l-3 p-r-1 p-y-2 rounded-t-custom;
-    --apply: bg-$Dialog-title-bg color-$Dialog-title-color;
+    @apply flex items-center gap-2 p-l-3 p-r-1 p-y-2 rounded-t-custom;
+    @apply bg-$Dialog-title-bg color-$Dialog-title-color;
 
     &-title {
-      --apply: grow;
+      @apply grow;
     }
   }
 
   &__content {
-    --apply: relative flex flex-col grow gap-1 overflow-auto rounded-custom;
+    @apply relative flex flex-col grow gap-1 overflow-auto rounded-custom;
   }
 }
 
 // Position
 .dialog__wrapper[position='top'] {
-  --apply: justify-center items-start;
+  @apply justify-center items-start;
 
   .dialog {
-    --apply: rounded-t-none;
+    @apply rounded-t-none;
   }
 }
 
 .dialog__wrapper[position='bottom'] {
-  --apply: justify-center items-end;
+  @apply justify-center items-end;
 
   .dialog {
-    --apply: rounded-b-none;
+    @apply rounded-b-none;
   }
 }
 .dialog__wrapper[position='left'] {
-  --apply: justify-start items-center;
+  @apply justify-start items-center;
 
   .dialog {
-    --apply: rounded-l-none;
+    @apply rounded-l-none;
   }
 }
 
 .dialog__wrapper[position='right'] {
-  --apply: justify-end items-center;
+  @apply justify-end items-center;
 
   .dialog {
-    --apply: rounded-r-none;
+    @apply rounded-r-none;
   }
 }
 
 .dialog__wrapper[position='center'] {
-  --apply: flex-center;
+  @apply flex-center;
 }
-
 
 .v-enter-active,
 .v-leave-active {
-  --apply: pointer-events-none;
-  transition: opacity 0.3s ease,
-              transform 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+  @apply pointer-events-none;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
 // Backdrop
 .backdrop {
-  --apply: fixed inset-0 transition-background-color z-$zBackdrop
+  @apply fixed inset-0 transition-background-color z-$zBackdrop
     duration-$transitionDuration ease bg-transparent;
 
   &.is-active {
-    --apply: bg-darker/70;
-
+    @apply bg-darker/70;
   }
 }
 

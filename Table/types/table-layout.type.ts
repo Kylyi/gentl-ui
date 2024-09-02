@@ -1,5 +1,5 @@
 export type ITableLayout = {
-  id: number
+  id: number | string
   name: string
   schema: string
   accessLevel?: number

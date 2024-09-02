@@ -5,9 +5,6 @@ type IProps = {
 }
 
 const props = defineProps<IProps>()
-const emits = defineEmits<{
-  (e: 'remove:item', item: T): void
-}>()
 
 // Layout
 const componentTag = computed(() => {
@@ -17,17 +14,12 @@ const componentTag = computed(() => {
 function getItem() {
   return props.item
 }
-
-function removeItem() {
-  emits('remove:item', props.item)
-}
 </script>
 
 <template>
   <Component
     :is="componentTag"
     .get-item="getItem"
-    .remove-item="removeItem"
     data-draggable-item
   >
     <slot />
@@ -36,7 +28,7 @@ function removeItem() {
 
 <style lang="scss" scoped>
 .is-dragged[data-draggable-item] {
-  @apply: relative;
+  @apply relative;
 
   &::after {
     @apply content-empty absolute inset-0 rounded-custom

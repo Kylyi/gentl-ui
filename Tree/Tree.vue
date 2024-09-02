@@ -7,7 +7,7 @@ import type { ITreeProps } from '~/components/Tree/types/tree-props.type'
 
 // Functions
 import { useSearching } from '~/libs/Shared/functions/data/useSearching'
-import { useTraversing } from '~/libs/Shared/functions/useTraversing'
+import { useTraversing } from '~/utils/helpers/useTraversing'
 import { useTreeUtils } from '~/components/Tree/functions/useTreeUtils'
 
 // Components
@@ -95,7 +95,7 @@ function getNodesElements(resetHoveredIdx = true) {
   }
 
   nodesDomEls.value = Array.from(
-    treeEl.value.querySelectorAll('.tree-node-item')
+    treeEl.value.querySelectorAll('.tree-node-item'),
   ) as HTMLElement[]
 
   resetHoveredIdx && (hoveredIdx.value = -1)
@@ -117,12 +117,12 @@ const nodesFiltered = computedAsync(async () => {
   if (!isInitialized.value) {
     isInitialized.value = true
 
-    const nodesToCollapse =
-      props.collapsedOnInit === 'first'
+    const nodesToCollapse
+      = props.collapsedOnInit === 'first'
         ? nodesFlattened.slice(1)
         : props.collapsedOnInit
-        ? nodesFlattened
-        : []
+          ? nodesFlattened
+          : []
 
     nodesToCollapse.forEach(node => {
       collapsedById.value[node.id] = true
@@ -239,7 +239,7 @@ async function handleKey(ev: KeyboardEvent) {
       ev.preventDefault()
       hoveredIdx.value = Math.min(
         nodesDomEls.value!.length - 1,
-        hoveredIdx.value + 1
+        hoveredIdx.value + 1,
       )
 
       break
@@ -263,7 +263,7 @@ async function handleKey(ev: KeyboardEvent) {
       ev.preventDefault()
       ;(
         elFocused.value?.querySelector(
-          'a, button:not(.btn-collapser'
+          'a, button:not(.btn-collapser',
         ) as HTMLElement
       )?.click()
       break
@@ -275,7 +275,7 @@ async function handleKey(ev: KeyboardEvent) {
 
 onKeyStroke(
   ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter', 'Tab'],
-  handleKey
+  handleKey,
 )
 
 // PROVIDE
@@ -294,7 +294,7 @@ defineExpose({
   removeNode,
   getNode(id: number | string) {
     return [...props.nodes, ...nodesAddedViaFetch.value].find(
-      node => String(node.id) === String(id)
+      node => String(node.id) === String(id),
     )
   },
 })

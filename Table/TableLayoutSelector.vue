@@ -17,11 +17,11 @@ import {
   tableLayoutKey,
   tableLayoutsKey,
   tableRefreshKey,
-  tableResizeKey,
 } from '~/components/Table/provide/table.provide'
 
 // Functions
 import { useTableUtils } from '~/components/Table/functions/useTableUtils'
+import { useTableColumnResizing } from '~/components/Table/functions/useTableColumnResizing'
 
 // Store
 import { useTableStore } from '~/components/Table/table.store'
@@ -32,18 +32,18 @@ import Selector from '~/components/Selector/Selector.vue'
 // Constants
 import { queryBuilderDefault } from '~/components/QueryBuilder/constants/query-builder-default.constant'
 
-const props = defineProps<Pick<ITableProps, 'queryBuilder'>>()
-
-// Utils
-const { parseUrlParams } = useTableUtils()
+const props = defineProps<Pick<ITableProps, 'queryBuilder' | 'nonSavableSettings'>>()
 
 // Injections
 const columns = injectStrict(tableColumnsKey)
 const layouts = injectStrict(tableLayoutsKey)
 const layout = injectStrict(tableLayoutKey)
 const _getTableStorageKey = injectStrict(getTableStorageKey)
-const tableResize = injectStrict(tableResizeKey)
 const tableRefresh = injectStrict(tableRefreshKey)
+
+// Utils
+const { parseUrlParams } = useTableUtils()
+const { handleFitColumns } = useTableColumnResizing({ columns })
 
 // Store
 const { getTableState } = useTableStore()
@@ -51,16 +51,17 @@ const { getTableState } = useTableStore()
 // Layout
 const layoutSelectorEl = ref<InstanceType<typeof Selector>>()
 const queryBuilder = useVModel(props, 'queryBuilder')
+const search = ref('')
 
 function handleLayoutSelect(
   _layout?: ITableLayout,
-  resetColumnWidths?: boolean
+  resetColumnWidths?: boolean,
 ) {
   const storageKey = _getTableStorageKey()
   const tableState = getTableState(storageKey)
   const defaultFilter = get(
     tableState.value.meta,
-    config.table.defaultLayoutKey
+    config.table.defaultLayoutKey,
   ) as any
 
   // NOTE: We unfreeze any frozen column
@@ -75,8 +76,8 @@ function handleLayoutSelect(
       id: 0,
       name: '',
       schema:
-        defaultFilter?.schema ||
-        `select=${columns.value
+        defaultFilter?.schema
+        || `select=${columns.value
           .filter(col => !col.isHelperCol)
           .map(col => col.field)
           .join(',')}`,
@@ -100,8 +101,8 @@ function handleLayoutSelect(
     fromSchema: true,
   })
 
-  const schemaHasAnyFilters =
-    !!schemaFilters?.length || !!schemaQueryBuilder?.length
+  const schemaHasAnyFilters
+    = !!schemaFilters?.length || !!schemaQueryBuilder?.length
 
   // We reset the width, visibility, sorting, order and filters of all columns
   columns.value.forEach(col => {
@@ -144,9 +145,9 @@ function handleLayoutSelect(
   } else if (isReset && props.queryBuilder !== undefined) {
     queryBuilder.value = klona(queryBuilderDefault)
   } else if (
-    schemaHasAnyFilters &&
-    !schemaQueryBuilder?.length &&
-    props.queryBuilder !== undefined
+    schemaHasAnyFilters
+    && !schemaQueryBuilder?.length
+    && props.queryBuilder !== undefined
   ) {
     queryBuilder.value = klona(queryBuilderDefault)
   } else if (props.queryBuilder !== undefined) {
@@ -165,7 +166,8 @@ function handleLayoutSelect(
           comparator: filter.comparator,
           format: column.format,
           dataType: column.dataType,
-        })
+          customDbQueryFnc: column.customDbQueryFnc,
+        }),
       )
     }
   })
@@ -200,15 +202,15 @@ function handleLayoutSelect(
 
   // Refresh
   setTimeout(() => {
-    tableResize()
+    handleFitColumns()
 
     // When only filter columns are part of the schema, we manually trigger the
-    // table refresh as it is not watched
-    const isOnlyColFilters =
-      schemaFilters.length &&
-      !schemaColumns.length &&
-      !schemaSort.length &&
-      !schemaQueryBuilder.length
+    // table refresh as they are not watched
+    const isOnlyColFilters
+      = schemaFilters.length
+      && !schemaColumns.length
+      && !schemaSort.length
+      && !schemaQueryBuilder.length
 
     if (isOnlyColFilters) {
       tableRefresh(true)
@@ -217,39 +219,93 @@ function handleLayoutSelect(
 
   layoutSelectorEl.value?.blur()
 }
+
+// Dialogs
+const isSettingsDialogOpen = ref(false)
+const isOptionsDialogOpen = ref(false)
+
+function handleOpenDialog(dialogName: string) {
+  if (dialogName === 'layoutSettings') {
+    $hide({ all: true })
+    isSettingsDialogOpen.value = true
+  } else if (dialogName === 'tableOptions') {
+    $hide({ all: true })
+    isOptionsDialogOpen.value = true
+  }
+}
 </script>
 
 <template>
   <Selector
     ref="layoutSelectorEl"
+    v-model:search="search"
     :model-value="layout?.id === 0 ? undefined : layout"
     :options="layouts"
     option-label="name"
     size="sm"
-    w="50"
+    w="70"
     layout="regular"
+    no-menu-match-width
+    :menu-props="{ placement: 'bottom-end', class: 'w-120' }"
     :placeholder="$t('table.layoutState')"
     data-cy="scheme-search"
     @update:model-value="handleLayoutSelect"
+    @picker-hide="search = ''"
   >
     <template #prepend>
       <div class="i-solar:eye-linear m-l-2 color-ca" />
+
+      <TableLayoutSettingsDialog
+        v-model="isSettingsDialogOpen"
+        :search="search"
+        manual
+      />
+
+      <TableOptionsDialog
+        v-model="isOptionsDialogOpen"
+        manual
+      />
     </template>
 
     <template #above-options>
       <div
         relative
-        flex="~ col"
+        flex="~ gap-2 justify-between shrink-0"
         overflow="hidden"
+        p="t-1 x-2"
       >
+        <!-- Save -->
         <Btn
-          size="sm"
-          m="x-1 y-0.5"
-          color="negative"
+          icon="i-material-symbols:save"
+          size="xs"
+          color="positive"
           no-uppercase
-          :label="$t('table.layoutStateReset')"
-          @click="handleLayoutSelect(undefined, true)"
+          :label="$t('general.save')"
+          data-cy="settings"
+          @click="handleOpenDialog('layoutSettings')"
         />
+
+        <div flex="~ gap-2">
+          <!-- Layout settings -->
+          <Btn
+            icon="i-solar:settings-linear"
+            size="xs"
+            color="ca"
+            no-uppercase
+            :label="$t('general.option', 2)"
+            @click="handleOpenDialog('tableOptions')"
+          />
+
+          <!-- Reset -->
+          <Btn
+            size="xs"
+            color="negative"
+            no-uppercase
+            icon="i-carbon:reset"
+            :label="$t('table.layoutStateReset')"
+            @click="handleLayoutSelect(undefined, true)"
+          />
+        </div>
       </div>
 
       <Separator spaced />
@@ -269,15 +325,16 @@ function handleLayoutSelect(
         <TableLayoutSelectorSavedOptions :layout="item" />
       </div>
     </template>
+
+    <template
+      v-if="config.table.hasHelpButtons"
+      #after-search
+    >
+      <DocumentationBtn
+        path="layoutSelector"
+        self-center
+        m="r-2"
+      />
+    </template>
   </Selector>
 </template>
-
-<style scoped lang="scss">
-.x {
-  --apply: relative;
-
-  &::after {
-    --apply: absolute content-empty bottom-0 left-0 w-full h-px bg-ca left--2;
-  }
-}
-</style>

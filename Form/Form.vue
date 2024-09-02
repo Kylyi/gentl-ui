@@ -14,7 +14,7 @@ import { useAppStore } from '~/libs/App/app.store'
 import MenuConfirmation from '~/components/MenuConfirmation/MenuConfirmation.vue'
 
 // Injections
-import { isFormEditingKey } from '~/components/Form/provide/form.provide'
+import { formSubmitKey, isFormEditingKey } from '~/components/Form/provide/form.provide'
 
 defineOptions({
   inheritAttrs: false,
@@ -45,12 +45,14 @@ const { appState, lastPointerDownType, activeElement } = storeToRefs(appStore)
 const errors = toRef(props, 'errors', [])
 const { errorsExtended, handleDismissError } = useFormErrors(errors, emits)
 
+// Utils
+const { isDesktop } = useDevice()
+
 // Layout
 const formEl = ref<HTMLFormElement>()
 const menuConfirmationEl = ref<InstanceType<typeof MenuConfirmation>>()
 const isSubmitted = ref(false)
 const isEditing = defineModel('isEditing', { default: false })
-const { isDesktop } = useDevice()
 
 provide(isFormEditingKey, isEditing)
 
@@ -58,14 +60,10 @@ function isElementInViewport(el: Element) {
   const rect = el.getBoundingClientRect()
 
   return (
-    rect.top >= 0 &&
-    rect.left >= 0 &&
-    rect.bottom <=
-      (window.innerHeight ||
-        document.documentElement.clientHeight) /* or $(window).height() */ &&
-    rect.right <=
-      (window.innerWidth ||
-        document.documentElement.clientWidth) /* or $(window).width() */
+    rect.top >= 0
+    && rect.left >= 0
+    && rect.bottom <= (window.innerHeight || document.documentElement.clientHeight)
+    && rect.right <= (window.innerWidth || document.documentElement.clientWidth)
   )
 }
 
@@ -191,31 +189,25 @@ const throttledSubmit = useThrottleFn(
   },
   500,
   false,
-  true
+  true,
 )
 
 function focusFirstInput() {
   // We only focus the first input if the last pointer down type was a mouse
   // because on touch devices, it would most likely open a virtual keyboard
   // which might take unnecessary space on the screen
-  const shouldFocus =
-    lastPointerDownType?.value === 'mouse' ||
-    (isDesktop && !lastPointerDownType.value)
+  const shouldFocus = lastPointerDownType?.value === 'mouse' || (isDesktop && !lastPointerDownType.value)
+
   if (shouldFocus && props.focusFirstInput) {
-    const inputElements =
-      formEl?.value?.querySelectorAll('.wrapper__body') || []
+    const inputElements = formEl?.value?.querySelectorAll('.wrapper__body') || []
 
     const firstEditableField = Array.from(inputElements).find(el => {
-      const inputChild = el.querySelector(
-        '.control:not([readonly]):not([disabled])'
-      ) as HTMLElement
+      const inputChild = el.querySelector('.control:not([readonly]):not([disabled])') as HTMLElement
 
       return !!inputChild
     }) as HTMLElement
 
-    const firstEditableInput = firstEditableField?.querySelector(
-      '.control:not([readonly]):not([disabled])'
-    ) as HTMLElement
+    const firstEditableInput = firstEditableField?.querySelector('.control:not([readonly]):not([disabled])') as HTMLElement
 
     if (firstEditableInput) {
       const isInViewPort = isElementInViewport(firstEditableInput)
@@ -230,16 +222,15 @@ function focusFirstInput() {
 function handleEnter(ev: KeyboardEvent) {
   const isCtrlKey = ev.ctrlKey || ev.metaKey
   const isInput = activeElement.value?.tagName === 'INPUT'
-  const hasCustomEnterHandler =
-    activeElement.value?.classList.contains('custom-enter')
+  const hasCustomEnterHandler = activeElement.value?.classList.contains('custom-enter')
 
   const isInputWithCustomEnterHandler = isInput && hasCustomEnterHandler
 
   if (
-    preventSubmitOnEnter.value &&
-    isInput &&
-    !isCtrlKey &&
-    !isInputWithCustomEnterHandler
+    preventSubmitOnEnter.value
+    && isInput
+    && !isCtrlKey
+    && !isInputWithCustomEnterHandler
   ) {
     ev.preventDefault()
   } else if (isCtrlKey && !props.submitDisabled) {
@@ -248,13 +239,13 @@ function handleEnter(ev: KeyboardEvent) {
   }
 }
 
+provide(formSubmitKey, throttledSubmit)
+
 defineExpose({
   submit: throttledSubmit,
   fakeSubmit: () => (isSubmitted.value = true),
   reset: () => formEl.value?.reset(),
-  recomputeConfirmationMenuPosition: () => {
-    menuConfirmationEl.value?.recomputeMenuPosition()
-  },
+  recomputeConfirmationMenuPosition: () => menuConfirmationEl.value?.recomputeMenuPosition(),
 })
 
 // When triggering the edit mode, we want to focus the first input
@@ -262,14 +253,12 @@ whenever(isEditing, () => {
   // We need a timeout to
   // 1. Wait for the form to be rendered
   // 2. Potentially prevent the `e` key being inputted into the input
-  setTimeout(() => {
-    focusFirstInput()
-  })
+  setTimeout(() => focusFirstInput())
 })
 
 // We also try to focus the first input when the form is mounted
 onMounted(() => {
-  focusFirstInput()
+  setTimeout(() => focusFirstInput())
 })
 </script>
 
@@ -299,9 +288,7 @@ onMounted(() => {
       <Section
         v-if="errorsExtended.length"
         flex="~ col gap-y-2"
-        :section-class="{
-          'order--1': !!errorsOnTop,
-        }"
+        :section-class="{ 'order--1': !!errorsOnTop }"
       >
         <Banner
           v-for="error in errorsExtended"
@@ -333,19 +320,19 @@ onMounted(() => {
           <span>&nbsp;</span>
         </slot>
 
-        <!-- Spacer -->
+        <!-- Spacer (will make sure the submit button is always to the right) -->
         <div
           v-if="!ui?.noSpacer"
           grow
         />
 
+        <!-- Controls -->
         <div
           relative
           flex="~ gap-2"
           :class="ui?.submitWrapperClass"
         >
-          <slot name="submit-before" />
-
+          <!-- Cancel button -->
           <CrudBtnCancel
             v-if="editControls?.cancel"
             :class="{ invisible: !isEditing }"
@@ -359,6 +346,9 @@ onMounted(() => {
             />
           </CrudBtnCancel>
 
+          <slot name="submit-before" />
+
+          <!-- Submit button -->
           <Btn
             v-if="!noSubmit"
             bg="primary"
@@ -382,6 +372,7 @@ onMounted(() => {
               ref="menuConfirmationEl"
               manual
               :confirmation-text="submitConfirmationText"
+              placement="top"
               @ok="throttledSubmit(true, $event)"
             >
               <template #append>
@@ -399,6 +390,7 @@ onMounted(() => {
             />
           </Btn>
 
+          <!-- Edit button -->
           <CrudEditBtn v-if="editControls?.edit">
             <KeyboardShortcut
               v-if="hasKeyboardShortcuts"
@@ -417,28 +409,28 @@ onMounted(() => {
 <style lang="scss" scoped>
 .form {
   &-content {
-    --apply: flex-gap-2 border-ca;
+    @apply flex-gap-2 border-ca;
   }
 
   > .form-content {
-    --apply: p-$Form-content-padding;
+    @apply p-$Form-content-padding;
   }
 
   &.is-grown {
-    --apply: contents;
+    @apply contents;
 
     > .form-content {
-      --apply: flex-grow;
+      @apply flex-grow;
     }
   }
 
   &.is-bordered {
     > .form-content {
-      --apply: border-x-2 border-t-2 border-ca;
+      @apply border-x-2 border-t-2 border-ca;
     }
 
     > #form-controls {
-      --apply: border-x-2 border-b-2 border-ca rounded-b-custom;
+      @apply border-x-2 border-b-2 border-ca rounded-b-custom;
 
       z-index: calc(var(--zDrawer) - 1);
     }
@@ -446,13 +438,12 @@ onMounted(() => {
 
   &:not(.is-label-forced-visible) {
     :deep(#form-controls .btn-label) {
-      --apply: lt-lg:hidden;
+      @apply lt-lg:hidden;
     }
 
     :deep(#form-controls .btn) {
-      --apply: lt-lg:p-x-0;
+      @apply lt-lg:p-x-0;
     }
   }
-
 }
 </style>

@@ -21,6 +21,7 @@ const formattedValue = computed(() => {
     emptyValue: props.emptyValue,
     predictDataType: props.predictDataType,
     resolveEnums: props.resolveEnums,
+    comparator: props.comparator,
   })
 })
 
@@ -31,12 +32,12 @@ const formattedOriginalValue = computed(() => {
     emptyValue: props.emptyValue,
     predictDataType: props.predictDataType,
     resolveEnums: props.resolveEnums,
+    comparator: props.comparator,
   })
 })
 
 const isEmptyValue = computed(() => {
-  return isNil(formattedValue)
-    || formattedValue.value === props.emptyValue
+  return isNil(formattedValue) || formattedValue.value === props.emptyValue
 })
 </script>
 

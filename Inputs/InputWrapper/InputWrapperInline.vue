@@ -49,7 +49,11 @@ const classes = computed(() => {
       </div>
 
       <!-- Input -->
-      <div class="input-wrapper__inline-input-input">
+      <div
+        class="input-wrapper__inline-input-input"
+        :class="ui?.inputInnerContainerClass"
+        :style="ui?.inputInnerContainerStyle"
+      >
         <slot name="input" />
       </div>
 
@@ -74,14 +78,14 @@ const classes = computed(() => {
 
 <style lang="scss" scoped>
 .input-wrapper__inline {
-  --apply: flex flex-col rounded-custom;
+  @apply flex flex-col rounded-$borderRadius;
 
   &-label {
-    --apply: shrink-0;
+    @apply shrink-0;
   }
 
   &-input {
-    --apply: grid items-center;
+    @apply grid items-center;
 
     grid-template-areas:
       'prepend input loading append'
@@ -92,12 +96,12 @@ const classes = computed(() => {
   }
 
   .input-wrapper__inline-input-prepend {
-    --apply: fit flex flex-center;
+    @apply fit flex flex-center;
     grid-area: prepend;
   }
 
   .input-wrapper__inline-input-input {
-    --apply: flex flex-col;
+    @apply flex flex-col;
     grid-area: input;
   }
 
@@ -106,46 +110,46 @@ const classes = computed(() => {
   }
 
   .input-wrapper__inline-input-append {
-    --apply: fit flex flex-center;
+    @apply fit flex flex-center;
     grid-area: append;
   }
 
   .input-wrapper__inline-input-error {
-    --apply: p-x-3;
+    @apply p-x-3;
     grid-area: error;
   }
 
   @screen md {
-    --apply: flex-row items-start gap-2;
+    @apply flex-row items-start gap-2;
 
     &-label {
-      --apply: flex items-center;
+      @apply flex items-center;
     }
 
     &-input {
-      --apply: grow;
+      @apply grow;
     }
 
     // Label must be have at least the same height as the input to be positioned properly
     &.is-sm > .input-wrapper__inline-label {
-      --apply: min-h-8;
+      @apply min-h-8;
     }
 
     &.is-md > .input-wrapper__inline-label {
-      --apply: min-h-10;
+      @apply min-h-10;
     }
 
     &.is-lg > .input-wrapper__inline-label {
-      --apply: min-h-12;
+      @apply min-h-12;
     }
   }
 
   :slotted(> *) {
-    --apply: shrink-0;
+    @apply shrink-0;
   }
 
   :slotted(.wrapper-body__input) {
-    --apply: grow;
+    @apply grow;
   }
 }
 
@@ -155,33 +159,33 @@ const classes = computed(() => {
   grid-row: 1 / 2;
   transition: border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
-  --apply: border-custom rounded-custom pointer-events-none border-ca fit
+  @apply border-custom rounded-$borderRadius pointer-events-none border-ca fit
     bg-$Input-wrapper-bg;
 }
 
 .input-wrapper__inline:focus-within {
   .input-wrapper__inline-border {
-    --apply: border-$borderColor;
+    @apply border-$borderColor;
   }
 }
 
 .input-wrapper__inline.has-errors .input-wrapper__inline-border {
-  --apply: border-negative;
+  @apply border-negative;
 }
 
 .input-wrapper__inline.is-readonly .input-wrapper__inline-border {
-  --apply: border-dashed;
+  @apply border-dashed;
 }
 
 .input-wrapper__inline.is-disabled {
-  --apply: opacity-80 cursor-not-allowed;
+  @apply opacity-80 cursor-not-allowed;
 
   :slotted(.control) {
-    --apply: '!cursor-not-allowed';
+    @apply '!cursor-not-allowed';
   }
 }
 
 .input-wrapper__inline:not(.has-border) .input-wrapper__inline-border {
-  --apply: border-none;
+  @apply border-none;
 }
 </style>

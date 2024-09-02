@@ -1,9 +1,14 @@
 <script setup lang="ts">
+import type { CSSProperties } from 'vue'
+
 // Types
 import type { ICrudBtnProps } from '~/components/Crud/types/crud-btn-props.type'
 import type { IMenuProps } from '~/components/Menu/types/menu-props.type'
 
-defineProps<ICrudBtnProps & { confirmationText?: string; menuProps?: IMenuProps }>()
+defineProps<ICrudBtnProps & {
+  confirmationText?: string
+  menuProps?: IMenuProps & { class?: ClassType, style?: CSSProperties }
+}>()
 defineEmits<{
   (e: 'delete'): void
   (e: 'hide'): void
@@ -14,13 +19,14 @@ defineEmits<{
   <Btn
     preset="TRASH"
     :label="labels && (label || $t('general.delete'))"
-    :loader-type="loaderType"
-    :loading="loading"
+    :loader-type
+    :loading
     no-dim
-    :size="size"
-    :outlined="outlined"
-    :no-uppercase="noUppercase"
-    :disabled="disabled"
+    :size
+    :outlined
+    :no-uppercase
+    :align="align"
+    :disabled
     tabindex="-1"
     data-cy="delete-button"
     @click="noConfirm && $emit('delete')"
@@ -28,7 +34,7 @@ defineEmits<{
     <MenuConfirmation
       v-if="!noConfirm"
       :title="$t('general.delete')"
-      :confirmation-text="confirmationText"
+      :confirmation-text
       placement="bottom-start"
       no-uplift
       no-overlay

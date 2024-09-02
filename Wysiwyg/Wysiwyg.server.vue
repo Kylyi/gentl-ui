@@ -1,33 +1,23 @@
 <script setup lang="ts">
 // Types
 import type { IWysiwygProps } from '~/components/Wysiwyg/types/wysiwyg-props.type'
-import type { IItem } from '~/libs/Shared/types/item.type'
 
 // Functions
-import { useValueFormatterUtils } from '~/components/ValueFormatter/functions/useValueFormatterUtils'
 import { useInputWrapperUtils } from '~/components/Inputs/functions/useInputWrapperUtils'
 
-import { mentionEntityKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
-
 // Constants
-import { mentionItemsMap } from '~/components/Wysiwyg/constants/resolve-values.map'
+import { useWysiwygUtils } from '~/components/Wysiwyg/functions/useWysiwygUtils'
 
-const props = defineProps<
-  IWysiwygProps & { resolveMentionItems?: boolean; mentionEntity?: IItem }
->()
-const self = getCurrentInstance()
+const props = defineProps<IWysiwygProps>()
 
 // Utils
-const { formatValue } = useValueFormatterUtils()
+const isServer = !!import.meta.server
 const { getInputWrapperProps } = useInputWrapperUtils()
+const { resolveMentions } = useWysiwygUtils()
 
 // Layout
+const el = ref<HTMLParagraphElement>()
 const model = toRef(props, 'modelValue')
-const isServer = !!process.server
-const mentionEntity = injectStrict(
-  mentionEntityKey,
-  toRef(props, 'mentionEntity')
-)
 
 // Wrapper
 const wrapperProps = getInputWrapperProps(props)
@@ -36,30 +26,15 @@ const wrapperProps = getInputWrapperProps(props)
 // because normally, on server side, we don't have the `onMounted` hook
 onMounted(() => {
   nextTick(() => {
-    const entity = toValue(mentionEntity)
+    const shouldResolveMentions = props.mentionResolve || props.mentionReplace
 
-    ;(self?.proxy?.$el?.querySelectorAll('[data-id]') as Element[]).forEach(
-      el => {
-        const attrValue = el.getAttribute('data-id')
-
-        if (attrValue) {
-          const definition = mentionItemsMap.get(attrValue)
-
-          if (!definition) {
-            return ''
-          }
-
-          const value =
-            definition.format?.(entity) ??
-            formatValue(get(entity || {}, definition.id), undefined, {
-              dataType: definition.dataType,
-            }) ??
-            `\${${attrValue}}`
-
-          el.innerHTML = value
-        }
-      }
-    )
+    if (shouldResolveMentions && el.value) {
+      resolveMentions(
+        undefined,
+        props.mentionReplace,
+        { ...props, el: el.value },
+      )
+    }
   })
 })
 </script>
@@ -67,18 +42,26 @@ onMounted(() => {
 <template>
   <Field v-bind="wrapperProps">
     <ClientOnly>
-      <p v-html="model" />
+      <div
+        ref="el"
+        class="tiptap ProseMirror wysiwyg"
+        v-html="model"
+      />
     </ClientOnly>
 
-    <p
+    <div
       v-if="isServer"
+      ref="el"
+      class="tiptap ProseMirror wysiwyg"
       v-html="model"
     />
   </Field>
 </template>
 
 <style lang="scss" scoped>
-:deep(.wysiwyg) {
-  --apply: outline-none p-x-2;
+@import url('style/wysiwyg.style.scss');
+
+:deep(p:empty) {
+  @apply min-h-26px;
 }
 </style>

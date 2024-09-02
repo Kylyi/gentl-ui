@@ -13,19 +13,19 @@ const layoutInfo = computed(() => {
 
   const hasColumns = schemaSplit.some(s => s.startsWith('select='))
   const hasSorting = schemaSplit.some(
-    s => s.startsWith('paging=') || s.startsWith('order=')
+    s => s.startsWith('paging=') || s.startsWith('order='),
   )
   const hasFilters = schemaSplit.some(
     s =>
-      !s.startsWith('select=') &&
-      !s.startsWith('paging=') &&
-      !s.startsWith('order=')
+      !s.startsWith('select=')
+      && !s.startsWith('paging=')
+      && !s.startsWith('order='),
   )
 
-  const isDefault =
-    props.layout.accessLevel === 1 || props.layout.accessLevel === 3
-  const isPublic =
-    props.layout.accessLevel === 4 || props.layout.accessLevel === 3
+  const isDefault
+    = props.layout.accessLevel === 1 || props.layout.accessLevel === 3
+  const isPublic
+    = props.layout.accessLevel === 4 || props.layout.accessLevel === 3
 
   return {
     hasColumns,
@@ -40,7 +40,7 @@ const layoutInfo = computed(() => {
 
 <template>
   <div
-    flex="~ gap-0.5 self-start shrink-0"
+    flex="~ col gap-0.5"
     color="blue-100"
     p="r-1"
   >
@@ -69,10 +69,13 @@ const layoutInfo = computed(() => {
 
     <!-- Layout settings -->
     <div flex="~ gap-0.5">
+      <!-- Public -->
       <div
         v-if="layoutInfo.isPublic"
         class="layout-info-icon i-ic:round-public color-blue-500"
       />
+
+      <!-- Default -->
       <div
         v-if="layoutInfo.isDefault"
         class="layout-info-icon i-fluent:book-default-28-filled color-blue-500"

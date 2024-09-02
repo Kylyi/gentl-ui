@@ -2,7 +2,7 @@
 import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
 
 // Models
-import { TableColumn } from '~/components/Table/models/table-column.model'
+import type { TableColumn } from '~/components/Table/models/table-column.model'
 
 export type ITableColumnState = Pick<
   TableColumn,
@@ -16,6 +16,7 @@ export type ITableColumnState = Pick<
   | 'dataType'
   | 'originalWidth'
   | 'filterField'
+  | 'local'
 > & {
   filters: Pick<
     TableColumn['filters'][number],

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { editorKey } from '~/components/Wysiwyg/provide/wysiwyg.provide';
+// Store
+import { useWysiwygStore } from '~/components/Wysiwyg/wysiwyg.store'
 
 defineEmits<{
   (e: 'set-heading', value: boolean): void
@@ -8,13 +9,13 @@ defineEmits<{
   (e: 'toggle-underline'): void
 }>()
 
-// Layout
-const editor = inject(editorKey)
+// Utils
+const { editor } = useWysiwygStore()
 
 function handleSetColor(color?: string | null) {
   color
-    ? toValue(editor)?.chain().focus().setColor(color).run()
-    : toValue(editor)?.chain().focus().unsetColor().run()
+    ? editor?.chain().focus().setColor(color).run()
+    : editor?.chain().focus().unsetColor().run()
 }
 </script>
 
@@ -26,7 +27,7 @@ function handleSetColor(color?: string | null) {
       @click.stop.prevent
       @mousedown.stop.prevent
     >
-      <MenuProxy ref="colorMenuEl">
+      <MenuProxy>
         <ColorBrandingPicker
           @update:model-value="handleSetColor"
           @click.stop.prevent

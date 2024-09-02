@@ -1,12 +1,12 @@
 // Types
-import { type IItemToBeAdded } from '~/components/List/types/list-item-to-add.type'
-import { type IListProps } from '~/components/List/types/list-props.type'
+import type { IItemToBeAdded } from '~/components/List/types/list-item-to-add.type'
+import type { IListProps } from '~/components/List/types/list-props.type'
 
 export function useItemAdding(
   props: Pick<
     IListProps,
     'allowAdd' | 'itemKey' | 'itemLabel' | 'addedItems' | 'multi' | 'transformAddedItem'
-  >
+  >,
 ) {
   const {
     transformAddedItem = (item: IItem) => item,
@@ -14,10 +14,10 @@ export function useItemAdding(
 
   const preAddedItem = ref<IItemToBeAdded>()
   const addedItems = props.addedItems
-  ? useVModel(props, 'addedItems') as Ref<IItemToBeAdded[]>
-  : ref<IItemToBeAdded[]>([])
+    ? useVModel(props, 'addedItems') as Ref<IItemToBeAdded[]>
+    : ref<IItemToBeAdded[]>([])
 
-  function handleSearch(payload: { search: string; hasExactMatch: boolean }) {
+  function handleSearch(payload: { search: string, hasExactMatch: boolean }) {
     const { search, hasExactMatch } = payload
 
     if (props.allowAdd) {
@@ -28,8 +28,8 @@ export function useItemAdding(
 
       // New item to be added
       else if (search && !hasExactMatch) {
-        const labelKey =
-          typeof props.itemLabel === 'function'
+        const labelKey
+          = typeof props.itemLabel === 'function'
             ? 'label'
             : props.itemLabel || 'label'
 
@@ -54,7 +54,12 @@ export function useItemAdding(
     item._isCreate = true
     item._isNew = false
 
-    addedItems.value = [ ...addedItems.value, item]
+    addedItems.value = [...addedItems.value, item]
+  }
+
+  function resetAddedItems() {
+    preAddedItem.value = undefined
+    addedItems.value = []
   }
 
   return {
@@ -62,5 +67,6 @@ export function useItemAdding(
     preAddedItem,
     addItem,
     handleSearch,
+    resetAddedItems,
   }
 }

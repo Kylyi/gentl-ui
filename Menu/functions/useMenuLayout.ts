@@ -23,15 +23,16 @@ export function useMenuLayout(model: Ref<boolean>, props: IMenuProps) {
   const contentEl = ref<HTMLElement>()
   const referenceElZIndex = ref<string>()
   const isReferenceElTransparent = ref(false)
+  const virtualEl = ref<any>()
 
-  const virtualEl = computed(() => {
+  watch(model, () => {
     if (!props.virtual || !appStore.lastPointerDownEvent) {
       return null
     }
 
     const { clientX, clientY } = appStore.lastPointerDownEvent
 
-    return {
+    virtualEl.value = {
       getBoundingClientRect: () => ({
         width: 0,
         height: 0,
@@ -54,7 +55,13 @@ export function useMenuLayout(model: Ref<boolean>, props: IMenuProps) {
   })
 
   // Methods
-  function toggle() {
+  function toggle(ev?: Event) {
+    const isContextMenu = ev?.type === 'contextmenu'
+
+    if (isContextMenu) {
+      ev?.preventDefault()
+    }
+
     model.value = !model.value
   }
 
@@ -64,7 +71,7 @@ export function useMenuLayout(model: Ref<boolean>, props: IMenuProps) {
   function refreshAnchors() {
     const parentEl = instance?.vnode?.el?.parentNode
 
-    if (triggerEl.value instanceof HTMLElement) {
+    if (triggerEl.value instanceof Element) {
       triggerEl.value?.removeEventListener(props.trigger ?? 'click', toggle)
     }
 
@@ -72,25 +79,25 @@ export function useMenuLayout(model: Ref<boolean>, props: IMenuProps) {
     triggerEl.value = getElement(props.target ?? parentEl)
     referenceEl.value = getElement(props.referenceTarget ?? parentEl)
 
-    if (referenceEl.value && referenceEl.value instanceof HTMLElement) {
+    if (referenceEl.value && referenceEl.value instanceof Element) {
       referenceEl.value.classList.add('has-menu')
 
       const referenceElStyle = getComputedStyle(referenceEl.value)
       referenceElZIndex.value = referenceElStyle.zIndex
-      isReferenceElTransparent.value =
-        referenceElStyle.backgroundColor === 'rgba(0, 0, 0, 0)'
+      isReferenceElTransparent.value = referenceElStyle.backgroundColor === 'rgba(0, 0, 0, 0)'
     }
 
     // Add event listeners when not using the `manual` mode
-    if (!props.manual && triggerEl.value instanceof HTMLElement) {
+    if (!props.manual && triggerEl.value instanceof Element) {
       triggerEl.value?.addEventListener(props.trigger ?? 'click', toggle)
     }
   }
 
   // Watch for element changes
-  watch([() => props.target, () => props.referenceTarget], () => {
-    refreshAnchors()
-  })
+  watch([
+    () => props.target,
+    () => props.referenceTarget,
+  ], () => refreshAnchors())
 
   // Lifecycle
   onMounted(async () => {
@@ -99,7 +106,7 @@ export function useMenuLayout(model: Ref<boolean>, props: IMenuProps) {
   })
 
   onBeforeUnmount(() => {
-    if (triggerEl.value instanceof HTMLElement) {
+    if (triggerEl.value instanceof Element) {
       triggerEl.value?.removeEventListener(props.trigger ?? 'click', toggle)
     }
   })

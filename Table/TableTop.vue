@@ -4,20 +4,18 @@ import { config } from '~/components/config/components-config'
 // Types
 import type { ITableProps } from '~/components/Table/types/table-props.type'
 
+// Functions
+import { useTableColumnResizing } from '~/components/Table/functions/useTableColumnResizing'
+
 // Injections
 import {
   tableColumnsKey,
   tableNonHelperColumnsKey,
   tableRefreshKey,
-  tableRowsKey,
   tableSelectionKey,
-  tableSlotsKey,
-  tableStorageKey,
-  tableStretchColumnsKey,
 } from '~/components/Table/provide/table.provide'
 
 // Store
-import { useTableStore } from '~/components/Table/table.store'
 import { useAppStore } from '~/libs/App/app.store'
 
 // Components
@@ -39,10 +37,6 @@ const props = defineProps<
     smallScreen?: boolean
   }
 >()
-const emits = defineEmits<{
-  (e: 'update:columnsWidth'): void
-  (e: 'update:search', search: string): void
-}>()
 const slots = useSlots()
 
 // Constants
@@ -53,48 +47,87 @@ const QUERY_BUILDER_INLINE_GAP = 2
 
 // Store
 const appStore = useAppStore()
-const { setTableState } = useTableStore()
 
 // Injections
 const selection = injectStrict(tableSelectionKey)
 const columns = injectStrict(tableColumnsKey)
 const nonHelperColumns = injectStrict(tableNonHelperColumnsKey)
-const storageKey = injectStrict(tableStorageKey)
-const tableRows = injectStrict(tableRowsKey)
 const tableRefresh = injectStrict(tableRefreshKey)
-const tableSlots = injectStrict(tableSlotsKey)
-const tableStretchColumns = injectStrict(tableStretchColumnsKey)
+
+// Utils
+const { handleFitColumns } = useTableColumnResizing({
+  columns,
+  minimumColumnWidth: props.minimumColumnWidth,
+})
 
 // Layout
 const queryBuilder = useVModel(props, 'queryBuilder')
 const queryBuilderInlineEl = ref<InstanceType<typeof QueryBuilderInline>>()
 const search = useVModel(props, 'search')
 
-const hasActionBar = computedEager(() => {
+const hasActionBar = computed(() => {
   return (
-    !!slots['left-prepend'] ||
-    !!slots['left-append'] ||
-    !!slots['right-prepend'] ||
-    !!slots['right-append']
+    !!slots['left-prepend']
+    || !!slots['left-append']
+    || !!slots['right-prepend']
+    || !!slots['right-append']
   )
 })
 
+function fitColumns(ev?: MouseEvent) {
+  const isShiftKey = !!ev?.shiftKey
+  const isCtrlKey = ev?.ctrlKey || ev?.metaKey
+
+  let mode: 'content' | 'auto' | 'stretch' = 'content'
+
+  if (isShiftKey) {
+    mode = 'stretch'
+  } else if (isCtrlKey) {
+    mode = 'auto'
+  }
+
+  handleFitColumns(mode)
+}
+
+// Subscription
+const subscriptionEl = ref<any>()
+
+const hasSubscriptionBtn = computed(() => {
+  return !props.tableTopFunctionality?.noSubscription
+    && 'subscriptionComponent' in config
+    && config.subscriptionComponent
+})
+
+// Export
+const exportEl = ref<any>()
+
+const ExportBtn = computed(() => {
+  const hasCustomExport = 'exportComponent' in config.table && !!config.table.exportComponent
+
+  if (!props.exportProps?.useDefault && hasCustomExport) {
+    return config.table.exportComponent
+  }
+
+  return TableExportBtn
+})
+
+// Query builder
 const queryBuilderHeight = computed(() => {
   return {
     minHeight: `${
-      MIN_VISIBLE_QUERY_BUILDER_ROWS * 26 +
-      QUERY_BUILDER_INLINE_PADDING +
-      QUERY_BUILDER_INLINE_GAP
+      MIN_VISIBLE_QUERY_BUILDER_ROWS * 26
+      + QUERY_BUILDER_INLINE_PADDING
+      + QUERY_BUILDER_INLINE_GAP
     }px`,
     maxHeight: `${
-      MAX_VISIBLE_QUERY_BUILDER_ROWS * 26 +
-      QUERY_BUILDER_INLINE_PADDING +
-      QUERY_BUILDER_INLINE_GAP
+      MAX_VISIBLE_QUERY_BUILDER_ROWS * 26
+      + QUERY_BUILDER_INLINE_PADDING
+      + QUERY_BUILDER_INLINE_GAP
     }px`,
   }
 })
 
-const qbControlsClasses = computedEager(() => {
+const qbControlsClasses = computed(() => {
   const hasQueryBuilder = !!queryBuilder.value
 
   // Search is used
@@ -126,14 +159,6 @@ const qbControlsClasses = computedEager(() => {
   }
 })
 
-const ExportBtn = computed(() => {
-  if ('exportComponent' in config.table && config.table.exportComponent) {
-    return config.table.exportComponent
-  }
-
-  return TableExportBtn
-})
-
 const selectionCount = computed(() => {
   if (!selection.value) {
     return 0
@@ -144,9 +169,7 @@ const selectionCount = computed(() => {
     : Object.keys(selection.value).length
 })
 
-/**
- * Creates readable sorting string
- */
+// Filtering and sorting
 const tableSorting = computed(() => {
   return columns.value
     .filter(col => col.sort)
@@ -165,7 +188,7 @@ const tableSorting = computed(() => {
       col =>
         `${col.label} (<span>${
           col.direction === 'asc' ? '&#8593;' : '&#8595;'
-        }</span>)`
+        }</span>)`,
     )
     .join(', ')
 })
@@ -194,15 +217,18 @@ function handleFilterClear(filters?: 'queryBuilder' | 'columns') {
     })
 
     // Reset query builder
-    queryBuilder.value = [
-      {
-        id: generateUUID(),
-        isGroup: true,
-        children: [],
-        condition: 'AND',
-        path: '0',
-      },
-    ]
+    if (queryBuilder.value) {
+      queryBuilder.value = [
+        {
+          id: generateUUID(),
+          isGroup: true,
+          children: [],
+          condition: 'AND',
+          path: '0',
+        },
+      ]
+    }
+
     search.value = ''
 
     if (!queryBuilderInlineEl.value && !search.value) {
@@ -216,41 +242,6 @@ function handleClearSorting() {
     col.sort = undefined
     col.sortOrder = undefined
   })
-}
-
-function handleFitColumns(ev?: MouseEvent) {
-  const isShiftKey = !!ev?.shiftKey
-
-  const fittableColumns = columns.value.filter(
-    col => col.resizable && !col.hidden && !col.isHelperCol
-  )
-
-  // We unfreeze any frozen column
-  const frozenColumn = fittableColumns.find(col => col.frozen)
-  frozenColumn?.freeze(fittableColumns)
-
-  setTimeout(async () => {
-    // We autofit the columns
-    for await (const col of fittableColumns) {
-      const slotRenderFnc = tableSlots[col.field]
-      await col.autoFit(
-        tableRows.value,
-        slotRenderFnc,
-        props.minimumColumnWidth
-      )
-    }
-
-    // We stretch the columns
-    if (isShiftKey) {
-      tableStretchColumns()
-    }
-
-    // We freeze the column again
-    frozenColumn?.freeze(fittableColumns)
-
-    setTableState(storageKey.value, { columns: columns.value })
-    emits('update:columnsWidth')
-  }, 0)
 }
 
 // Keyboard shortcuts
@@ -400,14 +391,9 @@ onKeyStroke(['d', 'D'], (ev: KeyboardEvent) => {
           </Btn>
 
           <!-- Subscriptions -->
-          <template
-            v-if="
-              !tableTopFunctionality?.noSubscription &&
-              'subscriptionComponent' in config &&
-              config.subscriptionComponent
-            "
-          >
+          <template v-if="hasSubscriptionBtn">
             <Separator
+              v-if="!subscriptionEl?.isHidden?.()"
               vertical
               m="r-1"
               :class="qbControlsClasses.separator"
@@ -415,6 +401,7 @@ onKeyStroke(['d', 'D'], (ev: KeyboardEvent) => {
 
             <Component
               :is="config.subscriptionComponent"
+              ref="subscriptionEl"
               self-start
               m="t-1"
             />
@@ -426,6 +413,7 @@ onKeyStroke(['d', 'D'], (ev: KeyboardEvent) => {
             name="export"
           >
             <Separator
+              v-if="!exportEl?.isHidden?.()"
               vertical
               m="r-1"
               :class="qbControlsClasses.separator"
@@ -433,12 +421,15 @@ onKeyStroke(['d', 'D'], (ev: KeyboardEvent) => {
 
             <Component
               :is="ExportBtn"
+              ref="exportEl"
               v-bind="exportProps"
               shrink-0
               :class="qbControlsClasses.exportBtn"
             />
           </slot>
         </slot>
+
+        <slot name="middle-end" />
       </div>
 
       <Separator m="b-1" />
@@ -450,12 +441,13 @@ onKeyStroke(['d', 'D'], (ev: KeyboardEvent) => {
         v-if="!tableTopFunctionality?.noSubbar"
         class="table-top__subbar"
       >
+        <slot name="subbar-left" />
+
         <!-- Selection & Sorting -->
         <div class="table-top__selection">
           <template
-            v-if="
-              selectionOptions?.selectable &&
-              ($slots['bulk-actions'] || $slots['bulk-actions-menu'])
+            v-if="selectionOptions?.selectable
+              && ($slots['bulk-actions'] || $slots['bulk-actions-menu'])
             "
           >
             <!-- Selection actions -->
@@ -478,7 +470,7 @@ onKeyStroke(['d', 'D'], (ev: KeyboardEvent) => {
                 </MenuProxy>
 
                 <div
-                  class="i-line-md:chevron-small-right rotate-90 h-4 w-4 m-l--1"
+                  class="i-flowbite:chevron-right-outline rotate-90 h-4 w-4 m-l--1"
                 />
               </Btn>
             </slot>
@@ -514,13 +506,6 @@ onKeyStroke(['d', 'D'], (ev: KeyboardEvent) => {
 
         <!-- Layout & Columns -->
         <div class="table-top__layout">
-          <span
-            v-if="!tableTopFunctionality?.noLayout"
-            class="table-top__layout-label"
-          >
-            {{ $t('table.layoutState') }}:
-          </span>
-
           <!-- Columns -->
           <TableColumnsBtn
             v-if="!tableTopFunctionality?.noColumnSelection"
@@ -535,17 +520,12 @@ onKeyStroke(['d', 'D'], (ev: KeyboardEvent) => {
             icon="i-material-symbols:fit-width"
             color="ca"
             :label="$t('table.fitColumns')"
-            @click="handleFitColumns"
+            @click="fitColumns"
           />
 
           <template v-if="!tableTopFunctionality?.noLayout">
             <!-- Layout selector -->
             <TableLayoutSelector v-model:query-builder="queryBuilder" />
-
-            <!-- Layout settings -->
-            <TableLayoutSettingsBtn
-              :non-saveable-settings="nonSavableSettings"
-            />
           </template>
         </div>
 
@@ -564,42 +544,42 @@ onKeyStroke(['d', 'D'], (ev: KeyboardEvent) => {
 
 <style scoped lang="scss">
 .table-top {
-  --apply: flex flex-col;
+  @apply flex flex-col;
 
   &__actionbar {
-    --apply: flex flex-wrap gap-2 items-center p-x-2 p-y-1;
+    @apply flex flex-wrap gap-2 items-center p-x-2 p-y-1;
   }
 
   &__qb {
-    --apply: flex gap-1 items-start p-x-2 p-y-1;
+    @apply flex gap-1 items-start p-x-2 p-y-1;
 
     &-remove-filters {
-      --apply: shrink-0 w-20 min-h-10 dark:bg-darker bg-white color-ca
-        border-2 border-transparent hover:border-negative;
+      @apply shrink-0 w-20 min-h-10 dark:bg-darker bg-white color-ca border-2
+        border-transparent hover:border-negative;
 
-      --apply: "!hover:color-negative !p-y-0";
+      @apply '!hover:color-negative !p-y-0';
     }
   }
 
   &__subbar {
-    --apply: flex gap-2 items-center justify-between p-x-2 p-y-1;
+    @apply flex gap-2 items-center justify-between p-x-2 p-y-1;
   }
 
   &__layout {
-    --apply: flex gap-2 items-center grow justify-end;
+    @apply flex gap-2 items-center grow justify-end;
 
     &-label {
-      --apply: text-caption text-xs font-bold;
-      --apply: '!lt-md:hidden';
+      @apply text-caption text-xs font-semibold;
+      @apply '!lt-md:hidden';
     }
   }
 
   &__selection {
-    --apply: flex grow gap-2 items-center;
-    --apply: '!lt-md:hidden';
+    @apply flex grow gap-2 items-center;
+    @apply '!lt-md:hidden';
 
     &-info {
-      --apply: flex gap-1 items-center leading-none text-caption text-xs;
+      @apply flex gap-1 items-center leading-none text-caption text-xs;
     }
   }
 }

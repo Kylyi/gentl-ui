@@ -9,15 +9,15 @@ import type { IListDraggedItem } from '~/components/List/types/list-dragged-item
 
 // Functions
 import { useList } from '~/components/List/functions/useList'
+import { useListUtils } from '~/components/List/functions/useListUtils'
 
 // Injections
 import { listContainerKey } from '~/components/List/provide/list.provide'
 import { useListDragAndDrop } from '~/components/List/functions/useListDragAndDrop'
 
 // Components
-import ListVirtualContainer from '~/components/List/ListVirtualContainer.vue'
+import type ListVirtualContainer from '~/components/List/ListVirtualContainer.vue'
 import ListContainer from '~/components/List/ListContainer.vue'
-import { useListUtils } from '~/components/List/functions/useListUtils'
 
 const props = withDefaults(defineProps<IListProps>(), {
   clearable: true,
@@ -37,13 +37,11 @@ defineEmits<{
   (e: 'added', item: any): void
   (e: 'added-multiple', items: any[]): void
   (e: 'removed', item: any): void
-  (e: 'search', payload: { hasExactMatch: boolean; search: string }): void
-  (
-    e: 'before-search',
-    payload: { hasExactMatch: boolean; search: string }
-  ): void
+  (e: 'search', payload: { hasExactMatch: boolean, search: string }): void
+  (e: 'before-search', payload: { hasExactMatch: boolean, search: string }): void
   (e: 'drag:start', item: IListDraggedItem): void
   (e: 'drag:end', item: IListDraggedItem): void
+  (e: 'submit', item: any): void
 }>()
 
 // Utils
@@ -51,10 +49,9 @@ const { handleMoveItem, handleMoveItems } = useListUtils()
 
 // Layout
 const containerEl = ref<InstanceType<typeof ListVirtualContainer>>()
-const items =
-  props.items !== undefined
-    ? (useVModel(props, 'items') as Ref<any[]>)
-    : ref<any[]>([])
+const items = props.items !== undefined
+  ? (useVModel(props, 'items') as Ref<any[]>)
+  : ref<any[]>([])
 
 const ContainerComponent = computed(() => {
   return ListContainer
@@ -78,11 +75,12 @@ defineExpose({
   refresh: () => refresh(),
   handleKey: (
     ev: KeyboardEvent,
-    options?: { force?: boolean; repeated?: boolean }
+    options?: { force?: boolean, repeated?: boolean },
   ) => handleKey(ev, options),
   moveItem: handleMoveListItemById,
   moveItems: handleMoveListItemsById,
-  getListItems: () => items
+  getListItems: () => items,
+  resetAddedItems: () => resetAddedItems(),
 })
 
 const {
@@ -102,6 +100,7 @@ const {
   handleSelectItem,
   loadData,
   refresh,
+  resetAddedItems,
 } = useList(items, props, containerEl)
 
 // D'n'D
@@ -125,7 +124,7 @@ function handleMoveListItemsById(
     ids: Array<string | number>
     targetId: string | number
     direction: 'above' | 'below'
-  }
+  },
 ) {
   handleMoveItems({ itemsRef: items, ...payload })
 }
@@ -155,7 +154,6 @@ onMounted(() => {
           v-model="search"
           :class="{ 'm-2': !dense }"
           grow
-          :debounce="searchDebounce"
           layout="regular"
           class="bg-white dark:bg-darker"
           :loading="isLoading"
@@ -201,7 +199,7 @@ onMounted(() => {
     >
       <template #default="{ item, index }">
         <ListRow
-          :item="item"
+          :item
           :tag="rowTag"
           :is-selected="!('isGroup' in item) && !!selectedByKey[item.id]"
           :is-hovered="hoveredIdx === index"
@@ -232,11 +230,16 @@ onMounted(() => {
       </template>
     </Component>
 
-    <Banner
+    <!-- No data -->
+    <div
       v-else-if="!isLoading && isInitialized"
-      icon-center
-      :label="$t('general.noData')"
-    />
+      flex="~ 1 col"
+    >
+      <Banner
+        icon-center
+        :label="$t('general.noData')"
+      />
+    </div>
 
     <LoaderBlock
       v-else-if="!isInitialized"
@@ -272,50 +275,52 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .list {
-  --apply: relative flex flex-col overflow-auto;
+  @apply relative flex flex-col overflow-auto;
 
   &.is-bordered {
-    --apply: border-1 border-ca rounded-3;
+    @apply border-1 border-ca rounded-3;
   }
 
   &-search {
-    --apply: flex w-full shrink-0 overflow-auto bg-ca;
+    @apply flex w-full shrink-0 overflow-auto;
+    @apply bg-$List-search-bg;
   }
 }
 
 .separator {
-  --apply: border-b-1 border-ca;
+  @apply border-b-1 border-ca;
 }
 
 [placement^='top'] {
   .list-search {
-    --apply: order-2;
+    @apply order-2;
   }
 
   .separator {
-    --apply: order-1;
+    @apply order-1;
   }
 }
 
-.list-search {
-  --apply: flex-wrap;
-}
+// .list-search {
+//   @apply flex-wrap;
+// }
 
 .no-data {
-  --apply: flex italic color-ca text-caption p-t-2 p-x-3;
+  @apply flex italic color-ca text-caption p-t-2 p-x-3;
 }
 
 .selector {
   .no-data {
-    --apply: p-x-3;
+    @apply p-x-3;
   }
 }
 
 .drop-indicator {
-  --apply: fixed h-2px bg-primary w-full rounded-full pointer-events-none z-$zMax;
+  @apply fixed h-2px bg-primary w-full rounded-full pointer-events-none z-$zMax;
 
   &__icon {
-    --apply: w-5 h-5 relative -left-5 color-primary bg-white dark:bg-darker rounded-custom;
+    @apply w-5 h-5 relative -left-5 rounded-custom
+    color-primary bg-white dark:bg-darker;
   }
 }
 </style>

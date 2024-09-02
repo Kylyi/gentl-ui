@@ -36,5 +36,12 @@ const component = computed(() => {
     ref="inputEl"
     v-model="model"
     v-bind="component.props"
-  />
+  >
+    <template
+      v-if="$slots.append"
+      #append
+    >
+      <slot name="append" />
+    </template>
+  </Component>
 </template>

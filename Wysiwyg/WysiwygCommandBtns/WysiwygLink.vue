@@ -1,58 +1,102 @@
 <script setup lang="ts">
-// Injections
-import { editorKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
+// Store
+import { useWysiwygStore } from '~/components/Wysiwyg/wysiwyg.store'
 
 // Components
 import Menu from '~/components/Menu/Menu.vue'
 
+// Store
+const { editor } = useWysiwygStore()
+
 // Layout
-const editor = inject(editorKey)
 const menuEl = ref<InstanceType<typeof Menu>>()
-const link = ref({
-  url: '',
-  text: '',
-})
+const { model: link, reset: linkReset } = useRefReset({ url: '', text: '' })
+const { model: selection, reset: posReset } = useRefReset({ from: 0, to: 0 })
 
 function reset() {
-  link.value = {
-    url: '',
-    text: '',
+  linkReset()
+  posReset()
+}
+
+function getSelectedLinkData() {
+  const state = editor?.state
+
+  if (!state) {
+    return
+  }
+
+  const { from, to } = state.selection
+
+  let linkMark: any
+  let linkText = ''
+
+  // We look for the `mark` that is `link` to initialize the link `href` and `text`
+  state.doc.nodesBetween(from - 1, to, node => {
+    if (node.isText) {
+      const mark = node.marks.find(mark => mark.type.name === 'link')
+
+      if (mark) {
+        linkMark = mark
+        linkText = node.text ?? ''
+      }
+    }
+  })
+
+  // If there is no `mark` found (~ we don't extend a link), we use the text from the selection
+  if (!linkText) {
+    linkText = state.doc.textBetween(from, to) ?? ''
+  }
+
+  selection.value = { from, to: from + linkText.length }
+
+  return {
+    text: linkText,
+    href: linkMark?.attrs.href ?? '',
   }
 }
 
 function createLink() {
-  const _editor = toValue(editor)
-
-  if (!_editor) {
+  if (!editor) {
     return
   }
 
-  const { href } = _editor.getAttributes('link') ?? {}
-  const { selection } = _editor.state
-  const linkNode = _editor.view.state.doc.nodeAt(selection.$from.pos)
+  const { text = '', href = '' } = getSelectedLinkData() ?? {}
 
-  link.value.url = href ?? ''
-  link.value.text = linkNode?.text ?? ''
+  link.value.url = href
+  link.value.text = text
 }
 
 function unlink() {
-  toValue(editor)?.chain().focus().unsetLink().run()
+  editor?.chain().focus().unsetLink().run()
   menuEl.value?.hide()
 }
 
 function handleSubmit() {
-  toValue(editor)
-    ?.chain()
-    .focus()
-    .insertContent(
-      `<a href="${link.value.url}" class="link">${link.value.text}</a>&nbsp;`,
-      {
-        parseOptions: {
-          preserveWhitespace: true,
-        },
-      }
-    )
-    .run()
+  const isLink = editor?.isActive('link')
+  const moveTo = selection.value.from + link.value.text.length + 1
+
+  if (isLink) {
+    editor
+      ?.chain()
+      .focus()
+      .extendMarkRange('link')
+      .setLink({ href: link.value.url })
+      .insertContent(link.value.text)
+      .run()
+  } else {
+    editor
+      ?.chain()
+      .focus()
+      .insertContent(
+        `<a href="${link.value.url}" class="link" data-uuid="${uuid}">${link.value.text}</a>&nbsp;`,
+        // { parseOptions: { preserveWhitespace: true } },
+      )
+      .run()
+
+    nextTick(() => {
+      editor?.chain().focus().setTextSelection(moveTo).run()
+    })
+  }
 
   menuEl.value?.hide()
 }
@@ -77,13 +121,19 @@ function handleSubmit() {
         p="2"
         label-forced-visibility
         :submit-confirmation="false"
+        no-shortcuts
+        :ui="{ submitClass: '!w-auto', controlsClass: '!border-t-0' }"
+        :submit-btn-props="{ size: 'sm', noUppercase: true }"
         @submit="handleSubmit"
       >
         <template #submit-start>
+          <!-- Cancel link -->
           <Btn
             v-if="editor?.isActive('link')"
-            preset="CLOSE"
-            :label="$t('general.cancel')"
+            :label="$t('general.cancelLink')"
+            size="sm"
+            color="negative"
+            no-uppercase
             @click="unlink"
           />
         </template>

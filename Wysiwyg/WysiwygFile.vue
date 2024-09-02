@@ -1,86 +1,107 @@
 <script lang="ts">
-import { nodeViewProps, NodeViewWrapper } from '@tiptap/vue-3'
+import { NodeViewWrapper, nodeViewProps } from '@tiptap/vue-3'
 
 // Models
-import type { FileModel } from '~/components/FileInput/models/file.model';
-import { filesByFilepathKey } from '~/components/Wysiwyg/provide/wysiwyg.provide';
+import { FileModel } from '~/components/FileInput/models/file.model'
+
+// Injections
+import { wysiwygModelKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
+
+// Functions
+import { useWysiwygUtils } from '~/components/Wysiwyg/functions/useWysiwygUtils'
+
+// Store
+import { useWysiwygStore } from '~/components/Wysiwyg/wysiwyg.store'
 
 export default {
   components: { NodeViewWrapper },
   props: nodeViewProps,
 
   setup(props) {
-    const { files: deepFiles } = useFiles()
+    // Utils
+    const { removeElement } = useWysiwygUtils()
+    const wysiwygStore = useWysiwygStore()
+    const { editor, filesByPath } = storeToRefs(wysiwygStore)
+
+    // Layout
+    const model = injectStrict(wysiwygModelKey)
+    const { files } = useFiles()
     const { handleRequest } = useRequest()
     const uuid = props.node.attrs.uuid
-    const self = getCurrentInstance()
-    const providedData = inject<IItem>('providedData')
-    const removeElement = inject<Function>('removeElement')
-    const syncFilesHTML = inject<Function>('syncFilesHTML')
-
-    // Files provided through the Wysiwyg component
-    const injectedFiles = inject(filesByFilepathKey, ref({}))
+    const filepath = props.node.attrs.filepath
 
     // New files uploaded through and grouped by the `uuid`
-    const componentData = providedData?.[uuid]
+    const componentData = wysiwygStore.providedData[uuid]
 
-    const files = computed(() => {
-      const uploadedFilesPaths = props.node.attrs.files
-        ?.split('__|__')
-        .map(trim)
-        .filter(Boolean) as string[]
+    const isEditable = computed(() => editor.value?.isEditable)
 
-      const uploadedFiles = uploadedFilesPaths
-        .map(id => injectedFiles.value?.[id])
-        .filter(Boolean) as IFile[]
+    const file = computed(() => {
+      const _filePath = filepath as keyof typeof filesByPath.value
+      const uploadedFile = filesByPath.value[_filePath]
+      const providedFile = componentData?.file as FileModel | IFile | undefined
 
-      return [
-        ...(componentData?.files?.filter(Boolean) ?? []),
-        ...uploadedFiles
-      ] as Array<IFile | FileModel>
+      return uploadedFile || providedFile
     })
 
-    function handleRemoveElement(idx: number) {
-      const file = files.value?.[idx] as FileModel
-
-      if (!file) {
-        return
+    function handleRemove() {
+      if (file.value instanceof FileModel && file.value.isUploaded) {
+        file.value.delete(handleRequest)
+      } else if (file.value instanceof FileModel && !file.value.isUploaded) {
+        file.value.cancelUpload?.()
       }
 
-      componentData!.files = files.value?.filter((_, i: number) => i !== idx)
+      removeElement?.(`span[uuid="${uuid}"]`, model)
+    }
 
-      file.delete(handleRequest)
-
-      if (!providedData![uuid].files.length) {
-        removeElement?.(self?.vnode.el)
+    /**
+     * Once files are uploaded, its path needs to be updated in the editor,
+     * this method does exactly that
+     */
+    function syncFilesHTML() {
+      if (!editor.value) {
+        return ''
       }
 
+      const parser = new DOMParser()
+      const doc = parser.parseFromString(editor.value?.getHTML(), 'text/html')
+
+      const fileNodes = doc.querySelectorAll('[data-type="wysiwyg-file"]')
+
+      Array.from(fileNodes).forEach(node => {
+        const nodeUUID = node.getAttribute('uuid') ?? ''
+
+        const file = wysiwygStore.providedData[nodeUUID]?.file as FileModel
+        const filepath = file?.uploadedFile?.filepath
+
+        if (filepath) {
+          node.setAttribute('filepath', filepath)
+        }
+      })
+
+      model.value = doc.body.innerHTML
+      editor.value?.chain().setContent(doc.body.innerHTML).run()
     }
 
     // When this component is mounted (~ an image is inserted into the Wysiwyg editor, upload the files)
     onMounted(() => {
       nextTick(() => {
-        files.value.forEach(file => {
-          if ('id' in file) {
-            return
-          }
-
-          file.upload?.(handleRequest).then(() => syncFilesHTML?.())
-        })
+        if (file.value instanceof FileModel && !file.value.isUploaded) {
+          file.value.upload?.(handleRequest).then(() => syncFilesHTML?.())
+        }
       })
     })
 
-    syncRef(files, deepFiles, { direction: 'both', deep: true })
-
-    // onBeforeUnmount(() => {
-    //   files.value.forEach((file: FileModel) => file.delete(handleRequest))
-    // })
+    whenever(file, file => {
+      files.value = [file]
+    }, { deep: true, immediate: true })
 
     return {
-      files,
-      removeElement,
+      isEditable,
+      uuid,
+      filepath,
+      file,
       componentData,
-      handleRemoveElement,
+      handleRemove,
     }
   },
 }
@@ -88,25 +109,44 @@ export default {
 
 <template>
   <NodeViewWrapper class="wysiwyg-file">
-    <FilePreview
-      v-for="(file, idx) in files"
-      :key="idx"
+    <!-- File preview -->
+    <FilePreview2
+      v-if="file"
       :file="file"
       data-drag-handle
-      :editable="!('id' in file)"
-      @remove="handleRemoveElement(idx)"
+      :editable="isEditable"
+      @remove="handleRemove"
     />
+
+    <!-- Removed file -->
+    <div
+      v-else
+      data-drag-handle
+      class="file-removed"
+    >
+      <span
+        text="xs"
+        color="negative"
+      >
+        [{{ $t('file.deleted') }}]
+      </span>
+
+      <span
+        text="caption"
+        line-clamp="3"
+      >
+        {{ filepath.split('/').at(-1) }}
+      </span>
+    </div>
   </NodeViewWrapper>
 </template>
 
 <style lang="scss" scoped>
 .wysiwyg-file {
-  @apply cursor-default grid gap-2;
+  @apply inline-block cursor-default m-r-1;
 
-  @apply border-2 border-dashed p-2 rounded-3 relative overflow-auto;
-  @apply dark:border-true-gray-600/50 border-true-gray-300/80;
-  @apply dark:bg-darker bg-white;
-
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  .file-removed {
+    @apply flex flex-col flex-wrap gap-1 max-w-52 p-2 border-1 border-ca border-dotted rounded-custom break-anywhere;
+  }
 }
 </style>

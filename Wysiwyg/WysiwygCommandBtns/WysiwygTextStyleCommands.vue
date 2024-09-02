@@ -1,24 +1,30 @@
 <script setup lang="ts">
-import { editorKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
+// Store
+import { useWysiwygStore } from '~/components/Wysiwyg/wysiwyg.store'
 
-// Layout
-const editor = inject(editorKey)
+// Store
+const { editor } = useWysiwygStore()
 
-// Bold & Italic & Underline
-const isBold = computed(() => toValue(editor)?.isActive('bold'))
-const isItalic = computed(() => toValue(editor)?.isActive('italic'))
-const isUnderline = computed(() => toValue(editor)?.isActive('underline'))
+// Bold & Italic & Underline
+const isBold = computed(() => editor?.isActive('bold'))
+const isItalic = computed(() => editor?.isActive('italic'))
+const isUnderline = computed(() => editor?.isActive('underline'))
+const isStrikethrough = computed(() => editor?.isActive('strike'))
 
 function handleToggleBold() {
-  toValue(editor)?.chain().focus().toggleBold().run()
+  editor?.chain().focus().toggleBold().run()
 }
 
 function handleToggleUnderline() {
-  toValue(editor)?.chain().focus().toggleUnderline().run()
+  editor?.chain().focus().toggleUnderline().run()
 }
 
 function handleToggleItalic() {
-  toValue(editor)?.chain().focus().toggleItalic().run()
+  editor?.chain().focus().toggleItalic().run()
+}
+
+function handleToggleStrikethrough() {
+  editor?.chain().focus().toggleStrike().run()
 }
 </script>
 
@@ -51,6 +57,16 @@ function handleToggleItalic() {
       color="ca"
       :class="{ 'is-active': isUnderline }"
       @click.stop.prevent="handleToggleUnderline"
+      @mousedown.stop.prevent
+    />
+
+    <!-- Strikethrough -->
+    <Btn
+      icon="i-material-symbols:format-strikethrough-rounded"
+      size="sm"
+      color="ca"
+      :class="{ 'is-active': isStrikethrough }"
+      @click.stop.prevent="handleToggleStrikethrough"
       @mousedown.stop.prevent
     />
   </div>

@@ -13,7 +13,7 @@ import { FilterItem } from '~/libs/Shared/models/filter-item'
 import { qbIsActivelyModifyingValuesKey } from '~/components/QueryBuilder/provide/query-builder.provide'
 
 export function useQueryBuilderColumnFilters(
-  props: Pick<IQueryBuilderProps, 'columns'>
+  props: Pick<IQueryBuilderProps, 'columns'>,
 ) {
   const isActivelyModifyingValues = ref(false)
 
@@ -57,7 +57,7 @@ export function useQueryBuilderColumnFilters(
   const qbColumnFilters = ref(columnFilters.value)
   const originalFiltersByField = props.columns.reduce((agg, col) => {
     agg[col.field] = col.filters.map(
-      filter => new FilterItem({ ...filter, format: col.format })
+      filter => new FilterItem({ ...filter, format: col.format, customDbQueryFnc: col.customDbQueryFnc }),
     )
 
     return agg
@@ -82,8 +82,8 @@ export function useQueryBuilderColumnFilters(
       ?.children as IQueryBuilderItem[]
 
     if (
-      !config.table.queryBuilder.showColumnFilters ||
-      !_columnFilters?.length
+      !config.table.queryBuilder.showColumnFilters
+      || !_columnFilters?.length
     ) {
       return
     }
@@ -111,7 +111,7 @@ export function useQueryBuilderColumnFilters(
               ...newColumn,
               comparator: filter.comparator,
               value: filter.value,
-            })
+            }),
           )
         }
       }
@@ -149,7 +149,7 @@ export function useQueryBuilderColumnFilters(
       if (oldIsModifying && !isModifying) {
         syncFilters()
       }
-    }
+    },
   )
 
   return {

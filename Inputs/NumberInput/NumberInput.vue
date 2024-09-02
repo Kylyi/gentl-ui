@@ -19,26 +19,30 @@ const props = withDefaults(defineProps<INumberInputProps>(), {
   fractionDigits: 2,
   inline: undefined,
   labelInside: undefined,
-  // @ts-expect-error Wrong IMask type, will be overriden anyway
-  mask: () => ({ mask: String }),
   required: undefined,
   size: 'md',
   stackLabel: undefined,
-  step: 'auto',
   min: Number.NEGATIVE_INFINITY,
   max: Number.POSITIVE_INFINITY,
+  step: 'auto',
 })
 
 defineEmits<{
   (e: 'update:modelValue', val?: number | undefined | null): void
   (e: 'blur'): void
+  (e: 'focus'): void
+  (e: 'clear'): void
 }>()
 
 // Utils
-const { separators } = useNumber()
+const { separators, parseNumber } = useNumber()
 
 // Mask
 const mask = computed<MaskedNumber>(() => {
+  if (props.mask) {
+    return props.mask as MaskedNumber
+  }
+
   return new MaskedNumber({
     thousandsSeparator: props.noGrouping
       ? ''
@@ -80,69 +84,17 @@ const {
   maskRef: mask,
 })
 
+// Validation
 const { path } = useInputValidationUtils(props)
 
-// Step
-const increment = ref<InstanceType<typeof Btn>>()
-const decrement = ref<InstanceType<typeof Btn>>()
-const modifier = ref<-1 | 1>(1)
+// Layout
+function handlePaste(ev: ClipboardEvent) {
+  const pastedText = ev.clipboardData?.getData('text')
+  const parsedValue = parseNumber(pastedText)
 
-const stepAdjusted = computed(() => {
-  if (!model.value) {
-    return typeof props.step === 'number' ? props.step : 1
+  if (!isNil(parsedValue)) {
+    model.value = parsedValue
   }
-
-  if (props.step !== 'auto') {
-    return props.step || 0
-  }
-
-  if (+model.value <= 200) {
-    return 1
-  } else if (+model.value <= 20000) {
-    return 100
-  } else {
-    return 1000
-  }
-})
-
-const { pause, resume } = useIntervalFn(() => handleStep(), 120, {
-  immediate: false,
-  immediateCallback: true,
-})
-
-function handleStep() {
-  let currentValue = model.value
-
-  if (
-    isNil(currentValue) ||
-    currentValue === '' ||
-    currentValue === props.emptyValue
-  ) {
-    currentValue = 0
-  }
-
-  const nextValue = +currentValue! + stepAdjusted.value * modifier.value
-  model.value = nextValue
-}
-
-function startStep(_: PointerEvent, increment = true) {
-  modifier.value = increment ? 1 : -1
-
-  window.addEventListener('pointerup', stopStep)
-  window.addEventListener('mouseup', stopStep)
-  window.addEventListener('touchend', stopStep)
-  window.addEventListener('touchmove', stopStep)
-  window.addEventListener('touchcancel', stopStep)
-  resume()
-}
-
-function stopStep() {
-  pause()
-  window.removeEventListener('pointerup', stopStep)
-  window.removeEventListener('mouseup', stopStep)
-  window.removeEventListener('touchend', stopStep)
-  window.removeEventListener('touchmove', stopStep)
-  window.removeEventListener('touchcancel', stopStep)
 }
 
 defineExpose({
@@ -191,7 +143,8 @@ defineExpose({
       v-bind="inputProps"
       @focus="handleFocusOrClick"
       @blur="handleBlur"
-    />
+      @paste.stop.prevent="handlePaste"
+    >
 
     <template
       v-if="$slots.append || hasClearableBtn || (!readonly && !disabled)"
@@ -199,7 +152,8 @@ defineExpose({
     >
       <div
         v-if="step || hasClearableBtn || $slots.append"
-        class="number-input__step"
+        class="number-input__append"
+        data-cy="offset-buttons"
         @click="handleFocusOrClick"
       >
         <slot
@@ -227,43 +181,18 @@ defineExpose({
         </Btn>
 
         <!-- Step -->
-        <div
+        <NumberInputStep
           v-if="step && !readonly && !disabled"
-          flex="~ col shrink"
-          w="4"
-        >
-          <Btn
-            ref="increment"
-            tabindex="-1"
-            size="auto"
-            icon="i-bi:caret-up-fill w-4 h-4"
-            color="ca"
-            no-hover-effect
-            touch-none
-            @pointerdown="startStep($event, true)"
-            @mousedown.stop.prevent
-            @click.stop.prevent
-          />
-          <Btn
-            ref="decrement"
-            tabindex="-1"
-            size="auto"
-            icon="i-bi:caret-up-fill rotate-180 w-4 h-4"
-            color="ca"
-            no-hover-effect
-            touch-none
-            @pointerdown="startStep($event, false)"
-            @mousedown.stop.prevent
-            @click.stop.prevent
-          />
-        </div>
+          v-bind="props"
+          v-model="model"
+        />
       </div>
     </template>
   </InputWrapper>
 </template>
 
 <style lang="scss" scoped>
-.number-input__step {
-  --apply: flex gap-x-2 flex-center p-x-2;
+.number-input__append {
+  @apply flex gap-x-2 flex-center p-x-2;
 }
 </style>

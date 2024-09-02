@@ -17,13 +17,13 @@ const hasRows = computed(() => props.rows && props.rows?.length > 0)
     <div
       class="flex flex-center"
       relative
-      min-w="30"
+      w="68"
       backdrop="blur-sm"
+      max-w="80%"
     >
       <LoaderInline
         size="sm"
         bg="white dark:darker"
-        rounded="full"
         h="8"
       />
     </div>
@@ -32,10 +32,10 @@ const hasRows = computed(() => props.rows && props.rows?.length > 0)
 
 <style lang="scss" scoped>
 .loading {
-  --apply: flex flex-center z-1;
+  @apply flex flex-center z-1;
 
   &.is-absolute {
-    --apply: absolute inset-inline-0 bottom-0 h-10;
+    @apply absolute inset-inline-0 bottom-0 h-10;
   }
 }
 </style>

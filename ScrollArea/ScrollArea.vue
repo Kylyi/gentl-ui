@@ -10,12 +10,15 @@ const scrollArea = ref<HTMLDivElement>()
 const ps = ref<PerfectScrollbar>()
 
 onMounted(() => {
-  if (scrollArea.value) {
-    ps.value = new PerfectScrollbar(scrollArea.value, {
-      wheelSpeed: 0.75,
-      ...(props.options || {}),
-    })
-  }
+  // We add timeout to prevent scrollbars to show when waiting for animation
+  setTimeout(() => {
+    if (scrollArea.value) {
+      ps.value = new PerfectScrollbar(scrollArea.value, {
+        wheelSpeed: 0.75,
+        ...(props.options || {}),
+      })
+    }
+  }, 300)
 })
 
 onBeforeUnmount(() => {
@@ -32,7 +35,7 @@ defineExpose({
     if (scrollArea.value) {
       setTimeout(
         () => (scrollArea.value!.scrollTop = scrollArea.value!.scrollHeight),
-        0
+        0,
       )
     }
   },

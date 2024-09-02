@@ -1,104 +1,141 @@
 <script setup lang="ts">
-import { editorKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
+// Types
+import type { IWysiwygProps } from '~/components/Wysiwyg/types/wysiwyg-props.type'
 
-type IProps = {
-  allowLink?: boolean
-  textSize?: string
-}
+// Store
+import { useWysiwygStore } from '~/components/Wysiwyg/wysiwyg.store'
 
-const props = defineProps<IProps>()
-const emits = defineEmits<{
-  (e: 'set-heading', payload: { isHeading: boolean; level?: 4 | 5 | 6 }): void
-  (e: 'toggle-bold'): void
-  (e: 'toggle-italic'): void
-  (e: 'toggle-underline'): void
-  (e: 'text-align', value: string): void
-  (e: 'text-color', value?: string | null): void
-  (e: 'toggle-bulleted-list'): void
-  (e: 'toggle-numbered-list'): void
-  (e: 'insert-gallery'): void
-  (e: 'toggle-task-list'): void
-}>()
+const props = defineProps<IWysiwygProps>()
+
+// Store
+const { isFocused } = storeToRefs(useWysiwygStore())
 
 // Layout
-const editor = inject(editorKey)
+const sinkEl = ref<HTMLDivElement>()
+const hasActiveMenu = ref(false)
 
-const canUseImage = computed(() => {
-  return toValue(editor)?.options.extensions.find(ext => ext.name === 'mage')
+const isEditable = computed(() => !props.readonly && !props.disabled)
+
+const isSinkVisible = computed(() => {
+  if (props.noSink || !isEditable.value) {
+    return false
+  }
+
+  return isFocused.value || props.sinkAlwaysVisible || hasActiveMenu.value
 })
+
+useMutationObserver(
+  sinkEl,
+  records => {
+    hasActiveMenu.value = records.some(record => {
+      const targetClasslist = (record.target as HTMLElement).classList
+
+      return targetClasslist.contains('is-menu-active') || targetClasslist.contains('is-dialog-active')
+    })
+  },
+  { subtree: true, attributeFilter: ['class'] },
+)
 </script>
 
 <template>
-  <HorizontalScroller
-    class="wysiwyg-sink"
-    content-class="gap-x-1 p-1"
+  <div
+    v-if="isSinkVisible"
+    ref="sinkEl"
+    class="wysiwyg-sink__wrapper"
+    @click.stop.prevent
+    @mousedown.stop.prevent
   >
-    <WysiwygTextSizeSimpleCommands />
+    <slot name="prepend" />
 
-    <Separator
-      vertical
-      inset
-    />
+    <HorizontalScroller
+      class="wysiwyg-sink"
+      content-class="gap-x-1 p-1"
+    >
+      <WysiwygTextSizeSimpleCommands />
 
-    <WysiwygTextColorCommands />
+      <Separator
+        vertical
+        inset
+      />
 
-    <Separator
-      vertical
-      inset
-    />
+      <WysiwygTextColorCommands />
 
-    <WysiwygTextStyleCommands />
+      <Separator
+        vertical
+        inset
+      />
 
-    <Separator
-      vertical
-      spaced
-      inset
-    />
+      <WysiwygTextStyleCommands />
 
-    <WysiwygTextAlignmentCommands />
-
-    <Separator
-      vertical
-      spaced
-      inset
-    />
-
-    <WysiwygListCommands />
-
-    <template v-if="allowLink">
       <Separator
         vertical
         spaced
         inset
       />
 
-      <WysiwygLink />
+      <WysiwygTextAlignmentCommands />
 
-      <WysiwygFileCommandBtn />
-    </template>
-
-    <template v-if="canUseImage">
       <Separator
         vertical
         spaced
         inset
       />
 
-      <WysiwygImg />
-    </template>
-  </HorizontalScroller>
+      <WysiwygListCommands />
+
+      <template v-if="allowLink || allowFileUpload">
+        <Separator
+          vertical
+          spaced
+          inset
+        />
+
+        <WysiwygLink v-if="allowLink" />
+
+        <WysiwygFileCommandBtn v-if="allowFileUpload" />
+      </template>
+
+      <Separator
+        vertical
+        spaced
+        inset
+      />
+
+      <WysiwygDetailsCommandBtn />
+
+      <template v-if="allowImage">
+        <Separator
+          vertical
+          spaced
+          inset
+        />
+
+        <WysiwygImg />
+      </template>
+    </HorizontalScroller>
+
+    <slot name="append" />
+  </div>
 </template>
 
 <style lang="scss" scoped>
 .wysiwyg-sink {
-  --apply: z-$zLogo dark:bg-darker bg-white;
+  @apply z-$zLogo dark:bg-darker bg-white;
+
+  &__wrapper {
+    @apply flex gap-2 items-center right-0 w-full shrink-0;
+
+    &.is-floating {
+      @apply absolute -top-40px;
+    }
+  }
 
   :deep(.btn) {
-    --apply: border-1 border-transparent;
+    @apply border-1 border-transparent;
   }
 
   :deep(.is-active) {
-    --apply: border-primary color-primary;
+    @apply border-primary color-primary;
   }
 }
 </style>

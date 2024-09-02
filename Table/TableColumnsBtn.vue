@@ -30,7 +30,7 @@ type IProps = {
 } & IBtnProps
 
 const props = defineProps<IProps>()
-const emits = defineEmits<{
+defineEmits<{
   (e: 'update:columns', columns: TableColumn[]): void
 }>()
 
@@ -46,7 +46,11 @@ const { getBtnProps } = useBtnUtils()
 
 // Layout
 const dialogEl = ref<InstanceType<typeof Dialog>>()
-const columns = useVModel(props, 'columns', emits)
+// const columns = useVModel(props, 'columns', emits)
+const { model: columns, syncToParent, reset } = useRefReset(
+  () => props.columns,
+  { autoSyncFromParent: true },
+)
 
 const { cloned: clonedColumns } = useCloned(columns, {
   clone: cols => cols.map((col: TableColumn) => new TableColumn(col)),
@@ -55,13 +59,17 @@ const { cloned: clonedColumns } = useCloned(columns, {
 const nonHelperCols = computed({
   get() {
     return clonedColumns.value.filter(
-      col => !col.isHelperCol && !!col.selectable
+      col => !col.isHelperCol && !!col.selectable,
     )
   },
   set(columns: TableColumn[]) {
-    const helpersCols = clonedColumns.value.filter(col => col.isHelperCol)
+    const helpersCols = clonedColumns.value.filter(col => col.isHelperCol || !col.selectable)
 
-    clonedColumns.value = [...helpersCols, ...columns]
+    helpersCols.forEach(col => {
+      columns = columns.toSpliced(col._internalSort ?? 0, 0, col)
+    })
+
+    clonedColumns.value = columns
     setTableState(storageKey.value, { columns: clonedColumns.value })
   },
 })
@@ -92,14 +100,14 @@ function handleSortEnd() {
 // Column visibility
 function handleColumnVisibilityChange(
   val: boolean | undefined,
-  col: TableColumn
+  col: TableColumn,
 ) {
   col.hidden = val
 }
 
 function handleColumnVisibilityForAll(
   val: boolean,
-  colsFiltered: Array<IGroupRow | IItem>
+  colsFiltered: Array<IGroupRow | IItem>,
 ) {
   colsFiltered.forEach(col => {
     if (!('isGroup' in col)) {
@@ -123,6 +131,7 @@ function handleMoveUp(col: TableColumn) {
 // Apply changes
 async function handleApplyChanges() {
   columns.value = clonedColumns.value.map(col => new TableColumn(col))
+  syncToParent()
   await nextTick()
 
   handleTableResize()
@@ -159,6 +168,7 @@ async function handleApplyChanges() {
       max-h="6/10"
       h="auto"
       header-class="p-l-3 p-r-1 h-auto"
+      @before-hide="reset"
     >
       <template #title>
         <div
@@ -202,7 +212,9 @@ async function handleApplyChanges() {
             p="t-2"
           >
             <div flex="~ gap-2 items-center">
-              <h6 font="bold">{{ $t('table.availableMetrics') }}</h6>
+              <h6 font="bold">
+                {{ $t('table.availableMetrics') }}
+              </h6>
               <span text="caption">({{ nonHelperCols.length }})</span>
             </div>
             <span text="caption">{{ $t('table.selectVisibleColumns') }}</span>
@@ -278,7 +290,9 @@ async function handleApplyChanges() {
             p="t-2"
           >
             <div flex="~ gap-2 items-center">
-              <h6 font="bold">{{ $t('table.columnsSelected') }}</h6>
+              <h6 font="bold">
+                {{ $t('table.columnsSelected') }}
+              </h6>
               <span text="caption">({{ filteredCols.length }})</span>
             </div>
 

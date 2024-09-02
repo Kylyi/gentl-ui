@@ -23,10 +23,7 @@ export function useNumber(localeRef?: MaybeRefOrGetter<string>) {
   const summaryMetricOptions = computed(() => {
     return [
       { id: SummaryEnum.SUM, label: t(`summaryEnum.${SummaryEnum.SUM}`) },
-      {
-        id: SummaryEnum.AVERAGE,
-        label: t(`summaryEnum.${SummaryEnum.AVERAGE}`),
-      },
+      { id: SummaryEnum.AVERAGE, label: t(`summaryEnum.${SummaryEnum.AVERAGE}`) },
       { id: SummaryEnum.MEDIAN, label: t(`summaryEnum.${SummaryEnum.MEDIAN}`) },
       { id: SummaryEnum.COUNT, label: t(`summaryEnum.${SummaryEnum.COUNT}`) },
     ]
@@ -34,6 +31,8 @@ export function useNumber(localeRef?: MaybeRefOrGetter<string>) {
 
   /**
    * Parses a number from a string
+   *
+   * Respects locale (thousand separator, decimal separator)
    */
   const parseNumber = (valueRef?: MaybeRefOrGetter<string | number | null>) => {
     const val = String(toValue(valueRef))
@@ -58,7 +57,7 @@ export function useNumber(localeRef?: MaybeRefOrGetter<string>) {
    */
   const formatNumber = (
     valueRef?: MaybeRefOrGetter<number | string | null>,
-    options: INumberOptions = {}
+    options: INumberOptions = {},
   ) => {
     const val = toValue(valueRef)
     if (val === null || val === undefined) {
@@ -70,6 +69,31 @@ export function useNumber(localeRef?: MaybeRefOrGetter<string>) {
     const usedIntlOptions = intlOptions || defaultIntlOptions
 
     return Intl.NumberFormat(usedLocale, usedIntlOptions).format(+val)
+  }
+
+  /**
+   * Formats currency
+   */
+  function formatCurrency(
+    valueRef?: MaybeRefOrGetter<number | string | null>,
+    currency?: string,
+    options: INumberOptions = {},
+  ) {
+    const val = toValue(valueRef)
+
+    if (val === null || val === undefined) {
+      return ''
+    }
+
+    const formattedNumber = formatNumber(valueRef, {
+      ...options,
+      intlOptions: {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      },
+    })
+
+    return currency ? `${formattedNumber} ${currency}` : formattedNumber
   }
 
   /**
@@ -108,5 +132,6 @@ export function useNumber(localeRef?: MaybeRefOrGetter<string>) {
     parseNumber,
     formatNumber,
     formatBytes,
+    formatCurrency,
   }
 }

@@ -124,11 +124,13 @@ function commitHide() {
 
   const referenceEl = floatingReferenceEl.value as HTMLElement
 
-  referenceEl.classList.remove('is-menu-active')
-  referenceEl.style.zIndex = referenceElZIndex.value!
+  if (referenceEl instanceof Element) {
+    referenceEl.classList.remove('is-menu-active')
+    referenceEl.style.zIndex = referenceElZIndex.value!
 
-  if (isReferenceElTransparent.value && !props.noUplift) {
-    referenceEl.style.backgroundColor = ''
+    if (isReferenceElTransparent.value && !props.noUplift) {
+      referenceEl.style.backgroundColor = ''
+    }
   }
 
   emits('hide')
@@ -140,13 +142,17 @@ whenever(model, isVisible => {
   debouncedModel.value = isVisible
 
   const referenceEl = floatingReferenceEl.value as HTMLElement
+
+  if (!(referenceEl instanceof Element)) {
+    return
+  }
+
   const referenceElStyle = getComputedStyle(referenceEl as any)
 
   referenceEl.classList.add('is-menu-active')
   referenceElZIndex.value = referenceElStyle.zIndex
 
-  isReferenceElTransparent.value =
-    referenceElStyle.backgroundColor === 'rgba(0, 0, 0, 0)'
+  isReferenceElTransparent.value = referenceElStyle.backgroundColor === 'rgba(0, 0, 0, 0)'
 
   if ((!props.noOverlay || !props.noUplift) && !props.cover) {
     referenceEl.style.zIndex = '3000'
@@ -179,10 +185,11 @@ const {
 watch(menuPlacement, placement => emits('placement', placement))
 
 // We react to page resize/scroll to reposition the floating UI
-// @ts-expect-error Bad element type
-const { x: pageX, y: pageY } = useElementBounding(referenceEl, {
-  windowResize: true,
-})
+const {
+  x: pageX,
+  y: pageY,
+  // @ts-expect-error Bad element type
+} = useElementBounding(referenceEl, { windowResize: true })
 
 if (!props.noMove) {
   watchThrottled([pageX, pageY], update, {
@@ -205,21 +212,17 @@ function handleClickOutside(ev: Event) {
 
   const isTargetBody = targetEl === document.body
   const isPartOfFloatingUI = floatingEl.value?.contains(targetEl)
+  const isPartOfReferenceEl = !props.virtual && (floatingReferenceEl.value as any)!.contains(targetEl)
 
-  const isPartOfReferenceEl =
-    !props.virtual && (floatingReferenceEl.value as any)!.contains(targetEl)
-
-  const lastFloatingElement = document.querySelector(
-    '.floating-element:last-child'
-  )
+  const lastFloatingElement = Array.from(document.querySelectorAll('.floating-element')).pop()
   const isNotifications = !!targetEl.closest('.notifications')
 
   if (
-    !isTargetBody &&
-    !isPartOfFloatingUI &&
-    !isPartOfReferenceEl &&
-    !isNotifications &&
-    lastFloatingElement === floatingEl.value
+    !isTargetBody
+    && !isPartOfFloatingUI
+    && !isPartOfReferenceEl
+    && !isNotifications
+    && lastFloatingElement === floatingEl.value
   ) {
     if (props.persistent) {
       bounce()
@@ -331,10 +334,12 @@ const isOverlayVisible = computed(() => {
 
             <slot name="header-right" />
 
+            <!-- Close -->
             <Btn
               v-if="!noClose"
               preset="CLOSE"
               size="sm"
+              self="start"
               @click="hide"
             />
           </div>
@@ -355,121 +360,118 @@ const isOverlayVisible = computed(() => {
 
 <style lang="scss" scoped>
 .menu {
-  --apply: flex flex-col max-w-95vw max-h-95% rounded-custom z-$zMenu rounded-custom
-    border-1 border-ca
-    bg-white dark:bg-darker;
+  @apply flex flex-col max-w-95vw max-h-95% rounded-custom z-$zMenu
+    rounded-custom border-1 border-ca bg-white dark:bg-darker;
 
-  --apply: shadow-consistent-xs shadow-darker/20;
+  @apply shadow-consistent-xs shadow-darker/20;
 
   &__header {
-    --apply: flex items-center gap-2 p-l-3 p-r-1 p-y-2 rounded-t-custom;
-    --apply: bg-$Menu-title-bg color-$Menu-title-color;
+    @apply flex items-center gap-2 p-l-3 p-r-1 p-y-2 rounded-t-custom;
+    @apply bg-$Menu-title-bg color-$Menu-title-color;
 
     &-title {
-      --apply: grow;
+      @apply grow;
     }
   }
 
   &__arrow {
-    --apply: absolute w-2 h-2 rotate-45 bg-white dark:bg-darker z--1;
+    @apply absolute w-2 h-2 rotate-45 bg-white dark:bg-darker z--1;
   }
 
   &__content {
-    --apply: relative flex flex-col grow gap-1 overflow-auto rounded-custom;
+    @apply relative flex flex-col grow gap-1 overflow-auto rounded-custom;
   }
 }
 
-
 // Arrow placement
 .menu[placement^='top'] > .menu__arrow {
-  --apply: bottom--5px border-b-custom border-r-custom border-ca;
+  @apply bottom--5px border-b-custom border-r-custom border-ca;
 }
 
 .menu[placement^='bottom'] > .menu__arrow {
-  --apply: top--5px border-t-custom border-l-custom border-ca;
+  @apply top--5px border-t-custom border-l-custom border-ca;
 }
 
 .menu[placement^='left'] > .menu__arrow {
-  --apply: right--5px border-r-custom border-t-custom border-ca;
+  @apply right--5px border-r-custom border-t-custom border-ca;
 }
 
 .menu[placement^='right'] > .menu__arrow {
-  --apply: left--5px border-l-custom border-b-custom border-ca;
+  @apply left--5px border-l-custom border-b-custom border-ca;
 }
 
 // Transition
 .menu[placement='top'] {
-  --apply: transform-origin-bottom;
+  @apply transform-origin-bottom;
 }
 
 .menu[placement='top-start'] {
-  --apply: transform-origin-bottom-left;
+  @apply transform-origin-bottom-left;
 }
 
 .menu[placement='top-end'] {
-  --apply: transform-origin-bottom-right;
+  @apply transform-origin-bottom-right;
 }
 
 .menu[placement='bottom'] {
-  --apply: transform-origin-top;
+  @apply transform-origin-top;
 }
 
 .menu[placement='bottom-start'] {
-  --apply: transform-origin-top-left;
+  @apply transform-origin-top-left;
 }
 
 .menu[placement='bottom-end'] {
-  --apply: transform-origin-top-right;
+  @apply transform-origin-top-right;
 }
 
 .menu[placement='left'] {
-  --apply: transform-origin-right;
+  @apply transform-origin-right;
 }
 
 .menu[placement='left-start'] {
-  --apply: transform-origin-top-right;
+  @apply transform-origin-top-right;
 }
 
 .menu[placement='left-end'] {
-  --apply: transform-origin-bottom-right;
+  @apply transform-origin-bottom-right;
 }
 
 .menu[placement='right'] {
-  --apply: transform-origin-left;
+  @apply transform-origin-left;
 }
 
 .menu[placement='right-start'] {
-  --apply: transform-origin-top-left;
-}s
-
-.menu[placement='right-end'] {
-  --apply: transform-origin-bottom-left;
+  @apply transform-origin-top-left;
+}
+s .menu[placement='right-end'] {
+  @apply transform-origin-bottom-left;
 }
 .menu.is-cover {
-  --apply: transform-origin-center;
+  @apply transform-origin-center;
 }
-
 
 .v-enter-active,
 .v-leave-active {
-  --apply: pointer-events-none;
-  transition: opacity 0.3s ease,
-              transform 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+  @apply pointer-events-none;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
 // .v-enter-from,
 // .v-leave-to {
-//   --apply: opacity-0 scale-100;
+//   @apply opacity-0 scale-100;
 // }
 
 // Backdrop
 .backdrop {
-  --apply: fixed inset-0 z-$zBackdrop transition-background-color
+  @apply fixed inset-0 z-$zBackdrop transition-background-color
     duration-$transitionDuration ease bg-transparent;
 }
 
 .backdrop.is-open {
-  --apply: bg-darker/70;
+  @apply bg-darker/70;
 }
 
 // Bounce
@@ -490,11 +492,11 @@ const isOverlayVisible = computed(() => {
 // Selector
 .selector.is-menu-width-matched {
   &[placement^='top'] {
-    --apply: rounded-b-0;
+    @apply rounded-b-0;
   }
 
   &[placement^='bottom'] {
-    --apply: rounded-t-0;
+    @apply rounded-t-0;
   }
 }
 </style>

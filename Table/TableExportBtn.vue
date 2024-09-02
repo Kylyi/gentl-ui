@@ -8,9 +8,10 @@ import {
 
 type IProps = {
   loading?: boolean
+  formatName?: () => string
 }
 
-defineProps<IProps>()
+const props = defineProps<IProps>()
 
 // Injections
 const tableColumns = injectStrict(tableNonHelperColumnsKey)
@@ -22,6 +23,7 @@ async function handleExport(exportFormat: 'xlsx' | 'csv') {
   await handleTableExport({
     exportFormat,
     columns: toValue(tableColumns),
+    formatName: props.formatName,
   })
 }
 </script>
@@ -39,7 +41,7 @@ async function handleExport(exportFormat: 'xlsx' | 'csv') {
     <div class="export-btn__label">
       {{ $t('table.export', 1) }}
 
-      <div class="i-line-md:chevron-small-right rotate-90" />
+      <div class="i-flowbite:chevron-right-outline rotate-90" />
     </div>
 
     <Menu>

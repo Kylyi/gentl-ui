@@ -1,3 +1,5 @@
+import type { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
+
 export type IValueFormatter = {
   value: any
   previousValue?: any
@@ -42,4 +44,13 @@ export type IValueFormatter = {
   resolveEnums?: {
     translationKey: string
   }
+
+  /**
+   * In some cases, we need to also provide the comparator because some of the
+   * data types might support multiple value-resolving
+   *
+   * For example, the `date` data type can be either a regular date for all
+   * comparators EXCEPT for `AGO` and `UNTIL` when it's actually a simple string
+   */
+  comparator?: ComparatorEnum
 }

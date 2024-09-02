@@ -50,7 +50,11 @@ const classes = computed(() => {
     </div>
 
     <!-- Input -->
-    <div class="input-wrapper__regular-input input-wrapper__focusable">
+    <div
+      class="input-wrapper__regular-input input-wrapper__focusable"
+      :class="ui?.inputInnerContainerClass"
+      :style="ui?.inputInnerContainerStyle"
+    >
       <slot name="input" />
     </div>
 
@@ -74,7 +78,7 @@ const classes = computed(() => {
 
 <style lang="scss" scoped>
 .input-wrapper__regular {
-  --apply: grid items-center rounded-custom;
+  @apply grid items-center rounded-$borderRadius;
 
   // Without label
   grid-template-areas:
@@ -95,18 +99,18 @@ const classes = computed(() => {
   }
 
   .input-wrapper__regular-input {
-    --apply: relative flex overflow-auto;
+    @apply relative flex overflow-auto;
     grid-area: input;
   }
 
   .input-wrapper__regular-label {
-    --apply: self-start relative fit;
+    @apply self-start relative fit;
     grid-column: 2 / 5;
     grid-row: 1 / 3;
   }
 
   .input-wrapper__regular-prepend {
-    --apply: fit flex flex-center;
+    @apply fit flex flex-center;
     grid-area: prepend;
   }
 
@@ -115,12 +119,12 @@ const classes = computed(() => {
   }
 
   .input-wrapper__regular-append {
-    --apply: fit flex flex-center;
+    @apply fit flex flex-center;
     grid-area: append;
   }
 
   .input-wrapper__regular-error {
-    --apply: flex flex-col p-x-1;
+    @apply flex flex-col p-x-1;
     grid-area: error;
   }
 }
@@ -132,7 +136,7 @@ const classes = computed(() => {
   grid-row: 1 / 2;
   transition: border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
-  --apply: fit border-custom rounded-custom pointer-events-none border-ca
+  @apply fit border-custom rounded-$borderRadius pointer-events-none border-ca
     bg-$Input-wrapper-bg;
 }
 
@@ -143,27 +147,27 @@ const classes = computed(() => {
 
 .input-wrapper__regular:focus-within {
   .input-wrapper__regular-border {
-    --apply: border-$borderColor;
+    @apply border-$borderColor;
   }
 }
 
 .input-wrapper__regular.has-errors > .input-wrapper__regular-border {
-  --apply: border-negative;
+  @apply border-negative;
 }
 
 .input-wrapper__regular.is-readonly > .input-wrapper__regular-border {
-  --apply: border-dashed;
+  @apply border-dashed;
 }
 
 .input-wrapper__regular.is-disabled {
-  --apply: opacity-80 cursor-not-allowed;
+  @apply opacity-80 cursor-not-allowed;
 
   :slotted(.control) {
-    --apply: '!cursor-not-allowed';
+    @apply '!cursor-not-allowed';
   }
 }
 
 .input-wrapper__regular:not(.has-border) .input-wrapper__regular-border {
-  --apply: border-none;
+  @apply border-none;
 }
 </style>

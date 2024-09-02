@@ -15,8 +15,7 @@ import Menu from '~/components/Menu/Menu.vue'
 
 type IProps = {
   breakpoint?: keyof typeof BREAKPOINTS
-} & IDialogProps &
-  IMenuProps
+} & IDialogProps & IMenuProps
 
 const props = withDefaults(defineProps<IProps>(), {
   breakpoint: 'sm',
@@ -63,9 +62,10 @@ defineExpose({
   <Component
     :is="isMenu ? Menu : Dialog"
     ref="menuProxyEl"
-    v-model:no-overlay="isMenu"
     v-bind="$props"
     v-model="model"
+    :no-overlay="isMenu"
+    h="auto"
     @hide="emits('hide')"
     @show="emits('show')"
     @before-hide="emits('beforeHide')"

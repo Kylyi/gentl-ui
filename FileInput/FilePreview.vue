@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Models
-import type { FileModel } from '~/components/FileInput/models/file.model'
+import { FileModel } from '~/components/FileInput/models/file.model'
 
 // Functions
 import { useNumber } from '~/components/Inputs/NumberInput/functions/useNumber'
@@ -13,6 +13,7 @@ type IProps = {
   editable?: boolean
   file: FileModel | IFile
   noDownloadButton?: boolean
+  fileDownloadTitle?: string
 }
 
 const props = defineProps<IProps>()
@@ -25,15 +26,13 @@ const { formatNumber, formatBytes } = useNumber()
 const { getLocalImageUrl } = useImages()
 
 const icon = computed(() => {
-  const icon =
-    ICON_BY_FILE_TYPE[props.file.type as keyof typeof ICON_BY_FILE_TYPE] ||
-    'i-bi:file-image'
+  const icon = ICON_BY_FILE_TYPE[props.file.type as keyof typeof ICON_BY_FILE_TYPE]
+    || 'i-solar:file-linear'
 
   return icon
 })
 
 const imageUrl = computed(() => {
-  const isUploadedFile = 'id' in props.file
   const PREVIEWABLE_IMAGE_TYPES = [
     'image/jpeg',
     'image/jpg',
@@ -43,23 +42,25 @@ const imageUrl = computed(() => {
     'image/webp',
     'image/bmp',
   ]
-  const isImageFile = PREVIEWABLE_IMAGE_TYPES.includes(props.file.type)
+  const isImageFile = PREVIEWABLE_IMAGE_TYPES.includes(props.file.type ?? '')
 
-  if (isUploadedFile && isImageFile) {
-    return getLocalImageUrl(props.file.path)
-  } else if (!isUploadedFile && isImageFile) {
-    return URL.createObjectURL(props.file.file)
+  if (!isImageFile) {
+    return null
   }
 
-  return null
+  if (props.file instanceof FileModel) {
+    return URL.createObjectURL(props.file.file)
+  } else {
+    return getLocalImageUrl(props.file.path)
+  }
 })
 </script>
 
 <template>
   <div class="file-preview">
-    <div class="file-preview--header">
+    <div class="file-preview__header">
       <span class="file-preview__filename">
-        {{ file?.name }}
+        {{ file.name }}
       </span>
 
       <Btn
@@ -71,13 +72,13 @@ const imageUrl = computed(() => {
       />
     </div>
 
-    <div class="file-preview--image">
+    <div class="file-preview__image">
       <img
         v-if="imageUrl"
         :src="imageUrl"
         :alt="file.name"
         height="100"
-      />
+      >
 
       <div
         v-else
@@ -89,7 +90,7 @@ const imageUrl = computed(() => {
 
     <div
       v-if="!noDownloadButton"
-      class="file-preview--download rounded-b-2 overflow-hidden"
+      class="file-preview__download rounded-b-2 overflow-hidden"
     >
       <!-- Download file -->
       <Btn
@@ -97,7 +98,7 @@ const imageUrl = computed(() => {
         w-full
         size="sm"
         class="!rounded-t-0"
-        :label="$t('file.download')"
+        :label="fileDownloadTitle ?? $t('file.download')"
         @click.stop.prevent="handleDownloadFile(file, { url: downloadUrl })"
       />
 
@@ -115,7 +116,7 @@ const imageUrl = computed(() => {
       <div
         v-else-if="!file.isUploading && !file.isUploaded"
         :label="$t('file.added')"
-        class="flex flex-center rounded-t-0 w-full h-8 bg-blue-50 text-caption text-xs"
+        class="flex flex-center rounded-t-0 w-full h-8 bg-blue-50 dark:bg-dark text-caption text-xs rounded-custom"
       >
         {{ formatBytes(file.file.size) }}
       </div>
@@ -132,9 +133,7 @@ const imageUrl = computed(() => {
       <!-- Uploading - Progress bar -->
       <ProgressBar
         v-else
-        :label="
-          progress => `${$t('file.uploading')}... (${formatNumber(progress)}%)`
-        "
+        :label="progress => `${$t('file.uploading')}... (${formatNumber(progress)}%)`"
         :progress="file.uploadProgress"
         rounded="b-2"
       />
@@ -144,29 +143,30 @@ const imageUrl = computed(() => {
 
 <style lang="scss" scoped>
 .file-preview {
-  --apply: grid gap-2 fit items-center border-1 border-dotted rounded-3
-    border-ca color-ca;
+  @apply grid gap-2 fit items-center border-1 border-dotted rounded-3
+    border-ca color-ca h-auto;
 
   grid-template-rows: auto 1fr auto;
 
   &__filename {
-    --apply: self-center text-caption line-clamp-2 p-y-1 break-words;
+    @apply self-center text-caption line-clamp-2 m-y-1 break-words;
   }
 
-  &--header {
-    --apply: flex flex-row gap-x-2 p-x-2 w-full justify-between p-t-1 p-b-2 overflow-auto;
+  &__header {
+    @apply flex flex-row gap-x-2 p-x-2 w-full justify-between p-t-1 p-b-2
+      overflow-auto;
   }
 
-  &--image {
-    --apply: flex flex-center p-b-4 p-x-3;
+  &__image {
+    @apply flex flex-center p-b-4 p-x-3;
 
     img {
-      --apply: rounded-3 object-cover object-center h-20;
+      @apply rounded-3 object-cover object-center h-20;
     }
   }
 
   &:hover {
-    --apply: shadow-consistent-xs shadow-ca color-dark dark:color-light;
+    @apply shadow-consistent-xs shadow-ca color-dark dark:color-light;
   }
 }
 </style>

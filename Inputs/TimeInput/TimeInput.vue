@@ -30,6 +30,7 @@ defineEmits<{
   (e: 'update:modelValue', val?: Datetime): void
   (e: 'validation-reset', val?: string | undefined | null): void
   (e: 'blur'): void
+  (e: 'clear'): void
 }>()
 
 // Utils
@@ -274,12 +275,12 @@ defineExpose({
       @focus="handleFocusOrClick"
       @input="handleInput"
       @blur="handleBlur"
-    />
+    >
 
     <template #append>
       <div
         v-if="$slots.append || hasClearableBtn || (!readonly && !disabled)"
-        flex="~ gap-x-2 center"
+        flex="~ gap-x-1 center"
         @click="handleFocusOrClick"
       >
         <slot

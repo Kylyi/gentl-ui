@@ -2,7 +2,7 @@
 import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
 
 // Models
-import { TableColumn } from '~/components/Table/models/table-column.model'
+import type { TableColumn } from '~/components/Table/models/table-column.model'
 
 export type IQueryBuilderProps = {
   /**
@@ -19,6 +19,11 @@ export type IQueryBuilderProps = {
    * The actual items
    */
   items: IQueryBuilderRow[]
+
+  /**
+   * The maximum level of the query builder
+   */
+  maxLevel?: number
 
   /**
    * Whether to initialize the query builder with and empty group

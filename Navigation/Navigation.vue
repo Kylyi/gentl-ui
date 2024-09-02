@@ -28,11 +28,13 @@ const leftDrawer = inject('leftDrawer', ref(false))
 const isInitialized = ref(false)
 const navigationEl = ref<HTMLElement>()
 
+const hasAccountBtn = computed(() => !props.noAccountBtn)
+
 // Scroll utils
 const lastScrollDirection = ref<'up' | 'down'>('down')
 const diff = ref(0)
 
-const { arrivedState, y } = useScroll(() => (process.client ? window : null), {
+const { arrivedState, y } = useScroll(() => (import.meta.client ? window : null), {
   throttle: 10,
 })
 
@@ -61,16 +63,16 @@ const isNavigationHidden = computed(() => {
     return false
   }
 
-  const hasScrollerMoreThanNavigationHeight =
-    y.value >= navigationEl.value.offsetHeight
+  const hasScrollerMoreThanNavigationHeight
+    = y.value >= navigationEl.value.offsetHeight
   const hasScrolledDown = lastScrollDirection.value === 'down'
   const hasScrolledUpEnough = !(
     diff.value > SCROLL_TRIGGER_PX && lastScrollDirection.value === 'up'
   )
 
   return (
-    hasScrollerMoreThanNavigationHeight &&
-    (hasScrolledDown || hasScrolledUpEnough)
+    hasScrollerMoreThanNavigationHeight
+    && (hasScrolledDown || hasScrolledUpEnough)
   )
 })
 
@@ -111,7 +113,7 @@ onMounted(() => {
         <slot name="actions">
           <ThemeToggle />
           <LocaleSwitch />
-          <AccountBtn v-if="!noAccountBtn" />
+          <AccountBtn v-if="hasAccountBtn" />
         </slot>
 
         <slot name="append-actions" />
@@ -126,36 +128,36 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 header {
-  --apply: relative top-0 inset-inline-0 transition-transform ease-linear;
+  @apply relative top-0 inset-inline-0 transition-transform ease-linear;
 
   &.is-hidden {
-    --apply: -translate-y-100%;
+    @apply -translate-y-100%;
   }
 
   &.is-initialized {
-    --apply: fixed;
+    @apply fixed;
   }
 
   &.has-shadow:not(:has(~ main .has-breadcrumbs)) {
-    --apply: shadow-consistent shadow-ca;
+    @apply shadow-consistent shadow-ca;
   }
 
   .toolbar {
-    --apply: flex flex-gap-1.5 self-start h-$navigation items-center min-h-40px
+    @apply flex flex-gap-1.5 self-start h-$navigation items-center min-h-40px
       bg-white dark:bg-darker self-center p-x-2 rounded-full;
 
     .environment {
-      --apply: absolute left-50% -translate-x-1/2 p-y-1 p-x-2 color-white rounded-custom
+      @apply absolute left-50% -translate-x-1/2 p-y-1 p-x-2 color-white rounded-custom
         border-2 border-white;
     }
   }
 }
 
 .navigation {
-  --apply: w-full flex flex-gap-2 p-x-1;
+  @apply w-full flex flex-gap-2 p-x-1;
 
   &-wrapper {
-    --apply: flex flex-col justify-center bg-$Navigation-bg min-h-$navHeight;
+    @apply flex flex-col justify-center bg-$Navigation-bg min-h-$navHeight;
   }
 }
 </style>

@@ -1,5 +1,5 @@
-import { type CSSProperties } from 'vue'
-import { type Required } from 'utility-types'
+import type { CSSProperties } from 'vue'
+import type { Required } from 'utility-types'
 import { config } from '~/components/config/components-config'
 
 // Types
@@ -12,7 +12,7 @@ import type {
 
 // Models
 import { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
-import { FilterItem } from '~/libs/Shared/models/filter-item'
+import type { FilterItem } from '~/libs/Shared/models/filter-item'
 
 // Functions
 import { useRenderTemporaryTableCell } from '~/components/Table/functions/useRenderTemporaryTableCell'
@@ -30,7 +30,6 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   dataType: ExtendedDataType = 'string'
   label: string
   width: number | string = 1
-  align: 'left' | 'center' | 'right' = 'left'
   field: ObjectKey<T>
   hideLabel?: boolean
   noFilters?: boolean
@@ -38,6 +37,16 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   reorderable = true
   resizable = true
   sortable = true
+
+  /**
+   * Whether the column is local (ie. not part of the database)
+   */
+  local?: boolean
+
+  /**
+   * When true, the column will always be visible in the table
+   */
+  alwaysVisible?: boolean
 
   /**
    * When provided, the `select` will be extended with these fields
@@ -186,7 +195,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   /**
    * When filtering in the filter dropdown, we can use different formatting than in the table
    */
-  filterFormat?: (row: T) => string | number
+  filterFormat?: (row: T) => any
 
   /**
    * Whether to sort options in the filter dropdown
@@ -200,7 +209,12 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   /**
    * Miscellanous data that can be used for anything
    */
-  misc?: Record<string, any>
+  misc?: IItem
+
+  /**
+   * Function to inject the `filterDbQuery` getter to customize it
+   */
+  customDbQueryFnc?: (filterItem: FilterItem<T>, query: IItem) => IItem | undefined
 
   get filterDbQuery() {
     if (!this.filters.length) {
@@ -213,7 +227,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
         return filter.comparator && filter.value.length
       }
       const isNonValueComparator = NON_VALUE_COMPARATORS.includes(
-        filter.comparator
+        filter.comparator,
       )
 
       return filter.comparator && (!isNil(filter.value) || isNonValueComparator)
@@ -258,6 +272,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
       field: this.field,
       direction: this.sort,
       sortOrder: this.sortOrder,
+      filterField: this.filterField,
     }
   }
 
@@ -335,16 +350,22 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
 
         break
 
-      default:
+      case 'string':
+      case 'stringSimple':
         this.comparator = defaultComparator ?? ComparatorEnum.STARTS_WITH
+
+        break
+
+      default:
+        this.comparator = defaultComparator ?? ComparatorEnum.EQUAL
 
         break
     }
 
     // If the column doesn't support the comparator, we set it to the first one
     if (
-      this.comparators &&
-      !this.comparators.includes(this.comparator as ComparatorEnum)
+      this.comparators
+      && !this.comparators.includes(this.comparator as ComparatorEnum)
     ) {
       this.comparator = this.comparators[0]
     }
@@ -380,13 +401,13 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
 
             return agg
           },
-          { labelChars: 0, row: undefined } as Record<string, any>
+          { labelChars: 0, row: undefined } as Record<string, any>,
         )
 
       maxContentWidth = await getCellWidth(
         maxContentRow.row,
         this,
-        slotRenderFnc
+        slotRenderFnc,
       )
     }
 
@@ -409,9 +430,9 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
         tableMinColWidth,
         this.minWidth || 0,
         config.table.columnAutoFit.considerHeader ? labelChars * 8 + 40 : 0, // These numbers are arbitrary
-        maxContentWidth + CELL_PADDING
+        maxContentWidth + CELL_PADDING,
       ),
-      config.table.columnAutoFit.maxColumnWidthChars * 6 + 20 // When autofitting, we don't want to go over some predefined value
+      config.table.columnAutoFit.maxColumnWidthChars * 6 + 20, // When autofitting, we don't want to go over some predefined value
     )
 
     this.setWidth(`${colMinWidth}px`)
@@ -488,7 +509,6 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     this.width = col.width || this.width
     this.originalWidth = col.width || this.width
     this.minWidth = col.minWidth
-    this.align = col.align || this.align
     this.hideLabel = col.hideLabel
     this.noFilters = col.noFilters
     this.sortable = col.sortable ?? true
@@ -502,6 +522,8 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     this.autofitLongestText = col.autofitLongestText ?? true
     this.selectable = col.selectable ?? true
     this.needsFields = col.needsFields
+    this.local = col.local ?? false
+    this.alwaysVisible = col.alwaysVisible ?? false
 
     // Editing
     this.noEdit = col.noEdit
@@ -521,6 +543,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     this.comparator = col.comparator || this.comparator
     this.extraComparators = col.extraComparators
     this.noFilterSort = col.noFilterSort ?? false
+    this.customDbQueryFnc = col.customDbQueryFnc
     this.filterFormat = col.filterFormat
     this.getDistinctData = col.getDistinctData
     this.valueGetter = col.valueGetter ?? this.valueGetter

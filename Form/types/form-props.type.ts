@@ -1,6 +1,6 @@
 import type { IBtnProps } from '~/components/Button/types/btn-props.type'
 
-export interface IFormProps {
+export type IFormProps = {
   /**
    * If true, the form will have a border.
    */
@@ -18,10 +18,10 @@ export interface IFormProps {
    */
   editControls?:
     | {
-        edit?: boolean
-        cancel?: boolean
-      }
-    | true
+      edit?: boolean
+      cancel?: boolean
+    }
+    | boolean
 
   /**
    * Errors to display in the form.

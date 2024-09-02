@@ -92,6 +92,20 @@ export const COMPARATORS_BY_DATATYPE_MAP = defu(
       ComparatorEnum.NOT_IN,
     ],
 
+    // Currency
+    currency: [
+      ComparatorEnum.EQUAL,
+      ComparatorEnum.NOT_EQUAL,
+      ComparatorEnum.GREATER_THAN,
+      ComparatorEnum.GREATER_THAN_OR_EQUAL,
+      ComparatorEnum.LESS_THAN,
+      ComparatorEnum.LESS_THAN_OR_EQUAL,
+      ComparatorEnum.IS_EMPTY,
+      ComparatorEnum.NOT_IS_EMPTY,
+      ComparatorEnum.IN,
+      ComparatorEnum.NOT_IN,
+    ],
+
     // Duration
     duration: [
       ComparatorEnum.EQUAL,
@@ -257,6 +271,20 @@ export const COMPARATORS_BY_DATATYPE_MAP = defu(
       ComparatorEnum.NOT_IS_EMPTY,
     ],
 
+    // Currency
+    currencySimple: [
+      ComparatorEnum.EQUAL,
+      ComparatorEnum.NOT_EQUAL,
+      ComparatorEnum.GREATER_THAN,
+      ComparatorEnum.GREATER_THAN_OR_EQUAL,
+      ComparatorEnum.LESS_THAN,
+      ComparatorEnum.LESS_THAN_OR_EQUAL,
+      ComparatorEnum.IS_EMPTY,
+      ComparatorEnum.NOT_IS_EMPTY,
+      ComparatorEnum.IN,
+      ComparatorEnum.NOT_IN,
+    ],
+
     // Duration
     durationSimple: [
       ComparatorEnum.EQUAL,
@@ -360,5 +388,5 @@ export const COMPARATORS_BY_DATATYPE_MAP = defu(
   },
 
   // App specific
-  config.dataTypes.comparators
+  config.dataTypes.comparators,
 ) satisfies Record<ExtendedDataType, ComparatorEnum[]>

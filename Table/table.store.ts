@@ -27,7 +27,7 @@ export const useTableStore = defineStore('table', () => {
    */
   function setTableState(
     tableStorageKey: string,
-    state?: Partial<ITableState>
+    state?: Partial<ITableState>,
   ) {
     // Pick only the relevant data from columns when provided
     if (state?.columns) {
@@ -57,6 +57,7 @@ export const useTableStore = defineStore('table', () => {
           semiFrozen: col.semiFrozen,
           originalWidth: col.originalWidth,
           filterField: col.filterField,
+          local: col.local,
         }
       })
     }
@@ -68,13 +69,13 @@ export const useTableStore = defineStore('table', () => {
         ...state,
       }
 
-      if (process.client) {
+      if (import.meta.client) {
         localStorage.setItem(
           tableStorageKey,
           JSON.stringify({
             ...tableState[tableStorageKey].value,
             ...state,
-          })
+          }),
         )
       }
     }

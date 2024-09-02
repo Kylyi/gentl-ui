@@ -41,7 +41,16 @@ export function useInputUtils(options: IInputUtilsOptions) {
   const { el, mask, masked, unmasked, typed } = useIMask(maskRef, {
     onAccept: ev => {
       nextTick(() => {
-        maskEventHandlers?.onAccept?.(lastValidValue.value, ev)
+        const val = maskEventHandlers?.onAccept?.(
+          lastValidValue.value,
+          ev,
+          { typed, unmasked, masked },
+        )
+
+        if (!isNil(val)) {
+          typed.value = val
+        }
+
         syncTypedWithModel()
       })
     },
@@ -50,9 +59,7 @@ export function useInputUtils(options: IInputUtilsOptions) {
     },
   })
 
-  const originalModel = useVModel(props, 'modelValue', undefined, {
-    defaultValue: props.emptyValue,
-  })
+  const originalModel = useVModel(props, 'modelValue', undefined, { defaultValue: props.emptyValue })
   const model = ref(originalModel.value)
 
   // We also need to create an instance of mask to get the `masked` value
@@ -71,9 +78,9 @@ export function useInputUtils(options: IInputUtilsOptions) {
 
   const isEmpty = computed(() => {
     return (
-      typed.value === unref(emptyValue) ||
-      isNil(typed.value) ||
-      unmasked.value === ''
+      typed.value === unref(emptyValue)
+      || isNil(typed.value)
+      || unmasked.value === ''
     )
   })
 
@@ -118,11 +125,18 @@ export function useInputUtils(options: IInputUtilsOptions) {
   }
 
   const clear = (shouldFocusAfterClear?: boolean) => {
-    model.value = props.emptyValue
+    const temporaryMask = createMask(toValue(maskRef.value))
+    temporaryMask.typedValue = props.emptyValue
+
+    masked.value = temporaryMask.value
+    typed.value = temporaryMask.typedValue
+    unmasked.value = temporaryMask.unmaskedValue
 
     if (shouldFocusAfterClear || !isBlurred.value) {
       setTimeout(() => focus(), 0)
     }
+
+    setTimeout(() => instance?.emit('clear'), 0)
   }
 
   function handleBlur(ev: FocusEvent) {
@@ -130,27 +144,25 @@ export function useInputUtils(options: IInputUtilsOptions) {
     const lastTarget = appStore.lastPointerDownEl
     const isProgrammatic = appStore.activeElement === document.body
 
-    const isFocusable =
-      lastTarget?.classList.contains('input-wrapper__focusable') ||
-      !!lastTarget?.closest('.input-wrapper__focusable')
+    const isFocusable
+      = lastTarget?.classList.contains('input-wrapper__focusable')
+      || !!lastTarget?.closest('.input-wrapper__focusable')
 
-    const isSameWrapper =
-      inputElement.value?.closest('.wrapper__body') ===
-      lastTarget?.closest('.wrapper__body')
+    const isSameWrapper = inputElement.value?.closest('.wrapper__body') === lastTarget?.closest('.wrapper__body')
 
     // `Tab` handling
     const relatedTargetWrapper = relatedTarget?.closest('.wrapper__body')
-    const isRelatedTargetFocusable =
-      !relatedTargetWrapper ||
-      relatedTargetWrapper === inputElement.value?.closest('.wrapper__body')
+    const isRelatedTargetFocusable
+      = !relatedTargetWrapper
+      || relatedTargetWrapper === inputElement.value?.closest('.wrapper__body')
 
     // We prevent the blur event when clicking on focusable elements
     // in the same wrapper
     if (
-      isFocusable &&
-      isSameWrapper &&
-      isRelatedTargetFocusable &&
-      !isProgrammatic
+      isFocusable
+      && isSameWrapper
+      && isRelatedTargetFocusable
+      && !isProgrammatic
     ) {
       ev.preventDefault()
       focus()
@@ -165,9 +177,9 @@ export function useInputUtils(options: IInputUtilsOptions) {
 
     if (!isSame) {
       // We need to reset the iMask placeholder
-      const isModelEmpty =
-        isNil(originalModel.value) ||
-        toValue(originalModel) === toValue(emptyValue)
+      const isModelEmpty
+        = isNil(originalModel.value)
+        || toValue(originalModel) === toValue(emptyValue)
 
       if (isModelEmpty) {
         unmasked.value = ''
@@ -190,9 +202,8 @@ export function useInputUtils(options: IInputUtilsOptions) {
   // element, so the `focus` does not get triggered. We need to handle this case manually
   function handleClickWrapper(ev: MouseEvent) {
     const target = ev.target as HTMLElement
-    const isFocusable =
-      target.classList.contains('input-wrapper__focusable') ||
-      !!target.closest('.input-wrapper__focusable')
+    const isFocusable = target.classList.contains('.input-wrapper__focusable')
+      || !!target.closest('.input-wrapper__focusable')
 
     if (isFocusable) {
       handleFocusOrClick(ev)
@@ -209,10 +220,12 @@ export function useInputUtils(options: IInputUtilsOptions) {
     const isFocusEvent = ev instanceof FocusEvent
 
     if (!props.disabled && !props.readonly) {
-      if (isFocusEvent || isSelectEvent) {
+      const shouldHideFloating = !props.noHideFloating
+
+      if (shouldHideFloating && (isFocusEvent || isSelectEvent)) {
         const inputMenu = inputElement.value?.closest('.floating-element')
 
-        $hide({ all: true, ignoreUntilEl: inputMenu })
+        $hide({ all: true, ignoreUntilEl: props.hideUntilEl ?? inputMenu })
       }
 
       nextTick(() => {
@@ -231,10 +244,10 @@ export function useInputUtils(options: IInputUtilsOptions) {
     // We need to manually focus the input when necessary, ie. when the event
     // would not focus the input automatically
     if (
-      !isFocusEvent &&
-      !isSelectEvent &&
-      !isInputFocused &&
-      !isFocusPrevented
+      !isFocusEvent
+      && !isSelectEvent
+      && !isInputFocused
+      && !isFocusPrevented
     ) {
       focus(true)
     }
@@ -245,6 +258,7 @@ export function useInputUtils(options: IInputUtilsOptions) {
 
     isBlurred.value = false
 
+    instance?.emit('focus')
     onFocus?.(isTouchEvent ? 'touch' : 'mouse', ev)
   }
 
@@ -278,7 +292,11 @@ export function useInputUtils(options: IInputUtilsOptions) {
   // We sync the `model` with the `typed` value from iMask
   watch(model, val => {
     if (val !== typed.value) {
-      typed.value = val
+      if (props.emptyValue === val) {
+        typed.value = ''
+      } else {
+        typed.value = val
+      }
     }
   })
 
@@ -295,17 +313,22 @@ export function useInputUtils(options: IInputUtilsOptions) {
     })
   })
 
+  provide('inputId', inputId)
+
   return {
     el,
     inputId,
     model,
     masked,
+    typed,
+    unmasked,
     hasBeenTouched,
     isBlurred,
     wrapperProps,
     hasNoValue: isEmpty,
     hasClearableBtn,
     hasContent,
+    lastValidValue,
     handleBlur,
     clear,
     focus,

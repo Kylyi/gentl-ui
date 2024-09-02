@@ -12,7 +12,7 @@ import { cover } from '~/utils/floatingMiddleware/cover'
 
 export function useMenuMiddleware(
   props: IMenuProps,
-  options: { arrowEl: MaybeElementRef }
+  options: { arrowEl: MaybeElementRef },
 ) {
   const { arrowEl } = options
 
@@ -45,7 +45,7 @@ export function useMenuMiddleware(
 
     // Arrow
     if (!props.noArrow) {
-      middleware.push(arrow({ element: arrowEl, padding: 4 }))
+      middleware.push(arrow({ element: arrowEl, padding: 8 }))
     }
 
     return middleware

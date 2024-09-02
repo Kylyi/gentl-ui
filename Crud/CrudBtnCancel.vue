@@ -22,7 +22,6 @@ type IProps = {
 const props = defineProps<IProps>()
 const emits = defineEmits<{
   (e: 'update:isEditing', val: boolean): void
-  (e: 'restore'): void
 }>()
 
 // Injections

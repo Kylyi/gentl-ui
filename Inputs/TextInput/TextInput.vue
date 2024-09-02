@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Types
-import { type ITextInputProps } from '~/components/Inputs/TextInput/types/text-input-props.type'
+import type { ITextInputProps } from '~/components/Inputs/TextInput/types/text-input-props.type'
 
 // Functions
 import { useInputUtils } from '~/components/Inputs/functions/useInputUtils'
@@ -23,8 +23,10 @@ const props = withDefaults(defineProps<ITextInputProps>(), {
 defineEmits<{
   (e: 'update:modelValue', val?: string | undefined | null): void
   (e: 'validation-reset', val?: string | undefined | null): void
+  (e: 'focus'): void
   (e: 'blur', ev: FocusEvent): void
   (e: 'enter', event: KeyboardEvent): void
+  (e: 'clear'): void
 }>()
 
 const {
@@ -104,7 +106,7 @@ defineExpose({
       @focus="handleFocusOrClick"
       @blur="handleBlur"
       @keypress.enter="$emit('enter', $event)"
-    />
+    >
 
     <template
       v-if="$slots.append || hasCopyBtn || clearable"

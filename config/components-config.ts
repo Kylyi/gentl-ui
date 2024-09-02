@@ -60,6 +60,7 @@ import type { IVirtualScrollerProps } from '~/components/VirtualScroller/types/v
 import type { IWysiwygProps } from '~/components/Wysiwyg/types/wysiwyg-props.type'
 import type { IYearMonthSelectorProps } from '~/components/YearMonthSelector/types/year-month-selector-props.type'
 import type { IYearSelectorProps } from '~/components/YearSelector/types/year-selector-props.type'
+import type { ICurrencyInputProps } from '~/components/Inputs/CurrencyInput/types/currency-input-props.type'
 import type {
   ITableDataFetchFncInput,
   ITableQuery,
@@ -199,7 +200,7 @@ export const config = merge(
       /**
        * When the form is submitted and no errors are present, this function will be called
        */
-      onSubmitSuccess: () => {},
+      onSubmitSuccess: () => { },
     },
 
     // Input block
@@ -208,6 +209,13 @@ export const config = merge(
     // Input - Color input
     colorInput: {
       props: {} as IColorProps,
+    },
+
+    // Input - Currency input
+    currencyInput: {
+      props: {
+        step: 'auto',
+      } as ICurrencyInputProps,
     },
 
     // Input - Date input
@@ -229,6 +237,8 @@ export const config = merge(
         layout: 'regular',
         stackLabel: true,
       } as IInputWrapperProps,
+
+      borderRadius: '0.5rem',
     },
 
     // Input - Number input
@@ -397,6 +407,11 @@ export const config = merge(
       allowCaseInsensitiveColumns: false,
 
       /**
+       * When true, the columns will be auto-fit after the first data load
+       */
+      fitMode: 'auto' as 'auto' | 'content' | 'stretch',
+
+      /**
        * When true, the scheme can be saved as default
        */
       canSaveLayoutAsDefault: false,
@@ -453,7 +468,7 @@ export const config = merge(
         options?: {
           externalDataRef?: Ref<IItem>
           metaRef?: MaybeRefOrGetter<IItem>
-        }
+        },
       ) => {
         return {}
       },
@@ -466,7 +481,7 @@ export const config = merge(
       /**
        * Creates a query string from the table query object
        */
-      getQuery: (query: ITableQuery) => {
+      getQuery: (query: ITableQuery, options?: { externalData?: IItem }) => {
         return new URLSearchParams()
       },
 
@@ -588,5 +603,5 @@ export const config = merge(
       >
     },
   },
-  appConfig
+  appConfig,
 )

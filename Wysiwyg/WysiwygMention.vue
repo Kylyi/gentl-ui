@@ -9,15 +9,17 @@ import {
 import { type MaybeElement, useFloating } from '@floating-ui/vue'
 
 // Types
-import type { IWysiwygMentionItem } from '~/components/Wysiwyg/types/wysiwyg-mention-item.type'
+import type { IListProps } from '~/components/List/types/list-props.type'
+import type { IListFetchFnc } from '~/components/List/types/list-fetch.type'
 
 // Components
 import List from '~/components/List/List.vue'
 
 type IProps = {
-  items: IWysiwygMentionItem[]
   getRect: () => ClientRectObject
   selectFnc: Function
+  listProps?: Partial<IListProps>
+  loadData: IListFetchFnc
 }
 
 const props = defineProps<IProps>()
@@ -25,7 +27,6 @@ const props = defineProps<IProps>()
 // Layout
 const listEl = ref<InstanceType<typeof List>>()
 const mentionEl = ref<HTMLElement>()
-const items = toRef(props, 'items')
 const isMentionOpen = ref(false)
 
 const middleware = ref([offset(4), flip(), shift()])
@@ -36,23 +37,25 @@ const virtualEl = computed<MaybeElement<VirtualElement>>(() => {
   }
 })
 
-const groupBy = computedEager(() => {
-  return items.value.some(item => item.group)
-    ? [{ field: 'group', name: 'group' }]
-    : undefined
-})
-
 const { floatingStyles, placement } = useFloating(virtualEl, mentionEl, {
   strategy: 'fixed',
   placement: 'bottom-start',
   middleware,
 })
 
+function hide() {
+  isMentionOpen.value = false
+}
+
+const searchList = ref('')
+
 defineExpose({
   show: () => (isMentionOpen.value = true),
   hide: () => (isMentionOpen.value = false),
-  onKeyDown: (event: KeyboardEvent) =>
-    listEl.value?.handleKey(event, { force: true }),
+  onKeyDown: (event: KeyboardEvent) => listEl.value?.handleKey(event, { force: true }),
+  load: async (search?: string) => {
+    searchList.value = search ?? ''
+  },
 })
 </script>
 
@@ -62,13 +65,18 @@ defineExpose({
     ref="mentionEl"
     :style="floatingStyles"
     :placement="placement"
-    class="mention-items"
+    class="mention-items floating-element"
+    .hide="hide"
   >
     <List
       ref="listEl"
+      v-model:search="searchList"
+      no-autofocus
+      no-filter
       no-search
-      :items="items"
-      :group-by="groupBy"
+      :load-data="{ fnc: loadData, onSearch: true }"
+      row-class="!min-h-8"
+      v-bind="listProps"
       @update:selected="selectFnc($event)"
     />
   </div>
@@ -76,7 +84,7 @@ defineExpose({
 
 <style scoped lang="scss">
 .mention-items {
-  --apply: flex flex-gap-2 flex-col bg-ca p-2 rounded-custom z-$zMax max-h-100
-    overflow-auto;
+  @apply flex flex-gap-2 flex-col rounded-custom z-$zMax max-h-100
+    overflow-auto border-1 border-ca min-w-40 bg-white dark:bg-darker;
 }
 </style>

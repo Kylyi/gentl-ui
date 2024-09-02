@@ -5,13 +5,14 @@ import { config } from '~/components/config/components-config'
 
 // Types
 import type { ITableProps } from '~/components/Table/types/table-props.type'
+import type { ITableSelection } from '~/components/Table/types/table-selection.type'
 import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
 
 // Injections
 import { tableSlotsKey } from '~/components/Table/provide/table.provide'
 
 // Models
-import { TableColumn } from '~/components/Table/models/table-column.model'
+import type { TableColumn } from '~/components/Table/models/table-column.model'
 
 // Functions
 import { useTableData } from '~/components/Table/functions/useTableData'
@@ -29,7 +30,6 @@ const props = withDefaults(defineProps<ITableProps>(), {
   minimumColumnWidth: 80,
   mobileRowHeight: 32,
   rowHeight: 40,
-  rowKey: 'id',
   separator: 'cell',
   totalRows: 0,
   useUrl: true,
@@ -48,18 +48,18 @@ defineEmits<{
   (e: 'update:rows', rows: any[]): void
   (e: 'update:totalRows', count: number): void
   (e: 'update:queryBuilder', rows: IQueryBuilderRow[]): void
-  (e: 'row-click', payload: { row: any; el: Element; ev: PointerEvent }): void
+  (e: 'row-click', payload: { row: any, el: Element, ev: PointerEvent }): void
   (e: 'update:loading', loading: boolean): void
   (e: 'update:selected', selection: any): void
 }>()
 
 defineSlots<{
   [key: string]: any
-  dataRow: { columns: any[]; row: any; index: number }
-  inner: { columns: any[]; row: any; index: number }
+  dataRow: { columns: any[], row: any, index: number }
+  inner: { columns: any[], row: any, index: number }
   paginationAppend: { customData: IItem }
   default: IItem
-  rowInside: { columns: any[]; row: any; index: number }
+  rowInside: { columns: any[], row: any, index: number }
   top: IItem
   topLeftPrepend: IItem
   topLeftAppend: IItem
@@ -70,6 +70,7 @@ defineSlots<{
   topBulkActionsMenu: { selection: any[] }
   belowTop: { rows: any[] }
   topBarMiddleStart: IItem
+  topBarMiddleEnd: IItem
 }>()
 
 const slots = useSlots()
@@ -79,15 +80,14 @@ provide(tableSlotsKey, slots)
 defineExpose({
   rerender: (noEmit?: boolean) => scrollerEl.value?.rerender(noEmit),
   refreshData: () => refreshData(true),
+  refreshSelection: (selection?: ITableSelection) => refreshSelection(selection),
   resizeColumns: (force?: boolean) => handleResize(force),
-  adjustColumns: (fnc: (columns: TableColumn[]) => void) => {
-    fnc(internalColumns.value)
-  },
+  adjustColumns: (fnc: (columns: TableColumn[]) => void) => fnc(internalColumns.value),
   scrollToTop: () => scrollerEl.value?.scrollToTop(),
   getDbQuery: () => dbQuery.value,
   selectRow: (
     row: any,
-    options?: { val?: boolean; clearSelection?: boolean }
+    options?: { val?: boolean, clearSelection?: boolean },
   ) => handleSelectRow(row, options),
   clearSelection: () => clearSelection(),
   handleCancelEditRow: () => handleCancelEditRow(),
@@ -98,7 +98,8 @@ defineExpose({
       totalRowsRef: Ref<number | undefined>
       tableRowHeight: typeof tableRowHeight.value
       scrollerEl: typeof scrollerEl.value
-    }) => void
+      refreshData: () => void
+    }) => void,
   ) => {
     fnc({
       columns: internalColumns.value,
@@ -106,6 +107,7 @@ defineExpose({
       totalRowsRef: totalRows,
       tableRowHeight: tableRowHeight.value,
       scrollerEl: scrollerEl.value,
+      refreshData: () => refreshData(true),
     })
   },
 })
@@ -116,9 +118,10 @@ const { getTableTopProps } = useTableTopUtils()
 // Layout
 const tableTopProps = getTableTopProps(props)
 const queryBuilderOriginal = useVModel(props, 'queryBuilder')
-const { cloned: queryBuilder } = useCloned(queryBuilderOriginal, {
-  clone: klona,
-})
+const { cloned: queryBuilder } = useCloned(
+  queryBuilderOriginal,
+  { clone: klona },
+)
 
 const { columns, layout, metadataRefetch } = await useTableMetaData(props)
 
@@ -128,7 +131,6 @@ const {
   headerEl,
   scrollbarWidth,
   scrollerElBounds,
-  scrollLeft,
   totalsEl,
   tableEl,
 
@@ -142,7 +144,6 @@ const {
   tableRowHeight,
   rowKey,
   TableRowComponent,
-  handleScrollLeft,
   handleRowClick,
   recreateColumns,
   handleResize,
@@ -178,10 +179,10 @@ const {
   scrollerEl,
   metadataRefetch,
   recreateColumns,
-  handleResize
+  handleResize,
 )
 
-const { handleSelectRow, clearSelection } = useTableSelection(props)
+const { handleSelectRow, clearSelection, refreshSelection } = useTableSelection(props, rows)
 useTableExporting(rows)
 const { handleCancelEditRow } = useTableEditing(props)
 
@@ -222,7 +223,15 @@ onMounted(() => {
         v-bind="tableTopProps"
         :small-screen="!isBreakpoint"
         @update:columns-width="handleColumnsWidthChange"
+        @resized="scrollerEl?.rerender"
       >
+        <template
+          v-if="$slots['middle-center']"
+          #left
+        >
+          <slot name="middle-center" />
+        </template>
+
         <template
           v-if="$slots['top-left-prepend']"
           #left-prepend
@@ -252,6 +261,13 @@ onMounted(() => {
         </template>
 
         <template
+          v-if="$slots['subbar-left']"
+          #subbar-left
+        >
+          <slot name="subbar-left" />
+        </template>
+
+        <template
           v-if="$slots['subbar-right']"
           #subbar-right
         >
@@ -263,6 +279,13 @@ onMounted(() => {
           #middle-start
         >
           <slot name="topbar-middle-start" />
+        </template>
+
+        <template
+          v-if="$slots['topbar-middle-end']"
+          #middle-end
+        >
+          <slot name="topbar-middle-end" />
         </template>
 
         <template
@@ -299,14 +322,14 @@ onMounted(() => {
       v-if="!noHeader"
       ref="headerEl"
       class="table-header"
-      :columns="internalColumns"
       :rows="rows"
       :minimum-column-width="minimumColumnWidth"
       :small-screen="!isBreakpoint"
       :no-lock="noLock"
+      :no-autofit="noAutofit"
       :class="{ 'shadow-lg shadow-ca': isScrolled }"
-      @scrolled="handleScrollLeft"
-      @resized="scrollerEl?.rerender"
+      :selection-options="selectionOptions"
+      @resized="scrollerEl?.rerender(true)"
     >
       <template #default="{ col }">
         <slot :name="`header-${col.name}`" />
@@ -317,7 +340,7 @@ onMounted(() => {
       v-show="hasVisibleColumn"
       ref="scrollerEl"
       :rows="rowsSplit"
-      :row-key="rowKey"
+      :row-key
       :row-height="tableRowHeight.current"
       :no-scroll-emit="!infiniteScroll"
       :overscan="overscan"
@@ -348,7 +371,6 @@ onMounted(() => {
               :index="index"
               :mode="mode"
               :bounds="scrollerElBounds"
-              :scroll-left="scrollLeft"
               :scrollbar-width="scrollbarWidth"
             />
           </template>
@@ -405,7 +427,6 @@ onMounted(() => {
       class="table-totals"
       :columns="internalColumns"
       :get-totals-data="getTotalsData"
-      @scrolled="handleScrollLeft"
     />
 
     <TablePagination

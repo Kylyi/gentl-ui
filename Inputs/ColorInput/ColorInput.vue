@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { config } from '~/components/config/components-config'
+
 // Types
 import type { IColorProps } from '~/components/Inputs/ColorInput/types/color-props.type'
 
@@ -15,6 +17,7 @@ const props = withDefaults(defineProps<IColorProps>(), {
   labelInside: undefined,
   required: undefined,
   stackLabel: undefined,
+  disallowedColors: () => config.colorInput?.props?.disallowedColors ?? [],
 })
 const emits = defineEmits<{
   (e: 'update:modelValue', value: any): void
@@ -23,7 +26,7 @@ const emits = defineEmits<{
 // Lifcecycle
 onMounted(() => {
   referenceEl.value = unrefElement(fieldEl as any)?.querySelector(
-    '.wrapper__body'
+    '.wrapper__body',
   ) as HTMLDivElement
 })
 
@@ -69,7 +72,14 @@ const fieldProps = getFieldProps(props)
     :no-content="!model"
     @focus="handleFocusOrClick"
   >
-    <span :style="{ color: model }">
+    <template #prepend>
+      <div
+        class="w-6 h-6 rounded-custom border-1 border-ca m-l-2"
+        :style="{ backgroundColor: model }"
+      />
+    </template>
+
+    <span>
       {{ modelLabel || '&nbsp;' }}
     </span>
 
@@ -84,6 +94,8 @@ const fieldProps = getFieldProps(props)
     >
       <ColorBrandingPicker
         v-model="model"
+        :rgba
+        :disallowed-colors
         @update:model-value="handlePickColor"
       />
     </MenuProxy>
@@ -94,7 +106,6 @@ const fieldProps = getFieldProps(props)
         m="x-2"
         tabindex="-1"
         cursor="pointer"
-        :style="{ color: model }"
       />
     </template>
   </Field>

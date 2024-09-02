@@ -78,9 +78,7 @@ const contentClass = computed(() => {
   }
 })
 
-const wrapperStyleVariables = computed(() =>
-  getInputWrapperStyleVariables(props)
-)
+const wrapperStyleVariables = computed(() => getInputWrapperStyleVariables(props))
 
 const isInputRequired = computed(() => {
   if (!isNil(props.required)) {
@@ -204,25 +202,25 @@ const wrapperProps = computed(() => {
 
 <style lang="scss" scoped>
 .wrapper {
-  --apply: relative flex flex-col rounded-custom;
+  @apply relative flex flex-col rounded-$borderRadius;
 
   .wrapper__body {
-    --apply: relative;
+    @apply relative;
     margin: var(--bodyMargin);
 
     &.is-readonly,
     &.is-disabled {
       :slotted(.control) {
-        --apply: cursor-default;
+        @apply cursor-default;
       }
 
       &::after {
-        --apply: border-dashed;
+        @apply border-dashed;
       }
     }
 
     :slotted(.control) {
-      --apply: bg-inherit outline-none rounded-custom w-full;
+      @apply bg-inherit outline-none rounded-$borderRadius;
 
       font-size: var(--fontSize);
       line-height: var(--lineHeight);
@@ -233,12 +231,12 @@ const wrapperProps = computed(() => {
 
   &:not(.has-content) {
     :slotted(.control) {
-      --apply: color-true-gray-400;
+      @apply color-true-gray-400;
     }
 
     &:not(:focus-within) {
       :slotted(.control) {
-        --apply: '!color-transparent';
+        @apply '!color-transparent';
       }
     }
   }

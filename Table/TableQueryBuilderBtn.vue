@@ -2,7 +2,7 @@
 import { klona } from 'klona/full'
 
 // Types
-import { type IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
+import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
 
 // Injections
 import {
@@ -35,9 +35,23 @@ const { sync, cloned } = useCloned(queryBuilder, { clone: klona })
 
 const queryBuilderHasChildren = computed(() => {
   return queryBuilder.value.some(
-    item => 'children' in item && item.children?.length
+    item => 'children' in item && item.children?.length,
   )
 })
+
+function removeEmptyGroups(queryBuilder: MaybeRefOrGetter<IQueryBuilderRow[]>) {
+  const qb = toValue(queryBuilder)
+
+  return qb.filter(item => {
+    if ('children' in item) {
+      item.children = removeEmptyGroups(item.children)
+
+      return item.children.length
+    }
+
+    return true
+  })
+}
 
 async function syncToParent() {
   const isValid = await $z.value.$validate()
@@ -46,7 +60,7 @@ async function syncToParent() {
     return
   }
 
-  queryBuilder.value = cloned.value
+  queryBuilder.value = removeEmptyGroups(cloned.value)
   queryBuilderEl.value?.syncFilters()
 
   dialogEl.value?.hide()
@@ -78,7 +92,7 @@ const $z = useZod({ scope: 'qb' })
     <Dialog
       ref="dialogEl"
       :title="$t('queryBuilder.self')"
-      w="220"
+      w="280"
       max-h="90%"
       min-h="100"
       h="auto"

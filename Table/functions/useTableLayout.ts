@@ -3,12 +3,13 @@ import type { ITableProps } from '~/components/Table/types/table-props.type'
 import type { ITableLayout } from '~/components/Table/types/table-layout.type'
 
 // Models
-import { TableColumn } from '~/components/Table/models/table-column.model'
+import type { TableColumn } from '~/components/Table/models/table-column.model'
 
 // Injections
 import {
   tableFocusKey,
   tableResizeKey,
+  tableScrollerEl,
   tableStretchColumnsKey,
 } from '~/components/Table/provide/table.provide'
 
@@ -22,14 +23,14 @@ import { $bp } from '~/libs/App/constants/breakpoints.constant'
 // Components
 import TableRow from '~/components/Table/TableRow.vue'
 import TableRowMobile from '~/components/Table/TableRow.mobile.vue'
-import TableHeader from '~/components/Table/TableHeader.vue'
-import TableTotals from '~/components/Table/TableTotals/TableTotals.vue'
-import VirtualScroller from '~/components/VirtualScroller/VirtualScroller.vue'
+import type TableHeader from '~/components/Table/TableHeader.vue'
+import type TableTotals from '~/components/Table/TableTotals/TableTotals.vue'
+import type VirtualScroller from '~/components/VirtualScroller/VirtualScroller.vue'
 
 export function useTableLayout(
   props: ITableProps,
   columnsRef: Ref<TableColumn[]>,
-  layoutRef: Ref<ITableLayout | undefined>
+  layoutRef: Ref<ITableLayout | undefined>,
 ) {
   const instance = getCurrentInstance()
 
@@ -53,7 +54,7 @@ export function useTableLayout(
   // Layout
   const scrollerEl = ref<ComponentInstance<typeof VirtualScroller>>()
   const tableEl = ref<HTMLDivElement>()
-  const headerEl = ref<InstanceType<typeof TableHeader>>()
+  const headerEl = ref<ComponentInstance<typeof TableHeader>>()
   const totalsEl = ref<InstanceType<typeof TableTotals>>()
   const containerEl = ref<HTMLDivElement>()
   const scrollerElBounds = useElementBounding(scrollerEl)
@@ -80,6 +81,9 @@ export function useTableLayout(
     return isOverflown.value ? _scrollbarWidth : 0
   })
 
+  // Provide the scroller element
+  provide(tableScrollerEl, scrollerEl as any)
+
   // CSS variables
   const rowHeight = useCssVar('--rowHeight', tableEl)
   const mobileRowHeight = useCssVar('--mobileRowHeight', tableEl)
@@ -100,14 +104,12 @@ export function useTableLayout(
    * Handles the resize of the table
    */
   function handleResize(force?: boolean) {
-    const { width } = unrefElement(
-      scrollerEl.value as any
-    ).getBoundingClientRect()
+    const { width } = unrefElement(scrollerEl.value as any)?.getBoundingClientRect() || {}
 
     if (
-      scrollerEl.value &&
-      tableEl.value &&
-      (width !== containerWidth || force)
+      scrollerEl.value
+      && tableEl.value
+      && (width !== containerWidth || force)
     ) {
       internalColumns.value = resizeColumns(
         tableEl.value,
@@ -118,7 +120,7 @@ export function useTableLayout(
           isSelectableRef: props.selectionOptions?.selectable,
           groupExpandWidthRef: props.groupExpandWidth,
           minColWidthRef: props.minimumColumnWidth,
-        }
+        },
       )
       containerWidth = width
     }
@@ -130,26 +132,28 @@ export function useTableLayout(
   /**
    * Will stretch the columns to the full width of the table
    */
-  function handleStretchColumns() {
+  function handleStretchColumns(retry = true) {
     const table = toValue(tableEl)
-    const scroller = toValue(scrollerEl)
+    const scrollerDomEl = unrefElement(scrollerEl)
 
-    const { width } = unrefElement(scrollerEl as any).getBoundingClientRect()
+    const { width } = unrefElement(scrollerEl as any)?.getBoundingClientRect() ?? {}
 
-    if (scroller && table) {
+    if (scrollerDomEl && table) {
       internalColumns.value = stretchColumns(
         table,
-        scroller.$el,
+        scrollerDomEl,
         toValue(internalColumns),
         {
           groupsRef: [],
           isSelectableRef: props.selectionOptions?.selectable,
           groupExpandWidthRef: props.groupExpandWidth,
           minColWidthRef: props.minimumColumnWidth,
-        }
+        },
       )
 
       containerWidth = width
+    } else if (retry) {
+      setTimeout(() => handleStretchColumns(false), 500)
     }
   }
 
@@ -163,17 +167,44 @@ export function useTableLayout(
       // handleResize(true)
       nextTick(() => handleResize(true))
     },
-    { direction: 'vertical' }
+    { direction: 'vertical' },
   )
 
-  // Sync scrolling between header and body
-  const { x: scrollLeft } = useScroll(containerEl, {
-    onScroll: ev => {
-      const el = ev.target as HTMLDivElement
-      headerEl.value?.syncScroll(el.scrollLeft)
-      totalsEl.value?.syncScroll(el.scrollLeft)
-      isScrolled.value = el.scrollTop !== 0
-    },
+  // Sync scrolling between header, body and totals
+  const headerScrollerEl = ref<HTMLElement>()
+  const totalsScrollerEl = ref<HTMLElement>()
+  const { x: containerX } = useScroll(containerEl)
+  const { x: headerScrollerX } = useScroll(headerScrollerEl)
+  const { x: totalsX } = useScroll(totalsScrollerEl)
+
+  watch(
+    ([containerX, headerScrollerX, totalsX]), ([_containerX, _headerScrollerX, _totalsX], [oldContainerX, oldHeaderScrollerX, oldTotalsX]) => {
+      const containerChanged = _containerX !== oldContainerX
+      const headerChanged = _headerScrollerX !== oldHeaderScrollerX
+      const totalsChanged = _totalsX !== oldTotalsX
+
+      if (containerChanged) {
+        headerScrollerX.value = _containerX
+        totalsX.value = _containerX
+      } else if (headerChanged) {
+        containerX.value = _headerScrollerX
+        totalsX.value = _headerScrollerX
+      } else if (totalsChanged) {
+        containerX.value = _totalsX
+        headerScrollerX.value = _totalsX
+      }
+    }, { flush: 'pre' })
+
+  watch(containerX, val => {
+    if (headerScrollerX.value !== val) {
+      headerScrollerX.value = val
+    }
+  })
+
+  watch(headerScrollerX, val => {
+    if (containerX.value !== val) {
+      containerX.value = val
+    }
   })
 
   const throttledHandleResize = useThrottleFn(
@@ -182,11 +213,11 @@ export function useTableLayout(
     },
     250,
     true,
-    false
+    false,
   )
 
   // Responsivity
-  const isBreakpoint = computedEager(() => {
+  const isBreakpoint = computed(() => {
     // This is a semi-hack to prevent warnings...
     const currentBreakpoints = $bp.current().value
 
@@ -195,17 +226,17 @@ export function useTableLayout(
 
   const tableRowHeight = computed(() => {
     const visibleColumns = internalColumns.value.filter(
-      column => !column.hidden && column.field !== '_selectable'
+      column => !column.hidden && column.field !== '_selectable',
     )
 
     const MOBILE_ROW_Y_PADDING = 2 * (12 + 1) // + 1 is border
     const MOBILE_ROW_CONTAINER_Y_PADDING = 2 * 4
-    const columnsHeight =
-      visibleColumns.length *
-      (props.mobileRowHeight || props.mobileRowHeight || 40)
+    const columnsHeight
+      = visibleColumns.length
+      * (props.mobileRowHeight || props.mobileRowHeight || 40)
 
-    const mobile =
-      columnsHeight + MOBILE_ROW_Y_PADDING + MOBILE_ROW_CONTAINER_Y_PADDING
+    const mobile
+      = columnsHeight + MOBILE_ROW_Y_PADDING + MOBILE_ROW_CONTAINER_Y_PADDING
     const current = isBreakpoint.value ? props.rowHeight : mobile
 
     return {
@@ -225,8 +256,14 @@ export function useTableLayout(
     const selfDom = instance?.vnode.el as HTMLElement
 
     containerEl.value = selfDom.querySelector(
-      '.virtual-scroll'
+      '.virtual-scroll',
     ) as HTMLDivElement
+
+    // @ts-expect-error Too complex
+    headerScrollerEl.value = unrefElement(headerEl.value)?.querySelector('.content')
+
+    // @ts-expect-error Too complex
+    totalsScrollerEl.value = unrefElement(totalsEl.value)?.querySelector('.content')
   })
 
   return {
@@ -238,11 +275,9 @@ export function useTableLayout(
     tableRowHeight,
     TableRowComponent,
     rowKey,
-    handleScrollLeft: (left: number) => (scrollLeft.value = left),
 
     // Element refs
     scrollerEl,
-    scrollLeft,
     tableEl,
     headerEl,
     totalsEl,

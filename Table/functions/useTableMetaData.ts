@@ -7,6 +7,7 @@ import type { ITableProps } from '~/components/Table/types/table-props.type'
 // Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
 import {
+  tableCustomDataKey,
   tableLayoutKey,
   tableLayoutsKey,
   tableViewCodeKey,
@@ -23,7 +24,6 @@ import { useAppStore } from '~/libs/App/app.store'
 const EXTENDABLE_COLUMN_PROPERTIES: Array<keyof TableColumn> = [
   'label',
   'width',
-  'align',
   'alwaysSelected',
   'classes',
   'comparator',
@@ -72,10 +72,12 @@ export async function useTableMetaData(props: ITableProps) {
   const layout = ref<ITableLayout>()
   const viewCode = ref<string>('L')
   const columns = ref<TableColumn[]>(props.columns || [])
+  const customData = injectLocal(tableCustomDataKey, ref({} as IItem))
 
   provide(tableLayoutKey, layout)
   provide(tableLayoutsKey, layouts)
   provide(tableViewCodeKey, viewCode)
+  provideLocal(tableCustomDataKey, customData)
 
   // Data fetching
   /**
@@ -84,7 +86,7 @@ export async function useTableMetaData(props: ITableProps) {
    */
   async function fetchAndSetMetaData(
     forceRefetch?: boolean,
-    options?: { meta?: any }
+    options?: { meta?: any, metaFields?: string[] },
   ) {
     const storageKey = getStorageKey()
     const providedMetaData = options?.meta
@@ -99,18 +101,22 @@ export async function useTableMetaData(props: ITableProps) {
     // 3. Fetch the metadata from the API (provided we have a props function for it)
     // 4. Get the metadata from the API (provided we have a general function for it)
     if (
-      !props.getMetaData &&
-      !stateMetaData.value?.meta &&
-      !getTableMetadata &&
-      !providedMetaData
+      !props.getMetaData
+      && !stateMetaData.value?.meta
+      && !getTableMetadata
+      && !providedMetaData
     ) {
       return
     }
 
     await handleRequest(
       async () => {
-        const { fnc, columnsKey, defaultLayoutKey, layoutsKey } =
-          props.getMetaData ?? getGenericMetaData ?? {}
+        const {
+          fnc,
+          columnsKey,
+          defaultLayoutKey,
+          layoutsKey,
+        } = props.getMetaData ?? getGenericMetaData ?? {}
 
         let result: any
 
@@ -121,34 +127,35 @@ export async function useTableMetaData(props: ITableProps) {
 
         // Otherwise, we decide whether to use the state or fetch from the API
         else {
+          const _meta = stateMetaData.value.meta ?? {}
+
           result = forceRefetch
-            ? await fnc?.()
+            ? await fnc?.(options?.metaFields)
             : config.table.useLocalStorageForMetaFirst
-            ? stateMetaData.value.meta ?? (await fnc?.())
-            : await fnc?.()
+              ? stateMetaData.value.meta ?? (await fnc?.(options?.metaFields))
+              : await fnc?.(options?.metaFields)
         }
 
         tableStore.setTableState(
           getStorageKey(),
           {
             meta: result,
-            pageSize: stateMetaData.value.pageSize ??props.paginationOptions?.pageSize
-          }
+            pageSize: stateMetaData.value.pageSize ?? props.paginationOptions?.pageSize,
+          },
         )
 
         const _layout = get(
           result,
-          defaultLayoutKey || config.table.defaultLayoutKey
+          defaultLayoutKey || config.table.defaultLayoutKey,
         )
 
-        const localStorageLayoutSchema =
-          !!appStore.appState.table?.autoSaveSchema &&
-          stateMetaData.value.schema
+        const localStorageLayoutSchema
+          = !!appStore.appState.table?.autoSaveSchema
+          && stateMetaData.value.schema
 
-        layout.value =
-          _layout && !localStorageLayoutSchema
-            ? { ..._layout, preventLayoutReset: true }
-            : undefined
+        layout.value = _layout && !localStorageLayoutSchema
+          ? { ..._layout, preventLayoutReset: true }
+          : localStorageLayoutSchema ? { schema: localStorageLayoutSchema } : undefined
 
         // Project specific
         if (_layout?.viewCode) {
@@ -173,7 +180,7 @@ export async function useTableMetaData(props: ITableProps) {
           // schema. The initial layout schema has the highest priority tho.
           const schemaParams = new URLSearchParams(_layout?.schema ?? '')
           const initSchemaParams = new URLSearchParams(
-            props.initialLayoutSchema
+            props.initialLayoutSchema,
           )
 
           initSchemaParams.forEach((value, key) => {
@@ -212,12 +219,12 @@ export async function useTableMetaData(props: ITableProps) {
         else if (columns.value.length && apiColumns && useAllColumns) {
           const uniqueColumns = uniqBy(
             [...apiColumns, ...columns.value],
-            'name'
+            'name',
           )
 
           columns.value = uniqueColumns.map((col: any) => {
             const foundColumn = columns.value.find(
-              (c: any) => c.field === col.name
+              (c: any) => c.field === col.name,
             )
 
             // We extend the column with the data from the API when found
@@ -233,8 +240,8 @@ export async function useTableMetaData(props: ITableProps) {
             }
 
             return (
-              foundColumn ??
-              new TableColumn({
+              foundColumn
+              ?? new TableColumn({
                 field: col.name,
                 label: props.translationPrefix
                   ? $t(`${props.translationPrefix}.${col.name}`)
@@ -250,7 +257,7 @@ export async function useTableMetaData(props: ITableProps) {
         else if (columns.value.length) {
           columns.value = columns.value.map(col => {
             const foundColumn = apiColumns?.find(
-              (c: any) => c.name === col.field
+              (c: any) => c.name === col.field,
             )
 
             if (foundColumn) {
@@ -261,7 +268,7 @@ export async function useTableMetaData(props: ITableProps) {
           })
         }
       },
-      { notifyError: false, noResolve: true }
+      { notifyError: false, noResolve: true },
     )
   }
 

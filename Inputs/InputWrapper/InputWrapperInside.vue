@@ -31,7 +31,11 @@ const classes = computed(() => {
     :style="ui?.inputContainerStyle"
   >
     <!-- Input -->
-    <div class="input-wrapper__inside-input input-wrapper__focusable">
+    <div
+      class="input-wrapper__inside-input input-wrapper__focusable"
+      :class="ui?.inputInnerContainerClass"
+      :style="ui?.inputInnerContainerStyle"
+    >
       <slot name="input" />
     </div>
 
@@ -77,7 +81,7 @@ const classes = computed(() => {
 
 <style lang="scss" scoped>
 .input-wrapper__inside {
-  --apply: grid items-center rounded-custom bg-$Input-wrapper-bg;
+  @apply grid items-center rounded-$borderRadius bg-$Input-wrapper-bg;
 
   grid-template-areas:
     'prepend input loading append'
@@ -88,32 +92,32 @@ const classes = computed(() => {
   grid-template-rows: 18px 1fr auto;
 
   &.is-sm {
-    --apply: min-h-9;
+    @apply min-h-9;
 
     grid-template-rows: 16px 1fr auto;
   }
 
   &.is-md {
-    --apply: min-h-11;
+    @apply min-h-11;
   }
 
   &.is-lg {
-    --apply: min-h-13;
+    @apply min-h-13;
   }
 
   .input-wrapper__inside-label {
-    --apply: fit overflow-hidden;
+    @apply fit overflow-hidden;
     grid-column: 2 / 3;
     grid-row: 1 / 3;
   }
 
   .input-wrapper__inside-input {
-    --apply: flex relative h-full;
+    @apply flex relative h-full;
     grid-area: input;
   }
 
   .input-wrapper__inside-prepend {
-    --apply: fit flex flex-center;
+    @apply fit flex flex-center;
     grid-area: prepend;
   }
 
@@ -122,12 +126,12 @@ const classes = computed(() => {
   }
 
   .input-wrapper__inside-append {
-    --apply: fit flex flex-center;
+    @apply fit flex flex-center;
     grid-area: append;
   }
 
   .input-wrapper__regular-error {
-    --apply: p-x-3;
+    @apply p-x-3;
     grid-area: error;
   }
 }
@@ -138,44 +142,44 @@ const classes = computed(() => {
   grid-row: 1 / 3;
   transition: border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
-  --apply: absolute fit border-custom rounded-custom pointer-events-none
+  @apply absolute fit border-custom rounded-$borderRadius pointer-events-none
     border-ca;
 }
 
 .input-wrapper__inside:focus-within {
   .input-wrapper__inside-border {
-    --apply: border-$borderColor;
+    @apply border-$borderColor;
   }
 }
 
 .input-wrapper__inside.has-errors > .input-wrapper__inside-border {
-  --apply: border-negative;
+  @apply border-negative;
 }
 
 .input-wrapper__inside.is-readonly > .input-wrapper__inside-border {
-  --apply: border-dashed;
+  @apply border-dashed;
 }
 
 .input-wrapper__inside.is-disabled {
-  --apply: opacity-80 cursor-not-allowed;
+  @apply opacity-80 cursor-not-allowed;
 
   :slotted(.control) {
-    --apply: '!cursor-not-allowed';
+    @apply '!cursor-not-allowed';
   }
 }
 
 // Height of input based on size
 .input-wrapper__inside {
   &.is-sm > .input-wrapper__inside-input {
-    --apply: min-h-40px;
+    @apply min-h-40px;
   }
 
   &.is-md > .input-wrapper__inside-input {
-    --apply: min-h-44px;
+    @apply min-h-44px;
   }
 
   &.is-lg > .input-wrapper__inside-input {
-    --apply: min-h-48px;
+    @apply min-h-48px;
   }
 }
 
@@ -183,10 +187,10 @@ const classes = computed(() => {
   grid-column: 2 / 3;
   grid-row: 1 / 2;
 
-  --apply: absolute fit pointer-events-none rounded-t-custom bg-inherit;
+  @apply absolute fit pointer-events-none rounded-t-custom bg-inherit;
 }
 
 .input-wrapper__inside:not(.has-border) .input-wrapper__inside-border {
-  --apply: border-none;
+  @apply border-none;
 }
 </style>

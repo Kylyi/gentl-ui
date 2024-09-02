@@ -5,10 +5,12 @@ import { colors } from '@unocss/preset-mini'
 import type { ISelectorProps } from '~/components/Selector/types/selector-props.type'
 
 type IProps = {
+  disallowedColors?: string[]
   modelValue?: string
+  rgba?: boolean
 }
 
-defineProps<IProps>()
+const props = defineProps<IProps>()
 const emits = defineEmits<{
   (e: 'update:modelValue', val: string | undefined): void
 }>()
@@ -50,19 +52,32 @@ const { getColor, hexToRgb } = useColors()
 const model = defineModel<string>()
 const { isSupported, open: openEyeDropper, sRGBHex } = useEyeDropper()
 
+const standardColors = computed(() => {
+  return {
+    black: !props.disallowedColors?.includes('black'),
+    white: !props.disallowedColors?.includes('white'),
+  }
+})
+
 const standardColorsByColumn = computed(() => {
   const _colors = pick(colors, relevantColors)
+  const _disallowedColors = props.disallowedColors?.map(color => color.toLocaleLowerCase()) ?? []
 
   return Object.entries(_colors).reduce((agg, [key, value]) => {
     const colorShades = new Set(Object.values(value as any))
 
     agg[key] = Array.from(colorShades)
+
     if (agg[key]) {
       agg[key]?.splice(agg[key]!.length - 2, 1)
     }
 
     // Pick every second color
-    agg[key] = agg[key]?.filter((_, i) => i % 2 === 0)
+    agg[key] = agg[key]
+      ?.filter((_, i) => i % 2 === 0)
+      .filter((color: any) => {
+        return !_disallowedColors?.includes(color)
+      })
 
     return agg
   }, {} as Record<string, ISelectorProps['options']>)
@@ -73,6 +88,8 @@ const opacity = computed({
     if (model.value?.startsWith('rgba')) {
       return Number(model.value.split(', ')[3].replace(')', '')) * 100
     }
+
+    return undefined
   },
   set(val) {
     if (model.value?.startsWith('rgba')) {
@@ -86,13 +103,25 @@ const opacity = computed({
 })
 
 watch(sRGBHex, value => {
-  if (value) {
+  if (value && props.rgba) {
     model.value = hexToRgb(value)
   }
 })
 
 // Methods
 function setColor(color: string, isThemeColor = false) {
+  if (!props.rgba) {
+    if (isThemeColor) {
+      model.value = getColor(color, undefined, true)
+
+      return
+    }
+
+    model.value = color
+
+    return
+  }
+
   if (isThemeColor) {
     model.value = getColor(color)
 
@@ -127,6 +156,7 @@ function setColor(color: string, isThemeColor = false) {
           </div>
 
           <div
+            v-if="standardColors.white"
             class="color-block"
             bg="white"
             border="1 ca"
@@ -135,6 +165,7 @@ function setColor(color: string, isThemeColor = false) {
           />
 
           <div
+            v-if="standardColors.black"
             class="color-block"
             bg="black"
             text="center"
@@ -187,34 +218,34 @@ function setColor(color: string, isThemeColor = false) {
           />
         </div>
       </div>
-    </div>
 
-    <!-- Customize color -->
-    <div
-      v-if="typeof opacity === 'number'"
-      flex="~ gap-2"
-    >
-      <RangeInput
-        v-model.number="opacity"
-        :step="5"
-        h="10"
-        grow
-      />
+      <!-- Customize color -->
+      <div
+        v-if="typeof opacity === 'number' && rgba"
+        flex="~ gap-2"
+      >
+        <RangeInput
+          v-model.number="opacity"
+          :step="5"
+          h="10"
+          grow
+        />
 
-      <NumberInput
-        v-model="opacity"
-        size="sm"
-        :min="0"
-        :max="100"
-        :step="5"
-        w="!20"
-      />
+        <NumberInput
+          v-model="opacity"
+          size="sm"
+          :min="0"
+          :max="100"
+          :step="5"
+          w="!20"
+        />
+      </div>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .color-block {
-  --apply: h-6 w-6 hover:shadow-consistent shadow-ca hover:z-1 cursor-pointer;
+  @apply h-6 w-6 hover:shadow-consistent shadow-ca hover:z-1 cursor-pointer;
 }
 </style>

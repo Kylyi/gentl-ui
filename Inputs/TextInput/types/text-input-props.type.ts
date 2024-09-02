@@ -1,6 +1,6 @@
 // Types
-import { type IInputProps } from '~/components/Inputs/types/input-props.type'
-import { type IMenuProps } from '~/components/Menu/types/menu-props.type'
+import type { IInputProps } from '~/components/Inputs/types/input-props.type'
+import type { IMenuProps } from '~/components/Menu/types/menu-props.type'
 
 export type ITextInputProps = IInputProps & {
   /**
@@ -21,7 +21,7 @@ export type ITextInputProps = IInputProps & {
   /**
    * The type of the input (native HTML attribute)
    */
-  type?: 'text' | 'password'
+  type?: 'text' | 'password' | 'email'
 
   /**
    * The props that should be passed to the tooltip

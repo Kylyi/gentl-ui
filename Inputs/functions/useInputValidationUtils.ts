@@ -5,7 +5,7 @@ export function useInputValidationUtils(props: IInputWrapperProps) {
   const $z = useZod(
     typeof props.zod === 'string'
       ? { watchOnly: true }
-      : { ...props.zod?.options, watchOnly: true }
+      : { ...props.zod?.options, watchOnly: true },
   )
 
   const validation = computed(() => {
@@ -15,7 +15,7 @@ export function useInputValidationUtils(props: IInputWrapperProps) {
 
     if (props.zod) {
       return $z.value.$getValidationForField(
-        typeof props.zod === 'string' ? props.zod : props.zod?.key
+        typeof props.zod === 'string' ? props.zod : props.zod?.key,
       )
     }
   })
@@ -23,7 +23,7 @@ export function useInputValidationUtils(props: IInputWrapperProps) {
   const isRequired = computed(() => {
     if (props.zod) {
       return $z.value.$isFieldRequired(
-        typeof props.zod === 'string' ? props.zod : props.zod?.key
+        typeof props.zod === 'string' ? props.zod : props.zod?.key,
       )
     }
 
@@ -39,9 +39,14 @@ export function useInputValidationUtils(props: IInputWrapperProps) {
   })
 
   const issues = computed(() => {
-    return Array.isArray(validation.value)
+    const messages = Array.isArray(validation.value)
       ? validation.value[0]?.$messages || ([].filter(Boolean) as string[])
       : validation.value?.$messages || []
+
+    return [
+      ...messages,
+      ...(props.errors || []),
+    ]
   })
 
   return {

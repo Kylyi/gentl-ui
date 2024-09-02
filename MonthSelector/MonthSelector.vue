@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Types
-import { type IMonthSelectorProps } from '~/components/MonthSelector/types/month-selector-props.type'
+import type { IMonthSelectorProps } from '~/components/MonthSelector/types/month-selector-props.type'
 
 type Month = {
   idx: number
@@ -15,6 +15,7 @@ const emits = defineEmits<{
 }>()
 
 // Utils
+const { $bp } = useNuxtApp()
 const { formatDate } = useDateUtils()
 
 // Layout
@@ -34,7 +35,7 @@ const months = computed(() => {
   return Array.from({ length: 12 }, (_, idx) => {
     const idxString = padStart(String(idx), 2, '0')
     const date = $date(
-      `${dateObj.value.year()}-${padStart(String(idx + 1), 2, '0')}-01`
+      `${dateObj.value.year()}-${padStart(String(idx + 1), 2, '0')}-01`,
     )
 
     return {
@@ -90,9 +91,7 @@ function handleMonthSelect(month: Month, callback?: () => void) {
       :fit="false"
       no-uplift
       :target="monthBtn"
-      :reference-target="
-        $bp.isGreaterOrEqual('xm') ? referenceTarget : undefined
-      "
+      :reference-target="$bp.isGreaterOrEqual('xm') ? referenceTarget : undefined"
     >
       <template #default="{ hide }">
         <div grid="~ cols-2 xm:cols-3 gap-1">

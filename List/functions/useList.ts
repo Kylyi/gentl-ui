@@ -1,7 +1,7 @@
 import { type UseFuseOptions, useFuse } from '@vueuse/integrations/useFuse'
 import { klona } from 'klona/full'
-import { type Required } from 'utility-types'
-import { type MaybeElementRef } from '@vueuse/core'
+import type { Required } from 'utility-types'
+import type { MaybeElementRef } from '@vueuse/core'
 import { config } from '~/components/config/components-config'
 
 // Types
@@ -28,8 +28,8 @@ import { useListKeyboardNavigation } from '~/components/List/functions/useListKe
 import { listItemsKey } from '~/components/List/provide/list.provide'
 
 // Components
-import SearchInput from '~/components/Inputs/SearchInput.vue'
-import ListVirtualContainer from '~/components/List/ListVirtualContainer.vue'
+import type SearchInput from '~/components/Inputs/SearchInput.vue'
+import type ListVirtualContainer from '~/components/List/ListVirtualContainer.vue'
 
 type IListPropsWithDefaults = Required<
   IListProps,
@@ -41,7 +41,7 @@ export function useList(
   props: IListPropsWithDefaults,
   listContainerRef: MaybeElementRef<
     InstanceType<typeof ListVirtualContainer> | undefined
-  >
+  >,
 ) {
   const self = getCurrentInstance()!
   const isInitialized = ref(false)
@@ -57,6 +57,7 @@ export function useList(
     addedItems,
     preAddedItem,
     addItem,
+    resetAddedItems,
   } = useItemAdding(props)
 
   const { getKey, getLabel, getOption, getEmitValue, isSelected } = {
@@ -77,7 +78,7 @@ export function useList(
       const key = getKey(option)
 
       return !!selectedByKey.value[key]
-    }
+    },
   }
 
   const fuseOptions: UseFuseOptions<any> = {
@@ -96,8 +97,7 @@ export function useList(
     },
   }
 
-  const useToBoldLatin =
-    props.useToBoldLatin ?? config.list.props.useToBoldLatin
+  const useToBoldLatin = props.useToBoldLatin ?? config.list.props.useToBoldLatin
 
   // List
   const isLoading = ref(false)
@@ -120,7 +120,7 @@ export function useList(
           key as string,
           useToBoldLatin
             ? $toBoldLatin(val?.toString())
-            : normalizeText(val?.toString())
+            : normalizeText(val?.toString()),
         )
       })
 
@@ -143,7 +143,7 @@ export function useList(
         return typeof props.itemLabel === 'function'
           ? props.itemLabel(row)
           : get(row, props.itemLabel)
-      }
+      },
     }),
   ]
 
@@ -179,9 +179,9 @@ export function useList(
 
     // Multi ~ `selected` is an Object
     else if (
-      props.multi &&
-      typeof selected.value === 'object' &&
-      Object.keys(selected.value).length
+      props.multi
+      && typeof selected.value === 'object'
+      && Object.keys(selected.value).length
     ) {
       return Object.keys(selected.value).reduce<Record<string, any>>(
         (agg, key) => {
@@ -190,7 +190,7 @@ export function useList(
 
           return agg
         },
-        {}
+        {},
       )
     }
 
@@ -206,10 +206,12 @@ export function useList(
   function reset() {
     hasMore.value = true
     totalRows.value = 0
+
+    resetAddedItems()
   }
 
   // Data handling
-  const hasMore = ref(true)
+  const hasMore = ref(!props.loadData?.local)
   const totalRows = ref(0)
   const selected = toRef(props, 'selected')
 
@@ -227,7 +229,9 @@ export function useList(
   }
 
   function handleSelectItem(option: any) {
-    if (props.noSelect) {
+    const isDisabled = props.disabledFnc?.(option)
+
+    if (props.noSelect || isDisabled) {
       return
     }
 
@@ -242,8 +246,6 @@ export function useList(
 
     // We selected a `preAdded` item
     if ('_isNew' in option.ref && option.ref._isNew) {
-      !props.noLocalAdd && addItem(option.ref)
-
       if (!props.noLocalAdd) {
         addItem(option.ref)
       } else {
@@ -327,8 +329,8 @@ export function useList(
       const isToBeCreated = '_isCreate' in item && item._isCreate
       // Remove the item from the added items if it was about to be created
       if (isToBeCreated && selectedByKey.value[itemKey] && props.multi && !props.keepAddedItems) {
-        addedItems.value =  addedItems.value.filter(
-          item => getKey(item) !== itemKey
+        addedItems.value = addedItems.value.filter(
+          item => getKey(item) !== itemKey,
         )
 
         nextTick(() => handleSearchedResults(results.value))
@@ -340,7 +342,7 @@ export function useList(
 
   // Searching
   const searchEl = ref<InstanceType<typeof SearchInput>>()
-  const search = ref(props.search || '')
+  const search = isNil(props.search) ? ref('') : useVModel(props, 'search')
   const hasExactMatch = ref(false)
   const arr = ref<Array<IGroupRow | IListItem>>([])
   const isPreventFetchData = refAutoReset(false, 150)
@@ -350,7 +352,7 @@ export function useList(
   // Extended search
   const extendedSearch = computed(() => {
     if (!search.value) {
-      return search.value
+      return search.value ?? ''
     }
 
     const searchBoldLatin = useToBoldLatin
@@ -363,25 +365,25 @@ export function useList(
 
     switch (props.fuseExtendedSearchToken) {
       case "'":
-        return `'${searchBoldLatin}`
+        return `'"${searchBoldLatin}"`
 
       case '=':
-        return `=${searchBoldLatin}`
+        return `="${searchBoldLatin}"`
 
       case '!':
-        return `!${searchBoldLatin}`
+        return `!"${searchBoldLatin}"`
 
       case '^':
-        return `^${searchBoldLatin}`
+        return `^"${searchBoldLatin}"`
 
       case '!^':
-        return `!^${searchBoldLatin}`
+        return `!^"${searchBoldLatin}"`
 
       case '$':
-        return `${searchBoldLatin}$`
+        return `"${searchBoldLatin}"$`
 
       case '!$':
-        return `!${searchBoldLatin}$`
+        return `!"${searchBoldLatin}"$`
 
       default:
         return searchBoldLatin
@@ -393,7 +395,7 @@ export function useList(
 
   async function handleSearchedResults(res: typeof results.value) {
     const _hasExactMatch = itemsExtended.value.some(
-      item => getLabel(item._ref) === search.value
+      item => getLabel(item._ref) === search.value,
     )
     let highlightedItems: IListItem[] = []
 
@@ -404,7 +406,7 @@ export function useList(
           ref: item._ref,
           id: getKey(item._ref),
           _highlighted: getLabel(item._ref),
-          path: '' // Just prepare
+          path: '', // Just prepare
         }
       })
     }
@@ -417,7 +419,7 @@ export function useList(
           id: getKey(item._ref),
           _highlighted: getLabel(item._ref),
           score,
-          path: '' // Just prepare
+          path: '', // Just prepare
         }
       })
     }
@@ -427,7 +429,7 @@ export function useList(
       const { highlightedResult } = highlight(res, {
         keys: fuseOptions?.fuseOptions?.keys || [],
         searchValue: search.value,
-        itemGetter: item => item._ref
+        itemGetter: item => item._ref,
       })
 
       highlightedItems = highlightedResult.map(({ item, highlighted }) => {
@@ -435,7 +437,7 @@ export function useList(
           ref: item._ref,
           id: getKey(item._ref),
           _highlighted: useToBoldLatin ? getLabel(item._ref) : highlighted,
-          path: '' // Just prepare
+          path: '', // Just prepare
         }
       })
     }
@@ -447,11 +449,10 @@ export function useList(
       })
     })
 
-    const shouldNotSort =
-      props.noSort ||
-      (fuseOptions.fuseOptions?.shouldSort &&
-        highlightedItems.length !== items.value.length)
-
+    const shouldNotSort
+      = props.noSort
+      || (fuseOptions.fuseOptions?.shouldSort
+      && highlightedItems.length !== items.value.length)
 
     const resultsSorted = shouldNotSort
       ? highlightedItems
@@ -463,18 +464,18 @@ export function useList(
             format: ({ ref }) => s.format?.(ref) || get(ref, s.field),
           })
         }),
-        groupBy
+        groupBy,
       )
 
     const groupedArray = await groupData(
       resultsSorted,
       groupBy,
       undefined,
-      useWorker.value
+      useWorker.value,
     )
 
     const preAddedItem = handleAddOnSearch({
-      search: search.value,
+      search: search.value ?? '',
       hasExactMatch: _hasExactMatch,
     })
 
@@ -483,7 +484,7 @@ export function useList(
         id: getKey(preAddedItem),
         ref: preAddedItem,
         _highlighted: getLabel(preAddedItem),
-        path: '' // Just prepare
+        path: '', // Just prepare
       })
     }
 
@@ -498,11 +499,11 @@ export function useList(
       return 'isGroup' in item
         ? item
         : {
-          id: item.id,
-          ref: item.ref,
-          _highlighted: item._highlighted,
-          path: String(idx)
-        }
+            id: item.id,
+            ref: item.ref,
+            _highlighted: item._highlighted,
+            path: String(idx),
+          }
     })
   }
 
@@ -542,12 +543,12 @@ export function useList(
               abortController: abortController(),
             })
           },
-          { noResolve: true }
+          { noResolve: true },
         )
 
         const resRows = get(
           res,
-          props.loadData.countKey || config.selector.countKey
+          props.loadData.countKey || config.selector.countKey,
         )
 
         if (props.loadData.local) {
@@ -579,10 +580,11 @@ export function useList(
         isLoading.value = false
       } catch (error) {
         isLoading.value = false
-        console.error(error)
       }
     }
   }
+
+  const debouncedFetchAndSetData = useDebounceFn(fetchAndSetData, props.searchDebounce ?? 0)
 
   // Watchers
   watch(
@@ -593,7 +595,11 @@ export function useList(
       // We need to wait for the previous `abort`
       setTimeout(async () => {
         if (props.loadData?.onSearch) {
-          await fetchAndSetData(search)
+          if (props.allowAdd) {
+            handleSearchedResults(results.value)
+          }
+
+          await debouncedFetchAndSetData(search)
         } else {
           if (isInitialized.value) {
             self.emit('before-search', {
@@ -611,7 +617,7 @@ export function useList(
         isInitialized.value = true
       })
     },
-    { immediate: true }
+    { immediate: true },
   )
 
   watch(items, () => {
@@ -621,13 +627,18 @@ export function useList(
   })
 
   // Keyboard navigation
-  const { hoveredIdx, listEl, handleKey, handleMouseOver } =
-    useListKeyboardNavigation({
-      listContainerRef,
-      handleSelectItem,
-      itemsRef: arr,
-      selectedRef: selected,
-    })
+  const {
+    hoveredIdx,
+    listEl,
+    handleKey,
+    handleMouseOver,
+  } = useListKeyboardNavigation({
+    listContainerRef,
+    handleSelectItem,
+    itemsRef: arr,
+    selectedRef: selected,
+    searchEl,
+  })
 
   return {
     isInitialized,
@@ -649,6 +660,7 @@ export function useList(
     refresh: () => {
       handleSearchedResults(results.value)
     },
+    resetAddedItems,
     reset,
   }
 }

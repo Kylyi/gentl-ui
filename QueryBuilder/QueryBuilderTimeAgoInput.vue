@@ -12,8 +12,20 @@ type IAgoValue = {
   unitShortName: string
 }
 
+type IExactInputProps = {
+  /**
+   * The initial value for `isExact` input
+   */
+  value: boolean
+  /**
+   * Indicates should exact selection button be disabled
+   */
+  isButtonDisabled?: boolean
+}
+
 type IProps = {
   item: Pick<IQueryBuilderItem, 'value' | 'comparator'>
+  exactInputOptions?: IExactInputProps
 }
 
 const props = defineProps<IProps>()
@@ -29,6 +41,7 @@ defineExpose({
 const inputEl = ref<InstanceType<typeof NumberInput>>()
 const menuEl = ref<InstanceType<typeof Menu>>()
 const item = toRef(props, 'item')
+const exactInputOptions = toRef(props, 'exactInputOptions')
 
 const units = computed(() => [
   { id: 'd', label: $t('general.day', agoValue.value.value ?? 0) },
@@ -40,7 +53,7 @@ const units = computed(() => [
 // ComapratorEnum.AGO, CoparatorEnum.NOT_AGO, ComparatorEnum.UNTIL, ComparatorEnum.NOT_UNTIL
 const agoValue = computed({
   get() {
-    const matches = (item.value.value || '').match(/(\d+\.\d+|\d+)([a-zA-Z]+)/)
+    const matches = (item.value.value || '').match(/(\d+\.\d+|\d+)([a-z]+)/i)
     let value: number | undefined
     let unit: string
     const unitShortName = matches?.[2] as string
@@ -89,6 +102,11 @@ const isExact = computed({
   },
 })
 
+// Set isExact value from exactInputOptions props, if provided
+if (exactInputOptions.value?.value && exactInputOptions.value.value !== isExact.value) {
+  isExact.value = exactInputOptions.value.value
+}
+
 function setUnit(unitShortName: string) {
   agoValue.value = {
     unitShortName: isExact.value ? `${unitShortName}e` : unitShortName,
@@ -104,6 +122,7 @@ function setUnit(unitShortName: string) {
     :model-value="agoValue.value"
     size="sm"
     layout="regular"
+    :mask="{ mask: /^\d+$/ }"
     class="qb-item__content-value"
     @update:model-value="agoValue = { value: $event }"
   >
@@ -111,15 +130,14 @@ function setUnit(unitShortName: string) {
       <div flex="~ gap-1">
         <Btn
           flex="shrink"
-          :label="
-            $t(`general.${agoValue.unit}`, agoValue.value || 0).toLowerCase()
-          "
+          :label="$t(`general.${agoValue.unit}`, Math.round(agoValue.value ?? 0) || 0).toLowerCase()"
           size="xs"
           no-uppercase
           no-bold
           color="ca"
           tabindex="-1"
           w="16"
+          @click.stop.prevent
           @mousedown.stop.prevent
         >
           <Menu
@@ -151,6 +169,7 @@ function setUnit(unitShortName: string) {
           no-bold
           no-uppercase
           :label="$t('table.exactFilter')"
+          :disabled="exactInputOptions?.isButtonDisabled"
           @click="isExact = !isExact"
         />
       </div>

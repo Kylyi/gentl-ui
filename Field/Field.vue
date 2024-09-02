@@ -31,7 +31,6 @@ defineExpose({
     error-visible
     :has-content="!noContent"
     @click="handleClickWrapper"
-    @label-click="el?.focus()"
   >
     <template
       v-if="$slots.prepend"
@@ -42,7 +41,6 @@ defineExpose({
 
     <span
       :id="inputId"
-      ref="el"
       class="control w-full"
       :class="[
         controlClass,
@@ -55,7 +53,7 @@ defineExpose({
       :disabled="disabled"
       @focus="$emit('focus', $event)"
     >
-      <slot> {{ modelValue || placeholder || '&nbsp;' }} </slot>
+      <slot :el> {{ modelValue || placeholder || '&nbsp;' }} </slot>
     </span>
 
     <template
@@ -75,6 +73,6 @@ defineExpose({
 
 <style scoped lang="scss">
 .is-placeholder {
-  --apply: color-[#9ca3af];
+  @apply color-[#9ca3af];
 }
 </style>

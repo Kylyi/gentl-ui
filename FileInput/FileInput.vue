@@ -15,10 +15,13 @@ const props = withDefaults(defineProps<IFileInputProps>(), {
   downloadUrl: config.fileInput.props.downloadUrl,
   multi: config.fileInput.props.multi,
 })
+
 const emits = defineEmits<{
   (e: 'update:modelValue', value: Array<FileModel | IFile>): void
   (e: 'filesAdded', value: Array<FileModel | IFile>): void
   (e: 'filesRemoved', value: Array<FileModel | IFile>): void
+  (e: 'focus'): void
+  (e: 'blur'): void
 }>()
 
 // Utils
@@ -46,6 +49,7 @@ const { isOverDropZone } = useDropZone(fileInputWrapperEl, {
   onDrop: handleAdd,
   dataTypes: props.accept?.split(',').map(type => type.trim()),
 })
+
 const { open, onChange, reset } = useFileDialog({
   accept: props.accept,
   multiple: props.multi,
@@ -63,13 +67,14 @@ function handleAdd(files: FileList | File[] | null) {
   }
 
   const filesArray = Array.from(files).map(file => new FileModel({ file }))
-  emits('filesAdded', filesArray)
 
   if (props.multi) {
     model.value = [...(model.value || []), ...filesArray]
   } else {
     model.value = filesArray
   }
+
+  emits('filesAdded', filesArray)
 
   reset()
 }
@@ -79,9 +84,8 @@ function handleRemove(idx: number) {
     return
   }
 
-  const removed = model.value.slice(idx, 1)
-  emits('filesRemoved', removed)
-  model.value = model.value.filter((_, i) => i !== idx)
+  emits('filesRemoved', [model.value[idx]])
+  model.value = model.value.toSpliced(idx, 1)
 }
 
 onChange(handleAdd)
@@ -148,40 +152,39 @@ syncRef(model, files, { direction: 'both', deep: true })
 
 <style scoped lang="scss">
 .file-input-wrapper {
-  --apply: h-50 border-2 border-dashed p-2 rounded-3 relative  overflow-auto;
-  --apply: dark:border-true-gray-600/50 border-true-gray-300/80;
-  --apply: dark:bg-darker bg-white;
+  @apply min-h-50 border-2 border-dashed p-2 rounded-3 relative  overflow-auto;
+  @apply dark:border-true-gray-600/50 border-true-gray-300/80;
+  @apply dark:bg-darker bg-white;
 
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
 
   &.is-dragger-over,
   &:hover {
-    --apply: dark:border-true-gray-600 border-true-gray-300;
+    @apply dark:border-true-gray-600 border-true-gray-300;
 
     .file-input-wrapper-hint {
-      --apply: color-darker dark:color-light-800;
+      @apply color-darker dark:color-light-800;
     }
   }
 
   &-hint {
-    --apply: absolute grid place-content-center place-items-center inset-0;
-    --apply: color-true-gray-500;
+    @apply absolute grid place-content-center place-items-center inset-0;
+    @apply color-true-gray-500;
   }
 
   &:not(.is-readonly) {
-    --apply: cursor-pointer;
+    @apply cursor-pointer;
   }
 
-
   .file-add {
-    --apply: fit flex-gap-4 border-2 border-dotted border-primary;
-    --apply: min-h-146px; // This is the height of the file preview
+    @apply fit flex-gap-4 border-2 border-dotted border-primary;
+    @apply min-h-146px; // This is the height of the file preview
   }
 }
 
 .wrapper__body.has-error {
   .file-input-wrapper {
-    --apply: border-negative;
+    @apply border-negative;
   }
 }
 </style>

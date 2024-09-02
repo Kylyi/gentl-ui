@@ -1,10 +1,12 @@
-import { type CSSProperties } from 'vue'
-import { type FuseOptions } from '@vueuse/integrations/useFuse'
+import type { CSSProperties } from 'vue'
+import type { FuseOptions } from '@vueuse/integrations/useFuse'
 import type { RouteLocationRaw } from '#vue-router'
 
 // Types
 import type { IInputProps } from '~/components/Inputs/types/input-props.type'
 import type { IListProps } from '~/components/List/types/list-props.type'
+import type { IMenuProps } from '~/components/Menu/types/menu-props.type'
+import type { IDialogProps } from '~/components/Dialog/types/dialog-props.type'
 
 // Models
 import type { GroupItem } from '~/libs/Shared/models/group-item.model'
@@ -30,6 +32,11 @@ export type ISelectorProps = IInputProps & {
    * The class applied to the `control` element
    */
   controlClass?: ClassType
+
+  /**
+   * When true, the `append` slot will not be shown
+   */
+  noAppend?: boolean
 
   /**
    * Whether to hide clear buttons for selected items
@@ -135,4 +142,25 @@ export type ISelectorProps = IInputProps & {
    * The function to use for transforming the added item
    */
   transformAddedItem?: (item: any) => any
+
+  /**
+   * The class applied to the `Chip` when using `multi` mode
+   */
+  chipClass?: ClassType | ((item: any) => ClassType)
+
+  /**
+   * The style applied to the `Chip` when using `multi` mode
+   */
+  chipStyle?: CSSProperties | ((item: any) => CSSProperties)
+
+  /**
+   * Props for the picker
+   */
+  menuProps?: IDialogProps & IMenuProps & { class?: ClassType, style?: CSSProperties }
+
+  /**
+   * Defines how the label of the item looks like while selected
+   * Takes priority over the `optionLabel` prop
+   */
+  selectionLabel?: ((opt: any) => string) | string
 }

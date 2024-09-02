@@ -1,25 +1,25 @@
 <script setup lang="ts">
-// Injections
-import { editorKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
+// Store
+import { useWysiwygStore } from '~/components/Wysiwyg/wysiwyg.store'
 
-// Layout
-const editor = inject(editorKey)
+// Store
+const { editor } = useWysiwygStore()
 
 function isActive(level?: number) {
-  return toValue(editor)?.isActive('heading', { ...(level && { level }) })
+  return editor?.isActive('heading', { ...(level && { level }) })
 }
 
-function handleSetHeading(payload: { isHeading: boolean; level?: number }) {
+function handleSetHeading(payload: { isHeading: boolean, level?: number }) {
   const { isHeading, level } = payload
 
   if (isHeading) {
-    toValue(editor)
+    editor
       ?.chain()
       .focus()
       .setHeading({ level: (level as any) ?? 6 })
       .run()
   } else {
-    toValue(editor)?.chain().focus().setParagraph().run()
+    editor?.chain().focus().setParagraph().run()
   }
 }
 </script>

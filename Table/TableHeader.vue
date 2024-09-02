@@ -1,6 +1,9 @@
 <script setup lang="ts">
+// Types
+import type { ITableProps } from '~/components/Table/types/table-props.type'
+
 // Models
-import { TableColumn } from '~/components/Table/models/table-column.model'
+import type { TableColumn } from '~/components/Table/models/table-column.model'
 
 // Functions
 import {
@@ -10,6 +13,8 @@ import {
 
 // Injections
 import {
+  tableColumnsKey,
+  tableRowsKey,
   tableSelectRowKey,
   tableSelectionKey,
 } from '~/components/Table/provide/table.provide'
@@ -18,11 +23,12 @@ import {
 import HorizontalScroller from '~/components/Scroller/HorizontalScroller.vue'
 
 type IProps = {
-  columns: TableColumn<any>[]
   minimumColumnWidth?: number
+  noAutofit?: boolean
   noLock?: boolean
   rows: any[]
   smallScreen?: boolean
+  selectionOptions?: ITableProps['selectionOptions']
 }
 
 const props = defineProps<IProps>()
@@ -33,15 +39,25 @@ const emits = defineEmits<{
 
 // Utils
 const { scrollbarWidth } = useOverflow()
-const { headerEl, activeSplitter, columnSplitters, handleSplitterPointerDown } =
-  useTableColumnResizing(props)
 
 // Injections
 const selection = injectStrict(tableSelectionKey)
+const tableRows = injectStrict(tableRowsKey)
+const columns = injectStrict(tableColumnsKey)
 const handleSelectRow = injectStrict(tableSelectRowKey)
 
+const {
+  headerEl,
+  activeSplitter,
+  columnSplitters,
+  handleFitColumns,
+  handleSplitterPointerDown,
+} = useTableColumnResizing({
+  columns,
+  minimumColumnWidth: props.minimumColumnWidth,
+})
+
 // Layout
-const columns = toRef(props, 'columns')
 const scrollX = ref(0)
 
 const selectedCount = computed(() => {
@@ -55,8 +71,8 @@ const selectionState = computed({
     return selectedCount.value === totalCount && selectedCount.value > 0
       ? true // Everything is selected
       : selectedCount.value > 0
-      ? null // Something is selected
-      : false // Nothing is selected
+        ? null // Something is selected
+        : false // Nothing is selected
   },
   set(val: boolean | null) {
     props.rows.forEach(row => {
@@ -82,8 +98,16 @@ const scrollerContentClass = computed(() => {
 
 watch(
   () => visibleColumns.value.length,
-  () => nextTick(() => headerEl.value?.updateArrows())
+  () => nextTick(() => headerEl.value?.updateArrows()),
 )
+
+// Auto-fitting and auto-stretching columns
+if (!props.noAutofit) {
+  watchOnce(tableRows, async () => {
+    await nextTick()
+    handleFitColumns()
+  })
+}
 
 function handleScroll(x: number) {
   scrollX.value = x
@@ -159,9 +183,7 @@ defineExpose({
           :key="splitter.field"
           class="splitter"
           :style="{ left: getSplitterLeft(splitter) }"
-          @pointerdown.stop.prevent="
-            handleSplitterPointerDown(splitter, $event)
-          "
+          @pointerdown.stop.prevent="handleSplitterPointerDown(splitter, $event)"
         />
       </template>
     </template>
@@ -170,19 +192,19 @@ defineExpose({
 
 <style lang="scss" scoped>
 .thead {
-  --apply: flex shrink-0 relative
-    bg-white dark:bg-darker min-h-$headerHeight;
+  @apply flex shrink-0 relative
+    bg-$Table-header-bg min-h-$headerHeight;
 }
 .splitter {
-  --apply: absolute top-0 bottom-0 w-7px z-5;
+  @apply absolute top-0 bottom-0 w-7px z-5;
 
   &-active {
-    --apply: fixed z-$zMax border-x-3px border-ca bg-black dark:bg-white
+    @apply fixed z-$zMax border-x-3px border-ca bg-black dark:bg-white
       cursor-col-resize;
   }
 
   &:hover {
-    --apply: border-x-3px border-ca bg-black dark:bg-white cursor-col-resize;
+    @apply border-x-3px border-ca bg-black dark:bg-white cursor-col-resize;
   }
 }
 </style>

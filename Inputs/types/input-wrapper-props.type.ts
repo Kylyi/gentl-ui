@@ -1,4 +1,4 @@
-import { type CSSProperties } from 'vue'
+import type { CSSProperties } from 'vue'
 
 // Types
 import type { IInputLabelProps } from '~/components/Inputs/types/input-label-props.type'
@@ -17,6 +17,11 @@ export type IInputWrapperProps = IInputLabelProps & {
   disabled?: boolean
 
   /**
+   * Custom errors provided by the parent component
+   */
+  errors?: string[]
+
+  /**
    * When true, the error container takes space (~ is relative positioned)
    * WHen false, the error container is absolute positioned
    */
@@ -26,6 +31,12 @@ export type IInputWrapperProps = IInputLabelProps & {
    * Whether the error is visible
    */
   errorVisible?: boolean
+
+  /**
+   * By default, when focusing the input, menus/dialogs that are not in the same context
+   * will be hidden. We can provide the element that actually sets the context
+   */
+  hideUntilEl?: Element
 
   /**
    * The hint that will be shown below the input
@@ -46,6 +57,12 @@ export type IInputWrapperProps = IInputLabelProps & {
    * Whether the input has no border
    */
   noBorder?: boolean
+
+  /**
+   * By default, when focusing the input, menus/dialogs that are not in the same context
+   * When this prop is true, the floating will not be hidden
+   */
+  noHideFloating?: boolean
 
   /**
    * The original value of the input
@@ -69,7 +86,7 @@ export type IInputWrapperProps = IInputLabelProps & {
 
   /**
    * When clicking into the input, the tooltip will be shown
-   * Note: Currently works only for TextInput
+   * NOTE: Currently works only for TextInput
    */
   tooltip?: string
 
@@ -83,7 +100,12 @@ export type IInputWrapperProps = IInputLabelProps & {
     borderColor?: string
 
     /**
-     * The class of the input wrapper (including label,...)
+     * The border radius of the input
+     */
+    borderRadius?: string
+
+    /**
+     * The class of the input wrapper (including label, ...)
      */
     contentClass?: ClassType
 
@@ -93,7 +115,7 @@ export type IInputWrapperProps = IInputLabelProps & {
     contentStyle?: CSSProperties
 
     /**
-     * Class of the input container
+     * Class of the input container (excluding label, hint, error container, ...)
      *
      * Note: Primarily used for background color
      */
@@ -102,9 +124,19 @@ export type IInputWrapperProps = IInputLabelProps & {
     /**
      * Style of the input container
      *
-     * * Note: Primarily used for background color
+     * Note: Primarily used for background color
      */
     inputContainerStyle?: CSSProperties
+
+    /**
+     * Class of the inner container around the actual input tag
+     */
+    inputInnerContainerClass?: ClassType
+
+    /**
+     * Style of the inner container around the actual input tag
+     */
+    inputInnerContainerStyle?: CSSProperties
   }
 
   /**
@@ -120,7 +152,7 @@ export type IInputWrapperProps = IInputLabelProps & {
   zod?:
     | string
     | {
-        key: string
-        options?: IZodValidationOptions
-      }
+      key: string
+      options?: IZodValidationOptions
+    }
 }

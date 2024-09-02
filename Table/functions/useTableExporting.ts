@@ -16,8 +16,9 @@ export function useTableExporting(tableRows?: MaybeRefOrGetter<any[]>) {
     rows?: any[]
     columns?: any[]
     exportFormat?: 'xlsx' | 'csv'
+    formatName?: () => string
   }) {
-    const { columns = [], rows: _rows, exportFormat } = options ?? {}
+    const { columns = [], rows: _rows, exportFormat, formatName } = options ?? {}
 
     const rows = _rows ?? toValue(tableRows)
 
@@ -43,7 +44,7 @@ export function useTableExporting(tableRows?: MaybeRefOrGetter<any[]>) {
       return rowData
     })
 
-    const fileName = `data-${formatDate(Date.now(), 'long')}`
+    const fileName = formatName?.() ?? `data-${formatDate(Date.now(), 'long')}`
 
     if (exportFormat === 'xlsx') {
       const wb = utils.book_new()

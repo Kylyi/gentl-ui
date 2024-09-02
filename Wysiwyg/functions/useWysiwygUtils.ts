@@ -1,91 +1,80 @@
-import { mergeAttributes, Node } from '@tiptap/core'
-import { VueNodeViewRenderer } from '@tiptap/vue-3'
-import { type SuggestionKeyDownProps } from '@tiptap/suggestion'
-
-// Functions
-import { useValueFormatterUtils } from '~/components/ValueFormatter/functions/useValueFormatterUtils'
+// Types
+import type { IWysiwygProps } from '~/components/Wysiwyg/types/wysiwyg-props.type'
 
 // Injections
-import { mentionEntityKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
+import { wysiwygMentionPopulateKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
 
 // Constants
-import { mentionItemsMap } from '~/components/Wysiwyg/constants/resolve-values.map'
-
-// Components
-import WysiwygFile from '~/components/Wysiwyg/WysiwygFile.vue'
+import { useWysiwygStore } from '~/components/Wysiwyg/wysiwyg.store'
 
 export function useWysiwygUtils() {
-  const { formatValue } = useValueFormatterUtils()
-  const mentionEntity = injectStrict(mentionEntityKey, {})
+  // Injections
+  const injectedPopulateFnc = inject(wysiwygMentionPopulateKey)
 
-  function resolveValues(view: SuggestionKeyDownProps['view']) {
-    const entity = toValue(mentionEntity)
-    const elements = view.dom.querySelectorAll('span[data-type="mention"]')
+  // Store
+  const wysiwygStore = useWysiwygStore()
+
+  const transitionProps = computed(() => ({
+    enterActiveClass: 'animate-fade-in animate-duration-150',
+    leaveActiveClass: 'animate-fade-out animate-duration-150',
+  }))
+
+  function resolveMentions(
+    populateFnc: IWysiwygProps['populateMention'],
+    replace = false,
+    props?: Pick<IWysiwygProps, 'populateMention' | 'onMentionResolve'>
+    & { el?: HTMLElement },
+  ) {
+    const domEl = props?.el ?? wysiwygStore.editor?.view?.dom
+    const _populateFnc = populateFnc ?? injectedPopulateFnc ?? props?.populateMention
+
+    if (!domEl || !_populateFnc) {
+      return
+    }
+
+    const elements = domEl.querySelectorAll('span[data-type="mention"]')
 
     elements.forEach(el => {
-      const attrValue = el.getAttribute('data-id')
+      const attrId = el.getAttribute('data-id')
 
-      if (attrValue) {
-        const definition = mentionItemsMap.get(attrValue)
+      if (attrId) {
+        const value = _populateFnc?.(attrId) ?? ''
 
-        if (!definition) {
-          return ''
+        if (isUndefined(value) || value === '') {
+          return
         }
+        if (replace) {
+          const spanEl = document.createElement('span')
+          spanEl.textContent = value
 
-        const value =
-          definition.format?.(entity) ??
-          formatValue(get(entity || {}, definition.id), undefined, {
-            dataType: definition.dataType,
-          }) ??
-          `\${${attrValue}}`
-
-        const spanEl = document.createElement('span')
-        spanEl.innerText = value
-
-        el.replaceWith(spanEl)
+          el.replaceWith(spanEl)
+        } else {
+          el.textContent = value
+        }
       }
     })
+
+    props?.onMentionResolve?.(domEl.innerHTML)
   }
 
-  function FileComponent() {
-    return Node.create({
-      name: 'wysiwygFile',
-      group: 'inline', // Change this to inline
-      inline: true, // Ensure the node is inline
-      draggable: true,
-      atom: true,
-      parseHTML() {
-        return [
-          { tag: 'wysiwyg-file' },
-        ]
-      },
-      renderHTML({ HTMLAttributes }) {
-        return [
-          'wysiwyg-file',
-          mergeAttributes(
-            HTMLAttributes,
-            { 'data-type': 'draggable-item' }
-          )
-        ]
-      },
-      addAttributes() {
-        return {
-          uuid: {
-            default: '',
-          },
-          files: {
-            default: '',
-          }
-        }
-      },
-      addNodeView() {
-        return VueNodeViewRenderer(WysiwygFile)
-      },
-    })
+  function removeElement(selector: string, wysiwygModel: Ref<any>) {
+    const parser = new DOMParser()
+    const doc = parser.parseFromString(wysiwygStore.editor?.getHTML() ?? '', 'text/html')
+
+    const node = doc.querySelector(selector)
+
+    if (node) {
+      node.remove()
+
+      wysiwygStore.editor?.chain().setContent(doc.body.innerHTML).run()
+
+      wysiwygModel.value = doc.body.innerHTML
+    }
   }
 
   return {
-    resolveValues,
-    FileComponent
+    resolveMentions,
+    transitionProps,
+    removeElement,
   }
 }

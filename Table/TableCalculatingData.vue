@@ -6,6 +6,6 @@
 
 <style lang="scss" scoped>
 .calculating-data {
-  --apply: absolute inset-inline-0 top-17 flex flex-center;
+  @apply absolute inset-inline-0 top-17 flex flex-center;
 }
 </style>

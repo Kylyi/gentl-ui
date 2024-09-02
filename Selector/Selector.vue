@@ -69,13 +69,16 @@ defineExpose({
     optionsInternal.value = []
   },
   handleSelect,
+  handleRemove,
   clear: () => clear(),
 })
+
+const slots = useSlots()
 
 // Lifecycle
 onMounted(() => {
   menuReferenceTarget.value = self?.proxy?.$el.querySelector(
-    '.input-wrapper-border'
+    '.input-wrapper-border',
   )
 })
 
@@ -85,17 +88,18 @@ watch(
   () => {
     nextTick(() => {
       menuReferenceTarget.value = self?.proxy?.$el.querySelector(
-        '.input-wrapper-border'
+        '.input-wrapper-border',
       )
     })
-  }
+  },
 )
 
 // Utils
+const self = getCurrentInstance()
+const { $bp } = useNuxtApp()
 const { handleRequest } = useRequest()
 const { path } = useInputValidationUtils(props)
 const { getListProps } = useListUtils()
-const self = getCurrentInstance()
 
 const hasContent = computed(() => {
   return Array.isArray(model.value)
@@ -114,11 +118,31 @@ function getKey(option: any): string {
   return typeof option === 'object' ? get(option, props.optionKey) : option
 }
 
+function getChipClass(item: any) {
+  return typeof props.chipClass === 'function'
+    ? props.chipClass(item)
+    : props.chipClass
+}
+
+function getChipStyle(item: any) {
+  return typeof props.chipStyle === 'function'
+    ? props.chipStyle(item)
+    : props.chipStyle
+}
+
 function getLabel(option: any) {
   if (isNil(option)) {
     return ''
   }
 
+  // We provided the `selectionLabel` prop
+  if (typeof props.selectionLabel === 'function') {
+    return typeof option !== 'object'
+      ? props.selectionLabel(optionsByKey.value[option]) || option
+      : props.selectionLabel(option)
+  }
+
+  // We provided the `optionLabel` prop
   if (typeof props.optionLabel === 'function') {
     return typeof option !== 'object'
       ? props.optionLabel(optionsByKey.value[option]) || option
@@ -127,7 +151,7 @@ function getLabel(option: any) {
 
   return typeof option !== 'object'
     ? get(optionsByKey.value[option], props.optionLabel) ?? option
-    : get(option, props.optionLabel)
+    : get(option, props.optionLabel) ?? get(optionsByKey.value[getKey(option)], props.optionLabel)
 }
 
 function getOption(option: any): any {
@@ -211,11 +235,13 @@ function handleSelect(val: any) {
 function handleSelectAdd(data: any) {
   emits('added', data)
   syncScrollArea()
+  menuProxyEl.value?.recomputePosition()
 }
 
 function handleSelectRemove(data: any) {
   emits('removed', data)
   syncScrollArea()
+  menuProxyEl.value?.recomputePosition()
 }
 
 // List
@@ -223,13 +249,14 @@ const listEl = ref<InstanceType<typeof List>>()
 const options = toRef(props, 'options')
 const optionsInternal = ref<any[]>([])
 const listProps = getListProps(props)
+const search = defineModel<ISelectorProps['search']>('search')
 
 const optionsExtended = computed(() => {
   const optionsAdjusted = [...options.value, ...optionsInternal.value].map(
     opt =>
       typeof opt === 'object'
         ? opt
-        : { [props.optionKey]: opt, [props.optionLabel as string]: opt }
+        : { [props.optionKey]: opt, [props.optionLabel as string]: opt },
   )
 
   return optionsAdjusted
@@ -337,6 +364,14 @@ const isLoading = computed(() => {
   return props.loading || isLoadingInternal.value
 })
 
+const hasAppendSlot = computed(() => {
+  if (props.noAppend) {
+    return false
+  }
+
+  return slots.append || (!props.readonly && !props.disabled)
+})
+
 const ui = computed(() => {
   return {
     ...props.ui,
@@ -366,9 +401,9 @@ if (props.loadData?.immediate) {
 
 // Preselect on init
 if (
-  props.preselectFirst &&
-  (props.modelValue === props.emptyValue || isNil(props.modelValue)) &&
-  props.options.length > 0
+  props.preselectFirst
+  && (props.modelValue === props.emptyValue || isNil(props.modelValue))
+  && props.options.length > 0
 ) {
   if (props.emitKey) {
     handleSelect(getKey(options.value[0]))
@@ -479,6 +514,8 @@ function getData() {
           :navigate-to-options="{ open: { target: '_blank' } }"
           min-w="20"
           p="!y-1px"
+          :class="getChipClass(chip)"
+          :style="getChipStyle(chip)"
           :has-remove="!(readonly || disabled)"
           @remove="handleRemove(chip)"
         />
@@ -486,17 +523,24 @@ function getData() {
 
       <!-- Multi -->
       <template v-else-if="multi && model">
-        <Chip
-          v-for="(chip, idx) in modelValue"
-          :key="idx"
-          :label="getLabel(chip)"
-          :to="optionTo?.(chip)"
-          :navigate-to-options="{ open: { target: '_blank' } }"
-          :has-remove="!(readonly || disabled) && !noItemsClear"
-          min-w="20"
-          p="!y-1px"
-          @remove="handleRemove(chip)"
-        />
+        <slot
+          name="selection-chips"
+          :selected-option="getOption(model)"
+        >
+          <Chip
+            v-for="(chip, idx) in modelValue"
+            :key="idx"
+            :label="getLabel(chip)"
+            :to="optionTo?.(chip)"
+            :navigate-to-options="{ open: { target: '_blank' } }"
+            :has-remove="!(readonly || disabled) && !noItemsClear"
+            min-w="20"
+            p="!y-1px"
+            :class="getChipClass(chip)"
+            :style="getChipStyle(chip)"
+            @remove="handleRemove(chip)"
+          />
+        </slot>
       </template>
 
       <!-- Single selection -->
@@ -512,7 +556,7 @@ function getData() {
 
     <template #append>
       <div
-        v-if="$slots.append || (!readonly && !disabled && !noDropdownIcon)"
+        v-if="hasAppendSlot"
         flex="~ gap-x-1 center"
         p="x-2"
         shrink-0
@@ -574,6 +618,7 @@ function getData() {
         no-uplift
         max-height="50%"
         :ui="{ contentClass: 'p-0' }"
+        v-bind="menuProps"
         data-cy="drop-down-list"
         @placement="menuPlacement = $event"
         @before-hide="handleBeforeHide"
@@ -586,6 +631,7 @@ function getData() {
             ref="listEl"
             v-model:added-items="addedItems"
             v-model:items="listOptions"
+            v-model:search="search"
             :selected="modelValue || []"
             :item-key="optionKey"
             :item-label="optionLabel"
@@ -600,10 +646,13 @@ function getData() {
             @removed="handleSelectRemove"
           >
             <template
-              v-if="$bp.isSmaller('sm')"
+              v-if="$bp.isSmaller('sm') || $slots['after-search']"
               #after-search
             >
+              <slot name="after-search" />
+
               <Btn
+                v-if="$bp.isSmaller('sm')"
                 preset="CLOSE"
                 self-center
                 m="r-2"
@@ -648,64 +697,63 @@ function getData() {
 
 <style lang="scss" scoped>
 .placeholder {
-  --apply: truncate max-w-9/10%;
+  @apply truncate max-w-9/10%;
   color: #9ca3af;
 }
 
 .dropdown-icon {
-  --apply: shrink-0 color-ca inline cursor-pointer;
+  @apply shrink-0 color-ca inline cursor-pointer;
 }
 
 .wrapper--sm {
   .dropdown-icon {
-    --apply: h-3.5 w-3.5;
+    @apply h-3.5 w-3.5;
   }
 }
 
 .wrapper--md {
   .dropdown-icon {
-    --apply: h-4 w-4;
+    @apply h-4 w-4;
   }
 }
 
-
 .is-active {
   :deep(.label) {
-    --apply: color-$InputLabel-active-color;
+    @apply color-$InputLabel-active-color;
   }
 
   :deep(.wrapper__body:after) {
-    --apply: border-primary/50 dark:border-primary/50;
+    @apply border-primary/50 dark:border-primary/50;
   }
 }
 
 @screen md {
   .is-active.is-menu-width-matched.has-menu-bottom {
     :deep(.wrapper__body:after) {
-      --apply: rounded-b-0;
+      @apply rounded-b-0;
     }
 
     :deep(.input-wrapper-border) {
-      --apply: rounded-b-0 border-primary/40;
+      @apply rounded-b-0 border-primary/40;
     }
   }
 
   .is-active.is-menu-width-matched.has-menu-top {
     :deep(.wrapper__body:after) {
-      --apply: rounded-t-0;
+      @apply rounded-t-0;
     }
 
     :deep(.input-wrapper-border) {
-      --apply: rounded-t-0 border-primary/40;
+      @apply rounded-t-0 border-primary/40;
     }
   }
 }
 
 .control {
-  --apply: flex;
+  @apply flex;
 
   &::after {
-    --apply: color-transparent w-0;
+    @apply color-transparent w-0;
     content: '_';
   }
 }
