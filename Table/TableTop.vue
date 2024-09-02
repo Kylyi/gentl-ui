@@ -521,7 +521,40 @@ onKeyStroke(['d', 'D'], (ev: KeyboardEvent) => {
             color="ca"
             :label="$t('table.fitColumns')"
             @click="fitColumns"
-          />
+          >
+            <Tooltip
+              flex="~ col gap-1"
+              p="2"
+            >
+              <div
+                text="caption"
+                flex="~ gap-1"
+              >
+                <KeyboardShortcut
+                  icon="i-hugeicons:mouse-left-click-01"
+                  with-ctrl
+                  force-visibility
+                  shrink-0
+                />
+
+                {{ $t('table.justifyColumns') }}
+              </div>
+
+              <div
+                text="caption"
+                flex="~ gap-1"
+              >
+                <KeyboardShortcut
+                  icon="i-hugeicons:mouse-left-click-01"
+                  with-shift
+                  force-visibility
+                  shrink-0
+                />
+
+                {{ $t('table.stretchColumns') }}
+              </div>
+            </Tooltip>
+          </Btn>
 
           <template v-if="!tableTopFunctionality?.noLayout">
             <!-- Layout selector -->

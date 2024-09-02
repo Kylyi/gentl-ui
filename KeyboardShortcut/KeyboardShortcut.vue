@@ -5,6 +5,7 @@ import { useAppStore } from '~/libs/App/app.store'
 type IProps = {
   icon?: string
   char?: string
+  forceVisibility?: boolean
   withCtrl?: boolean
   withAlt?: boolean
   withShift?: boolean
@@ -22,7 +23,7 @@ const hasAnyModifier = computed(() => {
 
 const isVisible = computed(() => {
   return appStore.lastPointerDownType === 'mouse'
-    && appStore.appState.general?.keyboardShortcuts
+    && (appStore.appState.general?.keyboardShortcuts || props.forceVisibility)
 })
 </script>
 
