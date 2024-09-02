@@ -24,7 +24,9 @@ const tooltipEl = ref<HTMLElement>()
 const arrowEl = ref<HTMLDivElement>()
 const middleware = computed(() => [
   offset(props.step.offset),
-  flip(),
+  flip({
+    fallbackPlacements: props.step.fallbackPlacements
+  }),
   shift(),
   ...(props.noArrow ? [] : [arrow({ element: arrowEl, padding: 4 })]),
 ])

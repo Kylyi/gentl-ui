@@ -28,6 +28,7 @@ export class TutorialWizardStep {
 
   // Placement of the tutorial step
   placement: Placement = 'top'
+  fallbackPlacements?: Placement[]
   offset: OffsetOptions = 10
   // Whether to adapt the placement of the tutorial step based on avaiable space
   adaptPlacement: boolean = true
@@ -49,6 +50,7 @@ export class TutorialWizardStep {
 
       // Layout
       this.placement = args.placement ?? this.placement
+      this.fallbackPlacements = args.fallbackPlacements
       this.offset = args.offset ?? this.offset
       this.adaptPlacement = args.adaptPlacement ?? this.adaptPlacement
       this.heading = args.heading
