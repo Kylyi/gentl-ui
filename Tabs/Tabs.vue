@@ -8,18 +8,12 @@ import { config } from '~/components/config/components-config'
 // Types
 import type { ITabsProps } from '~/components/Tabs/types/tabs-props.type'
 
-// Utils
-import { useTabsUtils } from '~/components/Tabs/functions/useTabsUtils'
-
 const props = withDefaults(defineProps<ITabsProps>(), {
   noAnimation: config.tabs.props.noAnimation,
 })
 const emits = defineEmits<{
   (e: 'update:modelValue', id: string | number): void
 }>()
-
-// Utils
-const { createTab } = useTabsUtils()
 
 // Layout
 const keepAliveTabs = ref<string[]>([])
@@ -54,25 +48,32 @@ const tabs = computed(() => {
   return vueInstances
     .filter(
       t =>
-        typeof t.type === 'object' && (t.type as any).name?.startsWith('Tab_'),
+        typeof t.type === 'object' && (t.type as any).name?.startsWith('Tab_')
     )
-    .map((t: VNode, index) => {
-      return createTab(t, index)
+    .map((t: VNode) => {
+      return {
+        id: t.props!.name,
+        label: t.props!.label || t.props!.name,
+        icon: t.props!.icon,
+        size: t.props!.size,
+        component: t,
+        componentName: (t.type as any).name,
+      }
     })
 })
 
 const activeTab = computed(() => {
-  return tabs.value.find(tab => tab.props?.id === props.modelValue)
+  return tabs.value.find(tab => tab.id === props.modelValue)
 })
 
 watch(
   tabs,
   tabs => {
     keepAliveTabs.value = tabs
-      .filter(tab => !isNil(tab.props?.['keep-alive']))
-      .map(tab => tab.props?.componentName)
+      .filter(tab => !isNil(tab.component.props?.['keep-alive']))
+      .map(tab => tab.componentName)
   },
-  { immediate: true },
+  { immediate: true }
 )
 
 // Handling tab changes
@@ -81,10 +82,8 @@ const transitionEnter = ref('')
 const transitionLeave = ref('')
 
 function handleTabChange(id: string | number) {
-  const currentIdx = tabs.value.findIndex(
-    tab => tab?.props?.id === oldModel.value,
-  )
-  const selectedTabIdx = tabs.value.findIndex(tab => tab?.props?.id === id)
+  const currentIdx = tabs.value.findIndex(tab => tab.id === oldModel.value)
+  const selectedTabIdx = tabs.value.findIndex(tab => tab.id === id)
 
   if (currentIdx < selectedTabIdx) {
     transitionEnter.value = props.transitionNext || 'animate-fade-in-right'
@@ -122,27 +121,25 @@ watch(model, model => {
     >
       <slot
         v-for="tab in tabs"
-        :key="tab?.props?.id"
-        :name="`${tab?.props?.id}-label`"
+        :key="tab.id"
+        :name="`${tab.id}-label`"
         :tab="tab"
-        :change-fn="(id?: number | string) => handleTabChange(id ?? tab?.props?.id)"
+        :change-fn="(id?: number | string) => handleTabChange(id ?? tab.id)"
       >
         <Btn
-          v-if="!invisibleTabs?.includes(tab?.props?.id)"
-          :label="tab?.props?.label"
-          :icon="tab?.props?.icon"
+          v-if="!invisibleTabs?.includes(tab.id)"
+          :label="tab.label"
+          :icon="tab.icon"
           no-uppercase
           class="tab-label"
-          :size="tab?.props?.size || 'lg'"
+          :size="tab.size || 'lg'"
           :class="[
             labelClass,
-            ...(tab?.props?.id === activeTab?.props?.id
-              ? [labelActiveClass]
-              : []),
-            { 'is-active': tab?.props?.id === activeTab?.props?.id },
+            ...(tab.id === activeTab?.id ? [labelActiveClass] : []),
+            { 'is-active': tab.id === activeTab?.id },
           ]"
           v-bind="tabBtnProps"
-          @click="handleTabChange(tab.props?.id)"
+          @click="handleTabChange(tab.id)"
         />
       </slot>
     </HorizontalScroller>
@@ -164,8 +161,8 @@ watch(model, model => {
       >
         <KeepAlive :include="keepAliveTabs">
           <Component
-            :is="activeTab"
-            :key="activeTab.props?.id"
+            :is="activeTab.component"
+            :key="activeTab.id"
           />
         </KeepAlive>
 
@@ -182,17 +179,17 @@ watch(model, model => {
 <style lang="scss" scoped>
 .tab {
   &-content {
-    @apply overflow-x-hidden;
+    --apply: overflow-x-hidden;
   }
 
   &-label {
-    @apply min-w-min;
-    @apply '!lt-lg:p-x-4';
+    --apply: min-w-min;
+    --apply: '!lt-lg:p-x-4';
   }
 
   &-label.is-active {
     &::after {
-      @apply content-empty absolute inset-inline-0 bottom-0 h-1 bg-secondary
+      --apply: content-empty absolute inset-inline-0 bottom-0 h-1 bg-secondary
         rounded-custom;
     }
   }
