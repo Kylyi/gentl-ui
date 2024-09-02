@@ -9,7 +9,9 @@ export class TutorialWizardModel {
   isFinished: boolean = false
 
   goToStep(step: number) {
+    console.log('goToStep', step)
     if(step >= this.steps.length) {
+      this.isFinished = true
       this.endTour()
     }
 

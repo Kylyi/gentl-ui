@@ -10,12 +10,14 @@ export class TutorialWizardStep {
   // Target element for the tutorial step
   element: MaybeElement<ReferenceElement> | HTMLElement | string | null | Ref<any>
 
+  // Advancement
+
   /**
    * Specifies the event condition for advancing to the next step in the tutorial wizard.
    */
   goForwardOn?: {
     element: MaybeElement<ReferenceElement> | HTMLElement | string | null | Ref<any>
-    event: string
+    triggerFnc: () => Promise<boolean> | boolean
   }
 
   /**
@@ -26,6 +28,10 @@ export class TutorialWizardStep {
     event?: Event
   }
 
+  // Layout
+
+  // Whether to show "Back" and "Next" buttons
+  showNavigation: boolean = true
   // Placement of the tutorial step
   placement: Placement = 'top'
   fallbackPlacements?: Placement[]
@@ -36,19 +42,22 @@ export class TutorialWizardStep {
   heading?: string
   message?: string
 
-  // Condition for indlucing the step in the onboarding
-  showOn?: () => boolean
+
+  showOn?: () => boolean// Condition for indlucing the step in the onboarding
 
 
   constructor(args: Partial<TutorialWizardStep>) {
       // Target element
       this.element = args.element
 
+
+
       // Advancement
       this.goForwardOn = args.goForwardOn
       this.goBackOn = args.goBackOn
 
       // Layout
+      this.showNavigation = args.showNavigation ?? this.showNavigation
       this.placement = args.placement ?? this.placement
       this.fallbackPlacements = args.fallbackPlacements
       this.offset = args.offset ?? this.offset

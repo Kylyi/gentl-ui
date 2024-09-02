@@ -100,18 +100,53 @@ watch(() => props.step, () => {
   nextTick(() => {
     referenceEl.value = getTargetElement(props.step.element)
     updateOverlayClip()
+    debouncedStepChange()
   })
 })
 
-// goForwardOn
-whenever(() => !!props.step.goForwardOn, () => {
-  const goForwardOnElement = getTargetElement(props.step.goForwardOn?.element)
+// Trigger on step change
+const stepChanged = ref(false)
+function debouncedStepChange() {
+  stepChanged.value = true
+  setTimeout(() => {
+    stepChanged.value = false
+  }, 100)
+}
 
-  useMutationObserver(
-    goForwardOnElement,
-    () => { console.log('Mutation')},
-    { attributes: true, subtree: true})
+// goForwardOn
+whenever(() => (!!props.step.goForwardOn?.triggerFnc && stepChanged.value), setMutationObserver)
+
+onMounted(() => {
+  if (!!props.step.goForwardOn?.triggerFnc){
+    setMutationObserver()
+  }
 })
+
+function setMutationObserver() {
+  const goForwardOnElement = getTargetElement(props.step.goForwardOn?.element)
+  console.log('setMutationObserver', goForwardOnElement)
+
+  const { stop } = useMutationObserver(
+    goForwardOnElement,
+    mutations => {
+      useDebounceFn(async () => {
+        if (await props.step.goForwardOn?.triggerFnc()){
+          stop()
+          props.wizard.goToNextStep()
+
+        }
+        console.log('mutations', mutations)
+
+      }, 100)()
+    },
+    {
+      subtree: true,
+      characterData: true,
+      attributes: true,
+      characterDataOldValue: true,
+      childList: true,
+    })
+}
 </script>
 
 <template>
@@ -181,7 +216,10 @@ whenever(() => !!props.step.goForwardOn, () => {
 
         <TutorialWizardStepper :wizard />
 
-        <div class="tooltip-controls">
+        <div
+          v-if="step.showNavigation"
+          class="tooltip-controls"
+        >
           <!-- Back -->
           <Btn
             :disabled="step.id === 0"
