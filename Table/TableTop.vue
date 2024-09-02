@@ -525,6 +525,7 @@ onKeyStroke(['d', 'D'], (ev: KeyboardEvent) => {
             <Tooltip
               flex="~ col gap-1"
               p="2"
+              :delay="[1500, 0]"
             >
               <div
                 text="caption"
