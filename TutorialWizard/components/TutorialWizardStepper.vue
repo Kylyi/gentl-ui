@@ -6,7 +6,15 @@ type IProps = {
 }
 const props = defineProps<IProps>()
 
+const isClickable = computed(()=>{
+  return props.wizard.steps[props.wizard.currentStep].canUseStepper
+})
+
 function handleStepClick(stepIndex: number) {
+  if(!isClickable.value || !props.wizard.steps[stepIndex].canBeSkippedTo){
+    return;
+  }
+
   props.wizard.goToStep(stepIndex);
 };
 
@@ -21,7 +29,10 @@ const test = ref(true)
       v-for="step in wizard.steps"
       :key="step.id"
       class="step"
-      :class="{ 'active': step.id === wizard.currentStep }"
+      :class="{
+        'active': step.id === wizard.currentStep,
+        'not-clickable': !isClickable || !wizard.steps[step.id].canBeSkippedTo
+        }"
       @click="handleStepClick(step.id)"
     >
     {{ step.id + 1 }}
@@ -46,6 +57,10 @@ const test = ref(true)
 
   &.active {
     @apply color-blue-500 border-blue-500;
+  }
+
+  &.not-clickable {
+    @apply cursor-not-allowed;
   }
 }
 </style>

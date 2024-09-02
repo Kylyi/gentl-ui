@@ -45,6 +45,10 @@ export class TutorialWizardModel {
     }) ?? []
     this.steps.forEach(step => {
       step.id = this.steps.indexOf(step)
+
+      if(step.id === 0) {
+        step.canGoBack = false
+      }
     })
 
     this.currentStep = args.currentStep ?? this.currentStep

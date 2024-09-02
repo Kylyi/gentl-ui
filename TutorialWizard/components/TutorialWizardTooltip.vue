@@ -113,6 +113,21 @@ function debouncedStepChange() {
   }, 100)
 }
 
+// KeyBoard controlls
+onKeyStroke('ArrowLeft', () => {
+  if(props.step.canUseKeyboard){
+    props.wizard.goToPreviousStep()
+  }
+})
+onKeyStroke('ArrowRight', () => {
+  if(props.step.canUseKeyboard){
+    props.wizard.goToNextStep()
+  }
+})
+onKeyStroke('Escape', () => {
+  props.wizard.endTour()
+})
+
 // goForwardOn
 whenever(() => (!!props.step.goForwardOn?.triggerFnc && stepChanged.value), setMutationObserver)
 
@@ -222,7 +237,7 @@ function setMutationObserver() {
         >
           <!-- Back -->
           <Btn
-            :disabled="step.id === 0"
+            :disabled="!step.canGoBack"
             :label="$t('onboarding.back')"
             :ripple="false"
             color="blue-500"
@@ -233,6 +248,7 @@ function setMutationObserver() {
 
           <!-- Next/Close -->
           <Btn
+            :disabled="!step.canGoForward"
             :label="isLastStep ? $t('general.close') : $t('onboarding.next')"
             :ripple="false"
             color="white"

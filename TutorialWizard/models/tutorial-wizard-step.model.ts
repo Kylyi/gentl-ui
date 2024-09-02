@@ -10,7 +10,30 @@ export class TutorialWizardStep {
   // Target element for the tutorial step
   element: MaybeElement<ReferenceElement> | HTMLElement | string | null | Ref<any>
 
-  // Advancement
+  /**
+   *
+   * Controls
+   *
+   */
+
+  /**
+   * Whether user can generally controll the step by available navigation
+   */
+  canControl: boolean = true
+  canGoBack: boolean
+  canGoForward: boolean
+  canUseKeyboard: boolean
+  /**
+   * Whether user can use stepper to skip to another step
+   */
+  canUseStepper: boolean
+  /**
+   * Whether the step can be skipped to another step
+   *
+   * Meant for steps that require some action to be done before them -
+   * e.g. clicking a input field, routing to a different page etc.
+   */
+  canBeSkippedTo: boolean = true
 
   /**
    * Specifies the event condition for advancing to the next step in the tutorial wizard.
@@ -28,31 +51,49 @@ export class TutorialWizardStep {
     event?: Event
   }
 
-  // Layout
+  /**
+   *
+   * Layout
+   *
+   */
 
-  // Whether to show "Back" and "Next" buttons
+
+  /**
+   * Whether to show "Back" and "Next" buttons
+   */
   showNavigation: boolean = true
-  // Placement of the tutorial step
+  /**
+   * Placement of the tutorial step
+   */
   placement: Placement = 'top'
   fallbackPlacements?: Placement[]
   offset: OffsetOptions = 10
-  // Whether to adapt the placement of the tutorial step based on avaiable space
+  /**
+   * Whether to adapt the placement of the tutorial step based on avaiable space
+   */
   adaptPlacement: boolean = true
 
   heading?: string
   message?: string
 
-
-  showOn?: () => boolean// Condition for indlucing the step in the onboarding
+  /**
+   * Condition for indlucing the step in the onboarding
+   */
+  showOn?: () => boolean
 
 
   constructor(args: Partial<TutorialWizardStep>) {
       // Target element
       this.element = args.element
 
+      // Controls
+      this.canControl = args.canControl ?? this.canControl
+      this.canGoBack = args.canGoBack ?? this.canControl
+      this.canUseKeyboard = args.canUseKeyboard ?? this.canControl
+      this.canGoForward = args.canGoForward ?? this.canControl
+      this.canUseStepper = args.canUseStepper ?? this.canControl
+      this.canBeSkippedTo = args.canBeSkippedTo ?? this.canBeSkippedTo
 
-
-      // Advancement
       this.goForwardOn = args.goForwardOn
       this.goBackOn = args.goBackOn
 
