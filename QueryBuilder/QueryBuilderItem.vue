@@ -105,7 +105,7 @@ const customValue = computed({
     return item.value.value
   },
   set(value) {
-    const val = typeof value === 'string' ? value.trim() : value
+    const val = value
 
     if (customFilterComponent.value?.valueFormatter) {
       item.value.value = customFilterComponent.value.valueFormatter.setter(val)

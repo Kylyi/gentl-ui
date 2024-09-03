@@ -240,11 +240,7 @@ function handleValueChange(
   const { set, debounce } = options ?? {}
 
   if (set) {
-    if (typeof val === 'string') {
-      filter.value.value = val.trim()
-    } else {
-      filter.value.value = val
-    }
+    filter.value.value = val
   }
 
   if (debounce) {
