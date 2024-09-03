@@ -18,6 +18,7 @@ const props = defineProps<{
 // Utils
 const referenceEl = ref<HTMLElement | null>(null)
 const { updateOverlayClip } = useOnboardingOverlay(referenceEl)
+const { width: windowWidth, height: windowHeight } = useWindowSize()
 
   // Layout
 const tooltipEl = ref<HTMLElement>()
@@ -51,22 +52,39 @@ const {
   y: pageY,
 } = useElementBounding(referenceEl, { windowResize: true })
 
+const {
+  width: tooltipWidth,
+  height: tooltipHeight,
+} = useElementBounding(tooltipEl, { windowResize: true })
+
 watchThrottled([pageX, pageY], update, {
   throttle: 1,
 })
 
 // Arrow placement
 watch(middlewareData, middlewareData => {
+  if(!arrowEl.value){
+    return
+  }
   if (middlewareData.arrow) {
     const { x, y } = middlewareData.arrow
 
-    Object.assign(arrowEl.value!.style, {
+    Object.assign(arrowEl.value.style, {
       left: x != null ? `${x}px` : '',
       top: y != null ? `${y}px` : '',
     })
   }
 })
 
+// Absolute positioning
+const tooltipStyles = computed(() => [
+  floatingStyles.value,
+  props.step.positioning === 'absolute' && {
+    left: `${windowWidth.value/2 - tooltipWidth.value/2}px !important`,
+    top: `${windowHeight.value/2 - tooltipHeight.value/2}px !important`,
+    transform: 'translate(0, 0) !important',
+  }
+])
 // Scroll to step
 watch(() => props.step.id, () => {
     referenceEl.value = getTargetElement(props.step.element)
@@ -181,7 +199,7 @@ function setMutationObserver() {
 
     <div
       ref="tooltipEl"
-      :style="floatingStyles"
+      :style="tooltipStyles"
       class="tooltip"
       :placement
       v-bind="$attrs"
@@ -190,7 +208,7 @@ function setMutationObserver() {
     >
       <!-- Arrow -->
       <div
-        v-if="!noArrow"
+        v-if="!noArrow && props.step.positioning === 'component'"
         ref="arrowEl"
         class="arrow"
       />
@@ -219,6 +237,7 @@ function setMutationObserver() {
           </div>
         </slot>
 
+        <!-- Content -->
         <div class="tooltip-content">
           <!-- Heading -->
           <slot name="heading">
@@ -239,6 +258,7 @@ function setMutationObserver() {
 
         <OnboardingStepper :onboarding />
 
+        <!-- Controls -->
         <div
           v-if="step.showNavigation"
           class="tooltip-controls"

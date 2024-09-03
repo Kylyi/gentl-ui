@@ -12,16 +12,19 @@ export function useOnboardingOverlay(el: MaybeRefOrGetter<HTMLElement | null>) {
   })
 
   function updateOverlayClip() {
-
-    if (isNil(toValue(el))) {
-      return
-    }
-
-    const rect = toValue(el)!.getBoundingClientRect()
     const overlay = document.querySelector('.tutorial-overlay') as HTMLElement
     if (!overlay) {
       return
     }
+
+    if (isNil(toValue(el))) {
+      overlay.style.clipPath = 'none'
+
+      return
+    }
+
+    const rect = toValue(el)!.getBoundingClientRect()
+
 
     overlay.style.clipPath = `
       polygon(
