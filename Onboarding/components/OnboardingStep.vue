@@ -1,23 +1,23 @@
 <script setup lang="ts">
 // Functions
 import { arrow, flip, offset, shift, useFloating } from '@floating-ui/vue'
-import { useWizardOverlay } from '../functions/useWizardOverlay';
+import { useOnboardingOverlay } from '../functions/useOnboardingOverlay';
 import { getTargetElement } from '~/components/Tooltip/functions/getTargetElement';
 
 // Models
-import type { TutorialWizardStep } from '../models/tutorial-wizard-step.model'
-import type { TutorialWizardModel } from '../models/tutorial-wizard.model';
+import type { OnboardingStep } from '../models/onboarding-step.model'
+import type { OnboardingModel } from '../models/onboarding.model';
 
 const props = defineProps<{
-  step: TutorialWizardStep
-  wizard: TutorialWizardModel
+  step: OnboardingStep
+  onboarding: OnboardingModel
   noArrow?: boolean
   delay?: [number, number]
 }>()
 
 // Utils
 const referenceEl = ref<HTMLElement | null>(null)
-const { updateOverlayClip } = useWizardOverlay(referenceEl)
+const { updateOverlayClip } = useOnboardingOverlay(referenceEl)
 
   // Layout
 const tooltipEl = ref<HTMLElement>()
@@ -32,7 +32,7 @@ const middleware = computed(() => [
 ])
 const stepPlacement = computed(() => props.step.placement)
 const isLastStep = computed(() => {
-  return props.wizard.currentStep === props.wizard.steps.length - 1
+  return props.onboarding.currentStep === props.onboarding.steps.length - 1
 })
 
 const { floatingStyles, placement, middlewareData, update } = useFloating(
@@ -116,17 +116,17 @@ function debouncedStepChange() {
 // KeyBoard controlls
 onKeyStroke('ArrowLeft', () => {
   if(props.step.canUseKeyboard){
-    props.wizard.goToPreviousStep()
+    props.onboarding.goToPreviousStep()
   }
 })
 onKeyStroke('ArrowRight', () => {
   if(props.step.canUseKeyboard){
-    props.wizard.goToNextStep()
+    props.onboarding.goToNextStep()
   }
 })
 onKeyStroke('Escape', () => {
   if(props.step.canUseKeyboard){
-    props.wizard.endTour()
+    props.onboarding.endTour()
   }
 })
 
@@ -153,7 +153,7 @@ function setMutationObserver() {
       useDebounceFn(async () => {
         if (await props.step.goForwardOn?.triggerFnc()){
           stop()
-          props.wizard.goToNextStep()
+          props.onboarding.goToNextStep()
 
         }
         console.log('mutations', mutations)
@@ -202,7 +202,7 @@ function setMutationObserver() {
               <!-- Step counter -->
               <slot name="step-counter">
                 <p class="tooltip-step-counter">
-                  {{ step.id + 1 }}/{{ wizard.steps.length }}
+                  {{ step.id + 1 }}/{{ onboarding.steps.length }}
                 </p>
               </slot>
 
@@ -213,7 +213,7 @@ function setMutationObserver() {
                   color="slate-600 dark:white"
                   size="sm"
                   no-hover-effect
-                  @click="wizard.endTour()"
+                  @click="onboarding.endTour()"
                 />
               </slot>
           </div>
@@ -237,7 +237,7 @@ function setMutationObserver() {
           </slot>
         </div>
 
-        <TutorialWizardStepper :wizard />
+        <OnboardingStepper :onboarding />
 
         <div
           v-if="step.showNavigation"
@@ -251,7 +251,7 @@ function setMutationObserver() {
             color="blue-500"
             outlined
             no-uppercase
-            @click="wizard.goToPreviousStep()"
+            @click="onboarding.goToPreviousStep()"
           />
 
           <!-- Next/Close -->
@@ -262,7 +262,7 @@ function setMutationObserver() {
             color="white"
             bg-blue-500
             no-uppercase
-            @click="wizard.goToNextStep()"
+            @click="onboarding.goToNextStep()"
           />
         </div>
       </slot>

@@ -1,13 +1,13 @@
 // Models
-import type { TutorialWizardStep } from "./tutorial-wizard-step.model";
+import type { OnboardingStep } from "./onboarding-step.model";
 
 // Store
-import { useOnboardingStore } from '~/components/TutorialWizard/functions/onboarding.store'
+import { useOnboardingStore } from '~/components/Onboarding/functions/onboarding.store'
 
-export class TutorialWizardModel {
+export class OnboardingModel {
   name: string = uuid()
 
-  steps: TutorialWizardStep[]
+  steps: OnboardingStep[]
   currentStep: number = 0
   isActive: boolean = false
   isFinished: boolean = false
@@ -17,8 +17,10 @@ export class TutorialWizardModel {
   goToStep(step: number) {
     this.log('goToStep', step)
     if(step >= this.steps.length) {
-      this.isFinished = true
       this.endTour()
+      useOnboardingStore().resetTour(this.name)
+
+      return
     }
 
     this.currentStep = step < 0 ? 0 : step
@@ -49,7 +51,7 @@ export class TutorialWizardModel {
     }
   }
 
-  constructor(args: Partial<TutorialWizardModel>) {
+  constructor(args: Partial<OnboardingModel>) {
     this.name = args.name ?? this.name
 
     // Steps

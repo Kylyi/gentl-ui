@@ -1,9 +1,9 @@
 import type { MaybeElement } from '@floating-ui/vue'
 import type { ReferenceElement, Placement, OffsetOptions } from '@floating-ui/dom'
-import type { TutorialWizardModel } from './tutorial-wizard.model'
+import type { OnboardingModel } from './onboarding.model'
 import type { Required } from 'utility-types'
 
-export class TutorialWizardStep {
+export class OnboardingStep {
   // Relative step number in onboarding
   id: number = 0
 
@@ -92,7 +92,7 @@ export class TutorialWizardStep {
   showOn?: () => boolean
 
 
-  constructor(args: Partial<TutorialWizardStep>) {
+  constructor(args: Partial<OnboardingStep>) {
       // Positioning
       this.element = args.element
       this.positioning = args.positioning ?? isNil(args.element) ? 'absolute' : 'component'

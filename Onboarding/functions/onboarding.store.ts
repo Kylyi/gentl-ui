@@ -34,7 +34,9 @@ export const useOnboardingStore = defineStore(
     }
 
     function resetTour(name: OnboardingModel['name']){
-      if(!onboardingsByName.value) onboardingsByName.value = {}
+      if(!onboardingsByName.value) {
+        onboardingsByName.value = {}
+      }
 
       onboardingsByName.value[name].currentStep = 0
       lastIndexByName.value[name] = 0

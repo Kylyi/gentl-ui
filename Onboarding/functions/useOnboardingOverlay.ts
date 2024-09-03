@@ -1,4 +1,4 @@
-export function useWizardOverlay(el: MaybeRefOrGetter<HTMLElement | null>) {
+export function useOnboardingOverlay(el: MaybeRefOrGetter<HTMLElement | null>) {
   window.addEventListener('resize', updateOverlayClip)
 
   const {

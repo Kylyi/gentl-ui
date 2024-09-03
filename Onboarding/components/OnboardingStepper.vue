@@ -1,37 +1,37 @@
 <script setup lang="ts">
-import type { TutorialWizardModel } from '../models/tutorial-wizard.model';
+import type { OnboardingModel } from '../models/onboarding.model';
 
 type IProps = {
-  wizard: TutorialWizardModel
+  onboarding: OnboardingModel
 }
 const props = defineProps<IProps>()
 
 const isClickable = computed(()=>{
-  return props.wizard.steps[props.wizard.currentStep].canUseStepper
+  return props.onboarding.steps[props.onboarding.currentStep].canUseStepper
 })
 
 function handleStepClick(stepIndex: number) {
-  if(!isClickable.value || !props.wizard.steps[stepIndex].canBeSkippedTo){
+  if(!isClickable.value || !props.onboarding.steps[stepIndex].canBeSkippedTo){
     return;
   }
 
-  props.wizard.goToStep(stepIndex);
+  props.onboarding.goToStep(stepIndex);
 };
 
 const test = ref(true)
 </script>
 
 <template>
-  <div class="wizard-steps">
+  <div class="onboarding-steps">
     <div class="line" />
 
     <div
-      v-for="step in wizard.steps"
+      v-for="step in onboarding.steps"
       :key="step.id"
       class="step"
       :class="{
-        'active': step.id === wizard.currentStep,
-        'not-clickable': !isClickable || !wizard.steps[step.id].canBeSkippedTo
+        'active': step.id === onboarding.currentStep,
+        'not-clickable': !isClickable || !onboarding.steps[step.id].canBeSkippedTo
         }"
       @click="handleStepClick(step.id)"
     >
@@ -41,7 +41,7 @@ const test = ref(true)
 </template>
 
 <style lang="scss" scoped>
-.wizard-steps {
+.onboarding-steps {
  @apply flex justify-between items-center w-full p-x-0 p-y-5 relative;
 }
 
