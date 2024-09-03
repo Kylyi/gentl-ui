@@ -7,8 +7,18 @@ export class TutorialWizardStep {
   // Relative step number in onboarding
   id: number = 0
 
-  // Target element for the tutorial step
-  element: MaybeElement<ReferenceElement> | HTMLElement | string | null | Ref<any>
+  /**
+   *
+   * Placement
+   *
+   */
+
+  /**
+   * Target element for the tutorial step
+   */
+  element?: MaybeElement<ReferenceElement> | HTMLElement | string | null | Ref<any>
+  positioning: 'absolute' | 'component'
+  absolutePlacement: Placement | 'center' = 'center'
 
   /**
    *
@@ -83,8 +93,10 @@ export class TutorialWizardStep {
 
 
   constructor(args: Partial<TutorialWizardStep>) {
-      // Target element
+      // Positioning
       this.element = args.element
+      this.positioning = args.positioning ?? isNil(args.element) ? 'absolute' : 'component'
+      this.absolutePlacement = args.absolutePlacement ?? this.absolutePlacement
 
       // Controls
       this.canControl = args.canControl ?? this.canControl
