@@ -23,8 +23,18 @@ export const useOnboardingStore = defineStore(
         [onboarding.name]: onboarding,
       }
 
+      // Add lastIndex if it didn't exit
       if(!(onboarding.name in lastIndexByName.value)){
         lastIndexByName.value[onboarding.name] = 0
+      }
+
+      // If last step cannot be skipped to, go to earlier step
+      while(
+        !onboarding.steps[lastIndexByName.value[onboarding.name]].canBeSkippedTo &&
+        lastIndexByName.value[onboarding.name] > 0
+      )
+        {
+        lastIndexByName.value[onboarding.name]--
       }
     }
 
