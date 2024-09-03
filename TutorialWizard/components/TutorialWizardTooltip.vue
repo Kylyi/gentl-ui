@@ -125,7 +125,9 @@ onKeyStroke('ArrowRight', () => {
   }
 })
 onKeyStroke('Escape', () => {
-  props.wizard.endTour()
+  if(props.step.canUseKeyboard){
+    props.wizard.endTour()
+  }
 })
 
 // goForwardOn
@@ -136,6 +138,10 @@ onMounted(() => {
     setMutationObserver()
   }
 })
+
+const stopObserver = ref<() => void>()
+
+onUnmounted(() => stopObserver.value?.())
 
 function setMutationObserver() {
   const goForwardOnElement = getTargetElement(props.step.goForwardOn?.element)
@@ -161,6 +167,8 @@ function setMutationObserver() {
       characterDataOldValue: true,
       childList: true,
     })
+
+    stopObserver.value = stop
 }
 </script>
 
@@ -273,7 +281,7 @@ function setMutationObserver() {
 
 .tooltip {
   @apply dark:bg-darker bg-white border-ca border-custom rounded-custom z-$zMenu p-x-4 p-y-2
-    max-w-100 xl:min-w-100;
+    max-w-100 md:min-w-100;
 
   transition: 0.3s linear;
 

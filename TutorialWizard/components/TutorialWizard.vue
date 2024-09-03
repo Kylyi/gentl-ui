@@ -7,16 +7,12 @@ import { useOnboardingStore } from '~/components/TutorialWizard/functions/onboar
 
 
 const { activeOnboarding } = storeToRefs(useOnboardingStore())
-
-const tour = computed(() => {
-  return activeOnboarding.value?.tour
-})
 </script>
 
 <template>
     <TutorialWizardTooltip
-      v-if="tour"
-      :step="tour.steps[tour.currentStep]"
-      :wizard="tour"
+      v-if="activeOnboarding"
+      :step="activeOnboarding.steps[activeOnboarding.currentStep]"
+      :wizard="activeOnboarding"
     />
 </template>

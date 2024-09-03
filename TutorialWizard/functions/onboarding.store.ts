@@ -9,36 +9,35 @@ export const useOnboardingStore = defineStore(
   () => {
     const onboardingsByName = ref<Record<
       string,
-      {
-        tour: TutorialWizardModel
-        lastStep: number
-      }>>({})
+      TutorialWizardModel
+      >>({})
+    const lastIndexByName = ref<Record<string, number>>({})
 
     const activeOnboarding = computed(() => {
-      return Object.values(onboardingsByName.value).find(onboarding => onboarding.tour.isActive)
+      return Object.values(onboardingsByName.value).find(onboarding => onboarding.isActive)
     })
 
     function addTour(onboarding: TutorialWizardModel) {
-      if(onboarding.name in onboardingsByName.value) {
-        return
-      }
-
       onboardingsByName.value = {
         ...onboardingsByName.value,
-        [onboarding.name]: {
-          tour: onboarding,
-          lastStep: onboarding.currentStep,
-        },
+        [onboarding.name]: onboarding,
+      }
+
+      if(!(onboarding.name in lastIndexByName.value)){
+        lastIndexByName.value[onboarding.name] = 0
       }
     }
 
     function startTour(name: TutorialWizardModel['name']){
       const tour = onboardingsByName.value[name]
-      tour.tour.startTour(tour.lastStep)
+      tour.startTour(lastIndexByName.value[name])
     }
 
     function resetTour(name: TutorialWizardModel['name']){
-      onboardingsByName.value[name].lastStep = 0
+      if(!onboardingsByName.value) onboardingsByName.value = {}
+
+      onboardingsByName.value[name].currentStep = 0
+      lastIndexByName.value[name] = 0
     }
 
     return {
@@ -46,11 +45,13 @@ export const useOnboardingStore = defineStore(
       startTour,
       resetTour,
       activeOnboarding,
+      lastIndexByName,
     }
   },
   {
     persist: {
+      key: 'onboarding',
       storage: persistedState.localStorage,
-    },
+    }
   },
 )

@@ -1,4 +1,8 @@
+// Models
 import type { TutorialWizardStep } from "./tutorial-wizard-step.model";
+
+// Store
+import { useOnboardingStore } from '~/components/TutorialWizard/functions/onboarding.store'
 
 export class TutorialWizardModel {
   name: string = uuid()
@@ -7,15 +11,18 @@ export class TutorialWizardModel {
   currentStep: number = 0
   isActive: boolean = false
   isFinished: boolean = false
+  // TODO: Remove after development
+  debug: boolean = false
 
   goToStep(step: number) {
-    console.log('goToStep', step)
+    this.log('goToStep', step)
     if(step >= this.steps.length) {
       this.isFinished = true
       this.endTour()
     }
 
     this.currentStep = step < 0 ? 0 : step
+    useOnboardingStore().lastIndexByName[this.name] = this.currentStep
   }
 
   goToNextStep() {
@@ -36,6 +43,12 @@ export class TutorialWizardModel {
     this.goToStep(step ?? 0)
   }
 
+  log(...args: any[]){
+    if(this.debug){
+      console.log(...args)
+    }
+  }
+
   constructor(args: Partial<TutorialWizardModel>) {
     this.name = args.name ?? this.name
 
@@ -54,5 +67,6 @@ export class TutorialWizardModel {
     this.currentStep = args.currentStep ?? this.currentStep
     this.isActive = args.isActive ?? this.isActive
     this.isFinished = args.isFinished ?? this.isFinished
+    this.debug = args.debug ?? this.debug
   }
 }
