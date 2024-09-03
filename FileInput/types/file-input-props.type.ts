@@ -26,6 +26,11 @@ export type IFileInputProps = {
   noDownloadButton?: boolean
 
   /**
+   * When true, the preview will not be shown, just an icon
+   */
+  noPreview?: boolean
+
+  /**
    * Validation object
    */
   validation?: IZodValidationItem | Array<IZodValidationItem | undefined>

@@ -14,6 +14,11 @@ type IProps = {
   file: FileModel | IFile
   noDownloadButton?: boolean
   fileDownloadTitle?: string
+
+  /**
+   * When true, the preview will not be shown, just an icon
+   */
+  noPreview?: boolean
 }
 
 const props = defineProps<IProps>()
@@ -33,6 +38,10 @@ const icon = computed(() => {
 })
 
 const imageUrl = computed(() => {
+  if (props.noPreview) {
+    return
+  }
+
   const PREVIEWABLE_IMAGE_TYPES = [
     'image/jpeg',
     'image/jpg',

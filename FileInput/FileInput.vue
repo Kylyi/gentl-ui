@@ -110,10 +110,11 @@ syncRef(model, files, { direction: 'both', deep: true })
       <FilePreview
         v-for="(file, idx) in model"
         :key="idx"
-        :file="file"
+        :file
         :editable="!readonly && !disabled"
-        :no-download-button="noDownloadButton"
-        :download-url="downloadUrl"
+        :no-download-button
+        :download-url
+        :no-preview
         @remove="handleRemove(idx)"
         @click.stop.prevent
       />
