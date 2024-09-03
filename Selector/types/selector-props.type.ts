@@ -163,4 +163,9 @@ export type ISelectorProps = IInputProps & {
    * Takes priority over the `optionLabel` prop
    */
   selectionLabel?: ((opt: any) => string) | string
+
+  /**
+   * A link to the item
+   */
+  to?: RouteLocationRaw | ((item: any) => RouteLocationRaw)
 }

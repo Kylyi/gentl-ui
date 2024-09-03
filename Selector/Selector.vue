@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { NuxtLink } from '#components'
+
 // ENHANCMENT: I'm using `props.optionLabel` for adding new items on the fly
 // but it will not work when optionLabel is a function
 import { config } from '~/components/config/components-config'
@@ -22,7 +24,6 @@ const props = withDefaults(defineProps<ISelectorProps>(), {
   debounce: 0,
   disabled: undefined,
   readonly: undefined,
-  emptyValue: () => undefined,
   errorTakesSpace: true,
   errorVisible: true,
   fuseExtendedSearchToken: config.selector.props.fuseExtendedSearchToken,
@@ -214,10 +215,6 @@ function handleRemove(item: any) {
   syncScrollArea()
 }
 
-// Item adding
-const addedItems = ref<IItemToBeAdded[]>([])
-
-// Selection
 function handleSelect(val: any) {
   if (props.multi && !val.length) {
     model.value = props.emptyValue
@@ -231,6 +228,9 @@ function handleSelect(val: any) {
     menuProxyEl.value?.hide()
   }
 }
+
+// Item adding & removing
+const addedItems = ref<IItemToBeAdded[]>([])
 
 function handleSelectAdd(data: any) {
   emits('added', data)
@@ -377,6 +377,14 @@ const ui = computed(() => {
     ...props.ui,
     contentClass: [props.ui?.contentClass, 'selector-wrapper'],
   } as typeof props.ui
+})
+
+const componentSingle = computed(() => {
+  return {
+    component: props.to ? NuxtLink : 'span',
+    to: typeof props.to === 'function' ? props.to(model.value) : props.to,
+    class: props.to ? 'link' : '',
+  }
 })
 
 function syncScrollArea() {
@@ -544,14 +552,16 @@ function getData() {
       </template>
 
       <!-- Single selection -->
-      <span
+      <Component
+        :is="componentSingle.component"
         v-else-if="hasContent"
         self-center
+        :to="componentSingle.to"
         style="width: calc(100% - 12px)"
-        :class="{ truncate: !noTruncate }"
+        :class="[componentSingle.class, { truncate: !noTruncate }]"
       >
         {{ getLabel(model) }}
-      </span>
+      </Component>
     </Component>
 
     <template #append>
