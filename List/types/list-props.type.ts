@@ -7,9 +7,7 @@ import type { IItemToBeAdded } from '~/components/List/types/list-item-to-add.ty
 
 // Models
 import type { SortItem } from '~/libs/Shared/models/sort-item.model'
-import type { IZodShape } from '~/utils/zod/types/zod-structure.type'
-import type { IZodValidationItem } from '~/utils/zod/types/zod-validation-item.type'
-import type { IZodValidationOutput } from '~/utils/zod/types/zod-validation-output'
+import type { ZodInferred } from '~/utils/zod/types/zod-inferred.type'
 
 export type IListProps = IListBaseProps & {
   bordered?: boolean
@@ -138,6 +136,14 @@ export type IListProps = IListBaseProps & {
   searchDebounce?: number
 
   /**
+   * The validation rules for the search input
+   */
+  searchInputValidation?: {
+    schema: ZodInferred<any>
+    key: string
+  }
+
+  /**
    * Can be either
    * Array<string | number | item>
    * Record<itemKey, boolean | item>
@@ -155,12 +161,4 @@ export type IListProps = IListBaseProps & {
    * be transformed via the `toBoldLatin` fnc
    */
   useToBoldLatin?: boolean
-
-  /**
-   * The validation rules for the search input
-   */
-  searchInputValidation?: {
-    schema: any
-    key: string
-  }
 }

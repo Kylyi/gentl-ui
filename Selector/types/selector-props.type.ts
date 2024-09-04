@@ -12,6 +12,7 @@ import type { IDialogProps } from '~/components/Dialog/types/dialog-props.type'
 import type { GroupItem } from '~/libs/Shared/models/group-item.model'
 import type { SortItem } from '~/libs/Shared/models/sort-item.model'
 import type { IZodValidationOutput } from '~/utils/zod/types/zod-validation-output'
+import type { ZodInferred } from '~/utils/zod/types/zod-inferred.type'
 
 export type ISelectorProps = IInputProps & {
   /**
@@ -117,7 +118,7 @@ export type ISelectorProps = IInputProps & {
    */
   searchInputValidation?: {
     key: string
-    schema: any
+    schema: ZodInferred<any>
   }
 
   /**

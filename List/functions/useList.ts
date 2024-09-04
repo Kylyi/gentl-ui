@@ -521,11 +521,20 @@ export function useList(
   }
 
   // Validation
-  const searchInputValidationOptions = props.searchInputValidation
-    && useZod<{ [K in typeof props.searchInputValidation.key]: typeof props.searchInputValidation.schema }>({ [props.searchInputValidation.key]: props.searchInputValidation.schema }, { [props.searchInputValidation.key]: search })
+  const searchInputValidationOptions
+    = props.searchInputValidation
+    && useZod<{
+      [K in typeof props.searchInputValidation.key]: typeof props.searchInputValidation.schema;
+    }>(
+      { [props.searchInputValidation.key]: props.searchInputValidation.schema },
+      { [props.searchInputValidation.key]: search },
+    )
 
-  const searchInputValidation = computed(() => {
-    const validation = props.searchInputValidation && searchInputValidationOptions && searchInputValidationOptions.value[props.searchInputValidation.key]
+  const searchInputValidationItem = computed(() => {
+    const validation
+      = props.searchInputValidation
+      && searchInputValidationOptions
+      && searchInputValidationOptions.value[props.searchInputValidation.key]
 
     return validation as IZodValidationItem
   })
@@ -674,7 +683,7 @@ export function useList(
     search,
     selectedByKey,
     itemsExtended,
-    searchInputValidation,
+    searchInputValidationItem,
     isSelected,
     handleKey,
     handleMouseOver,
