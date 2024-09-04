@@ -380,10 +380,16 @@ const ui = computed(() => {
 })
 
 const componentSingle = computed(() => {
+  const preventClick = (ev: MouseEvent) => {
+    ev.preventDefault()
+    ev.stopPropagation()
+  }
+
   return {
     component: props.to ? NuxtLink : 'span',
     to: typeof props.to === 'function' ? props.to(model.value) : props.to,
     class: props.to ? 'link' : '',
+    onClick: props.to ? preventClick : undefined,
   }
 })
 
@@ -557,8 +563,9 @@ function getData() {
         v-else-if="hasContent"
         self-center
         :to="componentSingle.to"
-        style="width: calc(100% - 12px)"
+        style="max-width: calc(100% - 12px)"
         :class="[componentSingle.class, { truncate: !noTruncate }]"
+        @click="componentSingle.onClick"
       >
         {{ getLabel(model) }}
       </Component>
