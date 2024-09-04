@@ -33,6 +33,7 @@ const {
   el,
   inputId,
   masked,
+  typed,
   wrapperProps,
   hasContent,
   isBlurred,
@@ -53,7 +54,7 @@ const {
 
 const { path } = useInputValidationUtils(props)
 
-const hasCopyBtn = computedEager(() => {
+const hasCopyBtn = computed(() => {
   return props.readonly && !props.disabled && !props.noCopy && hasContent.value
 })
 
@@ -63,6 +64,7 @@ defineExpose({
   blur,
   clear,
   getInputElement,
+  sync: (val: any) => typed.value = val,
 })
 </script>
 
@@ -90,11 +92,11 @@ defineExpose({
       ref="el"
       :value="masked"
       flex="1"
-      :type="type"
-      :inputmode="inputmode"
-      :placeholder="placeholder"
-      :readonly="readonly"
-      :disabled="disabled"
+      :type
+      :inputmode
+      :placeholder
+      :readonly
+      :disabled
       autocomplete="off"
       :label="label || placeholder"
       :name="name || path || label || placeholder"
