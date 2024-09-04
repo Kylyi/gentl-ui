@@ -39,6 +39,7 @@ defineEmits<{
   (e: 'removed', item: any): void
   (e: 'search', payload: { hasExactMatch: boolean, search: string }): void
   (e: 'before-search', payload: { hasExactMatch: boolean, search: string }): void
+  (e: 'update:search', val?: string | undefined | null): void
   (e: 'drag:start', item: IListDraggedItem): void
   (e: 'drag:end', item: IListDraggedItem): void
   (e: 'submit', item: any): void
@@ -93,6 +94,7 @@ const {
   search,
   searchEl,
   selectedByKey,
+  searchInputValidation,
   isSelected,
   handleKey,
   handleMouseOver,
@@ -160,6 +162,7 @@ onMounted(() => {
           :autofocus="!noAutofocus"
           data-cy="list-search"
           v-bind="inputProps"
+          :validation="searchInputValidation"
         />
 
         <slot name="after-search" />

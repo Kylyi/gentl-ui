@@ -7,6 +7,9 @@ import type { IItemToBeAdded } from '~/components/List/types/list-item-to-add.ty
 
 // Models
 import type { SortItem } from '~/libs/Shared/models/sort-item.model'
+import type { IZodShape } from '~/utils/zod/types/zod-structure.type'
+import type { IZodValidationItem } from '~/utils/zod/types/zod-validation-item.type'
+import type { IZodValidationOutput } from '~/utils/zod/types/zod-validation-output'
 
 export type IListProps = IListBaseProps & {
   bordered?: boolean
@@ -152,4 +155,12 @@ export type IListProps = IListBaseProps & {
    * be transformed via the `toBoldLatin` fnc
    */
   useToBoldLatin?: boolean
+
+  /**
+   * The validation rules for the search input
+   */
+  searchInputValidation?: {
+    schema: any
+    key: string
+  }
 }

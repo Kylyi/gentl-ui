@@ -12,6 +12,7 @@ import {
   type IGroupRow,
   useGrouping,
 } from '~/libs/Shared/functions/data/useGrouping'
+import type { IZodValidationItem } from '~/utils/zod/types/zod-validation-item.type'
 
 // Models
 import { SortItem } from '~/libs/Shared/models/sort-item.model'
@@ -228,7 +229,7 @@ export function useList(
     self.emit('selected-multiple', itemsToSelect)
   }
 
-  function handleSelectItem(option: any) {
+  async function handleSelectItem(option: any) {
     const isDisabled = props.disabledFnc?.(option)
 
     if (props.noSelect || isDisabled) {
@@ -246,6 +247,18 @@ export function useList(
 
     // We selected a `preAdded` item
     if ('_isNew' in option.ref && option.ref._isNew) {
+      if (searchInputValidationOptions) {
+        const isValid = await searchInputValidationOptions.value.$validate()
+
+        if (!isValid) {
+          // Skip adding option if validation fails
+          return
+        } else {
+          // This is needed after an option is added, with previously failed validation
+          searchInputValidationOptions.value.$reset()
+        }
+      }
+
       if (!props.noLocalAdd) {
         addItem(option.ref)
       } else {
@@ -507,6 +520,16 @@ export function useList(
     })
   }
 
+  // Validation
+  const searchInputValidationOptions = props.searchInputValidation
+    && useZod<{ [K in typeof props.searchInputValidation.key]: typeof props.searchInputValidation.schema }>({ [props.searchInputValidation.key]: props.searchInputValidation.schema }, { [props.searchInputValidation.key]: search })
+
+  const searchInputValidation = computed(() => {
+    const validation = props.searchInputValidation && searchInputValidationOptions && searchInputValidationOptions.value[props.searchInputValidation.key]
+
+    return validation as IZodValidationItem
+  })
+
   // Data fetching
   async function fetchAndSetData(search?: string, options?: IListFetchOptions) {
     if (isLoading.value) {
@@ -651,6 +674,7 @@ export function useList(
     search,
     selectedByKey,
     itemsExtended,
+    searchInputValidation,
     isSelected,
     handleKey,
     handleMouseOver,
