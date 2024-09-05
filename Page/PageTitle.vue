@@ -12,13 +12,13 @@ const slots = useSlots()
 
 const hasContent = computed(() => {
   return (
-    props.title ||
-    !!slots.default ||
-    !!slots['title-left'] ||
-    !!slots['title-right'] ||
-    !!slots['title-below'] ||
-    !!slots['title-prepend'] ||
-    !!slots['title-append']
+    props.title
+    || !!slots.default
+    || !!slots['title-left']
+    || !!slots['title-right']
+    || !!slots['title-below']
+    || !!slots['title-prepend']
+    || !!slots['title-append']
   )
 })
 </script>
@@ -51,11 +51,11 @@ const hasContent = computed(() => {
 
 <style lang="scss" scoped>
 .page-title {
-  --apply: flex gap-2;
+  @apply flex gap-2;
 
   &__wrapper {
-    --apply: flex flex-col gap-6;
-    --apply: max-w-$PageTitle-max-width p-$PageTitle-padding m-$PageTitle-margin;
+    @apply flex flex-col gap-6;
+    @apply max-w-$PageTitle-max-width p-$PageTitle-padding m-$PageTitle-margin;
 
     &.has-shadow {
       box-shadow: 0 8px 8px -9px theme('colors.truegray.300');
@@ -63,7 +63,7 @@ const hasContent = computed(() => {
   }
 
   &__text {
-    --apply: grow font-$PageTitle-font-weight m-b-0;
+    @apply grow font-$PageTitle-font-weight m-b-0;
   }
 }
 

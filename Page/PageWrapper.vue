@@ -78,8 +78,8 @@ onMounted(() => {
       :class="contentClass"
     >
       <PageTitle
-        :title="title"
-        :ui="ui"
+        :title
+        :ui
       >
         <template
           v-if="$slots['title-left']"
