@@ -159,6 +159,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   editComponent?: {
     component: any
     props?: Record<string, any>
+    onSave?: (row: any, column?: TableColumn, originalRow?: any) => void
   }
 
   /**

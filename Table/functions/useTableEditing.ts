@@ -39,9 +39,7 @@ export function useTableEditing(props: ITableProps) {
 
     // Get the element
     let el = document.querySelector(`[data-key="${_rowKey}"]`) as HTMLElement
-    el = el?.querySelector(
-      `.cell[data-field="${column?.field}"]`,
-    ) as HTMLElement
+    el = el?.querySelector(`.cell[data-field="${column?.field}"]`) as HTMLElement
 
     if (el) {
       editRowHeight.value = el.clientHeight
@@ -57,11 +55,17 @@ export function useTableEditing(props: ITableProps) {
     editRow.value = undefined
   }
 
-  function handleSaveRow(noCancel?: boolean) {
+  function handleSaveRow(
+    noCancel?: boolean,
+    options?: { onSave?: (row: any, column?: TableColumn, originalRow?: any) => void },
+  ) {
     if (!editRow.value) {
       return
     }
 
+    const { onSave } = options ?? {}
+
+    onSave?.(editValue.value, editRow.value.column, editRow.value.row)
     syncToParent()
 
     if (!noCancel) {

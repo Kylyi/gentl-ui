@@ -57,9 +57,7 @@ function focusSiblingCell(
   }
 
   siblingCell = isLastCell
-    ? parentRowElSibling?.querySelector?.(
-        `.cell${direction === 'previous' ? ':last-child' : ''}`,
-    )
+    ? parentRowElSibling?.querySelector?.(`.cell${direction === 'previous' ? ':last-child' : ''}`)
     : siblingCell
   const siblingCellEditBtn = siblingCell?.querySelector?.(
     '.cell-edit-btn',
@@ -75,7 +73,7 @@ function focusSiblingCell(
 }
 
 function focusFieldInNextRow(field?: string) {
-  handleSaveRow(true)
+  handleSaveRow(true, { onSave: props.column._editComponent?.onSave })
 
   const _field = field ?? props.column.field
 
@@ -159,7 +157,7 @@ function handleKeyDown(e: KeyboardEvent) {
 
     case 'Enter':
       setTimeout(() => {
-        handleSaveRow()
+        handleSaveRow(undefined, { onSave: props.column._editComponent?.onSave })
 
         if (isControlKey) {
           return
@@ -252,9 +250,9 @@ function selectSelf(self: any) {
           :is="col._editComponent.component"
           ref="inputEl"
           :model-value="get(editValue, col.field)"
+          size="sm"
           v-bind="col._editComponent.props"
           grow
-          size="sm"
           input-class="color-black dark:color-white"
           :input-props="{ onKeydown: handleKeyDown }"
           @update:model-value="set(editValue, col.field, $event)"
