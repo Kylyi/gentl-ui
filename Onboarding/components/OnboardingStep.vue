@@ -2,7 +2,7 @@
 // Functions
 import { arrow, flip, offset, shift, useFloating } from '@floating-ui/vue'
 import { useOnboardingOverlay } from '../functions/useOnboardingOverlay';
-import { getTargetElement } from '~/components/Tooltip/functions/getTargetElement';
+import { getTargetElement, isNestedElement } from '~/components/Tooltip/functions/element-functions';
 
 // Models
 import type { OnboardingStep } from '../models/onboarding-step.model'
@@ -153,83 +153,36 @@ onKeyStroke('Escape', () => {
 })
 
 // goForwardOn
-whenever(() => (!!props.step.goForwardOn?.triggerFnc && stepChanged.value), setMutationObserver)
+const { stop, resume, pause } = watchPausable(() => onboardingStore.lastEvent, async () => {
+  if(!props.step.goForwardOn){
+    return
+  }
 
-onMounted(() => {
-  if (!!props.step.goForwardOn?.triggerFnc){
-    setMutationObserver()
+  // First check the trigger function
+  if(props.step.goForwardOn.triggerFnc && !props.step.goForwardOn.triggerFnc?.()){
+    return
+  }
+
+  if(
+    props.step.goForwardOn?.targets.some(target => {
+      return target.event === onboardingStore.lastEvent?.type
+        && isNestedElement(getTargetElement(target.element), onboardingStore.lastEventEl)
+      })
+    ){
+      pause()
+      setTimeout(() => props.onboarding.goToNextStep(), 5)
   }
 })
 
-const stopObserver = ref<() => void>()
+whenever(() => (!!props.step.goForwardOn?.targets && stepChanged.value), () => nextTick(resume))
 
-onUnmounted(() => stopObserver.value?.())
-
-function setMutationObserver() {
-  const target = getTargetElement(props.step.goForwardOn?.element)
-
-  const { stop } = useMutationObserver(
-    target,
-    () => {
-      const goForwardOnElement = getTargetElement(props.step.goForwardOn?.target.element)
-
-      const isEventMatching = onboardingStore.lastEvent?.type === props.step.goForwardOn?.target.event
-      const isNested = isNestedElement(goForwardOnElement, onboardingStore.lastEventEl)
-
-      if(props.onboarding.debug) {
-        console.log('lastEvent', onboardingStore.lastEvent)
-        console.log('lastEventEl', onboardingStore.lastEventEl)
-        console.log('targetEl:', goForwardOnElement)
-        console.log('orig targetEl:', props.step.goForwardOn?.element)
-        console.log('event matching: ', isEventMatching)
-        console.log('isNestedElement: ', isNested)
-        console.log('triggerFnc', props.step.goForwardOn?.triggerFnc())
-      }
-
-      useDebounceFn(async () => {
-        if (isEventMatching
-        && isNested
-        && await props.step.goForwardOn?.triggerFnc()
-        ) {
-          props.onboarding.debug && console.log('all passed in mutationObserver')
-          stop()
-          props.onboarding.goToNextStep()
-        }
-
-      }, 10)()
-    },
-    {
-      subtree: true,
-      characterData: true,
-      attributes: true,
-      characterDataOldValue: true,
-      childList: true,
-    })
-
-    stopObserver.value = stop
-}
-
-function isNestedElement(parent: HTMLElement | null, child?: HTMLElement | null): boolean {
-  if (!parent || !child) {
-    return false;
+onMounted(() => {
+  if (!!props.step.goForwardOn?.targets){
+    nextTick(resume)
   }
+})
 
-  // Start with the child element
-  let currentElement: HTMLElement | null = child;
-
-  // Traverse up the DOM tree
-  while (currentElement !== null) {
-    // If we find the parent, return true
-    if (currentElement === parent) {
-      return true;
-    }
-    // Move to the parent of the current element
-    currentElement = currentElement.parentElement;
-  }
-
-  // If we've reached the top of the DOM without finding the parent, return false
-  return false;
-}
+onUnmounted(stop)
 </script>
 
 <template>

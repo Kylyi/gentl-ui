@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // Functions
 import { arrow, flip, offset, shift, useFloating } from '@floating-ui/vue'
-import { getTargetElement } from '~/components/Tooltip/functions/getTargetElement';
+import { getTargetElement } from '~/components/Tooltip/functions/element-functions';
 
 // Types
 import type { ITooltipProps } from '~/components/Tooltip/types/tooltip-props.type'

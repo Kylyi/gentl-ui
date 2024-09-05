@@ -57,15 +57,15 @@ export class OnboardingStep {
     /**
      * Validation function that needs to be true in order to proceed
      */
-    triggerFnc: () => Promise<boolean> | boolean
+    triggerFnc?: () => Promise<boolean> | boolean
 
-    target: {
+    targets: {
       /**
        * Target element of watched event
        */
       element: MaybeElement<ReferenceElement> | HTMLElement | string | null | Ref<any>
       event: keyof HTMLElementEventMap
-    }
+    }[]
   }
 
   /**

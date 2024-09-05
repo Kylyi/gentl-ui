@@ -180,6 +180,7 @@ defineExpose({
       class="date-picker-controls"
     >
       <Btn
+        id="date-picker-today"
         size="sm"
         :label="$t('general.today')"
         @click="handleSelectToday"

@@ -2,16 +2,16 @@ export function useOnboardingOverlay(el: MaybeRefOrGetter<HTMLElement | null>) {
   window.addEventListener('resize', updateOverlayClip)
 
   const {
-    x: pageX,
-    y: pageY,
+    x: elX,
+    y: elY,
   } = useElementBounding(el, { windowResize: true })
 
-  watchThrottled([pageX, pageY], updateOverlayClip, {
+  watchThrottled([elX, elY], updateOverlayClip, {
     trailing: true,
     throttle: 1,
   })
 
-  function updateOverlayClip() {
+  async function updateOverlayClip() {
     const overlay = document.querySelector('.tutorial-overlay') as HTMLElement
     if (!overlay) {
       return
