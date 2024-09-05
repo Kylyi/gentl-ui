@@ -49,9 +49,7 @@ function focusSiblingCell(
     ] as HTMLElement
   }
 
-  const isLastParentRow = !parentRowElSibling?.classList?.contains?.(
-    'virtual-scroll__row',
-  )
+  const isLastParentRow = !parentRowElSibling?.classList?.contains?.('virtual-scroll__row')
   if (isLastCell && isLastParentRow) {
     return
   }
@@ -220,6 +218,7 @@ function selectSelf(self: any) {
     <div
       v-if="!column.hideLabel"
       class="cell-label"
+      :class="{ 'non-editable': !editable || !isEditable }"
     >
       <span truncate>
         {{ column._label }}
