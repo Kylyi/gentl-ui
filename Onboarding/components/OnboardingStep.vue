@@ -132,7 +132,7 @@ function debouncedStepChange() {
   stepChanged.value = true
   setTimeout(() => {
     stepChanged.value = false
-  }, 100)
+  }, 10)
 }
 
 // KeyBoard controlls
@@ -169,8 +169,13 @@ const { stop, resume, pause } = watchPausable(() => onboardingStore.lastEvent, a
         && isNestedElement(getTargetElement(target.element), onboardingStore.lastEventEl)
       })
     ){
+      console.log('goForwardOn - all conditions met, going to next step')
       pause()
-      setTimeout(() => props.onboarding.goToNextStep(), 5)
+      setTimeout(() => {
+        if(!stepChanged.value){
+          props.onboarding.goToNextStep()
+        }
+      }, 5)
   }
 })
 
