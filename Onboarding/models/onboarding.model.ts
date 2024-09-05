@@ -22,7 +22,11 @@ export class OnboardingModel {
 
       return
     }
+    if(!this.steps[step].canBeSkippedTo && step < this.currentStep) {
+      this.goToStep(step - 1)
 
+      return
+    }
     this.currentStep = step < 0 ? 0 : step
     useOnboardingStore().lastIndexByName[this.name] = this.currentStep
   }

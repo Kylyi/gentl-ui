@@ -49,8 +49,23 @@ export class OnboardingStep {
    * Specifies the event condition for advancing to the next step in the tutorial wizard.
    */
   goForwardOn?: {
+    /**
+     * The element that triggers an event
+     */
     element: MaybeElement<ReferenceElement> | HTMLElement | string | null | Ref<any>
+
+    /**
+     * Validation function that needs to be true in order to proceed
+     */
     triggerFnc: () => Promise<boolean> | boolean
+
+    target: {
+      /**
+       * Target element of watched event
+       */
+      element: MaybeElement<ReferenceElement> | HTMLElement | string | null | Ref<any>
+      event: keyof HTMLElementEventMap
+    }
   }
 
   /**

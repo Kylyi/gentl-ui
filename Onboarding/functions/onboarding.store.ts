@@ -39,6 +39,39 @@ export const useOnboardingStore = defineStore(
     }
 
     function startTour(name: OnboardingModel['name']){
+      // Start event listener
+      const eventTypes = [
+        // Mouse events
+        'click', 'dblclick', 'mousedown', 'mouseup', 'mousemove', 'mouseover', 'mouseout', 'mouseenter', 'mouseleave',
+        // Keyboard events
+        'keydown', 'keyup', 'keypress',
+        // Form events
+        'submit', 'change', 'input', 'invalid', 'reset',
+        // Focus events
+        'focus', 'blur', 'focusin', 'focusout',
+        // Touch events
+        'touchstart', 'touchend', 'touchmove', 'touchcancel',
+        // Drag events
+        'dragstart', 'drag', 'dragenter', 'dragleave', 'dragover', 'drop', 'dragend',
+        // Clipboard events
+        'cut', 'copy', 'paste',
+        // Selection event
+        'select',
+        // Wheel event
+        'wheel'
+      ]
+
+      const handleEvent = (e: Event) => {
+        lastEvent.value = e
+        lastEventEl.value = e.target as HTMLElement
+        // console.log(`Event: ${e.type}, Target:`, e.target)
+      }
+
+      eventTypes.forEach(eventType => {
+        document.addEventListener(eventType, handleEvent, true)
+      })
+
+      // Start tour
       const tour = onboardingsByName.value[name]
       tour.startTour(lastIndexByName.value[name])
     }
@@ -52,12 +85,17 @@ export const useOnboardingStore = defineStore(
       lastIndexByName.value[name] = 0
     }
 
+    const lastEvent = ref<Event>()
+    const lastEventEl = ref<HTMLElement>()
+
     return {
       addTour,
       startTour,
       resetTour,
       activeOnboarding,
       lastIndexByName,
+      lastEvent,
+      lastEventEl,
     }
   },
   {

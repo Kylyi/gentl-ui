@@ -157,6 +157,7 @@ defineExpose({
       </div>
 
       <div
+        id="date-picker-days"
         grid="~ cols-7"
         relative
       >

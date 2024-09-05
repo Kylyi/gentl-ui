@@ -8,6 +8,9 @@ import { getTargetElement } from '~/components/Tooltip/functions/getTargetElemen
 import type { OnboardingStep } from '../models/onboarding-step.model'
 import type { OnboardingModel } from '../models/onboarding.model';
 
+// Store
+import { useOnboardingStore } from '~/components/Onboarding/functions/onboarding.store'
+
 const props = defineProps<{
   step: OnboardingStep
   onboarding: OnboardingModel
@@ -19,6 +22,7 @@ const props = defineProps<{
 const referenceEl = ref<HTMLElement | null>(null)
 const { updateOverlayClip } = useOnboardingOverlay(referenceEl)
 const { width: windowWidth, height: windowHeight } = useWindowSize()
+const onboardingStore = useOnboardingStore()
 
   // Layout
 const tooltipEl = ref<HTMLElement>()
@@ -162,21 +166,37 @@ const stopObserver = ref<() => void>()
 onUnmounted(() => stopObserver.value?.())
 
 function setMutationObserver() {
-  const goForwardOnElement = getTargetElement(props.step.goForwardOn?.element)
-  console.log('setMutationObserver', goForwardOnElement)
+  const target = getTargetElement(props.step.goForwardOn?.element)
 
   const { stop } = useMutationObserver(
-    goForwardOnElement,
-    mutations => {
+    target,
+    () => {
+      const goForwardOnElement = getTargetElement(props.step.goForwardOn?.target.element)
+
+      const isEventMatching = onboardingStore.lastEvent?.type === props.step.goForwardOn?.target.event
+      const isNested = isNestedElement(goForwardOnElement, onboardingStore.lastEventEl)
+
+      if(props.onboarding.debug) {
+        console.log('lastEvent', onboardingStore.lastEvent)
+        console.log('lastEventEl', onboardingStore.lastEventEl)
+        console.log('targetEl:', goForwardOnElement)
+        console.log('orig targetEl:', props.step.goForwardOn?.element)
+        console.log('event matching: ', isEventMatching)
+        console.log('isNestedElement: ', isNested)
+        console.log('triggerFnc', props.step.goForwardOn?.triggerFnc())
+      }
+
       useDebounceFn(async () => {
-        if (await props.step.goForwardOn?.triggerFnc()){
+        if (isEventMatching
+        && isNested
+        && await props.step.goForwardOn?.triggerFnc()
+        ) {
+          props.onboarding.debug && console.log('all passed in mutationObserver')
           stop()
           props.onboarding.goToNextStep()
-
         }
-        console.log('mutations', mutations)
 
-      }, 100)()
+      }, 10)()
     },
     {
       subtree: true,
@@ -188,13 +208,34 @@ function setMutationObserver() {
 
     stopObserver.value = stop
 }
+
+function isNestedElement(parent: HTMLElement | null, child?: HTMLElement | null): boolean {
+  if (!parent || !child) {
+    return false;
+  }
+
+  // Start with the child element
+  let currentElement: HTMLElement | null = child;
+
+  // Traverse up the DOM tree
+  while (currentElement !== null) {
+    // If we find the parent, return true
+    if (currentElement === parent) {
+      return true;
+    }
+    // Move to the parent of the current element
+    currentElement = currentElement.parentElement;
+  }
+
+  // If we've reached the top of the DOM without finding the parent, return false
+  return false;
+}
 </script>
 
 <template>
   <Teleport to="body">
     <div
       class="tutorial-overlay"
-      @click.prevent.stop
     />
 
     <div
