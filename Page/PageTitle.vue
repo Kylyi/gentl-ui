@@ -1,13 +1,8 @@
 <script setup lang="ts">
 // Types
-import type { IPageWrapperProps } from '~/components/Page/types/page-wrapper-props.type'
+import type { IPageTitleProps } from '~/components/Page/types/page-title-props.type'
 
-type IProps = {
-  title?: string
-  ui?: IPageWrapperProps['ui']
-}
-
-const props = defineProps<IProps>()
+const props = defineProps<IPageTitleProps>()
 const slots = useSlots()
 
 const hasContent = computed(() => {
@@ -20,6 +15,26 @@ const hasContent = computed(() => {
     || !!slots['title-prepend']
     || !!slots['title-append']
   )
+})
+
+const title = computed(() => {
+  if (!props.title) {
+    return
+  }
+
+  if (typeof props.title === 'string') {
+    return props.title
+  } else {
+    return props.title.value
+  }
+})
+
+const previousValueTitle = computed(() => {
+  if (!props.title || typeof props.title === 'string') {
+    return
+  }
+
+  return props.title.previousValue
 })
 </script>
 
@@ -38,6 +53,14 @@ const hasContent = computed(() => {
         <slot>
           {{ title }}
         </slot>
+
+        <span
+          v-if="previousValueTitle"
+          color="purple-500 dark:purple-600"
+        >
+          <br>
+          {{ previousValueTitle }}
+        </span>
 
         <slot name="title-append" />
       </h4>
