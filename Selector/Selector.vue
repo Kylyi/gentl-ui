@@ -308,8 +308,6 @@ const optionsByKey = computed(() => {
 // Picker
 const menuProxyEl = ref<ComponentInstance<typeof MenuProxy>>()
 const menuPlacement = ref('bottom')
-const isPickerActive = ref(false)
-const pickerAnimationState = ref<'show' | 'hide'>('hide')
 
 function handleBeforeHide() {
   preventNextFocus.value = true
@@ -347,6 +345,8 @@ const {
   el,
   inputId,
   preventNextFocus,
+  isPickerActive,
+  pickerAnimationState,
   model,
   wrapperProps,
   handleClickWrapper,
