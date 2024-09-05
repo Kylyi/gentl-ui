@@ -163,21 +163,31 @@ const { stop, resume, pause } = watchPausable(() => onboardingStore.lastEvent, a
     return
   }
 
-  if(
-    props.step.goForwardOn?.targets.some(target => {
-      return target.event === onboardingStore.lastEvent?.type
-        && isNestedElement(getTargetElement(target.element), onboardingStore.lastEventEl)
-      })
-    ){
+  const targetHit = props.step.goForwardOn.targets.find(target => {
+    return target.event === onboardingStore.lastEvent?.type
+      && isNestedElement(getTargetElement(target.element), onboardingStore.lastEventEl)
+  })
+
+  if(targetHit) {
       console.log('goForwardOn - all conditions met, going to next step')
-      pause()
-      setTimeout(() => {
-        if(!stepChanged.value){
-          props.onboarding.goToNextStep()
-        }
-      }, 5)
+      debouncedGoToNextStep.value()
   }
 })
+
+const debouncedGoToNextStep = computed(() => useDebounceFn(
+  () => {
+    pause()
+    setTimeout(() => {
+      if(!stepChanged.value){
+        props.onboarding.goToNextStep()
+      }
+    }, 5)
+  },
+  props.step.goForwardOn?.debounce || 0,
+  {
+    maxWait: props.step.goForwardOn?.maxWait
+  }
+))
 
 whenever(() => (!!props.step.goForwardOn?.targets && stepChanged.value), () => nextTick(resume))
 

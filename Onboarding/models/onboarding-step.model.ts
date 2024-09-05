@@ -66,6 +66,8 @@ export class OnboardingStep {
       element: MaybeElement<ReferenceElement> | HTMLElement | string | null | Ref<any>
       event: keyof HTMLElementEventMap
     }[]
+    debounce?: number
+    maxWait?: number
   }
 
   /**
