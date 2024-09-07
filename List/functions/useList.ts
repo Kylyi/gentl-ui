@@ -104,7 +104,7 @@ export function useList(
   const listRowProps = computed(() => getListProps(props))
 
   const itemsExtended = computed(() => {
-    const keys = fuseOptions.fuseOptions!.keys
+    const keys = fuseOptions.fuseOptions!.keys as string[]
     const itemsCloned = [...items.value, ...addedItems.value]
 
     return itemsCloned.map(item => {
@@ -112,7 +112,7 @@ export function useList(
         _ref: item,
       }
 
-      keys?.forEach((key: string) => {
+      keys?.forEach(key => {
         const val = get(item, key as string)
 
         set(

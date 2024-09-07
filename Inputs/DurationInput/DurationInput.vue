@@ -47,12 +47,10 @@ const numberInputProps = reactivePick(
   'errorVisible',
   'fractionDigits',
   'hint',
-  'inline',
   'immediate',
   'inputClass',
   'inputStyle',
   'label',
-  'labelInside',
   'layout',
   'loading',
   'min',
@@ -67,7 +65,7 @@ const numberInputProps = reactivePick(
   'step',
   'inputProps',
   'ui',
-  'zod'
+  'zod',
 )
 
 const modelByUnit = computed<Record<DurationUnit, number>>(() => {
