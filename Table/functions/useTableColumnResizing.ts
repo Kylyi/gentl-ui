@@ -277,7 +277,7 @@ export function useTableColumnResizing(options: {
     }, 0)
   }
 
-  function handleFitColumns(fit?: 'content' | 'stretch' | 'auto') {
+  function handleFitColumns(fit?: 'content' | 'stretch' | 'auto' | null) {
     if (!tableRows.value?.length) {
       return
     }

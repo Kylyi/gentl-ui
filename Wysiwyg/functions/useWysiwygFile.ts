@@ -1,5 +1,5 @@
-import { Node, mergeAttributes } from '@tiptap/core'
 import { VueNodeViewRenderer } from '@tiptap/vue-3'
+import { Node, mergeAttributes } from '@tiptap/core'
 import { FileHandler } from '@tiptap-pro/extension-file-handler'
 
 // Models
@@ -30,11 +30,7 @@ export function useWysiwygFile() {
       // atom: true,
 
       parseHTML() {
-        return [
-          {
-            tag: 'span[data-type="wysiwyg-file"]',
-          },
-        ]
+        return [{ tag: 'span[data-type="wysiwyg-file"]' }]
       },
 
       renderHTML({ HTMLAttributes }) {

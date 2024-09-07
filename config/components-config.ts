@@ -61,10 +61,7 @@ import type { IWysiwygProps } from '~/components/Wysiwyg/types/wysiwyg-props.typ
 import type { IYearMonthSelectorProps } from '~/components/YearMonthSelector/types/year-month-selector-props.type'
 import type { IYearSelectorProps } from '~/components/YearSelector/types/year-selector-props.type'
 import type { ICurrencyInputProps } from '~/components/Inputs/CurrencyInput/types/currency-input-props.type'
-import type {
-  ITableDataFetchFncInput,
-  ITableQuery,
-} from '~/components/Table/types/table-query.type'
+import type { ITableDataFetchFncInput, ITableQuery } from '~/components/Table/types/table-query.type'
 
 // Models
 import type { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
