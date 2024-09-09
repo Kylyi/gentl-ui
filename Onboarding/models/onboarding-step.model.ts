@@ -19,6 +19,7 @@ export class OnboardingStep {
   element?: MaybeElement<ReferenceElement> | HTMLElement | string | null | Ref<any>
   positioning: 'absolute' | 'component'
   absolutePlacement: Placement | 'center' = 'center'
+  canInteractWithElement: boolean = true
 
   /**
    *
@@ -71,12 +72,18 @@ export class OnboardingStep {
   }
 
   /**
+   * TODO
    * Element event that triggers going back a step
    */
   goBackOn?: {
     element: MaybeElement<ReferenceElement> | HTMLElement | string
     event?: Event
   }
+
+  /**
+   * Function fired before going to the next step
+   */
+  onBeforeLeave?: () => Promise<void>
 
   /**
    *
@@ -114,6 +121,7 @@ export class OnboardingStep {
       this.element = args.element
       this.positioning = args.positioning ?? isNil(args.element) ? 'absolute' : 'component'
       this.absolutePlacement = args.absolutePlacement ?? this.absolutePlacement
+      this.canInteractWithElement = args.canInteractWithElement ?? this.canInteractWithElement // TODO
 
       // Controls
       this.canControl = args.canControl ?? this.canControl
@@ -125,6 +133,9 @@ export class OnboardingStep {
 
       this.goForwardOn = args.goForwardOn
       this.goBackOn = args.goBackOn
+
+      // Lifecycle
+      this.onBeforeLeave = args.onBeforeLeave // TODO
 
       // Layout
       this.showNavigation = args.showNavigation ?? this.showNavigation

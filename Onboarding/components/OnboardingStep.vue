@@ -10,6 +10,7 @@ import type { OnboardingModel } from '../models/onboarding.model';
 
 // Store
 import { useOnboardingStore } from '~/components/Onboarding/functions/onboarding.store'
+import { useAppStore } from '~/libs/App/app.store'
 
 const props = defineProps<{
   step: OnboardingStep
@@ -20,7 +21,7 @@ const props = defineProps<{
 
 // Utils
 const referenceEl = ref<HTMLElement | null>(null)
-const { updateOverlayClip } = useOnboardingOverlay(referenceEl)
+const { updateOverlayClip } = useOnboardingOverlay(referenceEl, props.step)
 const { width: windowWidth, height: windowHeight } = useWindowSize()
 const onboardingStore = useOnboardingStore()
 
@@ -179,6 +180,7 @@ const debouncedGoToNextStep = computed(() => useDebounceFn(
     pause()
     setTimeout(() => {
       if(!stepChanged.value){
+        useAppStore().activeElement?.blur()
         props.onboarding.goToNextStep()
       }
     }, 5)
@@ -204,6 +206,7 @@ onUnmounted(stop)
   <Teleport to="body">
     <div
       class="tutorial-overlay"
+      @click.stop
     />
 
     <div
@@ -331,6 +334,7 @@ onUnmounted(stop)
 
     &__message {
       @apply color-slate-950 dark:color-white font-light text-base max-h-50 grow;
+      @apply 'p-l-0!';
     }
   }
 

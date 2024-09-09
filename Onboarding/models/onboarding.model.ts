@@ -14,7 +14,7 @@ export class OnboardingModel {
   // TODO: Remove after development
   debug: boolean = false
 
-  goToStep(step: number) {
+  async goToStep(step: number) {
     this.log('goToStep', step)
     if(step >= this.steps.length) {
       this.endTour()
@@ -27,7 +27,15 @@ export class OnboardingModel {
 
       return
     }
+
+    // Lifecycle of steps
+    const currentStep = this.steps[this.currentStep]
+    if(currentStep.onBeforeLeave){
+      await currentStep.onBeforeLeave()
+    }
+
     this.currentStep = step < 0 ? 0 : step
+    console.log('currentStep: ', this.currentStep)
     useOnboardingStore().lastIndexByName[this.name] = this.currentStep
   }
 

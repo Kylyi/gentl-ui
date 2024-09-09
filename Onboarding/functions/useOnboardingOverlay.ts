@@ -1,4 +1,6 @@
-export function useOnboardingOverlay(el: MaybeRefOrGetter<HTMLElement | null>) {
+import type { OnboardingStep } from "../models/onboarding-step.model"
+
+export function useOnboardingOverlay(el: MaybeRefOrGetter<HTMLElement | null>, step: MaybeRefOrGetter<OnboardingStep>) {
   window.addEventListener('resize', updateOverlayClip)
 
   const {
