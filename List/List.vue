@@ -93,6 +93,7 @@ const {
   search,
   searchEl,
   selectedByKey,
+  $z,
   isSelected,
   handleKey,
   handleMouseOver,
@@ -159,7 +160,10 @@ onMounted(() => {
           :loading="isLoading"
           :autofocus="!noAutofocus"
           data-cy="list-search"
-          v-bind="inputProps"
+          :input-props="{
+            ...inputProps,
+            ...($z && { validation: $z.search })
+          }"
         />
 
         <slot name="after-search" />

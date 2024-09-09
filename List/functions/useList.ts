@@ -3,6 +3,7 @@ import { klona } from 'klona/full'
 import type { Required } from 'utility-types'
 import type { MaybeElementRef } from '@vueuse/core'
 import { config } from '~/components/config/components-config'
+import { z } from 'zod'
 
 // Types
 import type { IListItem } from '~/components/List/types/list-item.type'
@@ -228,7 +229,7 @@ export function useList(
     self.emit('selected-multiple', itemsToSelect)
   }
 
-  function handleSelectItem(option: any) {
+  async function handleSelectItem(option: any) {
     const isDisabled = props.disabledFnc?.(option)
 
     if (props.noSelect || isDisabled) {
@@ -246,6 +247,12 @@ export function useList(
 
     // We selected a `preAdded` item
     if ('_isNew' in option.ref && option.ref._isNew) {
+      const validationPassed = $z ? await $z.value.$validate() : true
+
+      if (!validationPassed) {
+        return
+      }
+
       if (!props.noLocalAdd) {
         addItem(option.ref)
       } else {
@@ -260,6 +267,8 @@ export function useList(
         ...option,
         ref: option.ref,
       })
+
+      $z?.value.$reset()
 
       return
     }
@@ -346,6 +355,16 @@ export function useList(
   const hasExactMatch = ref(false)
   const arr = ref<Array<IGroupRow | IListItem>>([])
   const isPreventFetchData = refAutoReset(false, 150)
+
+  let $z = null
+
+  if (props.allowAdd && props.inputProps.searchValidationRule) {
+    $z = useZod({
+      search: props.inputProps.searchValidationRule,
+    }, {
+      search,
+    })
+  }
 
   provide(listItemsKey, items)
 
@@ -651,6 +670,7 @@ export function useList(
     search,
     selectedByKey,
     itemsExtended,
+    $z,
     isSelected,
     handleKey,
     handleMouseOver,

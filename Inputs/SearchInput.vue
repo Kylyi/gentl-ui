@@ -40,8 +40,8 @@ defineExpose({
     :input-style="inputStyle"
     :loading="loading"
     :ui="ui"
-    :input-props="inputProps"
     :placeholder="placeholder ?? $t('general.search')"
+    v-bind="inputProps"
     @update:model-value="$emit('update:model-value', $event)"
     @blur="$emit('blur', $event)"
   >
