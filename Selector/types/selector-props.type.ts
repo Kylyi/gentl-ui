@@ -7,6 +7,7 @@ import type { IInputProps } from '~/components/Inputs/types/input-props.type'
 import type { IListProps } from '~/components/List/types/list-props.type'
 import type { IMenuProps } from '~/components/Menu/types/menu-props.type'
 import type { IDialogProps } from '~/components/Dialog/types/dialog-props.type'
+import type { z } from 'zod'
 
 // Models
 import type { GroupItem } from '~/libs/Shared/models/group-item.model'
@@ -137,6 +138,26 @@ export type ISelectorProps = IInputProps & {
    * The props that should be passed to the input tag (<input>)
    */
   inputProps?: Record<string, any>
+
+  /**
+   * Validation schema for search input if creating of new item is allowed (allowAdd is set to true)
+   * @example
+   * z.string().min(3).max(5)
+   * 
+   * @example
+   * {
+   *   schema: z.object({
+   *     name: z.string().min(3).max(5)
+   *   }),
+   *   key: 'name'
+   * }
+   */
+  addedItemValidation?:
+    z.ZodSchema<any, any, any>
+    | {
+      schema: z.ZodSchema<any, any, any>,
+      key: string
+    }
 
   /**
    * The function to use for transforming the added item

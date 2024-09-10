@@ -3,7 +3,6 @@ import { klona } from 'klona/full'
 import type { Required } from 'utility-types'
 import type { MaybeElementRef } from '@vueuse/core'
 import { config } from '~/components/config/components-config'
-import { z } from 'zod'
 
 // Types
 import type { IListItem } from '~/components/List/types/list-item.type'
@@ -13,6 +12,7 @@ import {
   type IGroupRow,
   useGrouping,
 } from '~/libs/Shared/functions/data/useGrouping'
+import type { IZodValidationItem } from '~/utils/zod/types/zod-validation-item.type'
 
 // Models
 import { SortItem } from '~/libs/Shared/models/sort-item.model'
@@ -247,9 +247,9 @@ export function useList(
 
     // We selected a `preAdded` item
     if ('_isNew' in option.ref && option.ref._isNew) {
-      const validationPassed = $z ? await $z.value.$validate() : true
+      const isNewItemValid = await $z.value.$validate()
 
-      if (!validationPassed) {
+      if (!isNewItemValid) {
         return
       }
 
@@ -268,7 +268,7 @@ export function useList(
         ref: option.ref,
       })
 
-      $z?.value.$reset()
+      $z.value.$reset()
 
       return
     }
@@ -356,15 +356,25 @@ export function useList(
   const arr = ref<Array<IGroupRow | IListItem>>([])
   const isPreventFetchData = refAutoReset(false, 150)
 
-  let $z = null
-
-  if (props.allowAdd && props.inputProps.searchValidationRule) {
-    $z = useZod({
-      search: props.inputProps.searchValidationRule,
-    }, {
-      search,
-    })
+  // Validation
+  let validationSchema = null;
+  let validationDataKey = 'search';
+  
+  if (props.addedItemValidation instanceof z.ZodSchema) {
+    validationSchema = props.addedItemValidation
+  } else if (typeof props.addedItemValidation === 'object' && props.addedItemValidation.schema instanceof z.ZodObject && props.addedItemValidation.key) {
+    validationSchema = props.addedItemValidation.schema.shape[props.addedItemValidation.key]
+    validationDataKey = props.addedItemValidation.key
   }
+
+  const $z = validationSchema ? useZod(
+    { [validationDataKey]: validationSchema },
+    { [validationDataKey]: search },
+  ) : useZod()
+
+  const newItemValidation = computed(() => {
+    return $z.value[validationDataKey] as IZodValidationItem
+  })
 
   provide(listItemsKey, items)
 
@@ -670,7 +680,7 @@ export function useList(
     search,
     selectedByKey,
     itemsExtended,
-    $z,
+    newItemValidation,
     isSelected,
     handleKey,
     handleMouseOver,
