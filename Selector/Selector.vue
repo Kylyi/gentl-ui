@@ -618,9 +618,9 @@ function getData() {
 
     <template #menu>
       <MenuProxy
-        id="selector-menu"
         ref="menuProxyEl"
         v-model="isPickerActive"
+        data-onboarding="selector-menu"
         manual
         position="top"
         class="selector"

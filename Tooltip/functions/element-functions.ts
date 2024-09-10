@@ -12,7 +12,16 @@ export function getTargetElement(target: any): any {
 
   // Target is a selector
   else if (typeof target === 'string') {
-    return document?.querySelector(target) || document?.body || undefined
+
+    // Class or ID selector
+    if (target.startsWith('.') || target.startsWith('#')) {
+      return document?.querySelector(target) || undefined;
+    }
+
+    // Otherwise, assume it's a data-onboarding attribute value
+    else {
+      return document?.querySelector(`[data-onboarding="${target}"]`) || undefined;
+    }
   }
 
   // Target is Vue component
