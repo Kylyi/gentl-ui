@@ -1,40 +1,47 @@
+import { getTargetElement } from "~/components/Tooltip/functions/element-functions"
 import type { OnboardingStep } from "../models/onboarding-step.model"
 
-export function useOnboardingOverlay(el: MaybeRefOrGetter<HTMLElement | null>, step: MaybeRefOrGetter<OnboardingStep>) {
+export function useOnboardingOverlay(step: MaybeRefOrGetter<OnboardingStep>) {
   window.addEventListener('resize', updateOverlayClip)
 
+  const highlightEl = ref<HTMLElement>()
   const cleanup = ref<() => void>()
 
   const {
     x: elX,
     y: elY,
-  } = useElementBounding(el, { windowResize: true })
+  } = useElementBounding(highlightEl, { windowResize: true })
 
-  watchThrottled([elX, elY], updateOverlayClip, {
-    trailing: true,
-    throttle: 1,
-  })
+  watchThrottled(
+    [elX, elY, step],
+    async () => {
+      highlightEl.value = getTargetElement(toValue(step).element)
+      updateOverlayClip()
+      disableElementInteraction()
+    },
+    {
+      trailing: true,
+      throttle: 1,
+      immediate: true
+    }
+  )
 
   async function updateOverlayClip() {
-    if(!toValue(step).canInteractWithElement) {
-      cleanup.value = await disableElementInteraction()
-    }
-
-    const overlay = document.querySelector('.tutorial-overlay') as HTMLElement
-    if (!overlay) {
+    const overlayEl = document.querySelector('.tutorial-overlay') as HTMLElement
+    if (!overlayEl) {
       return
     }
 
-    if (isNil(toValue(el))) {
-      overlay.style.clipPath = 'none'
+    if (isNil(toValue(highlightEl))) {
+      overlayEl.style.clipPath = 'none'
 
       return
     }
 
-    const rect = toValue(el)!.getBoundingClientRect()
+    const rect = toValue(highlightEl)!.getBoundingClientRect()
 
 
-    overlay.style.clipPath = `
+    overlayEl.style.clipPath = `
       polygon(
         0% 0%,
         0% 100%,
@@ -51,48 +58,53 @@ export function useOnboardingOverlay(el: MaybeRefOrGetter<HTMLElement | null>, s
   }
 
   async function disableElementInteraction() {
-    const referenceEl = toValue(el);
+    if(toValue(step).canInteractWithElement) {
+      return
+    }
+
+    const referenceEl = toValue(highlightEl);
     if (!referenceEl) {
       return
     }
 
     // Wait for the element-overlay div to be rendered
-    await nextTick()
+    await nextTick(() => {
+      let elementOverlayEl = document.querySelector('.element-overlay') as HTMLDivElement;
 
-    let elementOverlayEl = document.querySelector('.element-overlay') as HTMLDivElement;
-    if (!elementOverlayEl) {
-      elementOverlayEl = document.createElement('div');
-      elementOverlayEl.className = 'element-overlay';
-      document.body.appendChild(elementOverlayEl);
-    }
-
-    const updateOverlay = () => {
       if (!elementOverlayEl) {
-        return
+        elementOverlayEl = document.createElement('div');
+        elementOverlayEl.className = 'element-overlay';
+        document.body.appendChild(elementOverlayEl);
       }
 
-      const rect = referenceEl.getBoundingClientRect();
+      const updateOverlay = () => {
+        if (!elementOverlayEl) {
+          return
+        }
 
-      Object.assign(elementOverlayEl.style, {
-        top: `${rect.top}px`,
-        left: `${rect.left}px`,
-        width: `${rect.width}px`,
-        height: `${rect.height}px`,
-        display: 'block',
-      });
-    };
+        const rect = referenceEl.getBoundingClientRect();
 
-    // Initial update
-    updateOverlay();
+        Object.assign(elementOverlayEl.style, {
+          top: `${rect.top}px`,
+          left: `${rect.left}px`,
+          width: `${rect.width}px`,
+          height: `${rect.height}px`,
+          display: 'block',
+        });
+      };
 
-    // Update on scroll and resize
-    window.addEventListener('scroll', updateOverlay);
-    window.addEventListener('resize', updateOverlay);
+      // Initial update
+      updateOverlay();
 
-    return () => {
-      window.removeEventListener('scroll', updateOverlay);
-      window.removeEventListener('resize', updateOverlay);
-    };
+      // Update on scroll and resize
+      window.addEventListener('scroll', updateOverlay);
+      window.addEventListener('resize', updateOverlay);
+
+      cleanup.value = () => {
+        window.removeEventListener('scroll', updateOverlay);
+        window.removeEventListener('resize', updateOverlay);
+      };
+    })
   }
 
   onUnmounted(() => {

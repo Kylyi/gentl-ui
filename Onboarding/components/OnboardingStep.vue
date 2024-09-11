@@ -21,7 +21,7 @@ const props = defineProps<{
 
 // Utils
 const referenceEl = ref<HTMLElement | null>(null)
-const { updateOverlayClip } = useOnboardingOverlay(referenceEl, props.step)
+const { updateOverlayClip } = useOnboardingOverlay(toRef(props, 'step'))
 const { width: windowWidth, height: windowHeight } = useWindowSize()
 const onboardingStore = useOnboardingStore()
 
@@ -90,6 +90,7 @@ const tooltipStyles = computed(() => [
     transform: 'translate(0, 0) !important',
   }
 ])
+
 // Scroll to step
 watch(() => props.step.id, () => {
     referenceEl.value = getTargetElement(props.step.element)
@@ -170,7 +171,9 @@ const { stop, resume, pause } = watchPausable(() => onboardingStore.lastEvent, a
   })
 
   if(targetHit) {
-      console.log('goForwardOn - all conditions met, going to next step')
+      if(props.onboarding.debug) {
+        console.log('goForwardOn - all conditions met, going to next step')
+      }
       debouncedGoToNextStep.value()
   }
 })
