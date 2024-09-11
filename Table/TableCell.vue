@@ -1,9 +1,9 @@
 <script setup lang="ts">
 // Types
-import type { ITableProps } from '~/components/Table/types/table-props.type';
+import type { ITableProps } from '~/components/Table/types/table-props.type'
 
 // Models
-import { TableColumn } from '~/components/Table/models/table-column.model'
+import type { TableColumn } from '~/components/Table/models/table-column.model'
 
 // Injections
 import {
@@ -39,7 +39,7 @@ const self = getCurrentInstance()
 
 function focusSiblingCellHorizontal(
   direction: 'previous' | 'next',
-  e: KeyboardEvent
+  e: KeyboardEvent,
 ) {
   let siblingCell = self?.vnode?.el?.[`${direction}ElementSibling`] as
     | HTMLElement
@@ -47,7 +47,7 @@ function focusSiblingCellHorizontal(
     | undefined
   const isLastCell = !siblingCell || !siblingCell?.classList?.contains?.('cell')
   const parentRowEl = self?.vnode.el?.closest(
-    '.virtual-scroll__content-row'
+    '.virtual-scroll__content-row',
   ) as HTMLElement
 
   lastDirection.value = direction === 'next' ? 'right' : 'left'
@@ -62,7 +62,7 @@ function focusSiblingCellHorizontal(
   }
 
   const isLastParentRow = !parentRowElSibling?.classList?.contains?.(
-    'virtual-scroll__content-row'
+    'virtual-scroll__content-row',
   )
   if (isLastCell && isLastParentRow) {
     return
@@ -70,8 +70,8 @@ function focusSiblingCellHorizontal(
 
   siblingCell = isLastCell
     ? parentRowElSibling?.querySelector?.(
-        `.cell${direction === 'previous' ? ':last-child' : ''}`
-      )
+        `.cell${direction === 'previous' ? ':last-child' : ''}`,
+    )
     : siblingCell
 
   const isDataCol = siblingCell?.classList?.contains?.('has-data')
@@ -87,17 +87,17 @@ function focusSiblingCellHorizontal(
 
 function focusSiblingCellVertical(
   direction: 'previous' | 'next',
-  e: KeyboardEvent
+  e: KeyboardEvent,
 ) {
   const cellEl = self?.vnode.el?.closest('.cell') as HTMLElement
 
   // Get index of current instance within the `cellEl`
   const cellIndex = Array.from(cellEl?.parentElement?.children ?? []).indexOf(
-    cellEl
+    cellEl,
   )
 
   const parentRowEl = self?.vnode.el?.closest(
-    '.virtual-scroll__content-row'
+    '.virtual-scroll__content-row',
   ) as HTMLElement
 
   lastDirection.value = direction === 'next' ? 'down' : 'up'
@@ -112,14 +112,14 @@ function focusSiblingCellVertical(
   ] as HTMLElement
 
   const isLastParentRow = !parentRowElSibling?.classList?.contains?.(
-    'virtual-scroll__content-row'
+    'virtual-scroll__content-row',
   )
   if (isLastParentRow) {
     return
   }
 
   const siblingCell = parentRowElSibling?.querySelector?.(
-    `.cell:nth-child(${cellIndex + 1})`
+    `.cell:nth-child(${cellIndex + 1})`,
   ) as HTMLElement | null
 
   const isDataCol = siblingCell?.classList?.contains?.('has-data')
@@ -163,14 +163,14 @@ const { pause, resume } = useIntersectionObserver(
 
     pause()
   },
-  { immediate: false }
+  { immediate: false },
 )
 
 const isEditingField = computedEager(() => {
   return (
-    isEditing?.value &&
-    editRow?.value?.row === props.row &&
-    (editRow?.value?.column === col.value || !editRow?.value?.column)
+    isEditing?.value
+    && editRow?.value?.row === props.row
+    && (editRow?.value?.column === col.value || !editRow?.value?.column)
   )
 })
 
@@ -374,6 +374,7 @@ function isSelectDisabled() {
             p="x-2"
             :to="col.link(row) || ''"
             v-bind="col.linkProps"
+            @click.stop
           >
             {{ val }}
           </NuxtLink>

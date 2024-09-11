@@ -292,6 +292,7 @@ function selectSelf(self: any) {
               :to="col.link(row) || ''"
               v-bind="col.linkProps"
               p="x-2"
+              @click.stop
             >
               {{ val }}
             </NuxtLink>
