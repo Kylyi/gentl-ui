@@ -1,5 +1,12 @@
+// Functions
 import { getTargetElement } from "~/components/Tooltip/functions/element-functions"
+
+// Models
 import type { OnboardingStep } from "../models/onboarding-step.model"
+
+// Store
+import { useOnboardingStore } from '~/components/Onboarding/functions/onboarding.store'
+
 
 export function useOnboardingOverlay(step: MaybeRefOrGetter<OnboardingStep>) {
   window.addEventListener('resize', updateOverlayClip)
@@ -16,6 +23,14 @@ export function useOnboardingOverlay(step: MaybeRefOrGetter<OnboardingStep>) {
     [elX, elY, step],
     async () => {
       highlightEl.value = getTargetElement(toValue(step).element)
+
+      // Handle whem target el is not found (event like closing a Menu)
+      if(!highlightEl.value) {
+        useOnboardingStore().activeOnboarding?.goToPreviousStep()
+
+        return
+      }
+
       updateOverlayClip()
       disableElementInteraction()
     },
