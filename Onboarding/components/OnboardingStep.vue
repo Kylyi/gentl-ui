@@ -204,10 +204,17 @@ onUnmounted(stop)
 
 <template>
   <Teleport to="body">
+    <!-- Tutorial overlay -->
     <div
       class="tutorial-overlay"
-      @click.stop
+      @click.prevent.stop
     />
+
+    <!-- Element overlay -->
+     <div
+      v-if="!step.canInteractWithElement"
+      class="element-overlay"
+     />
 
     <div
       ref="tooltipEl"
@@ -309,6 +316,10 @@ onUnmounted(stop)
   z-index: calc(var(--zMenu) - 1);
 
   transition: 0.3s linear;
+}
+
+.element-overlay {
+  @apply absolute cursor-not-allowed bg-transparent touch-none pointer-events-auto z-9999;
 }
 
 .tooltip {
