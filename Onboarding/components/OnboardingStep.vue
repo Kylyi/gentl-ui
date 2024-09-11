@@ -91,17 +91,19 @@ const tooltipStyles = computed(() => [
   }
 ])
 
-// Scroll to step
+// Lifecycle
 watch(() => props.step.id, () => {
     referenceEl.value = getTargetElement(props.step.element)
     scrollToElement(),
     nextTick(() => {
       updateOverlayClip()
+      triggerStepChangeDebounced()
     })
   },
   { immediate: true },
 )
 
+// Scroll to step
 function scrollToElement() {
   // Doesn't work without a timeout, not sure why
   setTimeout(() => {
@@ -109,28 +111,12 @@ function scrollToElement() {
       behavior: 'smooth',
       block: 'center',
     })
-
   }, 10)
 }
 
-// Update overlay clip
-onMounted(() => {
-  nextTick(() => {
-    referenceEl.value = getTargetElement(props.step.element)
-    updateOverlayClip()
-  })
-})
-watch(() => props.step, () => {
-  nextTick(() => {
-    referenceEl.value = getTargetElement(props.step.element)
-    updateOverlayClip()
-    debouncedStepChange()
-  })
-})
-
 // Trigger on step change
 const stepChanged = ref(false)
-function debouncedStepChange() {
+function triggerStepChangeDebounced() {
   stepChanged.value = true
   setTimeout(() => {
     stepChanged.value = false
@@ -154,14 +140,35 @@ onKeyStroke('Escape', () => {
   }
 })
 
-// goForwardOn
-const { stop, resume, pause } = watchPausable(() => onboardingStore.lastEvent, async () => {
-  if(!props.step.goForwardOn){
+// Event listener handler
+const { stop, resume, pause } = watchPausable(
+  () => onboardingStore.lastEvent,
+  async () => {
+    handleGoForwardOn()
+  }
+)
+const isListeningForEvent = computed(() => {
+  return !!props.step.goForwardOn?.targets
+})
+
+whenever(() => (isListeningForEvent.value && stepChanged.value), () => nextTick(resume))
+
+onMounted(() => {
+  if (!!props.step.goForwardOn?.targets){
+    nextTick(resume)
+  }
+})
+
+onUnmounted(stop)
+
+// GoForwardOn
+function handleGoForwardOn() {
+  if(!props.step.goForwardOn) {
     return
   }
 
   // First check the trigger function
-  if(props.step.goForwardOn.triggerFnc && !props.step.goForwardOn.triggerFnc?.()){
+  if(props.step.goForwardOn.triggerFnc && !props.step.goForwardOn.triggerFnc?.()) {
     return
   }
 
@@ -174,11 +181,11 @@ const { stop, resume, pause } = watchPausable(() => onboardingStore.lastEvent, a
       if(props.onboarding.debug) {
         console.log('goForwardOn - all conditions met, going to next step')
       }
-      debouncedGoToNextStep.value()
+      goToNextStepDebounced.value()
   }
-})
+}
 
-const debouncedGoToNextStep = computed(() => useDebounceFn(
+const goToNextStepDebounced = computed(() => useDebounceFn(
   () => {
     pause()
     setTimeout(() => {
@@ -193,16 +200,6 @@ const debouncedGoToNextStep = computed(() => useDebounceFn(
     maxWait: props.step.goForwardOn?.maxWait
   }
 ))
-
-whenever(() => (!!props.step.goForwardOn?.targets && stepChanged.value), () => nextTick(resume))
-
-onMounted(() => {
-  if (!!props.step.goForwardOn?.targets){
-    nextTick(resume)
-  }
-})
-
-onUnmounted(stop)
 </script>
 
 <template>
