@@ -1,3 +1,4 @@
+import type { ZodSchema } from 'zod'
 import { type UseFuseOptions, useFuse } from '@vueuse/integrations/useFuse'
 import { klona } from 'klona/full'
 import type { Required } from 'utility-types'
@@ -8,10 +9,6 @@ import { config } from '~/components/config/components-config'
 import type { IListItem } from '~/components/List/types/list-item.type'
 import type { IListProps } from '~/components/List/types/list-props.type'
 import type { IListFetchOptions } from '~/components/List/types/list-fetch.type'
-import {
-  type IGroupRow,
-  useGrouping,
-} from '~/libs/Shared/functions/data/useGrouping'
 import type { IZodValidationItem } from '~/utils/zod/types/zod-validation-item.type'
 
 // Models
@@ -23,6 +20,7 @@ import { highlight } from '~/components/List/functions/highlightText'
 import { useSorting } from '~/libs/Shared/functions/data/useSorting'
 import { useListUtils } from '~/components/List/functions/useListUtils'
 import { useItemAdding } from '~/components/List/functions/useItemAdding'
+import { type IGroupRow, useGrouping } from '~/libs/Shared/functions/data/useGrouping'
 import { useListKeyboardNavigation } from '~/components/List/functions/useListKeyboardNavigation'
 
 // Injections
@@ -357,22 +355,27 @@ export function useList(
   const isPreventFetchData = refAutoReset(false, 150)
 
   // Validation
-  let validationSchema = null;
-  let validationDataKey = 'search';
-  
-  if (props.addedItemValidation instanceof z.ZodSchema) {
-    validationSchema = props.addedItemValidation
-  } else if (typeof props.addedItemValidation === 'object' && props.addedItemValidation.schema instanceof z.ZodObject && props.addedItemValidation.key) {
-    validationSchema = props.addedItemValidation.schema.shape[props.addedItemValidation.key]
-    validationDataKey = props.addedItemValidation.key
+  let validationSchema: ZodSchema | undefined
+  let validationDataKey = 'search'
+
+  if (props.addItemValidation instanceof z.ZodSchema) {
+    validationSchema = props.addItemValidation
+  } else if (props.addItemValidation?.schema instanceof z.ZodObject && props.addItemValidation.key) {
+    validationSchema = props.addItemValidation.schema.shape[props.addItemValidation.key]
+    validationDataKey = props.addItemValidation.key
   }
 
-  const $z = validationSchema ? useZod(
-    { [validationDataKey]: validationSchema },
+  const $z = useZod(
+    { [validationDataKey]: validationSchema ?? z.any() },
     { [validationDataKey]: search },
-  ) : useZod()
+    { scope: 'add-item' },
+  )
 
-  const newItemValidation = computed(() => {
+  const $zAddItem = computed(() => {
+    if (!search.value || search.value === props.emptyValue) {
+      return undefined
+    }
+
     return $z.value[validationDataKey] as IZodValidationItem
   })
 
@@ -680,7 +683,7 @@ export function useList(
     search,
     selectedByKey,
     itemsExtended,
-    newItemValidation,
+    $zAddItem,
     isSelected,
     handleKey,
     handleMouseOver,

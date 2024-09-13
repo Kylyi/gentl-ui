@@ -1,10 +1,10 @@
+import type { z } from 'zod'
 import type { FuseOptions } from '@vueuse/integrations/useFuse'
 
 // Types
 import type { IListBaseProps } from '~/components/List/types/list-base-props.type'
 import type { IListFetchFnc } from '~/components/List/types/list-fetch.type'
 import type { IItemToBeAdded } from '~/components/List/types/list-item-to-add.type'
-import type { z } from 'zod'
 
 // Models
 import type { SortItem } from '~/libs/Shared/models/sort-item.model'
@@ -73,7 +73,7 @@ export type IListProps = IListBaseProps & {
    * Validation schema for search input if creating of new item is allowed (allowAdd is set to true)
    * @example
    * z.string().min(3).max(5)
-   * 
+   *
    * @example
    * {
    *   schema: z.object({
@@ -82,10 +82,10 @@ export type IListProps = IListBaseProps & {
    *   key: 'name'
    * }
    */
-  addedItemValidation?:
+  addItemValidation?:
     z.ZodSchema<any, any, any>
     | {
-      schema: z.ZodSchema<any, any, any>,
+      schema: z.ZodSchema<any, any, any>
       key: string
     }
 

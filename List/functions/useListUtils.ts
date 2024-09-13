@@ -5,7 +5,7 @@ import type { IListProps } from '~/components/List/types/list-props.type'
 export function useListUtils() {
   function getListProps(props: IListProps) {
     return reactivePick(props, [
-      'addedItemValidation',
+      'addItemValidation',
       'allowAdd',
       'allowSelectAllFiltered',
       'basePadding',

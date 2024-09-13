@@ -1,3 +1,4 @@
+import type { z } from 'zod'
 import type { CSSProperties } from 'vue'
 import type { FuseOptions } from '@vueuse/integrations/useFuse'
 import type { RouteLocationRaw } from '#vue-router'
@@ -7,7 +8,6 @@ import type { IInputProps } from '~/components/Inputs/types/input-props.type'
 import type { IListProps } from '~/components/List/types/list-props.type'
 import type { IMenuProps } from '~/components/Menu/types/menu-props.type'
 import type { IDialogProps } from '~/components/Dialog/types/dialog-props.type'
-import type { z } from 'zod'
 
 // Models
 import type { GroupItem } from '~/libs/Shared/models/group-item.model'
@@ -143,7 +143,7 @@ export type ISelectorProps = IInputProps & {
    * Validation schema for search input if creating of new item is allowed (allowAdd is set to true)
    * @example
    * z.string().min(3).max(5)
-   * 
+   *
    * @example
    * {
    *   schema: z.object({
@@ -152,10 +152,10 @@ export type ISelectorProps = IInputProps & {
    *   key: 'name'
    * }
    */
-  addedItemValidation?:
+  addItemValidation?:
     z.ZodSchema<any, any, any>
     | {
-      schema: z.ZodSchema<any, any, any>,
+      schema: z.ZodSchema<any, any, any>
       key: string
     }
 
