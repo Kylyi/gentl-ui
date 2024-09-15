@@ -317,8 +317,6 @@ function selectSelf(self: any) {
 
   grid-template-columns: subgrid;
 
-  // @apply h-$mobileRowHeight;
-
   &.is-editable:hover,
   &.is-editing {
     @apply shadow-consistent-xs shadow-primary bg-white dark:bg-darker;

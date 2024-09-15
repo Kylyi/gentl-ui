@@ -1,20 +1,20 @@
 <script setup lang="ts">
 import { config } from '~/components/config/components-config'
 
-// Types
-import type { IFormProps } from '~/components/Form/types/form-props.type'
-
 // Functions
 import { useFormErrors } from '~/components/Form/functions/useFormErrors'
 
-// Store
-import { useAppStore } from '~/libs/App/app.store'
+// Injections
+import { formSubmitKey, isFormEditingKey } from '~/components/Form/provide/form.provide'
+
+// Types
+import type { IFormProps } from '~/components/Form/types/form-props.type'
 
 // Components
 import MenuConfirmation from '~/components/MenuConfirmation/MenuConfirmation.vue'
 
-// Injections
-import { formSubmitKey, isFormEditingKey } from '~/components/Form/provide/form.provide'
+// Store
+import { useAppStore } from '~/libs/App/app.store'
 
 defineOptions({
   inheritAttrs: false,
@@ -359,12 +359,12 @@ onMounted(() => {
               { invisible: !isEditing && !!editControls },
             ]"
             :disabled="submitDisabled"
-            :loading="loading"
-            :icon="icon"
+            :loading
+            :icon
+            :label="label ?? $t('general.submit')"
             v-bind="submitBtnProps"
             type="submit"
             data-cy="save-button"
-            :label="label ?? $t('general.submit')"
           >
             <Component
               :is="FormConfirmation"

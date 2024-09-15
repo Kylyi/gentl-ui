@@ -462,31 +462,31 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .table-container {
-  --apply: relative flex flex-col overflow-auto max-h-full max-w-full
+  @apply relative flex flex-col overflow-auto max-h-full max-w-full
     rounded-custom;
 
-  --apply: m-$Table-content-margin;
+  @apply m-$Table-content-margin;
 
   &__top {
-    --apply: flex flex-col shrink-0 gap-1 border-b-1 border-ca p-2 p-l-1
+    @apply flex flex-col shrink-0 gap-1 border-b-1 border-ca p-2 p-l-1
       overflow-auto;
   }
 
   .is-clickable {
-    --apply: cursor-pointer;
+    @apply cursor-pointer;
   }
 
   .scroller {
-    --apply: max-h-full bg-$Table-container-bg;
+    @apply max-h-full bg-$Table-container-bg;
   }
 }
 
 .non-searchable-info {
-  --apply: m-t-2 p-x-2 p-y-3 text-caption text-center border-ca border-2
+  @apply m-t-2 p-x-2 p-y-3 text-caption text-center border-ca border-2
     rounded-custom;
 }
 
 :deep(.virtual-scroll__content) {
-  --apply: font-size-13px;
+  @apply font-size-13px;
 }
 </style>
