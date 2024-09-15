@@ -24,6 +24,7 @@ const props = withDefaults(defineProps<IProps>(), {
   offset: 8,
   noArrow: true,
   transitionDuration: 250,
+  noOverlay: undefined,
 })
 
 const emits = defineEmits<{
