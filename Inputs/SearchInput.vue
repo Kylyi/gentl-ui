@@ -42,6 +42,7 @@ defineExpose({
     :ui="ui"
     :input-props="inputProps"
     :placeholder="placeholder ?? $t('general.search')"
+    :validation
     @update:model-value="$emit('update:model-value', $event)"
     @blur="$emit('blur', $event)"
   >

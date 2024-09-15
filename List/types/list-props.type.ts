@@ -1,3 +1,4 @@
+import type { z } from 'zod'
 import type { FuseOptions } from '@vueuse/integrations/useFuse'
 
 // Types
@@ -67,6 +68,26 @@ export type IListProps = IListBaseProps & {
    * The props that should be passed to the search input tag (<input>)
    */
   inputProps?: Record<string, any>
+
+  /**
+   * Validation schema for search input if creating of new item is allowed (allowAdd is set to true)
+   * @example
+   * z.string().min(3).max(5)
+   *
+   * @example
+   * {
+   *   schema: z.object({
+   *     name: z.string().min(3).max(5)
+   *   }),
+   *   key: 'name'
+   * }
+   */
+  addItemValidation?:
+    z.ZodSchema<any, any, any>
+    | {
+      schema: z.ZodSchema<any, any, any>
+      key: string
+    }
 
   /**
    * When true, the `addedItems` will not be removed on unselect

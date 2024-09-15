@@ -1,3 +1,4 @@
+import type { ZodSchema } from 'zod'
 import { type UseFuseOptions, useFuse } from '@vueuse/integrations/useFuse'
 import { klona } from 'klona/full'
 import type { Required } from 'utility-types'
@@ -8,10 +9,7 @@ import { config } from '~/components/config/components-config'
 import type { IListItem } from '~/components/List/types/list-item.type'
 import type { IListProps } from '~/components/List/types/list-props.type'
 import type { IListFetchOptions } from '~/components/List/types/list-fetch.type'
-import {
-  type IGroupRow,
-  useGrouping,
-} from '~/libs/Shared/functions/data/useGrouping'
+import type { IZodValidationItem } from '~/utils/zod/types/zod-validation-item.type'
 
 // Models
 import { SortItem } from '~/libs/Shared/models/sort-item.model'
@@ -22,6 +20,7 @@ import { highlight } from '~/components/List/functions/highlightText'
 import { useSorting } from '~/libs/Shared/functions/data/useSorting'
 import { useListUtils } from '~/components/List/functions/useListUtils'
 import { useItemAdding } from '~/components/List/functions/useItemAdding'
+import { type IGroupRow, useGrouping } from '~/libs/Shared/functions/data/useGrouping'
 import { useListKeyboardNavigation } from '~/components/List/functions/useListKeyboardNavigation'
 
 // Injections
@@ -228,7 +227,7 @@ export function useList(
     self.emit('selected-multiple', itemsToSelect)
   }
 
-  function handleSelectItem(option: any) {
+  async function handleSelectItem(option: any) {
     const isDisabled = props.disabledFnc?.(option)
 
     if (props.noSelect || isDisabled) {
@@ -246,6 +245,12 @@ export function useList(
 
     // We selected a `preAdded` item
     if ('_isNew' in option.ref && option.ref._isNew) {
+      const isNewItemValid = await $z.value.$validate()
+
+      if (!isNewItemValid) {
+        return
+      }
+
       if (!props.noLocalAdd) {
         addItem(option.ref)
       } else {
@@ -260,6 +265,8 @@ export function useList(
         ...option,
         ref: option.ref,
       })
+
+      $z.value.$reset()
 
       return
     }
@@ -346,6 +353,31 @@ export function useList(
   const hasExactMatch = ref(false)
   const arr = ref<Array<IGroupRow | IListItem>>([])
   const isPreventFetchData = refAutoReset(false, 150)
+
+  // Validation
+  let validationSchema: ZodSchema | undefined
+  let validationDataKey = 'search'
+
+  if (props.addItemValidation instanceof z.ZodSchema) {
+    validationSchema = props.addItemValidation
+  } else if (props.addItemValidation?.schema instanceof z.ZodObject && props.addItemValidation.key) {
+    validationSchema = props.addItemValidation.schema.shape[props.addItemValidation.key]
+    validationDataKey = props.addItemValidation.key
+  }
+
+  const $z = useZod(
+    { [validationDataKey]: validationSchema ?? z.any() },
+    { [validationDataKey]: search },
+    { scope: 'add-item' },
+  )
+
+  const $zAddItem = computed(() => {
+    if (!search.value || search.value === props.emptyValue) {
+      return undefined
+    }
+
+    return $z.value[validationDataKey] as IZodValidationItem
+  })
 
   provide(listItemsKey, items)
 
@@ -651,6 +683,7 @@ export function useList(
     search,
     selectedByKey,
     itemsExtended,
+    $zAddItem,
     isSelected,
     handleKey,
     handleMouseOver,
