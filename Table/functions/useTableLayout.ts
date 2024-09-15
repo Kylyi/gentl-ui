@@ -85,14 +85,14 @@ export function useTableLayout(
   provide(tableScrollerEl, scrollerEl as any)
 
   // CSS variables
-  const rowHeight = useCssVar('--rowHeight', tableEl)
-  const mobileRowHeight = useCssVar('--mobileRowHeight', tableEl)
-  const rowHeaderHeight = useCssVar('--headerHeight', tableEl)
+  // const rowHeight = useCssVar('--rowHeight', tableEl)
+  // const mobileRowHeight = useCssVar('--mobileRowHeight', tableEl)
+  // const rowHeaderHeight = useCssVar('--headerHeight', tableEl)
 
   watchEffect(() => {
-    rowHeight.value = `${props.rowHeight}px`
-    mobileRowHeight.value = `${props.mobileRowHeight}px`
-    rowHeaderHeight.value = `${props.headerHeight || props.rowHeight}px`
+    // rowHeight.value = `${props.rowHeight}px`
+    // mobileRowHeight.value = `${props.mobileRowHeight}px`
+    // rowHeaderHeight.value = `${props.headerHeight || props.rowHeight}px`
   })
 
   // Resize & scrolling
@@ -178,7 +178,8 @@ export function useTableLayout(
   const { x: totalsX } = useScroll(totalsScrollerEl)
 
   watch(
-    ([containerX, headerScrollerX, totalsX]), ([_containerX, _headerScrollerX, _totalsX], [oldContainerX, oldHeaderScrollerX, oldTotalsX]) => {
+    ([containerX, headerScrollerX, totalsX]),
+    ([_containerX, _headerScrollerX, _totalsX], [oldContainerX, oldHeaderScrollerX, oldTotalsX]) => {
       const containerChanged = _containerX !== oldContainerX
       const headerChanged = _headerScrollerX !== oldHeaderScrollerX
       const totalsChanged = _totalsX !== oldTotalsX
@@ -193,7 +194,9 @@ export function useTableLayout(
         containerX.value = _totalsX
         headerScrollerX.value = _totalsX
       }
-    }, { flush: 'pre' })
+    },
+    { flush: 'pre' },
+  )
 
   watch(containerX, val => {
     if (headerScrollerX.value !== val) {
@@ -235,8 +238,7 @@ export function useTableLayout(
       = visibleColumns.length
       * (props.mobileRowHeight || props.mobileRowHeight || 40)
 
-    const mobile
-      = columnsHeight + MOBILE_ROW_Y_PADDING + MOBILE_ROW_CONTAINER_Y_PADDING
+    const mobile = columnsHeight + MOBILE_ROW_Y_PADDING + MOBILE_ROW_CONTAINER_Y_PADDING
     const current = isBreakpoint.value ? props.rowHeight : mobile
 
     return {

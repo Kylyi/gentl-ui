@@ -49,7 +49,13 @@ const wysiwygStore = useWysiwygStore()
 const { isFocused, files } = storeToRefs(wysiwygStore)
 
 // Init files
-files.value = props.files ?? []
+watch(
+  () => props.files,
+  propsFiles => {
+    files.value = propsFiles ?? []
+  },
+  { immediate: true },
+)
 
 // Utils
 const {

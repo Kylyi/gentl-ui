@@ -69,17 +69,22 @@ const videoUrl = computed(() => {
 })
 
 const downloadUrl = computedAsync(async () => {
-  if (!('path' in props.file)) {
+  const file = props.file instanceof FileModel
+    ? props.file.uploadedFile
+    : props.file
+
+  if (!file) {
     return
   }
 
-  return await handleDownloadFile(props.file, { returnUrlOnly: true })
+  const name = 'name' in file ? file.name : file.newFilename
+  const path = 'path' in file ? file.path : file.filepath
+
+  return await handleDownloadFile({ name, path }, { returnUrlOnly: true })
 })
 
 function handleImageClick(url: string) {
-  createDialog({
-    class: '!w-auto !h-auto',
-  }, {
+  createDialog({ class: '!w-auto !h-auto' }, {
     children: {
       default: () => {
         return h('img', {
@@ -115,7 +120,7 @@ function handleImageClick(url: string) {
 
           <!-- Download -->
           <NuxtLink
-            v-if="'path' in file"
+            v-if="downloadUrl"
             class="link"
             :to="downloadUrl"
             external
@@ -195,12 +200,12 @@ function handleImageClick(url: string) {
         <template v-else-if="!file.isUploading && !file.isUploaded">
           <div class="i-ion:cloud-upload color-ca h-12 w-12" />
 
-          <p>
+          <p text="caption">
             {{ $t('file.added') }}
           </p>
 
           <span
-            text="xs"
+            text="xs caption"
             m="t--2"
           >
             {{ formatBytes(file.file.size) }}
@@ -266,7 +271,7 @@ function handleImageClick(url: string) {
   }
 
   &__state {
-    @apply absolute inset-0 flex flex-center flex-col gap-2 p-2 rounded-3 bg-ca;
+    @apply absolute inset-0 flex flex-center flex-col gap-2 p-2 rounded-3 bg-white dark:bg-darker;
   }
 
   &__overlay {

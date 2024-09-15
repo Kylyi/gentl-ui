@@ -25,8 +25,10 @@ defineEmits<{
     :size
     :outlined
     :no-uppercase
-    :align="align"
+    :align
     :disabled
+    :tooltip
+    :tooltip-props
     tabindex="-1"
     data-cy="delete-button"
     @click="noConfirm && $emit('delete')"

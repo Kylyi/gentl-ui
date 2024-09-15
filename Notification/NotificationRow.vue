@@ -46,6 +46,12 @@ const { pause, resume, counter } = useInterval(STEP, {
   immediate: !props.noClose,
   callback(count) {
     if (count >= TIMEOUT && TIMEOUT) {
+      if (!notificationEl.value) {
+        handleHide()
+
+        return
+      }
+
       const { width } = notificationEl.value!.getBoundingClientRect()
       notificationEl.value!.style.width = `${width}px`
       handleHide()
@@ -126,9 +132,7 @@ watch(notificationCounter, async () => {
         p="y-2"
         grow
         overflow="auto"
-        :class="{
-          'font-bold tracking-wide': notification.subtitle,
-        }"
+        :class="{ 'font-bold tracking-wide': notification.subtitle }"
       >
         <p
           max-w="full"
@@ -168,7 +172,7 @@ watch(notificationCounter, async () => {
     <Component
       :is="notification.componentBelow.component"
       v-if="notification.componentBelow"
-      :notification="notification"
+      :notification
       v-bind="notification.componentBelow?.props"
     />
 
@@ -197,76 +201,76 @@ watch(notificationCounter, async () => {
 
 <style lang="scss" scoped>
 .notification-row {
-  --apply: relative bg-white dark:bg-darker relative flex flex-col rounded-custom
+  @apply relative bg-white dark:bg-darker relative flex flex-col rounded-custom
     w-80 md:w-100 p-4 shadow-consistent-sm shadow-ca;
 
   &::before {
-    --apply: content-empty absolute left-0 top-0 h-full w-1 rounded-l-custom bg-current;
+    @apply content-empty absolute left-0 top-0 h-full w-1 rounded-l-custom bg-current;
   }
 
   &::after {
-    --apply: content-empty absolute right-0 bottom-0 w-1 rounded-r-custom bg-current;
-    --apply: h-$progress;
-    // --apply: top-1/2 translate-y--50%;
+    @apply content-empty absolute right-0 bottom-0 w-1 rounded-r-custom bg-current;
+    @apply h-$progress;
+    // @apply top-1/2 translate-y--50%;
   }
 
   &.is-positive {
-    --apply: color-green-500;
+    @apply color-green-500;
   }
 
   &.is-negative {
-    --apply: color-red-500;
+    @apply color-red-500;
   }
 
   &.is-warning {
-    --apply: color-amber-500;
+    @apply color-amber-500;
   }
 
   &.is-info {
-    --apply: color-info;
+    @apply color-info;
   }
 
   &.is-primary {
-    --apply: color-primary;
+    @apply color-primary;
   }
 
   &.is-secondary {
-    --apply: color-secondary;
+    @apply color-secondary;
   }
 
   .progress-wrapper {
-    --apply: absolute bottom-0 left--2px w-[calc(100%+4px)]
+    @apply absolute bottom-0 left--2px w-[calc(100%+4px)]
     h-[calc(100%+4px)] rounded-3 overflow-hidden pointer-events-none;
   }
 
   &--progress {
-    --apply: left-0 bottom-0 w-full absolute h-1;
+    @apply left-0 bottom-0 w-full absolute h-1;
   }
 
   .notification-subtitle {
-    --apply: tracking-wide text-sm color-black dark:color-white break-words p-b-3;
+    @apply tracking-wide text-sm color-black dark:color-white break-words p-b-3;
   }
 
   .counter {
-    --apply: absolute z-1 rounded-2 -top-2 -right-4 p-x-1 min-w-7 bg-inherit
+    @apply absolute z-1 rounded-2 -top-2 -right-4 p-x-1 min-w-7 bg-inherit
       color-inherit border-2 border-current text-center;
   }
 }
 
 progress::-moz-progress-bar {
-  --apply: bg-current;
+  @apply bg-current;
 }
 progress::-webkit-progress-value {
-  --apply: bg-current;
+  @apply bg-current;
 }
 progress {
-  --apply: color-current;
+  @apply color-current;
 }
 
 progress::-webkit-progress-bar {
-  --apply: bg-ca;
+  @apply bg-ca;
 }
 progress::-moz-progress-bar {
-  --apply: bg-ca;
+  @apply bg-ca;
 }
 </style>

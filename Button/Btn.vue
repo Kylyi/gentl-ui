@@ -93,6 +93,7 @@ defineExpose({
       v-if="tooltip || $slots.tooltip"
       :offset="8"
       :class="tooltipClass"
+      v-bind="tooltipProps"
     >
       {{ tooltip }}
       <slot name="tooltip" />

@@ -1,3 +1,5 @@
+import type { CSSProperties } from 'vue'
+
 // Types
 import type { ToggleState } from '~/components/Toggle/types/toggle-props.type'
 
@@ -6,9 +8,12 @@ export type CheckboxClass = Record<
   {
     checkbox?: ClassType
     label?: ClassType
+    labelStyle?: CSSProperties
+    checkboxStyle?: CSSProperties
   }
 >
-export interface ICheckboxProps {
+
+export type ICheckboxProps = {
   checkValue?: any
   color?:
     | 'primary'
@@ -20,6 +25,7 @@ export interface ICheckboxProps {
     | 'light'
     | 'dark'
     | 'darker'
+
   comparatorFn?: (model: any, val: any) => boolean
   editable?: boolean
   indeterminate?: boolean
@@ -36,5 +42,5 @@ export interface ICheckboxProps {
   /**
    * The props that should be passed to the input tag (<input>)
    */
-  inputProps?: Record<string, any>
+  inputProps?: IItem
 }

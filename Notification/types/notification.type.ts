@@ -39,6 +39,6 @@ export type INotification = {
    */
   componentBelow?: {
     component: any
-    props: Record<string, any>
+    props?: IItem
   }
 }

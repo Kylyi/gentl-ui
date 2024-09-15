@@ -5,6 +5,7 @@ export class FileModel {
   file: File
   uploadProgress: number
   hasError = false
+
   uploadedFile?: {
     filepath: string
     newFilename: string
@@ -14,6 +15,8 @@ export class FileModel {
   }
 
   abortController?: AbortController
+
+  customData?: IItem
 
   get name() {
     return this.file.name
@@ -125,5 +128,6 @@ export class FileModel {
   constructor(obj: Required<Partial<FileModel>, 'file'>) {
     this.file = obj.file
     this.uploadProgress = 0
+    this.customData = obj.customData
   }
 }

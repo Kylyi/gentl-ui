@@ -38,6 +38,7 @@ function handleCopy() {
     v-if="isSupported"
     :size="copyBtnSize"
     :tooltip
+    :label
     bg="white dark:darker"
     no-dim
     no-hover-effect

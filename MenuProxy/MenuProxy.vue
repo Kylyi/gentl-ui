@@ -23,7 +23,6 @@ const props = withDefaults(defineProps<IProps>(), {
   maxHeight: 99999,
   offset: 8,
   noArrow: true,
-  noOverlay: true,
   transitionDuration: 250,
 })
 
@@ -40,6 +39,14 @@ const menuProxyEl = ref<InstanceType<typeof Menu | typeof Dialog>>()
 const model = defineModel({ default: false })
 
 const isMenu = computed(() => $bp[props.breakpoint].value)
+
+const noOverlay = computed(() => {
+  if (!isNil(props.noOverlay)) {
+    return props.noOverlay
+  }
+
+  return $bp[props.breakpoint].value
+})
 
 defineExpose({
   show: () => menuProxyEl.value?.show(),
@@ -64,7 +71,7 @@ defineExpose({
     ref="menuProxyEl"
     v-bind="$props"
     v-model="model"
-    :no-overlay="isMenu"
+    :no-overlay
     h="auto"
     @hide="emits('hide')"
     @show="emits('show')"

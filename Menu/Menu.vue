@@ -182,6 +182,7 @@ const {
   transform: false,
 })
 
+useResizeObserver(contentEl, update)
 watch(menuPlacement, placement => emits('placement', placement))
 
 // We react to page resize/scroll to reposition the floating UI

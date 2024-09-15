@@ -3,6 +3,7 @@ import type { NavigateToOptions } from '~/shims'
 
 // Constants
 import type { BUTTON_PRESET } from '~/components/Button/constants/button-preset.constant'
+import type { ITooltipProps } from '~/components/Tooltip/types/tooltip-props.type'
 
 export type INavigation = {
   disabled?: boolean
@@ -155,4 +156,9 @@ export type IBtnProps = IBtnNavigationProps & {
    * Class for the tooltip
    */
   tooltipClass?: ClassType
+
+  /**
+   * Props for the tooltip
+   */
+  tooltipProps?: Partial<ITooltipProps>
 }

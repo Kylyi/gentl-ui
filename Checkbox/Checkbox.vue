@@ -1,5 +1,7 @@
 <script setup lang="ts">
-// TYPES
+import type { CSSProperties } from 'vue'
+
+// Types
 import type { ICheckboxProps } from '~/components/Checkbox/types/checkbox-props.type'
 
 const props = withDefaults(defineProps<ICheckboxProps>(), {
@@ -49,31 +51,37 @@ const isIndeterminate = computed(() => {
 })
 
 const toggleState = computed(() => {
-  // Checkbox class
+  // Checkbox visuals
   let checkboxClass: ClassType | undefined = props.visuals?.unchecked?.checkbox
+  let checkboxStyle: CSSProperties | undefined = props.visuals?.unchecked?.checkboxStyle
 
   if (isChecked.value) {
     checkboxClass = props.visuals?.checked?.checkbox
+    checkboxStyle = props.visuals?.checked?.checkboxStyle
   } else if (isIndeterminate.value) {
     checkboxClass = props.visuals?.indeterminate?.checkbox
+    checkboxStyle = props.visuals?.indeterminate?.checkboxStyle
   }
 
   // Label class
-  let labelClassVisuals: ClassType | undefined = props.visuals?.unchecked?.label
+  let labelClass: ClassType | undefined = props.visuals?.unchecked?.label
+  let labelStyle: CSSProperties | undefined = props.visuals?.unchecked?.labelStyle
 
   if (isChecked.value) {
-    labelClassVisuals = props.visuals?.checked?.label
+    labelClass = props.visuals?.checked?.label
+    labelStyle = props.visuals?.checked?.labelStyle
   } else if (isIndeterminate.value) {
-    labelClassVisuals = props.visuals?.indeterminate?.label
+    labelClass = props.visuals?.indeterminate?.label
+    labelStyle = props.visuals?.indeterminate?.labelStyle
   }
-
-  const labelClass = [props.labelClass, labelClassVisuals]
 
   return {
     checked: !isIndeterminate.value ? isChecked.value : undefined,
     indeterminate: isIndeterminate.value || undefined,
     checkboxClass,
-    labelClass,
+    labelClass: [labelClass, props.labelClass],
+    checkboxStyle,
+    labelStyle,
   }
 })
 
@@ -91,7 +99,7 @@ function handleStateChange() {
     } else {
       emits(
         'update:modelValue',
-        model.value.filter(value => value !== props.checkValue)
+        model.value.filter(value => value !== props.checkValue),
       )
     }
   }
@@ -105,7 +113,7 @@ function handleStateChange() {
     } else {
       emits(
         'update:modelValue',
-        props.indeterminate ? props.indeterminateValue : props.checkValue
+        props.indeterminate ? props.indeterminateValue : props.checkValue,
       )
     }
   }
@@ -140,6 +148,7 @@ function handleKey(ev: KeyboardEvent) {
         'is-readonly': !editable,
       },
     ]"
+    :style="toggleState.labelStyle"
     @keydown="handleKey"
     @click.stop.prevent="handleStateChange"
   >
@@ -149,7 +158,7 @@ function handleKey(ev: KeyboardEvent) {
       tabindex="-1"
       :name="name"
       v-bind="toggleState"
-    />
+    >
 
     <div
       class="checkbox"
@@ -158,6 +167,7 @@ function handleKey(ev: KeyboardEvent) {
         { 'is-readonly': !editable },
         toggleState.checkboxClass,
       ]"
+      :style="toggleState.checkboxStyle"
     >
       <Checkmark
         :class="{ hidden: !toggleState.checked }"
@@ -197,145 +207,145 @@ function handleKey(ev: KeyboardEvent) {
 
 <style lang="scss" scoped>
 .label {
-  --apply: flex items-start relative gap-2 cursor-pointer transition-all
+  @apply flex items-start relative gap-2 cursor-pointer transition-all
     rounded-custom p-x-2 select-none;
 
-  --apply: '!outline-none';
+  @apply '!outline-none';
 
   &:focus-visible,
   &:focus {
     .checkbox {
-      --apply: ring-2 ring-primary/50 ring-offset-2;
+      @apply ring-2 ring-primary/50 ring-offset-2;
     }
   }
 
   &.is-readonly {
-    --apply: opacity-80;
+    @apply opacity-80;
   }
 
   &:not(.is-checked):not(.is-indeterminate) {
     .checkbox {
-      --apply: bg-transparent;
+      @apply bg-transparent;
     }
   }
 
   &.is-xs {
-    --apply: min-h-6;
+    @apply min-h-6;
 
     .checkbox {
-      --apply: h-3.5 w-3.5 rounded-1 m-t-5px;
+      @apply h-3.5 w-3.5 rounded-1 m-t-5px;
     }
 
     .checkbox-label {
-      --apply: font-rem-13 p-y-1;
+      @apply font-rem-13 p-y-1;
     }
   }
 
   &.is-sm {
-    --apply: min-h-8;
+    @apply min-h-8;
 
     .checkbox {
-      --apply: h-4.5 w-4.5 rounded-1 m-t-7px;
+      @apply h-4.5 w-4.5 rounded-1 m-t-7px;
     }
 
     .checkbox-label {
-      --apply: font-rem-14 p-t-7px p-b-6px;
+      @apply font-rem-14 p-t-7px p-b-6px;
     }
   }
 
   &.is-md {
-    --apply: min-h-10;
+    @apply min-h-10;
 
     .checkbox {
-      --apply: h-5.5 w-5.5 rounded-1.5 m-t-9px;
+      @apply h-5.5 w-5.5 rounded-1.5 m-t-9px;
     }
 
     .checkbox-label {
-      --apply: p-y-8px;
+      @apply p-y-8px;
     }
   }
 
   &.is-lg {
-    --apply: min-h-12;
+    @apply min-h-12;
 
     .checkbox {
-      --apply: h-6 w-6 rounded-1.5 m-t-12px;
+      @apply h-6 w-6 rounded-1.5 m-t-12px;
     }
 
     .checkbox-label {
-      --apply: font-rem-18 p-y-10px;
+      @apply font-rem-18 p-y-10px;
     }
   }
 }
 
 .checkbox {
-  --apply: flex flex-center rounded-2 border-primary border-2 shrink-0
+  @apply flex flex-center rounded-2 border-primary border-2 shrink-0
     self-start;
 
   &-label {
-    --apply: leading-tight;
+    @apply leading-tight;
   }
 
   &.is-primary {
-    --apply: bg-primary border-primary;
+    @apply bg-primary border-primary;
   }
 
   &.is-secondary {
-    --apply: bg-secondary border-secondary;
+    @apply bg-secondary border-secondary;
   }
 
   &.is-positive {
-    --apply: bg-positive border-positive;
+    @apply bg-positive border-positive;
   }
 
   &.is-warning {
-    --apply: bg-warning border-warning;
+    @apply bg-warning border-warning;
   }
 
   &.is-negative {
-    --apply: bg-negative border-negative;
+    @apply bg-negative border-negative;
   }
 
   &.is-info {
-    --apply: bg-info border-info;
+    @apply bg-info border-info;
   }
 
   &.is-light {
-    --apply: bg-light border-light;
+    @apply bg-light border-light;
   }
 
   &.is-dark {
-    --apply: bg-dark border-dark;
+    @apply bg-dark border-dark;
   }
 
   &.is-darker {
-    --apply: bg-darker border-darker;
+    @apply bg-darker border-darker;
   }
 
   &.is-readonly {
-    --apply: bg-true-gray border-true-gray;
+    @apply bg-true-gray border-true-gray;
   }
 
   &.is-sm {
-    --apply: h-5 w-5;
+    @apply h-5 w-5;
   }
 
   &.is-md {
-    --apply: h-6 w-6;
+    @apply h-6 w-6;
   }
 
   &.is-lg {
-    --apply: h-9 w-9;
+    @apply h-9 w-9;
   }
 }
 
 // .focus-helper {
-//   --apply: content-empty absolute inset-0 hover:bg-current hover:opacity-10 cursor-pointer
+//   @apply content-empty absolute inset-0 hover:bg-current hover:opacity-10 cursor-pointer
 //     rounded-inherit;
 // }
 
 .label:hover::before {
-  --apply: content-empty absolute inset-0 bg-current opacity-10 cursor-pointer
+  @apply content-empty absolute inset-0 bg-current opacity-10 cursor-pointer
     rounded-inherit pointer-events-none;
 }
 </style>

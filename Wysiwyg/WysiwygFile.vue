@@ -31,14 +31,16 @@ export default {
     const filepath = props.node.attrs.filepath
 
     // New files uploaded through and grouped by the `uuid`
-    const componentData = wysiwygStore.providedData[uuid]
+    const componentData = computed(() => wysiwygStore.providedData[uuid])
+
+    watch(() => wysiwygStore.providedData, d => console.log(d), { deep: true })
 
     const isEditable = computed(() => editor.value?.isEditable)
 
     const file = computed(() => {
       const _filePath = filepath as keyof typeof filesByPath.value
       const uploadedFile = filesByPath.value[_filePath]
-      const providedFile = componentData?.file as FileModel | IFile | undefined
+      const providedFile = componentData.value?.file as FileModel | IFile | undefined
 
       return uploadedFile || providedFile
     })
@@ -112,7 +114,7 @@ export default {
     <!-- File preview -->
     <FilePreview2
       v-if="file"
-      :file="file"
+      :file
       data-drag-handle
       :editable="isEditable"
       @remove="handleRemove"
