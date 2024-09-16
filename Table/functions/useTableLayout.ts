@@ -84,6 +84,13 @@ export function useTableLayout(
   // Provide the scroller element
   provide(tableScrollerEl, scrollerEl as any)
 
+  // CSS variables
+  const rowHeaderHeight = useCssVar('--headerHeight', tableEl)
+
+  watchEffect(() => {
+    rowHeaderHeight.value = `${props.headerHeight || props.rowHeight}px`
+  })
+
   // Resize & scrolling
   const isScrolled = ref(false)
   const isOverflown = ref(false)
