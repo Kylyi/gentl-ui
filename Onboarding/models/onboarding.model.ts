@@ -38,14 +38,21 @@ export class OnboardingModel {
       return
     }
 
+    const direction = stepId > this.currentStep ? 'next' : 'back'
+
     // Lifecycle of steps
     const currentStep = this.steps[this.currentStep]
-    if(currentStep.onBeforeLeave){
-      await currentStep.onBeforeLeave()
+
+    if(direction === 'next'){
+      await currentStep.onBeforeNextStep?.()
+      await this.onNextStep?.()
+    } else {
+      await currentStep.onBeforePreviousStep?.()
+      await this.onPreviousStep?.()
     }
 
     this.currentStep = stepId < 0 ? 0 : stepId
-    console.log('currentStep: ', this.currentStep)
+    this.log('currentStep: ', this.currentStep)
     useOnboardingStore().lastIndexByName[this.name] = this.currentStep
   }
 
@@ -57,9 +64,21 @@ export class OnboardingModel {
     this.goToStep(this.currentStep - 1)
   }
 
-  endTour() {
+  async endTour() {
+    await this.onFinish?.()
     this.isFinished = true
     this.isActive = false
+  }
+
+  async exitTour() {
+    await this.onExit?.()
+    this.isActive = false
+  }
+
+  async skipTour() {
+    await this.onTourSkip?.()
+    this.currentStep = 0
+    this.endTour()
   }
 
   startTour(step?: number) {
@@ -72,6 +91,33 @@ export class OnboardingModel {
       console.log(...args)
     }
   }
+
+  // Lifecycle callbacks
+ /*
+  * Callback when starting the tour.
+  */
+  onStart?: () => Promise<void> | void
+ /*
+  * Callback when exiting the tour.
+  */
+  onExit?: () => Promise<void> | void
+ /*
+  * Callback when finishing the tour.
+  */
+  onFinish?: () => Promise<void> | void
+ /*
+  * Callback when going back a step.
+  */
+  onPreviousStep?: () => Promise<void> | void
+ /*
+  * Callback when going forward a step.
+  */
+  onNextStep?: () => Promise<void> | void
+ /*
+  * Callback when skipping the tour.
+  */
+  onTourSkip?: () => Promise<void> | void
+
 
   constructor(args: Partial<OnboardingModel>) {
     this.name = args.name ?? this.name
@@ -92,5 +138,12 @@ export class OnboardingModel {
     this.isActive = args.isActive ?? this.isActive
     this.isFinished = args.isFinished ?? this.isFinished
     this.debug = args.debug ?? this.debug
+
+    this.onStart = args.onStart
+    this.onExit = args.onExit
+    this.onFinish = args.onFinish
+    this.onPreviousStep = args.onPreviousStep
+    this.onNextStep = args.onNextStep
+    this.onTourSkip = args.onTourSkip
   }
 }

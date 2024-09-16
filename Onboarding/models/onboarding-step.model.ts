@@ -80,10 +80,16 @@ export class OnboardingStep {
     event?: Event
   }
 
+  // Lyfecycles
   /**
    * Function fired before going to the next step
    */
-  onBeforeLeave?: () => Promise<void>
+  onBeforeNextStep?: () => Promise<void> | void
+  /**
+   * Function fired before going to previous step
+   */
+  onBeforePreviousStep?: () => Promise<void> | void
+
 
   /**
    *
@@ -113,7 +119,7 @@ export class OnboardingStep {
   /**
    * Condition for indlucing the step in the onboarding
    */
-  showOn?: () => boolean
+  showOn?: () => Promise<boolean> | boolean
 
 
   constructor(args: Partial<OnboardingStep>) {
@@ -121,7 +127,7 @@ export class OnboardingStep {
       this.element = args.element
       this.positioning = args.positioning ?? isNil(args.element) ? 'absolute' : 'component'
       this.absolutePlacement = args.absolutePlacement ?? this.absolutePlacement
-      this.canInteractWithElement = args.canInteractWithElement ?? this.canInteractWithElement // TODO
+      this.canInteractWithElement = args.canInteractWithElement ?? this.canInteractWithElement
 
       // Controls
       this.canControl = args.canControl ?? this.canControl
@@ -135,7 +141,8 @@ export class OnboardingStep {
       this.goBackOn = args.goBackOn
 
       // Lifecycle
-      this.onBeforeLeave = args.onBeforeLeave // TODO
+      this.onBeforeNextStep = args.onBeforeNextStep
+      this.onBeforePreviousStep = args.onBeforePreviousStep
 
       // Layout
       this.showNavigation = args.showNavigation ?? this.showNavigation

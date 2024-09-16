@@ -136,7 +136,7 @@ onKeyStroke('ArrowRight', () => {
 })
 onKeyStroke('Escape', () => {
   if(props.step.canUseKeyboard){
-    props.onboarding.endTour()
+    props.onboarding.skipTour()
   }
 })
 
