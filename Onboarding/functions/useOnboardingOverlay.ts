@@ -76,11 +76,6 @@ export function useOnboardingOverlay(step: MaybeRefOrGetter<OnboardingStep>) {
       return
     }
 
-    const referenceEl = toValue(highlightEl)
-    if (!referenceEl) {
-      return
-    }
-
     // Wait for the element-overlay div to be rendered
     await nextTick(() => {
       let elementOverlayEl = document.querySelector('.element-overlay') as HTMLDivElement
@@ -96,7 +91,7 @@ export function useOnboardingOverlay(step: MaybeRefOrGetter<OnboardingStep>) {
           return
         }
 
-        const rect = referenceEl.getBoundingClientRect()
+        const rect = highlightEl.value.getBoundingClientRect()
 
         Object.assign(elementOverlayEl.style, {
           top: `${rect.top}px`,
