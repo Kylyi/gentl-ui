@@ -1,5 +1,6 @@
 // Models
-import type { OnboardingStep } from "./onboarding-step.model";
+import { checkElementVisibility, getTargetElement } from "~/components/Tooltip/functions/element-functions"
+import type { OnboardingStep } from "./onboarding-step.model"
 
 // Store
 import { useOnboardingStore } from '~/components/Onboarding/functions/onboarding.store'
@@ -14,16 +15,25 @@ export class OnboardingModel {
   // TODO: Remove after development
   debug: boolean = false
 
-  async goToStep(step: number) {
-    this.log('goToStep', step)
-    if(step >= this.steps.length) {
+  async goToStep(stepId: number) {
+    this.log('goToStep', stepId)
+    if(stepId < 0) {
+      this.goToStep(0)
+
+      return
+    }
+    if(stepId >= this.steps.length) {
       this.endTour()
       useOnboardingStore().resetTour(this.name)
 
       return
     }
-    if(!this.steps[step].canBeSkippedTo && step < this.currentStep) {
-      this.goToStep(step - 1)
+
+    if(
+      (!this.steps[stepId].canBeSkippedTo && stepId < this.currentStep)
+      || !(await checkElementVisibility(this.steps[stepId]?.element))
+    ) {
+      this.goToStep(stepId - 1)
 
       return
     }
@@ -34,7 +44,7 @@ export class OnboardingModel {
       await currentStep.onBeforeLeave()
     }
 
-    this.currentStep = step < 0 ? 0 : step
+    this.currentStep = stepId < 0 ? 0 : stepId
     console.log('currentStep: ', this.currentStep)
     useOnboardingStore().lastIndexByName[this.name] = this.currentStep
   }

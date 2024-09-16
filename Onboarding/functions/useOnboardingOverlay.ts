@@ -1,5 +1,5 @@
 // Functions
-import { getTargetElement } from "~/components/Tooltip/functions/element-functions"
+import { getTargetElement, checkElementVisibility } from "~/components/Tooltip/functions/element-functions"
 
 // Models
 import type { OnboardingStep } from "../models/onboarding-step.model"
@@ -11,7 +11,7 @@ import { useOnboardingStore } from '~/components/Onboarding/functions/onboarding
 export function useOnboardingOverlay(step: MaybeRefOrGetter<OnboardingStep>) {
   window.addEventListener('resize', updateOverlayClip)
 
-  const highlightEl = ref<HTMLElement>()
+  const highlightEl = computed(() => getTargetElement(toValue(step).element))
   const cleanup = ref<() => void>()
 
   const {
@@ -20,15 +20,14 @@ export function useOnboardingOverlay(step: MaybeRefOrGetter<OnboardingStep>) {
   } = useElementBounding(highlightEl, { windowResize: true })
 
   watchThrottled(
-    [elX, elY, step],
+    [elX, elY, highlightEl],
     async () => {
-      highlightEl.value = getTargetElement(toValue(step).element)
+      const isVisible = await checkElementVisibility(highlightEl.value)
+      const isElementInBody = toValue(step)?.element ? getTargetElement(toValue(step).element) : true
 
       // Handle whem target el is not found (event like closing a Menu)
-      if(!highlightEl.value) {
+      if(!isVisible || !isElementInBody) {
         useOnboardingStore().activeOnboarding?.goToPreviousStep()
-
-        return
       }
 
       updateOverlayClip()
@@ -77,19 +76,19 @@ export function useOnboardingOverlay(step: MaybeRefOrGetter<OnboardingStep>) {
       return
     }
 
-    const referenceEl = toValue(highlightEl);
+    const referenceEl = toValue(highlightEl)
     if (!referenceEl) {
       return
     }
 
     // Wait for the element-overlay div to be rendered
     await nextTick(() => {
-      let elementOverlayEl = document.querySelector('.element-overlay') as HTMLDivElement;
+      let elementOverlayEl = document.querySelector('.element-overlay') as HTMLDivElement
 
       if (!elementOverlayEl) {
-        elementOverlayEl = document.createElement('div');
-        elementOverlayEl.className = 'element-overlay';
-        document.body.appendChild(elementOverlayEl);
+        elementOverlayEl = document.createElement('div')
+        elementOverlayEl.className = 'element-overlay'
+        document.body.appendChild(elementOverlayEl)
       }
 
       const updateOverlay = () => {
@@ -97,7 +96,7 @@ export function useOnboardingOverlay(step: MaybeRefOrGetter<OnboardingStep>) {
           return
         }
 
-        const rect = referenceEl.getBoundingClientRect();
+        const rect = referenceEl.getBoundingClientRect()
 
         Object.assign(elementOverlayEl.style, {
           top: `${rect.top}px`,
@@ -105,20 +104,20 @@ export function useOnboardingOverlay(step: MaybeRefOrGetter<OnboardingStep>) {
           width: `${rect.width}px`,
           height: `${rect.height}px`,
           display: 'block',
-        });
-      };
+        })
+      }
 
       // Initial update
-      updateOverlay();
+      updateOverlay()
 
       // Update on scroll and resize
-      window.addEventListener('scroll', updateOverlay);
-      window.addEventListener('resize', updateOverlay);
+      window.addEventListener('scroll', updateOverlay)
+      window.addEventListener('resize', updateOverlay)
 
       cleanup.value = () => {
-        window.removeEventListener('scroll', updateOverlay);
-        window.removeEventListener('resize', updateOverlay);
-      };
+        window.removeEventListener('scroll', updateOverlay)
+        window.removeEventListener('resize', updateOverlay)
+      }
     })
   }
 
