@@ -7,18 +7,18 @@ import type { IWysiwygProps } from '~/components/Wysiwyg/types/wysiwyg-props.typ
 // Functions
 import { useWysiwygInit } from '~/components/Wysiwyg/functions/useWysiwygInit'
 import { useWysiwygUtils } from '~/components/Wysiwyg/functions/useWysiwygUtils'
+import { useWysiwygInjections } from '~/components/Wysiwyg/functions/useWysiwygInjections'
 import { useInputWrapperUtils } from '~/components/Inputs/functions/useInputWrapperUtils'
+
+// Injections
+import { wysiwygIdKey, wysiwygModelKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
+
+// Store
+import { useWysiwygStore } from '~/components/Wysiwyg/wysiwyg.store'
 
 // Components
 import WysiwygMention from '~/components/Wysiwyg/WysiwygMention.vue'
 import WysiwygSink from '~/components/Wysiwyg/WysiwygSink.vue'
-
-// Injections
-import { wysiwygIdKey, wysiwygModelKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
-import { useWysiwygInjections } from '~/components/Wysiwyg/functions/useWysiwygInjections'
-
-// Store
-import { useWysiwygStore } from '~/components/Wysiwyg/wysiwyg.store'
 
 const props = defineProps<IWysiwygProps>()
 
@@ -38,7 +38,7 @@ defineExpose({
 })
 
 // Init
-const uuid = useId()
+const uuid = useId() as string
 const model = defineModel<any>()
 
 provideLocal(wysiwygIdKey, uuid)

@@ -67,7 +67,7 @@ export function useWysiwygMention(
                 'data-mention-type': mentionType,
                 'data-type': 'mention',
               }),
-            `${setup.char}${label ?? id}${appendedChar}`,
+              `${setup.char}${label ?? id}${appendedChar}`,
             ]
           },
           suggestion: {
