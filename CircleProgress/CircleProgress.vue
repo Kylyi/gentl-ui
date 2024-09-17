@@ -57,6 +57,8 @@ const strokeDasharray = computed(() => `${props.progress * 100 / 100}, 100`)
       />
     </svg>
 
+    <slot />
+
     <div
       v-if="!noProgressText"
       class="progress-text"
