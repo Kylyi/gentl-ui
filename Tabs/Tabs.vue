@@ -48,7 +48,7 @@ const tabs = computed(() => {
   return vueInstances
     .filter(
       t =>
-        typeof t.type === 'object' && (t.type as any).name?.startsWith('Tab_')
+        typeof t.type === 'object' && (t.type as any).name?.startsWith('Tab_'),
     )
     .map((t: VNode) => {
       return {
@@ -73,7 +73,7 @@ watch(
       .filter(tab => !isNil(tab.component.props?.['keep-alive']))
       .map(tab => tab.componentName)
   },
-  { immediate: true }
+  { immediate: true },
 )
 
 // Handling tab changes
@@ -189,8 +189,7 @@ watch(model, model => {
 
   &-label.is-active {
     &::after {
-      --apply: content-empty absolute inset-inline-0 bottom-0 h-1 bg-secondary
-        rounded-custom;
+      --apply: content-empty absolute inset-inline-0 bottom-0 h-1 bg-secondary rounded-custom;
     }
   }
 }
