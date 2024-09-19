@@ -22,6 +22,16 @@ export class OnboardingStep {
   canInteractWithElement: boolean = true
 
   /**
+   * Turns off the overlay watch, which moves the overlay in case the element disappears.
+   *
+   * This is needed when the element causes a page reroute,
+   * in which case the reroute is quicker than event listener trigger, causing going back a step.
+   *
+   * TODO: Should be added automatically, when f.e. trigger is rerouting.
+   */
+  disableOverlayWatch: boolean = false
+
+  /**
    *
    * Controls
    *
@@ -51,11 +61,6 @@ export class OnboardingStep {
    */
   goForwardOn?: {
     /**
-     * The element that triggers an event
-     */
-    element: MaybeElement<ReferenceElement> | HTMLElement | string | null | Ref<any>
-
-    /**
      * Validation function that needs to be true in order to proceed
      */
     triggerFnc?: () => Promise<boolean> | boolean
@@ -67,6 +72,10 @@ export class OnboardingStep {
       element: MaybeElement<ReferenceElement> | HTMLElement | string | null | Ref<any>
       event: keyof HTMLElementEventMap
     }[]
+
+    pageReroute?: boolean | {
+      path: string
+    }
     debounce?: number
     maxWait?: number
   }
@@ -128,6 +137,7 @@ export class OnboardingStep {
       this.positioning = args.positioning ?? isNil(args.element) ? 'absolute' : 'component'
       this.absolutePlacement = args.absolutePlacement ?? this.absolutePlacement
       this.canInteractWithElement = args.canInteractWithElement ?? this.canInteractWithElement
+      this.disableOverlayWatch = args.disableOverlayWatch ?? this.disableOverlayWatch
 
       // Controls
       this.canControl = args.canControl ?? this.canControl

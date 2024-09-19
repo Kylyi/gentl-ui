@@ -17,6 +17,7 @@ export class OnboardingModel {
 
   async goToStep(stepId: number) {
     this.log('goToStep', stepId)
+
     if(stepId < 0) {
       this.goToStep(0)
 
@@ -28,39 +29,52 @@ export class OnboardingModel {
 
       return
     }
-
-    if(
-      (!this.steps[stepId].canBeSkippedTo && stepId < this.currentStep)
-      || !(await checkElementVisibility(this.steps[stepId]?.element))
-    ) {
-      this.goToStep(stepId - 1)
-
-      return
-    }
-
     const direction = stepId > this.currentStep ? 'next' : 'back'
+    console.log('direction ', direction)
 
     // Lifecycle of steps
     const currentStep = this.steps[this.currentStep]
 
     if(direction === 'next'){
       await currentStep.onBeforeNextStep?.()
-      await this.onNextStep?.()
     } else {
       await currentStep.onBeforePreviousStep?.()
+    }
+
+    const isGointBackToIllegalStep = !this.steps[stepId].canBeSkippedTo && stepId < this.currentStep
+    const isElementVisible = await checkElementVisibility(this.steps[stepId]?.element)
+    if(
+      isGointBackToIllegalStep
+      || !isElementVisible
+    ) {
+      console.log('isGointBackToIllegalStep', isGointBackToIllegalStep)
+      console.log('isElementVisible', isElementVisible)
+      console.log('Going back a step')
+      this.goToStep(stepId - 1)
+
+      return
+    }
+
+
+    if(direction === 'next'){
+      await this.onNextStep?.()
+    } else {
       await this.onPreviousStep?.()
     }
 
     this.currentStep = stepId < 0 ? 0 : stepId
+
     this.log('currentStep: ', this.currentStep)
     useOnboardingStore().lastIndexByName[this.name] = this.currentStep
   }
 
   goToNextStep() {
+    console.log('goToNextStep fn')
     this.goToStep(this.currentStep + 1)
   }
 
   goToPreviousStep() {
+    console.log('goToPreviousStep fn')
     this.goToStep(this.currentStep - 1)
   }
 

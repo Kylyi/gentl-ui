@@ -19,14 +19,19 @@ export function useOnboardingOverlay(step: MaybeRefOrGetter<OnboardingStep>) {
     y: elY,
   } = useElementBounding(highlightEl, { windowResize: true })
 
-  watchThrottled(
+  const { pause, resume } = watchPausable(
     [elX, elY, highlightEl],
     async () => {
       const isVisible = await checkElementVisibility(highlightEl.value)
       const isElementInBody = toValue(step)?.element ? getTargetElement(toValue(step).element) : true
 
-      // Handle whem target el is not found (event like closing a Menu)
-      if(!isVisible || !isElementInBody) {
+      // Handle when target el is not found (event like closing a Menu)
+      if(
+        (!isVisible || !isElementInBody)
+        && !toValue(step).disableOverlayWatch
+      )
+      {
+        console.log('useOnboardingOverlay: Element disappeared, going back')
         useOnboardingStore().activeOnboarding?.goToPreviousStep()
       }
 
@@ -34,8 +39,6 @@ export function useOnboardingOverlay(step: MaybeRefOrGetter<OnboardingStep>) {
       disableElementInteraction()
     },
     {
-      trailing: true,
-      throttle: 1,
       immediate: true
     }
   )
@@ -122,6 +125,8 @@ export function useOnboardingOverlay(step: MaybeRefOrGetter<OnboardingStep>) {
   })
 
   return {
-    updateOverlayClip
+    updateOverlayClip,
+    pauseOverlay: pause,
+    resumeOverlay: resume,
   }
 }

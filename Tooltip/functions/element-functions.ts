@@ -111,8 +111,8 @@ export async function checkElementVisibility(target: any): Promise<boolean> {
       if (
         style.visibility === 'hidden' ||
         style.opacity === '0' ||
-        style.height === '0px' ||
-        style.width === '0px'
+        (style.height === '0px' &&
+        style.width === '0px')
       ) {
         resolve(false)
 

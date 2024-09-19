@@ -21,9 +21,10 @@ const props = defineProps<{
 
 // Utils
 const referenceEl = ref<HTMLElement | null>(null)
-const { updateOverlayClip } = useOnboardingOverlay(toRef(props, 'step'))
+const { updateOverlayClip, pauseOverlay, resumeOverlay } = useOnboardingOverlay(toRef(props, 'step'))
 const { width: windowWidth, height: windowHeight } = useWindowSize()
 const onboardingStore = useOnboardingStore()
+const { path } = useRoute()
 
   // Layout
 const tooltipEl = ref<HTMLElement>()
@@ -141,25 +142,34 @@ onKeyStroke('Escape', () => {
 })
 
 // Event listener handler
-const { stop, resume, pause } = watchPausable(
+const {
+  stop: stopEventHandler,
+  resume: resumeEventHandler,
+  pause: pauseEventHandler
+} = watchPausable(
   () => onboardingStore.lastEvent,
-  async () => {
-    handleGoForwardOn()
-  }
+  handleGoForwardOn
 )
+
 const isListeningForEvent = computed(() => {
   return !!props.step.goForwardOn?.targets
 })
 
-whenever(() => (isListeningForEvent.value && stepChanged.value), () => nextTick(resume))
+whenever(
+  () => (isListeningForEvent.value && stepChanged.value),
+  () => {
+    nextTick(() => {
+      resumeEventHandler()
+    })
+  })
 
 onMounted(() => {
   if (!!props.step.goForwardOn?.targets){
-    nextTick(resume)
+    nextTick(resumeEventHandler)
   }
 })
 
-onUnmounted(stop)
+onUnmounted(stopEventHandler)
 
 // GoForwardOn
 function handleGoForwardOn() {
@@ -181,17 +191,22 @@ function handleGoForwardOn() {
       if(props.onboarding.debug) {
         console.log('goForwardOn - all conditions met, going to next step')
       }
+      if(props.step.goForwardOn?.pageReroute){
+        console.log('goToNextStepDebounced: overlay paused')
+        pauseOverlay()
+      }
       goToNextStepDebounced.value()
   }
 }
 
 const goToNextStepDebounced = computed(() => useDebounceFn(
   () => {
-    pause()
+    pauseEventHandler()
     setTimeout(() => {
       if(!stepChanged.value){
         useAppStore().activeElement?.blur()
         props.onboarding.goToNextStep()
+        resumeOverlay()
       }
     }, 5)
   },
@@ -200,6 +215,25 @@ const goToNextStepDebounced = computed(() => useDebounceFn(
     maxWait: props.step.goForwardOn?.maxWait
   }
 ))
+
+// PageReroute
+watch(
+  () => useRoute().path,
+  (newValue, oldValue) => {
+    const goForwardOn = props.step.goForwardOn
+
+    if(goForwardOn?.pageReroute){
+      if(typeof goForwardOn.pageReroute === 'boolean' && goForwardOn.pageReroute){
+        props.onboarding.goToNextStep()
+      }
+
+      // TODO: wrong implementation here, the path should be exact (localized path is the issue)
+      else if(goForwardOn.pageReroute?.path && newValue.includes(goForwardOn.pageReroute.path)){
+        props.onboarding.goToNextStep()
+      }
+    }
+  }
+)
 </script>
 
 <template>
