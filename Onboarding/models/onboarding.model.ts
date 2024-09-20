@@ -1,5 +1,5 @@
 // Models
-import { checkElementVisibility, getTargetElement } from "~/components/Tooltip/functions/element-functions"
+import { isElementVisible, getTargetElement, waitForElementVisibility } from "~/components/Tooltip/functions/element-functions"
 import type { OnboardingStep } from "./onboarding-step.model"
 
 // Store
@@ -17,6 +17,7 @@ export class OnboardingModel {
 
   async goToStep(stepId: number) {
     this.log('goToStep', stepId)
+    const step = this.steps[stepId]
 
     if(stepId < 0) {
       this.goToStep(0)
@@ -41,14 +42,19 @@ export class OnboardingModel {
       await currentStep.onBeforePreviousStep?.()
     }
 
-    const isGointBackToIllegalStep = !this.steps[stepId].canBeSkippedTo && stepId < this.currentStep
-    const isElementVisible = await checkElementVisibility(this.steps[stepId]?.element)
+    const isGointBackToIllegalStep = !step.canBeSkippedTo && stepId < this.currentStep
+    const isElVisible = step.waitForElement
+      ? (direction === 'next'
+          ? await waitForElementVisibility(step?.element)
+          : isElementVisible(step?.element))
+      : isElementVisible(step?.element)
+
     if(
       isGointBackToIllegalStep
-      || !isElementVisible
+      || !isElVisible
     ) {
       console.log('isGointBackToIllegalStep', isGointBackToIllegalStep)
-      console.log('isElementVisible', isElementVisible)
+      console.log('isElementVisible', isElVisible)
       console.log('Going back a step')
       this.goToStep(stepId - 1)
 

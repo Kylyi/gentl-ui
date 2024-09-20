@@ -1,5 +1,5 @@
 // Functions
-import { getTargetElement, checkElementVisibility } from "~/components/Tooltip/functions/element-functions"
+import { getTargetElement, isElementVisible } from "~/components/Tooltip/functions/element-functions"
 
 // Models
 import type { OnboardingStep } from "../models/onboarding-step.model"
@@ -22,7 +22,7 @@ export function useOnboardingOverlay(step: MaybeRefOrGetter<OnboardingStep>) {
   const { pause, resume } = watchPausable(
     [elX, elY, highlightEl],
     async () => {
-      const isVisible = await checkElementVisibility(highlightEl.value)
+      const isVisible = isElementVisible(highlightEl.value)
       const isElementInBody = toValue(step)?.element ? getTargetElement(toValue(step).element) : true
 
       // Handle when target el is not found (event like closing a Menu)

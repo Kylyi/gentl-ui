@@ -22,6 +22,11 @@ export class OnboardingStep {
   canInteractWithElement: boolean = true
 
   /**
+   * When target element need to be yet rendered (f.e. Menu)
+   */
+  waitForElement: boolean = false
+
+  /**
    * Turns off the overlay watch, which moves the overlay in case the element disappears.
    *
    * This is needed when the element causes a page reroute,
@@ -138,6 +143,7 @@ export class OnboardingStep {
       this.absolutePlacement = args.absolutePlacement ?? this.absolutePlacement
       this.canInteractWithElement = args.canInteractWithElement ?? this.canInteractWithElement
       this.disableOverlayWatch = args.disableOverlayWatch ?? this.disableOverlayWatch
+      this.waitForElement = args.waitForElement ?? this.waitForElement
 
       // Controls
       this.canControl = args.canControl ?? this.canControl

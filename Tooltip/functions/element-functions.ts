@@ -73,23 +73,27 @@ function isElementInViewport(el: HTMLElement) {
     rect.right <= (window.innerWidth || document.documentElement.clientWidth)
   )
 
-  console.log('isElementInViewport', result)
   return result
 }
 
-export async function checkElementVisibility(target: any): Promise<boolean> {
-  if(!target){
-    console.log('Target not found')
-    return new Promise(resolve => resolve(true))
-  }
 
-  return new Promise((resolve) => {
-    setTimeout(() => {
+/**
+ * Checks if a given element is visible in the DOM.
+ *
+ * This function determines the visibility of an element by checking:
+ * 1. If the element exists.
+ * 2. If the element or any of its ancestors have `display: none`.
+ * 3. If the element has CSS properties that hide it.
+ *
+ * @returns `true` if the element is in DOM and visible by css (not viewport), `false` otherwise.
+ */
+export function isElementVisible(target: any): boolean {
+  if(!target){
+    return true
+  }
       const element = getTargetElement(target)
       if (!element) {
-        resolve(false)
-
-        return
+        return false
       }
 
       // Check if the element or any of its ancestors have display: none
@@ -99,9 +103,8 @@ export async function checkElementVisibility(target: any): Promise<boolean> {
         const style = window.getComputedStyle(currentElement)
 
         if (style.display === 'none') {
-          resolve(false)
 
-          return
+          return false
         }
         currentElement = currentElement.parentElement
       }
@@ -114,15 +117,42 @@ export async function checkElementVisibility(target: any): Promise<boolean> {
         (style.height === '0px' &&
         style.width === '0px')
       ) {
-        resolve(false)
 
+        return false
+      }
+
+      // Might not be in viewport
+      return true
+}
+
+export async function waitForElementVisibility(target: any, maxAttempts = 50): Promise<boolean> {
+  return new Promise((resolve) => {
+    let attempts = 0
+
+    const checkVisibility = () => {
+      attempts++
+      const element = getTargetElement(target)
+
+      if (!element) {
+        if (attempts >= maxAttempts) {
+          resolve(false)
+          stop()
+        }
         return
       }
 
-      // Check if the element is in the viewport
-      resolve(isElementInViewport(element))
+      const isVisible = isElementVisible(element)
 
-      // Timeout of 10ms to allow DOM elements to update, f.e. Menu component.
-    }, 10)
+      if (isVisible) {
+        resolve(true)
+        stop()
+      } else if (attempts >= maxAttempts) {
+        resolve(false)
+        stop()
+      }
+    }
+
+    const throttledCheck = throttle(checkVisibility, 100)
+    const { pause: stop } = useIntervalFn(throttledCheck, 200)
   })
 }
