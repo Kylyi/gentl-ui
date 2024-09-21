@@ -61,6 +61,11 @@ export type IWysiwygProps = {
   mentionReplace?: boolean
 
   /**
+   * The format of the returned value
+   */
+  returnFormat?: 'html' | 'markdown'
+
+  /**
    * The function to use for resolving the mention
    *
    * Usage:

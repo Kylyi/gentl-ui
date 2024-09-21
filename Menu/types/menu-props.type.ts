@@ -68,6 +68,11 @@ export type IMenuProps = {
   noArrow?: boolean
 
   /**
+   * When true, the bounce animation will not be shown
+   */
+  noBounce?: boolean
+
+  /**
    * When true, the `Menu` will not have a close button
    */
   noClose?: boolean

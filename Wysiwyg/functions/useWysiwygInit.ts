@@ -24,6 +24,9 @@ import { WysiwygTaskList } from '~/components/Wysiwyg/extensions/wysiwyg-task-li
 import { WysiwygTaskItem } from '~/components/Wysiwyg/extensions/wysiwyg-task-item.extension'
 import { WysiwygImage } from '~/components/Wysiwyg/extensions/wysiwyg-image.extension'
 import { WysiwygLink } from '~/components/Wysiwyg/extensions/wysiwyg-link.extension'
+import { useWysiwygCodeBlock } from '~/components/Wysiwyg/functions/useWysiwygCodeBlock'
+import { Markdown } from 'tiptap-markdown'
+import { WysiwygFocus } from '~/components/Wysiwyg/extensions/wysiwyg-focus.extension'
 
 export function useWysiwygInit(
   props: IWysiwygProps,
@@ -32,6 +35,7 @@ export function useWysiwygInit(
   // Utils
   const self = getCurrentInstance()
   const { WysiwygFile, FileHandler } = useWysiwygFile()
+  const { WysiwygCodeBlock } = useWysiwygCodeBlock()
   const {
     getRect,
     loadData,
@@ -72,7 +76,12 @@ export function useWysiwygInit(
       },
     },
     extensions: [
-      StarterKit,
+      StarterKit.configure({ codeBlock: false }),
+      WysiwygFocus(),
+      Markdown.configure({
+        breaks: true,
+      }),
+      WysiwygCodeBlock(),
       WysiwygPlaceholder(props),
       WysiwygTextAlign(),
       WysiwygUnderline(),
@@ -96,11 +105,16 @@ export function useWysiwygInit(
 
       ...MentionExtensions,
     ],
+
     onUpdate: ({ editor }) => {
       const text = editor.getText()
 
       if (text.length) {
-        model.value = editor.getHTML()
+        const returnFormat = props.returnFormat ?? 'html'
+
+        model.value = returnFormat === 'html'
+          ? editor.getHTML()
+          : editor.storage.markdown.getMarkdown()
       } else {
         model.value = props.emptyValue
       }

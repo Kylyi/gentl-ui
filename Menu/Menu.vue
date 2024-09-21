@@ -60,7 +60,7 @@ const modelHandler = computed({
     let shouldContinue = true
 
     if (!val && !isChangeForced.value) {
-      shouldContinue = (await props.beforeHideFnc?.()) ?? true
+      shouldContinue = (await props.beforeHideFnc?.()) ?? !props.persistent
     }
 
     if (shouldContinue) {
@@ -240,6 +240,10 @@ function handleClickOutside(ev: Event) {
 }
 
 function bounce() {
+  if (props.noBounce) {
+    return
+  }
+
   const _floatingEl = floatingEl.value as HTMLElement
 
   _floatingEl.addEventListener('animationend', () => {
