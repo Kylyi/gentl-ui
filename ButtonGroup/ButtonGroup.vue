@@ -25,6 +25,6 @@ withDefaults(defineProps<IButtonGroupProps>(), {
 
 <style lang="scss" scoped>
 .btn-group {
-  --apply: flex rounded-full;
+  @apply flex rounded-full;
 }
 </style>

@@ -73,10 +73,10 @@ const notificationsClass = computed(() => {
 
 <style lang="scss">
 .notifications {
-  --apply: flex flex-col gap-y-1 transition-transform fixed z-$zMax origin-center
+  @apply flex flex-col gap-y-1 transition-transform fixed z-$zMax origin-center
     min-w-240px max-w-320px lt-xm:max-w-280px flex-center;
 
-  // --apply: top-20 left-50% translate-x--50%;
+  // @apply top-20 left-50% translate-x--50%;
 }
 
 .list-move, /* apply transition to moving elements */
@@ -94,7 +94,7 @@ const notificationsClass = computed(() => {
 /* ensure leaving items are taken out of layout flow so that moving
    animations can be calculated correctly. */
 .list-leave-active {
-  --apply: w-full;
+  @apply w-full;
 
   position: absolute !important;
 }

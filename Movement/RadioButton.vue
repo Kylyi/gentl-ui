@@ -45,19 +45,19 @@ const fillColor = computedEager(() => {
 .radio-btn:hover,
 .radio-btn.hovered {
   .inner.unchecked {
-    --apply: scale-100 opacity-60;
+    @apply scale-100 opacity-60;
   }
 }
 
 .inner {
-  --apply: origin-center transition-all duration-350;
+  @apply origin-center transition-all duration-350;
 
   &.is-checked {
-    --apply: scale-100 opacity-100;
+    @apply scale-100 opacity-100;
   }
 
   &.unchecked {
-    --apply: scale-0 opacity-0;
+    @apply scale-0 opacity-0;
   }
 }
 </style>

@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import dayjs from 'dayjs'
+import type dayjs from 'dayjs'
 
 // Types
 import type { DayEvent } from '~/components/DatePicker/types/DayEvent.type'
 import type { IDatePickerProps } from '~/components/DatePicker/types/datepicker-props.type'
 
 // Models
-import type { Day } from '~/libs/Shared/models/day.model';
+import type { Day } from '~/libs/Shared/models/day.model'
 
 const props = withDefaults(defineProps<IDatePickerProps>(), {
   excludedDays: () => [],
@@ -20,8 +20,8 @@ const emits = defineEmits<{
 const MIN_COUNT_OF_WEEKS = 6
 
 // Utils
-const { formatDate, getPeriod, getExtendedPeriod, getDaysInPeriod } =
-  useDateUtils()
+const { formatDate, getPeriod, getExtendedPeriod, getDaysInPeriod }
+  = useDateUtils()
 
 // Layout
 const originalModel = defineModel<any>()
@@ -30,7 +30,7 @@ const daysInPeriod = computed(() =>
   getDaysInPeriod(extendedPeriod, {
     excludedDays: excludedDays.value,
     currentPeriod: period.value,
-  })
+  }),
 )
 
 const eventsByDay = computed(() => {
@@ -189,10 +189,10 @@ defineExpose({
 
 <style lang="scss" scoped>
 .date-picker {
-  --apply: flex flex-col bg-ca min-w-80 xm:w-90 overflow-auto;
+  @apply flex flex-col bg-ca min-w-80 xm:w-90 overflow-auto;
 
   &-controls {
-    --apply: flex items-center justify-end p-x-2 p-y-1 border-t-1 border-ca;
+    @apply flex items-center justify-end p-x-2 p-y-1 border-t-1 border-ca;
   }
 }
 </style>

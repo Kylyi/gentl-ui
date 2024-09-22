@@ -139,6 +139,6 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .picker-icon {
-  --apply: cursor-pointer color-ca m-x-2 h-5.5 w-5.5;
+  @apply cursor-pointer color-ca m-x-2 h-5.5 w-5.5;
 }
 </style>

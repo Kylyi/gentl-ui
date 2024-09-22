@@ -56,10 +56,10 @@ const months = computed(() => {
 
 <style lang="scss" scoped>
 .month-selector-grid {
-  --apply: grid grid-cols-2 xm:grid-cols-3 grid-gap-1;
+  @apply grid grid-cols-2 xm:grid-cols-3 grid-gap-1;
 
   .current {
-    --apply: shadow-coolGray;
+    @apply shadow-coolGray;
 
     box-shadow: 0px 0px 0px 2px var(--un-shadow-color);
   }

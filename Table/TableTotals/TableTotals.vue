@@ -56,6 +56,6 @@ defineExpose({
 
 <style lang="scss" scoped>
 .thead {
-  --apply: flex shrink-0 overflow-hidden relative min-h-$headerHeight;
+  @apply flex shrink-0 overflow-hidden relative min-h-$headerHeight;
 }
 </style>

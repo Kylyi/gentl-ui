@@ -22,31 +22,31 @@ defineProps<ISeparatorProps>()
 
 <style lang="scss" scoped>
 .separator {
-  --apply: flex border-true-gray/40 rounded-full;
+  @apply flex border-true-gray/40 rounded-full;
 
   &-horizontal {
-    --apply: w-full border-b-1;
+    @apply w-full border-b-1;
 
     line-height: 0;
 
     &.separator--spaced {
-      --apply: m-b-.5 p-b-.5;
+      @apply m-b-.5 p-b-.5;
     }
 
     &.separator--inset {
-      --apply: m-x-2 w-[calc(100%-1rem)];
+      @apply m-x-2 w-[calc(100%-1rem)];
     }
   }
 
   &-vertical {
-    --apply: border-r-1;
+    @apply border-r-1;
 
     &.separator--spaced {
-      --apply: p-r-.5 m-r-.5;
+      @apply p-r-.5 m-r-.5;
     }
 
     &.separator--inset {
-      --apply: m-y-1;
+      @apply m-y-1;
     }
   }
 }

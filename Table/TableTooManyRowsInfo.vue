@@ -23,7 +23,7 @@ const tooManyRowsWarningVisible = ref(true)
 
 <style lang="scss" scoped>
 .too-many-rows-warning {
-  --apply: flex flex-gap-x-2 bg-red color-white items-center justify-between
+  @apply flex flex-gap-x-2 bg-red color-white items-center justify-between
     p-x-2 m-1 rounded-3;
 }
 </style>

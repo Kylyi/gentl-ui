@@ -393,10 +393,10 @@ function isSelectDisabled() {
 
 <style scoped lang="scss">
 .cell {
-  --apply: relative;
+  @apply relative;
 
   &.is-editing::after {
-    --apply: absolute content-empty inset-0 pointer-events-none border-primary
+    @apply absolute content-empty inset-0 pointer-events-none border-primary
       border-2;
   }
 }
