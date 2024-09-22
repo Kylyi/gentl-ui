@@ -123,19 +123,19 @@ const imageUrl = computed(() => {
 
 <style lang="scss" scoped>
 .file-preview {
-  --apply: flex flex-col gap-4 fit items-center w-full border-1 border-dotted
+  @apply flex flex-col gap-4 fit items-center w-full border-1 border-dotted
     rounded-3 border-ca color-ca;
-  --apply: dark: bg-darker bg-white;
+  @apply dark:bg-darker bg-white;
 
   &--header {
-    --apply: flex flex-row gap-x-2 p-x-2 w-full justify-between p-t-1 p-b-2;
+    @apply flex flex-row gap-x-2 p-x-2 w-full justify-between p-t-1 p-b-2;
   }
 
   &--image {
-    --apply: flex flex-center p-b-4 p-x-3;
+    @apply flex flex-center p-b-4 p-x-3;
 
     img {
-      --apply: rounded-3 object-cover object-center h-20;
+      @apply rounded-3 object-cover object-center h-20;
     }
   }
 }

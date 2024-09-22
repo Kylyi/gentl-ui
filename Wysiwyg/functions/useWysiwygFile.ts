@@ -44,6 +44,7 @@ function WysiwygFile() {
       }
     },
     addNodeView() {
+      // @ts-expect-error
       return VueNodeViewRenderer(WysiwygFileComponent)
     },
   })
