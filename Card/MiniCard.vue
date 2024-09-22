@@ -150,7 +150,7 @@ const isModified = computed(() => {
               font="bold"
               text="caption"
             >
-              {{ $t('version.currentValue') }}
+              {{ $t('general.currentValue') }}
             </span>
 
             <ValueFormatter

@@ -38,12 +38,12 @@ function setFitColumns(mode: 'auto' | 'content' | 'stretch', unset?: boolean) {
     <!-- Auto-save table layout -->
     <Toggle
       :model-value="appState.table?.autoSaveSchema"
-      :label="$t('app.autoSaveLayout')"
+      :label="$t('table.autoSaveLayout')"
       @update:model-value="setAutoSaveLayout"
     />
 
     <span class="hint">
-      {{ $t('app.autoSaveLayoutExplain') }}
+      {{ $t('table.autoSaveLayoutExplain') }}
     </span>
 
     <Separator m="y-2" />
@@ -56,7 +56,7 @@ function setFitColumns(mode: 'auto' | 'content' | 'stretch', unset?: boolean) {
     />
 
     <span class="hint">
-      {{ $t('app.autoFitColumnsExplain') }}
+      {{ $t('table.autoFitColumnsExplain') }}
     </span>
 
     <Separator m="y-2" />
@@ -69,11 +69,11 @@ function setFitColumns(mode: 'auto' | 'content' | 'stretch', unset?: boolean) {
     />
 
     <span class="hint">
-      {{ $t('app.autoJustifyColumnsExplain') }}
+      {{ $t('table.autoJustifyColumnsExplain') }}
     </span>
 
     <span class="hint">
-      {{ $t('app.autoJustifyColumnsExplain2') }}
+      {{ $t('table.autoJustifyColumnsExplain2') }}
     </span>
 
     <Separator m="y-2" />
@@ -86,7 +86,7 @@ function setFitColumns(mode: 'auto' | 'content' | 'stretch', unset?: boolean) {
     />
 
     <span class="hint">
-      {{ $t('app.autoStretchColumnsExplain') }}
+      {{ $t('table.autoStretchColumnsExplain') }}
     </span>
   </Dialog>
 </template>

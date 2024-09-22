@@ -68,7 +68,7 @@ function handleHide() {
           :options="uploadedFiles"
           option-label="name"
           max-w="100"
-          :label="$t('task.useUploadedFile')"
+          :label="$t('wysiwyg.useUploadedFile')"
         >
           <template #item="{ item }">
             <div
