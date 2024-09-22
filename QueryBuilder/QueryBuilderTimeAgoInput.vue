@@ -74,7 +74,7 @@ const agoValue = computed({
       unit = 'month'
     }
 
-    return { value, unit, unitShortName }
+    return { value, unit, unitShortName } as Partial<IAgoValue>
   },
   set({ value, unitShortName }: Partial<IAgoValue>) {
     item.value.value = `${value ?? agoValue.value.value}${
