@@ -110,11 +110,11 @@ const handleCollapse = injectStrict(
 <style lang="scss" scoped>
 .tree-node-item {
   &--wrapper {
-    @applyflex items-center rounded-3;
+    --apply: flex items-center rounded-3;
   }
 
   &.is-focused > .tree-node-item--wrapper {
-    @applyshadow-secondary;
+    --apply: shadow-secondary;
 
     box-shadow: inset 0px 0px 0px 2px var(--un-shadow-color);
   }

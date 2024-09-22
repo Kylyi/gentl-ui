@@ -251,24 +251,24 @@ function handleMenuBeforeHide() {
 
 <style lang="scss" scoped>
 .icon {
-  @applyw-4 h-4 absolute;
+  --apply: w-4 h-4 absolute;
 
   &-badge {
-    @applyflex flex-center absolute -bottom-.5 -right-.5 w-3 h-3 bg-white
+    --apply: flex flex-center absolute -bottom-.5 -right-.5 w-3 h-3 bg-white
       color-black text-9px rounded-full leading-none z-1;
   }
 }
 
 .filter-btn {
-  @applyoverflow-hidden;
+  --apply: overflow-hidden;
 
   &.is-filtered::before {
-    @applyabsolute content-empty rotate-45 bg-primary -top-24.5px -left-24.5px
+    --apply: absolute content-empty rotate-45 bg-primary -top-24.5px -left-24.5px
       w-1 h-3/2 w-3/2;
   }
 
   &.is-sorted::after {
-    @applyabsolute content-empty rotate-45 bg-secondary -bottom-24.5px -right-24.5px
+    --apply: absolute content-empty rotate-45 bg-secondary -bottom-24.5px -right-24.5px
       w-1 h-3/2 w-3/2;
   }
 }

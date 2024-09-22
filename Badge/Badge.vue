@@ -20,7 +20,7 @@ defineProps<IBadgeProps>()
 
 <style lang="scss" scoped>
 .badge {
-  @applyabsolute rounded-2 p-x-1 min-w-7 font-normal border-2 text-center
+  --apply: absolute rounded-2 p-x-1 min-w-7 font-normal border-2 text-center
     font-rem-12;
 }
 </style>

@@ -37,6 +37,6 @@ const sizeClass = computedEager(() => {
 
 <style lang="scss" scoped>
 .label {
-  @applyrounded-custom fit dark:bg-darker bg-white p-x-1;
+  --apply: rounded-custom fit dark:bg-darker bg-white p-x-1;
 }
 </style>

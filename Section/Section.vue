@@ -102,36 +102,36 @@ const isTitleVisible = computed(() => {
 
 <style lang="scss" scoped>
 .section {
-  @applyrelative flex flex-col rounded-custom max-w-$Section-max-w;
+  --apply: relative flex flex-col rounded-custom max-w-$Section-max-w;
 
   &--dense {
-    @applyp-x-0 p-b-0;
+    --apply: p-x-0 p-b-0;
   }
 
   &-subtitle {
-    @applyw-full p-b-2;
+    --apply: w-full p-b-2;
   }
 
   &--bordered {
-    @applyborder-2 border-ca lt-sm:p-x-2;
+    --apply: border-2 border-ca lt-sm:p-x-2;
   }
 }
 
 .form--dense {
   .section {
-    @applyp-x-0;
+    --apply: p-x-0;
   }
 }
 
 .heading:not(.is-filled) {
   .section-subtitle {
-    @applyp-b-3;
+    --apply: p-b-3;
   }
 }
 
 .heading.is-filled.is-highlighted  {
   &::before {
-    @applyabsolute content-empty top-0 left-0 w-1 h-full bg-primary;
+    --apply: absolute content-empty top-0 left-0 w-1 h-full bg-primary;
   }
 }
 </style>

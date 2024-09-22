@@ -277,14 +277,14 @@ defineExpose({
 
 <style lang="scss" scoped>
 .picker-icon {
-  @applycursor-pointer color-ca m-x-2 h-6 w-6;
+  --apply: cursor-pointer color-ca m-x-2 h-6 w-6;
 }
 
 .input-wrapper {
   &--xs,
   &--sm {
     .picker-icon {
-      @applyh-5 w-5;
+      --apply: h-5 w-5;
     }
   }
 }

@@ -238,7 +238,7 @@ const isPaginationRightVisible = computed(() => {
   @apply relative flex flex-center flex-gap-x-1 p-y-1 min-h-10 bg-$Table-pagination-bg;
 
   .btn.is-active {
-    @applybg-$Table-pagination-button-active-bg color-white;
+    --apply: bg-$Table-pagination-button-active-bg color-white;
   }
 
   &__page-size {

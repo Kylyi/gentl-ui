@@ -25,28 +25,28 @@ defineProps<IProps>()
 
 <style lang="scss" scoped>
 .progress-bar {
-  @applyflex relative;
+  --apply: flex relative;
 }
 
 .progress-bar__inner {
-  @applyabsolute h-full;
+  --apply: absolute h-full;
 }
 
 .progress-bar__color {
-  @applybg-positive mix-blend-screen w-full z-4;
+  --apply: bg-positive mix-blend-screen w-full z-4;
 }
 
 .whitebg {
-  @applybg-white w-full z-1;
+  --apply: bg-white w-full z-1;
 }
 
 .blackbg {
-  @applybg-black z-2;
+  --apply: bg-black z-2;
   width: calc(var(--progress) * 1%);
 }
 
 .progress-bar__text {
-  @applyabsolute left-1/2 top-1/2 translate--50% mix-blend-difference
+  --apply: absolute left-1/2 top-1/2 translate--50% mix-blend-difference
     color-white z-3 text-nowrap;
 
   white-space: nowrap;

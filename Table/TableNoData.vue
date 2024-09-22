@@ -23,6 +23,6 @@ defineProps<IProps>()
 
 <style lang="scss" scoped>
 .no-data {
-  @applyflex h-24 p-4 text-caption italic items-start;
+  --apply: flex h-24 p-4 text-caption italic items-start;
 }
 </style>

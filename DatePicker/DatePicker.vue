@@ -189,10 +189,10 @@ defineExpose({
 
 <style lang="scss" scoped>
 .date-picker {
-  @applyflex flex-col bg-ca min-w-80 xm:w-90 overflow-auto;
+  --apply: flex flex-col bg-ca min-w-80 xm:w-90 overflow-auto;
 
   &-controls {
-    @applyflex items-center justify-end p-x-2 p-y-1 border-t-1 border-ca;
+    --apply: flex items-center justify-end p-x-2 p-y-1 border-t-1 border-ca;
   }
 }
 </style>
