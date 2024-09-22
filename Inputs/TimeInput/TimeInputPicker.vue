@@ -292,20 +292,20 @@ defineExpose({
 
 <style lang="scss" scoped>
 .shortcuts {
-  --apply: h-9;
+  @applyh-9;
 
   &-chip {
-    --apply: color-ca text-center cursor-pointer min-w-14;
+    @applycolor-ca text-center cursor-pointer min-w-14;
 
     &.is-12h {
-      --apply: min-w-22;
+      @applymin-w-22;
     }
   }
 }
 
 .menu[placement^='top'] {
   .shortcuts {
-    --apply: order--1 p-b-1;
+    @applyorder--1 p-b-1;
   }
 }
 </style>

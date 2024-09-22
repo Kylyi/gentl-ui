@@ -81,34 +81,34 @@ function handleAnimationEnd() {
 
 <style scoped lang="scss">
 .drawer-simple {
-  --apply: fixed flex flex-col flex-gap-1 top-0 opacity-0
+  @applyfixed flex flex-col flex-gap-1 top-0 opacity-0
     bg-light-200 dark:bg-dark-800 z-$zDrawer max-w-full overflow-auto h-full;
 
   transition: opacity ease-out 200ms, transform ease-out 200ms;
 
   &.is-absolute {
-    --apply: absolute;
+    @applyabsolute;
   }
 
   &:not(.is-full-height) {
-    --apply: m-t-$navHeight;
+    @applym-t-$navHeight;
     height: calc(100% - var(--navHeight));
   }
 
   &__title {
-    --apply: flex shrink-0 h-$navHeight p-l-4 p-r-2 items-center border-b-1 border-ca;
+    @applyflex shrink-0 h-$navHeight p-l-4 p-r-2 items-center border-b-1 border-ca;
 
     &-text {
-      --apply: flex-1 text-h6 truncate grow;
+      @applyflex-1 text-h6 truncate grow;
     }
   }
 
   &--right {
-    --apply: right-0 translate-x-100%;
+    @applyright-0 translate-x-100%;
   }
 
   &.is-show {
-    --apply: translate-x-0 opacity-100;
+    @applytranslate-x-0 opacity-100;
   }
 }
 </style>

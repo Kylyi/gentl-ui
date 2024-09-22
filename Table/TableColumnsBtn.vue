@@ -365,6 +365,6 @@ async function handleApplyChanges() {
 
 <style lang="scss" scoped>
 .handle {
-  --apply: color-ca cursor-move;
+  @applycolor-ca cursor-move;
 }
 </style>

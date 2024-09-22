@@ -18,7 +18,7 @@ withDefaults(defineProps<ISkeletonProps>(), {
 
 <style lang="scss" scoped>
 .skeleton {
-  --apply: cursor-wait bg-ca;
+  @applycursor-wait bg-ca;
 
   &::before {
     content: '\00a0';
@@ -30,20 +30,20 @@ withDefaults(defineProps<ISkeletonProps>(), {
 
   &--wave,
   &--blink {
-    --apply: relative overflow-hidden z-1;
+    @applyrelative overflow-hidden z-1;
 
     &::after {
-      --apply: content-empty absolute inset-0 z-0;
+      @applycontent-empty absolute inset-0 z-0;
     }
   }
 
   &--blink::after {
-    --apply: bg-white/70;
+    @applybg-white/70;
     animation: fade var(--animation-speed) linear 0.5s infinite alternate;
   }
 
   &--wave::after {
-    --apply: z-0;
+    @applyz-0;
     background: linear-gradient(
       90deg,
       rgba(255, 255, 255, 0),
@@ -66,7 +66,7 @@ withDefaults(defineProps<ISkeletonProps>(), {
     }
 
     &--blink::after {
-      --apply: bg-white/20;
+      @applybg-white/20;
     }
   }
 }

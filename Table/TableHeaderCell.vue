@@ -87,19 +87,19 @@ const hasFrozenBtn = computed(() => {
 
 <style lang="scss" scoped>
 .th {
-  --apply: flex shrink-0 items-center font-semibold text-xs tracking-wide
+  @applyflex shrink-0 items-center font-semibold text-xs tracking-wide
     border-ca border-b-1 border-t-1;
 
   &.has-data {
-    --apply: border-l-1;
+    @applyborder-l-1;
   }
 
   &.is-last {
-    --apply: border-r-1;
+    @applyborder-r-1;
   }
 
   &-label {
-    --apply: grow p-l-2 p-r-1 line-clamp-2;
+    @applygrow p-l-2 p-r-1 line-clamp-2;
 
     &::after {
       content: '\00a0';
@@ -107,36 +107,36 @@ const hasFrozenBtn = computed(() => {
   }
 
   &:not(.is-small-screen) {
-    --apply: w-$colWidth;
+    @applyw-$colWidth;
   }
 
   &.is-small-screen {
-    --apply: rounded-custom border-1 max-w-40;
+    @applyrounded-custom border-1 max-w-40;
 
     &.is-filtered {
-      --apply: border-t-1 border-l-1 border-t-primary border-l-primary;
+      @applyborder-t-1 border-l-1 border-t-primary border-l-primary;
     }
 
     &.is-sorted {
-      --apply: border-b-1 border-r-1 border-b-secondary border-r-secondary;
+      @applyborder-b-1 border-r-1 border-b-secondary border-r-secondary;
     }
   }
 
   &.is-semi-frozen {
-    --apply: z-6;
+    @applyz-6;
 
     &::after {
-      --apply: content-empty absolute -right-px top-0 h-full w-px bg-primary;
+      @applycontent-empty absolute -right-px top-0 h-full w-px bg-primary;
     }
   }
 }
 
 .column-lock {
-  --apply: hidden;
+  @applyhidden;
 }
 
 .th:hover .column-lock,
 .th.is-frozen .column-lock {
-  --apply: flex;
+  @applyflex;
 }
 </style>

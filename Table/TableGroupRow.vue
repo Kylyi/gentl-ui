@@ -113,14 +113,14 @@ function handleCollapse() {
 
 <style lang="scss" scoped>
 .cell {
-  --apply: flex shrink-0 h-full items-center border-ca border-b-1 flex-gap-x-2;
+  @applyflex shrink-0 h-full items-center border-ca border-b-1 flex-gap-x-2;
 }
 
 .tr {
-  --apply: flex;
+  @applyflex;
 
   &-group {
-    --apply: dark:bg-darker/50 bg-light/50 lt-md:overflow-hidden z-1;
+    @applydark:bg-darker/50 bg-light/50 lt-md:overflow-hidden z-1;
     backdrop-filter: blur(5px);
   }
 }

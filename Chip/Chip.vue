@@ -98,11 +98,11 @@ function handleClick() {
 
 <style lang="scss" scoped>
 .chip {
-  --apply: flex gap-2 p-y-3px p-l-2 border-px rounded truncate relative
+  @applyflex gap-2 p-y-3px p-l-2 border-px rounded truncate relative
     leading-tight items-center self-center font-rem-14;
 
   &-label {
-    --apply: flex flex-gap-x-2 flex-1 truncate;
+    @applyflex flex-gap-x-2 flex-1 truncate;
   }
 }
 </style>

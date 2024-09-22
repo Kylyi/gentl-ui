@@ -28,6 +28,6 @@ const shortcut = computed(() => {
 
 <style scoped lang="scss">
 .data-type-shortcut {
-  --apply: uppercase text-caption w-5 h-5 flex-inline;
+  @applyuppercase text-caption w-5 h-5 flex-inline;
 }
 </style>

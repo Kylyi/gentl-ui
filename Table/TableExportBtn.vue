@@ -71,7 +71,7 @@ async function handleExport(exportFormat: 'xlsx' | 'csv') {
 <style scoped lang="scss">
 .export-btn {
   &__label {
-    --apply: flex flex-gap-2 p-r-2 font-normal text-sm items-center;
+    @applyflex flex-gap-2 p-r-2 font-normal text-sm items-center;
   }
 }
 </style>

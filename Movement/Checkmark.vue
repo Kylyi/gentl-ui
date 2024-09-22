@@ -30,11 +30,11 @@ withDefaults(defineProps<IProps>(), {
 
 <style lang="scss" scoped>
 .animated-check {
-  --apply: fit;
+  @applyfit;
 }
 
 .animated-check path {
-  --apply: fill-none stroke-3;
+  @applyfill-none stroke-3;
 
   stroke-dasharray: 23;
   stroke-dashoffset: 23;

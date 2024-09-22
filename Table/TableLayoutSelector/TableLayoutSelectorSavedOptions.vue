@@ -86,6 +86,6 @@ const layoutInfo = computed(() => {
 
 <style scoped lang="scss">
 .layout-info-icon {
-  --apply: flex flex-center w-4 h-4 rounded-custom;
+  @applyflex flex-center w-4 h-4 rounded-custom;
 }
 </style>

@@ -18,6 +18,6 @@ defineProps<ITabProps>()
 
 <style lang="scss" scoped>
 .tab-content {
-  --apply: fit;
+  @applyfit;
 }
 </style>

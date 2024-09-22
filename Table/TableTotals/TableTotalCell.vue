@@ -87,20 +87,20 @@ if (props.getTotalsData?.immediate) {
 
 <style lang="scss" scoped>
 .thead {
-  --apply: flex shrink-0 relative
+  @applyflex shrink-0 relative
     bg-white dark:bg-darker min-h-$headerHeight;
 }
 
 .th {
-  --apply: relative flex shrink-0 items-center text-xs tracking-wide
+  @applyrelative flex shrink-0 items-center text-xs tracking-wide
     border-ca sm:w-$colWidth border-l-1 p-x-2 border-b-1 gap-x-2;
 
   &:last-of-type {
-    --apply: border-r-1;
+    @applyborder-r-1;
   }
 
   &::before {
-    --apply: absolute content-empty top-0 left-0 h-2px w-full
+    @applyabsolute content-empty top-0 left-0 h-2px w-full
       bg-darker dark:bg-white;
   }
 }

@@ -179,17 +179,17 @@ watch(model, model => {
 <style lang="scss" scoped>
 .tab {
   &-content {
-    --apply: overflow-x-hidden;
+    @applyoverflow-x-hidden;
   }
 
   &-label {
-    --apply: min-w-min;
-    --apply: '!lt-lg:p-x-4';
+    @applymin-w-min;
+    @apply'!lt-lg:p-x-4';
   }
 
   &-label.is-active {
     &::after {
-      --apply: content-empty absolute inset-inline-0 bottom-0 h-1 bg-secondary rounded-custom;
+      @applycontent-empty absolute inset-inline-0 bottom-0 h-1 bg-secondary rounded-custom;
     }
   }
 }

@@ -181,12 +181,12 @@ defineExpose({ sync })
 
 <style lang="scss" scoped>
 .year-selector {
-  --apply: flex flex-gap-x-1 items-center;
+  @applyflex flex-gap-x-1 items-center;
 
   &__previous,
   &__next {
-    --apply: w-8 h-8 p-3;
-    --apply: '!lt-xm:hidden';
+    @applyw-8 h-8 p-3;
+    @apply'!lt-xm:hidden';
   }
 }
 </style>

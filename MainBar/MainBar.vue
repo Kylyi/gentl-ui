@@ -116,34 +116,34 @@ defineExpose({
 
 <style lang="scss">
 .main-bar {
-  --apply: flex relative flex-col gap-x-2 p-t-2 z-$zMainBar w-full shrink-0
+  @applyflex relative flex-col gap-x-2 p-t-2 z-$zMainBar w-full shrink-0
   bg-white dark:bg-darker p-b-2;
 
   transition: padding 250ms cubic-bezier(0, 0, 0.2, 1);
 
   &-content {
-    --apply: flex flex-gap-x-4 grow items-center rounded-custom;
-    --apply: bg-$MainBar-bg;
+    @applyflex flex-gap-x-4 grow items-center rounded-custom;
+    @applybg-$MainBar-bg;
   }
 
   &-title {
-    --apply: flex flex-col grow overflow-auto relative rounded-custom;
+    @applyflex flex-col grow overflow-auto relative rounded-custom;
   }
 
   &-subtitle {
-    --apply: text-caption p-x-4 p-b-2 m-t--1;
+    @applytext-caption p-x-4 p-b-2 m-t--1;
   }
 
   &-actions {
-    --apply: flex flex-col self-start m-t-1 m-x-2;
+    @applyflex flex-col self-start m-t-1 m-x-2;
   }
 }
 
 aside.drawer--left.is-open + header .main-bar {
-  --apply: lg:p-l-$drawerLeftWidth;
+  @applylg:p-l-$drawerLeftWidth;
 }
 
 aside.drawer--right.is-open + header .main-bar {
-  --apply: lg:p-r-$drawerLeftWidth;
+  @applylg:p-r-$drawerLeftWidth;
 }
 </style>

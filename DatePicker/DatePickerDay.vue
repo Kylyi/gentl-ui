@@ -78,38 +78,38 @@ const eventsAdjusted = computed<Pick<DayEvent, 'color' | 'icon'>[]>(() => {
 
 <style lang="scss" scoped>
 .dp-day {
-  --apply: flex flex-col cursor-pointer aspect-square font-thin relative;
+  @applyflex flex-col cursor-pointer aspect-square font-thin relative;
 
   &:not(.is-disabled):hover {
-    --apply: shadow-consistent dark:shadow-true-gray-700/50 shadow-true-gray-300/50;
+    @applyshadow-consistent dark:shadow-true-gray-700/50 shadow-true-gray-300/50;
   }
 
   .dayNo {
-    --apply: flex flex-center w-7 h-7 relative m-1 rounded-full;
+    @applyflex flex-center w-7 h-7 relative m-1 rounded-full;
   }
 
   .edge {
-    --apply: absolute top-.5 right-.5 whitespace-nowrap italic text-sm color-gray leading-none;
+    @applyabsolute top-.5 right-.5 whitespace-nowrap italic text-sm color-gray leading-none;
   }
 
   &.is-weekend {
-    --apply: bg-true-gray-800/3 dark:bg-true-gray-200/3;
+    @applybg-true-gray-800/3 dark:bg-true-gray-200/3;
   }
 
   &.is-not-current {
-    --apply: bg-true-gray-800/7 dark:bg-true-gray-200/7;
+    @applybg-true-gray-800/7 dark:bg-true-gray-200/7;
   }
 
   &.is-today .dayNo {
-    --apply: rounded-full border-1 dark:border-white border-ca;
+    @applyrounded-full border-1 dark:border-white border-ca;
   }
 
   &.is-selected .dayNo {
-    --apply: dark:bg-primary color-white bg-primary;
+    @applydark:bg-primary color-white bg-primary;
   }
 
   &.is-disabled {
-    --apply: color-true-gray-400 dark:color-true-gray-600 cursor-not-allowed;
+    @applycolor-true-gray-400 dark:color-true-gray-600 cursor-not-allowed;
   }
 }
 </style>

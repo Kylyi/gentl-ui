@@ -6,10 +6,10 @@
 
 <style scoped lang="scss">
 .query-builder-move-handler {
-  --apply: flex flex-center shrink-0;
+  @applyflex flex-center shrink-0;
 
   &__icon {
-    --apply: color-ca w5 h-5 cursor-move;
+    @applycolor-ca w5 h-5 cursor-move;
   }
 }
 </style>

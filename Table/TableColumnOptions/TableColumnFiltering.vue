@@ -45,10 +45,10 @@ function handleClearFilter() {
 
 <style lang="scss" scoped>
 .filter-container {
-  --apply: flex flex-col grow overflow-auto;
+  @applyflex flex-col grow overflow-auto;
 
   &-title {
-    --apply: grow font-bold text-sm;
+    @applygrow font-bold text-sm;
   }
 }
 </style>

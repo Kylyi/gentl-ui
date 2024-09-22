@@ -106,14 +106,14 @@ function handleSort(sortValue?: 'asc' | 'desc', ev?: PointerEvent) {
 
 <style lang="scss" scoped>
 .sorting-container {
-  --apply: flex flex-col grow overflow-auto shrink-0 p-b-4;
+  @applyflex flex-col grow overflow-auto shrink-0 p-b-4;
 
   &-title {
-    --apply: grow font-bold text-sm;
+    @applygrow font-bold text-sm;
   }
 
   .is-active {
-    --apply: bg-primary color-white;
+    @applybg-primary color-white;
   }
 }
 </style>

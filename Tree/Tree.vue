@@ -375,10 +375,10 @@ defineExpose({
 }
 
 :deep(.ps > ul) {
-  --apply: m-0 p-0;
+  @applym-0 p-0;
 }
 
 :deep(ul li) {
-  --apply: list-none;
+  @applylist-none;
 }
 </style>

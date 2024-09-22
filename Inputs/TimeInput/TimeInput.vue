@@ -346,14 +346,14 @@ defineExpose({
 
 <style lang="scss" scoped>
 .time-input-icon {
-  --apply: cursor-pointer color-ca m-x-2 h-6 w-6;
+  @applycursor-pointer color-ca m-x-2 h-6 w-6;
 }
 
 .input-wrapper {
   &--xs,
   &--sm {
     .time-input-icon {
-      --apply: h-5 w-5;
+      @applyh-5 w-5;
     }
   }
 }

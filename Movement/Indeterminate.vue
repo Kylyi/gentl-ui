@@ -29,11 +29,11 @@ withDefaults(defineProps<IProps>(), {
 
 <style lang="scss" scoped>
 .animated-indeterminate {
-  --apply: fit;
+  @applyfit;
 }
 
 .animated-indeterminate path {
-  --apply: fill-none stroke-2 origin-center;
+  @applyfill-none stroke-2 origin-center;
 
   animation: rotate 0.35s ease-out;
 

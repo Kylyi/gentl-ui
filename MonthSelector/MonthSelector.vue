@@ -118,12 +118,12 @@ function handleMonthSelect(month: Month, callback?: () => void) {
 
 <style lang="scss" scoped>
 .month-selector {
-  --apply: flex flex-gap-x-1 items-center;
+  @applyflex flex-gap-x-1 items-center;
 
   &__previous,
   &__next {
-    --apply: w-8 h-8 p-3;
-    --apply: '!lt-xs:hidden';
+    @applyw-8 h-8 p-3;
+    @apply'!lt-xs:hidden';
   }
 }
 </style>

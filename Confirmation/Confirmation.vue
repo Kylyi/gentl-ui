@@ -70,14 +70,14 @@ function handleClose() {
 
 <style lang="scss" scoped>
 .confirmation {
-  --apply: flex flex-col inset-0 absolute bg-white dark:bg-darker rounded-custom z-$zMax;
+  @applyflex flex-col inset-0 absolute bg-white dark:bg-darker rounded-custom z-$zMax;
 
   &-checkmark {
-    --apply: flex flex-col flex-center grow;
+    @applyflex flex-col flex-center grow;
   }
 }
 
 .actions {
-  --apply: flex items-center p-x-3 p-y-1 shrink-0 justify-end flex-gap-x-3 bg-ca;
+  @applyflex items-center p-x-3 p-y-1 shrink-0 justify-end flex-gap-x-3 bg-ca;
 }
 </style>

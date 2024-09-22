@@ -89,14 +89,14 @@ function handleClick() {
 
 <style lang="scss" scoped>
 .crud-edit-btn {
-  --apply: md:min-w-60 w-full m-x-1;
+  @applymd:min-w-60 w-full m-x-1;
 
   &:not(.is-archived):not(.is-disabled) {
-    --apply: bg-primary color-white;
+    @applybg-primary color-white;
   }
 
   &.is-archived {
-    --apply: bg-dark-50 color-true-gray-400;
+    @applybg-dark-50 color-true-gray-400;
   }
 
   &-wrapper {

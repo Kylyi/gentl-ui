@@ -137,19 +137,19 @@ defineExpose({
 
 <style lang="scss" scoped>
 .crud-btns {
-  --apply: relative flex items-center gap-x-1 bg-white dark:bg-darker p-1
+  @applyrelative flex items-center gap-x-1 bg-white dark:bg-darker p-1
     rounded-custom border-1 border-dashed border-ca hover:border-true-gray-400;
 
   &.has-labels {
-    --apply: gap-x-2;
+    @applygap-x-2;
   }
 
   :deep(.btn) {
-    --apply: lt-lg:p-x-1;
+    @applylt-lg:p-x-1;
   }
 
   :deep(.btn-label) {
-    --apply: lt-lg:hidden;
+    @applylt-lg:hidden;
   }
 }
 </style>
