@@ -1,13 +1,18 @@
 <script setup lang="ts">
+// Model
+import type { OnboardingStep } from '../models/onboarding-step.model';
+import type { OnboardingModel } from '../models/onboarding.model';
+
 // Store
 import { useOnboardingStore } from '~/components/Onboarding/functions/onboarding.store'
+
 
 const { activeOnboarding } = storeToRefs(useOnboardingStore())
 
 const stepProps = computed(() => {
   return {
-    onboarding: activeOnboarding.value,
-    step: activeOnboarding.value?.steps[activeOnboarding.value.currentStep],
+    onboarding: activeOnboarding.value as OnboardingModel,
+    step: activeOnboarding.value?.steps[activeOnboarding.value.currentStep] as OnboardingStep,
   }
 })
 </script>
