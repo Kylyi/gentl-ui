@@ -110,11 +110,7 @@ export function useWysiwygInit(
       const text = editor.getText()
 
       if (text.length) {
-        const returnFormat = props.returnFormat ?? 'html'
-
-        model.value = returnFormat === 'html'
-          ? editor.getHTML()
-          : editor.storage.markdown.getMarkdown()
+        model.value = wysiwygStore.getEditorValue?.()
       } else {
         model.value = props.emptyValue
       }
@@ -130,6 +126,15 @@ export function useWysiwygInit(
       self?.emit('blur')
     },
   })
+
+  // Get editor value
+  wysiwygStore.getEditorValue = () => {
+    const returnFormat = props.returnFormat ?? 'html'
+
+    return returnFormat === 'html'
+      ? editor.value?.getHTML()
+      : editor.value?.storage.markdown.getMarkdown()
+  }
 
   // Provide
   watchOnce(editor, editor => {

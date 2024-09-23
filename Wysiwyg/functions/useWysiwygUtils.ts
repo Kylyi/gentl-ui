@@ -23,7 +23,7 @@ export function useWysiwygUtils() {
     populateFnc: IWysiwygProps['populateMention'],
     replace = false,
     props?: Pick<IWysiwygProps, 'populateMention' | 'onMentionResolve'>
-    & { el?: HTMLElement },
+      & { el?: HTMLElement },
   ) {
     const domEl = props?.el ?? wysiwygStore.editor?.view?.dom
     const _populateFnc = populateFnc ?? injectedPopulateFnc ?? props?.populateMention
@@ -68,7 +68,11 @@ export function useWysiwygUtils() {
 
       wysiwygStore.editor?.chain().setContent(doc.body.innerHTML).run()
 
-      wysiwygModel.value = doc.body.innerHTML
+      nextTick(() => {
+        const editorValue = wysiwygStore.getEditorValue?.()
+        wysiwygModel.value = editorValue
+        wysiwygStore.editor?.chain().setContent(editorValue).run()
+      })
     }
   }
 

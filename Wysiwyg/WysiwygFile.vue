@@ -1,5 +1,5 @@
 <script lang="ts">
-import { NodeViewWrapper, nodeViewProps } from '@tiptap/vue-3'
+import { nodeViewProps, NodeViewWrapper } from '@tiptap/vue-3'
 
 // Models
 import { FileModel } from '~/components/FileInput/models/file.model'
@@ -32,8 +32,6 @@ export default {
 
     // New files uploaded through and grouped by the `uuid`
     const componentData = computed(() => wysiwygStore.providedData[uuid])
-
-    watch(() => wysiwygStore.providedData, d => console.log(d), { deep: true })
 
     const isEditable = computed(() => editor.value?.isEditable)
 
@@ -80,8 +78,13 @@ export default {
         }
       })
 
-      model.value = doc.body.innerHTML
       editor.value?.chain().setContent(doc.body.innerHTML).run()
+
+      nextTick(() => {
+        const editorValue = wysiwygStore.getEditorValue?.()
+        model.value = editorValue
+        editor.value?.chain().setContent(editorValue).run()
+      })
     }
 
     // When this component is mounted (~ an image is inserted into the Wysiwyg editor, upload the files)

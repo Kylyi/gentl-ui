@@ -12,6 +12,8 @@ export function useWysiwygStore(wysiwygId?: string) {
     const files = ref<IFile[]>([])
     const isFocused = ref(false)
 
+    const getEditorValue = ref<() => any>()
+
     const filesByPath = computed(() => {
       return files.value.reduce((agg, file) => {
         agg[file.path] = file
@@ -30,6 +32,7 @@ export function useWysiwygStore(wysiwygId?: string) {
       filesByPath,
       isFocused,
       providedData,
+      getEditorValue,
       setEditor,
     }
   })()
