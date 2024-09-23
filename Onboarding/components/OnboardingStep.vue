@@ -98,13 +98,15 @@ watch(() => props.step.id, () => {
     scrollToElement(),
     nextTick(() => {
       updateOverlayClip()
-      triggerStepChangeDebounced()
+
+      if(props.step.goForwardOn?.targets){
+        resumeEventHandler()
+      }
     })
   },
   { immediate: true },
 )
 
-// Scroll to step
 function scrollToElement() {
   // Doesn't work without a timeout, not sure why
   setTimeout(() => {
@@ -112,15 +114,6 @@ function scrollToElement() {
       behavior: 'smooth',
       block: 'center',
     })
-  }, 10)
-}
-
-// Trigger on step change
-const stepChanged = ref(false)
-function triggerStepChangeDebounced() {
-  stepChanged.value = true
-  setTimeout(() => {
-    stepChanged.value = false
   }, 10)
 }
 
@@ -151,34 +144,20 @@ const {
   handleGoForwardOn
 )
 
-const isListeningForEvent = computed(() => {
-  return !!props.step.goForwardOn?.targets
-})
-
-whenever(
-  () => (isListeningForEvent.value && stepChanged.value),
-  () => {
-    nextTick(() => {
-      resumeEventHandler()
-    })
-  })
-
 onMounted(() => {
   if (!!props.step.goForwardOn?.targets){
     nextTick(resumeEventHandler)
   }
 })
 
-onUnmounted(stopEventHandler)
+onUnmounted(() => {
+  stopEventHandler()
+  onboardingStore.stopEventListener()
+})
 
 // GoForwardOn
 function handleGoForwardOn() {
-  if(!props.step.goForwardOn) {
-    return
-  }
-
-  // First check the trigger function
-  if(props.step.goForwardOn.triggerFnc && !props.step.goForwardOn.triggerFnc?.()) {
+  if(!props.step.goForwardOn || !props.step.goForwardOn.targets) {
     return
   }
 
@@ -188,13 +167,19 @@ function handleGoForwardOn() {
   })
 
   if(targetHit) {
+      // Check the validation function
+      if(props.step.goForwardOn.validationFnc && !props.step.goForwardOn.validationFnc?.()) {
+        return
+      }
+
       if(props.onboarding.debug) {
-        console.log('goForwardOn - all conditions met, going to next step')
+        props.onboarding.log('goForwardOn - all conditions met, going to next step')
       }
       if(props.step.goForwardOn?.pageReroute){
-        console.log('goToNextStepDebounced: overlay paused')
+        props.onboarding.log('goToNextStepDebounced: overlay paused')
         pauseOverlay()
       }
+
       goToNextStepDebounced.value()
   }
 }
@@ -203,11 +188,9 @@ const goToNextStepDebounced = computed(() => useDebounceFn(
   () => {
     pauseEventHandler()
     setTimeout(() => {
-      if(!stepChanged.value){
-        useAppStore().activeElement?.blur()
-        props.onboarding.goToNextStep()
-        resumeOverlay()
-      }
+      useAppStore().activeElement?.blur()
+      props.onboarding.goToNextStep()
+      resumeOverlay()
     }, 5)
   },
   props.step.goForwardOn?.debounce || 0,

@@ -78,22 +78,29 @@ export const useOnboardingStore = defineStore(
       'wheel'
     ]
 
-    function startEventListener() {
-      const handleEvent = (e: Event) => {
-        lastEvent.value = e
-        lastEventEl.value = e.target as HTMLElement
-        // console.log(`Event: ${e.type}, Target:`, e.target)
-      }
+    function handleEvent(e: Event) {
+      lastEvent.value = e
+      lastEventEl.value = e.target as HTMLElement
+      // console.log(`Event: ${e.type}, Target:`, e.target)
+    }
 
+    function startEventListener() {
       eventTypes.forEach(eventType => {
         document.addEventListener(eventType, handleEvent, true)
       })
+    }
+
+    function stopEventListener() {
+      eventTypes.forEach(eventType => {
+        document.removeEventListener(eventType, handleEvent, true);
+      });
     }
 
     return {
       addTour,
       startTour,
       resetTour,
+      stopEventListener,
       activeOnboarding,
       lastIndexByName,
       lastEvent,

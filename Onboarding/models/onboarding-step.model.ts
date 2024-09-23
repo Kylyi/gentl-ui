@@ -17,24 +17,17 @@ export class OnboardingStep {
    * Target element for the tutorial step
    */
   element?: MaybeElement<ReferenceElement> | HTMLElement | string | null | Ref<any>
+  /**
+   * Position the step absolutely or relatively to a target element
+   */
   positioning: 'absolute' | 'component'
-  absolutePlacement: Placement | 'center' = 'center'
+  absolutePlacement: 'center' = 'center' // TODO: support custom placement?
   canInteractWithElement: boolean = true
 
   /**
    * When target element need to be yet rendered (f.e. Menu)
    */
   waitForElement: boolean = false
-
-  /**
-   * Turns off the overlay watch, which moves the overlay in case the element disappears.
-   *
-   * This is needed when the element causes a page reroute,
-   * in which case the reroute is quicker than event listener trigger, causing going back a step.
-   *
-   * TODO: Should be added automatically, when f.e. trigger is rerouting.
-   */
-  disableOverlayWatch: boolean = false
 
   /**
    *
@@ -68,9 +61,9 @@ export class OnboardingStep {
     /**
      * Validation function that needs to be true in order to proceed
      */
-    triggerFnc?: () => Promise<boolean> | boolean
+    validationFnc?: () => Promise<boolean> | boolean
 
-    targets: {
+    targets?: {
       /**
        * Target element of watched event
        */
@@ -86,15 +79,11 @@ export class OnboardingStep {
   }
 
   /**
-   * TODO
-   * Element event that triggers going back a step
+   *
+   * Lyfecycles
+   *
    */
-  goBackOn?: {
-    element: MaybeElement<ReferenceElement> | HTMLElement | string
-    event?: Event
-  }
 
-  // Lyfecycles
   /**
    * Function fired before going to the next step
    */
@@ -104,13 +93,11 @@ export class OnboardingStep {
    */
   onBeforePreviousStep?: () => Promise<void> | void
 
-
   /**
    *
    * Layout
    *
    */
-
 
   /**
    * Whether to show "Back" and "Next" buttons
@@ -142,7 +129,6 @@ export class OnboardingStep {
       this.positioning = args.positioning ?? isNil(args.element) ? 'absolute' : 'component'
       this.absolutePlacement = args.absolutePlacement ?? this.absolutePlacement
       this.canInteractWithElement = args.canInteractWithElement ?? this.canInteractWithElement
-      this.disableOverlayWatch = args.disableOverlayWatch ?? this.disableOverlayWatch
       this.waitForElement = args.waitForElement ?? this.waitForElement
 
       // Controls
@@ -154,7 +140,11 @@ export class OnboardingStep {
       this.canBeSkippedTo = args.canBeSkippedTo ?? this.canBeSkippedTo
 
       this.goForwardOn = args.goForwardOn
-      this.goBackOn = args.goBackOn
+
+      if(this.goForwardOn?.pageReroute) {
+        // Right now, when trigger is reroute, `disableOverlayWatch` should be true
+        // this.disableOverlayWatch = args.disableOverlayWatch ?? true
+      }
 
       // Lifecycle
       this.onBeforeNextStep = args.onBeforeNextStep

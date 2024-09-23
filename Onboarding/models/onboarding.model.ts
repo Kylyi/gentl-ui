@@ -155,7 +155,6 @@ export class OnboardingModel {
     })
 
     this.currentStep = args.currentStep ?? this.currentStep
-    this.isActive = args.isActive ?? this.isActive
     this.isFinished = args.isFinished ?? this.isFinished
     this.debug = args.debug ?? this.debug
 
