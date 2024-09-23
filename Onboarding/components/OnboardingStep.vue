@@ -4,27 +4,20 @@ import { arrow, flip, offset, shift, useFloating } from '@floating-ui/vue'
 import { useOnboardingOverlay } from '../functions/useOnboardingOverlay';
 import { getTargetElement, isNestedElement } from '~/components/Tooltip/functions/element-functions';
 
-// Models
-import type { OnboardingStep } from '../models/onboarding-step.model'
-import type { OnboardingModel } from '../models/onboarding.model';
-
 // Store
 import { useOnboardingStore } from '~/components/Onboarding/functions/onboarding.store'
 import { useAppStore } from '~/libs/App/app.store'
 
-const props = defineProps<{
-  step: OnboardingStep
-  onboarding: OnboardingModel
-  noArrow?: boolean
-  delay?: [number, number]
-}>()
+// Types
+import type { OnboradingStepProps } from '~/components/Onboarding/types/onborading-step-props.type';
+
+const props = defineProps<OnboradingStepProps>()
 
 // Utils
 const referenceEl = ref<HTMLElement | null>(null)
 const { updateOverlayClip, pauseOverlay, resumeOverlay } = useOnboardingOverlay(toRef(props, 'step'))
 const { width: windowWidth, height: windowHeight } = useWindowSize()
 const onboardingStore = useOnboardingStore()
-const { path } = useRoute()
 
   // Layout
 const tooltipEl = ref<HTMLElement>()
@@ -35,7 +28,7 @@ const middleware = computed(() => [
     fallbackPlacements: props.step.fallbackPlacements
   }),
   shift(),
-  ...(props.noArrow ? [] : [arrow({ element: arrowEl, padding: 4 })]),
+  arrow({ element: arrowEl, padding: 4 }),
 ])
 const stepPlacement = computed(() => props.step.placement)
 const isLastStep = computed(() => {
@@ -244,82 +237,82 @@ watch(
     >
       <!-- Arrow -->
       <div
-        v-if="!noArrow && props.step.positioning === 'component'"
+        v-if="props.step.positioning === 'component'"
         ref="arrowEl"
         class="arrow"
       />
 
-      <slot>
+      <slot v-bind="props">
         <!-- Header -->
-         <slot name="header">
+         <slot name="header" v-bind="props">
            <div class="tooltip-header">
               <!-- Step counter -->
-              <slot name="step-counter">
+              <slot name="counter" v-bind="props">
                 <p class="tooltip-step-counter">
                   {{ step.id + 1 }}/{{ onboarding.steps.length }}
                 </p>
               </slot>
 
-              <!-- Close btn -->
-               <slot name="close-btn">
-                <Btn
-                  icon="i-ion:close"
-                  color="slate-600 dark:white"
-                  size="sm"
-                  no-hover-effect
-                  @click="onboarding.endTour()"
-                />
-              </slot>
-          </div>
-        </slot>
-
-        <!-- Content -->
-        <div class="tooltip-content">
-          <!-- Heading -->
-          <slot name="heading">
-              <p class="tooltip-content__heading">
-                {{ step.heading }}
-              </p>
+              <!-- Close -->
+              <Btn
+                icon="i-ion:close"
+                color="slate-600 dark:white"
+                size="sm"
+                no-hover-effect
+                @click="onboarding.endTour()"
+              />
+            </div>
           </slot>
 
-          <!-- Message -->
-          <slot name="message">
+        <!-- Content -->
+        <slot name="content" v-bind="props">
+          <div class="tooltip-content">
+            <!-- Heading -->
+            <p class="tooltip-content__heading">
+              {{ step.heading }}
+            </p>
+
+            <!-- Message -->
             <ScrollArea class="tooltip-content__message">
               <p >
                 {{ step.message }}
               </p>
             </ScrollArea>
-          </slot>
-        </div>
+          </div>
+        </slot>
 
-        <OnboardingStepper :onboarding />
+        <slot name="stepper" v-bind="props">
+          <OnboardingStepper :onboarding />
+        </slot>
 
         <!-- Controls -->
         <div
           v-if="step.showNavigation"
           class="tooltip-controls"
         >
-          <!-- Back -->
-          <Btn
-            :disabled="!step.canGoBack"
-            :label="$t('onboarding.back')"
-            :ripple="false"
-            color="blue-500"
-            outlined
-            no-uppercase
-            @click="onboarding.goToPreviousStep()"
-          />
+          <slot name="controls" v-bind="props">
+            <!-- Back -->
+            <Btn
+              :disabled="!step.canGoBack"
+              :label="$t('onboarding.back')"
+              :ripple="false"
+              color="blue-500"
+              outlined
+              no-uppercase
+              @click="onboarding.goToPreviousStep()"
+            />
 
-          <!-- Next/Close -->
-          <Btn
-            :disabled="!step.canGoForward"
-            :label="isLastStep ? $t('general.close') : $t('onboarding.next')"
-            :ripple="false"
-            color="white"
-            bg-blue-500
-            no-uppercase
-            @click="onboarding.goToNextStep()"
-          />
+            <!-- Next/Close -->
+            <Btn
+              :disabled="!step.canGoForward"
+              :label="isLastStep ? $t('general.close') : $t('onboarding.next')"
+              :ripple="false"
+              color="white"
+              bg-blue-500
+              no-uppercase
+              @click="onboarding.goToNextStep()"
+            />
+          </slot>
         </div>
       </slot>
     </div>
