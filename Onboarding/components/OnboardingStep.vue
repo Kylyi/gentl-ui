@@ -231,6 +231,9 @@ watch(
     <!-- Tutorial overlay -->
     <div
       class="tutorial-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Tutorial overlay"
       @click.prevent.stop
     />
 
@@ -238,6 +241,7 @@ watch(
      <div
       v-if="!step.canInteractWithElement"
       class="element-overlay"
+      aria-hidden="true"
      />
 
     <div
@@ -246,6 +250,9 @@ watch(
       class="tooltip"
       :placement
       v-bind="$attrs"
+      role="dialog"
+      aria-labelledby="tooltip-heading"
+      :aria-describedby="step.message ? 'tooltip-message' : undefined"
       @wheel.prevent.stop
       @touchmove.prevent.stop
     >
@@ -254,6 +261,7 @@ watch(
         v-if="props.step.positioning === 'component'"
         ref="arrowEl"
         class="arrow"
+        aria-hidden="true"
       />
 
       <slot v-bind="props">
@@ -261,8 +269,15 @@ watch(
          <slot name="header" v-bind="props">
            <div class="tooltip-header">
               <!-- Step counter -->
-              <slot name="counter" v-bind="props">
-                <p class="tooltip-step-counter">
+              <slot
+                name="counter"
+                v-bind="props"
+              >
+                <p
+                  class="tooltip-step-counter"
+                  aria-alive="polite"
+                  aria-atomic
+                >
                   {{ step.id + 1 }}/{{ onboarding.steps.length }}
                 </p>
               </slot>
@@ -273,6 +288,7 @@ watch(
                 color="slate-600 dark:white"
                 size="sm"
                 no-hover-effect
+                :aria-label="$t('onboarding.aria.close')"
                 @click="onboarding.endTour()"
               />
             </div>
@@ -282,20 +298,26 @@ watch(
         <slot name="content" v-bind="props">
           <div class="tooltip-content">
             <!-- Heading -->
-            <p class="tooltip-content__heading">
+            <h2
+              class="tooltip-content__heading"
+              aria-label="tooltip-heading"
+            >
               {{ step.heading }}
-            </p>
+            </h2>
 
             <!-- Message -->
             <ScrollArea class="tooltip-content__message">
-              <p >
+              <p>
                 {{ step.message }}
               </p>
             </ScrollArea>
           </div>
         </slot>
 
-        <slot name="stepper" v-bind="props">
+        <slot
+          name="stepper"
+          v-bind="props"
+        >
           <OnboardingStepper :onboarding />
         </slot>
 
@@ -304,7 +326,10 @@ watch(
           v-if="step.showNavigation"
           class="tooltip-controls"
         >
-          <slot name="controls" v-bind="props">
+          <slot
+            name="controls"
+            v-bind="props"
+          >
             <!-- Back -->
             <Btn
               :disabled="!step.canGoBack"
