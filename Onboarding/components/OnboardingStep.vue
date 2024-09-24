@@ -15,8 +15,15 @@ const props = defineProps<OnboradingStepProps>()
 
 // Utils
 const referenceEl = ref<HTMLElement | null>(null)
-const { updateOverlayClip, pauseOverlay, resumeOverlay } = useOnboardingOverlay(toRef(props, 'step'))
-const { width: windowWidth, height: windowHeight } = useWindowSize()
+const {
+  updateOverlayClip,
+  pauseOverlay,
+  resumeOverlay
+} = useOnboardingOverlay(toRef(props, 'step'))
+const {
+  width: windowWidth,
+  height: windowHeight
+} = useWindowSize()
 const onboardingStore = useOnboardingStore()
 
   // Layout
@@ -35,7 +42,12 @@ const isLastStep = computed(() => {
   return props.onboarding.currentStep === props.onboarding.steps.length - 1
 })
 
-const { floatingStyles, placement, middlewareData, update } = useFloating(
+const {
+  floatingStyles,
+  placement,
+  middlewareData,
+  update: updateTooltipPosition
+} = useFloating(
   referenceEl,
   tooltipEl,
   {
@@ -45,10 +57,12 @@ const { floatingStyles, placement, middlewareData, update } = useFloating(
   },
 )
 
-// We react to page resize/scroll to reposition the floating UI
+// We react to page resize/scroll and el size to reposition the floating UI
 const {
-  x: pageX,
-  y: pageY,
+  x: elX,
+  y: elY,
+  width: elWidth,
+  height: elHeight,
 } = useElementBounding(referenceEl, { windowResize: true })
 
 const {
@@ -56,7 +70,7 @@ const {
   height: tooltipHeight,
 } = useElementBounding(tooltipEl, { windowResize: true })
 
-watchThrottled([pageX, pageY], update, {
+watchThrottled([elX, elY, elWidth, elHeight], updateTooltipPosition, {
   throttle: 1,
 })
 

@@ -17,10 +17,12 @@ export function useOnboardingOverlay(step: MaybeRefOrGetter<OnboardingStep>) {
   const {
     x: elX,
     y: elY,
+    height,
+    width
   } = useElementBounding(highlightEl, { windowResize: true })
 
   const { pause, resume } = watchPausable(
-    [elX, elY, highlightEl],
+    [elX, elY, highlightEl, height, width],
     async () => {
       const isVisible = isElementVisible(highlightEl.value)
       const isElementInBody = toValue(step)?.element ? getTargetElement(toValue(step).element) : true
