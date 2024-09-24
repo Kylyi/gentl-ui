@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // Model
-import type { OnboardingStep } from '../models/onboarding-step.model';
-import type { OnboardingModel } from '../models/onboarding.model';
+import type { OnboardingStep } from '~/components/Onboarding/models/onboarding-step.model';
+import type { OnboardingModel } from '~/components/Onboarding/models/onboarding.model';
 
 // Store
 import { useOnboardingStore } from '~/components/Onboarding/functions/onboarding.store'
