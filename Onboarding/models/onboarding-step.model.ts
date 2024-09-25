@@ -61,7 +61,14 @@ export class OnboardingStep {
     /**
      * Validation function that needs to be true in order to proceed
      */
-    validationFnc?: (value?: any) => Promise<boolean> | boolean
+    validation?: {
+      fnc: (value?: any) => Promise<boolean> | boolean
+      /**
+       * Element that contains the value to be validated
+       * @default step.element
+       */
+      element?: MaybeElement<ReferenceElement> | HTMLElement | string | null | Ref<any>
+    }
 
     targets?: {
       /**
@@ -139,7 +146,15 @@ export class OnboardingStep {
       this.canUseStepper = args.canUseStepper ?? this.canControl
       this.canBeSkippedTo = args.canBeSkippedTo ?? this.canBeSkippedTo
 
-      this.goForwardOn = args.goForwardOn
+      this.goForwardOn = {
+        ...args.goForwardOn,
+        validation: args.goForwardOn?.validation
+          ? {
+              fnc: args.goForwardOn.validation.fnc,
+              element: args.goForwardOn?.validation.element ?? args.element // Default to step.element
+            }
+          : undefined
+      }
 
       if(this.goForwardOn?.pageReroute) {
         // Right now, when trigger is reroute, `disableOverlayWatch` should be true
