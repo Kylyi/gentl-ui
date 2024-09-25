@@ -175,11 +175,11 @@ async function handleGoForwardOn() {
 
   if(targetHit) {
       // Check the validation function
-      async function asyncValidation() {
+      function asyncValidation() {
         return new Promise(resolve =>
           setTimeout(
-            () => resolve(
-              !props.step.goForwardOn?.validation?.fnc?.(
+            async () => resolve(
+              await props.step.goForwardOn?.validation?.fnc?.(
                 getValueFromNestedInput(
                   getTargetElement(props.step.goForwardOn.validation.element)
                 )
@@ -192,7 +192,7 @@ async function handleGoForwardOn() {
 
       if(
         props.step.goForwardOn.validation?.fnc
-        && await asyncValidation()
+        && !(await asyncValidation())
       ) {
         return
       }

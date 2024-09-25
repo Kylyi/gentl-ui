@@ -158,7 +158,8 @@ export async function waitForElementVisibility(target: any, maxAttempts = 50): P
 }
 
 /**
- * Recursively searches the DOM for an input, select, or textarea element within the target.
+ * Recursively searches the DOM for an input, select, textarea or
+ * other GENTUI component value within the target.
  *
  * @param target The target element to search within.
  * @returns The value of the first found input element, or `null` if no input is found.
