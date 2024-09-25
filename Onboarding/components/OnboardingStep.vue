@@ -2,7 +2,7 @@
 // Functions
 import { arrow, flip, offset, shift, useFloating } from '@floating-ui/vue'
 import { useOnboardingOverlay } from '../functions/useOnboardingOverlay';
-import { getTargetElement, isNestedElement } from '~/components/Tooltip/functions/element-functions';
+import { getTargetElement, getValueFromNestedInput, isNestedElement } from '~/components/Tooltip/functions/element-functions';
 
 // Store
 import { useOnboardingStore } from '~/components/Onboarding/functions/onboarding.store'
@@ -163,7 +163,7 @@ onUnmounted(() => {
 })
 
 // GoForwardOn
-function handleGoForwardOn() {
+async function handleGoForwardOn() {
   if(!props.step.goForwardOn || !props.step.goForwardOn.targets) {
     return
   }
@@ -175,13 +175,26 @@ function handleGoForwardOn() {
 
   if(targetHit) {
       // Check the validation function
-      if(props.step.goForwardOn.validationFnc && !props.step.goForwardOn.validationFnc?.()) {
+      async function asyncValidation() {
+        return new Promise(resolve =>
+          setTimeout(
+            () => resolve(
+              !props.step.goForwardOn?.validationFnc?.(getValueFromNestedInput(referenceEl.value))
+            ),
+            1
+          )
+        )
+      }
+
+      if(
+        props.step.goForwardOn.validationFnc
+        && await asyncValidation()
+      ) {
         return
       }
 
-      if(props.onboarding.debug) {
-        props.onboarding.log('goForwardOn - all conditions met, going to next step')
-      }
+      props.onboarding.log('goForwardOn - all conditions met, going to next step')
+
       if(props.step.goForwardOn?.pageReroute){
         props.onboarding.log('goToNextStepDebounced: overlay paused')
         pauseOverlay()

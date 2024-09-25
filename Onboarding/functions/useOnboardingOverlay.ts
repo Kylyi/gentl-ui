@@ -55,7 +55,6 @@ export function useOnboardingOverlay(step: MaybeRefOrGetter<OnboardingStep>) {
 
     const rect = toValue(highlightEl)!.getBoundingClientRect()
 
-
     overlayEl.style.clipPath = `
       polygon(
         0% 0%,

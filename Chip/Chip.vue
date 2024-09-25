@@ -62,6 +62,7 @@ function handleClick() {
               :href="route.path"
               class="link"
               truncate
+              data-onboarding="chip-label"
               @click.stop.prevent="handleClick"
             >
               {{ label }}
@@ -72,6 +73,7 @@ function handleClick() {
         <span
           v-else
           truncate
+          data-onboarding="chip-label"
         >
           {{ label }}
         </span>

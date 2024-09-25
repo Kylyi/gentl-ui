@@ -61,7 +61,7 @@ export class OnboardingStep {
     /**
      * Validation function that needs to be true in order to proceed
      */
-    validationFnc?: () => Promise<boolean> | boolean
+    validationFnc?: (value?: any) => Promise<boolean> | boolean
 
     targets?: {
       /**

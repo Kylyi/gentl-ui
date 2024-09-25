@@ -156,3 +156,50 @@ export async function waitForElementVisibility(target: any, maxAttempts = 50): P
     const { pause: stop } = useIntervalFn(throttledCheck, 200)
   })
 }
+
+/**
+ * Recursively searches the DOM for an input, select, or textarea element within the target.
+ *
+ * @param target The target element to search within.
+ * @returns The value of the first found input element, or `null` if no input is found.
+ */
+export function getValueFromNestedInput(target: any): string | string[] | null {
+  const element = getTargetElement(target)
+
+  if (!element) {
+    return null
+  }
+
+  // Base case: If the element is an input, select, or textarea
+  if (
+    element instanceof HTMLInputElement
+    || element instanceof HTMLSelectElement
+    || element instanceof HTMLTextAreaElement
+    )
+  {
+    return element.value
+  }
+
+  // Selector
+  if (element.getAttribute('data-onboarding') === 'selector') {
+    const isMulti = !!element.querySelector('.is-multi')
+
+    if(isMulti) {
+      return Array.from(element.querySelectorAll('[data-onboarding="chip-label"]')).map(el => (el as HTMLElement).innerHTML) as string[]
+    } else {
+      return element.querySelector('[data-onboarding="selector-value"]').innerHTML as string
+    }
+  }
+
+  // Recursively search child nodes
+  const children = element.children
+  for (let i = 0; i < children.length; i++) {
+    const value = getValueFromNestedInput(children[i])
+
+    if (value !== null) {
+      return value
+    }
+  }
+
+  return null
+}
