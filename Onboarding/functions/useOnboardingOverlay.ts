@@ -28,7 +28,6 @@ export function useOnboardingOverlay(step: MaybeRefOrGetter<OnboardingStep>) {
 
       // Handle when target el is not found (event like closing a Menu)
       if ((!isVisible || !isElementInBody)) {
-        console.log('useOnboardingOverlay: Element disappeared, going back')
         useOnboardingStore().activeOnboarding?.goToPreviousStep()
       }
 

@@ -31,7 +31,7 @@ export class OnboardingModel {
       return
     }
     const direction = stepId > this.currentStep ? 'next' : 'back'
-    console.log('direction ', direction)
+    this.log('direction', direction)
 
     // Lifecycle of steps
     const currentStep = this.steps[this.currentStep]
@@ -53,9 +53,10 @@ export class OnboardingModel {
       isGointBackToIllegalStep
       || !isElVisible
     ) {
-      console.log('isGointBackToIllegalStep', isGointBackToIllegalStep)
-      console.log('isElementVisible', isElVisible)
-      console.log('Going back a step')
+      this.log('isGointBackToIllegalStep', isGointBackToIllegalStep)
+      this.log('isElementVisible', isElVisible)
+      this.log('Going back a step')
+
       this.goToStep(stepId - 1)
 
       return
@@ -74,12 +75,12 @@ export class OnboardingModel {
   }
 
   goToNextStep() {
-    console.log('goToNextStep fn')
+    this.log('goToNextStep fn')
     this.goToStep(this.currentStep + 1)
   }
 
   goToPreviousStep() {
-    console.log('goToPreviousStep fn')
+    this.log('goToPreviousStep fn')
     this.goToStep(this.currentStep - 1)
   }
 
