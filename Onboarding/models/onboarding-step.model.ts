@@ -153,11 +153,6 @@ export class OnboardingStep {
         : undefined,
     }
 
-    if (this.goForwardOn?.pageReroute) {
-      // Right now, when trigger is reroute, `disableOverlayWatch` should be true
-      // this.disableOverlayWatch = args.disableOverlayWatch ?? true
-    }
-
     // Lifecycle
     this.onBeforeNextStep = args.onBeforeNextStep
     this.onBeforePreviousStep = args.onBeforePreviousStep
