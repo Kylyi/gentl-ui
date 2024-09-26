@@ -261,6 +261,7 @@ defineExpose({
         min-w="!280px"
         max-w="!400px"
         :ui="{ contentClass: 'p-0' }"
+        data-onboarding="date-picker-menu"
       >
         <DatePicker
           ref="datePickerEl"

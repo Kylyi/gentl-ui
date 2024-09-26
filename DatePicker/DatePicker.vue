@@ -157,6 +157,7 @@ defineExpose({
       </div>
 
       <div
+        data-onboarding="date-picker-days"
         grid="~ cols-7"
         relative
       >
@@ -179,6 +180,7 @@ defineExpose({
       class="date-picker-controls"
     >
       <Btn
+        data-onboarding="date-picker-today"
         size="sm"
         :label="$t('general.today')"
         @click="handleSelectToday"

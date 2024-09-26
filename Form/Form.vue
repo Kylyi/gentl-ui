@@ -337,6 +337,7 @@ onMounted(() => {
             v-if="editControls?.cancel"
             :class="{ invisible: !isEditing }"
             :reset="reset"
+            data-onboarding="form-cancel-btn"
           >
             <KeyboardShortcut
               v-if="hasKeyboardShortcuts"
@@ -365,6 +366,7 @@ onMounted(() => {
             v-bind="submitBtnProps"
             type="submit"
             data-cy="save-button"
+            data-onboarding="form-save-btn"
           >
             <Component
               :is="FormConfirmation"

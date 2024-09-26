@@ -461,6 +461,7 @@ function getData() {
       },
     ]"
     .focus="handleFocusOrClick"
+    data-onboarding="selector"
     @click="handleClickWrapper"
     @label-click="handleFocusOrClick"
   >
@@ -565,6 +566,7 @@ function getData() {
         :to="componentSingle.to"
         style="max-width: calc(100% - 12px)"
         :class="[componentSingle.class, { truncate: !noTruncate }]"
+        data-onboarding="selector-value"
         @click="componentSingle.onClick"
       >
         {{ getLabel(model) }}
@@ -620,6 +622,7 @@ function getData() {
       <MenuProxy
         ref="menuProxyEl"
         v-model="isPickerActive"
+        data-onboarding="selector-menu"
         manual
         position="top"
         class="selector"
