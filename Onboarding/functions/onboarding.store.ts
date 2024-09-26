@@ -7,10 +7,7 @@ import type { OnboardingModel } from '~/components/Onboarding/models/onboarding.
 export const useOnboardingStore = defineStore(
   'onboarding',
   () => {
-    const onboardingsByName = ref<Record<
-      string,
-      OnboardingModel
-    >>({})
+    const onboardingsByName = ref<Record<string, OnboardingModel>>({})
     const lastIndexByName = ref<Record<string, number>>({})
 
     const activeOnboarding = computed(() => {
@@ -68,26 +65,31 @@ export const useOnboardingStore = defineStore(
       'mouseout',
       'mouseenter',
       'mouseleave',
+
       // Keyboard events
       'keydown',
       'keyup',
       'keypress',
+
       // Form events
       'submit',
       'change',
       'input',
       'invalid',
       'reset',
+
       // Focus events
       'focus',
       'blur',
       'focusin',
       'focusout',
+
       // Touch events
       'touchstart',
       'touchend',
       'touchmove',
       'touchcancel',
+
       // Drag events
       'dragstart',
       'drag',
@@ -96,12 +98,15 @@ export const useOnboardingStore = defineStore(
       'dragover',
       'drop',
       'dragend',
+
       // Clipboard events
       'cut',
       'copy',
       'paste',
+
       // Selection event
       'select',
+
       // Wheel event
       'wheel',
     ]

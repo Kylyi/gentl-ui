@@ -12,7 +12,6 @@ export function getTargetElement(target: any): any {
 
   // Target is a selector
   else if (typeof target === 'string') {
-
     // Class or ID selector
     if (target.startsWith('.') || target.startsWith('#')) {
       return document?.querySelector(target) || undefined
@@ -67,15 +66,14 @@ function isElementInViewport(el: HTMLElement) {
   const rect = target.getBoundingClientRect()
 
   const result = (
-    rect.top >= 0 &&
-    rect.left >= 0 &&
-    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-    rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+    rect.top >= 0
+    && rect.left >= 0
+    && rect.bottom <= (window.innerHeight || document.documentElement.clientHeight)
+    && rect.right <= (window.innerWidth || document.documentElement.clientWidth)
   )
 
   return result
 }
-
 
 /**
  * Checks if a given element is visible in the DOM.
@@ -88,45 +86,43 @@ function isElementInViewport(el: HTMLElement) {
  * @returns `true` if the element is in DOM and visible by css (not viewport), `false` otherwise.
  */
 export function isElementVisible(target: any): boolean {
-  if(!target){
+  if (!target) {
     return true
   }
-      const element = getTargetElement(target)
-      if (!element) {
-        return false
-      }
+  const element = getTargetElement(target)
+  if (!element) {
+    return false
+  }
 
-      // Check if the element or any of its ancestors have display: none
-      let currentElement: HTMLElement | null = element
+  // Check if the element or any of its ancestors have display: none
+  let currentElement: HTMLElement | null = element
 
-      while (currentElement) {
-        const style = window.getComputedStyle(currentElement)
+  while (currentElement) {
+    const style = window.getComputedStyle(currentElement)
 
-        if (style.display === 'none') {
+    if (style.display === 'none') {
+      return false
+    }
+    currentElement = currentElement.parentElement
+  }
 
-          return false
-        }
-        currentElement = currentElement.parentElement
-      }
+  // Check other CSS properties that might hide the element
+  const style = window.getComputedStyle(element)
+  if (
+    style.visibility === 'hidden'
+    || style.opacity === '0'
+    || (style.height === '0px'
+      && style.width === '0px')
+  ) {
+    return false
+  }
 
-      // Check other CSS properties that might hide the element
-      const style = window.getComputedStyle(element)
-      if (
-        style.visibility === 'hidden' ||
-        style.opacity === '0' ||
-        (style.height === '0px' &&
-        style.width === '0px')
-      ) {
-
-        return false
-      }
-
-      // Might not be in viewport
-      return true
+  // Might not be in viewport
+  return true
 }
 
 export async function waitForElementVisibility(target: any, maxAttempts = 50): Promise<boolean> {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     let attempts = 0
 
     const checkVisibility = () => {
@@ -176,7 +172,7 @@ export function getValueFromNestedInput(target: any): string | string[] | null {
     element instanceof HTMLInputElement
     || element instanceof HTMLSelectElement
     || element instanceof HTMLTextAreaElement
-    )
+  )
   {
     return element.value
   }
@@ -185,7 +181,7 @@ export function getValueFromNestedInput(target: any): string | string[] | null {
   if (element.getAttribute('data-onboarding') === 'selector') {
     const isMulti = !!element.querySelector('.is-multi')
 
-    if(isMulti) {
+    if (isMulti) {
       return Array
         .from(element.querySelectorAll('[data-onboarding="chip-label"]'))
         .map(el => (el as HTMLElement).innerHTML) as string[]
