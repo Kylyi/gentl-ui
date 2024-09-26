@@ -116,22 +116,27 @@ export class OnboardingModel {
   * Callback when starting the tour.
   */
   onStart?: () => Promise<void> | void
+
   /*
   * Callback when exiting the tour.
   */
   onExit?: () => Promise<void> | void
+
   /*
   * Callback when finishing the tour.
   */
   onFinish?: () => Promise<void> | void
+
   /*
   * Callback when going back a step.
   */
   onPreviousStep?: () => Promise<void> | void
+
   /*
   * Callback when going forward a step.
   */
   onNextStep?: () => Promise<void> | void
+
   /*
   * Callback when skipping the tour.
   */
