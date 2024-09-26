@@ -26,6 +26,10 @@
   li:first-child {
     @apply p-t-1;
   }
+
+  h3 {
+    @apply m-t-4 m-b-2;
+  }
 }
 
 :deep(.ProseMirror-selectednode) {
