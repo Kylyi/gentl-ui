@@ -1,21 +1,21 @@
 <script setup lang="ts">
-import type { OnboardingModel } from '../models/onboarding.model';
+import type { OnboardingModel } from '../models/onboarding.model'
 
 type IProps = {
   onboarding: OnboardingModel
 }
 const props = defineProps<IProps>()
 
-const isClickable = computed(()=>{
+const isClickable = computed(() => {
   return props.onboarding.steps[props.onboarding.currentStep].canUseStepper
 })
 
 function handleStepClick(stepIndex: number) {
-  if(!isClickable.value || !props.onboarding.steps[stepIndex].canBeSkippedTo){
-    return;
+  if (!isClickable.value || !props.onboarding.steps[stepIndex].canBeSkippedTo) {
+    return
   }
 
-  props.onboarding.goToStep(stepIndex);
+  props.onboarding.goToStep(stepIndex)
 };
 
 const test = ref(true)
@@ -31,22 +31,22 @@ const test = ref(true)
       class="step"
       :class="{
         'active': step.id === onboarding.currentStep,
-        'not-clickable': !isClickable || !onboarding.steps[step.id].canBeSkippedTo
-        }"
+        'not-clickable': !isClickable || !onboarding.steps[step.id].canBeSkippedTo,
+      }"
       @click="handleStepClick(step.id)"
     >
-    {{ step.id + 1 }}
+      {{ step.id + 1 }}
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .onboarding-steps {
- @apply flex justify-between items-center w-full p-x-0 p-y-5 relative;
+  @apply flex justify-between items-center w-full p-x-0 p-y-5 relative;
 }
 
 .line {
- @apply absolute top-[50%] left-0 right-0 h-0.5 bg-[#e0e0e0] z-1;
+  @apply absolute top-[50%] left-0 right-0 h-0.5 bg-[#e0e0e0] z-1;
 }
 
 .step {

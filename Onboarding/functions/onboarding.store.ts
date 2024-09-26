@@ -2,7 +2,7 @@
 import { defineStore } from 'pinia'
 
 // Models
-import { OnboardingModel } from '~/components/Onboarding/models/onboarding.model';
+import type { OnboardingModel } from '~/components/Onboarding/models/onboarding.model'
 
 export const useOnboardingStore = defineStore(
   'onboarding',
@@ -10,7 +10,7 @@ export const useOnboardingStore = defineStore(
     const onboardingsByName = ref<Record<
       string,
       OnboardingModel
-      >>({})
+    >>({})
     const lastIndexByName = ref<Record<string, number>>({})
 
     const activeOnboarding = computed(() => {
@@ -24,29 +24,29 @@ export const useOnboardingStore = defineStore(
       }
 
       // Add lastIndex if it didn't exit
-      if(!(onboarding.name in lastIndexByName.value)){
+      if (!(onboarding.name in lastIndexByName.value)) {
         lastIndexByName.value[onboarding.name] = 0
       }
 
       // If last step cannot be skipped to, go to earlier step
-      while(
-        !onboarding.steps[lastIndexByName.value[onboarding.name]].canBeSkippedTo &&
-        lastIndexByName.value[onboarding.name] > 0
+      while (
+        !onboarding.steps[lastIndexByName.value[onboarding.name]].canBeSkippedTo
+        && lastIndexByName.value[onboarding.name] > 0
       )
-        {
+      {
         lastIndexByName.value[onboarding.name]--
       }
     }
 
-    function startTour(name: OnboardingModel['name']){
+    function startTour(name: OnboardingModel['name']) {
       startEventListener()
 
       const tour = onboardingsByName.value[name]
       tour.startTour(lastIndexByName.value[name])
     }
 
-    function resetTour(name: OnboardingModel['name']){
-      if(!onboardingsByName.value) {
+    function resetTour(name: OnboardingModel['name']) {
+      if (!onboardingsByName.value) {
         onboardingsByName.value = {}
       }
 
@@ -59,23 +59,51 @@ export const useOnboardingStore = defineStore(
 
     const eventTypes = [
       // Mouse events
-      'click', 'dblclick', 'mousedown', 'mouseup', 'mousemove', 'mouseover', 'mouseout', 'mouseenter', 'mouseleave',
+      'click',
+      'dblclick',
+      'mousedown',
+      'mouseup',
+      'mousemove',
+      'mouseover',
+      'mouseout',
+      'mouseenter',
+      'mouseleave',
       // Keyboard events
-      'keydown', 'keyup', 'keypress',
+      'keydown',
+      'keyup',
+      'keypress',
       // Form events
-      'submit', 'change', 'input', 'invalid', 'reset',
+      'submit',
+      'change',
+      'input',
+      'invalid',
+      'reset',
       // Focus events
-      'focus', 'blur', 'focusin', 'focusout',
+      'focus',
+      'blur',
+      'focusin',
+      'focusout',
       // Touch events
-      'touchstart', 'touchend', 'touchmove', 'touchcancel',
+      'touchstart',
+      'touchend',
+      'touchmove',
+      'touchcancel',
       // Drag events
-      'dragstart', 'drag', 'dragenter', 'dragleave', 'dragover', 'drop', 'dragend',
+      'dragstart',
+      'drag',
+      'dragenter',
+      'dragleave',
+      'dragover',
+      'drop',
+      'dragend',
       // Clipboard events
-      'cut', 'copy', 'paste',
+      'cut',
+      'copy',
+      'paste',
       // Selection event
       'select',
       // Wheel event
-      'wheel'
+      'wheel',
     ]
 
     function handleEvent(e: Event) {
@@ -92,8 +120,8 @@ export const useOnboardingStore = defineStore(
 
     function stopEventListener() {
       eventTypes.forEach(eventType => {
-        document.removeEventListener(eventType, handleEvent, true);
-      });
+        document.removeEventListener(eventType, handleEvent, true)
+      })
     }
 
     return {
@@ -111,6 +139,6 @@ export const useOnboardingStore = defineStore(
     persist: {
       key: 'onboarding',
       storage: persistedState.localStorage,
-    }
+    },
   },
 )

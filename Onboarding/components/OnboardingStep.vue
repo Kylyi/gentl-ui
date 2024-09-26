@@ -1,15 +1,15 @@
 <script setup lang="ts">
 // Functions
 import { arrow, flip, offset, shift, useFloating } from '@floating-ui/vue'
-import { useOnboardingOverlay } from '../functions/useOnboardingOverlay';
-import { getTargetElement, getValueFromNestedInput, isNestedElement } from '~/components/Tooltip/functions/element-functions';
+import { useOnboardingOverlay } from '../functions/useOnboardingOverlay'
+import { getTargetElement, getValueFromNestedInput, isNestedElement } from '~/components/Tooltip/functions/element-functions'
 
 // Store
 import { useOnboardingStore } from '~/components/Onboarding/functions/onboarding.store'
 import { useAppStore } from '~/libs/App/app.store'
 
 // Types
-import type { OnboradingStepProps } from '~/components/Onboarding/types/onborading-step-props.type';
+import type { OnboradingStepProps } from '~/components/Onboarding/types/onborading-step-props.type'
 
 const props = defineProps<OnboradingStepProps>()
 
@@ -18,21 +18,21 @@ const referenceEl = ref<HTMLElement | null>(null)
 const {
   updateOverlayClip,
   pauseOverlay,
-  resumeOverlay
+  resumeOverlay,
 } = useOnboardingOverlay(toRef(props, 'step'))
 const {
   width: windowWidth,
-  height: windowHeight
+  height: windowHeight,
 } = useWindowSize()
 const onboardingStore = useOnboardingStore()
 
-  // Layout
+// Layout
 const tooltipEl = ref<HTMLElement>()
 const arrowEl = ref<HTMLDivElement>()
 const middleware = computed(() => [
   offset(props.step.offset),
   flip({
-    fallbackPlacements: props.step.fallbackPlacements
+    fallbackPlacements: props.step.fallbackPlacements,
   }),
   shift(),
   arrow({ element: arrowEl, padding: 4 }),
@@ -46,7 +46,7 @@ const {
   floatingStyles,
   placement,
   middlewareData,
-  update: updateTooltipPosition
+  update: updateTooltipPosition,
 } = useFloating(
   referenceEl,
   tooltipEl,
@@ -76,7 +76,7 @@ watchThrottled([elX, elY, elWidth, elHeight], updateTooltipPosition, {
 
 // Arrow placement
 watch(middlewareData, middlewareData => {
-  if(!arrowEl.value){
+  if (!arrowEl.value) {
     return
   }
   if (middlewareData.arrow) {
@@ -93,26 +93,24 @@ watch(middlewareData, middlewareData => {
 const tooltipStyles = computed(() => [
   floatingStyles.value,
   props.step.positioning === 'absolute' && {
-    left: `${windowWidth.value/2 - tooltipWidth.value/2}px !important`,
-    top: `${windowHeight.value/2 - tooltipHeight.value/2}px !important`,
+    left: `${windowWidth.value / 2 - tooltipWidth.value / 2}px !important`,
+    top: `${windowHeight.value / 2 - tooltipHeight.value / 2}px !important`,
     transform: 'translate(0, 0) !important',
-  }
+  },
 ])
 
 // Lifecycle
 watch(() => props.step.id, () => {
-    referenceEl.value = getTargetElement(props.step.element)
-    scrollToElement(),
-    nextTick(() => {
-      updateOverlayClip()
+  referenceEl.value = getTargetElement(props.step.element)
+  scrollToElement(),
+  nextTick(() => {
+    updateOverlayClip()
 
-      if(props.step.goForwardOn?.targets){
-        resumeEventHandler()
-      }
-    })
-  },
-  { immediate: true },
-)
+    if (props.step.goForwardOn?.targets) {
+      resumeEventHandler()
+    }
+  })
+}, { immediate: true })
 
 function scrollToElement() {
   // Doesn't work without a timeout, not sure why
@@ -126,17 +124,17 @@ function scrollToElement() {
 
 // KeyBoard controlls
 onKeyStroke('ArrowLeft', () => {
-  if(props.step.canUseKeyboard){
+  if (props.step.canUseKeyboard) {
     props.onboarding.goToPreviousStep()
   }
 })
 onKeyStroke('ArrowRight', () => {
-  if(props.step.canUseKeyboard){
+  if (props.step.canUseKeyboard) {
     props.onboarding.goToNextStep()
   }
 })
 onKeyStroke('Escape', () => {
-  if(props.step.canUseKeyboard){
+  if (props.step.canUseKeyboard) {
     props.onboarding.skipTour()
   }
 })
@@ -145,14 +143,14 @@ onKeyStroke('Escape', () => {
 const {
   stop: stopEventHandler,
   resume: resumeEventHandler,
-  pause: pauseEventHandler
+  pause: pauseEventHandler,
 } = watchPausable(
   () => onboardingStore.lastEvent,
-  handleGoForwardOn
+  handleGoForwardOn,
 )
 
 onMounted(() => {
-  if (!!props.step.goForwardOn?.targets){
+  if (props.step.goForwardOn?.targets) {
     nextTick(resumeEventHandler)
   }
 })
@@ -164,7 +162,7 @@ onUnmounted(() => {
 
 // GoForwardOn
 async function handleGoForwardOn() {
-  if(!props.step.goForwardOn || !props.step.goForwardOn.targets) {
+  if (!props.step.goForwardOn || !props.step.goForwardOn.targets) {
     return
   }
 
@@ -173,38 +171,38 @@ async function handleGoForwardOn() {
       && isNestedElement(getTargetElement(target.element), onboardingStore.lastEventEl)
   })
 
-  if(targetHit) {
-      // Check the validation function
-      function asyncValidation() {
-        return new Promise(resolve =>
-          setTimeout(
-            async () => resolve(
-              await props.step.goForwardOn?.validation?.fnc?.(
-                getValueFromNestedInput(
-                  getTargetElement(props.step.goForwardOn.validation.element)
-                )
-              )
+  if (targetHit) {
+    // Check the validation function
+    function asyncValidation() {
+      return new Promise(resolve =>
+        setTimeout(
+          async () => resolve(
+            await props.step.goForwardOn?.validation?.fnc?.(
+              getValueFromNestedInput(
+                getTargetElement(props.step.goForwardOn.validation.element),
+              ),
             ),
-            1
-          )
-        )
-      }
+          ),
+          1,
+        ),
+      )
+    }
 
-      if(
-        props.step.goForwardOn.validation?.fnc
-        && !(await asyncValidation())
-      ) {
-        return
-      }
+    if (
+      props.step.goForwardOn.validation?.fnc
+      && !(await asyncValidation())
+    ) {
+      return
+    }
 
-      props.onboarding.log('goForwardOn - all conditions met, going to next step')
+    props.onboarding.log('goForwardOn - all conditions met, going to next step')
 
-      if(props.step.goForwardOn?.pageReroute){
-        props.onboarding.log('goToNextStepDebounced: overlay paused')
-        pauseOverlay()
-      }
+    if (props.step.goForwardOn?.pageReroute) {
+      props.onboarding.log('goToNextStepDebounced: overlay paused')
+      pauseOverlay()
+    }
 
-      goToNextStepDebounced.value()
+    goToNextStepDebounced.value()
   }
 }
 
@@ -219,8 +217,8 @@ const goToNextStepDebounced = computed(() => useDebounceFn(
   },
   props.step.goForwardOn?.debounce || 0,
   {
-    maxWait: props.step.goForwardOn?.maxWait
-  }
+    maxWait: props.step.goForwardOn?.maxWait,
+  },
 ))
 
 // PageReroute
@@ -229,17 +227,17 @@ watch(
   (newValue, oldValue) => {
     const goForwardOn = props.step.goForwardOn
 
-    if(goForwardOn?.pageReroute){
-      if(typeof goForwardOn.pageReroute === 'boolean' && goForwardOn.pageReroute){
+    if (goForwardOn?.pageReroute) {
+      if (typeof goForwardOn.pageReroute === 'boolean' && goForwardOn.pageReroute) {
         props.onboarding.goToNextStep()
       }
 
       // TODO: wrong implementation here, the path should be exact (localized path is the issue)
-      else if(goForwardOn.pageReroute?.path && newValue.includes(goForwardOn.pageReroute.path)){
+      else if (goForwardOn.pageReroute?.path && newValue.includes(goForwardOn.pageReroute.path)) {
         props.onboarding.goToNextStep()
       }
     }
-  }
+  },
 )
 </script>
 
@@ -255,11 +253,11 @@ watch(
     />
 
     <!-- Element overlay -->
-     <div
+    <div
       v-if="!step.canInteractWithElement"
       class="element-overlay"
       aria-hidden="true"
-     />
+    />
 
     <div
       ref="tooltipEl"
@@ -283,36 +281,42 @@ watch(
 
       <slot v-bind="props">
         <!-- Header -->
-         <slot name="header" v-bind="props">
-           <div class="tooltip-header">
-              <!-- Step counter -->
-              <slot
-                name="counter"
-                v-bind="props"
+        <slot
+          name="header"
+          v-bind="props"
+        >
+          <div class="tooltip-header">
+            <!-- Step counter -->
+            <slot
+              name="counter"
+              v-bind="props"
+            >
+              <p
+                class="tooltip-step-counter"
+                aria-alive="polite"
+                aria-atomic
               >
-                <p
-                  class="tooltip-step-counter"
-                  aria-alive="polite"
-                  aria-atomic
-                >
-                  {{ step.id + 1 }}/{{ onboarding.steps.length }}
-                </p>
-              </slot>
+                {{ step.id + 1 }}/{{ onboarding.steps.length }}
+              </p>
+            </slot>
 
-              <!-- Close -->
-              <Btn
-                icon="i-ion:close"
-                color="slate-600 dark:white"
-                size="sm"
-                no-hover-effect
-                :aria-label="$t('onboarding.aria.close')"
-                @click="onboarding.endTour()"
-              />
-            </div>
-          </slot>
+            <!-- Close -->
+            <Btn
+              icon="i-ion:close"
+              color="slate-600 dark:white"
+              size="sm"
+              no-hover-effect
+              :aria-label="$t('onboarding.aria.close')"
+              @click="onboarding.endTour()"
+            />
+          </div>
+        </slot>
 
         <!-- Content -->
-        <slot name="content" v-bind="props">
+        <slot
+          name="content"
+          v-bind="props"
+        >
           <div class="tooltip-content">
             <!-- Heading -->
             <h2
@@ -395,7 +399,7 @@ watch(
   transition: 0.3s linear;
 
   &-header {
-    @apply flex justify-between items-center p-y-1
+    @apply flex justify-between items-center p-y-1;
   }
 
   &-step-counter {

@@ -1,7 +1,5 @@
 import type { MaybeElement } from '@floating-ui/vue'
-import type { ReferenceElement, Placement, OffsetOptions } from '@floating-ui/dom'
-import type { OnboardingModel } from './onboarding.model'
-import type { Required } from 'utility-types'
+import type { OffsetOptions, Placement, ReferenceElement } from '@floating-ui/dom'
 
 export class OnboardingStep {
   // Relative step number in onboarding
@@ -129,51 +127,50 @@ export class OnboardingStep {
    */
   showOn?: () => Promise<boolean> | boolean
 
-
   constructor(args: Partial<OnboardingStep>) {
-      // Positioning
-      this.element = args.element
-      this.positioning = args.positioning ?? isNil(args.element) ? 'absolute' : 'component'
-      this.absolutePlacement = args.absolutePlacement ?? this.absolutePlacement
-      this.canInteractWithElement = args.canInteractWithElement ?? this.canInteractWithElement
-      this.waitForElement = args.waitForElement ?? this.waitForElement
+    // Positioning
+    this.element = args.element
+    this.positioning = args.positioning ?? isNil(args.element) ? 'absolute' : 'component'
+    this.absolutePlacement = args.absolutePlacement ?? this.absolutePlacement
+    this.canInteractWithElement = args.canInteractWithElement ?? this.canInteractWithElement
+    this.waitForElement = args.waitForElement ?? this.waitForElement
 
-      // Controls
-      this.canControl = args.canControl ?? this.canControl
-      this.canGoBack = args.canGoBack ?? this.canControl
-      this.canUseKeyboard = args.canUseKeyboard ?? this.canControl
-      this.canGoForward = args.canGoForward ?? this.canControl
-      this.canUseStepper = args.canUseStepper ?? this.canControl
-      this.canBeSkippedTo = args.canBeSkippedTo ?? this.canBeSkippedTo
+    // Controls
+    this.canControl = args.canControl ?? this.canControl
+    this.canGoBack = args.canGoBack ?? this.canControl
+    this.canUseKeyboard = args.canUseKeyboard ?? this.canControl
+    this.canGoForward = args.canGoForward ?? this.canControl
+    this.canUseStepper = args.canUseStepper ?? this.canControl
+    this.canBeSkippedTo = args.canBeSkippedTo ?? this.canBeSkippedTo
 
-      this.goForwardOn = {
-        ...args.goForwardOn,
-        validation: args.goForwardOn?.validation
-          ? {
-              fnc: args.goForwardOn.validation.fnc,
-              element: args.goForwardOn?.validation.element ?? args.element // Default to step.element
-            }
-          : undefined
-      }
+    this.goForwardOn = {
+      ...args.goForwardOn,
+      validation: args.goForwardOn?.validation
+        ? {
+            fnc: args.goForwardOn.validation.fnc,
+            element: args.goForwardOn?.validation.element ?? args.element, // Default to step.element
+          }
+        : undefined,
+    }
 
-      if(this.goForwardOn?.pageReroute) {
-        // Right now, when trigger is reroute, `disableOverlayWatch` should be true
-        // this.disableOverlayWatch = args.disableOverlayWatch ?? true
-      }
+    if (this.goForwardOn?.pageReroute) {
+      // Right now, when trigger is reroute, `disableOverlayWatch` should be true
+      // this.disableOverlayWatch = args.disableOverlayWatch ?? true
+    }
 
-      // Lifecycle
-      this.onBeforeNextStep = args.onBeforeNextStep
-      this.onBeforePreviousStep = args.onBeforePreviousStep
+    // Lifecycle
+    this.onBeforeNextStep = args.onBeforeNextStep
+    this.onBeforePreviousStep = args.onBeforePreviousStep
 
-      // Layout
-      this.showNavigation = args.showNavigation ?? this.showNavigation
-      this.placement = args.placement ?? this.placement
-      this.fallbackPlacements = args.fallbackPlacements
-      this.offset = args.offset ?? this.offset
-      this.adaptPlacement = args.adaptPlacement ?? this.adaptPlacement
-      this.heading = args.heading
-      this.message = args.message
+    // Layout
+    this.showNavigation = args.showNavigation ?? this.showNavigation
+    this.placement = args.placement ?? this.placement
+    this.fallbackPlacements = args.fallbackPlacements
+    this.offset = args.offset ?? this.offset
+    this.adaptPlacement = args.adaptPlacement ?? this.adaptPlacement
+    this.heading = args.heading
+    this.message = args.message
 
-      this.showOn = args.showOn
+    this.showOn = args.showOn
   }
 }

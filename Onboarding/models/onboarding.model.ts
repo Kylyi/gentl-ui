@@ -1,6 +1,6 @@
 // Models
-import { isElementVisible, getTargetElement, waitForElementVisibility } from "~/components/Tooltip/functions/element-functions"
-import type { OnboardingStep } from "./onboarding-step.model"
+import { isElementVisible, waitForElementVisibility } from '~/components/Tooltip/functions/element-functions'
+import type { OnboardingStep } from './onboarding-step.model'
 
 // Store
 import { useOnboardingStore } from '~/components/Onboarding/functions/onboarding.store'
@@ -19,12 +19,12 @@ export class OnboardingModel {
     this.log('goToStep', stepId)
     const step = this.steps[stepId]
 
-    if(stepId < 0) {
+    if (stepId < 0) {
       this.goToStep(0)
 
       return
     }
-    if(stepId >= this.steps.length) {
+    if (stepId >= this.steps.length) {
       this.endTour()
       useOnboardingStore().resetTour(this.name)
 
@@ -36,7 +36,7 @@ export class OnboardingModel {
     // Lifecycle of steps
     const currentStep = this.steps[this.currentStep]
 
-    if(direction === 'next'){
+    if (direction === 'next') {
       await currentStep.onBeforeNextStep?.()
     } else {
       await currentStep.onBeforePreviousStep?.()
@@ -49,7 +49,7 @@ export class OnboardingModel {
           : isElementVisible(step?.element))
       : isElementVisible(step?.element)
 
-    if(
+    if (
       isGointBackToIllegalStep
       || !isElVisible
     ) {
@@ -61,8 +61,7 @@ export class OnboardingModel {
       return
     }
 
-
-    if(direction === 'next'){
+    if (direction === 'next') {
       await this.onNextStep?.()
     } else {
       await this.onPreviousStep?.()
@@ -106,38 +105,37 @@ export class OnboardingModel {
     this.goToStep(step ?? 0)
   }
 
-  log(...args: any[]){
-    if(this.debug){
+  log(...args: any[]) {
+    if (this.debug) {
       console.log(...args)
     }
   }
 
   // Lifecycle callbacks
- /*
+  /*
   * Callback when starting the tour.
   */
   onStart?: () => Promise<void> | void
- /*
+  /*
   * Callback when exiting the tour.
   */
   onExit?: () => Promise<void> | void
- /*
+  /*
   * Callback when finishing the tour.
   */
   onFinish?: () => Promise<void> | void
- /*
+  /*
   * Callback when going back a step.
   */
   onPreviousStep?: () => Promise<void> | void
- /*
+  /*
   * Callback when going forward a step.
   */
   onNextStep?: () => Promise<void> | void
- /*
+  /*
   * Callback when skipping the tour.
   */
   onTourSkip?: () => Promise<void> | void
-
 
   constructor(args: Partial<OnboardingModel>) {
     this.name = args.name ?? this.name
@@ -149,7 +147,7 @@ export class OnboardingModel {
     this.steps.forEach(step => {
       step.id = this.steps.indexOf(step)
 
-      if(step.id === 0) {
+      if (step.id === 0) {
         step.canGoBack = false
       }
     })

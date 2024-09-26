@@ -1,12 +1,11 @@
 // Functions
-import { getTargetElement, isElementVisible } from "~/components/Tooltip/functions/element-functions"
+import { getTargetElement, isElementVisible } from '~/components/Tooltip/functions/element-functions'
 
 // Models
-import type { OnboardingStep } from "../models/onboarding-step.model"
+import type { OnboardingStep } from '../models/onboarding-step.model'
 
 // Store
 import { useOnboardingStore } from '~/components/Onboarding/functions/onboarding.store'
-
 
 export function useOnboardingOverlay(step: MaybeRefOrGetter<OnboardingStep>) {
   window.addEventListener('resize', updateOverlayClip)
@@ -18,7 +17,7 @@ export function useOnboardingOverlay(step: MaybeRefOrGetter<OnboardingStep>) {
     x: elX,
     y: elY,
     height,
-    width
+    width,
   } = useElementBounding(highlightEl, { windowResize: true })
 
   const { pause, resume } = watchPausable(
@@ -28,7 +27,7 @@ export function useOnboardingOverlay(step: MaybeRefOrGetter<OnboardingStep>) {
       const isElementInBody = toValue(step)?.element ? getTargetElement(toValue(step).element) : true
 
       // Handle when target el is not found (event like closing a Menu)
-      if((!isVisible || !isElementInBody)) {
+      if ((!isVisible || !isElementInBody)) {
         console.log('useOnboardingOverlay: Element disappeared, going back')
         useOnboardingStore().activeOnboarding?.goToPreviousStep()
       }
@@ -37,8 +36,8 @@ export function useOnboardingOverlay(step: MaybeRefOrGetter<OnboardingStep>) {
       disableElementInteraction()
     },
     {
-      immediate: true
-    }
+      immediate: true,
+    },
   )
 
   async function updateOverlayClip() {
@@ -72,7 +71,7 @@ export function useOnboardingOverlay(step: MaybeRefOrGetter<OnboardingStep>) {
   }
 
   async function disableElementInteraction() {
-    if(toValue(step).canInteractWithElement) {
+    if (toValue(step).canInteractWithElement) {
       return
     }
 
