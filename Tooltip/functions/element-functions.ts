@@ -159,7 +159,7 @@ export async function waitForElementVisibility(target: any, maxAttempts = 50): P
 
 /**
  * Recursively searches the DOM for an input, select, textarea or
- * other GENTUI component value within the target.
+ * other GENTLUI component value within the target.
  *
  * @param target The target element to search within.
  * @returns The value of the first found input element, or `null` if no input is found.
@@ -186,7 +186,9 @@ export function getValueFromNestedInput(target: any): string | string[] | null {
     const isMulti = !!element.querySelector('.is-multi')
 
     if(isMulti) {
-      return Array.from(element.querySelectorAll('[data-onboarding="chip-label"]')).map(el => (el as HTMLElement).innerHTML) as string[]
+      return Array
+        .from(element.querySelectorAll('[data-onboarding="chip-label"]'))
+        .map(el => (el as HTMLElement).innerHTML) as string[]
     } else {
       return element.querySelector('[data-onboarding="selector-value"]').innerHTML as string
     }
