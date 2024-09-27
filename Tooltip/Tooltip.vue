@@ -1,7 +1,5 @@
 <script setup lang="ts">
-// Functions
 import { arrow, flip, offset, shift, useFloating } from '@floating-ui/vue'
-import { getTargetElement } from '~/components/Tooltip/functions/element-functions';
 
 // Types
 import type { ITooltipProps } from '~/components/Tooltip/types/tooltip-props.type'
@@ -14,6 +12,35 @@ const props = withDefaults(
   defineProps<ITooltipProps & { noInheritFontStyle?: boolean }>(),
   { noInheritFontStyle: true, offset: 8 },
 )
+
+function getTargetElement(target: any): any {
+  if (!import.meta.client) {
+    return
+  }
+
+  // Target is an element
+  if (target instanceof Element) {
+    return target as Element
+  }
+
+  // Target is a selector
+  else if (typeof target === 'string') {
+    return document?.querySelector(target) || document?.body || undefined
+  }
+
+  // Target is Vue component
+  else if (target) {
+    const el = unrefElement(target)
+
+    if (el) {
+      return el
+    }
+  }
+
+  return instance?.vnode.el?.parentNode
+}
+
+const instance = getCurrentInstance()
 
 // Layout
 const model = defineModel({ default: false })

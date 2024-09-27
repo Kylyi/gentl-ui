@@ -172,25 +172,20 @@ onKeyStroke(['e', 'E'], ev => {
 })
 
 // Functions
-const throttledSubmit = useThrottleFn(
-  (isConfirmed?: boolean, payload?: any) => {
-    if (!isConfirmed && formConfirmation.value) {
-      menuConfirmationEl.value?.show()
-      menuConfirmationEl.value?.focusConfirmButton?.()
+const throttledSubmit = useThrottleFn((isConfirmed?: boolean, payload?: any) => {
+  if (!isConfirmed && formConfirmation.value) {
+    menuConfirmationEl.value?.show()
+    menuConfirmationEl.value?.focusConfirmButton?.()
 
-      return
-    }
+    return
+  }
 
-    if (!props.loading && !props.submitDisabled) {
-      emits('submit', payload)
-    }
+  if (!props.loading && !props.submitDisabled) {
+    emits('submit', payload)
+  }
 
-    isSubmitted.value = true
-  },
-  500,
-  false,
-  true,
-)
+  isSubmitted.value = true
+}, 500, false, true)
 
 function focusFirstInput() {
   // We only focus the first input if the last pointer down type was a mouse
@@ -306,6 +301,7 @@ onMounted(() => {
     <slot
       v-if="!noControls && hasControls !== false"
       name="submit"
+      :submit="throttledSubmit"
     >
       <div
         id="form-controls"
