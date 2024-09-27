@@ -14,7 +14,7 @@ function setAutoSaveLayout(value: boolean | undefined | null) {
   })
 }
 
-function setFitColumns(mode: 'auto' | 'content' | 'stretch', unset?: boolean) {
+function setFitColumns(mode: 'auto' | 'content' | 'stretch' | null, unset?: boolean) {
   if (unset) {
     appStore.setAppState({
       table: { fit: null },

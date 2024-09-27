@@ -346,12 +346,16 @@ function WysiwygCodeBlock(options?: CodeBlockOptions) {
 }
 
 // Highlihgter
-const highlighter = await createHighlighter({
-  themes: ['vitesse-light'],
-  langs: [],
-})
+function getHighlighter() {
+  return createHighlighter({
+    themes: ['vitesse-light'],
+    langs: [],
+  })
+}
 
 async function highlight(content: string, lang: BundledLanguage) {
+  const highlighter = await getHighlighter()
+
   // Load the language
   await highlighter.loadLanguage(lang)
 
