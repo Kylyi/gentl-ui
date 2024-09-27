@@ -1,6 +1,6 @@
 import defu from 'defu'
 import { type BundledLanguage, bundledLanguagesInfo, createHighlighter } from 'shiki'
-import { mergeAttributes, Node, textblockTypeInputRule } from '@tiptap/core'
+import { Node, mergeAttributes, textblockTypeInputRule } from '@tiptap/core'
 import { VueNodeViewRenderer } from '@tiptap/vue-3'
 import {
   Plugin,

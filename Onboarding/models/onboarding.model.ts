@@ -1,9 +1,9 @@
 // Models
+import type { OnboardingStep } from '~/components/Onboarding/models/onboarding-step.model'
 import { isElementVisible, waitForElementVisibility } from '~/components/Tooltip/functions/element-functions'
-import type { OnboardingStep } from './onboarding-step.model'
 
 // Store
-import { useOnboardingStore } from '~/components/Onboarding/functions/onboarding.store'
+import { useOnboardingStore } from '~/components/Onboarding/onboarding.store'
 
 export class OnboardingModel {
   name: string = uuid()

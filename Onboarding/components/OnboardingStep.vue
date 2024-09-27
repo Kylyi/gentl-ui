@@ -1,11 +1,12 @@
 <script setup lang="ts">
-// Functions
 import { arrow, flip, offset, shift, useFloating } from '@floating-ui/vue'
-import { useOnboardingOverlay } from '../functions/useOnboardingOverlay'
+
+// Functions
+import { useOnboardingOverlay } from '~/components/Onboarding/functions/useOnboardingOverlay'
 import { getTargetElement, getValueFromNestedInput, isNestedElement } from '~/components/Tooltip/functions/element-functions'
 
 // Store
-import { useOnboardingStore } from '~/components/Onboarding/functions/onboarding.store'
+import { useOnboardingStore } from '~/components/Onboarding/onboarding.store'
 import { useAppStore } from '~/libs/App/app.store'
 
 // Types

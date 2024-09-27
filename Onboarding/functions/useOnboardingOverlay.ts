@@ -2,10 +2,10 @@
 import { getTargetElement, isElementVisible } from '~/components/Tooltip/functions/element-functions'
 
 // Models
-import type { OnboardingStep } from '../models/onboarding-step.model'
+import type { OnboardingStep } from '~/components/Onboarding/models/onboarding-step.model'
 
 // Store
-import { useOnboardingStore } from '~/components/Onboarding/functions/onboarding.store'
+import { useOnboardingStore } from '~/components/Onboarding/onboarding.store'
 
 export function useOnboardingOverlay(step: MaybeRefOrGetter<OnboardingStep>) {
   window.addEventListener('resize', updateOverlayClip)

@@ -4,7 +4,7 @@ import type { OnboardingStep } from '~/components/Onboarding/models/onboarding-s
 import type { OnboardingModel } from '~/components/Onboarding/models/onboarding.model'
 
 // Store
-import { useOnboardingStore } from '~/components/Onboarding/functions/onboarding.store'
+import { useOnboardingStore } from '~/components/Onboarding/onboarding.store'
 
 const { activeOnboarding } = storeToRefs(useOnboardingStore())
 
