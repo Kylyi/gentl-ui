@@ -8,6 +8,11 @@ import { useWysiwygCodeBlock } from '~/components/Wysiwyg/functions/useWysiwygCo
 
 const props = defineProps(nodeViewProps)
 
+// Constants
+const fuseOptions = {
+  keys: ['name', 'aliases'],
+}
+
 // Utils
 const { highlight, languages } = useWysiwygCodeBlock()
 const { copy, copied } = useClipboard({ copiedDuring: 2000 })
@@ -110,6 +115,7 @@ onMounted(() => {
         :menu-props="{ matchWidth: false, fit: true, referenceTarget: configurationEl }"
         :option-label="getLanguageLabel"
         no-border
+        :fuse-options
         :placeholder="`${$t('wysiwyg.chooseLanguage')}...`"
         :ui="{ borderRadius: '0px' }"
       >
