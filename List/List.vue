@@ -154,7 +154,7 @@ onMounted(() => {
         <SearchInput
           ref="searchEl"
           v-model="search"
-          :class="{ 'm-2': !dense }"
+          :class="{ 'm-1': !dense }"
           grow
           layout="regular"
           class="bg-white dark:bg-darker"

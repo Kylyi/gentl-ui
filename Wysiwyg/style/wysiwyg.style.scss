@@ -10,7 +10,7 @@
 }
 
 :deep(.wysiwyg) {
-  @apply outline-none fit;
+  @apply outline-none fit font-rem-14;
 
   p.is-empty:first-child::before {
     content: attr(data-placeholder);
@@ -23,8 +23,16 @@
     @apply italic;
   }
 
+  p:not(:last-child) {
+    @apply m-b-2;
+  }
+
   li:first-child {
     @apply p-t-1;
+  }
+
+  li:last-child {
+    @apply p-b-2;
   }
 
   h3 {

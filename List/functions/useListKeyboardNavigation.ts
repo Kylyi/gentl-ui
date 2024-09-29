@@ -26,7 +26,7 @@ export function useListKeyboardNavigation(options: {
   } = options
 
   // Injections
-  const submit = inject(formSubmitKey)
+  const submit = inject(formSubmitKey, () => {})
 
   // Utils
   const self = getCurrentInstance()

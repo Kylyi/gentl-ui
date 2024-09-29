@@ -44,6 +44,12 @@ type IProps = {
   rowKey?: keyof T
 
   /**
+   * The threshold for virtual scroller to kick in, otherwise it will be
+   * a regular div with scroll
+   */
+  threshold?: number
+
+  /**
    * Watch for width changes
    */
   watchWidth?: boolean
@@ -64,6 +70,7 @@ type IVisibleRows = {
 const props = withDefaults(defineProps<IProps>(), {
   rowHeight: 40,
   rowKey: 'id' as keyof T,
+  threshold: 80,
 })
 
 const emits = defineEmits<{
@@ -72,6 +79,7 @@ const emits = defineEmits<{
 
 defineExpose({
   scrollToTop: () => scrollTo(0),
+  scrollToBottom,
   scrollTo,
   focus: () => virtualScrollEl.value?.focus(),
   rerender: (noEmit?: boolean) => rerenderVisibleRows({ triggerScrollEvent: !noEmit }),
@@ -91,10 +99,9 @@ function getRowKey(row: T) {
 }
 
 // Constants
-const VIRTUAL_SCROLL_THRESHOLD = 80
+const VIRTUAL_SCROLL_THRESHOLD = props.threshold
 const OVERSCAN_PX = { top: 200, bottom: 400 }
-const INITIAL_ROWS_RENDER_COUNT
-  = props.initialRowsRenderCount
+const INITIAL_ROWS_RENDER_COUNT = props.initialRowsRenderCount
   ?? (isDesktopOrTablet
     ? Math.ceil(2160 / props.rowHeight)
     : Math.ceil(1080 / props.rowHeight))
@@ -104,7 +111,7 @@ const rows = toRef(props, 'rows')
 const containerEl = ref<HTMLDivElement>()
 const virtualScrollEl = ref<HTMLDivElement>()
 const isMounted = ref(false)
-const isVirtual = ref(false)
+const isVirtual = ref((props.rows ?? []).length > VIRTUAL_SCROLL_THRESHOLD || false)
 const rowHeight = toRef(props, 'rowHeight')
 const rowKey = toRef(props, 'rowKey') as Ref<keyof T>
 const visibleItemsIdx = ref({ first: 0, last: 0 })
@@ -316,17 +323,40 @@ function scrollTo(idx: number) {
 }
 
 /**
+ * Scrolls to the bottom of the virtual scroller
+ */
+function scrollToBottom() {
+  if (!virtualScrollEl.value) {
+    return
+  }
+
+  const { scrollTop, scrollHeight, clientHeight } = virtualScrollEl.value
+
+  if (virtualScrollEl.value) {
+    virtualScrollEl.value.scrollTop = scrollHeight
+
+    requestAnimationFrame(() => {
+      const diff = scrollTop - (scrollHeight - clientHeight)
+
+      if (Math.abs(diff) >= 1) {
+        scrollToBottom()
+      }
+    })
+  }
+}
+
+/**
  * When row is mounted, we update the height for that specific row
  */
 async function handleMountedRow(node: any, row: IRow) {
   const el = 'el' in node ? node.el : node
   const idx = +el.dataset.idx
 
-  if (heights.value[idx] !== el.clientHeight) {
-    heights.value[idx] = el.clientHeight
-  }
-
   nextTick(() => {
+    if (heights.value[idx] !== el.clientHeight) {
+      heights.value[idx] = el.clientHeight
+    }
+
     row.style['--translateY'] = heightsCumulated.value[idx - 1] ?? 0
   })
 }

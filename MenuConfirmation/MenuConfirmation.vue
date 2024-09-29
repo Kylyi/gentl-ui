@@ -6,7 +6,7 @@ import type { IMenuConfirmationProps } from '~/components/MenuConfirmation/types
 import { useMenuUtils } from '~/components/Menu/functions/useMenuUtils'
 
 // Components
-import Menu from '~/components/Menu/Menu.vue'
+import type Menu from '~/components/Menu/Menu.vue'
 import Btn from '~/components/Button/Btn.vue'
 
 const props = withDefaults(defineProps<IMenuConfirmationProps>(), {

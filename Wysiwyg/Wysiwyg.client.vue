@@ -143,33 +143,28 @@ onBeforeUnmount(wysiwygStore.$dispose)
     />
 
     <template #menu>
-      <Transition
-        appear
-        v-bind="transitionProps"
+      <WysiwygSink
+        v-if="editor"
+        :class="{ 'is-floating': !noSinkFloat }"
+        v-bind="$props"
       >
-        <WysiwygSink
-          v-if="editor"
-          :class="{ 'is-floating': !noSinkFloat }"
-          v-bind="$props"
+        <template
+          v-if="$slots['sink-prepend']"
+          #prepend
         >
-          <template
-            v-if="$slots['sink-prepend']"
-            #prepend
-          >
-            <slot name="sink-prepend" />
-          </template>
+          <slot name="sink-prepend" />
+        </template>
 
-          <template
-            v-if="$slots['sink-append']"
-            #append
-          >
-            <slot
-              name="sink-append"
-              :blur-editor="blurEditor"
-            />
-          </template>
-        </WysiwygSink>
-      </Transition>
+        <template
+          v-if="$slots['sink-append']"
+          #append
+        >
+          <slot
+            name="sink-append"
+            :blur-editor="blurEditor"
+          />
+        </template>
+      </WysiwygSink>
     </template>
   </InputWrapper>
 </template>

@@ -9,7 +9,7 @@ import { useWysiwygStore } from '~/components/Wysiwyg/wysiwyg.store'
 
 export function useWysiwygUtils() {
   // Injections
-  const injectedPopulateFnc = inject(wysiwygMentionPopulateKey)
+  const injectedPopulateFnc = inject(wysiwygMentionPopulateKey, undefined)
 
   // Store
   const wysiwygStore = useWysiwygStore()

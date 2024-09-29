@@ -151,7 +151,10 @@ useResizeObserver(headerEl, entries => {
         />
       </slot>
 
-      <slot v-if="!noExpandIcon" name="expand-icon">
+      <slot
+        v-if="!noExpandIcon"
+        name="expand-icon"
+      >
         <div
           class="expand-icon i-majesticons:chevron-right"
           :class="{ 'rotate-90deg': internalValue }"
