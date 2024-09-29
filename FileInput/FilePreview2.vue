@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { Required } from 'utility-types'
+
 // Models
 import { FileModel } from '~/components/FileInput/models/file.model'
 
@@ -71,7 +73,7 @@ const videoUrl = computed(() => {
 const downloadUrl = computedAsync(async () => {
   const file = props.file instanceof FileModel
     ? props.file.uploadedFile
-    : props.file
+    : props.file as Required<IFile, 'name' | 'path'>
 
   if (!file) {
     return
@@ -80,7 +82,10 @@ const downloadUrl = computedAsync(async () => {
   const name = 'name' in file ? file.name : file.newFilename
   const path = 'path' in file ? file.path : file.filepath
 
-  return await handleDownloadFile({ name, path }, { returnUrlOnly: true })
+  return await handleDownloadFile(
+    { name, path },
+    { returnUrlOnly: true },
+  )
 })
 
 function handleImageClick(url: string) {
@@ -105,7 +110,10 @@ function handleImageClick(url: string) {
       <!-- Icon -->
       <div class="i-material-symbols:attachment color-ca shrink-0" />
 
-      <div flex="~ col grow">
+      <div
+        flex="~ col grow"
+        overflow-auto
+      >
         <!-- Filename -->
         <span class="file-preview__filename">
           {{ file?.name }}
@@ -177,7 +185,7 @@ function handleImageClick(url: string) {
 
       <!-- Upload state -->
       <div
-        v-if="!('path' in file) && !file.isUploaded"
+        v-if="file instanceof FileModel && !file.isUploaded"
         class="file-preview__state"
       >
         <!-- Upload failed -->
@@ -241,7 +249,7 @@ function handleImageClick(url: string) {
 <style lang="scss" scoped>
 .file-preview {
   @apply grid gap-2 fit items-center border-1 border-dotted rounded-3
-    border-ca color-ca;
+    border-ca color-ca max-w-50;
 
   grid-template-rows: auto 1fr;
 

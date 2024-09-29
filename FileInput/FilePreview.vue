@@ -103,7 +103,7 @@ const imageUrl = computed(() => {
     >
       <!-- Download file -->
       <Btn
-        v-if="'path' in file"
+        v-if="'path' in file || !(file instanceof FileModel)"
         w-full
         size="sm"
         class="!rounded-t-0"

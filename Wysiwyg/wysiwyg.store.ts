@@ -16,10 +16,12 @@ export function useWysiwygStore(wysiwygId?: string) {
 
     const filesByPath = computed(() => {
       return files.value.reduce((agg, file) => {
-        agg[file.path] = file
+        if (file.path) {
+          agg[file.path] = file
+        }
 
         return agg
-      }, {} as Record<IFile['path'], IFile>)
+      }, {} as Record<string, IFile>)
     })
 
     function setEditor(_editor: Editor) {
