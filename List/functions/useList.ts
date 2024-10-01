@@ -547,6 +547,7 @@ export function useList(
 
     if (props.loadData) {
       const mapKey = props.loadData.mapKey ?? config.selector.mapKey
+      const countKey = props.loadData.countKey ?? config.selector.countKey
 
       try {
         options = options ?? {}
@@ -578,16 +579,14 @@ export function useList(
           { noResolve: true },
         )
 
-        const resRows = get(
-          res,
-          props.loadData.countKey || config.selector.countKey,
-        )
+        const resRows = get(res, mapKey)
+        const resRowsCount = get(res, countKey)
 
         if (props.loadData.local) {
           items.value = options.fetchMore ? [...items.value, ...res] : res
         } else {
           items.value = options.fetchMore
-            ? [...items.value, ...get(res, mapKey)]
+            ? [...items.value, ...resRows]
             : get(res, mapKey)
         }
 
@@ -596,9 +595,7 @@ export function useList(
         await nextTick()
 
         isPreventFetchData.value = true
-        totalRows.value = options.fetchMore
-          ? totalRows.value + (resRows || 0)
-          : resRows || 0
+        totalRows.value = resRowsCount || totalRows.value
 
         hasMore.value = totalRows.value > items.value.length
 
