@@ -17,7 +17,9 @@ import SearchInput from '~/components/Inputs/SearchInput.vue'
 import {
   treeCollapsedKey,
   treeHandleCollapseKey,
+  treeIdKey,
 } from '~/components/Tree/provide/tree.provide'
+import { useTreeDragAndDrop } from '~/components/Tree/functions/useTreeDragAndDrop'
 
 const props = withDefaults(defineProps<ITreeProps>(), {
   connectors: true,
@@ -26,20 +28,32 @@ const props = withDefaults(defineProps<ITreeProps>(), {
   collapsedOnInit: true,
 })
 
-// UTILS
-const { flattenTree, flatToTree, getChildren } = useTraversing()
+// Init
+const uuid = useId()
+
+provideLocal(treeIdKey, uuid)
+
+// Utils
 const { searchData } = useSearching()
 const { addNode, removeNode } = useTreeUtils(props)
+const { containerEl } = useTreeDragAndDrop()
+const { flattenTree, flatToTree, getChildren } = useTraversing()
 
-// LAYOUT
+// Layout
 const searchInputEl = ref<InstanceType<typeof SearchInput>>()
 const treeEl = ref<HTMLDivElement>()
 const nodesDomEls = ref<HTMLElement[]>()
 const isInitialized = ref(false)
 const search = ref('')
 const level = ref(0)
-const collapsedById = ref<Record<string | number, boolean>>({})
 const nodesAddedViaFetch = ref<ITreeNode[]>([])
+
+function handleTreeMounted(node: any) {
+  containerEl.value = node.el
+}
+
+// Expand / Collapse
+const collapsedById = ref<Record<string | number, boolean>>({})
 
 function handleExpandNode(id: string | number) {
   if (collapsedById.value[id]) {
@@ -85,7 +99,7 @@ async function handleCollapse(node: ITreeNode, val?: boolean) {
 
 /**
  * Gets all the DOM elements of the nodes
- * so we canuse keyboard navigation
+ * so we can use keyboard navigation
  */
 function getNodesElements(resetHoveredIdx = true) {
   if (!nodesFiltered.value || !treeEl.value) {
@@ -94,9 +108,7 @@ function getNodesElements(resetHoveredIdx = true) {
     return
   }
 
-  nodesDomEls.value = Array.from(
-    treeEl.value.querySelectorAll('.tree-node-item'),
-  ) as HTMLElement[]
+  nodesDomEls.value = Array.from(treeEl.value.querySelectorAll('.tree-node-item')) as HTMLElement[]
 
   resetHoveredIdx && (hoveredIdx.value = -1)
 }
@@ -117,12 +129,11 @@ const nodesFiltered = computedAsync(async () => {
   if (!isInitialized.value) {
     isInitialized.value = true
 
-    const nodesToCollapse
-      = props.collapsedOnInit === 'first'
-        ? nodesFlattened.slice(1)
-        : props.collapsedOnInit
-          ? nodesFlattened
-          : []
+    const nodesToCollapse = props.collapsedOnInit === 'first'
+      ? nodesFlattened.slice(1)
+      : props.collapsedOnInit
+        ? nodesFlattened
+        : []
 
     nodesToCollapse.forEach(node => {
       collapsedById.value[node.id] = true
@@ -170,7 +181,7 @@ const nodesFiltered = computedAsync(async () => {
   return searched as ITreeNode[]
 })
 
-// KEYBOARD NAVIGATION
+// Keyboard navigation
 const { focused: isFocused } = useFocusWithin(treeEl)
 const elFocused = ref<HTMLElement>()
 const hoveredIdx = ref(-1)
@@ -186,12 +197,12 @@ watch(hoveredIdx, (idx, oldIdx) => {
     return
   }
 
-  // REMOVE FOCUS FROM PREVIOUS NODE
+  // Remove focus from previous node
   if (!isNil(oldIdx) && oldIdx !== -1) {
     nodesDomEls.value[oldIdx].classList.toggle('is-focused')
   }
 
-  // ADD FOCUS TO CURRENT NODE
+  // Add focus to current node
   if (!isNil(idx) && idx !== -1) {
     nodesDomEls.value[idx]?.classList.toggle('is-focused')
     elFocused.value = nodesDomEls.value[idx]
@@ -204,7 +215,7 @@ watch(hoveredIdx, (idx, oldIdx) => {
     }
   }
 
-  // NOTHIGN TO FOCUS
+  // Nothing to focus
   else {
     elFocused.value = undefined
   }
@@ -244,22 +255,22 @@ async function handleKey(ev: KeyboardEvent) {
 
       break
 
-    case 'ArrowRight':
       // Expand
+    case 'ArrowRight':
       ev.preventDefault()
       currentNode && (await handleCollapse(currentNode, false))
 
       break
 
-    case 'ArrowLeft':
       // Collapse
+    case 'ArrowLeft':
       ev.preventDefault()
       currentNode && (await handleCollapse(currentNode, true))
 
       break
 
-    case 'Enter':
       // Select
+    case 'Enter':
       ev.preventDefault()
       ;(
         elFocused.value?.querySelector(
@@ -278,7 +289,7 @@ onKeyStroke(
   handleKey,
 )
 
-// PROVIDE
+// Provide
 provide(treeCollapsedKey, collapsedById)
 provide(treeHandleCollapseKey, handleCollapse)
 
@@ -308,17 +319,12 @@ defineExpose({
     class="tree"
     tabindex="0"
     :class="{ 'has-connectors': connectors }"
-    :style="{
-      '--treeRowHeight': rowHeight,
-    }"
+    :style="{ '--treeRowHeight': rowHeight }"
   >
-    <!-- SEARCH -->
+    <!-- Search -->
     <div
       v-if="!noSearch"
-      border="b-1 ca"
-      p="x-1 b-2"
-      shrink="0"
-      flex="~ gap-x-2"
+      class="search-wrapper"
     >
       <SearchInput
         ref="searchInputEl"
@@ -330,6 +336,8 @@ defineExpose({
       <slot name="search-append" />
     </div>
 
+    <pre>{{ nodesFiltered }}</pre>
+
     <ScrollArea
       v-if="nodesFiltered?.length"
       flex="1"
@@ -340,17 +348,19 @@ defineExpose({
     >
       <TreeNode
         :nodes="nodesFiltered"
-        :level="level"
-        :max-level="maxLevel"
-        :prefer-collapse-btn-hidden="preferCollapseBtnHidden"
-        :fetch-children="fetchChildren"
-        :has-children="hasChildren"
+        :level
+        :max-level
+        :prefer-collapse-btn-hidden
+        :fetch-children
+        path="0"
+        :has-children
         overflow="x-auto"
+        @vue:mounted="handleTreeMounted"
       >
         <template #node="{ node, level: lvl }">
           <slot
             name="node"
-            :node="node"
+            :node
             :level="lvl"
             :collapse="() => handleCollapse(node)"
             :is-collapsed="collapsedById[node.id]"
@@ -370,6 +380,10 @@ defineExpose({
 </template>
 
 <style lang="scss" scoped>
+.search-wrapper {
+  @apply p-1 shrink-0 flex gap-x-2 border-b-1 border-ca;
+}
+
 :deep(li > div) {
   height: var(--treeRowHeight);
 }

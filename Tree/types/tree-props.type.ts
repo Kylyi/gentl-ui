@@ -1,20 +1,63 @@
-import { type FuseOptions } from '@vueuse/integrations/useFuse'
-import { type ITreeNodeProps } from '~/components/Tree/types/tree-node-props.type'
+import type { FuseOptions } from '@vueuse/integrations/useFuse'
 
-// TYPES
+// Types
 import type { ITreeNode } from '~/components/Tree/types/tree-node.type'
+import type { ITreeNodeProps } from '~/components/Tree/types/tree-node-props.type'
 
-export type ITreeProps = Omit<ITreeNodeProps, 'level'> & {
+export type ITreeProps = Omit<ITreeNodeProps, 'level' | 'path'> & {
+  /**
+   * Whether the tree should be collapsed on initialization
+   */
   collapsedOnInit?: boolean | 'first'
+
+  /**
+   * Whether the connectors should be shown
+   */
   connectors?: boolean
+
+  /**
+   * Class for the content wrapper
+   */
   contentClass?: ClassType
-  fetchChildren?: { fnc: Function; mapKey: string }
+
+  /**
+   * Configuration for fetching children nodes
+   */
+  fetchChildren?: { fnc: Function, mapKey: string }
+
+  /**
+   * Fuse options for the search
+   */
   fuseOptions?: FuseOptions<any>
+
+  /**
+   * Maximum level for the nodes
+   */
   maxLevel?: number
+
+  /**
+   * The tree nodes
+   */
   nodes?: ITreeNode[]
+
+  /**
+   * When true, the search input will not be shown
+   */
   noSearch?: boolean
+
+  /**
+   * Whether the collapse button should be hidden
+   */
   preferCollapseBtnHidden?: boolean
+
+  /**
+   * The height of the row
+   */
   rowHeight?: string
+
+  /**
+   * Whether the scroll event should be propagated to the parent
+   */
   wheelPropagation?: boolean
 
   /**

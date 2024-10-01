@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // @ts-nocheck
-// TYPES
+// Types
 import type { ITreeNodeProps } from '~/components/Tree/types/tree-node-props.type'
 
 defineProps<ITreeNodeProps>()
@@ -13,20 +13,22 @@ defineProps<ITreeNodeProps>()
     relative
   >
     <TreeNodeRow
-      v-for="node in nodes"
+      v-for="(node, idx) in nodes"
       :key="node.id"
-      :node="node"
-      :level="level"
-      :max-level="maxLevel"
-      :fetch-children="fetchChildren"
-      :has-children="hasChildren"
-      :prefer-collapse-btn-hidden="preferCollapseBtnHidden"
+      :node
+      :level
+      :max-level
+      :fetch-children
+      :path="`${path}.children.${idx}`"
+      :prefer-collapse-btn-hidden
+      :has-children
     >
       <template #node="deepNode">
         <slot
           name="node"
           :node="deepNode.node"
           :level="deepNode.level"
+          :path="deepNode.path"
         />
       </template>
     </TreeNodeRow>

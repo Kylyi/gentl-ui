@@ -1,12 +1,14 @@
-// TYPES
+// Types
 import type { ITreeNode } from '~/components/Tree/types/tree-node.type'
 
 export type ITreeNodeRowProps = {
-  fetchChildren?: { fnc: Function; mapKey: string }
+  fetchChildren?: { fnc: Function, mapKey: string }
   level: number
   maxLevel?: number
   node: ITreeNode
   preferCollapseBtnHidden?: boolean
+
+  path: string
 
   /**
    * Function to determine if a node has children - will override the node's `hasChildren` property

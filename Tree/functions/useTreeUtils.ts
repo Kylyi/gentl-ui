@@ -28,8 +28,7 @@ export function useTreeUtils(props: ITreeProps) {
     parentNode?: ITreeNode | string,
   ): void {
     if (parentNode) {
-      const _parentNode
-        = typeof parentNode === 'string' ? getNodeById(parentNode) : parentNode
+      const _parentNode = typeof parentNode === 'string' ? getNodeById(parentNode) : parentNode
 
       const nodeId = node.id || uuid()
       const newNode: ITreeNode = {
