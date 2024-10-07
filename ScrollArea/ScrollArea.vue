@@ -26,7 +26,9 @@ onBeforeUnmount(() => {
 })
 
 useResizeObserver(scrollArea, () => {
-  ps.value?.update()
+  requestAnimationFrame(() => {
+    ps.value?.update()
+  })
 })
 
 defineExpose({

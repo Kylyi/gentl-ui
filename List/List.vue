@@ -109,7 +109,9 @@ const {
 const { draggedItem, listElRect } = useListDragAndDrop(listEl as Ref<HTMLDivElement>)
 
 useResizeObserver(listEl, entries => {
-  listElRect.value = listEl.value?.getBoundingClientRect()
+  requestAnimationFrame(() => {
+    listElRect.value = listEl.value?.getBoundingClientRect()
+  })
 })
 
 // Move item(s)

@@ -94,9 +94,11 @@ function handleAddFirstCondition() {
 }
 
 useResizeObserver(queryBuilderEl, entries => {
-  const { contentRect } = entries[0]
+  requestAnimationFrame(() => {
+    const { contentRect } = entries[0]
 
-  isSmallerScreen.value = contentRect.width < 1024
+    isSmallerScreen.value = contentRect.width < 1024
+  })
 })
 
 // Column filters

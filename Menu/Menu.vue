@@ -183,9 +183,11 @@ const {
 })
 
 useResizeObserver(contentEl, () => {
-  if (!props.noMove) {
-    update()
-  }
+  requestAnimationFrame(() => {
+    if (!props.noMove) {
+      update()
+    }
+  })
 })
 watch(menuPlacement, placement => emits('placement', placement))
 

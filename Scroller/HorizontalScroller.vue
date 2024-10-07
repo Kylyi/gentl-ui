@@ -19,7 +19,9 @@ const isLocalScroll = refAutoReset(false, 100)
 const hasArrows = ref(false)
 const { arrivedState, x } = useScroll(scrollEl)
 
-useResizeObserver(scrollEl, () => emits('resized'))
+useResizeObserver(scrollEl, () => {
+  requestAnimationFrame(() => emits('resized'))
+})
 
 const btnScrollSpeed = ref(4)
 const clampedScrollSpeed = useClamp(btnScrollSpeed, -16, 16)
