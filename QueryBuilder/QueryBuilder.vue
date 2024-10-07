@@ -64,10 +64,12 @@ function clearFilter() {
 }
 
 useResizeObserver(queryBuilderEl, entries => {
-  const { contentRect } = entries[0]
+  requestAnimationFrame(() => {
+    const { contentRect } = entries[0]
 
-  isSmallerScreen.value = contentRect.width < 1024
-  queryBuilderElRect.value = queryBuilderEl.value?.getBoundingClientRect()
+    isSmallerScreen.value = contentRect.width < 1024
+    queryBuilderElRect.value = queryBuilderEl.value?.getBoundingClientRect()
+  })
 })
 
 // Column filters

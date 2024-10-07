@@ -19,7 +19,9 @@ const { arrivedState } = useScroll(scrollEl, {
   onScroll: () => emits('resized'),
 })
 
-useResizeObserver(scrollEl, () => emits('resized'))
+useResizeObserver(scrollEl, () => {
+  requestAnimationFrame(() => emits('resized'))
+})
 
 const btnScrollSpeed = ref(4)
 const clampedScrollSpeed = useClamp(btnScrollSpeed, -16, 16)

@@ -87,11 +87,13 @@ watch(internalValue, val => {
 
 // Moves the content element below the header on window resizing
 useResizeObserver(headerEl, entries => {
-  const { height } = entries[0].contentRect
+  requestAnimationFrame(() => {
+    const { height } = entries[0].contentRect
 
-  if (contentEl.value && props.floating) {
-    contentEl.value.style.top = `${height}px`
-  }
+    if (contentEl.value && props.floating) {
+      contentEl.value.style.top = `${height}px`
+    }
+  })
 })
 </script>
 
