@@ -4,12 +4,14 @@ import type { ITreeNode } from '~/components/Tree/types/tree-node.type'
 // Store
 import { useTreeStore } from '~/components/Tree/tree.store'
 
-// Constants
-const ITEM_LEFT_MARGIN = 20
-
 export function useTreeDragAndDropItem(nodeRef: MaybeRefOrGetter<ITreeNode>) {
   // Store
-  const { draggedItem, nodes, containerEl } = storeToRefs(useTreeStore())
+  const {
+    draggedItem,
+    dndOptions,
+    nodes,
+    containerEl,
+  } = storeToRefs(useTreeStore())
 
   // Layout
   const draggableEl = ref<HTMLDivElement>()
@@ -37,8 +39,13 @@ export function useTreeDragAndDropItem(nodeRef: MaybeRefOrGetter<ITreeNode>) {
 
   // Mouse
   function handleMouseDown(event: MouseEvent) {
-    const target = event.currentTarget as HTMLElement
-    const isDraggableEl = target.classList.contains('tree-node-item')
+    if (!dndOptions.value.enabled) {
+      return
+    }
+
+    const { clientX, clientY } = event
+    const els = document.elementsFromPoint(clientX, clientY)
+    const isDraggableEl = els.find(el => el.classList.contains(dndOptions.value.dragClass)) as HTMLElement
 
     if (!isDraggableEl) {
       return
@@ -84,8 +91,12 @@ export function useTreeDragAndDropItem(nodeRef: MaybeRefOrGetter<ITreeNode>) {
 
   // Touch
   function handleTouchStart(event: TouchEvent) {
+    if (!dndOptions.value.enabled) {
+      return
+    }
+
     const target = event.target as HTMLElement
-    const isDraggableEl = target.classList.contains('tree-node-item')
+    const isDraggableEl = target.classList.contains(dndOptions.value.dragClass)
 
     if (!isDraggableEl) {
       return
@@ -139,52 +150,49 @@ export function useTreeDragAndDropItem(nodeRef: MaybeRefOrGetter<ITreeNode>) {
     document.removeEventListener('touchend', handleDragEnd)
 
     if (clonedElement) {
-      // clonedElement.remove()
-      // clonedElement = null
+      clonedElement.remove()
+      clonedElement = null
     }
 
     // Handle the drag result
     if (draggedItem.value) {
       const { currentPath, newPath, dropDirection, item } = draggedItem.value
-      const isNewPathParent = (get(toValue(nodes), newPath ?? '') as ITreeNode)?.hasChildren
 
       if (newPath && dropDirection) {
-      // Get current row info
+        // Get current row info
         const currentParentPath = currentPath?.split('.').slice(0, -2).join('.')
-        const currentParent = item.parent ?? get(toValue(nodes), currentParentPath ?? '')
-        const currentIndex = +(currentPath ?? '').slice(-1)
+        const currentParent = item.parent ?? get(toValue(nodes), currentParentPath ?? '') as ITreeNode
+        const target = get(toValue(nodes), newPath ?? '') as ITreeNode
 
-        // Get the new location info
-        const parentPath = isNewPathParent
-          ? newPath
-          : newPath.split('.').slice(0, -2).join('.')
-
-        const parent = get(toValue(nodes), parentPath) as ITreeNode
-
-        const index = isNewPathParent
-          ? dropDirection === 'below'
-            ? parent.children?.length ?? 0
-            : 0
-          : +newPath.slice(-1)
-
-        // In case we're moving the item within its parent
-        if (parent === currentParent) {
-          moveItem(parent.children!, currentIndex, index)
+        // Remove the item from the structure
+        if (currentParent) {
+          currentParent.children = currentParent.children!.filter(child => child.id !== item.id)
+        } else {
+          nodes.value = nodes.value!.filter(child => child.id !== item.id)
         }
 
-        // In case we're moving the item to another parent
-        else {
-          const itemExtracted = currentParent.children.splice(currentIndex, 1)[0]
+        // If we're dropping the item below the target, we put it on the first index of the children
+        if (dropDirection === 'below') {
+          if (!target.children) {
+            target.children = []
+          }
 
-          if (dropDirection === 'below') {
-            parent.children?.splice(index + 1, 0, itemExtracted)
+          target.children = target.children!.toSpliced(0, 0, item)
+        }
+
+        // If we're dropping the item above the target, we put it on the last index of the children
+        // of the previous parent
+        else {
+          const targetParentPath = newPath?.split('.').slice(0, -2).join('.')
+          const targetIdx = +newPath?.split('.').slice(-1)
+          const targetParent = get(toValue(nodes), targetParentPath) as ITreeNode
+
+          if (!targetParent?.children) {
+            nodes.value = nodes.value!.toSpliced(targetIdx, 0, item)
           } else {
-            parent.children?.splice(index, 0, itemExtracted)
+            targetParent.children = targetParent.children!.toSpliced(targetIdx, 0, item)
           }
         }
-
-        // We update the paths for the structure
-        // updatePaths()
 
         // We reset the dragged item
         draggedItem.value = undefined
@@ -192,6 +200,7 @@ export function useTreeDragAndDropItem(nodeRef: MaybeRefOrGetter<ITreeNode>) {
     }
 
     // Reset scrolling
+    // console.log('Log ~ handleDragEnd ~ nodes.value:', nodes.value)
     scrollBy.value = { speedX: 0, speedY: 0 }
     pause()
   }
@@ -213,11 +222,8 @@ export function useTreeDragAndDropItem(nodeRef: MaybeRefOrGetter<ITreeNode>) {
         clientY = event.touches[0].clientY
       }
 
-      clonedElement.style.display = 'flex'
-      clonedElement.style.alignItems = 'center'
       clonedElement.style.listStyleType = 'none'
       clonedElement.style.position = 'absolute'
-      clonedElement.style.backgroundColor = 'red'
       clonedElement.style.left = `${clientX + mouseOffset.x}px`
       clonedElement.style.top = `${clientY + mouseOffset.y}px`
       clonedElement.style.width = `${draggableElement.value!.offsetWidth}px`
@@ -225,6 +231,8 @@ export function useTreeDragAndDropItem(nodeRef: MaybeRefOrGetter<ITreeNode>) {
       clonedElement.style.zIndex = '9999'
       clonedElement.style.opacity = '0.5'
       clonedElement.style.pointerEvents = 'none'
+      clonedElement.style.backgroundColor = '#ccc'
+      clonedElement.style.borderRadius = '12px'
       document.body.appendChild(clonedElement)
 
       draggedItem.value = {

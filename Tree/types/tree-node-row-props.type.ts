@@ -8,7 +8,7 @@ export type ITreeNodeRowProps = {
   node: ITreeNode
   preferCollapseBtnHidden?: boolean
 
-  path: string
+  path?: string
 
   /**
    * Function to determine if a node has children - will override the node's `hasChildren` property

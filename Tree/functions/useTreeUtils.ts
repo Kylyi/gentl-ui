@@ -2,13 +2,18 @@ import type { Required } from 'utility-types'
 
 // Types
 import type { ITreeNode } from '~/components/Tree/types/tree-node.type'
-import type { ITreeProps } from '~/components/Tree/types/tree-props.type'
 
-export function useTreeUtils(props: ITreeProps) {
+// Store
+import { useTreeStore } from '~/components/Tree/tree.store'
+
+export function useTreeUtils() {
+  // Store
+  const { nodes } = storeToRefs(useTreeStore())
+
   // Utils
   const { flattenTree } = useTraversing()
 
-  const nodes = useVModel(props, 'nodes')
+  // Layout
   const flattenedNodes = ref<ITreeNode[]>([])
 
   const nodesById = computed(() => {

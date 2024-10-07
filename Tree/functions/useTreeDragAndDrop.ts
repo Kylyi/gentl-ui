@@ -1,9 +1,23 @@
+// Types
+import type { ITreeProps } from '~/components/Tree/types/tree-props.type'
+
 // Store
 import { useTreeStore } from '~/components/Tree/tree.store'
 
-export function useTreeDragAndDrop() {
+export function useTreeDragAndDrop(props: ITreeProps) {
   // Store
-  const { containerEl, draggedItem } = storeToRefs(useTreeStore())
+  const {
+    containerEl,
+    dndOptions,
+    draggedItem,
+    nodes,
+  } = storeToRefs(useTreeStore())
+
+  // Init
+  dndOptions.value = {
+    dragClass: props.dnd?.dragClass ?? 'tree-move-handler',
+    enabled: !!props.dnd?.enabled,
+  }
 
   const containerElRect = ref<DOMRect>()
 
@@ -25,7 +39,7 @@ export function useTreeDragAndDrop() {
     // Get all elements from the point where we are dragging the item
     // and get the dragged-over query builder row
     const els = document.elementsFromPoint(posX, posY)
-    const treeItem = els.find(el => el.classList.contains('tree-node-item')) as HTMLElement
+    let treeItem = els.find(el => el.classList.contains('tree-node-item')) as HTMLElement
     const treeItemPath = treeItem?.dataset.path
 
     // When no item is found, we don't really do anything
@@ -43,6 +57,12 @@ export function useTreeDragAndDrop() {
     // When hovering over parent, we need to adjust the position of drop
     // indicator a bit because the parent also has controls elements
     const isParent = treeItem?.classList.contains('has-children')
+
+    // The parent also includes the children, but for the positioning we need to
+    // use just the parent node
+    treeItem = isParent
+      ? treeItem.querySelector('.tree-node-item__wrapper') as HTMLElement
+      : treeItem
 
     const {
       x: rowX,
@@ -102,8 +122,15 @@ export function useTreeDragAndDrop() {
     () => handleDragging(),
   )
 
+  watch(
+    () => props.nodes,
+    propsNodes => nodes.value = propsNodes,
+    { immediate: true },
+  )
+
   return {
     containerEl,
     containerElRect,
+    draggedItem,
   }
 }

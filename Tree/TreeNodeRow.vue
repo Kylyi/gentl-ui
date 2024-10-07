@@ -13,6 +13,9 @@ import {
 // Functions
 import { useTreeDragAndDropItem } from '~/components/Tree/functions/useTreeDragAndDropItem'
 
+// Store
+import { useTreeStore } from '~/components/Tree/tree.store'
+
 const props = defineProps<ITreeNodeRowProps>()
 
 // Injections
@@ -23,8 +26,15 @@ const handleCollapse = injectStrict(
   async (_node: ITreeNode) => {},
 )
 
+// Store
+const { dndOptions } = storeToRefs(useTreeStore())
+
 // Utils
-const { draggableEl, handleMouseDown, handleTouchStart } = useTreeDragAndDropItem(props.node)
+const {
+  draggableEl,
+  handleMouseDown,
+  handleTouchStart,
+} = useTreeDragAndDropItem(props.node)
 
 // Layout
 const isLoading = ref(false)
@@ -69,24 +79,45 @@ async function handleCollapseInternal(node: ITreeNode) {
     class="tree-node-item"
     :data-node-id="node.id"
     :data-path="path"
-    :class="{ 'has-children': isCollapseVisible }"
+    :class="{
+      'has-children': isCollapseVisible,
+      'has-visible-children': isCollapseVisible && !collapsed[node.id],
+    }"
+    :style="{ '--level': level }"
     @mousedown="handleMouseDown"
     @touchstart="handleTouchStart"
   >
-    <div class="tree-node-item--wrapper">
-      <!-- Collapse -->
-      <Btn
-        v-if="!preferCollapseBtnHidden"
-        class="btn-collapser"
-        :class="[
-          isCollapseVisible ? 'visible' : 'invisible',
-          { 'm-l-4 m-r-1': level && isCollapseVisible },
-        ]"
-        size="auto"
-        :loading="isLoading"
-        :icon
-        @click="handleCollapseInternal(node)"
-      />
+    <div class="tree-node-item__wrapper">
+      <!-- Move handler -->
+      <TreeMoveHandler v-if="dndOptions.enabled && dndOptions.dragClass === 'tree-move-handler'" />
+
+      <div flex="~ col">
+        <!-- Collapse -->
+        <Btn
+          v-if="!preferCollapseBtnHidden || isCollapseVisible"
+          class="btn-collapser"
+          :class="[
+            isCollapseVisible ? 'visible' : 'invisible',
+          ]"
+          size="auto"
+          :loading="isLoading"
+          :icon
+          @click="handleCollapseInternal(node)"
+        />
+
+        <div
+          v-else
+          m="l-5"
+          h="6"
+        />
+
+        <slot
+          name="node-collapse-below"
+          :node
+          :level
+          :path
+        />
+      </div>
 
       <!-- Content -->
       <slot
@@ -118,19 +149,42 @@ async function handleCollapseInternal(node: ITreeNode) {
           :path="deepNode.path"
         />
       </template>
+
+      <template #node-collapse-below="deepNode">
+        <slot
+          name="node-collapse-below"
+          :node="deepNode.node"
+          :level="deepNode.level"
+          :path="deepNode.path"
+        />
+      </template>
     </TreeNode>
   </li>
 </template>
 
 <style lang="scss" scoped>
 .tree-node-item {
-  @apply border-1;
+  @apply relative list-none;
 
-  &--wrapper {
-    @apply flex items-center rounded-3;
+  &::before {
+    @apply content-empty absolute left--2 top-0 h-full w-px
+    bg-true-gray-300 dark:bg-true-gray-700;
+
+    // @apply bg-pink;
   }
 
-  &.is-focused > .tree-node-item--wrapper {
+  &__wrapper {
+    @apply relative flex items-start rounded-3 p-y-1;
+
+    &::after {
+      @apply content-empty absolute top-4 w-1.5 left--2 translate-y--1/2 h-px
+      bg-true-gray-300 dark:bg-true-gray-700;
+
+      // @apply bg-green;
+    }
+  }
+
+  &.is-focused > .tree-node-item__wrapper {
     @apply shadow-secondary;
 
     box-shadow: inset 0px 0px 0px 2px var(--un-shadow-color);
@@ -139,5 +193,15 @@ async function handleCollapseInternal(node: ITreeNode) {
 
 .btn-collapser {
   @apply h-6 w-6 z-1 focus-visible:outline-none;
+}
+
+.tree-node-item.has-visible-children {
+  > .tree-node-item__wrapper::before {
+    @apply content-empty absolute top-7 w-px left-2
+    bg-true-gray-300 dark:bg-true-gray-700;
+
+    // @apply bg-blue;
+    height: calc(100% - 1.75rem);
+  }
 }
 </style>

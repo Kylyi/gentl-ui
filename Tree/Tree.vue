@@ -23,7 +23,6 @@ import { useTreeDragAndDrop } from '~/components/Tree/functions/useTreeDragAndDr
 
 const props = withDefaults(defineProps<ITreeProps>(), {
   connectors: true,
-  rowHeight: '32px',
   filterMode: 'parent',
   collapsedOnInit: true,
 })
@@ -35,8 +34,8 @@ provideLocal(treeIdKey, uuid)
 
 // Utils
 const { searchData } = useSearching()
-const { addNode, removeNode } = useTreeUtils(props)
-const { containerEl } = useTreeDragAndDrop()
+const { nodes, addNode, removeNode } = useTreeUtils()
+const { containerEl, draggedItem } = useTreeDragAndDrop(props)
 const { flattenTree, flatToTree, getChildren } = useTraversing()
 
 // Layout
@@ -114,15 +113,15 @@ function getNodesElements(resetHoveredIdx = true) {
 }
 
 const nodesFiltered = computedAsync(async () => {
-  if (!props.nodes) {
+  if (!nodes.value) {
     return []
   }
 
   if (!search.value && isInitialized.value) {
-    return props.nodes
+    return nodes.value
   }
 
-  const nodesClone = klona(props.nodes)
+  const nodesClone = klona(nodes.value)
   const nodesFlattened = flattenTree(nodesClone)
 
   // TODO: Side effect in computed!!
@@ -140,7 +139,7 @@ const nodesFiltered = computedAsync(async () => {
     })
 
     if (!search.value) {
-      return props.nodes
+      return nodes.value
     }
   }
 
@@ -304,7 +303,7 @@ defineExpose({
   addNode,
   removeNode,
   getNode(id: number | string) {
-    return [...props.nodes, ...nodesAddedViaFetch.value].find(
+    return [...nodes.value, ...nodesAddedViaFetch.value].find(
       node => String(node.id) === String(id),
     )
   },
@@ -319,7 +318,6 @@ defineExpose({
     class="tree"
     tabindex="0"
     :class="{ 'has-connectors': connectors }"
-    :style="{ '--treeRowHeight': rowHeight }"
   >
     <!-- Search -->
     <div
@@ -336,14 +334,12 @@ defineExpose({
       <slot name="search-append" />
     </div>
 
-    <pre>{{ nodesFiltered }}</pre>
-
     <ScrollArea
       v-if="nodesFiltered?.length"
       flex="1"
       overflow="auto"
       :options="{ wheelSpeed: 0.25, wheelPropagation }"
-      p="l-none"
+      p="!l-none"
       :class="contentClass"
     >
       <TreeNode
@@ -352,16 +348,27 @@ defineExpose({
         :max-level
         :prefer-collapse-btn-hidden
         :fetch-children
-        path="0"
         :has-children
         overflow="x-auto"
         @vue:mounted="handleTreeMounted"
       >
-        <template #node="{ node, level: lvl }">
+        <template #node="{ node, level: lvl, path }">
           <slot
             name="node"
             :node
             :level="lvl"
+            :path
+            :collapse="() => handleCollapse(node)"
+            :is-collapsed="collapsedById[node.id]"
+          />
+        </template>
+
+        <template #node-collapse-below="{ node, level: lvl, path }">
+          <slot
+            name="node-collapse-below"
+            :node
+            :level="lvl"
+            :path
             :collapse="() => handleCollapse(node)"
             :is-collapsed="collapsedById[node.id]"
           />
@@ -369,6 +376,28 @@ defineExpose({
       </TreeNode>
     </ScrollArea>
 
+    <!-- Drop indicator -->
+    <div
+      v-if="draggedItem?.dropIndicatorPos"
+      class="drop-indicator"
+      :style="{
+        left: `${draggedItem.dropIndicatorPos.x ?? 0}px`,
+        top: `${draggedItem.dropIndicatorPos.y ?? 0}px`,
+        width: `${draggedItem.dropIndicatorPos.width ?? 0}px`,
+      }"
+    >
+      <div
+        class="drop-indicator__icon"
+        :class="{
+          'rotate-y-180 -top-3': draggedItem.dropDirection === 'below',
+          'rotate-180 -top-7px': draggedItem.dropDirection === 'above',
+        }"
+      >
+        <div i-tabler:arrow-back />
+      </div>
+    </div>
+
+    <!-- No data -->
     <Banner
       v-if="!nodesFiltered?.length"
       no-dismiss
@@ -384,15 +413,12 @@ defineExpose({
   @apply p-1 shrink-0 flex gap-x-2 border-b-1 border-ca;
 }
 
-:deep(li > div) {
-  height: var(--treeRowHeight);
-}
+.drop-indicator {
+  @apply fixed h-2px bg-primary w-full rounded-full pointer-events-none z-$zMax;
 
-:deep(.ps > ul) {
-  @apply m-0 p-0;
-}
-
-:deep(ul li) {
-  @apply list-none;
+  &__icon {
+    @apply w-5 h-5 relative rounded-custom
+    color-primary bg-white dark:bg-darker;
+  }
 }
 </style>

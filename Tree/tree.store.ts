@@ -3,6 +3,7 @@ import type { ITreeNode } from '~/components/Tree/types/tree-node.type'
 
 // Injections
 import { treeIdKey } from '~/components/Tree/provide/tree.provide'
+import type { ITreeProps } from '~/components/Tree/types/tree-props.type'
 
 type IDraggedItem = {
   item: ITreeNode
@@ -22,9 +23,21 @@ export function useTreeStore(treeId?: string) {
 
   return defineStore(`tree.${_treeId}`, () => {
     const containerEl = ref<HTMLDivElement>()
-    const draggedItem = ref<IDraggedItem>()
     const nodes = ref<ITreeNode[]>([])
 
-    return { containerEl, draggedItem, nodes }
+    // D'n'D
+    const draggedItem = ref<IDraggedItem>()
+
+    const dndOptions = ref({
+      dragClass: 'tree-move-handler',
+      enabled: true as boolean,
+    } satisfies ITreeProps['dnd'])
+
+    return {
+      containerEl,
+      dndOptions,
+      draggedItem,
+      nodes,
+    }
   })()
 }

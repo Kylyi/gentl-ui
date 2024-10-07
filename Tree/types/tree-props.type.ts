@@ -21,6 +21,23 @@ export type ITreeProps = Omit<ITreeNodeProps, 'level' | 'path'> & {
   contentClass?: ClassType
 
   /**
+   * D'n'D
+   */
+  dnd?: {
+    /**
+     * When true, the tree nodes will be draggable
+     */
+    enabled?: boolean
+
+    /**
+     * The class that is used for the drag and drop
+     *
+     * @default 'tree-move-handler'
+     */
+    dragClass?: string
+  }
+
+  /**
    * Configuration for fetching children nodes
    */
   fetchChildren?: { fnc: Function, mapKey: string }
@@ -49,11 +66,6 @@ export type ITreeProps = Omit<ITreeNodeProps, 'level' | 'path'> & {
    * Whether the collapse button should be hidden
    */
   preferCollapseBtnHidden?: boolean
-
-  /**
-   * The height of the row
-   */
-  rowHeight?: string
 
   /**
    * Whether the scroll event should be propagated to the parent
