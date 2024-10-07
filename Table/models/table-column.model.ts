@@ -154,6 +154,11 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   }
 
   /**
+   * Usage: when we need to pass props to the "default" filter component
+   */
+  filterComponentProps?: IItem | ((row: T, column: ITableFilterItem) => IItem)
+
+  /**
    * The component to use for editing the actual value in the table
    */
   editComponent?: {
@@ -548,6 +553,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
     this.filterFormat = col.filterFormat
     this.getDistinctData = col.getDistinctData
     this.valueGetter = col.valueGetter ?? this.valueGetter
+    this.filterComponentProps = col.filterComponentProps ?? this.filterComponentProps
 
     this.reorderable = col.reorderable ?? this.reorderable
     this.resizable = col.resizable ?? this.resizable

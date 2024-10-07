@@ -11,8 +11,6 @@ const props = withDefaults(defineProps<IListRowProps>(), {
   tag: 'div',
 })
 
-console.log(props)
-
 const DEFAULT_ROW_HEIGHT = 40
 
 const item = toRef(props, 'item')

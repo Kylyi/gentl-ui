@@ -134,6 +134,18 @@ const comparatorOptions = computed(() => {
   }))
 })
 
+const filterComponentProps = computed(() => {
+  if (!column.value.filterComponentProps) {
+    return
+  }
+
+  const props = typeof column.value.filterComponentProps === 'function'
+    ? column.value.filterComponentProps(filter.value, column.value)
+    : column.value.filterComponentProps
+
+  return props
+})
+
 const customFilterComponent = computed(() => {
   const isCustomFilterComponent
     = column.value.filterComponent?.comparators.includes(filter.value.comparator)
@@ -311,6 +323,7 @@ defineExpose({
       :placeholder="`${$t('table.filterValue')}...`"
       empty-value=""
       layout="regular"
+      v-bind="filterComponentProps"
       @update:model-value="handleValueChange"
     />
 
@@ -329,6 +342,7 @@ defineExpose({
       size="sm"
       layout="regular"
       :placeholder="`${$t('table.filterValue')}...`"
+      v-bind="filterComponentProps"
       @update:model-value="handleValueChange($event, { debounce: false })"
     />
 
