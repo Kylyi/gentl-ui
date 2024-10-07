@@ -11,6 +11,8 @@ const props = withDefaults(defineProps<IListRowProps>(), {
   tag: 'div',
 })
 
+console.log(props)
+
 const DEFAULT_ROW_HEIGHT = 40
 
 const item = toRef(props, 'item')
@@ -70,7 +72,7 @@ function getItem() {
         'no-dragover': !rowInfo.isReorderable,
       },
     ]"
-    .getItem="getItem"
+    .get-item="getItem"
     @mousedown="handleMouseDown"
     @touchstart="handleTouchStart"
   >

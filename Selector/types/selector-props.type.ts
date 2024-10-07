@@ -109,6 +109,7 @@ export type ISelectorProps = IInputProps & {
   noSearch?: boolean
   searchDebounce?: number
   listClass?: ClassType
+  rowClass?: ClassType
   search?: string
   hasInfiniteScroll?: IListProps['hasInfiniteScroll']
 
