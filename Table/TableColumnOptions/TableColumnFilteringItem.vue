@@ -323,7 +323,6 @@ defineExpose({
       :placeholder="`${$t('table.filterValue')}...`"
       empty-value=""
       layout="regular"
-      v-bind="filterComponentProps"
       @update:model-value="handleValueChange"
     />
 

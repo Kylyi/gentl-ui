@@ -155,6 +155,18 @@ const comparators = computed(() => {
   }))
 })
 
+const filterComponentProps = computed(() => {
+  if (!colSelected.value?.filterComponentProps) {
+    return
+  }
+
+  const props = typeof colSelected.value.filterComponentProps === 'function'
+    ? colSelected.value.filterComponentProps(item.value, colSelected.value)
+    : colSelected.value.filterComponentProps
+
+  return props
+})
+
 const customFilterComponent = computed(() => {
   if (!colSelected.value) {
     return
@@ -426,6 +438,7 @@ const $z = useZod(
             :placeholder="`${$t('table.filterValue')}...`"
             data-cy="qb-item__content-value"
             :validation="$z.item.value"
+            v-bind="filterComponentProps"
           />
 
           <!-- Ago value -->
