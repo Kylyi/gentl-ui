@@ -1,6 +1,6 @@
 import defu from 'defu'
 import { type BundledLanguage, bundledLanguagesInfo, createHighlighter } from 'shiki'
-import { Node, mergeAttributes, textblockTypeInputRule } from '@tiptap/core'
+import { mergeAttributes, Node, textblockTypeInputRule } from '@tiptap/core'
 import { VueNodeViewRenderer } from '@tiptap/vue-3'
 import {
   Plugin,
@@ -345,7 +345,7 @@ function WysiwygCodeBlock(options?: CodeBlockOptions) {
   })
 }
 
-// Highlihgter
+// Highlighter
 function getHighlighter() {
   return createHighlighter({
     themes: ['vitesse-light'],
@@ -353,18 +353,24 @@ function getHighlighter() {
   })
 }
 
-async function highlight(content: string, lang: BundledLanguage) {
-  const highlighter = await getHighlighter()
-
-  // Load the language
-  await highlighter.loadLanguage(lang)
-
-  return highlighter.codeToHtml(
-    content,
-    { theme: 'vitesse-light', lang },
-  )
-}
-
 export function useWysiwygCodeBlock() {
-  return { WysiwygCodeBlock, highlight, languages: bundledLanguagesInfo }
+  const highlighter = getHighlighter()
+
+  async function highlight(content: string, lang: BundledLanguage) {
+    const _highlighter = await highlighter
+
+    // Load the language
+    await _highlighter.loadLanguage(lang)
+
+    return _highlighter.codeToHtml(
+      content,
+      { theme: 'vitesse-light', lang },
+    )
+  }
+
+  return {
+    WysiwygCodeBlock,
+    highlight,
+    languages: bundledLanguagesInfo,
+  }
 }
