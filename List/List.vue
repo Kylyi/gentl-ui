@@ -208,7 +208,7 @@ onMounted(() => {
           :tag="rowTag"
           :is-selected="!('isGroup' in item) && !!selectedByKey[item.id]"
           :is-hovered="hoveredIdx === index"
-          :is-disabled="disabledFnc(item)"
+          :is-disabled="disabledFnc?.(item)"
           v-bind="listRowProps"
           :row-height="'isGroup' in item ? rowGroupHeight : rowHeight"
           @mouseover="handleMouseOver(item, index)"
@@ -243,6 +243,8 @@ onMounted(() => {
       <Banner
         icon-center
         :label="$t('general.noData')"
+        :class="ui?.noDataClass"
+        :style="ui?.noDataStyle"
       />
     </div>
 

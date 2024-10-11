@@ -1,4 +1,5 @@
 import type { z } from 'zod'
+import type { CSSProperties } from 'vue'
 import type { FuseOptions } from '@vueuse/integrations/useFuse'
 
 // Types
@@ -173,4 +174,19 @@ export type IListProps = IListBaseProps & {
    * be transformed via the `toBoldLatin` fnc
    */
   useToBoldLatin?: boolean
+
+  /**
+   * Visuals
+   */
+  ui?: {
+    /**
+     * Class to apply to the `Banner` when there are no items
+     */
+    noDataClass?: ClassType
+
+    /**
+     * Style to apply to the `Banner` when there are no items
+     */
+    noDataStyle?: CSSProperties
+  }
 }

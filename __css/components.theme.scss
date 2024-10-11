@@ -101,7 +101,11 @@
   }
 
   // Page wrapper
+  --PageWrapper-padding: 0;
+  // --PageWrapper-bg: unset;
   --PageWrapper-content-padding: 0;
+  // --PageWrapper-content-bg: unset;
+  // --PageWrapper-content-rounded: unset;
 
   // Page title
   --PageTitle-max-width: var(--screenLg);

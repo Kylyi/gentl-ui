@@ -15,7 +15,7 @@ const defaultIntlOptions: Intl.NumberFormatOptions = {
 }
 
 export function useNumber(localeRef?: MaybeRefOrGetter<string>) {
-  const { currentLocaleIso } = useLocale()
+  const { currentLocale } = useLocale()
   const { t } = useI18n()
 
   const separators = computed(() => getSeparators(localeRef))
@@ -65,7 +65,7 @@ export function useNumber(localeRef?: MaybeRefOrGetter<string>) {
     }
 
     const { localeIso, intlOptions } = options
-    const usedLocale = localeIso || currentLocaleIso.value
+    const usedLocale = localeIso || currentLocale.value.iso || currentLocale.value.code
     const usedIntlOptions = intlOptions || defaultIntlOptions
 
     return Intl.NumberFormat(usedLocale, usedIntlOptions).format(+val)
@@ -113,7 +113,7 @@ export function useNumber(localeRef?: MaybeRefOrGetter<string>) {
   }
 
   function getSeparators(localeRef?: MaybeRefOrGetter<string>) {
-    const locale = toValue(localeRef) || currentLocaleIso.value
+    const locale = toValue(localeRef) || currentLocale.value.iso || currentLocale.value.code
 
     const helperVal = Intl.NumberFormat(locale).formatToParts(1111.1)
     const thousandSeparator = helperVal[1].value

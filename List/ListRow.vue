@@ -129,7 +129,7 @@ function getItem() {
 
   &--active {
     &::before {
-      @apply absolute content-empty left-0 inset-block-.5 w-1 bg-primary rounded-l-custom;
+      @apply absolute content-empty left-0 inset-block-px w-1 bg-primary rounded-l-custom;
     }
   }
 

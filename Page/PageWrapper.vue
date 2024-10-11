@@ -146,7 +146,8 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .page-wrapper {
-  @apply ease-out grow z-$zPageWrapper p-$PageWrapper-padding;
+  @apply ease-out grow z-$zPageWrapper;
+  @apply p-$PageWrapper-padding bg-$PageWrapper-bg;
 
   &.is-mounted {
     transition:
@@ -164,20 +165,18 @@ onMounted(() => {
   }
 
   &__content {
-    @apply flex flex-col grow p-$PageWrapper-content-padding overflow-auto;
+    @apply flex flex-col grow overflow-auto;
+    @apply p-$PageWrapper-content-padding bg-$PageWrapper-content-bg rounded-$PageWrapper-content-rounded;
   }
 }
 
-.page-drawer.is-open.page-drawer--left ~ .page-wrapper {
+.page-drawer.is-open.page-drawer--left.is-mini ~ .page-wrapper {
   margin-left: calc(var(--drawerLeftMiniWidth));
 }
 
-.page-drawer.is-open.page-drawer--left:not(.is-absolute):not(.is-mini)
-  ~ .page-wrapper {
+.page-drawer.is-open.page-drawer--left:not(.is-absolute):not(.is-mini) ~ .page-wrapper {
   &.is-mobile.move-content {
-    transform: translateX(
-      calc(var(--drawerLeftWidth) - var(--drawerLeftMiniWidth))
-    );
+    transform: translateX(calc(var(--drawerLeftWidth) - var(--drawerLeftMiniWidth)));
   }
 
   &:not(.is-mobile),
@@ -190,8 +189,7 @@ onMounted(() => {
   padding-right: var(--drawerRightMiniWidth);
 }
 
-.page-drawer.is-open.page-drawer--right:not(.is-absolute):not(.is-mini)
-  ~ .page-wrapper {
+.page-drawer.is-open.page-drawer--right:not(.is-absolute):not(.is-mini) ~ .page-wrapper {
   padding-right: var(--drawerRightWidth);
 }
 </style>
