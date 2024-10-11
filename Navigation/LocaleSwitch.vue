@@ -8,8 +8,6 @@ const { locale, locales } = useI18n()
 const switchLocalePath = useSwitchLocalePath()
 
 const localeCookie = useCookie('lang', {
-  path: '/',
-  sameSite: 'lax',
   domain: rC.public.COOKIE_DOMAIN ?? undefined,
 })
 
