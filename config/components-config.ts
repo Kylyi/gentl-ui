@@ -471,6 +471,16 @@ export const config = merge(
       },
 
       /**
+       * Extends the metadata object
+       *
+       * Usage: in some cases, we might need to merge or extend the metadata with
+       * something project-specific.
+       */
+      extendMetaData: (meta: IItem, oldMeta?: IItem, metaFields?: string[]): IItem => {
+        return meta
+      },
+
+      /**
        * Whether to focus on filter's input on component show/load
        */
       focusOnFilterInput: true,

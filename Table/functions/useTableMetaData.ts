@@ -57,6 +57,25 @@ const EXTENDABLE_COLUMN_PROPERTIES: Array<keyof TableColumn> = [
   'width',
 ]
 
+export type IMetadataFetchOptions = {
+  /**
+   * Provided metadata
+   * (will take precedence over the state)
+   */
+  meta?: IItem
+
+  /**
+   * metaFields to fetch
+   */
+  metaFields?: string[]
+
+  /**
+   * Whether to update the state only
+   * -> will not set `layout` and other stuff, just updated the state
+   */
+  updateStateOnly?: boolean
+}
+
 export async function useTableMetaData(props: ITableProps) {
   // Utils
   const { handleRequest } = useRequest()
@@ -86,7 +105,7 @@ export async function useTableMetaData(props: ITableProps) {
    */
   async function fetchAndSetMetaData(
     forceRefetch?: boolean,
-    options?: { meta?: any, metaFields?: string[] },
+    options?: IMetadataFetchOptions,
   ) {
     const storageKey = getStorageKey()
     const providedMetaData = options?.meta
@@ -118,6 +137,7 @@ export async function useTableMetaData(props: ITableProps) {
           layoutsKey,
         } = props.getMetaData ?? getGenericMetaData ?? {}
 
+        const oldMeta = stateMetaData.value.meta ?? {}
         let result: any
 
         // When we provide explicit metadata, we use that
@@ -127,14 +147,14 @@ export async function useTableMetaData(props: ITableProps) {
 
         // Otherwise, we decide whether to use the state or fetch from the API
         else {
-          const _meta = stateMetaData.value.meta ?? {}
-
           result = forceRefetch
             ? await fnc?.(options?.metaFields)
             : config.table.useLocalStorageForMetaFirst
               ? stateMetaData.value.meta ?? (await fnc?.(options?.metaFields))
               : await fnc?.(options?.metaFields)
         }
+
+        result = config.table.extendMetaData(result, oldMeta, options?.metaFields)
 
         tableStore.setTableState(
           getStorageKey(),
@@ -143,6 +163,10 @@ export async function useTableMetaData(props: ITableProps) {
             pageSize: stateMetaData.value.pageSize ?? props.paginationOptions?.pageSize,
           },
         )
+
+        if (options?.updateStateOnly) {
+          return
+        }
 
         const _layout = get(
           result,

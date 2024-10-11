@@ -1,9 +1,10 @@
 import { config } from '~/components/config/components-config'
 
 // Types
-import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
-import type { ITableLayout } from '~/components/Table/types/table-layout.type'
 import type { ITableProps } from '~/components/Table/types/table-props.type'
+import type { ITableLayout } from '~/components/Table/types/table-layout.type'
+import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
+import type { IMetadataFetchOptions } from '~/components/Table/functions/useTableMetaData'
 import type { IVirtualScrollEvent } from '~/components/VirtualScroller/types/virtual-scroll-event.type'
 import type {
   ITableDataFetchFncInput,
@@ -46,10 +47,7 @@ export function useTableData(
   layoutRef: Ref<ITableLayout | undefined>,
   queryBuilder: Ref<IQueryBuilderRow[] | undefined>,
   scrollerEl: Ref<any>,
-  metaDataRefetch?: (
-    forceRefetch?: boolean,
-    options?: { meta?: any, metaFields?: string[] },
-  ) => Promise<void>,
+  metaDataRefetch?: (forceRefetch?: boolean, options?: IMetadataFetchOptions,) => Promise<void>,
   recreateColumns?: (shouldRecreate?: boolean) => void,
   resizeColumns?: (force?: boolean) => void,
 ) {
@@ -403,16 +401,6 @@ export function useTableData(
 
       const res = await fetchData(options)
 
-      if (config.table.extractData) {
-        customData.value = Object.assign(
-          customData.value,
-          config.table.extractData(res, {
-            externalDataRef: externalData,
-            metaRef: tableState.value?.meta,
-          }),
-        )
-      }
-
       // When any of the hashes mismatches, we force metadata refetch and data refetch
       if (!dataHasBeenFetched.value) {
         const resHashes = res?.hashes ?? {}
@@ -433,8 +421,27 @@ export function useTableData(
 
           return
         } else {
-          // await metaDataRefetch?.(true, { metaFields: ['subscriptions', 'columns'] })
+          metaDataRefetch?.(true, { metaFields: ['subscriptions'], updateStateOnly: true })
+            .then(() => {
+              customData.value = Object.assign(
+                customData.value,
+                config.table.extractData(res, {
+                  externalDataRef: externalData,
+                  metaRef: tableState.value?.meta,
+                }),
+              )
+            })
         }
+      }
+
+      if (config.table.extractData) {
+        customData.value = Object.assign(
+          customData.value,
+          config.table.extractData(res, {
+            externalDataRef: externalData,
+            metaRef: tableState.value?.meta,
+          }),
+        )
       }
 
       if (res) {
