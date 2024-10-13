@@ -66,7 +66,7 @@ export function useTableSelection(props: ITableProps, rows: Ref<any[]>) {
       await nextTick()
     }
 
-    const key = get(row, rowKey.value)
+    const key = get(row, props.selectionOptions?.selectionKey ?? rowKey.value)
     const _isSelected = isSelected(row)
 
     if (val === true && _isSelected) {

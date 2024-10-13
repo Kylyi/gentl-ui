@@ -88,7 +88,7 @@ export const tableResizeKey: InjectionKey<() => void> = Symbol('tableResize')
  * Function to select a row
  */
 export const tableSelectRowKey: InjectionKey<
-  (row: any, options?: { clearSelection?: boolean, val?: boolean }) => void
+  (row: any, options?: { clearSelection?: boolean, val?: boolean }) => Promise<void>
 > = Symbol('tableSelectRow')
 
 /**

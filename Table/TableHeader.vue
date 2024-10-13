@@ -74,10 +74,21 @@ const selectionState = computed({
         ? null // Something is selected
         : false // Nothing is selected
   },
-  set(val: boolean | null) {
-    props.rows.forEach(row => {
-      handleSelectRow(row, { val: !!val })
-    })
+  async set(val: boolean | null) {
+    // When using `selectionKey`, we need to make sure we don't select the same row twice
+    if (props.selectionOptions?.selectionKey) {
+      const uniqRows = uniqBy(props.rows, row => {
+        return get(row, props.selectionOptions!.selectionKey!)
+      })
+
+      for await (const row of uniqRows) {
+        await handleSelectRow(row, { val: !!val })
+      }
+    } else {
+      props.rows.forEach(row => {
+        handleSelectRow(row, { val: !!val })
+      })
+    }
   },
 })
 
