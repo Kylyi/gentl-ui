@@ -35,6 +35,7 @@ defineExpose({
     fnc?: IWysiwygProps['populateMention'],
     replace?: boolean,
   ) => resolveMentions(fnc, replace, props),
+  setModel: (content: string) => model.value = content,
 })
 
 // Init

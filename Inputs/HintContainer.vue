@@ -12,6 +12,8 @@ defineProps<IProps>()
     color="ca"
     font="rem-12"
   >
-    {{ hint }}
+    <slot>
+      {{ hint }}
+    </slot>
   </span>
 </template>

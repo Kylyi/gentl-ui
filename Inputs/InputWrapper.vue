@@ -181,7 +181,7 @@ const wrapperProps = computed(() => {
         #error
       >
         <ErrorContainer
-          :error-takes-space="errorTakesSpace"
+          :error-takes-space
           :errors="issues"
           class="wrapper-error"
         />
@@ -189,10 +189,15 @@ const wrapperProps = computed(() => {
 
       <!-- Hint -->
       <template
-        v-if="hint"
+        v-if="hint || $slots.hint"
         #hint
       >
-        <HintContainer :hint="hint" />
+        <slot name="hint">
+          <HintContainer
+            v-if="hint"
+            :hint
+          />
+        </slot>
       </template>
     </Component>
 

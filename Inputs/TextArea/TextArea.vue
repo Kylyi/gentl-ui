@@ -152,5 +152,12 @@ defineExpose({
     </template>
 
     <slot name="inner" />
+
+    <template
+      v-if="$slots.hint"
+      #hint
+    >
+      <slot name="hint" />
+    </template>
   </InputWrapper>
 </template>
