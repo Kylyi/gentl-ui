@@ -29,7 +29,7 @@ const props = withDefaults(defineProps<IProps>(), {
 })
 
 // Injections
-const handleSelectRow = injectStrict(tableSelectRowKey, () => {})
+const handleSelectRow = injectStrict(tableSelectRowKey, (_: any) => {})
 const isSelectedRow = injectStrict(tableIsSelectedRowKey, () => false)
 
 // Layout

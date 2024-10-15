@@ -3,7 +3,7 @@ import type { IListItem } from '~/components/List/types/list-item.type'
 import type { IListProps } from '~/components/List/types/list-props.type'
 
 export function useListUtils() {
-  function getListProps(props: IListProps) {
+  function getListProps(props: Omit<IListProps, 'ui'>) {
     return reactivePick(props, [
       'addItemValidation',
       'allowAdd',

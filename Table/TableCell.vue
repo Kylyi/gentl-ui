@@ -22,7 +22,7 @@ type IProps = {
 const props = defineProps<IProps>()
 
 // Injections
-const handleSelectRow = injectStrict(tableSelectRowKey, () => {})
+const handleSelectRow = injectStrict(tableSelectRowKey, (_: any) => {})
 const isSelectedRow = injectStrict(tableIsSelectedRowKey, () => false)
 const {
   isEditing,
@@ -70,7 +70,7 @@ function focusSiblingCellHorizontal(
 
   siblingCell = isLastCell
     ? parentRowElSibling?.querySelector?.(
-        `.cell${direction === 'previous' ? ':last-child' : ''}`,
+      `.cell${direction === 'previous' ? ':last-child' : ''}`,
     )
     : siblingCell
 
@@ -276,7 +276,11 @@ async function handleKeyDown(e: KeyboardEvent) {
 
 function selectSelf(self: any) {
   nextTick(() => {
-    self.component?.exposed?.select?.() ?? self.component?.exposed?.focus?.()
+    if (self.component?.exposed?.select) {
+      self.component?.exposed?.select?.()
+    } else if (self.component?.exposed?.focus) {
+      self.component?.exposed?.focus?.()
+    }
   })
 }
 
