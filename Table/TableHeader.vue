@@ -15,8 +15,8 @@ import {
 import {
   tableColumnsKey,
   tableRowsKey,
-  tableSelectRowKey,
   tableSelectionKey,
+  tableSelectRowKey,
 } from '~/components/Table/provide/table.provide'
 
 // Components
@@ -85,9 +85,9 @@ const selectionState = computed({
         await handleSelectRow(row, { val: !!val })
       }
     } else {
-      props.rows.forEach(row => {
-        handleSelectRow(row, { val: !!val })
-      })
+      for await (const row of props.rows) {
+        await handleSelectRow(row, { val: !!val })
+      }
     }
   },
 })
