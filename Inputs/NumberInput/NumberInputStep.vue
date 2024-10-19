@@ -73,12 +73,15 @@ function stopStep() {
 </script>
 
 <template>
-  <div class="number-input__step">
+  <div
+    class="number-input__step"
+    :class="`is--${size}`"
+  >
     <Btn
       ref="increment"
       tabindex="-1"
       size="auto"
-      icon="i-bi:caret-up-fill w-4 h-4"
+      icon="step-icon i-bi:caret-up-fill"
       color="ca"
       no-hover-effect
       touch-none
@@ -90,7 +93,7 @@ function stopStep() {
       ref="decrement"
       tabindex="-1"
       size="auto"
-      icon="i-bi:caret-up-fill rotate-180 w-4 h-4"
+      icon="step-icon i-bi:caret-up-fill rotate-180"
       color="ca"
       no-hover-effect
       touch-none
@@ -104,5 +107,18 @@ function stopStep() {
 <style lang="scss" scoped>
 .number-input__step {
   @apply flex flex-col shrink w-4;
+}
+
+.is--sm {
+  :deep(.step-icon) {
+    @apply w-3 h-3;
+  }
+}
+
+.is--md,
+.is--lg {
+  :deep(.step-icon) {
+    @apply w-4 h-4;
+  }
 }
 </style>

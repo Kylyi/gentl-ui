@@ -37,6 +37,7 @@ const {
   wrapperProps,
   hasClearableBtn,
   hasContent,
+  isBlurred,
   focus,
   select,
   blur,
@@ -159,5 +160,22 @@ defineExpose({
     >
       <slot name="hint" />
     </template>
+
+    <!-- Tooltip -->
+    <Menu
+      v-if="tooltip || !!$slots.tooltip"
+      :model-value="!isBlurred"
+      manual
+      placement="right"
+      :fallback-placements="['bottom']"
+      :reference-target="el"
+      :no-arrow="false"
+      no-uplift
+      v-bind="tooltipProps"
+    >
+      <slot name="tooltip">
+        {{ tooltip }}
+      </slot>
+    </Menu>
   </InputWrapper>
 </template>

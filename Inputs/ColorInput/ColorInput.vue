@@ -13,8 +13,7 @@ import Field from '~/components/Field/Field.vue'
 
 const props = withDefaults(defineProps<IColorProps>(), {
   icon: 'i-material-symbols:format-color-text-rounded',
-  inline: undefined,
-  labelInside: undefined,
+  noIcon: true,
   required: undefined,
   stackLabel: undefined,
   disallowedColors: () => config.colorInput?.props?.disallowedColors ?? [],
@@ -54,6 +53,7 @@ function handlePickColor(color?: string) {
   // nextTick(() => {
   //   fieldEl.value?.blur()
   // })
+  $hide()
 }
 
 // Field
@@ -100,7 +100,10 @@ const fieldProps = getFieldProps(props)
       />
     </MenuProxy>
 
-    <template #append>
+    <template
+      v-if="!noIcon"
+      #append
+    >
       <div
         :class="icon"
         m="x-2"

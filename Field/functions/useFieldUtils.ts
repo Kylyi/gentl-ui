@@ -88,6 +88,7 @@ export function useFieldUtils(options?: {
       'label',
       'layout',
       'loading',
+      'noBorder',
       'noContent',
       'placeholder',
       'readonly',
