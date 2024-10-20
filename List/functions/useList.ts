@@ -287,8 +287,7 @@ export function useList(
             const idx = selected.value.findIndex(sel => getKey(sel) === itemKey)
 
             if (idx > -1) {
-              const _selected = [...selected.value]
-              _selected.splice(idx, 1)
+              const _selected = selected.value.toSpliced(idx, 1)
 
               self.emit('update:selected', _selected)
             }
