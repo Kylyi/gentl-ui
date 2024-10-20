@@ -6,11 +6,14 @@ import { useWysiwygStore } from '~/components/Wysiwyg/wysiwyg.store'
 import Menu from '~/components/Menu/Menu.vue'
 
 // Store
-const { editor } = useWysiwygStore()
+const wysiwygStore = useWysiwygStore()
 
 // Layout
 const menuEl = ref<InstanceType<typeof Menu>>()
-const { model: link, reset: linkReset } = useRefReset({ url: '', text: '' })
+const { model: link, reset: linkReset } = useRefReset({
+  url: '',
+  text: '',
+})
 const { model: selection, reset: posReset } = useRefReset({ from: 0, to: 0 })
 
 function reset() {
@@ -19,7 +22,7 @@ function reset() {
 }
 
 function getSelectedLinkData() {
-  const state = editor?.state
+  const state = wysiwygStore.editor?.state
 
   if (!state) {
     return
@@ -56,7 +59,7 @@ function getSelectedLinkData() {
 }
 
 function createLink() {
-  if (!editor) {
+  if (!wysiwygStore.editor) {
     return
   }
 
@@ -67,16 +70,16 @@ function createLink() {
 }
 
 function unlink() {
-  editor?.chain().focus().unsetLink().run()
+  wysiwygStore.editor?.chain().focus().unsetLink().run()
   menuEl.value?.hide()
 }
 
 function handleSubmit() {
-  const isLink = editor?.isActive('link')
+  const isLink = wysiwygStore.editor?.isActive('link')
   const moveTo = selection.value.from + link.value.text.length + 1
 
   if (isLink) {
-    editor
+    wysiwygStore.editor
       ?.chain()
       .focus()
       .extendMarkRange('link')
@@ -84,21 +87,40 @@ function handleSubmit() {
       .insertContent(link.value.text)
       .run()
   } else {
-    editor
+    wysiwygStore.editor
       ?.chain()
       .focus()
       .insertContent(
-        `<a href="${link.value.url}" class="link" data-uuid="${uuid}">${link.value.text}</a>&nbsp;`,
+        `<a href="${link.value.url}" data-uuid="${uuid}">${link.value.text}</a>&nbsp;`,
         // { parseOptions: { preserveWhitespace: true } },
       )
       .run()
 
     nextTick(() => {
-      editor?.chain().focus().setTextSelection(moveTo).run()
+      wysiwygStore.editor?.chain().focus().setTextSelection(moveTo).run()
     })
   }
 
   menuEl.value?.hide()
+}
+
+// Mentions
+const urlEl = useTemplateRef('urlEl')
+
+const mentions = computedAsync(async () => {
+  const mentionItems: IItem[] = []
+
+  for await (const item of (wysiwygStore.mentionSetup ?? [])) {
+    const res = item.loadData({})
+
+    mentionItems.push(...res.data)
+  }
+
+  return mentionItems.flat()
+})
+
+function addTemplateVariable(mention: IItem) {
+  link.value.url = `${link.value.url}{{${mention.id}}}`
 }
 </script>
 
@@ -107,14 +129,14 @@ function handleSubmit() {
     icon="i-ph:link"
     size="sm"
     color="ca"
-    :class="{ 'is-active': editor?.isActive('link') }"
+    :class="{ 'is-active': wysiwygStore.editor?.isActive('link') }"
     @click.stop.prevent="createLink"
     @mousedown.stop.prevent
   >
     <Menu
       ref="menuEl"
       :no-arrow="false"
-      w="70"
+      w="100"
       @hide="reset"
     >
       <Form
@@ -129,7 +151,7 @@ function handleSubmit() {
         <template #submit-start>
           <!-- Cancel link -->
           <Btn
-            v-if="editor?.isActive('link')"
+            v-if="wysiwygStore.editor?.isActive('link')"
             :label="$t('general.cancelLink')"
             size="sm"
             color="negative"
@@ -142,18 +164,51 @@ function handleSubmit() {
         <TextInput
           v-model="link.text"
           :label="$t('general.title')"
-          label-inside
           placeholder="Google"
           autofocus
         />
 
         <!-- Url -->
-        <TextInput
+        <TextArea
+          ref="urlEl"
           v-model="link.url"
+          :mask="{ mask: /^(?!.* ).*$/ }"
           :label="$t('general.link')"
           placeholder="https://google.com"
-          label-inside
-        />
+        >
+          <template
+v-if="mentions?.length"
+#tooltip
+>
+            <div
+              class="attribute__id-tooltip"
+              @click.stop.prevent
+              @mousedown.stop.prevent
+            >
+              <div
+                flex="~ gap-1"
+                p="l-2 y-2"
+              >
+                <Chip
+                  v-for="mention in mentions"
+                  :key="mention.id"
+                  p="x-2"
+                  :ripple="true"
+                  :label="mention.label"
+                  @click.stop.prevent="addTemplateVariable(mention)"
+                  @mousedown.stop.prevent
+                />
+              </div>
+
+              <small
+                text="caption"
+                p="x-2"
+                >
+                {{ $t('wysiwyg.addTemplateVariableHint') }}
+              </small>
+            </div>
+          </template>
+        </TextArea>
       </Form>
     </Menu>
   </Btn>

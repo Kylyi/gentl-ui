@@ -3,7 +3,6 @@ import type { ImageOptions } from '@tiptap/extension-image'
 
 // Types
 import type { IInputWrapperProps } from '~/components/Inputs/types/input-wrapper-props.type'
-import type { IWysiwygMentionItem } from '~/components/Wysiwyg/types/wysiwyg-mention-item.type'
 import type { IWysiwygMentionSetup } from '~/components/Wysiwyg/types/wysiwyg-mention-setup.type'
 
 export type IWysiwygProps = {
@@ -20,22 +19,65 @@ export type IWysiwygProps = {
   allowLink?: boolean
 
   /**
+   * When true, email buttons will be allowed to be inserted
+   */
+  allowEmailBtn?: boolean
+
+  /**
    * When true, files will be allowed to be inserted
    */
   allowFileUpload?: boolean
-  image?: Partial<ImageOptions> | boolean
-  debounce?: number
-  editorClass?: ClassType
-  editorStyle?: CSSProperties
-  emptyValue?: any
-  hint?: string
-  name?: string
-  noSink?: boolean
-  mentionItems?: IWysiwygMentionItem[]
-  modelValue?: any
-  sinkAlwaysVisible?: boolean
 
+  /**
+   * When true, tables will be allowed to be inserted
+   */
+  allowTable?: boolean
+
+  /**
+   *
+   */
+  image?: Partial<ImageOptions> | boolean
+
+  /**
+   * Debounce for changes within the editor
+   */
+  debounce?: number
+
+  /**
+   * Class for the editor
+   */
+  editorClass?: ClassType
+
+  /**
+   * Style for the editor
+   */
+  editorStyle?: CSSProperties
+
+  /**
+   * The empty value
+   */
+  emptyValue?: any
+
+  /**
+   * Hint for the wysiwyg editor
+   */
+  hint?: string
+
+  /**
+   * Name for the wysiwyg editor
+   */
+  name?: string
+  modelValue?: any
+
+  /**
+   * Mentions
+   */
   mentionSetup?: IWysiwygMentionSetup[]
+
+  /**
+   * When true, the WysiwygSink will NOT be shown
+   */
+  noSink?: boolean
 
   /**
    * When true, the WysiwygSink will NOT be floating -> will be `relative` instead of `absolute`
@@ -63,7 +105,12 @@ export type IWysiwygProps = {
   /**
    * The format of the returned value
    */
-  returnFormat?: 'html' | 'markdown'
+  returnFormat?: 'html' | 'markdown' | 'text'
+
+  /**
+   * When true, the sink will always be visible
+   */
+  sinkAlwaysVisible?: boolean
 
   /**
    * The function to use for resolving the mention

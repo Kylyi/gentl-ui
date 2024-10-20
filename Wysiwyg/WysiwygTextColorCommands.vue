@@ -13,14 +13,25 @@ defineEmits<{
 const { editor } = useWysiwygStore()
 
 function handleSetColor(color?: string | null) {
-  color
-    ? editor?.chain().focus().setColor(color).run()
-    : editor?.chain().focus().unsetColor().run()
+  if (color) {
+    editor?.chain().focus().setColor(color).run()
+  } else {
+    editor?.chain().focus().unsetColor().run()
+  }
+}
+
+function handleSetBackgroundColor(color?: string | null) {
+  // if (color) {
+  //   editor?.chain().focus().setBackgroundColor(color).run()
+  // } else {
+  //   editor?.chain().focus().unsetBackgroundColor().run()
+  // }
 }
 </script>
 
 <template>
   <div flex="~">
+    <!-- Text color -->
     <Btn
       size="sm"
       icon="i-material-symbols:format-color-text-rounded"
@@ -35,5 +46,21 @@ function handleSetColor(color?: string | null) {
         />
       </MenuProxy>
     </Btn>
+
+    <!-- Background color -->
+    <!-- <Btn
+      size="sm"
+      icon="i-material-symbols:format-color-fill"
+      @click.stop.prevent
+      @mousedown.stop.prevent
+    >
+      <MenuProxy>
+        <ColorBrandingPicker
+          @update:model-value="handleSetBackgroundColor"
+          @click.stop.prevent
+          @mousedown.stop.prevent
+        />
+      </MenuProxy>
+    </Btn> -->
   </div>
 </template>

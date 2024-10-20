@@ -23,9 +23,9 @@
     @apply italic;
   }
 
-  p:not(:last-child) {
-    @apply m-b-2;
-  }
+  // p:not(:last-child) {
+  //   @apply m-b-2;
+  // }
 
   li > p:first-child {
     @apply m-b-0;
@@ -66,10 +66,71 @@
   h4 {
     @apply text-lg;
   }
+
+  &.resize-cursor {
+    @apply cursor-col-resize;
+  }
 }
 
 :deep(.ProseMirror-selectednode) {
   @apply outline-2 outline-solid outline-primary rounded-custom;
+}
+
+:deep(table) {
+  @apply border-collapse table-fixed overflow-hidden;
+
+  &.separator-both {
+    td,
+    th {
+      @apply border-1;
+    }
+  }
+
+  &.separator-rows {
+    td,
+    th {
+      @apply border-y-1;
+    }
+  }
+
+  &.separator-cols {
+    td,
+    th {
+      @apply border-x-1;
+    }
+  }
+
+  td,
+  th {
+    @apply relative border-ca box-border min-w-4 p-x-2 p-y-1 align-top;
+    // @apply border-1;
+
+    > * {
+      @apply m-b-0;
+    }
+  }
+
+  th {
+    @apply bg-primary color-white font-semibold text-left;
+  }
+
+  .selectedCell:after {
+    @apply absolute content-empty inset-0 pointer-events-none z-2;
+    @apply bg-truegray-500/25 dark:bg-truegray-800/25;
+  }
+
+  .column-resize-handle {
+    @apply absolute bg-secondary pointer-events-none w-1 z-2;
+
+    bottom: -2px;
+    right: -2px;
+    top: 0;
+  }
+}
+
+:deep(.wysiwyg-table),
+:deep(.tableWrapper) {
+  @apply overflow-x-auto w-full max-w-full;
 }
 
 // Details

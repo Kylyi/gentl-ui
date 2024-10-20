@@ -48,4 +48,32 @@ export function WysiwygLink(
 
       ...options,
     })
+    .extend({
+      parseHTML() {
+        return [
+          {
+            tag: 'a[href]:not([data-type="wysiwyg-email-btn"])', // Exclude custom button nodes
+          },
+        ]
+      },
+
+      addAttributes() {
+        return {
+          ...this.parent?.(),
+
+          style: {
+            default: null,
+            parseHTML: element => element.getAttribute('style'),
+            renderHTML: attributes => {
+              if (!attributes.style) {
+                return {}
+              }
+              return {
+                style: attributes.style,
+              }
+            },
+          },
+        }
+      },
+    })
 }

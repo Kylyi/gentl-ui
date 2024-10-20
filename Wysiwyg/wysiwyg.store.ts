@@ -1,5 +1,8 @@
 import type { Editor } from '@tiptap/vue-3'
 
+// Types
+import type { IWysiwygMentionSetup } from '~/components/Wysiwyg/types/wysiwyg-mention-setup.type'
+
 // Injections
 import { wysiwygIdKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
 
@@ -11,6 +14,7 @@ export function useWysiwygStore(wysiwygId?: string) {
     const providedData = reactive<IItem>({})
     const files = ref<IFile[]>([])
     const isFocused = ref(false)
+    const mentionSetup = ref<IWysiwygMentionSetup[] | undefined>()
 
     const getEditorValue = ref<() => any>()
 
@@ -33,6 +37,7 @@ export function useWysiwygStore(wysiwygId?: string) {
       files,
       filesByPath,
       isFocused,
+      mentionSetup,
       providedData,
       getEditorValue,
       setEditor,

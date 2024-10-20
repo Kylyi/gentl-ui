@@ -2,6 +2,7 @@ import { useEditor } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 
 // Types
+import { Markdown } from 'tiptap-markdown'
 import type { IWysiwygProps } from '~/components/Wysiwyg/types/wysiwyg-props.type'
 
 // Functions
@@ -25,8 +26,9 @@ import { WysiwygTaskItem } from '~/components/Wysiwyg/extensions/wysiwyg-task-it
 import { WysiwygImage } from '~/components/Wysiwyg/extensions/wysiwyg-image.extension'
 import { WysiwygLink } from '~/components/Wysiwyg/extensions/wysiwyg-link.extension'
 import { useWysiwygCodeBlock } from '~/components/Wysiwyg/functions/useWysiwygCodeBlock'
-import { Markdown } from 'tiptap-markdown'
 import { WysiwygFocus } from '~/components/Wysiwyg/extensions/wysiwyg-focus.extension'
+import { useWysiwygEmailBtn } from '~/components/Wysiwyg/functions/useWysiwygEmailBtn'
+import { WysiwygTable } from '~/components/Wysiwyg/extensions/wysiwyg-table.extension'
 
 export function useWysiwygInit(
   props: IWysiwygProps,
@@ -36,6 +38,7 @@ export function useWysiwygInit(
   const self = getCurrentInstance()
   const { WysiwygFile, FileHandler } = useWysiwygFile()
   const { WysiwygCodeBlock } = useWysiwygCodeBlock()
+  const { WysiwygEmailBtn } = useWysiwygEmailBtn()
   const {
     getRect,
     loadData,
@@ -49,7 +52,11 @@ export function useWysiwygInit(
     extension: T,
     dependentKey: keyof IWysiwygProps,
   ) {
-    return props[dependentKey] ? [extension] : []
+    const extensions = Array.isArray(extension)
+      ? extension
+      : [extension]
+
+    return props[dependentKey] ? extensions : []
   }
 
   // Store
@@ -78,9 +85,7 @@ export function useWysiwygInit(
     extensions: [
       StarterKit.configure({ codeBlock: false }),
       WysiwygFocus(),
-      Markdown.configure({
-        breaks: true,
-      }),
+      Markdown.configure({ breaks: true }),
       WysiwygCodeBlock(),
       WysiwygPlaceholder(props),
       WysiwygTextAlign(),
@@ -93,6 +98,9 @@ export function useWysiwygInit(
       WysiwygTaskList(),
       WysiwygTaskItem(),
 
+      // Table
+      ...resolveExtension(WysiwygTable(), 'allowTable'),
+
       // File upload
       ...resolveExtension(WysiwygFile(), 'allowFileUpload'),
       ...resolveExtension(FileHandler, 'allowFileUpload'),
@@ -100,9 +108,13 @@ export function useWysiwygInit(
       // Images
       ...resolveExtension(WysiwygImage(), 'allowImage'),
 
+      // Email button
+      ...resolveExtension(WysiwygEmailBtn(), 'allowEmailBtn'),
+
       // Link
       ...resolveExtension(WysiwygLink(), 'allowLink'),
 
+      // Mentions
       ...MentionExtensions,
     ],
 
@@ -131,9 +143,16 @@ export function useWysiwygInit(
   wysiwygStore.getEditorValue = () => {
     const returnFormat = props.returnFormat ?? 'html'
 
-    return returnFormat === 'html'
-      ? editor.value?.getHTML()
-      : editor.value?.storage.markdown.getMarkdown()
+    switch (returnFormat) {
+      case 'html':
+        return editor.value?.getHTML()
+
+      case 'markdown':
+        return editor.value?.storage.markdown.getMarkdown()
+
+      case 'text':
+        return editor.value?.getText()
+    }
   }
 
   // Provide

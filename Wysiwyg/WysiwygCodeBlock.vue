@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { offset } from '@floating-ui/dom'
 import { useFloating } from '@floating-ui/vue'
-import { NodeViewContent, nodeViewProps, NodeViewWrapper } from '@tiptap/vue-3'
+import { NodeViewContent, NodeViewWrapper, nodeViewProps } from '@tiptap/vue-3'
 
 // Functions
 import { useWysiwygCodeBlock } from '~/components/Wysiwyg/functions/useWysiwygCodeBlock'
@@ -42,6 +42,7 @@ const highlighted = computedAsync(async () => {
 
   return await highlight(toValue(content.value) ?? '', language.value)
 })
+
 function getLanguageLabel(opt: string | IItem) {
   if (!opt) {
     return

@@ -3,6 +3,7 @@ import { EditorContent } from '@tiptap/vue-3'
 
 // Types
 import type { IWysiwygProps } from '~/components/Wysiwyg/types/wysiwyg-props.type'
+import type { IWysiwygMentionSetup } from '~/components/Wysiwyg/types/wysiwyg-mention-setup.type'
 
 // Functions
 import { useWysiwygInit } from '~/components/Wysiwyg/functions/useWysiwygInit'
@@ -39,6 +40,7 @@ defineExpose({
 })
 
 // Init
+const self = getCurrentInstance()
 const uuid = useId() as string
 const model = defineModel<any>()
 
@@ -47,7 +49,7 @@ provideLocal(wysiwygModelKey, model)
 
 // Store
 const wysiwygStore = useWysiwygStore()
-const { isFocused, files } = storeToRefs(wysiwygStore)
+const { isFocused, files, mentionSetup } = storeToRefs(wysiwygStore)
 
 // Init files
 watch(
@@ -58,6 +60,11 @@ watch(
   { immediate: true },
 )
 
+// Init
+const mentionSetupOriginal = defineModel<IWysiwygMentionSetup[]>('mentionSetup')
+
+syncRef(mentionSetupOriginal, mentionSetup, { direction: 'ltr' })
+
 // Utils
 const {
   editor,
@@ -67,6 +74,7 @@ const {
   selectFnc,
   mentionListProps,
 } = useWysiwygInit(props, model)
+
 const { getInputWrapperProps } = useInputWrapperUtils()
 const { transitionProps, resolveMentions } = useWysiwygUtils()
 
@@ -89,6 +97,57 @@ watch(model, model => {
 })
 
 useWysiwygInjections({ model })
+
+const selectedDom = ref<{ type: 'table', domEl: HTMLElement, pos: number } | null>(null)
+
+watch(
+  () => editor.value?.state?.selection,
+  () => {
+    const { view, state } = editor.value ?? {}
+    const { selection } = state ?? {}
+
+    if (!view || !selection) {
+      selectedDom.value = null
+
+      return
+    }
+
+    const { $from, $anchor } = selection
+    for (let depth = $from.depth; depth > 0; depth--) {
+      const node = $from.node(depth)
+
+      if (node.type.name === 'table') {
+        const pos = $from.before(depth)
+        const wrapperEl = view.nodeDOM(pos) as HTMLElement
+        const tableEl = wrapperEl.querySelector('table')
+
+        if (!tableEl) {
+          continue
+        }
+
+        if (wrapperEl.clientWidth < tableEl.clientWidth) {
+          selectedDom.value = {
+            type: 'table',
+            domEl: wrapperEl as HTMLElement,
+            pos: $anchor.pos,
+          }
+
+          return
+        } else {
+          selectedDom.value = {
+            type: 'table',
+            domEl: tableEl as HTMLElement,
+            pos: $anchor.pos,
+          }
+
+          return
+        }
+      }
+    }
+
+    selectedDom.value = null
+  },
+)
 
 // Life cycle
 onMounted(() => {
@@ -141,6 +200,13 @@ onBeforeUnmount(wysiwygStore.$dispose)
       :list-props="mentionListProps"
       :get-rect
       :select-fnc
+    />
+
+    <WysiwygElementOptions
+      v-if="selectedDom"
+      :dom="selectedDom?.domEl"
+      :type="selectedDom.type"
+      :pos="selectedDom.pos"
     />
 
     <template #menu>

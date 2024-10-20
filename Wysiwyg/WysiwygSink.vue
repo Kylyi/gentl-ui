@@ -51,6 +51,7 @@ useMutationObserver(
       class="wysiwyg-sink"
       content-class="gap-x-1 p-1"
     >
+      <!-- Size -->
       <WysiwygTextSizeSimpleCommands />
 
       <Separator
@@ -58,6 +59,7 @@ useMutationObserver(
         inset
       />
 
+      <!-- Text Color -->
       <WysiwygTextColorCommands />
 
       <Separator
@@ -65,6 +67,7 @@ useMutationObserver(
         inset
       />
 
+      <!-- Text style -->
       <WysiwygTextStyleCommands />
 
       <Separator
@@ -73,6 +76,7 @@ useMutationObserver(
         inset
       />
 
+      <!-- Text alignment -->
       <WysiwygTextAlignmentCommands />
 
       <Separator
@@ -81,8 +85,10 @@ useMutationObserver(
         inset
       />
 
+      <!-- List (ordered & unordered) -->
       <WysiwygListCommands />
 
+      <!-- Link & File -->
       <template v-if="allowLink || allowFileUpload">
         <Separator
           vertical
@@ -101,8 +107,10 @@ useMutationObserver(
         inset
       />
 
+      <!-- Details -->
       <WysiwygDetailsCommandBtn />
 
+      <!-- Email button -->
       <template v-if="allowImage">
         <Separator
           vertical
@@ -110,7 +118,29 @@ useMutationObserver(
           inset
         />
 
-        <WysiwygImg />
+        <WysiwygEmailBtnCommand />
+      </template>
+
+      <!-- Image -->
+      <template v-if="allowImage">
+        <Separator
+          vertical
+          spaced
+          inset
+        />
+
+        <WysiwygImgCommand />
+      </template>
+
+      <!-- Table -->
+      <template v-if="allowTable">
+        <Separator
+          vertical
+          spaced
+          inset
+        />
+
+        <WysiwygTableCommandBtn />
       </template>
     </HorizontalScroller>
 
