@@ -1,6 +1,6 @@
-import type { IBtnProps } from "~/components/Button/types/btn-props.type"
+import type { IBtnProps } from '~/components/Button/types/btn-props.type'
 
-export interface ITabsProps {
+export type ITabsProps = {
   contentClass?: ClassType
   labelActiveClass?: ClassType
   labelClass?: ClassType

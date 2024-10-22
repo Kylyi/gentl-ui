@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { type Placement } from '@floating-ui/dom'
+import type { Placement } from '@floating-ui/dom'
 import { config } from '~/components/config/components-config'
 
 // Models
-import { TableColumn } from '~/components/Table/models/table-column.model'
+import type { TableColumn } from '~/components/Table/models/table-column.model'
 
 // Injections
 import { tableFocusKey } from '~/components/Table/provide/table.provide'
@@ -42,7 +42,7 @@ function handleSort(sortValue?: 'asc' | 'desc') {
     // We need to adjust their number accordingly, so that the order is not broken
     const sortedColumnsAfter = props.columns.filter(
       col =>
-        col.sortOrder !== undefined && col.sortOrder > column.value.sortOrder!
+        col.sortOrder !== undefined && col.sortOrder > column.value.sortOrder!,
     )
 
     sortedColumnsAfter.forEach(col => {
@@ -50,8 +50,8 @@ function handleSort(sortValue?: 'asc' | 'desc') {
     })
     column.value.sortOrder = undefined
   } else if (!column.value.sortOrder) {
-    column.value.sortOrder =
-      props.columns.filter(col => col.sortOrder !== undefined).length + 1
+    column.value.sortOrder
+      = props.columns.filter(col => col.sortOrder !== undefined).length + 1
   }
 }
 
@@ -86,16 +86,16 @@ function handleMenuShow(ev: PointerEvent) {
 function handleMenuBeforeHide() {
   column.value.filters = column.value.filters.filter(filter => {
     const isNonValueComparator = NON_VALUE_COMPARATORS.includes(
-      filter.comparator
+      filter.comparator,
     )
 
     const isUndefinedValue = filter.value === undefined
     const isEmptyArray = Array.isArray(filter.value) && !filter.value.length
 
     return (
-      (!isUndefinedValue && !isEmptyArray) ||
-      isNonValueComparator ||
-      filter.nonInteractive
+      (!isUndefinedValue && !isEmptyArray)
+      || isNonValueComparator
+      || filter.nonInteractive
     )
   })
 

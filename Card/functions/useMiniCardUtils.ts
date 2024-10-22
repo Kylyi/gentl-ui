@@ -1,5 +1,5 @@
 // Types
-import { type IMiniCardProps } from '~/components/Card/types/mini-card-props.type'
+import type { IMiniCardProps } from '~/components/Card/types/mini-card-props.type'
 
 export function useMiniCardUtils() {
   function getMiniCardProps(props: IMiniCardProps) {

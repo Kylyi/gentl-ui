@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { EditorContent, Node } from '@tiptap/vue-3'
+import { EditorContent } from '@tiptap/vue-3'
 
 // Types
 import type { IWysiwygProps } from '~/components/Wysiwyg/types/wysiwyg-props.type'

@@ -400,8 +400,8 @@ onKeyStroke(['d', 'D'], (ev: KeyboardEvent) => {
             />
 
             <Component
-              v-if="('subscriptionComponent' in config) && config.subscriptionComponent"
               :is="config.subscriptionComponent"
+              v-if="('subscriptionComponent' in config) && config.subscriptionComponent"
               ref="subscriptionEl"
               self-start
               m="t-1"

@@ -23,7 +23,7 @@ const months = computed(() => {
   return Array.from({ length: 12 }, (_, idx) => {
     const idxString = padStart(String(idx), 2, '0')
     const date = $date(
-      `${dateObj.value.year()}-${padStart(String(idx + 1), 2, '0')}-01`
+      `${dateObj.value.year()}-${padStart(String(idx + 1), 2, '0')}-01`,
     )
 
     return {

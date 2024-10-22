@@ -6,7 +6,7 @@ export type IErrorExtended = {
 
 export function useFormErrors(
   errorsRef: MaybeRefOrGetter<string[]>,
-  emits: any
+  emits: any,
 ) {
   const errorsExtended = computed(() => {
     const errors = toValue(errorsRef)
@@ -37,7 +37,7 @@ export function useFormErrors(
 
     emits(
       'update:errors',
-      errors.filter(err => err !== error.errorText)
+      errors.filter(err => err !== error.errorText),
     )
   }
 

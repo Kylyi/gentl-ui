@@ -1,12 +1,12 @@
-import dayjs from 'dayjs'
+import type dayjs from 'dayjs'
 
 // Types
-import { type DayEvent } from '~/components/DatePicker/types/DayEvent.type'
+import type { DayEvent } from '~/components/DatePicker/types/DayEvent.type'
 
 // Models
-import { DayEnum } from '~/components/Inputs/DateInput/enums/day.enum'
+import type { DayEnum } from '~/components/Inputs/DateInput/enums/day.enum'
 
-export interface IDatePickerProps {
+export type IDatePickerProps = {
   allowedDays?: Array<dayjs.Dayjs> | ((date: dayjs.Dayjs) => boolean)
   disabledDays?: Array<dayjs.Dayjs> | ((date: dayjs.Dayjs) => boolean)
   events?: DayEvent[]

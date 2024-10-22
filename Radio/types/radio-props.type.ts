@@ -1,4 +1,4 @@
-export interface IRadioProps {
+export type IRadioProps = {
   color?:
     | 'primary'
     | 'secondary'

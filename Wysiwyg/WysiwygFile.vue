@@ -1,5 +1,5 @@
 <script lang="ts">
-import { nodeViewProps, NodeViewWrapper } from '@tiptap/vue-3'
+import { NodeViewWrapper, nodeViewProps } from '@tiptap/vue-3'
 
 // Models
 import { FileModel } from '~/components/FileInput/models/file.model'

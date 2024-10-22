@@ -1,6 +1,6 @@
 import type { IMenuProps } from '~/components/Menu/types/menu-props.type'
 
-export interface IMenuConfirmationProps extends IMenuProps {
+export type IMenuConfirmationProps = IMenuProps & {
   /**
    * The text to display in the confirmation menu
    */

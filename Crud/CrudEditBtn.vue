@@ -3,7 +3,7 @@
 import { isFormEditingKey } from '~/components/Form/provide/form.provide'
 
 // Constants
-import { BUTTON_PRESET } from '~/components/Button/constants/button-preset.constant'
+import type { BUTTON_PRESET } from '~/components/Button/constants/button-preset.constant'
 
 type IProps = {
   archived?: boolean
@@ -47,10 +47,10 @@ const transitionProps = computed(() => ({
 }))
 
 const btnProps = computed(() => {
-  const preset: keyof typeof BUTTON_PRESET =
-    props.preset ?? (props.archived ? 'RESTORE' : 'EDIT')
-  const label =
-    props.label ?? (props.archived ? $t('general.restore') : $t('general.edit'))
+  const preset: keyof typeof BUTTON_PRESET
+    = props.preset ?? (props.archived ? 'RESTORE' : 'EDIT')
+  const label
+    = props.label ?? (props.archived ? $t('general.restore') : $t('general.edit'))
 
   return { preset, label }
 })
@@ -100,8 +100,8 @@ function handleClick() {
   }
 
   &-wrapper {
-    --apply : absolute inset-block-0 right-0 flex flex-center rounded-inherit
-    bg-white dark:bg-darker min-w-full;
+    @apply absolute inset-block-0 right-0 flex flex-center rounded-inherit
+      bg-white dark:bg-darker min-w-full;
   }
 }
 </style>

@@ -1,4 +1,4 @@
-export interface IMonthSelectorProps {
+export type IMonthSelectorProps = {
   modelValue?: Datetime
   referenceTarget?: any
 }

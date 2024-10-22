@@ -1,4 +1,4 @@
-export interface IConfirmationProps {
+export type IConfirmationProps = {
   checkmarkClass?: ClassType
   confirmationText?: string
   delay?: number

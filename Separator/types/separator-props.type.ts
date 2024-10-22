@@ -1,4 +1,4 @@
-export interface ISeparatorProps {
+export type ISeparatorProps = {
   spaced?: boolean
   vertical?: boolean
   inset?: boolean

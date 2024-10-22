@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import dayjs from 'dayjs'
+import type dayjs from 'dayjs'
 
 // Types
 import type { IDatePickerNavigationProps } from '~/components/DatePicker/types/datepicker-navigation-props.type'
@@ -20,7 +20,7 @@ function handleNavigation(val: number, unit: 'month' | 'year') {
 function handleSetDate(payload: { idx: number }, unit: 'year' | 'month') {
   emits(
     'update:modelValue',
-    $date(props.modelValue)[unit](payload.idx) as dayjs.Dayjs
+    $date(props.modelValue)[unit](payload.idx) as dayjs.Dayjs,
   )
 }
 </script>

@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'vue'
 
-export interface ICollapseProps {
+export type ICollapseProps = {
   /**
    * Functions that gets called before teh collapse is shown
    *

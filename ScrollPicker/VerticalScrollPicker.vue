@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type CSSProperties } from 'vue'
+import type { CSSProperties } from 'vue'
 
 // Types
 import type { IVerticalScrollPickerProps } from '~/components/ScrollPicker/types/vertical-scroll-picker-props.type'
@@ -54,7 +54,7 @@ const containerStyle = computedEager<CSSProperties>(() => {
   return {
     maxHeight: `${Math.min(
       props.maxVisible * itemHeight.value,
-      options.value.length * itemHeight.value
+      options.value.length * itemHeight.value,
     )}px`,
   }
 })
@@ -97,7 +97,7 @@ function handleClick(ev: PointerEvent, idx: number) {
 const preventNextScrollRef = autoResetRef(false, 1000)
 const { list, containerProps, wrapperProps, scrollTo } = useVirtualList(
   optionsExtended,
-  { itemHeight: itemHeight.value, overscan: overscan.value + 1 }
+  { itemHeight: itemHeight.value, overscan: overscan.value + 1 },
 )
 
 useScroll(containerProps.ref, {
@@ -112,17 +112,17 @@ useScroll(containerProps.ref, {
     adjustScrollDebounced()
     throttledUpdateModelValue(
       optionsExtended.value[
-        Math.round(containerProps.ref.value!.scrollTop / itemHeight.value) +
-          overscan.value
-      ]
+        Math.round(containerProps.ref.value!.scrollTop / itemHeight.value)
+        + overscan.value
+      ],
     )
 
     if (optionsExtended.value.length !== options.value.length) {
       const container = containerProps.ref.value
 
-      const addBottom =
-        container!.scrollHeight - container!.scrollTop <=
-        (props.maxVisible + overscan.value) * itemHeight.value
+      const addBottom
+        = container!.scrollHeight - container!.scrollTop
+        <= (props.maxVisible + overscan.value) * itemHeight.value
       if (addBottom) {
         optionsExtended.value.push(...options.value)
       }
@@ -132,8 +132,8 @@ useScroll(containerProps.ref, {
         hasSmoothScroll.value = false
         optionsExtended.value.unshift(...options.value)
         nextTick(() => {
-          container!.scrollTop +=
-            options.value.length * itemHeight.value + Math.abs(diffTop)
+          container!.scrollTop
+            += options.value.length * itemHeight.value + Math.abs(diffTop)
           hasSmoothScroll.value = true
         })
       }
@@ -163,7 +163,7 @@ const adjustScrollDebounced = useDebounceFn(() => {
   }
 
   selectedIdx.value = Math.round(
-    containerProps.ref.value!.scrollTop / itemHeight.value
+    containerProps.ref.value!.scrollTop / itemHeight.value,
   )
   scrollTo(selectedIdx.value)
 
@@ -175,11 +175,11 @@ function reinitializeScroller(preselectIdx?: number) {
   hasSmoothScroll.value = false
   getOptions()
   const iterations = Math.round(Math.ceil(5000 / options.value.length) / 2)
-  const idx =
-    iterations * options.value.length +
-    options.value.length +
-    ((preselectIdx ?? selectedIdx.value) % options.value.length) +
-    (isInitialized.value ? 0 : -2)
+  const idx
+    = iterations * options.value.length
+    + options.value.length
+    + ((preselectIdx ?? selectedIdx.value) % options.value.length)
+    + (isInitialized.value ? 0 : -2)
 
   nextTick(() => {
     scrollTo(idx)
@@ -196,7 +196,7 @@ const throttledUpdateModelValue = useThrottleFn(
   },
   100,
   true,
-  true
+  true,
 )
 
 onMounted(() => {

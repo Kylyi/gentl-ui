@@ -5,7 +5,7 @@ type IGroupBtn = {
   class?: ClassType
 }
 
-export interface IButtonGroupProps {
+export type IButtonGroupProps = {
   modelValue: string | number
   buttons: IGroupBtn[]
   activeClass?: ClassType

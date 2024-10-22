@@ -2,7 +2,7 @@
 import type { ITreeNode } from '~/components/Tree/types/tree-node.type'
 
 export type ITreeNodeRowProps = {
-  fetchChildren?: { fnc: Function; mapKey: string }
+  fetchChildren?: { fnc: Function, mapKey: string }
   level: number
   maxLevel?: number
   node: ITreeNode

@@ -84,7 +84,9 @@ function handleAnimationEnd() {
   @apply fixed flex flex-col flex-gap-1 top-0 opacity-0
     bg-light-200 dark:bg-dark-800 z-$zDrawer max-w-full overflow-auto h-full;
 
-  transition: opacity ease-out 200ms, transform ease-out 200ms;
+  transition:
+    opacity ease-out 200ms,
+    transform ease-out 200ms;
 
   &.is-absolute {
     @apply absolute;

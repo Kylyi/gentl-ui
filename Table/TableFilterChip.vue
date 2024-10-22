@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // Models
-import { TableColumn } from '~/components/Table/models/table-column.model'
-import { FilterItem } from '~/libs/Shared/models/filter-item'
+import type { TableColumn } from '~/components/Table/models/table-column.model'
+import type { FilterItem } from '~/libs/Shared/models/filter-item'
 
 // Injections
 import { tableRefreshKey } from '~/components/Table/provide/table.provide'
@@ -25,7 +25,7 @@ const column = computed(() => {
 
 function removeChip() {
   column.value.filters = column.value.filters.filter(
-    filterItem => filterItem.comparator !== filter.value.comparator
+    filterItem => filterItem.comparator !== filter.value.comparator,
   )
 
   tableRefresh()

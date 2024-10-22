@@ -2,7 +2,7 @@
 import type { DurationUnit } from '~/components/Inputs/DurationInput/functions/useDuration'
 import type { INumberInputProps } from '~/components/Inputs/NumberInput/types/number-input-props.type'
 
-export interface IDurationInputProps extends INumberInputProps {
+export type IDurationInputProps = INumberInputProps & {
   /**
    * The initial duration unit
    */

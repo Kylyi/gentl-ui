@@ -1,5 +1,5 @@
 // Types
-import { type IInputProps } from '~/components/Inputs/types/input-props.type'
+import type { IInputProps } from '~/components/Inputs/types/input-props.type'
 
 // TODO: This is correct but breaks the props object...
 // type IInputWrapperPropsWithouHasContent = Omit<IInputWrapperProps, 'hasContent'>

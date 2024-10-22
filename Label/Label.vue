@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type CSSProperties } from 'vue'
+import type { CSSProperties } from 'vue'
 
 type IProps = {
   modelValue: string

@@ -1,6 +1,6 @@
-import { type IBtnProps } from '~/components/Button/types/btn-props.type'
+import type { IBtnProps } from '~/components/Button/types/btn-props.type'
 
-export interface ITabProps {
+export type ITabProps = {
   name: string
   label?: string
   icon?: string

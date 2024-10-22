@@ -1,6 +1,6 @@
 import type { FactoryOpts } from 'imask'
 
-export interface IMaskOptions {
+export type IMaskOptions = {
   modelValue?: Ref<any>
   maskOptions: Ref<FactoryOpts>
   immediateUpdateValueFnc?: (val: any) => void

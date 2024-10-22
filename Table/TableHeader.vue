@@ -15,8 +15,8 @@ import {
 import {
   tableColumnsKey,
   tableRowsKey,
-  tableSelectionKey,
   tableSelectRowKey,
+  tableSelectionKey,
 } from '~/components/Table/provide/table.provide'
 
 // Components

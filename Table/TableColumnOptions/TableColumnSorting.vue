@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Models
-import { TableColumn } from '~/components/Table/models/table-column.model'
+import type { TableColumn } from '~/components/Table/models/table-column.model'
 
 type IProps = {
   columns?: TableColumn[]
@@ -23,8 +23,10 @@ function handleSort(sortValue?: 'asc' | 'desc', ev?: PointerEvent) {
       // These are the columns that have higher sortOrder than the current column
       // We need to adjust their number accordingly, so that the order is not broken
       const sortedColumnsAfter = props.columns.filter(
-        col =>
-          col.sortOrder !== undefined && col.sortOrder > column.value.sortOrder!
+        col => {
+          return col.sortOrder !== undefined && col.sortOrder > column.value.sortOrder!
+        },
+
       )
 
       sortedColumnsAfter.forEach(col => {
@@ -32,8 +34,8 @@ function handleSort(sortValue?: 'asc' | 'desc', ev?: PointerEvent) {
       })
       column.value.sortOrder = undefined
     } else if (!column.value.sortOrder) {
-      column.value.sortOrder =
-        props.columns.filter(col => col.sortOrder !== undefined).length + 1
+      column.value.sortOrder
+        = props.columns.filter(col => col.sortOrder !== undefined).length + 1
     }
   }
 

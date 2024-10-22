@@ -1,7 +1,7 @@
-// TYPES
+// Types
 import type { IInputWrapperProps } from '~/components/Inputs/types/input-wrapper-props.type'
 
-export interface IYearMonthSelectorProps extends IInputWrapperProps {
+export type IYearMonthSelectorProps = IInputWrapperProps & {
   clearable?: boolean
   emptyValue?: any
   modelValue?: Datetime

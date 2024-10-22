@@ -27,8 +27,8 @@ const draggedItem = injectStrict(qbDraggedItemKey)
 const items = injectStrict(qbItemsKey)
 
 // Layout
-const draggableEl =
-  ref<InstanceType<typeof QueryBuilderGroup | typeof QueryBuilderItem>>()
+const draggableEl
+  = ref<InstanceType<typeof QueryBuilderGroup | typeof QueryBuilderItem>>()
 
 // Scrolling
 const scrollBy = ref({ speedX: 0, speedY: 0 })
@@ -39,7 +39,7 @@ const { pause, resume, isActive } = useIntervalFn(
     scrollContainer.value?.scrollBy(speedX, speedY)
   },
   5,
-  { immediate: false }
+  { immediate: false },
 )
 
 // D'n'D
@@ -47,15 +47,15 @@ let clonedElement: HTMLElement | null = null
 let mouseOffset = { x: 0, y: 0 }
 
 const draggableElement = computed(
-  () => unrefElement(draggableEl as any) as unknown as HTMLElement
+  () => unrefElement(draggableEl as any) as unknown as HTMLElement,
 )
 
 // Mouse
 function handleMouseDown(event: MouseEvent) {
   const target = event.target as HTMLElement
-  const isDraggableEl =
-    target.classList.contains('query-builder-move-handler') ||
-    target.classList.contains('query-builder-move-handler__icon')
+  const isDraggableEl
+    = target.classList.contains('query-builder-move-handler')
+    || target.classList.contains('query-builder-move-handler__icon')
 
   if (!isDraggableEl) {
     return
@@ -84,7 +84,7 @@ function handleMouseMove(event: MouseEvent) {
     // Constrain to viewport
     newLeft = Math.min(
       newLeft,
-      window.innerWidth - clonedElement.offsetWidth - ITEM_ROW_LEFT_MARGIN
+      window.innerWidth - clonedElement.offsetWidth - ITEM_ROW_LEFT_MARGIN,
     )
     newTop = Math.min(newTop, window.innerHeight - clonedElement.offsetHeight)
     newLeft = Math.max(newLeft, 0)
@@ -105,9 +105,9 @@ function handleMouseMove(event: MouseEvent) {
 // Touch
 function handleTouchStart(event: TouchEvent) {
   const target = event.target as HTMLElement
-  const isDraggableEl =
-    target.classList.contains('query-builder-move-handler') ||
-    target.classList.contains('query-builder-move-handler__icon')
+  const isDraggableEl
+    = target.classList.contains('query-builder-move-handler')
+    || target.classList.contains('query-builder-move-handler__icon')
 
   if (!isDraggableEl) {
     return
@@ -138,7 +138,7 @@ function handleTouchMove(event: TouchEvent) {
     // Constrain to viewport
     newLeft = Math.min(
       newLeft,
-      window.innerWidth - clonedElement.offsetWidth - ITEM_ROW_LEFT_MARGIN
+      window.innerWidth - clonedElement.offsetWidth - ITEM_ROW_LEFT_MARGIN,
     )
     newTop = Math.min(newTop, window.innerHeight - clonedElement.offsetHeight)
     newLeft = Math.max(newLeft, 0)
@@ -176,8 +176,7 @@ function handleDragEnd() {
       // Get current row info
       const currentPath = props.item.path
       const currentParentPath = currentPath.split('.').slice(0, -2).join('.')
-      const currentParent =
-        props.parent ?? get(toValue(items), currentParentPath)
+      const currentParent = props.parent ?? get(toValue(items), currentParentPath)
       const currentIndex = +currentPath.slice(-1)
 
       // Get the new location info
@@ -204,7 +203,7 @@ function handleDragEnd() {
 
         // We remove the original row
         const idx = parent.children.findIndex(
-          child => child.path === currentPath
+          child => child.path === currentPath,
         )
         parent.children.splice(idx, 1)
       }

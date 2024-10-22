@@ -16,5 +16,5 @@ const model = defineModel<number>()
   <input
     v-model.number="model"
     type="range"
-  />
+  >
 </template>

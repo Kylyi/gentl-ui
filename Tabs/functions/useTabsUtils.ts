@@ -1,5 +1,5 @@
 // Types
-import { type IItem } from '~/libs/Shared/types/item.type'
+import type { IItem } from '~/libs/Shared/types/item.type'
 
 export type ITab = IItem & {
   id: string | number

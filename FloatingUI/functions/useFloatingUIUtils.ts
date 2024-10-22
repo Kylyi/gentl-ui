@@ -4,9 +4,9 @@ export function useFloatingUIUtils() {
   function getElement(
     elRef?: MaybeRefOrGetter<
       MaybeElement<ReferenceElement> | HTMLElement | string | null
-    >
+    >,
   ) {
-    if (!process.client) {
+    if (!import.meta.client) {
       return
     }
 

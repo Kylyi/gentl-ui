@@ -5,7 +5,7 @@ import type { IListDraggedItem } from '~/components/List/types/list-dragged-item
 import {
   listDraggedItemKey,
   listEmitDragEndEventKey,
-  listEmitDragStartEventKey
+  listEmitDragStartEventKey,
 } from '~/components/List/provide/list.provide'
 
 // Constants
@@ -13,12 +13,11 @@ const GROUP_ROW_TITLE_HEIGHT = 38
 const GROUP_ROW_CONTROLS_HEIGHT = -38
 
 export function useListDragAndDrop(
-  listEl: Ref<HTMLDivElement>
+  listEl: Ref<HTMLDivElement>,
 ) {
   const self = getCurrentInstance()!
   const draggedItem = ref<IListDraggedItem>()
   const listElRect = ref<DOMRect>()
-
 
   provide(listDraggedItemKey, draggedItem)
   provide(listEmitDragStartEventKey, payload => self.emit('drag:start', payload))
@@ -48,10 +47,10 @@ export function useListDragAndDrop(
     // We also do nothing when we're dragging over the same row
     // We also do nothing when we're dragging over descendants of the dragged item (only if nested)
     if (
-      !listRow ||
-      listRow.classList.contains('no-dragover') ||
-      listRowPath === draggedItem.value?.path ||
-      (listRowPath?.includes('.') && listRowPath?.startsWith(draggedItem.value?.path || ''))
+      !listRow
+      || listRow.classList.contains('no-dragover')
+      || listRowPath === draggedItem.value?.path
+      || (listRowPath?.includes('.') && listRowPath?.startsWith(draggedItem.value?.path || ''))
     ) {
       return
     }
@@ -117,12 +116,12 @@ export function useListDragAndDrop(
 
   whenever(
     () => draggedItem.value?.pos,
-    () => handleDragging()
+    () => handleDragging(),
   )
 
   return {
     listEl,
     listElRect,
-    draggedItem
+    draggedItem,
   }
 }

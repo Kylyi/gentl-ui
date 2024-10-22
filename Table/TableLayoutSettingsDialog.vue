@@ -82,10 +82,10 @@ const nonSaveableSettingsByName = computed(() => {
 const isSaveable = computed(() => {
   return (
     (layout.value.filters
-    || layout.value.queryBuilder
-    || layout.value.sort
-    || layout.value.columns)
-    && layout.value.name
+      || layout.value.queryBuilder
+      || layout.value.sort
+      || layout.value.columns)
+      && layout.value.name
   )
 })
 

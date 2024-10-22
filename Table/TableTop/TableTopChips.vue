@@ -16,12 +16,12 @@ const filterChips = computed(() => {
     .flatMap(col => col.filters)
     .filter(filter => {
       const isNonValueComparator = NON_VALUE_COMPARATORS.includes(
-        filter.comparator
+        filter.comparator,
       )
 
       return (
-        !filter.nonInteractive &&
-        (filter.value !== undefined || isNonValueComparator)
+        !filter.nonInteractive
+        && (filter.value !== undefined || isNonValueComparator)
       )
     })
     .sort((a, b) => a.id - b.id)

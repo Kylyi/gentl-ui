@@ -1,7 +1,7 @@
 // Types
-import { type CrudAction } from '~/components/Crud/types/crud-action.type'
+import type { CrudAction } from '~/components/Crud/types/crud-action.type'
 
-export interface IMainBarProps {
+export type IMainBarProps = {
   actions?: Partial<Record<CrudAction, boolean>> | true
   loading?: boolean
   noBreadcrumbs?: boolean

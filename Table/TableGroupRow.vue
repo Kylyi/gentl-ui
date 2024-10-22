@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Types
-import { type IGroupRow } from '~/libs/Shared/functions/data/useGrouping'
+import type { IGroupRow } from '~/libs/Shared/functions/data/useGrouping'
 
 // Models
 import { TableColumn } from '~/components/Table/models/table-column.model'
@@ -22,11 +22,11 @@ const collapsed = useVModel(props, 'collapsed', emits)
 
 const cols = computed(() => {
   const firstGroupColIdx = props.columns.findIndex(col =>
-    col.name.startsWith('_group')
+    col.name.startsWith('_group'),
   )
 
-  const firstDataColIdx =
-    props.columns.slice(1).findIndex(col => !col.name.startsWith('_group')) + 1
+  const firstDataColIdx
+    = props.columns.slice(1).findIndex(col => !col.name.startsWith('_group')) + 1
 
   const groupColsWidth = props.columns
     .slice(firstGroupColIdx)

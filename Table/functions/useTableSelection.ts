@@ -10,8 +10,8 @@ import { useTableUtils } from '~/components/Table/functions/useTableUtils'
 import {
   tableClearSelectionKey,
   tableIsSelectedRowKey,
-  tableSelectionKey,
   tableSelectRowKey,
+  tableSelectionKey,
 } from '~/components/Table/provide/table.provide'
 
 export function useTableSelection(props: ITableProps, rows: Ref<any[]>) {

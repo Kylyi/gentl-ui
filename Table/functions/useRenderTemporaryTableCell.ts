@@ -1,10 +1,13 @@
-/* eslint-disable vue/one-component-per-file */
-import { type DefineComponent } from 'vue'
-import TableCell from '~/components/Table/TableCell.vue'
-import { TableColumn } from '~/components/Table/models/table-column.model'
+import type { DefineComponent } from 'vue'
+
+// Models
+import type { TableColumn } from '~/components/Table/models/table-column.model'
 
 // Store
 import { useAppStore } from '~/libs/App/app.store'
+
+// Components
+import TableCell from '~/components/Table/TableCell.vue'
 
 export function useRenderTemporaryTableCell() {
   const { setTempComponent } = useAppStore()
@@ -12,7 +15,7 @@ export function useRenderTemporaryTableCell() {
   async function getCellWidth(
     row: any,
     col: TableColumn<any>,
-    slotRenderFnc?: Function
+    slotRenderFnc?: Function,
   ) {
     let maxContentWidth = 0
 

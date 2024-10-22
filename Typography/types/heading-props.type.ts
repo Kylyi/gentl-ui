@@ -6,8 +6,8 @@ export type IHeadingProps = {
 
   /**
    * When true:
-   *  * The filled title will have left highlight.
-   *  * The unfilled title will have bottom highlight
+   *  The filled title will have left highlight.
+   *  The unfilled title will have bottom highlight
    */
   highlighted?: boolean
 }

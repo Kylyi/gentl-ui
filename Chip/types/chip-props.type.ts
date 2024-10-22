@@ -1,5 +1,5 @@
 // Types
-import { type INavigation } from '~/components/Button/types/btn-props.type'
+import type { INavigation } from '~/components/Button/types/btn-props.type'
 
 export type IChipProps = {
   /**

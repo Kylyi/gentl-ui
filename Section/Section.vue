@@ -129,7 +129,7 @@ const isTitleVisible = computed(() => {
   }
 }
 
-.heading.is-filled.is-highlighted  {
+.heading.is-filled.is-highlighted {
   &::before {
     @apply absolute content-empty top-0 left-0 w-1 h-full bg-primary;
   }

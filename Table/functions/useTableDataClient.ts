@@ -17,13 +17,13 @@ export function useTableDataClient() {
   async function handleLocalFetch<T = IItem>(
     dataRef: MaybeRefOrGetter<T[]>,
     tableFetchInput: ITableDataFetchFncInput,
-    options?: { take?: number }
+    options?: { take?: number },
   ) {
     const { columnFilters, orderBy } = tableFetchInput.fetchTableQuery
 
     const filtered = filterData(
       dataRef,
-      columnFilters || ([] as ITableFilterItem<any>[])
+      columnFilters || ([] as ITableFilterItem<any>[]),
     )
     const rows = await sortData(filtered, orderBy || [])
 

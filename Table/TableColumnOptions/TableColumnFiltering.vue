@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Models
-import { TableColumn } from '~/components/Table/models/table-column.model'
+import type { TableColumn } from '~/components/Table/models/table-column.model'
 
 // Injections
 import { tableRefreshKey } from '~/components/Table/provide/table.provide'

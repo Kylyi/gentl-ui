@@ -1,10 +1,10 @@
 // Types
-import { type DayEvent } from '~/components/DatePicker/types/DayEvent.type'
+import type { DayEvent } from '~/components/DatePicker/types/DayEvent.type'
 
 // Models
-import { Day } from '~/libs/Shared/models/day.model'
+import type { Day } from '~/libs/Shared/models/day.model'
 
-export interface IDatePickerDayProps {
+export type IDatePickerDayProps = {
   day: Day
   isSelected?: boolean
   isBottomRow?: boolean

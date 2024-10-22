@@ -1,5 +1,5 @@
-import PerfectScrollbar from 'perfect-scrollbar'
+import type PerfectScrollbar from 'perfect-scrollbar'
 
-export interface IScrollAreaProps {
+export type IScrollAreaProps = {
   options?: PerfectScrollbar.Options
 }

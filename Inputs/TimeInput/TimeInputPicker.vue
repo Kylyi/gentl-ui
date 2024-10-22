@@ -25,12 +25,12 @@ const model = defineModel<any>()
 
 // Options
 const minuteOptions = computed(() =>
-  [...Array(60).keys()].map(val => padStart(String(val), 2, '0'))
+  [...Array(60).keys()].map(val => padStart(String(val), 2, '0')),
 )
 const hourOptions = computed(() =>
   props.is12h
     ? [...Array(12).keys()].map(val => padStart(String(val || 12), 2, '0'))
-    : [...Array(24).keys()].map(val => padStart(String(val), 2, '0'))
+    : [...Array(24).keys()].map(val => padStart(String(val), 2, '0')),
 )
 
 // Masks
@@ -103,7 +103,7 @@ function setValue(
   val: string | undefined | null,
   type: 'h' | 'm' | 'both',
   syncScrollPickers?: boolean,
-  syncWithInputs?: boolean
+  syncWithInputs?: boolean,
 ) {
   if (typeof val !== 'string' || preventNextChangeFromMobileInputs.value) {
     return

@@ -19,8 +19,8 @@ const isCollapseVisible = computedEager(() => {
   const hasChildren = props.hasChildren?.(props.node) ?? props.node.hasChildren
 
   return (
-    (!!props.node.children?.length || hasChildren) &&
-    props.level < (props.maxLevel ?? Number.POSITIVE_INFINITY)
+    (!!props.node.children?.length || hasChildren)
+    && props.level < (props.maxLevel ?? Number.POSITIVE_INFINITY)
   )
 })
 
@@ -45,7 +45,7 @@ const collapsedRef = injectStrict(treeCollapsedKey, ref({}))
 
 const handleCollapse = injectStrict(
   treeHandleCollapseKey,
-  async (_node: ITreeNode) => {}
+  async (_node: ITreeNode) => {},
 )
 </script>
 

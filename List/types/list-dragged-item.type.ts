@@ -1,8 +1,8 @@
-import type { IListItem } from '~/components/List/types/list-item.type';
+import type { IListItem } from '~/components/List/types/list-item.type'
 
 export type IListDraggedItem = {
   row: IListItem
-  pos: { x: number | null; y: number | null }
+  pos: { x: number | null, y: number | null }
   dropIndicatorPos?: {
     x: number | null
     y: number | null

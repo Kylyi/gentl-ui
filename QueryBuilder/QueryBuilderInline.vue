@@ -7,7 +7,7 @@ import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-bui
 import type { IQueryBuilderGroup } from '~/components/QueryBuilder/types/query-builder-group-props.type'
 
 // Models
-import { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
+import type { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
 
 // Injections
 import {
@@ -84,7 +84,7 @@ function handleAddFirstCondition() {
 
   nextTick(() => {
     const addedEl = unrefElement(queryBuilderEl)?.querySelector(
-      `[data-path="${path}"]`
+      `[data-path="${path}"]`,
     ) as HTMLElement
 
     setTimeout(() => {

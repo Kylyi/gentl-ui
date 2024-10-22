@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // TODO: MIN & MAX
 // Types
-import { type IYearMonthSelectorProps } from '~/components/YearMonthSelector/types/year-month-selector-props.type'
+import type { IYearMonthSelectorProps } from '~/components/YearMonthSelector/types/year-month-selector-props.type'
 
 // Functions
 import { useFieldUtils } from '~/components/Field/functions/useFieldUtils'

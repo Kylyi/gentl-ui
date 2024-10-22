@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Types
-import { type ITabProps } from '~/components/Tabs/types/tab-props.type'
+import type { ITabProps } from '~/components/Tabs/types/tab-props.type'
 
 defineOptions({
   // eslint-disable-next-line vue/component-definition-name-casing

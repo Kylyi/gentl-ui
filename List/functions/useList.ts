@@ -480,8 +480,7 @@ export function useList(
       })
     })
 
-    const shouldNotSort
-      = props.noSort
+    const shouldNotSort = props.noSort
       || (fuseOptions.fuseOptions?.shouldSort
       && highlightedItems.length !== items.value.length)
 

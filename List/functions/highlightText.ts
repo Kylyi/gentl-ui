@@ -1,4 +1,4 @@
-import * as Fuse from 'fuse.js'
+import type * as Fuse from 'fuse.js'
 
 // Types
 import type { IItem } from '~/libs/Shared/types/item.type'
@@ -30,13 +30,13 @@ export function highlight<T = IItem>(
     displayKeys?: string[]
 
     itemGetter?: (item: T) => T
-  }
+  },
 ) {
   const {
     keys = [],
     highlightClassName = 'fuse-highlighted',
     displayKeys,
-    itemGetter
+    itemGetter,
   } = options || {}
   let hasExactMatch = false
 
@@ -44,7 +44,7 @@ export function highlight<T = IItem>(
     highlighted: string,
     inputText = '',
     regions: readonly Fuse.RangeTuple[],
-    displayText?: string
+    displayText?: string,
   ) => {
     let content = ''
     let nextUnhighlightedRegionStartingIndex = 0
@@ -83,14 +83,13 @@ export function highlight<T = IItem>(
         const _item = itemGetter?.(item) ?? item
         const displayText = get(_item, displayKey ?? key as string)
 
-
         highlighted = match
           ? generateHighlightedText(
-              highlighted,
-              match.value,
-              match.indices,
-              displayText
-            )
+            highlighted,
+            match.value,
+            match.indices,
+            displayText,
+          )
           : `${highlighted} ${displayText}`
       })
 

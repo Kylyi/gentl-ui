@@ -174,9 +174,12 @@ onMounted(() => {
   margin-left: calc(var(--drawerLeftMiniWidth));
 }
 
-.page-drawer.is-open.page-drawer--left:not(.is-absolute):not(.is-mini) ~ .page-wrapper {
+.page-drawer.is-open.page-drawer--left:not(.is-absolute):not(.is-mini)
+  ~ .page-wrapper {
   &.is-mobile.move-content {
-    transform: translateX(calc(var(--drawerLeftWidth) - var(--drawerLeftMiniWidth)));
+    transform: translateX(
+      calc(var(--drawerLeftWidth) - var(--drawerLeftMiniWidth))
+    );
   }
 
   &:not(.is-mobile),
@@ -189,7 +192,8 @@ onMounted(() => {
   padding-right: var(--drawerRightMiniWidth);
 }
 
-.page-drawer.is-open.page-drawer--right:not(.is-absolute):not(.is-mini) ~ .page-wrapper {
+.page-drawer.is-open.page-drawer--right:not(.is-absolute):not(.is-mini)
+  ~ .page-wrapper {
   padding-right: var(--drawerRightWidth);
 }
 </style>

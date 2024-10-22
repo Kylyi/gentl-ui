@@ -1,4 +1,4 @@
-import dayjs from 'dayjs'
+import type dayjs from 'dayjs'
 
 // Types
 import type { IInputProps } from '~/components/Inputs/types/input-props.type'

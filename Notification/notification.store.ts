@@ -18,9 +18,9 @@ export const useNotificationStore = defineStore('notification', () => {
   function addNotification(notification: Omit<INotification, 'id'>) {
     const sameNotification = notifications.value.find(notif => {
       return (
-        notif.title === notification.title &&
-        notif.subtitle === notification.subtitle &&
-        notif.type === notification.type
+        notif.title === notification.title
+        && notif.subtitle === notification.subtitle
+        && notif.type === notification.type
       )
     })
 

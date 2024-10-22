@@ -105,21 +105,21 @@ export function useFileUtils() {
     {
       group: $t('office'),
       label: $t(
-        'mimetype.application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        'mimetype.application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       ),
       id: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     },
     {
       group: $t('office'),
       label: $t(
-        'mimetype.application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        'mimetype.application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       ),
       id: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     },
     {
       group: $t('office'),
       label: $t(
-        'mimetype.application/vnd.openxmlformats-officedocument.presentationml.presentation'
+        'mimetype.application/vnd.openxmlformats-officedocument.presentationml.presentation',
       ),
       id: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
     },

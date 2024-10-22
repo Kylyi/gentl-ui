@@ -3,7 +3,7 @@ import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-bui
 
 export type IQueryBuilderDraggedItem = {
   row: IQueryBuilderRow
-  pos: { x: number | null; y: number | null }
+  pos: { x: number | null, y: number | null }
   dropIndicatorPos?: {
     x: number | null
     y: number | null

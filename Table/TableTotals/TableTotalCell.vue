@@ -2,7 +2,7 @@
 import { config } from '~/components/config/components-config'
 
 // Types
-import { type ITableProps } from '~/components/Table/types/table-props.type'
+import type { ITableProps } from '~/components/Table/types/table-props.type'
 
 // Injections
 import {
@@ -11,7 +11,7 @@ import {
 } from '~/components/Table/provide/table.provide'
 
 // Models
-import { TableColumn } from '~/components/Table/models/table-column.model'
+import type { TableColumn } from '~/components/Table/models/table-column.model'
 
 type IProps = {
   column: TableColumn<any>
@@ -37,7 +37,7 @@ async function fetchAndSetTotals() {
   const res = await handleRequest(
     () =>
       props.getTotalsData?.fnc(dbQuery.value, props.column, tableRows.value),
-    { noResolve: true }
+    { noResolve: true },
   )
 
   total.value = get(res, payloadKey)

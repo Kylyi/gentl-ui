@@ -44,10 +44,10 @@ export function useQueryBuilderDragAndDrop() {
     // We also do nothing when we're dragging over the same row
     // We also do nothing when we're dragging over descendants of the dragged item (only if nested)
     if (
-      !qbRow ||
-      qbRow.classList.contains('no-dragover') ||
-      qbRowPath === draggedItem.value?.row.path ||
-      (qbRowPath?.includes('.') && qbRowPath?.startsWith(draggedItem.value?.row.path || ''))
+      !qbRow
+      || qbRow.classList.contains('no-dragover')
+      || qbRowPath === draggedItem.value?.row.path
+      || (qbRowPath?.includes('.') && qbRowPath?.startsWith(draggedItem.value?.row.path || ''))
     ) {
       return
     }
@@ -94,11 +94,11 @@ export function useQueryBuilderDragAndDrop() {
       draggedItem.value!.dropIndicatorPos = {
         x: rowX + offset.x - (queryBuilderElRect.value?.x ?? 0),
         y:
-          rowY +
-          offset.y +
-          scrollY.value +
-          rowHeight -
-          (queryBuilderElRect.value?.y ?? 0),
+          rowY
+          + offset.y
+          + scrollY.value
+          + rowHeight
+          - (queryBuilderElRect.value?.y ?? 0),
         width: rowWidth,
       }
 
@@ -111,7 +111,7 @@ export function useQueryBuilderDragAndDrop() {
 
   whenever(
     () => draggedItem.value?.pos,
-    () => handleDragging()
+    () => handleDragging(),
   )
 
   return {

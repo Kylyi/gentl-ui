@@ -1,4 +1,4 @@
-export interface IVerticalScrollPickerProps {
+export type IVerticalScrollPickerProps = {
   itemHeight?: number
   maxVisible?: number
   modelValue?: any
