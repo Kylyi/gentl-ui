@@ -1,4 +1,3 @@
-// useWysiwygEmailBtn.ts
 import { Node, mergeAttributes } from '@tiptap/core'
 import { VueNodeViewRenderer } from '@tiptap/vue-3'
 
