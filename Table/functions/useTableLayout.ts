@@ -87,7 +87,7 @@ export function useTableLayout(
   // CSS variables
   const rowHeaderHeight = useCssVar('--headerHeight', tableEl)
 
-  watchEffect(() => {
+  watch(tableEl, () => {
     rowHeaderHeight.value = `${props.headerHeight || props.rowHeight}px`
   })
 
