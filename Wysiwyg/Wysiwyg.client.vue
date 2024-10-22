@@ -204,14 +204,14 @@ onBeforeUnmount(wysiwygStore.$dispose)
       :select-fnc
     />
 
-    <WysiwygElementOptions
+    <!-- <WysiwygElementOptions
       v-if="selectedDom && isEditable"
       :dom="selectedDom?.domEl"
       :type="selectedDom.type"
       :pos="selectedDom.pos"
-    />
+    /> -->
 
-    <WysiwygSelection />
+    <!-- <WysiwygSelection /> -->
 
     <template #menu>
       <WysiwygSink
