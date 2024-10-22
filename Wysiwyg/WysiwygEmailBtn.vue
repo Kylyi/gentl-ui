@@ -91,6 +91,7 @@ watch(
     :href="node.attrs.href"
     :style="style"
     data-type="wysiwyg-email-btn"
+    :data-id="node.attrs.id"
     data-drag-handle
     @click.stop.prevent="isMenuActive = true"
   >

@@ -42,8 +42,9 @@ export function WysiwygLink(
       openOnClick: false,
       protocols: ['ftp', 'mailto'],
       HTMLAttributes: {
-        class: 'link wysiwyg-link',
-        target: '_blank',
+        'class': 'link wysiwyg-link',
+        'target': '_blank',
+        'data-id': generateUUID(),
       },
 
       ...options,
@@ -61,15 +62,18 @@ export function WysiwygLink(
         return {
           ...this.parent?.(),
 
-          style: {
+          id: {
             default: null,
-            parseHTML: element => element.getAttribute('style'),
+            parseHTML: element => {
+              return element.getAttribute('data-id')
+            },
             renderHTML: attributes => {
-              if (!attributes.style) {
+              if (!attributes.id) {
                 return {}
               }
+
               return {
-                style: attributes.style,
+                'data-id': attributes.id,
               }
             },
           },

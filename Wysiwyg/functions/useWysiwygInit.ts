@@ -29,6 +29,7 @@ import { useWysiwygCodeBlock } from '~/components/Wysiwyg/functions/useWysiwygCo
 import { WysiwygFocus } from '~/components/Wysiwyg/extensions/wysiwyg-focus.extension'
 import { useWysiwygEmailBtn } from '~/components/Wysiwyg/functions/useWysiwygEmailBtn'
 import { WysiwygTable } from '~/components/Wysiwyg/extensions/wysiwyg-table.extension'
+import { WysiwygUniqueId } from '~/components/Wysiwyg/extensions/wysiwyg-unique-id.extension'
 
 export function useWysiwygInit(
   props: IWysiwygProps,
@@ -61,6 +62,7 @@ export function useWysiwygInit(
 
   // Store
   const wysiwygStore = useWysiwygStore()
+  const { currentNodeSelection } = storeToRefs(wysiwygStore)
 
   // Layout
   const isEditable = computed(() => !props.readonly && !props.disabled)
@@ -97,6 +99,22 @@ export function useWysiwygInit(
       WysiwygDetailsContent(),
       WysiwygTaskList(),
       WysiwygTaskItem(),
+      WysiwygUniqueId({ types: [
+        'heading',
+        'paragraph',
+        'table',
+        'tableCell',
+        'tableRow',
+        'image',
+        'bulletList',
+        'orderedList',
+        'taskList',
+        'listItem',
+        'taskItem',
+        'details',
+        'detailsSummary',
+        'detailsContent',
+      ] }),
 
       // Table
       ...resolveExtension(WysiwygTable(), 'allowTable'),
@@ -137,6 +155,31 @@ export function useWysiwygInit(
 
       self?.emit('blur')
     },
+    onSelectionUpdate: ({ transaction }) => {
+      currentNodeSelection.value = {
+        nodes: [],
+        marks: [],
+      }
+
+      const { selection } = transaction
+      const { from, to } = selection
+
+      // Collect nodes and marks within the selection range
+      transaction.doc.nodesBetween(from, to, node => {
+        if (node.type.name !== 'text') {
+          currentNodeSelection.value.nodes = [
+            ...currentNodeSelection.value.nodes,
+            node,
+          ]
+        }
+        node.marks.forEach(mark => {
+          currentNodeSelection.value.marks = [
+            ...currentNodeSelection.value.marks,
+            mark,
+          ]
+        })
+      })
+    },
   })
 
   // Get editor value
@@ -165,10 +208,11 @@ export function useWysiwygInit(
   // React to editability
   watch(isEditable, isEditable => {
     editor.value?.setEditable(isEditable)
-  })
+  }, { immediate: true })
 
   return {
     editor,
+    isEditable,
     mentionEl,
     getRect,
     loadMentionData: loadData,

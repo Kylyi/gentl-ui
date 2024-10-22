@@ -16,6 +16,11 @@ export function useWysiwygStore(wysiwygId?: string) {
     const isFocused = ref(false)
     const mentionSetup = ref<IWysiwygMentionSetup[] | undefined>()
 
+    const currentNodeSelection = ref({
+      nodes: [] as IItem[],
+      marks: [] as IItem[],
+    })
+
     const getEditorValue = ref<() => any>()
 
     const filesByPath = computed(() => {
@@ -40,6 +45,7 @@ export function useWysiwygStore(wysiwygId?: string) {
       mentionSetup,
       providedData,
       getEditorValue,
+      currentNodeSelection,
       setEditor,
     }
   })()

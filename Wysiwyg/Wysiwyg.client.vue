@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { EditorContent } from '@tiptap/vue-3'
+import { EditorContent, Node } from '@tiptap/vue-3'
 
 // Types
 import type { IWysiwygProps } from '~/components/Wysiwyg/types/wysiwyg-props.type'
@@ -70,6 +70,7 @@ const {
   editor,
   mentionEl,
   getRect,
+  isEditable,
   loadMentionData,
   selectFnc,
   mentionListProps,
@@ -112,9 +113,10 @@ watch(
       return
     }
 
-    const { $from, $anchor } = selection
+    const { $from, $anchor, $head } = selection
     for (let depth = $from.depth; depth > 0; depth--) {
       const node = $from.node(depth)
+      // console.log('node' in selection ? selection.node?.type?.name : node?.type?.name)
 
       if (node.type.name === 'table') {
         const pos = $from.before(depth)
@@ -203,11 +205,13 @@ onBeforeUnmount(wysiwygStore.$dispose)
     />
 
     <WysiwygElementOptions
-      v-if="selectedDom"
+      v-if="selectedDom && isEditable"
       :dom="selectedDom?.domEl"
       :type="selectedDom.type"
       :pos="selectedDom.pos"
     />
+
+    <WysiwygSelection />
 
     <template #menu>
       <WysiwygSink

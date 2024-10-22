@@ -27,14 +27,24 @@ function WysiwygEmailBtn() {
 
     addAttributes() {
       return {
-        href: {
+        href: { default: null },
+        style: { default: '' },
+        content: { default: '' },
+        id: {
           default: null,
-        },
-        style: {
-          default: '',
-        },
-        content: {
-          default: '',
+          parseHTML: element => {
+            console.log('Log ~ addAttributes ~ element:', element.getAttribute('data-id'))
+            return element.getAttribute('data-id')
+          },
+          renderHTML: attributes => {
+            if (!attributes.id) {
+              return {}
+            }
+
+            return {
+              'data-id': attributes.id,
+            }
+          },
         },
       }
     },

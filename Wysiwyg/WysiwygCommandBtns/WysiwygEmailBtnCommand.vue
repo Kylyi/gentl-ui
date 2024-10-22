@@ -18,6 +18,7 @@ function handleAddBtn() {
     href="#"
     data-type="wysiwyg-email-btn"
     content="Link"
+    data-id="${generateUUID()}"
     style="padding-left:8px;padding-right:8px;border-radius:4px;background-color:${primaryColor};color:#FFFFFF;"
     ></a>`)
     .run()

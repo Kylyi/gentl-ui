@@ -50,6 +50,7 @@ watch(
     draggable="true"
     :src="node.attrs.src"
     :alt="node.attrs.alt"
+    :data-id="node.attrs.id"
     :style
     data-drag-handle
     class="wysiwyg-img"
