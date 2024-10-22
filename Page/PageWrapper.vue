@@ -146,7 +146,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .page-wrapper {
-  @apply ease-out grow z-$zPageWrapper p-$PageWrapper-padding;
+  @apply ease-out grow z-$zPageWrapper p-$PageWrapper-padding items-center;
 
   &.is-mounted {
     transition:
@@ -164,7 +164,7 @@ onMounted(() => {
   }
 
   &__content {
-    @apply flex flex-col grow p-$PageWrapper-content-padding overflow-auto;
+    @apply flex flex-col grow p-$PageWrapper-content-padding max-w-$PageWrapper-content-width w-full overflow-auto;
   }
 }
 
