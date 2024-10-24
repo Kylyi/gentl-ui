@@ -2,14 +2,14 @@
 import { EditorContent } from '@tiptap/vue-3'
 
 // Types
-import type { IWysiwygProps } from '~/components/Wysiwyg/types/wysiwyg-props.type'
 import type { IWysiwygMentionSetup } from '~/components/Wysiwyg/types/wysiwyg-mention-setup.type'
+import type { IWysiwygProps } from '~/components/Wysiwyg/types/wysiwyg-props.type'
 
 // Functions
-import { useWysiwygInit } from '~/components/Wysiwyg/functions/useWysiwygInit'
-import { useWysiwygUtils } from '~/components/Wysiwyg/functions/useWysiwygUtils'
-import { useWysiwygInjections } from '~/components/Wysiwyg/functions/useWysiwygInjections'
 import { useInputWrapperUtils } from '~/components/Inputs/functions/useInputWrapperUtils'
+import { useWysiwygInit } from '~/components/Wysiwyg/functions/useWysiwygInit'
+import { useWysiwygInjections } from '~/components/Wysiwyg/functions/useWysiwygInjections'
+import { useWysiwygUtils } from '~/components/Wysiwyg/functions/useWysiwygUtils'
 
 // Injections
 import { wysiwygIdKey, wysiwygModelKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
@@ -41,7 +41,7 @@ defineExpose({
 
 // Init
 const self = getCurrentInstance()
-const uuid = useId() as string
+const uuid = injectLocal(wysiwygIdKey, useId()) as string
 const model = defineModel<any>()
 
 provideLocal(wysiwygIdKey, uuid)
@@ -210,9 +210,6 @@ onBeforeUnmount(wysiwygStore.$dispose)
       :type="selectedDom.type"
       :pos="selectedDom.pos"
     /> -->
-
-    <!-- <WysiwygSelection /> -->
-
     <template #menu>
       <WysiwygSink
         v-if="editor"

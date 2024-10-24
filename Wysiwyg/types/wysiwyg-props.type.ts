@@ -1,11 +1,11 @@
-import type { CSSProperties } from 'vue'
 import type { ImageOptions } from '@tiptap/extension-image'
+import type { CSSProperties } from 'vue'
 
 // Types
 import type { IInputWrapperProps } from '~/components/Inputs/types/input-wrapper-props.type'
 import type { IWysiwygMentionSetup } from '~/components/Wysiwyg/types/wysiwyg-mention-setup.type'
 
-export type IWysiwygProps = {
+export type IWysiwygProps = IInputWrapperProps & {
   /**
    * When true, images will be allowed to be inserted
    *
@@ -32,6 +32,11 @@ export type IWysiwygProps = {
    * When true, tables will be allowed to be inserted
    */
   allowTable?: boolean
+
+  /**
+   * Visuals (CSS) for each node (and some marks)
+   */
+  visuals?: Record<string, CSSProperties & IItem>
 
   /**
    *
@@ -143,4 +148,4 @@ export type IWysiwygProps = {
    */
   onMentionResolve?: (html: string) => void
 
-} & IInputWrapperProps
+}

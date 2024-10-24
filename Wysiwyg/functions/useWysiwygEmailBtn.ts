@@ -1,4 +1,4 @@
-import { Node, mergeAttributes } from '@tiptap/core'
+import { mergeAttributes, Node } from '@tiptap/core'
 import { VueNodeViewRenderer } from '@tiptap/vue-3'
 
 // Components
@@ -32,7 +32,6 @@ function WysiwygEmailBtn() {
         id: {
           default: null,
           parseHTML: element => {
-            console.log('Log ~ addAttributes ~ element:', element.getAttribute('data-id'))
             return element.getAttribute('data-id')
           },
           renderHTML: attributes => {
