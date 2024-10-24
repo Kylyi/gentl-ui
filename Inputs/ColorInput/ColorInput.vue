@@ -76,6 +76,7 @@ const fieldProps = getFieldProps(props)
       <div
         class="w-6 h-6 rounded-custom border-1 border-ca m-l-2"
         :style="{ backgroundColor: model }"
+        data-cy="color-picker-preview"
       />
     </template>
 
