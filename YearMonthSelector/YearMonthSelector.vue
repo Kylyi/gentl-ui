@@ -38,6 +38,17 @@ const menuProxyEl = ref<ComponentInstance<typeof MenuProxy>>()
 const isPickerActive = ref(false)
 const pickerState = ref('hide')
 
+function handlePickerIconClick(ev: MouseEvent) {
+  if (isPickerActive.value) {
+    ev.preventDefault()
+    ev.stopPropagation()
+
+    return
+  }
+
+  isPickerActive.value = true
+}
+
 function handleMonthSelect(month: number) {
   model.value = $date(props.modelValue).month(month).startOf('month').valueOf()
   isPickerActive.value = false
@@ -132,6 +143,8 @@ onMounted(() => {
       <div
         i-formkit:month
         class="picker-icon"
+        @mousedown="handlePickerIconClick"
+        @click.stop.prevent
       />
     </template>
   </Field>

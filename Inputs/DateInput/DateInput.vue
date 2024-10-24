@@ -129,6 +129,17 @@ const menuProxyEl = ref<InstanceType<typeof MenuProxy>>()
 const datePickerEl = ref<InstanceType<typeof DatePicker>>()
 const isPickerActive = ref(false)
 
+function handlePickerIconClick(ev: MouseEvent) {
+  if (isPickerActive.value) {
+    ev.preventDefault()
+    ev.stopPropagation()
+
+    return
+  }
+
+  isPickerActive.value = true
+}
+
 const {
   el,
   inputId,
@@ -242,6 +253,8 @@ defineExpose({
         <div
           i-system-uicons:calendar-date
           class="picker-icon"
+          @mousedown="handlePickerIconClick"
+          @click.stop.prevent
         />
       </div>
     </template>

@@ -13,9 +13,13 @@ export function useFieldUtils(options?: {
   // Store
   const appStore = useAppStore()
 
+  // Utils
+  const instance = getCurrentInstance()
+
   // Layout
   const el = ref<HTMLDivElement>()
   const inputId = options?.props?.id ?? useId()
+  const isBlurred = ref(true)
   const menuEl = computed(() => toValue(menuElRef))
 
   const inputElement = computed(() => {
@@ -44,21 +48,19 @@ export function useFieldUtils(options?: {
     const isSelectEvent = ev?.type === 'select'
     const isFocusEvent = ev instanceof FocusEvent
 
-    if (isFocusEvent || isSelectEvent) {
-      const inputMenu = inputElement.value?.closest('.floating-element')
+    if (!options?.props?.disabled && !options?.props?.readonly) {
+      const shouldHideFloating = !options?.props?.noHideFloating
 
-      // FIXME: I dont fucking know
-      // $hide({ all: true, ignoreUntilEl: inputMenu })
+      if (shouldHideFloating && (isFocusEvent || isSelectEvent)) {
+        const inputMenu = inputElement.value?.closest('.floating-element')
+
+        $hide({ all: true, ignoreUntilEl: options?.props?.hideUntilEl ?? inputMenu })
+      }
+
+      nextTick(() => {
+        menuEl.value?.show()
+      })
     }
-
-    nextTick(() => {
-      menuEl.value?.show()
-    })
-
-    // In some cases, for example `DateInput`, we don't want to focus the input
-    // on mobile phones
-    const isTouchEvent = appStore.lastPointerDownEvent?.pointerType !== 'mouse'
-    const isFocusPrevented = isTouchEvent
 
     // When event is not a `FocusEvent`, we focus it and align the cursor
     const isInputFocused = appStore.activeElement === inputElement.value
@@ -69,10 +71,13 @@ export function useFieldUtils(options?: {
       !isFocusEvent
       && !isSelectEvent
       && !isInputFocused
-      && !isFocusPrevented
     ) {
-      inputElement.value?.focus()
+      focus()
     }
+
+    isBlurred.value = false
+
+    instance?.emit('focus')
   }
 
   function getFieldProps(props: IFieldProps) {
