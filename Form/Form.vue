@@ -331,8 +331,9 @@ onMounted(() => {
           <!-- Cancel button -->
           <CrudBtnCancel
             v-if="editControls?.cancel"
-            :class="{ invisible: !isEditing }"
-            :reset="reset"
+            :class="[ui?.cancelClass, { invisible: !isEditing }]"
+            :reset
+            v-bind="cancelBtnProps"
             data-onboarding="form-cancel-btn"
           >
             <KeyboardShortcut

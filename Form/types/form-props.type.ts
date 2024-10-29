@@ -139,11 +139,21 @@ export type IFormProps = {
   submitBtnProps?: IBtnProps & IItem
 
   /**
+   * Props for the cancel button
+   */
+  cancelBtnProps?: IBtnProps & IItem
+
+  /**
    * If true, the submit button will be disabled.
    */
   submitDisabled?: boolean
 
   ui?: {
+    /**
+     * Class for the cancel button.
+     */
+    cancelClass?: ClassType
+
     /**
      * Class for the submit button.
      */
