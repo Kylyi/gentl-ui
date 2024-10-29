@@ -160,6 +160,11 @@ export type IFormProps = {
     submitClass?: ClassType
 
     /**
+     * Class for the cancel button.
+     */
+    cancelClass?: ClassType
+
+    /**
      * Class for controls section
      */
     controlsClass?: ClassType
