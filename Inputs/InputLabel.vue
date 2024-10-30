@@ -44,6 +44,7 @@ label.label {
     leading-tight max-w-full p-x-3 break-words cursor-text;
 
   @apply color-$InputLabel-color;
+  font-weight: var(--InputLabel-weight);
 
   transition:
     transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),

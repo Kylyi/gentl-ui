@@ -177,7 +177,8 @@ const isModified = computed(() => {
   }
 
   &-label {
-    @apply text-caption color-$MiniCard-label-color font-size-$MiniCard-label-font-size p-b-1;
+    @apply text-caption color-$MiniCard-label-color font-size-$MiniCard-label-font-size p-$MiniCard-label-padding;
+    font-weight: var(--MiniCard-label-font-weight);
   }
 
   &__value {
