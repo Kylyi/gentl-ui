@@ -20,6 +20,7 @@
   // MiniCard (InputBlock)
   --MiniCard-label-color: theme('colors.slate.600');
   --MiniCard-label-font-size: theme('font.size.md');
+  --MiniCard-label-font-weight: 500;
   --MiniCard-value-font-size: theme('font.size.md');
   --MiniCard-value-font-weight: 500;
   --MiniCard-icon-color: theme('colors.blue.500');
@@ -116,6 +117,7 @@
   // Input label
   --InputLabel-color: theme('colors.truegray.600');
   --InputLabel-active-color: theme('colors.primary');
+  --InputLabel-weight: 500;
 
   &.dark {
     --InputLabel-color: theme('colors.truegray.300');
