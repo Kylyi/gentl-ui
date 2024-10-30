@@ -24,6 +24,7 @@
   --MiniCard-value-font-size: theme('font.size.md');
   --MiniCard-value-font-weight: 500;
   --MiniCard-icon-color: theme('colors.blue.500');
+  --MiniCard-label-padding: 0 0 4px 0;
 
   &.dark {
     --MiniCard-label-color: theme('colors.slate.300');
