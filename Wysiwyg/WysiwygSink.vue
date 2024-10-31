@@ -5,7 +5,11 @@ import type { IWysiwygProps } from '~/components/Wysiwyg/types/wysiwyg-props.typ
 // Store
 import { useWysiwygStore } from '~/components/Wysiwyg/wysiwyg.store'
 
-const props = defineProps<IWysiwygProps>()
+type IProps = Pick<IWysiwygProps, 'features' | 'sink'> & {
+  editable?: boolean
+}
+
+const props = defineProps<IProps>()
 
 // Store
 const { isFocused } = storeToRefs(useWysiwygStore())
@@ -14,14 +18,12 @@ const { isFocused } = storeToRefs(useWysiwygStore())
 const sinkEl = ref<HTMLDivElement>()
 const hasActiveMenu = ref(false)
 
-const isEditable = computed(() => !props.readonly && !props.disabled)
-
 const isSinkVisible = computed(() => {
-  if (props.noSink || !isEditable.value) {
+  if (!props.sink?.enabled || !props.editable) {
     return false
   }
 
-  return isFocused.value || props.sinkAlwaysVisible || hasActiveMenu.value
+  return isFocused.value || props.sink?.alwaysVisible || hasActiveMenu.value
 })
 
 useMutationObserver(
@@ -42,6 +44,7 @@ useMutationObserver(
     v-if="isSinkVisible"
     ref="sinkEl"
     class="wysiwyg-sink__wrapper"
+    :class="{ 'is-floating': sink?.floating }"
     @click.stop.prevent
     @mousedown.stop.prevent
   >
@@ -89,16 +92,16 @@ useMutationObserver(
       <WysiwygListCommands />
 
       <!-- Link & File -->
-      <template v-if="allowLink || allowFileUpload">
+      <template v-if="features?.link || features?.fileUpload">
         <Separator
           vertical
           spaced
           inset
         />
 
-        <WysiwygLink v-if="allowLink" />
+        <WysiwygLink v-if="features?.link" />
 
-        <WysiwygFileCommandBtn v-if="allowFileUpload" />
+        <WysiwygFileCommandBtn v-if="features?.fileUpload" />
       </template>
 
       <Separator
@@ -111,7 +114,7 @@ useMutationObserver(
       <WysiwygDetailsCommandBtn />
 
       <!-- Email button -->
-      <template v-if="allowImage">
+      <template v-if="features?.emailButton">
         <Separator
           vertical
           spaced
@@ -122,7 +125,7 @@ useMutationObserver(
       </template>
 
       <!-- Image -->
-      <template v-if="allowImage">
+      <template v-if="features?.image">
         <Separator
           vertical
           spaced
@@ -133,7 +136,7 @@ useMutationObserver(
       </template>
 
       <!-- Table -->
-      <template v-if="allowTable">
+      <template v-if="features?.table">
         <Separator
           vertical
           spaced

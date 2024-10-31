@@ -40,9 +40,17 @@ defineExpose({
 })
 
 // Init
-const self = getCurrentInstance()
 const uuid = injectLocal(wysiwygIdKey, useId()) as string
 const model = defineModel<any>()
+const visuals = defineModel<IWysiwygProps['visuals']>('visuals', { default: () => ({}) })
+
+const bodyId = computed(() => {
+  return visuals.value?.body?.['--id']
+})
+
+if (!bodyId.value) {
+  set(visuals.value!, 'body.[--id]', generateUUID())
+}
 
 provideLocal(wysiwygIdKey, uuid)
 provideLocal(wysiwygModelKey, model)
@@ -60,7 +68,7 @@ watch(
   { immediate: true },
 )
 
-// Init
+// Init mentions
 const mentionSetupOriginal = defineModel<IWysiwygMentionSetup[]>('mentionSetup')
 
 syncRef(mentionSetupOriginal, mentionSetup, { direction: 'ltr' })
@@ -88,7 +96,12 @@ function blurEditor() {
 }
 
 // Layout
+const isEditDialogOpen = defineModel<boolean>('editDialog')
 const wrapperProps = getInputWrapperProps(props)
+
+// const bodyClass = computed(() => {
+//   return
+// })
 
 // Sync editor value with model when not focused
 watch(model, model => {
@@ -193,6 +206,7 @@ onBeforeUnmount(wysiwygStore.$dispose)
       min-h="50"
       :class="editorClass"
       :style="editorStyle"
+      :data-id="`body_${bodyId}`"
       @drop.stop.prevent
     />
 
@@ -204,17 +218,27 @@ onBeforeUnmount(wysiwygStore.$dispose)
       :select-fnc
     />
 
+    <WysiwygEditDialog
+      v-model:edit-dialog="isEditDialogOpen"
+      v-model="model"
+      v-model:visuals="visuals"
+      :features
+      :sink
+    />
+
     <!-- <WysiwygElementOptions
       v-if="selectedDom && isEditable"
       :dom="selectedDom?.domEl"
       :type="selectedDom.type"
       :pos="selectedDom.pos"
     /> -->
+
     <template #menu>
       <WysiwygSink
         v-if="editor"
-        :class="{ 'is-floating': !noSinkFloat }"
-        v-bind="$props"
+        :features
+        :sink
+        :editable="isEditable"
       >
         <template
           v-if="$slots['sink-prepend']"

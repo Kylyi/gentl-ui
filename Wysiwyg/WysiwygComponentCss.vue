@@ -2,18 +2,12 @@
 // Functions
 import { stringToFloat } from '~/libs/Shared/regex/string-to-float.regex'
 
-type Property =
-  | 'padding'
-  | 'colors'
-  | 'border'
-  | 'border-radius'
-  | 'margin'
-  | 'float'
-  | 'size'
+// Constants
+import type { IWysiwygCSSProperty } from '~/components/Wysiwyg/constants/wysiwyg-node.constant'
 
 type IProps = {
   css: Record<string, string>
-  properties?: Property[]
+  properties?: IWysiwygCSSProperty[]
 }
 
 const props = defineProps<IProps>()
@@ -26,7 +20,7 @@ const propertyByName = computed(() => {
     agg[property] = true
 
     return agg
-  }, {} as Record<Property, boolean>)
+  }, {} as Record<IWysiwygCSSProperty, boolean>)
 })
 
 const cssPadding = computed(() => {
@@ -66,7 +60,7 @@ const cssBorder = computed(() => {
 })
 
 function setStyleValue(key: string, value?: string | number | null) {
-  if (!value) {
+  if (isNil(value)) {
     css.value = omit(css.value, key)
   } else {
     css.value = {
@@ -78,12 +72,56 @@ function setStyleValue(key: string, value?: string | number | null) {
 </script>
 
 <template>
+  <!-- Text align -->
+  <Field
+    v-if="propertyByName?.['text-align']"
+    :label="$t('style.textAlign')"
+    control-class="!p-y-2px !p-x-1 cols-3"
+    col="span-2"
+    class="wrapper-container"
+    no-border
+  >
+    <!-- Left -->
+    <Btn
+      size="sm"
+      :label="$t('style.textAlignLeft')"
+      class="group-btn"
+      no-uppercase
+      :rounded="false"
+      :class="{ 'is-active': css['text-align'] === 'left' }"
+      @click="setStyleValue('text-align', 'left')"
+    />
+
+    <!-- Center -->
+    <Btn
+      size="sm"
+      :label="$t('style.textAlignCenter')"
+      class="group-btn"
+      no-uppercase
+      :rounded="false"
+      :class="{ 'is-active': css['text-align'] === 'center' }"
+      @click="setStyleValue('text-align', 'center')"
+    />
+
+    <!-- Right -->
+    <Btn
+      size="sm"
+      :label="$t('style.textAlignRight')"
+      class="group-btn"
+      no-uppercase
+      :rounded="false"
+      :class="{ 'is-active': css['text-align'] === 'right' }"
+      @click="setStyleValue('text-align', 'right')"
+    />
+  </Field>
+
   <!-- Padding -->
   <Field
     v-if="propertyByName?.padding"
     :label="$t('style.padding')"
-    control-class="flex gap-1 items-center !p-y-px !p-x-1"
+    control-class="!p-y-px !p-x-1 cols-2"
     col="span-2"
+    class="wrapper-container"
   >
     <NumberInput
       :model-value="cssPadding.top"
@@ -96,7 +134,7 @@ function setStyleValue(key: string, value?: string | number | null) {
       </template>
     </NumberInput>
 
-    <Separator vertical />
+    <!-- <Separator vertical /> -->
 
     <NumberInput
       :model-value="cssPadding.right"
@@ -109,7 +147,7 @@ function setStyleValue(key: string, value?: string | number | null) {
       </template>
     </NumberInput>
 
-    <Separator vertical />
+    <!-- <Separator vertical /> -->
 
     <NumberInput
       :model-value="cssPadding.bottom"
@@ -122,7 +160,7 @@ function setStyleValue(key: string, value?: string | number | null) {
       </template>
     </NumberInput>
 
-    <Separator vertical />
+    <!-- <Separator vertical /> -->
 
     <NumberInput
       :model-value="cssPadding.left"
@@ -163,42 +201,45 @@ function setStyleValue(key: string, value?: string | number | null) {
       @update:model-value="setStyleValue('color', $event)"
     />
 
-    <span
-      font="semibold rem-12"
-      col="span-2"
-      p="l-2 t-2"
-      leading="tight"
-    >
-      {{ $t('style.hover') }}
-    </span>
+    <template v-if="propertyByName?.['colors-hover']">
+      <span
+        font="semibold rem-12"
+        col="span-2"
+        p="l-2 t-2"
+        leading="tight"
+        border="b-1 ca"
+      >
+        {{ $t('style.hover') }}
+      </span>
 
-    <ColorInput
-      :model-value="css['--hoverBg']"
-      size="sm"
-      icon="i-tabler:background"
-      :no-icon="false"
-      no-border
-      :placeholder="$t('style.backgroundColor')"
-      @update:model-value="setStyleValue('--hoverBg', $event)"
-    />
+      <ColorInput
+        :model-value="css['--hoverBg']"
+        size="sm"
+        icon="i-tabler:background"
+        :no-icon="false"
+        no-border
+        :placeholder="$t('style.backgroundColor')"
+        @update:model-value="setStyleValue('--hoverBg', $event)"
+      />
 
-    <ColorInput
-      :model-value="css['--hoverColor']"
-      size="sm"
-      icon="i-tabler:text-color"
-      :no-icon="false"
-      no-border
-      :placeholder="$t('style.color')"
-      @update:model-value="setStyleValue('--hoverColor', $event)"
-    />
+      <ColorInput
+        :model-value="css['--hoverColor']"
+        size="sm"
+        icon="i-tabler:text-color"
+        :no-icon="false"
+        no-border
+        :placeholder="$t('style.color')"
+        @update:model-value="setStyleValue('--hoverColor', $event)"
+      />
+    </template>
   </Field>
 
   <!-- Border -->
   <Field
     v-if="propertyByName?.border"
     :label="$t('style.border')"
-    control-class="flex gap-1 items-center !p-y-px !p-x-1"
-    col="span-3"
+    control-class="!p-y-px !p-x-1 cols-3"
+    class="wrapper-container"
   >
     <!-- Width -->
     <NumberInput
@@ -209,8 +250,6 @@ function setStyleValue(key: string, value?: string | number | null) {
       :placeholder="$t('style.borderWidth')"
       @update:model-value="setStyleValue('border-width', $event)"
     />
-
-    <Separator vertical />
 
     <!-- Style -->
     <Selector
@@ -223,8 +262,6 @@ function setStyleValue(key: string, value?: string | number | null) {
       :placeholder="$t('style.borderStyle')"
       @update:model-value="setStyleValue('border-style', $event)"
     />
-
-    <Separator vertical />
 
     <!-- Color -->
     <ColorInput
@@ -257,8 +294,9 @@ function setStyleValue(key: string, value?: string | number | null) {
   <Field
     v-if="propertyByName?.float"
     :label="$t('style.float')"
-    control-class="flex items-center !p-y-2px !p-x-1"
+    control-class="!p-y-2px !p-x-1 cols-3"
     col="span-2"
+    class="wrapper-container"
   >
     <!-- Left -->
     <Btn
@@ -266,6 +304,7 @@ function setStyleValue(key: string, value?: string | number | null) {
       :label="$t('style.floatLeft')"
       class="group-btn"
       :rounded="false"
+      no-uppercase
       :class="{ 'is-active': css.float === 'left' }"
       @click="setStyleValue('float', 'left')"
     />
@@ -276,6 +315,7 @@ function setStyleValue(key: string, value?: string | number | null) {
       :label="$t('style.floatNone')"
       class="group-btn"
       :rounded="false"
+      no-uppercase
       :class="{ 'is-active': css.float === 'none' }"
       @click="setStyleValue('float', 'none')"
     />
@@ -286,6 +326,7 @@ function setStyleValue(key: string, value?: string | number | null) {
       :label="$t('style.floatRight')"
       class="group-btn"
       :rounded="false"
+      no-uppercase
       :class="{ 'is-active': css.float === 'right' }"
       @click="setStyleValue('float', 'right')"
     />
@@ -297,6 +338,7 @@ function setStyleValue(key: string, value?: string | number | null) {
     :label="$t('style.size')"
     control-class="grid cols-2 gap-1 items-center !p-1"
     col="span-2"
+    class="wrapper-container"
   >
     <!-- Width -->
     <NumberInput
@@ -337,7 +379,21 @@ function setStyleValue(key: string, value?: string | number | null) {
   }
 
   &.is-active {
-    @apply bg-primary color-white;
+    @apply bg-primary color-white container-inline;
+  }
+}
+
+.wrapper-container {
+  container-type: inline-size;
+
+  :deep(.control) {
+    @container (width >= 400px) {
+      @apply flex items-center;
+    }
+
+    @container (width < 400px) {
+      @apply grid;
+    }
   }
 }
 </style>

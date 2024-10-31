@@ -6,16 +6,26 @@ import type { IWysiwygProps } from '~/components/Wysiwyg/types/wysiwyg-props.typ
 import { wysiwygIdKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
 
 // Constants
-import { WYSIWYG_SELECTION_ITEMS_BY_ID } from '~/components/Wysiwyg/constants/wysiwyg-selection-items.constant'
+import { type IWysiwygNode, WYSIWYG_NODES_BY_NAME } from '~/components/Wysiwyg/constants/wysiwyg-node.constant'
 
 // Store
 import { useWysiwygStore } from '~/components/Wysiwyg/wysiwyg.store'
 
 type IProps = {
+  screenSize?: 'mobile' | 'tablet' | 'desktop'
   visuals?: IWysiwygProps['visuals']
 }
 
 defineProps<IProps>()
+
+// Constants
+const BODY_NODE: IWysiwygNode = {
+  id: 'body',
+  label: () => $t('wysiwyg.node.body'),
+  icon: 'i-mdi:card-outline',
+  ref: undefined,
+  properties: ['colors'],
+}
 
 // Injections
 const uuid = injectLocal(wysiwygIdKey, useId()) as string
@@ -25,50 +35,131 @@ const { currentNodeSelection } = storeToRefs(useWysiwygStore(uuid))
 
 // Layout
 const nodeSelected = ref<IItem>()
-const visuals = defineModel<IProps['visuals']>('visuals')
+const visuals = defineModel<IProps['visuals']>('visuals', { default: () => ({}) })
+const screenSize = defineModel<IProps['screenSize']>(
+  'screenSize',
+  { default: 'mobile' },
+) as Ref<'mobile' | 'tablet' | 'desktop'>
 
 const nodes = computed(() => {
-  console.log(currentNodeSelection.value.nodes.map(e => e.type.name))
-
-  return currentNodeSelection.value.nodes
-    ?.map(node => ({ ...WYSIWYG_SELECTION_ITEMS_BY_ID[node.type.name], ref: node }))
-    .filter(node => !!node.id)
+  return [
+    BODY_NODE,
+    ...currentNodeSelection.value.nodes
+      ?.map(node => ({ ...WYSIWYG_NODES_BY_NAME[node.type.name], ref: node }))
+      .filter(node => !!node.id),
+  ]
 })
 
 const nodeVisuals = computed({
   get() {
-    return visuals.value?.[nodeSelected.value?.attrs?.id] ?? {}
+    const nodeId = nodeSelected.value?.ref?.attrs!.id
+
+    // When `nodeId` is nullish, we assume it's for the body
+    if (!nodeId) {
+      if (screenSize.value !== 'mobile') {
+        return visuals.value?.body?.[screenSize.value] ?? {}
+      }
+
+      return visuals.value?.body ?? {}
+
+      return
+    }
+
+    // Otherwise, it's an actual node
+    if (screenSize.value !== 'mobile') {
+      return visuals.value?.[nodeSelected.value?.ref?.attrs?.id]?.[screenSize.value] ?? {}
+    }
+
+    return visuals.value?.[nodeSelected.value?.ref?.attrs?.id] ?? {}
   },
   set(val) {
-    visuals.value = {
-      ...visuals.value,
-      [nodeSelected.value!.attrs!.id!]: val,
+    const nodeId = nodeSelected.value!.ref?.attrs?.id
+
+    // When `nodeId` is nullish, we assume it's for the body
+    if (!nodeId) {
+      if (screenSize.value !== 'mobile') {
+        set(visuals.value!, `body.${screenSize.value}`, val)
+
+        // We need to trigger the reactivity here
+        visuals.value = { ...visuals.value }
+      } else {
+        visuals.value = {
+          ...visuals.value,
+          body: val,
+        }
+      }
+
+      return
+    }
+
+    // Otherwise, it's an actual node
+    if (screenSize.value !== 'mobile') {
+      set(visuals.value!, `${nodeId}.${screenSize.value}`, val)
+
+      // We need to trigger the reactivity here
+      visuals.value = { ...visuals.value }
+    } else {
+      visuals.value = {
+        ...visuals.value,
+        [nodeId]: val,
+      }
     }
   },
 })
 
+// Auto-select the last node
 watch(currentNodeSelection, selection => {
   if (selection.nodes.length) {
-    nodeSelected.value = selection.nodes[selection.nodes.length - 1]
+    const lastNode = selection.nodes[selection.nodes.length - 1]
+    const node = nodes.value.find(node => node.id === lastNode.type.name)
+
+    nodeSelected.value = node
   }
-})
+}, { immediate: true })
 </script>
 
 <template>
   <div class="wysiwyg-selection">
-    <!-- Nodes -->
-    <HorizontalScroller>
-      <Btn
-        v-for="(node, idx) in nodes"
-        :key="idx"
-        size="sm"
-        no-uppercase
-        :icon="node.icon"
-        :label="node.label()"
-        :class="{ 'is-active': nodeSelected === node.ref }"
-        @click="nodeSelected = node.ref"
-      />
-    </HorizontalScroller>
+    <div flex="~ items-center">
+      <!-- Nodes -->
+      <HorizontalScroller
+        grow
+        content-class="gap-1"
+      >
+        <Btn
+          v-for="(node, idx) in nodes"
+          :key="idx"
+          size="sm"
+          no-uppercase
+          :icon="node.icon"
+          :label="node.label()"
+          :class="{ 'is-active': nodeSelected?.id === node.id }"
+          @click="nodeSelected = node"
+        />
+      </HorizontalScroller>
+
+      <!-- Screen sizes -->
+      <div flex="~ gap-1 items-center">
+        <Btn
+          size="xs"
+          icon="i-uiw:mobile"
+          :class="{ 'is-active-alt': screenSize === 'mobile' }"
+          @click="screenSize = 'mobile'"
+        />
+        <Btn
+          size="xs"
+          icon="i-la:tablet-alt"
+          :class="{ 'is-active-alt': screenSize === 'tablet' }"
+          @click="screenSize = 'tablet'"
+        />
+        <Btn
+          size="xs"
+          icon="i-prime:desktop"
+          :class="{ 'is-active-alt': screenSize === 'desktop' }"
+          @click="screenSize = 'desktop'"
+        />
+      </div>
+    </div>
 
     <!-- Marks -->
     <div
@@ -89,22 +180,28 @@ watch(currentNodeSelection, selection => {
       </HorizontalScroller>
     </div>
 
-    <WysiwygComponentCss
-      v-if="nodeSelected?.attrs.id"
-      v-model:css="nodeVisuals"
-      :properties="['padding', 'colors', 'border', 'border-radius', 'margin', 'float', 'size']"
-    />
+    <Separator m="y-2" />
 
-    <pre>{{ nodeVisuals }}</pre>
+    <!-- CSS -->
+    <div flex="~ col gap-2">
+      <WysiwygComponentCss
+        v-model:css="nodeVisuals"
+        :properties="nodeSelected?.properties"
+      />
+    </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .wysiwyg-selection {
-  @apply flex flex-col gap-2 overflow-auto border-1 border-ca rounded-custom p-2;
+  @apply flex flex-col overflow-auto border-1 border-ca rounded-custom p-2;
 
   .is-active {
     @apply bg-primary color-white;
+  }
+
+  .is-active-alt {
+    @apply bg-secondary color-white;
   }
 }
 </style>

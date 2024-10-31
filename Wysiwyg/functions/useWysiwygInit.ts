@@ -51,13 +51,13 @@ export function useWysiwygInit(
 
   function resolveExtension<T>(
     extension: T,
-    dependentKey: keyof IWysiwygProps,
+    dependentKey: ObjectKey<IWysiwygProps>,
   ) {
     const extensions = Array.isArray(extension)
       ? extension
       : [extension]
 
-    return props[dependentKey] ? extensions : []
+    return get(props, dependentKey) ? extensions : []
   }
 
   // Store
@@ -117,20 +117,20 @@ export function useWysiwygInit(
       ] }),
 
       // Table
-      ...resolveExtension(WysiwygTable(), 'allowTable'),
+      ...resolveExtension(WysiwygTable(), 'features.table'),
 
       // File upload
-      ...resolveExtension(WysiwygFile(), 'allowFileUpload'),
-      ...resolveExtension(FileHandler, 'allowFileUpload'),
+      ...resolveExtension(WysiwygFile(), 'features.fileUpload'),
+      ...resolveExtension(FileHandler, 'features.fileUpload'),
 
       // Images
-      ...resolveExtension(WysiwygImage(), 'allowImage'),
+      ...resolveExtension(WysiwygImage(), 'features.image'),
 
       // Email button
-      ...resolveExtension(WysiwygEmailBtn(), 'allowEmailBtn'),
+      ...resolveExtension(WysiwygEmailBtn(), 'features.emailButton'),
 
       // Link
-      ...resolveExtension(WysiwygLink(), 'allowLink'),
+      ...resolveExtension(WysiwygLink(), 'features.link'),
 
       // Mentions
       ...MentionExtensions,

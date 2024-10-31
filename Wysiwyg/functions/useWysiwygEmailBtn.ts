@@ -27,7 +27,6 @@ function WysiwygEmailBtn() {
     addAttributes() {
       return {
         href: { default: null },
-        style: { default: '' },
         content: { default: '' },
         id: {
           default: null,
