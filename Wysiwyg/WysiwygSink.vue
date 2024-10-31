@@ -12,18 +12,18 @@ type IProps = Pick<IWysiwygProps, 'features' | 'sink'> & {
 const props = defineProps<IProps>()
 
 // Store
-const { isFocused } = storeToRefs(useWysiwygStore())
+const { isFocused, features, sink } = storeToRefs(useWysiwygStore())
 
 // Layout
 const sinkEl = ref<HTMLDivElement>()
 const hasActiveMenu = ref(false)
 
 const isSinkVisible = computed(() => {
-  if (!props.sink?.enabled || !props.editable) {
+  if (!sink.value?.enabled || !props.editable) {
     return false
   }
 
-  return isFocused.value || props.sink?.alwaysVisible || hasActiveMenu.value
+  return isFocused.value || sink.value?.alwaysVisible || hasActiveMenu.value
 })
 
 useMutationObserver(
@@ -52,7 +52,7 @@ useMutationObserver(
 
     <HorizontalScroller
       class="wysiwyg-sink"
-      content-class="gap-x-1 p-1"
+      content-class="gap-x-1 p-px"
     >
       <!-- Size -->
       <WysiwygTextSizeSimpleCommands />
@@ -153,7 +153,7 @@ useMutationObserver(
 
 <style lang="scss" scoped>
 .wysiwyg-sink {
-  @apply z-$zLogo dark:bg-darker bg-white;
+  @apply z-$zLogo dark:bg-darker bg-white border-x-1 border-b-1 border-ca rounded-b-custom;
 
   &__wrapper {
     @apply flex gap-2 items-center right-0 w-full shrink-0;

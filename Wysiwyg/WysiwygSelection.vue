@@ -194,7 +194,7 @@ watch(currentNodeSelection, selection => {
 
 <style lang="scss" scoped>
 .wysiwyg-selection {
-  @apply flex flex-col overflow-auto border-1 border-ca rounded-custom p-2;
+  @apply flex flex-col overflow-auto p-2;
 
   .is-active {
     @apply bg-primary color-white;

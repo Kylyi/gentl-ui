@@ -56,7 +56,7 @@ provideLocal(wysiwygIdKey, uuid)
 provideLocal(wysiwygModelKey, model)
 
 // Store
-const wysiwygStore = useWysiwygStore()
+const wysiwygStore = useWysiwygStore(undefined, props)
 const { isFocused, files, mentionSetup } = storeToRefs(wysiwygStore)
 
 // Init files
@@ -202,7 +202,7 @@ onBeforeUnmount(wysiwygStore.$dispose)
   >
     <EditorContent
       class="control"
-      :editor="editor"
+      :editor
       min-h="50"
       :class="editorClass"
       :style="editorStyle"
@@ -224,6 +224,7 @@ onBeforeUnmount(wysiwygStore.$dispose)
       v-model:visuals="visuals"
       :features
       :sink
+      :editable="isEditable"
     />
 
     <!-- <WysiwygElementOptions

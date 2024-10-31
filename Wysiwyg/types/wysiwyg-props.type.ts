@@ -3,7 +3,11 @@ import type { CSSProperties } from 'vue'
 
 // Types
 import type { IInputWrapperProps } from '~/components/Inputs/types/input-wrapper-props.type'
+import type { IWysiwygFeaturesProps } from '~/components/Wysiwyg/types/wysiwyg-features-props.type'
 import type { IWysiwygMentionSetup } from '~/components/Wysiwyg/types/wysiwyg-mention-setup.type'
+import type { IWysiwygSinkProps } from '~/components/Wysiwyg/types/wysiwyg-sink-props.type'
+
+type WysiwygFeaturePreset = 'full' | 'none' | 'basic'
 
 export type IWysiwygProps = IInputWrapperProps & {
   /**
@@ -36,13 +40,7 @@ export type IWysiwygProps = IInputWrapperProps & {
    */
   emptyValue?: any
 
-  features?: {
-    emailButton?: boolean
-    fileUpload?: boolean
-    image?: boolean
-    link?: boolean
-    table?: boolean
-  }
+  features?: IWysiwygFeaturesProps | WysiwygFeaturePreset
 
   /**
    * Hint for the wysiwyg editor
@@ -83,19 +81,7 @@ export type IWysiwygProps = IInputWrapperProps & {
    */
   returnFormat?: 'html' | 'markdown' | 'text'
 
-  sink?: {
-    enabled?: boolean
-
-    /**
-     * When true, the sink will always be visible
-     */
-    alwaysVisible?: boolean
-
-    /**
-     * When true, the sink will float on top of the input (absolute positioned)
-     */
-    floating?: boolean
-  }
+  sink?: IWysiwygSinkProps | boolean
 
   /**
    * Visuals (CSS) for each node (and some marks)

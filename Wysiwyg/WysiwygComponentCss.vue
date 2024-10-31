@@ -178,7 +178,7 @@ function setStyleValue(key: string, value?: string | number | null) {
   <Field
     v-if="propertyByName?.colors"
     :label="$t('style.colors')"
-    control-class="grid cols-2 gap-1 items-center !p-1"
+    control-class="grid cols-2 gap-1 items-center !p-y-px !p-x-1"
     col="span-2"
   >
     <ColorInput

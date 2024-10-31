@@ -2,15 +2,20 @@
 import { EditorContent } from '@tiptap/vue-3'
 
 // Types
-import { useWysiwygInit } from '~/components/Wysiwyg/functions/useWysiwygInit'
 import type { IWysiwygProps } from '~/components/Wysiwyg/types/wysiwyg-props.type'
 
-const props = defineProps<Pick<IWysiwygProps, 'modelValue' | 'editDialog' | 'features' | 'sink' | 'visuals'>>()
+// Functions
+import { useWysiwygStore } from '~/components/Wysiwyg/wysiwyg.store'
+
+type IProps = Pick<IWysiwygProps, 'modelValue' | 'editDialog' | 'features' | 'sink' | 'visuals'> & {
+  editable?: boolean
+}
+
+const props = defineProps<IProps>()
 
 // Layout
 const isOpen = defineModel<IWysiwygProps['editDialog']>('editDialog')
 const visuals = defineModel<IWysiwygProps['visuals']>('visuals', { default: () => ({}) })
-const { model, isModified } = useRefReset(() => props.modelValue)
 
 const bodyId = computed(() => {
   return visuals.value?.body?.['--id']
@@ -19,8 +24,8 @@ const bodyId = computed(() => {
 // Screen sizes
 const screenSize = ref<'mobile' | 'tablet' | 'desktop'>('mobile')
 
-// Editor
-const { editor, isEditable } = useWysiwygInit(props, model)
+// Store
+const { editor } = storeToRefs(useWysiwygStore())
 
 // Apply the visuals
 let styleElement: HTMLStyleElement | undefined
@@ -28,7 +33,7 @@ let styleElement: HTMLStyleElement | undefined
 whenever(visuals, visuals => {
   if (!styleElement) {
     styleElement = document.createElement('style')
-    styleElement.id = 'dynamic-styles'
+    styleElement.id = `dynamic-styles_${generateUUID()}`
     document.head.appendChild(styleElement)
   }
 
@@ -82,10 +87,7 @@ whenever(visuals, visuals => {
     h="9/10"
     :ui="{ contentClass: 'p-0' }"
   >
-    <Form
-      class="wyswiyg-edit-dialog"
-      p="!b-0"
-    >
+    <div class="wyswiyg-edit-dialog">
       <div class="content-wrapper">
         <div
           class="content-wrapper__inner"
@@ -104,28 +106,41 @@ whenever(visuals, visuals => {
           v-if="editor"
           :features
           :sink
-          :editable="isEditable"
+          :editable
           justify-center
           border="t-1 ca"
           bg="white dark:darker"
         />
       </div>
 
-      <WysiwygSelection
-        v-model:visuals="visuals"
-        v-model:screen-size="screenSize"
-      />
-    </Form>
+      <div flex="~ col gap-1">
+        <WysiwygSelection
+          v-model:visuals="visuals"
+          v-model:screen-size="screenSize"
+          grow
+          border="1 ca"
+          rounded="t-custom"
+        />
+
+        <Btn
+          :label="$t('general.confirm')"
+          size="sm"
+          m="b--2px"
+          color="white"
+          bg="primary"
+        />
+      </div>
+    </div>
   </Dialog>
 </template>
 
 <style lang="scss" scoped>
 @import url('style/wysiwyg.style.scss');
 
-:deep(.wyswiyg-edit-dialog) {
-  @apply grid;
+.wyswiyg-edit-dialog {
+  @apply grid gap-1 grow p-1;
 
-  grid-template-columns: 1fr 320px;
+  grid-template-columns: 1fr 400px;
 }
 
 :deep(.wysiwyg) {
