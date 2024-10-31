@@ -23,7 +23,7 @@ export function useFieldUtils(options?: {
   const menuEl = computed(() => toValue(menuElRef))
 
   const inputElement = computed(() => {
-    return unrefElement(el.value as any) as HTMLInputElement | undefined
+    return unrefElement(el) as HTMLElement | undefined
   })
 
   // In some cases, we click into the wrapper but not directly in the `.control`
@@ -52,9 +52,12 @@ export function useFieldUtils(options?: {
       const shouldHideFloating = !options?.props?.noHideFloating
 
       if (shouldHideFloating && (isFocusEvent || isSelectEvent)) {
-        const inputMenu = inputElement.value?.closest('.floating-element')
+        const inputMenu = unrefElement(el)?.closest('.floating-element')
 
-        $hide({ all: true, ignoreUntilEl: options?.props?.hideUntilEl ?? inputMenu })
+        $hide({
+          all: true,
+          ignoreUntilEl: options?.props?.hideUntilEl ?? inputMenu,
+        })
       }
 
       nextTick(() => {

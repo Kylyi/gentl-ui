@@ -449,8 +449,8 @@ function getData() {
     v-bind="wrapperProps"
     :id="inputId"
     :loading="isLoading"
-    :has-content="hasContent"
-    :ui="ui"
+    :has-content
+    :ui
     prefer-margin
     :class="[
       menuPlacement === 'bottom' ? 'has-menu-bottom' : 'has-menu-top',
@@ -475,7 +475,7 @@ function getData() {
     <span
       v-if="$slots.selection"
       class="control"
-      :class="controlClass"
+      :class="[controlClass, { 'has-content': hasContent || placeholder }]"
       :readonly="readonly"
       :disabled="disabled"
       @click="handleFocusOrClick"
@@ -496,7 +496,7 @@ function getData() {
       box="content"
       tabindex="0"
       :name="name || path || label || placeholder"
-      :class="[innerClass, { 'is-multi': !!multi }]"
+      :class="[innerClass, { 'is-multi': !!multi, 'has-content': hasContent || placeholder }]"
       :style="{ maxHeight: `${maxHeight}px` }"
       :readonly="readonly"
       :disabled="disabled"
@@ -772,8 +772,9 @@ function getData() {
 .control {
   @apply flex;
 
-  &::after {
+  &:not(.has-content)::after {
     @apply color-transparent w-0;
+
     content: '_';
   }
 }

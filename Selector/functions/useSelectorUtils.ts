@@ -62,7 +62,7 @@ export function useSelectorUtils(options: ISelectorUtilsOptions) {
 
     if (!props.disabled && !props.readonly && !isPickerActive.value) {
       if (isFocusEvent || isSelectEvent) {
-        const inputMenu = unrefElement(el.value)?.closest('.floating-element')
+        const inputMenu = unrefElement(el)?.closest('.floating-element')
 
         $hide({ all: true, ignoreUntilEl: inputMenu })
       }

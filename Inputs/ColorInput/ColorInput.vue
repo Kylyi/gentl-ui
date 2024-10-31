@@ -57,7 +57,7 @@ function handlePickColor(color?: string) {
 }
 
 // Field
-const { getFieldProps, handleFocusOrClick } = useFieldUtils({
+const { el, getFieldProps, handleFocusOrClick } = useFieldUtils({
   props,
   menuElRef: menuEl,
 })
@@ -80,7 +80,7 @@ const fieldProps = getFieldProps(props)
       />
     </template>
 
-    <span>
+    <span ref="el">
       {{ modelLabel || '&nbsp;' }}
     </span>
 
