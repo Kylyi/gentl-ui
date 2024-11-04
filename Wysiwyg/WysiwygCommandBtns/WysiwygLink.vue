@@ -105,7 +105,7 @@ function handleSubmit() {
 }
 
 // Mentions
-const urlEl = useTemplateRef('urlEl')
+const urlEl = ref<any>()
 
 const mentions = computedAsync(async () => {
   const mentionItems: IItem[] = []
