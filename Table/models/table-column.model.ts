@@ -29,7 +29,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
   format?: (row: T, value?: any) => any
   dataType: ExtendedDataType = 'string'
   label: string
-  width: number | string = 1
+  width: number | string | 'fit-label' = 1
   field: ObjectKey<T>
   hideLabel?: boolean
   noFilters?: boolean
