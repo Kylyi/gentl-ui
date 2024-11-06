@@ -29,6 +29,7 @@ defineEmits<{
     :disabled
     :tooltip
     :tooltip-props
+    :icon
     tabindex="-1"
     data-cy="delete-button"
     @click="noConfirm && $emit('delete')"

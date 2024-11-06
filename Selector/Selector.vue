@@ -105,7 +105,7 @@ const { getListProps } = useListUtils()
 const hasContent = computed(() => {
   return Array.isArray(model.value)
     ? model.value.length > 0
-    : !isNil(model.value) && model.value !== ''
+    : !isNil(getKey(model.value))
 })
 
 // Selection
