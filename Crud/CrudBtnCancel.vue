@@ -5,7 +5,7 @@ import { isFormEditingKey } from '~/components/Form/provide/form.provide'
 type IProps = {
   disabled?: boolean
   isEditing?: boolean
-  label?: string
+  label?: string | number | false
 
   /**
    * Normally, the edit button interacts with the `Form` it is part of (~ makes it editable)

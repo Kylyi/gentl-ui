@@ -41,7 +41,7 @@ const { editor } = storeToRefs(useWysiwygStore())
 
 // Layout
 const domEl = toRef(props, 'dom')
-const floatingEl = useTemplateRef('floatingEl')
+const floatingEl = ref<any>()
 const { width } = useElementSize(domEl)
 
 const { floatingStyles, update } = useFloating(domEl, floatingEl, {

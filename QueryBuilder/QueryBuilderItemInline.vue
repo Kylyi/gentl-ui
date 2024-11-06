@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { klona } from 'klona/full'
+
 // Types
 import type {
   IQueryBuilderItem,
@@ -51,6 +53,7 @@ const noItemOverlay = inject('noItemOverlay', ref(false))
 const itemEditMenuEl = ref<InstanceType<typeof Menu>>()
 const itemEditEl = ref<InstanceType<typeof QueryBuilderItem>>()
 const item = toRef(props, 'item')
+const originalValue = ref(klona(item.value))
 const items = injectStrict(qbItemsKey)
 
 const cols = computed(() => toValue(columns))
@@ -91,10 +94,15 @@ function getDataType(): ExtendedDataType {
   }
 }
 
-function handleRemoveCondition() {
+function handleRemoveCondition(force?: boolean) {
+  const isValueChanged = item.value.value !== originalValue.value.value || force
+
   if (props.removeFnc) {
     props.removeFnc(item.value)
-    tableRefresh()
+
+    if (isValueChanged) {
+      tableRefresh()
+    }
 
     return
   }
@@ -114,7 +122,10 @@ function handleRemoveCondition() {
 
       parentOfParent.children = parentOfParent.children.toSpliced(selfIdx, 1)
     }
-    tableRefresh()
+
+    if (isValueChanged) {
+      tableRefresh()
+    }
 
     return
   }
@@ -122,7 +133,10 @@ function handleRemoveCondition() {
   parent.children = [...parent.children]
 
   emits('delete:row', item.value)
-  tableRefresh()
+
+  if (isValueChanged) {
+    tableRefresh()
+  }
 }
 
 async function applyChanges() {
@@ -148,6 +162,8 @@ async function handleItemEditMenuBeforeHide() {
   } else {
     applyChanges()
   }
+
+  originalValue.value = klona(item.value)
 }
 
 const $z = useZod({ scope: 'qb' })
@@ -194,7 +210,7 @@ const $z = useZod({ scope: 'qb' })
       v-if="editable"
       size="xs"
       preset="TRASH"
-      @click.stop.prevent="handleRemoveCondition"
+      @click.stop.prevent="handleRemoveCondition(true)"
       @mousedown.stop.prevent
     />
 

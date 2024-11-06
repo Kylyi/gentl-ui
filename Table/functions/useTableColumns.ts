@@ -344,9 +344,7 @@ export function useTableColumns(
     const container = toValue(containerElRef)
     const wrapper = toValue(wrapperElRef)
     const containerWidth = container.clientWidth
-    const isWrapperOverflownVertically = isOverflown(wrapper, {
-      direction: 'vertical',
-    })
+    const isWrapperOverflownVertically = isOverflown(wrapper, { direction: 'vertical' })
 
     const { minColWidthRef = 64 } = options
     const minColWidth = toValue(minColWidthRef)
