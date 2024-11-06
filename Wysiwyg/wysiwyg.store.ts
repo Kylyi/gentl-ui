@@ -9,7 +9,7 @@ import type { IWysiwygMentionSetup } from '~/components/Wysiwyg/types/wysiwyg-me
 import { wysiwygIdKey } from '~/components/Wysiwyg/provide/wysiwyg.provide'
 import type { IWysiwygSinkProps } from '~/components/Wysiwyg/types/wysiwyg-sink-props.type'
 
-export function useWysiwygStore(wysiwygId?: string, props?: IWysiwygProps) {
+export function useWysiwygStore(wysiwygId?: string) {
   const _wysiwygId = injectLocal(wysiwygIdKey, wysiwygId ?? useId())
 
   return defineStore(`wysiwyg.${_wysiwygId}`, () => {
@@ -47,11 +47,11 @@ export function useWysiwygStore(wysiwygId?: string, props?: IWysiwygProps) {
     })
 
     // Features
-    const propsFeatures = ref<IWysiwygProps['features']>(props?.features)
+    const propsFeatures = ref<IWysiwygProps['features']>()
 
     const features = computed<IWysiwygFeaturesProps | undefined>(() => {
-      if (typeof propsFeatures === 'string') {
-        switch (propsFeatures) {
+      if (typeof propsFeatures.value === 'string') {
+        switch (propsFeatures.value) {
           case 'full':
             return {
               emailButton: true,
@@ -83,7 +83,7 @@ export function useWysiwygStore(wysiwygId?: string, props?: IWysiwygProps) {
     })
 
     // Sink
-    const propsSink = ref<IWysiwygProps['sink']>(props?.sink)
+    const propsSink = ref<IWysiwygProps['sink']>()
 
     const sink = computed<IWysiwygSinkProps | undefined>(() => {
       if (typeof propsSink === 'boolean') {
@@ -97,6 +97,11 @@ export function useWysiwygStore(wysiwygId?: string, props?: IWysiwygProps) {
       return propsSink.value as IWysiwygSinkProps
     })
 
+    function init(props: IWysiwygProps) {
+      propsFeatures.value = props.features
+      propsSink.value = props.sink
+    }
+
     return {
       editor,
       features,
@@ -109,6 +114,7 @@ export function useWysiwygStore(wysiwygId?: string, props?: IWysiwygProps) {
       getEditorValue,
       currentNodeSelection,
       setEditor,
+      init,
     }
   })()
 }

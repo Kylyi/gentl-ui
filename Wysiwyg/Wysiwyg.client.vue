@@ -56,8 +56,10 @@ provideLocal(wysiwygIdKey, uuid)
 provideLocal(wysiwygModelKey, model)
 
 // Store
-const wysiwygStore = useWysiwygStore(undefined, props)
+const wysiwygStore = useWysiwygStore(undefined)
 const { isFocused, files, mentionSetup } = storeToRefs(wysiwygStore)
+
+wysiwygStore.init(props)
 
 // Init files
 watch(
@@ -227,12 +229,12 @@ onBeforeUnmount(wysiwygStore.$dispose)
       :editable="isEditable"
     />
 
-    <!-- <WysiwygElementOptions
+    <WysiwygElementOptions
       v-if="selectedDom && isEditable"
       :dom="selectedDom?.domEl"
       :type="selectedDom.type"
       :pos="selectedDom.pos"
-    /> -->
+    />
 
     <template #menu>
       <WysiwygSink

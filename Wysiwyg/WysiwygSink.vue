@@ -13,6 +13,7 @@ const props = defineProps<IProps>()
 
 // Store
 const { isFocused, features, sink } = storeToRefs(useWysiwygStore())
+console.log('Log ~ features:', features.value)
 
 // Layout
 const sinkEl = ref<HTMLDivElement>()

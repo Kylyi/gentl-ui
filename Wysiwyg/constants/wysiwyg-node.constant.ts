@@ -152,7 +152,7 @@ export const WYSIWYG_NODES_BY_NAME: Record<string, IWysiwygNode> = {
     id: 'link',
     label: () => $t('wysiwyg.node.link'),
     icon: 'i-ph:link',
-    properties: ['padding', 'border', 'border-radius', 'margin', 'float', 'size'],
+    properties: ['padding', 'border', 'border-radius', 'colors'],
     ref: null,
   },
 
@@ -161,7 +161,7 @@ export const WYSIWYG_NODES_BY_NAME: Record<string, IWysiwygNode> = {
     id: 'emailButton',
     label: () => $t('wysiwyg.node.emailButton'),
     icon: 'i-formkit:button',
-    properties: ['padding', 'border', 'border-radius', 'margin', 'text-align'],
+    properties: ['padding', 'border', 'colors', 'border-radius', 'margin', 'text-align'],
     ref: null,
   },
 }

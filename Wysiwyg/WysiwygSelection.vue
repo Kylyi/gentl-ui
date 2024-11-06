@@ -11,6 +11,9 @@ import { type IWysiwygNode, WYSIWYG_NODES_BY_NAME } from '~/components/Wysiwyg/c
 // Store
 import { useWysiwygStore } from '~/components/Wysiwyg/wysiwyg.store'
 
+// Components
+import type HorizontalScroller from '~/components/Scroller/HorizontalScroller.vue'
+
 type IProps = {
   screenSize?: 'mobile' | 'tablet' | 'desktop'
   visuals?: IWysiwygProps['visuals']
@@ -35,6 +38,7 @@ const { currentNodeSelection } = storeToRefs(useWysiwygStore(uuid))
 
 // Layout
 const nodeSelected = ref<IItem>()
+const horizontalScrollerEl = ref<InstanceType<typeof HorizontalScroller>>()
 const visuals = defineModel<IProps['visuals']>('visuals', { default: () => ({}) })
 const screenSize = defineModel<IProps['screenSize']>(
   'screenSize',
@@ -47,6 +51,10 @@ const nodes = computed(() => {
     ...currentNodeSelection.value.nodes
       ?.map(node => ({ ...WYSIWYG_NODES_BY_NAME[node.type.name], ref: node }))
       .filter(node => !!node.id),
+    ...currentNodeSelection.value.marks
+      ?.filter(mark => mark.type.name === 'link')
+      .map(mark => ({ ...WYSIWYG_NODES_BY_NAME[mark.type.name], ref: mark }))
+      .filter(mark => !!mark.id),
   ]
 })
 
@@ -114,26 +122,33 @@ watch(currentNodeSelection, selection => {
     const node = nodes.value.find(node => node.id === lastNode.type.name)
 
     nodeSelected.value = node
+    horizontalScrollerEl.value?.updateArrows()
+
+    nextTick(() => {
+      horizontalScrollerEl.value?.scroll(Number.MAX_SAFE_INTEGER)
+    })
   }
 }, { immediate: true })
 </script>
 
 <template>
   <div class="wysiwyg-selection">
-    <div flex="~ items-center">
+    <div flex="~ items-center gap-2">
       <!-- Nodes -->
       <HorizontalScroller
+        ref="horizontalScrollerEl"
         grow
         content-class="gap-1"
       >
         <Btn
           v-for="(node, idx) in nodes"
           :key="idx"
-          size="sm"
+          size="xs"
           no-uppercase
           :icon="node.icon"
           :label="node.label()"
           :class="{ 'is-active': nodeSelected?.id === node.id }"
+          shrink-0
           @click="nodeSelected = node"
         />
       </HorizontalScroller>
@@ -161,29 +176,25 @@ watch(currentNodeSelection, selection => {
       </div>
     </div>
 
-    <!-- Marks -->
-    <div
-      v-if="currentNodeSelection.marks.length"
-      flex="~ gap-1 items-center"
-    >
-      <div class="i-ri:mark-pen-line w-5 h-5 shrink-0" />
-
-      <HorizontalScroller>
-        <Btn
-          v-for="(mark, idx) in currentNodeSelection.marks"
-          :key="idx"
-          size="sm"
-          no-uppercase
-          :label="mark.type.name"
-          @click="nodeSelected = mark"
-        />
-      </HorizontalScroller>
-    </div>
-
     <Separator m="y-2" />
 
     <!-- CSS -->
-    <div flex="~ col gap-2">
+    <div
+      flex="~ col gap-2"
+      bg="ca"
+      m="x--1"
+      p="1"
+      rounded="custom"
+    >
+      <span
+        font="semibold rem-14"
+        p="1"
+        border="b-1 ca"
+        text="center"
+      >
+        {{ $t('wysiwyg.visuals') }}
+      </span>
+
       <WysiwygComponentCss
         v-model:css="nodeVisuals"
         :properties="nodeSelected?.properties"
