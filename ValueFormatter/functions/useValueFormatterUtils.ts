@@ -55,7 +55,7 @@ export function useValueFormatterUtils() {
     } = options
 
     if (emptyValue === value) {
-      return null
+      return emptyValue
     }
 
     // We try to resolve enums when possible
@@ -169,7 +169,11 @@ export function useValueFormatterUtils() {
       case 'bool':
       case 'booleanSimple':
       case 'boolSimple':
-        return JSON.parse(value) ? $t('general.yes') : $t('general.no')
+        try {
+          return JSON.parse(value) ? $t('general.yes') : $t('general.no')
+        } catch {
+          return emptyValue
+        }
 
       case 'string':
       case 'stringSimple':

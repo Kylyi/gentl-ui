@@ -9,6 +9,7 @@ import Toggle from '~/components/Toggle/Toggle.vue'
 import TimeInput from '~/components/Inputs/TimeInput/TimeInput.vue'
 import DurationInput from '~/components/Inputs/DurationInput/DurationInput.vue'
 import CurrencyInput from '~/components/Inputs/CurrencyInput/CurrencyInput.vue'
+import YearMonthSelector from '~/components/YearMonthSelector/YearMonthSelector.vue'
 
 const TEXT_INPUT = {
   component: markRaw(TextInput),
@@ -33,7 +34,7 @@ const DURATION_INPUT = {
   props: {
     format: '0,0.00',
   } as ComponentProps<typeof DurationInput>,
-  icon: 'i-carbon:time',
+  icon: 'i-lets-icons:time-atack-light',
 }
 
 const DATE_INPUT = {
@@ -42,6 +43,12 @@ const DATE_INPUT = {
     format: 'YYYY-MM-DD',
   } as ComponentProps<typeof DateInput>,
   icon: 'i-system-uicons:calendar-date',
+}
+
+const YEAR_MONTH_INPUT = {
+  component: markRaw(YearMonthSelector),
+  props: {} as ComponentProps<typeof YearMonthSelector>,
+  icon: 'i-carbon:calendar',
 }
 
 const BOOLEAN_INPUT = {
@@ -82,10 +89,12 @@ const INPUT_BY_DATATYPE = {
   // Date
   date: DATE_INPUT,
   datetime: DATE_INPUT,
-  yearMonth: DATE_INPUT,
   timestamp: DATE_INPUT,
   DateTime: DATE_INPUT,
   fullDateTime: DATE_INPUT,
+
+  // Year month
+  yearMonth: YEAR_MONTH_INPUT,
 
   // Boolean
   boolean: BOOLEAN_INPUT,

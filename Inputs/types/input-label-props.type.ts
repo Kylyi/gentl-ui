@@ -16,7 +16,7 @@ export type IInputLabelProps = {
   /**
    * The input's label
    */
-  label?: string
+  label?: string | (() => string)
 
   /**
    * The input's placeholder

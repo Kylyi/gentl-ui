@@ -159,7 +159,8 @@ useResizeObserver(headerEl, entries => {
       >
         <div
           class="expand-icon i-majesticons:chevron-right"
-          :class="{ 'rotate-90deg': internalValue }"
+          :class="[ui?.expandIconClass, { 'rotate-90deg': internalValue }]"
+          :style="ui?.expandIconStyle"
         />
       </slot>
     </div>

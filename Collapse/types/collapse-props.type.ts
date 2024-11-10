@@ -82,4 +82,16 @@ export type ICollapseProps = {
    * The class to be applied to the content when transitioning
    */
   transitionClass?: ClassType
+
+  ui?: {
+    /**
+     * Class to apply to the expand icon
+     */
+    expandIconClass?: ClassType
+
+    /**
+     * Style to apply to the expand icon
+     */
+    expandIconStyle?: CSSProperties
+  }
 }

@@ -39,6 +39,8 @@ function handleCopy() {
     :size="copyBtnSize"
     :tooltip
     :label
+    :label-class
+    :no-uppercase
     bg="white dark:darker"
     no-dim
     no-hover-effect
