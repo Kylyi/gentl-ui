@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nodeViewProps, NodeViewWrapper } from '@tiptap/vue-3'
+import { NodeViewWrapper, nodeViewProps } from '@tiptap/vue-3'
 
 const props = defineProps(nodeViewProps)
 const { node } = props
@@ -23,7 +23,6 @@ watch(
     :src="node.attrs.src"
     :alt="node.attrs.alt"
     :data-id="node.attrs.id"
-    :style
     data-drag-handle
     class="wysiwyg-img"
     :class="{ 'has-open-menu': isMenuActive }"

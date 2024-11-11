@@ -77,6 +77,7 @@ const {
   hasNoValue,
   lastValidValue,
   hasClearableBtn,
+  label,
   focus,
   select,
   blur,

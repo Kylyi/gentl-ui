@@ -38,6 +38,7 @@ const {
   hasContent,
   isBlurred,
   hasClearableBtn,
+  label,
   handleBlur,
   handleClickWrapper,
   handleFocusOrClick,

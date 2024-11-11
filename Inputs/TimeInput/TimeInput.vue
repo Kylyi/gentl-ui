@@ -161,6 +161,7 @@ const {
   inputId,
   masked,
   model,
+  label,
   wrapperProps,
   hasNoValue,
   hasClearableBtn,

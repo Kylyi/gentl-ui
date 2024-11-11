@@ -93,6 +93,14 @@ export function useInputUtils(options: IInputUtilsOptions) {
 
   const menuEl = computed(() => toValue(menuElRef))
 
+  const label = computed(() => {
+    if (typeof props.label === 'function') {
+      return props.label()
+    }
+
+    return props.label
+  })
+
   const inputElement = computed(() => {
     return unrefElement(el.value as any) as HTMLInputElement | undefined
   })
@@ -328,6 +336,7 @@ export function useInputUtils(options: IInputUtilsOptions) {
     hasNoValue: isEmpty,
     hasClearableBtn,
     hasContent,
+    label,
     lastValidValue,
     handleBlur,
     clear,

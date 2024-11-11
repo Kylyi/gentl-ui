@@ -150,6 +150,7 @@ const {
   hasClearableBtn,
   handleFocusOrClick,
   handleClickWrapper,
+  label,
   focus,
   select,
   handleBlur,
