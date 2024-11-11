@@ -87,6 +87,13 @@ const PATTERN = 'HH:mm'
 const preventNextIsAmChange = autoResetRef(false, 50)
 
 const delocalizedTimeParts = computed(() => {
+  const validTimeRegex = /^\d{2}:\d{2}$/
+  const isValidTime = validTimeRegex.test(props.modelValue)
+
+  if (!isValidTime) {
+    return { hh: '12', mm: '00' }
+  }
+
   const time = props.modelValue || '12:00'
 
   return {

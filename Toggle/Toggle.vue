@@ -12,6 +12,7 @@ const props = withDefaults(defineProps<IToggleProps>(), {
   uncheckValue: false,
   contained: true,
   rounding: 'full',
+  size: 'md',
 })
 
 const emits = defineEmits<{

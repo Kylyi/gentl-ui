@@ -60,6 +60,12 @@ const mask = computed<MaskedNumber>(() => {
         return ''
       }
 
+      const isValidNumber = isNumeric(value)
+
+      if (!isValidNumber) {
+        return ''
+      }
+
       return value.toFixed(props.fractionDigits)
     },
   })
