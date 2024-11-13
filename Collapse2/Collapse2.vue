@@ -119,6 +119,7 @@ const isOpen = defineModel<boolean>({ default: false })
 
     &[data-state='open'] {
       @apply rounded-b-0;
+      @apply bg-$Collapse-header-active-bg color-$Collapse-header-active-color;
     }
   }
 

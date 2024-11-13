@@ -94,9 +94,6 @@ export function useWysiwygInit(
       WysiwygUnderline(),
       WysiwygTextStyle(),
       WysiwygColor(),
-      WysiwygDetails(),
-      WysiwygDetailsSummary(),
-      WysiwygDetailsContent(),
       WysiwygTaskList(),
       WysiwygTaskItem(),
       WysiwygUniqueId({
@@ -117,6 +114,11 @@ export function useWysiwygInit(
           'detailsContent',
         ],
       }),
+
+      // Details
+      ...resolveExtension(WysiwygDetails(), 'details'),
+      ...resolveExtension(WysiwygDetailsSummary(), 'details'),
+      ...resolveExtension(WysiwygDetailsContent(), 'details'),
 
       // Table
       ...resolveExtension(WysiwygTable(), 'table'),

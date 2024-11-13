@@ -5,22 +5,19 @@ import type { IWysiwygProps } from '~/components/Wysiwyg/types/wysiwyg-props.typ
 // Store
 import { useWysiwygStore } from '~/components/Wysiwyg/wysiwyg.store'
 
-type IProps = Pick<IWysiwygProps, 'features' | 'sink'> & {
-  editable?: boolean
-}
+type IProps = Pick<IWysiwygProps, 'noBorder'>
 
-const props = defineProps<IProps>()
+defineProps<IProps>()
 
 // Store
-const { isFocused, features, sink } = storeToRefs(useWysiwygStore())
-console.log('Log ~ features:', features.value)
+const { isEditable, isFocused, features, sink } = storeToRefs(useWysiwygStore())
 
 // Layout
 const sinkEl = ref<HTMLDivElement>()
 const hasActiveMenu = ref(false)
 
 const isSinkVisible = computed(() => {
-  if (!sink.value?.enabled || !props.editable) {
+  if (!sink.value?.enabled || !isEditable.value) {
     return false
   }
 
@@ -45,7 +42,10 @@ useMutationObserver(
     v-if="isSinkVisible"
     ref="sinkEl"
     class="wysiwyg-sink__wrapper"
-    :class="{ 'is-floating': sink?.floating }"
+    :class="[
+      `floating--${sink?.floatingPlacement ?? 'bottom'}`,
+      { 'is-floating': sink?.floating },
+    ]"
     @click.stop.prevent
     @mousedown.stop.prevent
   >
@@ -54,6 +54,10 @@ useMutationObserver(
     <HorizontalScroller
       class="wysiwyg-sink"
       content-class="gap-x-1 p-px"
+      :class="[
+        `floating--${sink?.floatingPlacement ?? 'bottom'}`,
+        { 'is-floating': sink?.floating, 'no-border': noBorder },
+      ]"
     >
       <!-- Size -->
       <WysiwygTextSizeSimpleCommands />
@@ -105,14 +109,16 @@ useMutationObserver(
         <WysiwygFileCommandBtn v-if="features?.fileUpload" />
       </template>
 
-      <Separator
-        vertical
-        spaced
-        inset
-      />
-
       <!-- Details -->
-      <WysiwygDetailsCommandBtn />
+      <template v-if="features?.details">
+        <Separator
+          vertical
+          spaced
+          inset
+        />
+
+        <WysiwygDetailsCommandBtn />
+      </template>
 
       <!-- Email button -->
       <template v-if="features?.emailButton">
@@ -154,13 +160,39 @@ useMutationObserver(
 
 <style lang="scss" scoped>
 .wysiwyg-sink {
-  @apply z-$zLogo dark:bg-darker bg-white border-x-1 border-b-1 border-ca rounded-b-custom;
+  @apply z-$zLogo dark:bg-darker bg-white border-x-1 border-ca;
+
+  &:not(.is-floating) {
+    @apply rounded-b-custom border-b-1;
+  }
+
+  &.is-floating {
+    &.floating--top {
+      @apply rounded-t-custom border-t-1;
+    }
+
+    &.floating--bottom {
+      @apply rounded-b-custom border-b-1;
+    }
+  }
+
+  &.no-border {
+    @apply border-1 rounded-custom;
+  }
 
   &__wrapper {
     @apply flex gap-2 items-center right-0 w-full shrink-0;
 
     &.is-floating {
-      @apply absolute -top-40px;
+      @apply absolute;
+
+      &.floating--top {
+        @apply -top-35px;
+      }
+
+      &.floating--bottom {
+        @apply -bottom-35px;
+      }
     }
   }
 

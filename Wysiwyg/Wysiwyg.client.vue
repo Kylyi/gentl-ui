@@ -37,6 +37,7 @@ defineExpose({
     replace?: boolean,
   ) => resolveMentions(fnc, replace, props),
   setModel: (content: string) => model.value = content,
+  getEditor: () => editor.value,
 })
 
 // Init
@@ -57,7 +58,7 @@ provideLocal(wysiwygModelKey, model)
 
 // Store
 const wysiwygStore = useWysiwygStore(undefined)
-const { isFocused, files, mentionSetup } = storeToRefs(wysiwygStore)
+const { isFocused, isEditable: isEditableStore, files, mentionSetup } = storeToRefs(wysiwygStore)
 
 wysiwygStore.init(props)
 
@@ -88,6 +89,8 @@ const {
 
 const { getInputWrapperProps } = useInputWrapperUtils()
 const { transitionProps, resolveMentions } = useWysiwygUtils()
+
+syncRef(isEditableStore, isEditable)
 
 function focusEditor() {
   editor.value?.chain().focus().run()
@@ -237,29 +240,35 @@ onBeforeUnmount(wysiwygStore.$dispose)
     />
 
     <template #menu>
-      <WysiwygSink
-        v-if="editor"
-        :features
-        :sink
-        :editable="isEditable"
+      <slot
+        name="sink"
+        :select-fnc="selectFnc"
       >
-        <template
-          v-if="$slots['sink-prepend']"
-          #prepend
+        <WysiwygSink
+          v-if="editor"
+          :features
+          :sink
+          :no-border
+          :editable="isEditable"
         >
-          <slot name="sink-prepend" />
-        </template>
+          <template
+            v-if="$slots['sink-prepend']"
+            #prepend
+          >
+            <slot name="sink-prepend" />
+          </template>
 
-        <template
-          v-if="$slots['sink-append']"
-          #append
-        >
-          <slot
-            name="sink-append"
-            :blur-editor="blurEditor"
-          />
-        </template>
-      </WysiwygSink>
+          <template
+            v-if="$slots['sink-append']"
+            #append
+          >
+            <slot
+              name="sink-append"
+              :blur-editor="blurEditor"
+            />
+          </template>
+        </WysiwygSink>
+      </slot>
     </template>
   </InputWrapper>
 </template>

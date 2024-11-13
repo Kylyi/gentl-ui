@@ -49,6 +49,11 @@ export type IInputWrapperProps = IInputLabelProps & {
   loading?: boolean
 
   /**
+   * A marker in top right corner of the input to visualize *something*
+   */
+  marker?: { text: string, color?: string }
+
+  /**
    * The input value
    */
   modelValue?: any

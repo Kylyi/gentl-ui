@@ -4,4 +4,5 @@ export type IWysiwygFeaturesProps = {
   image?: boolean
   link?: boolean
   table?: boolean
+  details?: boolean
 }

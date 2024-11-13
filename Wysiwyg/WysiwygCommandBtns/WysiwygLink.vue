@@ -177,9 +177,9 @@ function addTemplateVariable(mention: IItem) {
           placeholder="https://google.com"
         >
           <template
-v-if="mentions?.length"
-#tooltip
->
+            v-if="mentions?.length"
+            #tooltip
+          >
             <div
               class="attribute__id-tooltip"
               @click.stop.prevent

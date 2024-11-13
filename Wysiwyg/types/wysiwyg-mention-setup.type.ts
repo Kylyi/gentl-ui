@@ -4,6 +4,13 @@ import type { IListFetchFnc } from '~/components/List/types/list-fetch.type'
 
 export type IWysiwygMentionSetup = {
   /**
+   * The character that should be appended to the mention
+   *
+   * Note: Does not need to be a single character
+   */
+  appendChar?: string
+
+  /**
    * The character that triggers the mention
    *
    * Note: Does not need to be a single character
@@ -11,16 +18,14 @@ export type IWysiwygMentionSetup = {
   char: string
 
   /**
+   * The props that should be passed to the `List` component
+   */
+  listProps?: Partial<IListProps>
+
+  /**
    * The type of the mention for semantic purposes
    */
   type?: string
-
-  /**
-   * The character that should be appended to the mention
-   *
-   * Note: Does not need to be a single character
-   */
-  appendChar?: string
 
   /**
    * The function to use for fetching the data
@@ -30,8 +35,4 @@ export type IWysiwygMentionSetup = {
    */
   loadData: IListFetchFnc
 
-  /**
-   * The props that should be passed to the `List` component
-   */
-  listProps?: Partial<IListProps>
 }

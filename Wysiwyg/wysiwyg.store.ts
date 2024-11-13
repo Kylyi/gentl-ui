@@ -20,6 +20,7 @@ export function useWysiwygStore(wysiwygId?: string) {
 
     // Editor
     const isFocused = ref(false)
+    const isEditable = ref(true)
     const editor = shallowRef<Editor>()
 
     const currentNodeSelection = ref({
@@ -108,6 +109,7 @@ export function useWysiwygStore(wysiwygId?: string) {
       sink,
       files,
       filesByPath,
+      isEditable,
       isFocused,
       mentionSetup,
       providedData,
