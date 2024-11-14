@@ -91,6 +91,7 @@ defineExpose({
   ) => handleSelectRow(row, options),
   clearSelection: () => clearSelection(),
   handleCancelEditRow: () => handleCancelEditRow(),
+  getRows: () => rows,
   customFnc: (
     fnc: (options: {
       columns: TableColumn[]
