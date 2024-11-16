@@ -72,7 +72,7 @@ const isVisible = computed(() => {
       class="keyboard-shortcut__wrapper"
     >
       <div
-        i-material-symbols:shift-lock-rounded
+        i-fluent:keyboard-shift-uppercase-16-filled
         class="icon"
       />
     </div>
