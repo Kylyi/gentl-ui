@@ -1,3 +1,5 @@
+import type { CSSProperties } from 'vue'
+
 // Types
 import type { NavigateToOptions } from '~/shims'
 
@@ -160,5 +162,5 @@ export type IBtnProps = IBtnNavigationProps & {
   /**
    * Props for the tooltip
    */
-  tooltipProps?: Partial<ITooltipProps>
+  tooltipProps?: Partial<ITooltipProps> & { style?: CSSProperties, class: ClassType }
 }

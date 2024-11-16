@@ -44,7 +44,7 @@
   }
 
   h1 {
-    @apply text-3xl relative;
+    @apply relative;
 
     &::before {
       @apply content-empty absolute top-0 left--2 w-1 h-full bg-tertiary rounded-custom;
@@ -52,7 +52,7 @@
   }
 
   h2 {
-    @apply text-2xl relative;
+    @apply relative;
 
     &::before {
       @apply content-empty absolute top-0 left--2 w-1 h-full bg-tertiary rounded-custom;
@@ -60,11 +60,7 @@
   }
 
   h3 {
-    @apply m-t-4 m-b-2 text-xl;
-  }
-
-  h4 {
-    @apply text-lg;
+    @apply m-t-4 m-b-2;
   }
 
   &.resize-cursor {
