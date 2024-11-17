@@ -164,7 +164,7 @@ const classes = computed(() => {
 }
 
 .input-wrapper__inline:focus-within {
-  .input-wrapper__inline-border {
+  > .input-wrapper__inline-border {
     @apply border-$borderColor;
   }
 }

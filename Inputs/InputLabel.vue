@@ -128,8 +128,8 @@ label.label {
   }
 }
 
-.wrapper__body:not(.selector-wrapper):focus-within {
-  label.label {
+.wrapper__body:not(.selector-wrapper):focus-within > div {
+  > label.label {
     @apply color-$InputLabel-active-color;
 
     &:not(.is-inline) {
@@ -145,7 +145,7 @@ label.label {
     }
   }
 
-  label.label[haserror='true'] {
+  > label.label[haserror='true'] {
     @apply color-negative;
   }
 }
