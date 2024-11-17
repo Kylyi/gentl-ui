@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { CSSProperties } from 'vue'
+
 // Store
 import { useAppStore } from '~/libs/App/app.store'
 
@@ -9,6 +11,10 @@ type IProps = {
   withCtrl?: boolean
   withAlt?: boolean
   withShift?: boolean
+  ui?: {
+    wrapperClass?: ClassType
+    wrapperStyle?: CSSProperties
+  }
 }
 
 const props = defineProps<IProps>()
@@ -36,6 +42,8 @@ const isVisible = computed(() => {
     <div
       v-if="withCtrl"
       class="keyboard-shortcut__wrapper"
+      :class="ui?.wrapperClass"
+      :style="ui?.wrapperStyle"
     >
       <div
         v-if="isApple"
@@ -53,6 +61,8 @@ const isVisible = computed(() => {
     <div
       v-if="withAlt"
       class="keyboard-shortcut__wrapper"
+      :class="ui?.wrapperClass"
+      :style="ui?.wrapperStyle"
     >
       <div
         v-if="isApple"
@@ -70,6 +80,8 @@ const isVisible = computed(() => {
     <div
       v-if="withShift"
       class="keyboard-shortcut__wrapper"
+      :class="ui?.wrapperClass"
+      :style="ui?.wrapperStyle"
     >
       <div
         i-fluent:keyboard-shift-uppercase-16-filled
@@ -82,7 +94,11 @@ const isVisible = computed(() => {
     </div>
 
     <!-- Key -->
-    <div class="keyboard-shortcut__wrapper">
+    <div
+      class="keyboard-shortcut__wrapper"
+      :class="ui?.wrapperClass"
+      :style="ui?.wrapperStyle"
+    >
       <div
         :class="icon"
         font="rem-14"

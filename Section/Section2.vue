@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { config } from '~/components/config/components-config'
-
 // Types
 import type { ISectionProps } from '~/components/Section/types/section-props.type'
 
@@ -12,12 +10,14 @@ defineOptions({
 })
 
 const props = withDefaults(defineProps<ISectionProps>(), {
-  ui: () => config.section2.props.ui ?? {},
+  ...getConfigProps('section2'),
 })
 
 // Layout
 const titleElement = computed(() => {
-  return props.titleElement ?? Heading
+  return props.titleElement
+    ? { component: props.titleElement, props: {} }
+    : { component: markRaw(Heading), props: pick(props, ['filled', 'highlighted']) }
 })
 </script>
 
@@ -33,7 +33,8 @@ const titleElement = computed(() => {
       name="title"
     >
       <Component
-        :is="titleElement"
+        :is="Heading"
+        v-bind="titleElement.props"
         class="section__title"
         :class="ui?.titleClass"
         :style="ui?.titleStyle"
