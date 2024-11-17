@@ -2,6 +2,9 @@
 // Types
 import type { ISectionProps } from '~/components/Section/types/section-props.type'
 
+// Functions
+import { getConfigProps } from '~/components/__helpers/get-config-props'
+
 // Components
 import Heading from '~/components/Typography/Heading.vue'
 
