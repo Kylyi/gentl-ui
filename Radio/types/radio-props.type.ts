@@ -1,4 +1,9 @@
+import type { CSSProperties } from 'vue'
+
 export type IRadioProps = {
+  /**
+   * The color of the radio
+   */
   color?:
     | 'primary'
     | 'secondary'
@@ -9,6 +14,7 @@ export type IRadioProps = {
     | 'light'
     | 'dark'
     | 'darker'
+
   comparatorFn?: (model: any, val: any) => boolean
   disabled?: boolean
   label?: string
@@ -17,4 +23,14 @@ export type IRadioProps = {
   noHoverEffect?: boolean
   size?: 'xs' | 'sm' | 'md' | 'lg'
   val: any
+
+  /**
+   * The class of the radio label
+   */
+  labelClass?: ClassType
+
+  /**
+   * The style of the radio label
+   */
+  labelStyle?: CSSProperties
 }

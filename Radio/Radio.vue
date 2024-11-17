@@ -54,6 +54,8 @@ function handleCheck() {
       <span
         v-if="label"
         class="radio-label"
+        :class="labelClass"
+        :style="labelStyle"
       >
         {{ label }}
       </span>
