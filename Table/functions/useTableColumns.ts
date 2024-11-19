@@ -568,7 +568,6 @@ export function useTableColumns(
       // up to some extra pixels that we need to distribute to the columns relative columns
       // so we sort the `relative` columns by its width and later stretch them
       // from the smallest to the biggest
-      const invisibleColumns = cols.filter(col => col.hidden)
       const visibleColumns = cols.filter(col => !col.hidden)
       const colsSortedByWidth = visibleColumns.toSorted((a, b) => {
         const widthA = a.isHelperCol ? 9999 * a.adjustedWidth || 0 : a.adjustedWidth
@@ -589,8 +588,6 @@ export function useTableColumns(
       const _colsTotalWidth = colsTotalWidth.relative
         + colsTotalWidth.fixed
         - helperColsWidth
-        - invisibleColumns.length
-        + 1
 
       let wExtra = 0
       colsSortedByWidth.forEach(col => {

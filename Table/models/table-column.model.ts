@@ -328,7 +328,7 @@ export class TableColumn<T = IItem> implements IItemBase<T> {
    */
   setWidth(width: string) {
     this.width = width
-    this.adjustedWidth = Number.parseInt(width.replace('px', ''))
+    this.adjustedWidth = Number.parseFloat(width.replace('px', ''))
   }
 
   setDataType(dataType?: ExtendedDataType, defaultComparator?: ComparatorEnum) {
