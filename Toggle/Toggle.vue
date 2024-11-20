@@ -261,7 +261,7 @@ export default {
   }
 
   &--sm {
-    @apply w-9 h-5.5 m-y-0.5 m-l-2.5 m-r-1.5;
+    @apply w-9.5 h-5.5 m-y-0.5 m-l-2.5 m-r-1.5;
 
     &.is-contained {
       @apply m-x-1.5;
@@ -340,7 +340,7 @@ export default {
 
     &.toggle--sm {
       .bullet {
-        @apply translate-x-14px;
+        @apply translate-x-16px;
       }
     }
 
@@ -370,11 +370,11 @@ export default {
 
     &.toggle--sm {
       .bullet {
-        @apply translate-x-5px;
+        @apply translate-x-6px;
       }
 
       .bullet.is-contained {
-        @apply translate-x-8px;
+        @apply translate-x-9px;
       }
     }
 
