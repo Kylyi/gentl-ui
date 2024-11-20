@@ -25,6 +25,14 @@ defineExpose({
 const model = defineModel()
 const labelEl = ref<HTMLElement>()
 
+const label = computed(() => {
+  if (typeof props.label === 'function') {
+    return props.label()
+  }
+
+  return props.label
+})
+
 const isChecked = computed(() => {
   // When custom function is provided, use it
   if (props.comparatorFn) {

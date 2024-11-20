@@ -17,14 +17,6 @@ export function WysiwygImage(
       ...options,
     })
     .extend({
-      addAttributes() {
-        return {
-          ...this.parent?.(),
-
-          style: { default: '' },
-        }
-      },
-
       addNodeView() {
         // @ts-expect-error
         return VueNodeViewRenderer(WysiwygImg)

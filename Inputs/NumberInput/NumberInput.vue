@@ -71,6 +71,7 @@ const {
   wrapperProps,
   hasNoValue,
   hasClearableBtn,
+  label,
   focus,
   select,
   blur,

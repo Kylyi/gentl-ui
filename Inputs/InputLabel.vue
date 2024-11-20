@@ -6,7 +6,15 @@ const props = withDefaults(defineProps<IInputLabelProps>(), {
   required: undefined,
 })
 
-const labelLocalClass = computed(() => {
+const label = computed(() => {
+  if (typeof props.label === 'function') {
+    return props.label()
+  }
+
+  return props.label
+})
+
+const labelClass = computed(() => {
   const isInline = props.layout === 'inline'
   const isInside = props.layout === 'label-inside'
   const isRegular = props.layout === 'regular'
@@ -31,7 +39,7 @@ const labelLocalClass = computed(() => {
   <label
     :for="id"
     class="label"
-    :class="labelLocalClass"
+    :class="labelClass"
     :style="ui?.labelStyle"
   >
     {{ label }}

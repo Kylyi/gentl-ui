@@ -1,5 +1,7 @@
 <script setup lang="ts">
 // TODO: MIN & MAX
+import { config } from '~/components/config/components-config'
+
 // Types
 import type { IYearMonthSelectorProps } from '~/components/YearMonthSelector/types/year-month-selector-props.type'
 
@@ -10,7 +12,10 @@ import { useFieldUtils } from '~/components/Field/functions/useFieldUtils'
 import Field from '~/components/Field/Field.vue'
 import MenuProxy from '~/components/MenuProxy/MenuProxy.vue'
 
-const props = defineProps<IYearMonthSelectorProps>()
+const props = withDefaults(defineProps<IYearMonthSelectorProps>(), {
+  layout: config.inputWrapper.props.layout,
+  stackLabel: config.inputWrapper.props.stackLabel,
+})
 
 defineEmits<{
   (e: 'update:modelValue', payload: Datetime): void
@@ -69,7 +74,7 @@ function handleYearPrevious() {
 }
 
 // Field
-const { getFieldProps, handleFocusOrClick } = useFieldUtils({
+const { el, getFieldProps, handleFocusOrClick } = useFieldUtils({
   props,
   menuElRef: menuProxyEl,
 })
@@ -93,7 +98,7 @@ onMounted(() => {
     :no-content="!modelFormatted"
     @focus="!readonly && handleFocusOrClick($event)"
   >
-    <span>
+    <span ref="el">
       {{ modelFormatted || '&nbsp;' }}
     </span>
 

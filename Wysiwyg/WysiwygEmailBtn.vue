@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { NodeViewWrapper, nodeViewProps } from '@tiptap/vue-3'
+import { nodeViewProps, NodeViewWrapper } from '@tiptap/vue-3'
 
 // Store
 import { useWysiwygStore } from '~/components/Wysiwyg/wysiwyg.store'
@@ -11,7 +11,6 @@ const { node, updateAttributes } = props
 const wysiwygStore = useWysiwygStore()
 
 // Layout
-const css = ref<string | undefined>(props.node.attrs.style)
 const href = ref<string | undefined>(node.attrs.href)
 const content = ref(node.attrs.content)
 
@@ -25,28 +24,6 @@ function setHref(val?: string | null) {
 
 // Menu
 const isMenuActive = ref(false)
-
-// Style
-const style = computed({
-  get() {
-    const cssValue = toValue(css.value) ?? ''
-
-    return cssValue.split(';').filter(Boolean).map(trim).reduce((agg, property) => {
-      const [key, value] = property.trim().split(':')
-
-      agg[key] = value.trim()
-
-      return agg
-    }, {} as Record<string, string>) ?? {}
-  },
-  set(val) {
-    updateAttributes({
-      style: Object.entries(cleanObject(val)).reduce((agg, [key, value]) => {
-        return `${agg}${key}:${value};`
-      }, ''),
-    })
-  },
-})
 
 // Mentions
 const mentions = computedAsync(async () => {
@@ -64,11 +41,6 @@ const mentions = computedAsync(async () => {
 function addTemplateVariable(mention: IItem) {
   setHref(`${href.value}{{${mention.id}}}`)
 }
-
-watch(
-  () => props.node.attrs.style,
-  _css => css.value = _css,
-)
 
 watch(
   () => props.node.attrs.content,
@@ -89,7 +61,6 @@ watch(
     draggable="true"
     contenteditable="false"
     :href="node.attrs.href"
-    :style="style"
     data-type="wysiwyg-email-btn"
     :data-id="node.attrs.id"
     data-drag-handle
@@ -156,17 +127,6 @@ watch(
             </div>
           </template>
         </TextArea>
-
-      <!-- Visuals -->
-      <Collapse
-        :title="$t('style.self')"
-        content-class="p-t-2 grid cols-2 gap-x-2 gap-y-4"
-      >
-        <WysiwygComponentCss
-          v-model:css="style"
-          :properties="['padding', 'colors', 'border', 'border-radius']"
-        />
-      </Collapse>
     </MenuProxy>
   </NodeViewWrapper>
 </template>
@@ -182,11 +142,6 @@ watch(
     .wysiwyg-email-btn__actions {
       @apply flex;
     }
-  }
-
-  &:hover {
-    background-color: var(--hoverBg) !important;
-    color: var(--hoverColor) !important;
   }
 }
 </style>

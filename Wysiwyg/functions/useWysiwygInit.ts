@@ -51,13 +51,13 @@ export function useWysiwygInit(
 
   function resolveExtension<T>(
     extension: T,
-    dependentKey: keyof IWysiwygProps,
+    dependentKey: string,
   ) {
     const extensions = Array.isArray(extension)
       ? extension
       : [extension]
 
-    return props[dependentKey] ? extensions : []
+    return get(wysiwygStore.features, dependentKey) ? extensions : []
   }
 
   // Store
@@ -94,43 +94,47 @@ export function useWysiwygInit(
       WysiwygUnderline(),
       WysiwygTextStyle(),
       WysiwygColor(),
-      WysiwygDetails(),
-      WysiwygDetailsSummary(),
-      WysiwygDetailsContent(),
       WysiwygTaskList(),
       WysiwygTaskItem(),
-      WysiwygUniqueId({ types: [
-        'heading',
-        'paragraph',
-        'table',
-        'tableCell',
-        'tableRow',
-        'image',
-        'bulletList',
-        'orderedList',
-        'taskList',
-        'listItem',
-        'taskItem',
-        'details',
-        'detailsSummary',
-        'detailsContent',
-      ] }),
+      // WysiwygUniqueId({
+      //   types: [
+      //     'heading',
+      //     'paragraph',
+      //     'table',
+      //     'tableCell',
+      //     'tableRow',
+      //     'image',
+      //     'bulletList',
+      //     'orderedList',
+      //     'taskList',
+      //     'listItem',
+      //     'taskItem',
+      //     'details',
+      //     'detailsSummary',
+      //     'detailsContent',
+      //   ],
+      // }),
+
+      // Details
+      ...resolveExtension(WysiwygDetails(), 'details'),
+      ...resolveExtension(WysiwygDetailsSummary(), 'details'),
+      ...resolveExtension(WysiwygDetailsContent(), 'details'),
 
       // Table
-      ...resolveExtension(WysiwygTable(), 'allowTable'),
+      ...resolveExtension(WysiwygTable(), 'table'),
 
       // File upload
-      ...resolveExtension(WysiwygFile(), 'allowFileUpload'),
-      ...resolveExtension(FileHandler, 'allowFileUpload'),
+      ...resolveExtension(WysiwygFile(), 'fileUpload'),
+      ...resolveExtension(FileHandler, 'fileUpload'),
 
       // Images
-      ...resolveExtension(WysiwygImage(), 'allowImage'),
+      ...resolveExtension(WysiwygImage(), 'image'),
 
       // Email button
-      ...resolveExtension(WysiwygEmailBtn(), 'allowEmailBtn'),
+      ...resolveExtension(WysiwygEmailBtn(), 'emailButton'),
 
       // Link
-      ...resolveExtension(WysiwygLink(), 'allowLink'),
+      ...resolveExtension(WysiwygLink(), 'link'),
 
       // Mentions
       ...MentionExtensions,

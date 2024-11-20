@@ -10,11 +10,15 @@
   --Collapse-header-bg: theme('colors.white');
   --Collapse-header-title-color: unset;
   --Collapse-dropdown-icon-color: theme('colors.primary');
+  --Collapse-header-active-bg: theme('colors.white');
+  --Collapse-header-active-color: unset;
 
   &.dark {
     --Collapse-header-bg: theme('colors.dark.700');
     --Collapse-header-title-color: unset;
     --Collapse-dropdown-icon-color: theme('colors.primary');
+    --Collapse-header-active-bg: theme('colors.dark.700');
+    --Collapse-header-active-color: unset;
   }
 
   // MiniCard (InputBlock)

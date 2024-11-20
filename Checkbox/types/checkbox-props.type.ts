@@ -30,7 +30,7 @@ export type ICheckboxProps = {
   editable?: boolean
   indeterminate?: boolean
   indeterminateValue?: any
-  label?: string
+  label?: string | (() => string)
   labelClass?: ClassType
   modelValue?: any
   noHoverEffect?: boolean

@@ -12,6 +12,10 @@ defineEmits<{
 // Utils
 const { editor } = useWysiwygStore()
 
+const currentTextColor = computed(() => {
+  return editor?.getAttributes('textStyle')?.color
+})
+
 function handleSetColor(color?: string | null) {
   if (color) {
     editor?.chain().focus().setColor(color).run()
@@ -35,6 +39,7 @@ function handleSetBackgroundColor(color?: string | null) {
     <Btn
       size="sm"
       icon="i-material-symbols:format-color-text-rounded"
+      :style="{ color: currentTextColor }"
       @click.stop.prevent
       @mousedown.stop.prevent
     >

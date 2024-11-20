@@ -201,6 +201,17 @@ const wrapperProps = computed(() => {
       </template>
     </Component>
 
+    <!-- Marker -->
+    <div
+      v-if="marker"
+      class="marker"
+      :class="marker?.color ?? 'bg-primary'"
+    >
+      <Tooltip>
+        {{ marker?.text }}
+      </Tooltip>
+    </div>
+
     <slot name="menu" />
   </div>
 </template>
@@ -244,6 +255,10 @@ const wrapperProps = computed(() => {
         @apply '!color-transparent';
       }
     }
+  }
+
+  .marker {
+    @apply cursor-help z-15 absolute top-1 right-2 w-2 h-2 rounded-full;
   }
 }
 </style>

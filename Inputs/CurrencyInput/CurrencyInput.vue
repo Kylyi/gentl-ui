@@ -60,6 +60,12 @@ const mask = computed<MaskedNumber>(() => {
         return ''
       }
 
+      const isValidNumber = isNumeric(value)
+
+      if (!isValidNumber) {
+        return ''
+      }
+
       return value.toFixed(props.fractionDigits)
     },
   })
@@ -77,6 +83,7 @@ const {
   hasNoValue,
   lastValidValue,
   hasClearableBtn,
+  label,
   focus,
   select,
   blur,

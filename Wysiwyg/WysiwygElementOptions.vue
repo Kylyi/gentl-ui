@@ -45,7 +45,7 @@ const floatingEl = ref<any>()
 const { width } = useElementSize(domEl)
 
 const { floatingStyles, update } = useFloating(domEl, floatingEl, {
-  strategy: 'absolute',
+  strategy: 'fixed',
   middleware,
   placement: 'top',
 })
@@ -102,6 +102,7 @@ watchThrottled(width, () => {
     v-if="domEl"
     ref="floatingEl"
     :style="floatingStyles"
+    z="$zMax"
   >
     <HorizontalScroller>
       <!-- Add column before -->

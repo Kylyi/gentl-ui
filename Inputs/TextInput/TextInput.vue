@@ -20,6 +20,7 @@ const props = withDefaults(defineProps<ITextInputProps>(), {
   size: 'md',
   stackLabel: undefined,
 })
+
 defineEmits<{
   (e: 'update:modelValue', val?: string | undefined | null): void
   (e: 'validation-reset', val?: string | undefined | null): void
@@ -38,6 +39,7 @@ const {
   hasContent,
   isBlurred,
   hasClearableBtn,
+  label,
   handleBlur,
   handleClickWrapper,
   handleFocusOrClick,

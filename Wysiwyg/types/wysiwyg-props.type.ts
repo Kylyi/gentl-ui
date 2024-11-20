@@ -3,41 +3,13 @@ import type { CSSProperties } from 'vue'
 
 // Types
 import type { IInputWrapperProps } from '~/components/Inputs/types/input-wrapper-props.type'
+import type { IWysiwygFeaturesProps } from '~/components/Wysiwyg/types/wysiwyg-features-props.type'
 import type { IWysiwygMentionSetup } from '~/components/Wysiwyg/types/wysiwyg-mention-setup.type'
+import type { IWysiwygSinkProps } from '~/components/Wysiwyg/types/wysiwyg-sink-props.type'
+
+type WysiwygFeaturePreset = 'full' | 'none' | 'basic'
 
 export type IWysiwygProps = IInputWrapperProps & {
-  /**
-   * When true, images will be allowed to be inserted
-   *
-   * TODO: This is not yet implemented
-   */
-  allowImage?: boolean
-
-  /**
-   * When true, links will be allowed to be inserted
-   */
-  allowLink?: boolean
-
-  /**
-   * When true, email buttons will be allowed to be inserted
-   */
-  allowEmailBtn?: boolean
-
-  /**
-   * When true, files will be allowed to be inserted
-   */
-  allowFileUpload?: boolean
-
-  /**
-   * When true, tables will be allowed to be inserted
-   */
-  allowTable?: boolean
-
-  /**
-   * Visuals (CSS) for each node (and some marks)
-   */
-  visuals?: Record<string, CSSProperties & IItem>
-
   /**
    *
    */
@@ -47,6 +19,11 @@ export type IWysiwygProps = IInputWrapperProps & {
    * Debounce for changes within the editor
    */
   debounce?: number
+
+  /**
+   * Whether to show the edit dialog
+   */
+  editDialog?: boolean
 
   /**
    * Class for the editor
@@ -63,6 +40,8 @@ export type IWysiwygProps = IInputWrapperProps & {
    */
   emptyValue?: any
 
+  features?: IWysiwygFeaturesProps | WysiwygFeaturePreset
+
   /**
    * Hint for the wysiwyg editor
    */
@@ -78,16 +57,6 @@ export type IWysiwygProps = IInputWrapperProps & {
    * Mentions
    */
   mentionSetup?: IWysiwygMentionSetup[]
-
-  /**
-   * When true, the WysiwygSink will NOT be shown
-   */
-  noSink?: boolean
-
-  /**
-   * When true, the WysiwygSink will NOT be floating -> will be `relative` instead of `absolute`
-   */
-  noSinkFloat?: boolean
 
   /**
    * When true, the editor will automatically resolve mentions as the user types
@@ -112,10 +81,12 @@ export type IWysiwygProps = IInputWrapperProps & {
    */
   returnFormat?: 'html' | 'markdown' | 'text'
 
+  sink?: IWysiwygSinkProps | boolean
+
   /**
-   * When true, the sink will always be visible
+   * Visuals (CSS) for each node (and some marks)
    */
-  sinkAlwaysVisible?: boolean
+  visuals?: Record<string, CSSProperties & IItem>
 
   /**
    * The function to use for resolving the mention

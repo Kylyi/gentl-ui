@@ -7,12 +7,12 @@ import type {
 
 const props = withDefaults(defineProps<IToggleProps>(), {
   allowString: true,
-  size: 'xs',
   modelValue: null,
   checkValue: true,
   uncheckValue: false,
   contained: true,
   rounding: 'full',
+  size: 'md',
 })
 
 const emits = defineEmits<{
@@ -131,6 +131,7 @@ const toggleClasses = computed(() => {
       'is-hoverable': props.hoverable,
       'is-readonly': props.readonly,
       'is-disabled': props.disabled,
+      'is-contained': props.contained,
     },
     classes.value[internalValue.value].toggle,
   ]
@@ -244,10 +245,30 @@ export default {
   }
 
   &--xs {
-    @apply w-10 h-6 m-y-1 m-x-2;
+    @apply w-8 h-4.5 m-y-0.75 m-l-3 m-r-1.5;
+
+    &.is-contained {
+      @apply m-x-1.5;
+    }
 
     .bullet {
-      @apply h-7 w-7;
+      @apply h-5 w-5;
+
+      &.is-contained {
+        @apply h-3.5 w-3.5;
+      }
+    }
+  }
+
+  &--sm {
+    @apply w-9.5 h-5.5 m-y-0.5 m-l-2.5 m-r-1.5;
+
+    &.is-contained {
+      @apply m-x-1.5;
+    }
+
+    .bullet {
+      @apply h-6 w-6;
 
       &.is-contained {
         @apply h-4.5 w-4.5;
@@ -255,38 +276,34 @@ export default {
     }
   }
 
-  &--sm {
-    @apply w-12 h-7 m-y-1.5 m-x-2.5;
+  &--md {
+    @apply w-11 h-6 m-y-1 m-l-3.5 m-r-2;
+
+    &.is-contained {
+      @apply m-l-2.5 m-r-2;
+    }
+
+    .bullet {
+      @apply h-7 w-7;
+
+      &.is-contained {
+        @apply h-5 w-5;
+      }
+    }
+  }
+
+  &--lg {
+    @apply w-12 h-7 m-y-1.5 m-l-3.5 m-r-2;
+
+    &.is-contained {
+      @apply m-l-2.5 m-r-2;
+    }
 
     .bullet {
       @apply h-8 w-8;
 
       &.is-contained {
         @apply h-5.5 w-5.5;
-      }
-    }
-  }
-
-  &--md {
-    @apply w-13 h-8 m-y-2 m-x-2.5;
-
-    .bullet {
-      @apply h-9 w-9;
-
-      &.is-contained {
-        @apply h-6.5 w-6.5;
-      }
-    }
-  }
-
-  &--lg {
-    @apply w-15 h-9 m-y-2.5 m-x-3;
-
-    .bullet {
-      @apply h-10 w-10;
-
-      &.is-contained {
-        @apply h-7.5 w-7.5;
       }
     }
   }
@@ -317,20 +334,25 @@ export default {
   &.is-checked {
     &.toggle--xs {
       .bullet {
-        @apply translate-x-18px;
+        @apply translate-x-14px;
       }
     }
 
-    &.toggle--sm,
+    &.toggle--sm {
+      .bullet {
+        @apply translate-x-16px;
+      }
+    }
+
     &.toggle--md {
       .bullet {
-        @apply translate-x-22px;
+        @apply translate-x-20px;
       }
     }
 
     &.toggle--lg {
       .bullet {
-        @apply translate-x-26px;
+        @apply translate-x-22px;
       }
     }
   }
@@ -342,28 +364,37 @@ export default {
       }
 
       .bullet.is-contained {
-        @apply translate-x-10px;
+        @apply translate-x-8px;
       }
     }
 
-    &.toggle--sm,
+    &.toggle--sm {
+      .bullet {
+        @apply translate-x-6px;
+      }
+
+      .bullet.is-contained {
+        @apply translate-x-9px;
+      }
+    }
+
     &.toggle--md {
       .bullet {
         @apply translate-x-7px;
       }
 
       .bullet.is-contained {
-        @apply translate-x-12px;
+        @apply translate-x-11px;
       }
     }
 
     &.toggle--lg {
       .bullet {
-        @apply translate-x-9px;
+        @apply translate-x-7px;
       }
 
       .bullet.is-contained {
-        @apply translate-x-14px;
+        @apply translate-x-12px;
       }
     }
   }

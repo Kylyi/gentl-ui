@@ -14,6 +14,7 @@ export function useInputWrapperUtils() {
       'label',
       'layout',
       'loading',
+      'marker',
       'modelValue',
       'noBorder',
       'originalValue',

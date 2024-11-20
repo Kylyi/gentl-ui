@@ -37,19 +37,30 @@ defineExpose({
     replace?: boolean,
   ) => resolveMentions(fnc, replace, props),
   setModel: (content: string) => model.value = content,
+  getEditor: () => editor.value,
 })
 
 // Init
-const self = getCurrentInstance()
 const uuid = injectLocal(wysiwygIdKey, useId()) as string
 const model = defineModel<any>()
+const visuals = defineModel<IWysiwygProps['visuals']>('visuals', { default: () => ({}) })
+
+const bodyId = computed(() => {
+  return visuals.value?.body?.['--id']
+})
+
+if (!bodyId.value) {
+  set(visuals.value!, 'body.[--id]', generateUUID())
+}
 
 provideLocal(wysiwygIdKey, uuid)
 provideLocal(wysiwygModelKey, model)
 
 // Store
-const wysiwygStore = useWysiwygStore()
-const { isFocused, files, mentionSetup } = storeToRefs(wysiwygStore)
+const wysiwygStore = useWysiwygStore(undefined)
+const { isFocused, isEditable: isEditableStore, files, mentionSetup } = storeToRefs(wysiwygStore)
+
+wysiwygStore.init(props)
 
 // Init files
 watch(
@@ -60,7 +71,7 @@ watch(
   { immediate: true },
 )
 
-// Init
+// Init mentions
 const mentionSetupOriginal = defineModel<IWysiwygMentionSetup[]>('mentionSetup')
 
 syncRef(mentionSetupOriginal, mentionSetup, { direction: 'ltr' })
@@ -79,6 +90,8 @@ const {
 const { getInputWrapperProps } = useInputWrapperUtils()
 const { transitionProps, resolveMentions } = useWysiwygUtils()
 
+syncRef(isEditableStore, isEditable)
+
 function focusEditor() {
   editor.value?.chain().focus().run()
 }
@@ -88,7 +101,12 @@ function blurEditor() {
 }
 
 // Layout
+const isEditDialogOpen = defineModel<boolean>('editDialog')
 const wrapperProps = getInputWrapperProps(props)
+
+// const bodyClass = computed(() => {
+//   return
+// })
 
 // Sync editor value with model when not focused
 watch(model, model => {
@@ -189,10 +207,11 @@ onBeforeUnmount(wysiwygStore.$dispose)
   >
     <EditorContent
       class="control"
-      :editor="editor"
+      :editor
       min-h="50"
       :class="editorClass"
       :style="editorStyle"
+      :data-id="`body_${bodyId}`"
       @drop.stop.prevent
     />
 
@@ -204,35 +223,52 @@ onBeforeUnmount(wysiwygStore.$dispose)
       :select-fnc
     />
 
-    <!-- <WysiwygElementOptions
+    <WysiwygEditDialog
+      v-model:edit-dialog="isEditDialogOpen"
+      v-model="model"
+      v-model:visuals="visuals"
+      :features
+      :sink
+      :editable="isEditable"
+    />
+
+    <WysiwygElementOptions
       v-if="selectedDom && isEditable"
       :dom="selectedDom?.domEl"
       :type="selectedDom.type"
       :pos="selectedDom.pos"
-    /> -->
-    <template #menu>
-      <WysiwygSink
-        v-if="editor"
-        :class="{ 'is-floating': !noSinkFloat }"
-        v-bind="$props"
-      >
-        <template
-          v-if="$slots['sink-prepend']"
-          #prepend
-        >
-          <slot name="sink-prepend" />
-        </template>
+    />
 
-        <template
-          v-if="$slots['sink-append']"
-          #append
+    <template #menu>
+      <slot
+        name="sink"
+        :select-fnc="selectFnc"
+      >
+        <WysiwygSink
+          v-if="editor"
+          :features
+          :sink
+          :no-border
+          :editable="isEditable"
         >
-          <slot
-            name="sink-append"
-            :blur-editor="blurEditor"
-          />
-        </template>
-      </WysiwygSink>
+          <template
+            v-if="$slots['sink-prepend']"
+            #prepend
+          >
+            <slot name="sink-prepend" />
+          </template>
+
+          <template
+            v-if="$slots['sink-append']"
+            #append
+          >
+            <slot
+              name="sink-append"
+              :blur-editor="blurEditor"
+            />
+          </template>
+        </WysiwygSink>
+      </slot>
     </template>
   </InputWrapper>
 </template>

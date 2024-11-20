@@ -5,23 +5,23 @@ import type { IWysiwygProps } from '~/components/Wysiwyg/types/wysiwyg-props.typ
 // Store
 import { useWysiwygStore } from '~/components/Wysiwyg/wysiwyg.store'
 
-const props = defineProps<IWysiwygProps>()
+type IProps = Pick<IWysiwygProps, 'noBorder'>
+
+defineProps<IProps>()
 
 // Store
-const { isFocused } = storeToRefs(useWysiwygStore())
+const { isEditable, isFocused, features, sink } = storeToRefs(useWysiwygStore())
 
 // Layout
 const sinkEl = ref<HTMLDivElement>()
 const hasActiveMenu = ref(false)
 
-const isEditable = computed(() => !props.readonly && !props.disabled)
-
 const isSinkVisible = computed(() => {
-  if (props.noSink || !isEditable.value) {
+  if (!sink.value?.enabled || !isEditable.value) {
     return false
   }
 
-  return isFocused.value || props.sinkAlwaysVisible || hasActiveMenu.value
+  return isFocused.value || sink.value?.alwaysVisible || hasActiveMenu.value
 })
 
 useMutationObserver(
@@ -42,6 +42,10 @@ useMutationObserver(
     v-if="isSinkVisible"
     ref="sinkEl"
     class="wysiwyg-sink__wrapper"
+    :class="[
+      `floating--${sink?.floatingPlacement ?? 'bottom'}`,
+      { 'is-floating': sink?.floating },
+    ]"
     @click.stop.prevent
     @mousedown.stop.prevent
   >
@@ -49,7 +53,11 @@ useMutationObserver(
 
     <HorizontalScroller
       class="wysiwyg-sink"
-      content-class="gap-x-1 p-1"
+      content-class="gap-x-1 p-px"
+      :class="[
+        `floating--${sink?.floatingPlacement ?? 'bottom'}`,
+        { 'is-floating': sink?.floating, 'no-border': noBorder },
+      ]"
     >
       <!-- Size -->
       <WysiwygTextSizeSimpleCommands />
@@ -89,29 +97,31 @@ useMutationObserver(
       <WysiwygListCommands />
 
       <!-- Link & File -->
-      <template v-if="allowLink || allowFileUpload">
+      <template v-if="features?.link || features?.fileUpload">
         <Separator
           vertical
           spaced
           inset
         />
 
-        <WysiwygLink v-if="allowLink" />
+        <WysiwygLink v-if="features?.link" />
 
-        <WysiwygFileCommandBtn v-if="allowFileUpload" />
+        <WysiwygFileCommandBtn v-if="features?.fileUpload" />
       </template>
 
-      <Separator
-        vertical
-        spaced
-        inset
-      />
-
       <!-- Details -->
-      <WysiwygDetailsCommandBtn />
+      <template v-if="features?.details">
+        <Separator
+          vertical
+          spaced
+          inset
+        />
+
+        <WysiwygDetailsCommandBtn />
+      </template>
 
       <!-- Email button -->
-      <template v-if="allowImage">
+      <template v-if="features?.emailButton">
         <Separator
           vertical
           spaced
@@ -122,7 +132,7 @@ useMutationObserver(
       </template>
 
       <!-- Image -->
-      <template v-if="allowImage">
+      <template v-if="features?.image">
         <Separator
           vertical
           spaced
@@ -133,7 +143,7 @@ useMutationObserver(
       </template>
 
       <!-- Table -->
-      <template v-if="allowTable">
+      <template v-if="features?.table">
         <Separator
           vertical
           spaced
@@ -150,13 +160,39 @@ useMutationObserver(
 
 <style lang="scss" scoped>
 .wysiwyg-sink {
-  @apply z-$zLogo dark:bg-darker bg-white;
+  @apply z-$zLogo dark:bg-darker bg-white border-x-1 border-ca;
+
+  &:not(.is-floating) {
+    @apply rounded-b-custom border-b-1;
+  }
+
+  &.is-floating {
+    &.floating--top {
+      @apply rounded-t-custom border-t-1;
+    }
+
+    &.floating--bottom {
+      @apply rounded-b-custom border-b-1;
+    }
+  }
+
+  &.no-border {
+    @apply border-1 rounded-custom;
+  }
 
   &__wrapper {
     @apply flex gap-2 items-center right-0 w-full shrink-0;
 
     &.is-floating {
-      @apply absolute -top-40px;
+      @apply absolute;
+
+      &.floating--top {
+        @apply -top-35px;
+      }
+
+      &.floating--bottom {
+        @apply -bottom-35px;
+      }
     }
   }
 
