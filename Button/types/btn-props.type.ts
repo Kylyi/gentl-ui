@@ -162,5 +162,5 @@ export type IBtnProps = IBtnNavigationProps & {
   /**
    * Props for the tooltip
    */
-  tooltipProps?: Partial<ITooltipProps> & { style?: CSSProperties, class: ClassType }
+  tooltipProps?: Partial<ITooltipProps> & { style?: CSSProperties, class?: ClassType }
 }

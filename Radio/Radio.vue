@@ -19,8 +19,11 @@ const isChecked = computed(() => {
   )
 })
 
-function handleCheck() {
+function handleCheck(ev: Event) {
   if (!props.disabled) {
+    ev.preventDefault()
+    ev.stopPropagation()
+
     emits('update:model-value', props.val)
   }
 }
@@ -31,8 +34,8 @@ function handleCheck() {
     tabindex="0"
     class="label"
     :class="[`is-${size}`, { 'is-checked': isChecked, 'is-disabled': disabled }]"
-    @keyup.stop.prevent.enter.space="handleCheck"
-    @keydown.stop.prevent.enter.space="handleCheck"
+    @keyup.enter.space="handleCheck"
+    @keydown.enter.space="handleCheck"
     @click="handleCheck"
   >
     <input
