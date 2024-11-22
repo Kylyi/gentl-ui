@@ -8,24 +8,16 @@ import type {
 // Models
 import type { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
 
-// Injections
-import {
-  qbCollapsedKey,
-  qbHoveredItemKey,
-  qbItemsKey,
-  qbMaxLevelKey,
-} from '~/components/QueryBuilder/provide/query-builder.provide'
+// Store
+import { useQueryBuilderStore } from '~/components/QueryBuilder/query-builder.store'
 
 const props = defineProps<IQueryBuilderGroupProps>()
 const emits = defineEmits<{
   (e: 'delete:row', item: IQueryBuilderGroup): void
 }>()
 
-// Injections
-const items = injectStrict(qbItemsKey)
-const hoveredRow = injectStrict(qbHoveredItemKey)
-const collapsed = injectStrict(qbCollapsedKey)
-const maxLevel = injectStrict(qbMaxLevelKey)
+// Store
+const { items, hoveredItem, maxNestingLevel, collapsedById } = storeToRefs(useQueryBuilderStore())
 
 // Utils
 const { t } = useI18n()
@@ -74,7 +66,7 @@ function handleRemoveGroup() {
 
 // Collapsing
 const collapseProps = computed(() => {
-  return collapsed.value[props.item.id]
+  return collapsedById.value[props.item.id]
     ? {
         label: t('queryBuilder.expand'),
         icon: 'i-flowbite:chevron-right-outline !w-6 !h-6',
@@ -90,15 +82,15 @@ const collapseProps = computed(() => {
   <ul
     class="qb-row qb-group"
     :class="{
-      'is-hovered': hoveredRow === item,
+      'is-hovered': hoveredItem === item,
       'is-base': !level,
       'is-last-child': isLastChild,
       'no-drag': item.isNotDraggable,
       'no-dragover': item.isNotDragOverable,
     }"
     :data-path="item.path"
-    @mouseover.stop="hoveredRow = item"
-    @mouseleave="hoveredRow = undefined"
+    @mouseover.stop="hoveredItem = item"
+    @mouseleave="hoveredItem = undefined"
   >
     <!-- Group row -->
     <div class="qb-group-row">
@@ -150,7 +142,7 @@ const collapseProps = computed(() => {
 
         <!-- Add group -->
         <Btn
-          v-if="maxLevel > level"
+          v-if="maxNestingLevel > level"
           icon="i-formkit:add"
           bg="white dark:darker"
           color="ca"
@@ -172,7 +164,7 @@ const collapseProps = computed(() => {
           no-uppercase
           :icon="collapseProps.icon"
           border="1 ca"
-          @click="collapsed[item.id] = !collapsed[item.id]"
+          @click="collapsedById[item.id] = !collapsedById[item.id]"
         >
           <Tooltip>
             {{ collapseProps.label }}
@@ -194,7 +186,7 @@ const collapseProps = computed(() => {
     </div>
 
     <!-- Children rows -->
-    <template v-if="!collapsed[item.id]">
+    <template v-if="!collapsedById[item.id]">
       <QueryBuilderRow
         v-for="(child, idx) in item.children"
         :key="child.path"

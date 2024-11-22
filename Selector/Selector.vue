@@ -778,4 +778,22 @@ function getData() {
     content: '_';
   }
 }
+
+.wrapper--sm {
+  .control {
+    @apply min-h-6;
+  }
+}
+
+.wrapper--md {
+  .control {
+    @apply min-h-26px;
+  }
+}
+
+.wrapper-lg {
+  .control {
+    @apply min-h-10;
+  }
+}
 </style>

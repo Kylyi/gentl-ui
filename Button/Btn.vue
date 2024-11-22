@@ -221,7 +221,7 @@ defineExpose({
     }
 
     .btn-label {
-      @apply font-rem-10 p-y-1;
+      @apply font-rem-10 p-y-1 m-t-2px; // That m-t-2px is arbitrary, it just looks better...
     }
 
     .loading__loader {

@@ -3,12 +3,8 @@
 import type { IQueryBuilderRowProps } from '~/components/QueryBuilder/types/query-builder-row-props.type'
 import type { IQueryBuilderGroup } from '~/components/QueryBuilder/types/query-builder-group-props.type'
 
-// Injections
-import {
-  qbContainerKey,
-  qbDraggedItemKey,
-  qbItemsKey,
-} from '~/components/QueryBuilder/provide/query-builder.provide'
+// Store
+import { useQueryBuilderStore } from '~/components/QueryBuilder/query-builder.store'
 
 // Components
 import QueryBuilderItem from '~/components/QueryBuilder/QueryBuilderItem.vue'
@@ -18,17 +14,14 @@ defineOptions({ inheritAttrs: false })
 
 const props = defineProps<IQueryBuilderRowProps>()
 
+// Store
+const { items, draggedItem, queryBuilderEl } = storeToRefs(useQueryBuilderStore())
+
 // Constants
 const ITEM_ROW_LEFT_MARGIN = 20
 
-// Injections
-const scrollContainer = injectStrict(qbContainerKey)
-const draggedItem = injectStrict(qbDraggedItemKey)
-const items = injectStrict(qbItemsKey)
-
 // Layout
-const draggableEl
-  = ref<InstanceType<typeof QueryBuilderGroup | typeof QueryBuilderItem>>()
+const draggableEl = ref<InstanceType<typeof QueryBuilderGroup | typeof QueryBuilderItem>>()
 
 // Scrolling
 const scrollBy = ref({ speedX: 0, speedY: 0 })
@@ -36,7 +29,7 @@ const scrollBy = ref({ speedX: 0, speedY: 0 })
 const { pause, resume, isActive } = useIntervalFn(
   () => {
     const { speedX, speedY } = scrollBy.value
-    scrollContainer.value?.scrollBy(speedX, speedY)
+    queryBuilderEl.value?.scrollBy(speedX, speedY)
   },
   5,
   { immediate: false },
@@ -270,11 +263,11 @@ function cloneElement(event: MouseEvent | TouchEvent) {
  * Handles scrolling when dragging an item
  */
 function calculateScroll(event: MouseEvent | TouchEvent) {
-  if (!scrollContainer.value || !clonedElement) {
+  if (!queryBuilderEl.value || !clonedElement) {
     return
   }
 
-  const containerRect = scrollContainer.value.getBoundingClientRect()
+  const containerRect = queryBuilderEl.value.getBoundingClientRect()
   const threshold = 40 // Distance from edge of container in px
   let speedX = 0
   let speedY = 0

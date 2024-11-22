@@ -9,12 +9,10 @@ import type {
 import type { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
 
 // Injections
-import {
-  qbColumnsKey,
-  qbContainerKey,
-  qbItemsKey,
-} from '~/components/QueryBuilder/provide/query-builder.provide'
 import { tableRefreshKey } from '~/components/Table/provide/table.provide'
+
+// Store
+import { useQueryBuilderStore } from '~/components/QueryBuilder/query-builder.store'
 
 // Constants
 import { COLORS } from '~/libs/App/constants/colors.constant'
@@ -29,14 +27,14 @@ const emits = defineEmits<{
   (e: 'delete:row', item: IQueryBuilderGroup): void
 }>()
 
+// Store
+const { columns, items, queryBuilderEl } = storeToRefs(useQueryBuilderStore())
+
 // Utils
 const { getColor } = useColors()
 
 // Injections
-const container = injectStrict(qbContainerKey)
-const items = injectStrict(qbItemsKey)
 const tableRefresh = injectStrict(tableRefreshKey, () => {})
-const columns = injectStrict(qbColumnsKey)
 
 // Layout
 const item = toRef(props, 'item')
@@ -79,7 +77,7 @@ function handleAddCondition(useParent?: boolean) {
   ]
 
   nextTick(() => {
-    const addedEl = container.value?.querySelector(
+    const addedEl = queryBuilderEl.value?.querySelector(
       `[data-path="${newPath}"]`,
     ) as HTMLElement
 

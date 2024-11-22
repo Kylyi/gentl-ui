@@ -10,12 +10,10 @@ import type {
 // Models
 import { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
 
+// Functions
+import { useQueryBuilderStore } from '~/components/QueryBuilder/query-builder.store'
+
 // Injections
-import {
-  qbColumnsKey,
-  qbIsActivelyModifyingValuesKey,
-  qbItemsKey,
-} from '~/components/QueryBuilder/provide/query-builder.provide'
 import { tableRefreshKey } from '~/components/Table/provide/table.provide'
 
 // Constants
@@ -29,23 +27,23 @@ import QueryBuilderItem from '~/components/QueryBuilder/QueryBuilderItem.vue'
 defineOptions({
   inheritAttrs: false,
 })
+
 const props = withDefaults(defineProps<IQueryBuilderItemProps>(), {
   noAdd: undefined,
 })
+
 const emits = defineEmits<{
   (e: 'add:row'): void
   (e: 'delete:row', item: IQueryBuilderItem): void
 }>()
 
+// Store
+const { columns, items, isActivelyModifyingValues } = storeToRefs(useQueryBuilderStore())
+
 // Utils
 const { getColor } = useColors()
 
 // Injections
-const columns = injectStrict(qbColumnsKey)
-const isActivelyModifyingValues = injectStrict(
-  qbIsActivelyModifyingValuesKey,
-  ref(false),
-)
 const tableRefresh = injectStrict(tableRefreshKey, () => {})
 const noItemOverlay = inject('noItemOverlay', ref(false))
 
@@ -54,7 +52,6 @@ const itemEditMenuEl = ref<InstanceType<typeof Menu>>()
 const itemEditEl = ref<InstanceType<typeof QueryBuilderItem>>()
 const item = toRef(props, 'item')
 const originalValue = ref(klona(item.value))
-const items = injectStrict(qbItemsKey)
 
 const cols = computed(() => toValue(columns))
 const colSelected = computed(() => {

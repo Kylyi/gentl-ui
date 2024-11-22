@@ -1,23 +1,21 @@
-// Types
-import type { IQueryBuilderDraggedItem } from '~/components/QueryBuilder/types/query-builder-dragged-item.type'
-
-// Injections
-import { qbDraggedItemKey } from '~/components/QueryBuilder/provide/query-builder.provide'
+// Store
+import { useQueryBuilderStore } from '~/components/QueryBuilder/query-builder.store'
 
 // Constants
 const GROUP_ROW_TITLE_HEIGHT = 38
 const GROUP_ROW_CONTROLS_HEIGHT = -38
 
 export function useQueryBuilderDragAndDrop() {
-  const queryBuilderEl = ref<HTMLDivElement>()
-  const draggedItem = ref<IQueryBuilderDraggedItem>()
-  const queryBuilderElRect = ref<DOMRect>()
+  // Store
+  const {
+    queryBuilderEl,
+    queryBuilderElRect,
+    draggedItem,
+  } = storeToRefs(useQueryBuilderStore())
 
   // const queryBuilderElRect = computed(() =>
   //   queryBuilderEl.value?.getBoundingClientRect()
   // )
-
-  provide(qbDraggedItemKey, draggedItem)
 
   const { y: scrollY } = useScroll(queryBuilderEl, {
     onScroll: () => handleDragging(),
@@ -113,10 +111,4 @@ export function useQueryBuilderDragAndDrop() {
     () => draggedItem.value?.pos,
     () => handleDragging(),
   )
-
-  return {
-    queryBuilderEl,
-    draggedItem,
-    queryBuilderElRect,
-  }
 }

@@ -9,16 +9,9 @@ import type {
 import type { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
 
 // Functions
-import { getInputByDataType } from '~/components/Inputs/DynamicInput/constants/input-by-datatype.map'
 import { useTableUtils } from '~/components/Table/functions/useTableUtils'
-
-// Injections
-import {
-  qbColumnsKey,
-  qbHoveredItemKey,
-  qbIsSmallerScreenKey,
-  qbItemsKey,
-} from '~/components/QueryBuilder/provide/query-builder.provide'
+import { getInputByDataType } from '~/components/Inputs/DynamicInput/constants/input-by-datatype.map'
+import { useQueryBuilderStore } from '~/components/QueryBuilder/query-builder.store'
 
 // Constants
 import {
@@ -53,11 +46,8 @@ defineExpose({
   },
 })
 
-// Injections
-const columns = injectStrict(qbColumnsKey)
-const items = injectStrict(qbItemsKey)
-const hoveredRow = injectStrict(qbHoveredItemKey)
-const isSmallerScreen = injectStrict(qbIsSmallerScreenKey)
+// Store
+const { columns, items, hoveredItem, isSmallerScreen } = storeToRefs(useQueryBuilderStore())
 
 // Utils
 const {
@@ -304,7 +294,7 @@ const $z = useZod(
   <li
     class="qb-row qb-item"
     :class="{
-      'is-hovered': hoveredRow === item,
+      'is-hovered': hoveredItem === item,
       'is-last-child': isLastChild,
       'no-drag': noDraggable || item.isNotDraggable,
       'no-dragover': item.isNotDragOverable,
@@ -312,8 +302,8 @@ const $z = useZod(
     }"
     :data-path="item.path"
     data-cy="qb-row"
-    @mouseover.stop="hoveredRow = item"
-    @mouseleave="hoveredRow = undefined"
+    @mouseover.stop="hoveredItem = item"
+    @mouseleave="hoveredItem = undefined"
   >
     <!-- Move handler -->
     <QueryBuilderMoveHandler

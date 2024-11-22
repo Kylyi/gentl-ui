@@ -3,41 +3,38 @@ import { config } from '~/components/config/components-config'
 
 // Types
 import type { IQueryBuilderProps } from '~/components/QueryBuilder/types/query-builder-props.type'
-import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
-
-// Injections
-import {
-  qbCollapsedKey,
-  qbColumnsKey,
-  qbContainerKey,
-  qbHoveredItemKey,
-  qbIsSmallerScreenKey,
-  qbItemsKey,
-  qbMaxLevelKey,
-} from '~/components/QueryBuilder/provide/query-builder.provide'
 
 // Functions
 import { useQueryBuilderDragAndDrop } from '~/components/QueryBuilder/functions/useQueryBuilderDragAndDrop'
 import { useQueryBuilderColumnFilters } from '~/components/QueryBuilder/functions/useQueryBuilderColumnFilters'
 
+// Store
+import { useQueryBuilderStore } from '~/components/QueryBuilder/query-builder.store'
+import { queryBuilderIdKey } from '~/components/QueryBuilder/provide/query-builder.provide'
+
 const props = withDefaults(defineProps<IQueryBuilderProps>(), {
   maxLevel: Number.POSITIVE_INFINITY,
 })
 
-const emits = defineEmits<{
-  (e: 'update:items', items: IQueryBuilderRow[]): void
-}>()
+const uuid = injectLocal(queryBuilderIdKey, useId())
+
+provideLocal(queryBuilderIdKey, uuid)
+
+// Store
+const {
+  columns: storeColumns,
+  items: storeItems,
+  maxNestingLevel: storeMaxNestingLevel,
+  queryBuilderEl,
+  draggedItem,
+  isSmallerScreen,
+} = storeToRefs(useQueryBuilderStore())
 
 // Utils
-const {
-  draggedItem,
-  queryBuilderEl,
-  queryBuilderElRect,
-} = useQueryBuilderDragAndDrop()
+useQueryBuilderDragAndDrop()
 
 // Layout
-const items = useVModel(props, 'items', emits)
-const isSmallerScreen = ref(false)
+const items = defineModel<IQueryBuilderProps['items']>('items', { required: true })
 const level = 0
 
 function initializeItems() {
@@ -63,30 +60,17 @@ function clearFilter() {
   ]
 }
 
-useResizeObserver(queryBuilderEl, entries => {
-  requestAnimationFrame(() => {
-    const { contentRect } = entries[0]
-
-    isSmallerScreen.value = contentRect.width < 1024
-    queryBuilderElRect.value = queryBuilderEl.value?.getBoundingClientRect()
-  })
-})
-
 // Column filters
 const { qbColumnFilters, syncFilters, removeItem } = useQueryBuilderColumnFilters(props)
 
-// Provide
-const columns = toRef(props, 'columns')
-const hoveredRow = ref<IQueryBuilderRow>()
-const collapsed = ref<Record<string, boolean>>({})
+// Init
 
-provide(qbColumnsKey, columns)
-provide(qbItemsKey, items)
-provide(qbHoveredItemKey, hoveredRow)
-provide(qbContainerKey, queryBuilderEl)
-provide(qbCollapsedKey, collapsed)
-provide(qbIsSmallerScreenKey, isSmallerScreen)
-provide(qbMaxLevelKey, props.maxLevel)
+const columns = toRef(props, 'columns')
+const maxNestingLevel = toRef(props, 'maxLevel')
+
+syncRef(columns, storeColumns, { direction: 'ltr' })
+syncRef(items, storeItems, { direction: 'both' })
+syncRef(maxNestingLevel, storeMaxNestingLevel, { direction: 'ltr' })
 
 // Lifecycle
 // When no items are provided, initialize the items with a group
@@ -94,10 +78,7 @@ if (!props.items.length && !props.noInitialization) {
   initializeItems()
 }
 
-defineExpose({
-  clearFilter,
-  syncFilters,
-})
+defineExpose({ clearFilter, syncFilters })
 </script>
 
 <template>
@@ -119,9 +100,9 @@ defineExpose({
       <QueryBuilderRow
         v-for="item in qbColumnFilters"
         :key="item.path"
-        :item="item"
-        :level="level"
-        :editable="editable"
+        :item
+        :level
+        :editable
         no-add
         no-condition-change
         :remove-fnc="removeItem"
@@ -135,9 +116,9 @@ defineExpose({
     <QueryBuilderRow
       v-for="item in items"
       :key="item.path"
-      :item="item"
-      :level="level"
-      :editable="editable"
+      :item
+      :level
+      :editable
       p="!l-2"
       m="!l-0"
     />

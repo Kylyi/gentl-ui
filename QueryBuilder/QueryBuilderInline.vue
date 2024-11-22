@@ -3,37 +3,38 @@ import { config } from '~/components/config/components-config'
 
 // Types
 import type { IQueryBuilderProps } from '~/components/QueryBuilder/types/query-builder-props.type'
-import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
 import type { IQueryBuilderGroup } from '~/components/QueryBuilder/types/query-builder-group-props.type'
 
 // Models
 import type { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
 
-// Injections
-import {
-  qbCollapsedKey,
-  qbColumnsKey,
-  qbContainerKey,
-  qbDraggedItemKey,
-  qbHoveredItemKey,
-  qbIsSmallerScreenKey,
-  qbItemsKey,
-} from '~/components/QueryBuilder/provide/query-builder.provide'
+// Functions
 import { useQueryBuilderColumnFilters } from '~/components/QueryBuilder/functions/useQueryBuilderColumnFilters'
 
-const props = defineProps<IQueryBuilderProps & {
+// Store
+import { useQueryBuilderStore } from '~/components/QueryBuilder/query-builder.store'
+
+const props = withDefaults(defineProps<IQueryBuilderProps & {
   /**
    * When true, the `QueryBuilderInlineItem` will not use overlay
    * for the edit menu
    */
   noItemOverlay?: boolean
-}>()
+}>(), {
+  maxLevel: Number.POSITIVE_INFINITY,
+})
+
+// Store
+const {
+  queryBuilderEl,
+  columns: storeColumns,
+  items: storeItems,
+  maxNestingLevel: storeMaxNestingLevel,
+} = storeToRefs(useQueryBuilderStore())
 
 // Layout
-const queryBuilderEl = ref<HTMLDivElement>()
-const items = useVModel(props, 'items')
+const items = defineModel<IQueryBuilderProps['items']>('items', { required: true })
 const level = 0
-const isSmallerScreen = ref(false)
 const noItemOverlay = toRef(props, 'noItemOverlay')
 
 provide('noItemOverlay', noItemOverlay)
@@ -93,28 +94,16 @@ function handleAddFirstCondition() {
   })
 }
 
-useResizeObserver(queryBuilderEl, entries => {
-  requestAnimationFrame(() => {
-    const { contentRect } = entries[0]
-
-    isSmallerScreen.value = contentRect.width < 1024
-  })
-})
-
 // Column filters
 const { qbColumnFilters, removeItem } = useQueryBuilderColumnFilters(props)
 
-// Provide
+// Init
 const columns = toRef(props, 'columns')
-const hoveredRow = ref<IQueryBuilderRow>()
+const maxNestingLevel = toRef(props, 'maxLevel')
 
-provide(qbColumnsKey, columns)
-provide(qbItemsKey, items)
-provide(qbHoveredItemKey, hoveredRow)
-provide(qbContainerKey, queryBuilderEl)
-provide(qbDraggedItemKey, ref(undefined))
-provide(qbCollapsedKey, ref<Record<string, boolean>>({}))
-provide(qbIsSmallerScreenKey, isSmallerScreen)
+syncRef(columns, storeColumns, { direction: 'ltr' })
+syncRef(items, storeItems, { direction: 'both' })
+syncRef(maxNestingLevel, storeMaxNestingLevel, { direction: 'ltr' })
 
 // Lifecycle
 // When no items are provided, initialize the items with a group

@@ -3,15 +3,15 @@
 import type { IQueryBuilderRowProps } from '~/components/QueryBuilder/types/query-builder-row-props.type'
 import type { IQueryBuilderGroup } from '~/components/QueryBuilder/types/query-builder-group-props.type'
 
-// Injections
-import { qbItemsKey } from '~/components/QueryBuilder/provide/query-builder.provide'
+// Store
+import { useQueryBuilderStore } from '~/components/QueryBuilder/query-builder.store'
 
 withDefaults(defineProps<IQueryBuilderRowProps>(), {
   noAdd: undefined,
 })
 
-// Injections
-const items = injectStrict(qbItemsKey)
+// Store
+const { items } = storeToRefs(useQueryBuilderStore())
 
 function updatePaths(parent?: IQueryBuilderGroup) {
   const _parent = parent ?? (toValue(items)[0] as IQueryBuilderGroup)

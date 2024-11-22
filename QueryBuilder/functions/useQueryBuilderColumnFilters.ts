@@ -9,15 +9,14 @@ import type { IQueryBuilderGroup } from '~/components/QueryBuilder/types/query-b
 // Models
 import { FilterItem } from '~/libs/Shared/models/filter-item'
 
-// Injections
-import { qbIsActivelyModifyingValuesKey } from '~/components/QueryBuilder/provide/query-builder.provide'
+// Store
+import { useQueryBuilderStore } from '~/components/QueryBuilder/query-builder.store'
 
 export function useQueryBuilderColumnFilters(
   props: Pick<IQueryBuilderProps, 'columns'>,
 ) {
-  const isActivelyModifyingValues = ref(false)
-
-  provide(qbIsActivelyModifyingValuesKey, isActivelyModifyingValues)
+  // Store
+  const { isActivelyModifyingValues } = storeToRefs(useQueryBuilderStore())
 
   const columnFilters = computed(() => {
     const filters = props.columns
