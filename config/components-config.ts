@@ -372,7 +372,7 @@ export const componentsConfig = {
 
   // Page wrapper
   pageWrapper: {
-    topBar: undefined as unknown as DefineComponent<any>,
+    topBar: undefined as unknown,
     props: {
       pad: true,
       includeTopBar: true,

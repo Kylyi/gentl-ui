@@ -18,6 +18,16 @@ const { isMobile } = useMobile()
 // Layout
 const mounted = ref(false)
 
+const topBarComponent = computed(() => {
+  if (config.pageWrapper?.topBar) {
+    return typeof config.pageWrapper.topBar === 'function'
+      ? config.pageWrapper.topBar()
+      : config.pageWrapper.topBar
+  }
+
+  return undefined
+})
+
 onMounted(() => {
   setTimeout(() => (mounted.value = true), 250)
 })
@@ -36,8 +46,8 @@ onMounted(() => {
   >
     <!-- TopBar -->
     <Component
-      :is="config.pageWrapper.topBar"
-      v-if="includeTopBar && config.pageWrapper.topBar"
+      :is="topBarComponent"
+      v-if="includeTopBar && topBarComponent"
     >
       <template #breadcrumbs-above>
         <slot name="breadcrumbs-above" />
