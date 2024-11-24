@@ -6,7 +6,7 @@ import type { IBadgeProps } from '~/components/Badge/types/badge-props.type'
 import { getComponentProps } from '~/components/__helpers/get-config-props'
 
 withDefaults(defineProps<IBadgeProps>(), {
-  ...getComponentProps('badge').props,
+  ...getComponentProps('badge'),
 })
 </script>
 

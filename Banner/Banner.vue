@@ -8,7 +8,7 @@ import type { IBannerProps } from '~/components/Banner/types/banner-props.type'
 import { getComponentProps } from '~/components/__helpers/get-config-props'
 
 const props = withDefaults(defineProps<IBannerProps>(), {
-  ...getComponentProps('banner').props,
+  ...getComponentProps('banner'),
 })
 
 defineEmits<{

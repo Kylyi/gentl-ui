@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { config } from '~/components/config/components-config'
-
 // Types
 import type { IListProps } from '~/components/List/types/list-props.type'
 import type { IListFetchOptions } from '~/components/List/types/list-fetch.type'
@@ -10,6 +8,7 @@ import type { IListDraggedItem } from '~/components/List/types/list-dragged-item
 // Functions
 import { useList } from '~/components/List/functions/useList'
 import { useListUtils } from '~/components/List/functions/useListUtils'
+import { getComponentProps } from '~/components/__helpers/get-config-props'
 
 // Injections
 import { listContainerKey } from '~/components/List/provide/list.provide'
@@ -20,14 +19,7 @@ import type ListVirtualContainer from '~/components/List/ListVirtualContainer.vu
 import ListContainer from '~/components/List/ListContainer.vue'
 
 const props = withDefaults(defineProps<IListProps>(), {
-  clearable: true,
-  disabledFnc: () => false,
-  emptyValue: null,
-  groupBy: () => [],
-  itemKey: 'id',
-  itemLabel: 'label',
-  fuseExtendedSearchToken: config.selector.props.fuseExtendedSearchToken,
-  useToBoldLatin: undefined,
+  ...getComponentProps('list'),
 })
 
 defineEmits<{

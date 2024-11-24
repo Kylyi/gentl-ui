@@ -162,10 +162,10 @@ export function getInputByDataType<T extends ExtendedDataType>(
   }
 
   return {
+    ...input,
     component: typeof input.component === 'function'
     // @ts-expect-error idk
       ? markRaw(input.component())
       : markRaw(input.component),
-    props: input.props,
   }
 }

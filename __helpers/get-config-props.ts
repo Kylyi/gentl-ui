@@ -5,5 +5,5 @@ type ConfigWithPropsKeys<T> = {
 }[keyof T]
 
 export function getComponentProps<T extends ConfigWithPropsKeys<typeof config>>(componentName: T) {
-  return config[componentName]
+  return config[componentName].props as typeof config[T]['props']
 }

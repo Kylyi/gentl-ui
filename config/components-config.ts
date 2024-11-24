@@ -1,5 +1,7 @@
+/* eslint-disable ts/no-unsafe-function-type */
 // @unocss-include
 import type { DefineComponent } from 'vue'
+import { createDefu } from 'defu'
 import { appConfig } from '~/config'
 
 // Types
@@ -66,13 +68,15 @@ import type { IYearSelectorProps } from '~/components/YearSelector/types/year-se
 // Models
 import type { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
 
-type PropsDefaults<T> = {
-  [K in keyof T]: NonNullable<T[K]> extends Array<any> | Record<string, any>
-    ? () => NonNullable<T[K]>
-    : T[K]
+export type PropsDefaults<T> = {
+  [K in keyof T]: NonNullable<T[K]> extends Function
+    ? T[K]
+    : NonNullable<T[K]> extends Array<any> | Record<string, any>
+      ? () => NonNullable<T[K]>
+      : T[K]
 }
 
-const defaultConfig = {
+export const componentsConfig = {
   // Badge
   badge: {
     props: {} satisfies PropsDefaults<Partial<IBadgeProps>>,
@@ -293,8 +297,15 @@ const defaultConfig = {
   // List
   list: {
     props: {
+      clearable: true,
+      disabledFnc: (_: any) => false,
+      emptyValue: null,
+      groupBy: () => [],
+      itemKey: 'id',
+      itemLabel: 'label',
+      fuseExtendedSearchToken: "'",
       noHighlight: true,
-      useToBoldLatin: true,
+      useToBoldLatin: false,
     } as PropsDefaults<Partial<IListProps>>,
   },
 
@@ -374,7 +385,10 @@ const defaultConfig = {
 
   // Section
   section: {
-    props: {} satisfies PropsDefaults<Partial<ISectionProps>>,
+    props: {
+      filled: false,
+      highlighted: true,
+    } satisfies PropsDefaults<Partial<ISectionProps>>,
   },
 
   // Section
@@ -389,9 +403,21 @@ const defaultConfig = {
     shouldFlipOnSearch: true,
 
     props: {
+      debounce: 0,
+      disabled: undefined,
+      readonly: undefined,
+      errorTakesSpace: true,
+      errorVisible: true,
+      fuseExtendedSearchToken: "'", // Contains
       hasInfiniteScroll: false,
-      fuseExtendedSearchToken:
-        "'" as ISelectorProps['fuseExtendedSearchToken'], // Contains
+      layout: 'regular',
+      optionKey: 'id',
+      optionLabel: 'label',
+      options: () => [],
+      required: undefined,
+      size: 'md',
+      stackLabel: true,
+      noHighlight: true,
     } satisfies PropsDefaults<Partial<ISelectorProps>>,
   },
 
@@ -633,4 +659,14 @@ const defaultConfig = {
   },
 } as const
 
-export const config = merge(defaultConfig, appConfig)
+const customDefu = createDefu((obj, key, value) => {
+  // For arrays, use the value, don't extend
+  if (typeof obj[key] === 'function') {
+    console.log(key)
+    obj[key] = value ?? obj[key]
+
+    return true
+  }
+})
+
+export const config = customDefu(appConfig, componentsConfig)

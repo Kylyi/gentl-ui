@@ -11,7 +11,7 @@ import MenuProxy from '~/components/MenuProxy/MenuProxy.vue'
 import Field from '~/components/Field/Field.vue'
 
 const props = withDefaults(defineProps<IColorProps>(), {
-  ...getComponentProps('colorInput').props,
+  ...getComponentProps('colorInput'),
 })
 const emits = defineEmits<{
   (e: 'update:modelValue', value: any): void

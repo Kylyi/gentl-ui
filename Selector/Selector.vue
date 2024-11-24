@@ -10,9 +10,10 @@ import type { ISelectorProps } from '~/components/Selector/types/selector-props.
 import type { IItemToBeAdded } from '~/components/List/types/list-item-to-add.type'
 
 // Functions
+import { useListUtils } from '~/components/List/functions/useListUtils'
+import { getComponentProps } from '~/components/__helpers/get-config-props'
 import { useSelectorUtils } from '~/components/Selector/functions/useSelectorUtils'
 import { useInputValidationUtils } from '~/components/Inputs/functions/useInputValidationUtils'
-import { useListUtils } from '~/components/List/functions/useListUtils'
 
 // Components
 import List from '~/components/List/List.vue'
@@ -21,13 +22,8 @@ import InputWrapper from '~/components/Inputs/InputWrapper.vue'
 import ScrollArea from '~/components/ScrollArea/ScrollArea.vue'
 
 const props = withDefaults(defineProps<ISelectorProps>(), {
-  debounce: 0,
-  disabled: undefined,
-  readonly: undefined,
-  errorTakesSpace: true,
-  errorVisible: true,
-  fuseExtendedSearchToken: config.selector.props.fuseExtendedSearchToken,
-  layout: config.inputWrapper.props.layout,
+  ...getComponentProps('selector'),
+
   maxChipsRows: props => {
     switch (props.layout) {
       case 'inline':
@@ -39,14 +35,6 @@ const props = withDefaults(defineProps<ISelectorProps>(), {
         return 2
     }
   },
-  optionKey: 'id',
-  optionLabel: 'label',
-  options: () => [],
-  required: undefined,
-  size: 'md',
-  stackLabel: config.inputWrapper.props.stackLabel,
-  noHighlight: config.list.props.noHighlight,
-  hasInfiniteScroll: config.selector.props.hasInfiniteScroll,
 })
 
 const emits = defineEmits<{

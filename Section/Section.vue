@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { config } from '~/components/config/components-config'
+import { getComponentProps } from '~/components/__helpers/get-config-props'
 
 // Types
 import type { ISectionProps } from '~/components/Section/types/section-props.type'
@@ -12,8 +12,7 @@ defineOptions({
 })
 
 const props = withDefaults(defineProps<ISectionProps>(), {
-  filled: config.section.props?.filled ?? false,
-  highlighted: config.section.props?.highlighted ?? true,
+  ...getComponentProps('section'),
 })
 
 const slots = useSlots()
