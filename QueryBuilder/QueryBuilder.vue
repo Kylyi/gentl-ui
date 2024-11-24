@@ -134,26 +134,29 @@ defineExpose({ clearFilter, syncFilters })
       }"
     >
       <div
-        class="i-tabler:arrow-back drop-indicator__icon"
+        class="drop-indicator__icon"
         :class="{
           'rotate-y-180 -top-3': draggedItem.dropDirection === 'below',
           'rotate-180 -top-7px': draggedItem.dropDirection === 'above',
         }"
-      />
+      >
+        <div i-tabler:arrow-back />
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
 .query-builder {
-  @apply relative bg-ca p-1 rounded-custom overflow-auto;
+  @apply relative bg-ca p-1 p-b-3 rounded-custom overflow-auto;
 }
 
 .drop-indicator {
-  @apply absolute h-2px bg-primary w-full rounded-full pointer-events-none z-2;
+  @apply absolute h-2px bg-primary w-full rounded-full pointer-events-none z-$zMax;
 
   &__icon {
-    @apply w-5 h-5 relative -left-5 color-primary;
+    @apply w-5 h-5 relative -left-5 rounded-custom
+    color-primary bg-white dark:bg-darker;
   }
 }
 </style>

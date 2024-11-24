@@ -47,7 +47,13 @@ defineExpose({
 })
 
 // Store
-const { columns, items, hoveredItem, isSmallerScreen } = storeToRefs(useQueryBuilderStore())
+const {
+  columns,
+  draggedItem,
+  items,
+  hoveredItem,
+  isSmallerScreen,
+} = storeToRefs(useQueryBuilderStore())
 
 // Utils
 const {
@@ -295,6 +301,7 @@ const $z = useZod(
     class="qb-row qb-item"
     :class="{
       'is-hovered': hoveredItem === item,
+      'is-dragged': draggedItem?.row === item,
       'is-last-child': isLastChild,
       'no-drag': noDraggable || item.isNotDraggable,
       'no-dragover': item.isNotDragOverable,
@@ -495,6 +502,10 @@ const $z = useZod(
 
   &.is-hovered {
     @apply bg-white dark:bg-darker z-1 shadow-consistent shadow-ca;
+  }
+
+  &.is-dragged {
+    @apply bg-primary/15 dark:bg-primary/15;
   }
 
   &.is-smaller-screen .qb-item__content {

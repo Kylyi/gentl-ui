@@ -17,7 +17,13 @@ const emits = defineEmits<{
 }>()
 
 // Store
-const { items, hoveredItem, maxNestingLevel, collapsedById } = storeToRefs(useQueryBuilderStore())
+const {
+  draggedItem,
+  items,
+  hoveredItem,
+  maxNestingLevel,
+  collapsedById,
+} = storeToRefs(useQueryBuilderStore())
 
 // Utils
 const { t } = useI18n()
@@ -83,6 +89,7 @@ const collapseProps = computed(() => {
     class="qb-row qb-group"
     :class="{
       'is-hovered': hoveredItem === item,
+      'is-dragged': draggedItem?.row === item,
       'is-base': !level,
       'is-last-child': isLastChild,
       'no-drag': item.isNotDraggable,
@@ -216,6 +223,10 @@ const collapseProps = computed(() => {
     & > li {
       @apply border-1 border-ca border-dashed;
     }
+  }
+
+  &.is-dragged {
+    @apply bg-primary/15 dark:bg-primary/15;
   }
 
   &-row {
