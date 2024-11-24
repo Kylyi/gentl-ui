@@ -1,31 +1,35 @@
 <script setup lang="ts">
 type IProps = {
+  label?: string
   modelValue?: boolean
-  label: string
+  mode?: 'labeled' | 'inside'
   position?: 'left' | 'right' | 'top' | 'bottom'
+  type?: 'positive' | 'negative'
 }
 
 withDefaults(defineProps<IProps>(), {
+  mode: 'labeled',
   position: 'left',
+  type: 'positive',
 })
 
-const internalValue = ref(false)
+const model = defineModel<boolean>()
 const hidden = ref(false)
 let timeout: any
 
 defineExpose({
-  showTemporarily: (cleanup?: () => void) => {
+  showTemporarily: (onCleanup?: () => void) => {
     clearTimeout(timeout)
     timeout = null
-    internalValue.value = true
+    model.value = true
     hidden.value = false
 
     timeout = setTimeout(() => {
       hidden.value = true
 
       setTimeout(() => {
-        internalValue.value = false
-        cleanup?.()
+        model.value = false
+        onCleanup?.()
       }, 250)
     }, 2000)
   },
@@ -33,13 +37,33 @@ defineExpose({
 </script>
 
 <template>
-  <Transition appear>
+  <div
+    v-if="model && !hidden && mode === 'inside'"
+    class="confirmation__inside"
+  >
+    <Checkmark
+      v-if="type === 'positive'"
+      w="full"
+      h="full"
+    />
+
+    <Close
+      v-else
+      w="full"
+      h="full"
+    />
+  </div>
+
+  <Transition
+    v-else-if="mode === 'labeled'"
+    appear
+  >
     <span
-      v-if="(modelValue || internalValue) && !hidden"
-      class="tooltip"
+      v-if="model && !hidden"
+      class="confirmation__labeled"
       color="positive"
       bg="white dark:bg-darker"
-      :class="`tooltip--${position}`"
+      :class="`confirmation__tooltip--${position}`"
     >
       {{ label }}
     </span>
@@ -47,10 +71,16 @@ defineExpose({
 </template>
 
 <style lang="scss" scoped>
-.tooltip {
+.confirmation__inside {
+  @apply absolute bg-white dark:bg-darker inset-0 p-2;
+}
+
+.confirmation--labeled {
   @apply bg-white dark:bg-darker absolute pointer-events-none
     rounded-custom p-x-2 text-sm tracking-wide z-$zMax h-full
-    flex flex-center;
+    flex flex-center font-normal font-rem-14;
+
+  text-transform: none;
 
   &--left {
     @apply -left-12px translate-x--100% top-0;

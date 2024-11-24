@@ -4,11 +4,16 @@ import type { CSSProperties } from 'vue'
 // Types
 import type { IInputWrapperProps } from '~/components/Inputs/types/input-wrapper-props.type'
 
-export type IInputProps = IInputWrapperProps & {
+export type IInputProps = {
   /**
    * Whether the input should be autofocused
    */
   autofocus?: boolean
+
+  /**
+   * The timeout in ms for the autofocus to trigger
+   */
+  autofocusTimeout?: number
 
   /**
    * Whether the Selector can be cleared -> will emit `emptyValue`
@@ -76,4 +81,4 @@ export type IInputProps = IInputWrapperProps & {
    * The props that should be passed to the input tag (<input>)
    */
   inputProps?: IItem
-}
+} & IInputWrapperProps

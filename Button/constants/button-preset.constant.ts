@@ -65,4 +65,8 @@ export const BUTTON_PRESET = {
     icon: 'i-iconamoon:trash',
     color: 'color-negative',
   },
+  SEARCH: {
+    icon: 'i-carbon:search',
+    color: 'color-ca',
+  },
 }

@@ -13,9 +13,9 @@ import {
 import Dialog from '~/components/Dialog/Dialog.vue'
 import Menu from '~/components/Menu/Menu.vue'
 
-type IProps = {
+type IProps = IDialogProps & IMenuProps & {
   breakpoint?: keyof typeof BREAKPOINTS
-} & IDialogProps & IMenuProps
+}
 
 const props = withDefaults(defineProps<IProps>(), {
   breakpoint: 'sm',
@@ -25,6 +25,7 @@ const props = withDefaults(defineProps<IProps>(), {
   noArrow: true,
   transitionDuration: 250,
   noOverlay: undefined,
+  noUplift: undefined,
 })
 
 const emits = defineEmits<{

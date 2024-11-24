@@ -60,7 +60,7 @@ export function useListDragAndDrop(
     const isGroup = listRow?.classList.contains('list-group')
 
     // @ts-expect-error - TS doesn't know about our custom functions
-    const draggedOverItem = listRow?.getItem()
+    const draggedOverItem = listRow?.['get-item']()
     draggedItem.value!.target = draggedOverItem
 
     const {

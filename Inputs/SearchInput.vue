@@ -5,10 +5,11 @@ import type { ITextInputProps } from '~/components/Inputs/TextInput/types/text-i
 // Components
 import TextInput from '~/components/Inputs/TextInput/TextInput.vue'
 
-withDefaults(defineProps<ITextInputProps>(), {
+const props = withDefaults(defineProps<ITextInputProps>(), {
   debounce: 0,
   required: undefined,
 })
+
 defineEmits<{
   (e: 'update:model-value', val?: string | undefined | null): void
   (e: 'blur', ev: FocusEvent): void
@@ -28,19 +29,21 @@ defineExpose({
   <TextInput
     ref="searchEl"
     :model-value="modelValue"
-    :debounce="debounce"
     class="control"
-    :autofocus="autofocus"
+    :debounce
     name="_search"
     immediate
     empty-value=""
-    :hint="hint"
-    :layout="layout"
-    :input-class="inputClass"
-    :input-style="inputStyle"
-    :loading="loading"
-    :ui="ui"
-    :input-props="inputProps"
+    :autofocus
+    :autofocus-timeout
+    :hint
+    :layout
+    :input-class
+    :input-style
+    :loading
+    :ui
+    :input-props
+    :size
     :placeholder="placeholder ?? $t('general.search')"
     :validation
     @update:model-value="$emit('update:model-value', $event)"

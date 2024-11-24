@@ -5,7 +5,7 @@ import type { IInputLabelProps } from '~/components/Inputs/types/input-label-pro
 import type { IZodValidationItem } from '~/utils/zod/types/zod-validation-item.type'
 import type { IZodValidationOptions } from '~/utils/zod/types/zod-validation-options.type'
 
-export type IInputWrapperProps = IInputLabelProps & {
+export type IInputWrapperProps = {
   /**
    * The cursor that will be shown when hovering over the input
    */
@@ -160,4 +160,4 @@ export type IInputWrapperProps = IInputLabelProps & {
       key: string
       options?: IZodValidationOptions
     }
-}
+} & IInputLabelProps

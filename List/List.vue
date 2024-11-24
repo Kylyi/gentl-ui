@@ -236,17 +236,20 @@ onMounted(() => {
     </Component>
 
     <!-- No data -->
-    <div
+    <slot
       v-else-if="!isLoading && isInitialized"
-      flex="~ 1 col"
+      name="empty"
+      :search
     >
-      <Banner
-        icon-center
-        :label="$t('general.noData')"
-        :class="ui?.noDataClass"
-        :style="ui?.noDataStyle"
-      />
-    </div>
+      <div flex="~ 1 col">
+        <Banner
+          icon-center
+          :label="$t('general.noData')"
+          :class="ui?.noDataClass"
+          :style="ui?.noDataStyle"
+        />
+      </div>
+    </slot>
 
     <LoaderBlock
       v-else-if="!isInitialized"

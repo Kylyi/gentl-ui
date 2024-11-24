@@ -2,7 +2,7 @@
 import type { IInputProps } from '~/components/Inputs/types/input-props.type'
 import type { IMenuProps } from '~/components/Menu/types/menu-props.type'
 
-export type ITextInputProps = IInputProps & {
+export type ITextInputProps = {
   /**
    * If true, the input has its own enter key handler
    */
@@ -27,4 +27,4 @@ export type ITextInputProps = IInputProps & {
    * The props that should be passed to the tooltip
    */
   tooltipProps?: IMenuProps
-}
+} & IInputProps

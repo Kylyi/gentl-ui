@@ -482,7 +482,7 @@ export function useList(
 
     const shouldNotSort = props.noSort
       || (fuseOptions.fuseOptions?.shouldSort
-      && highlightedItems.length !== items.value.length)
+        && highlightedItems.length !== items.value.length)
 
     const resultsSorted = shouldNotSort
       ? highlightedItems

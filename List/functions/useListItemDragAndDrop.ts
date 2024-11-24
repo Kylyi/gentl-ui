@@ -194,53 +194,6 @@ export function useListItemDragAndDrop(itemRef: MaybeRefOrGetter<IListItem>) {
       if (row && target) {
         handleMoveItem({ id: row.id, targetId: target.id, direction, itemsRef: items })
 
-        // const currentParent =
-        //   props.parent ?? get(toValue(items), currentParentPath)
-        // const currentIndex = +currentPath.slice(-1)
-
-        // // Get the new location info
-        // const parentPath = newPathIsGroup
-        //   ? newPath
-        //   : newPath.split('.').slice(0, -2).join('.')
-        // const parent = get(toValue(items), parentPath) as IListGro
-        // const index = newPathIsGroup
-        //   ? direction === 'below'
-        //     ? parent.children.length
-        //     : 0
-        //   : +newPath.slice(-1)
-
-        // // In case we're moving the item within its parent
-        // if (parent === currentParent) {
-        //   if (direction === 'below') {
-        //     parent.children.splice(index + 1, 0, {
-        //       ...props.item,
-        //       path: '_moved',
-        //     })
-        //   } else {
-        //     parent.children.splice(index, 0, { ...props.item, path: '_moved' })
-        //   }
-
-        //   // We remove the original row
-        //   const idx = parent.children.findIndex(
-        //     child => child.path === currentPath
-        //   )
-        //   parent.children.splice(idx, 1)
-        // }
-
-        // // In case we're moving the item to another parent
-        // else {
-        //   const itemExtracted = currentParent.children.splice(currentIndex, 1)[0]
-
-        //   if (direction === 'below') {
-        //     parent.children.splice(index + 1, 0, itemExtracted)
-        //   } else {
-        //     parent.children.splice(index, 0, itemExtracted)
-        //   }
-        // }
-
-        // // We update the paths for the structure
-        // updatePaths()
-
         // We emit the drag end event
         emitDragEndEvent(draggedItem.value)
 

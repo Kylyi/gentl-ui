@@ -275,7 +275,7 @@ export function useInputUtils(options: IInputUtilsOptions) {
     if (props.autofocus) {
       focus()
     }
-  }, 300)
+  }, props.autofocusTimeout ?? 300)
 
   function syncTypedWithModel() {
     if (!isInitialized.value) {

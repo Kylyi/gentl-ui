@@ -11,6 +11,15 @@ type IProps = {
   withCtrl?: boolean
   withAlt?: boolean
   withShift?: boolean
+
+  /**
+   * When true, the `+` between modifier and key will not be shown
+   */
+  noPlus?: boolean
+
+  /**
+   * The UI adjustments
+   */
   ui?: {
     wrapperClass?: ClassType
     wrapperStyle?: CSSProperties
@@ -24,6 +33,10 @@ const appStore = useAppStore()
 const { isApple } = useDevice()
 
 const hasAnyModifier = computed(() => {
+  if (props.noPlus) {
+    return false
+  }
+
   return props.withCtrl || props.withAlt || props.withShift
 })
 
