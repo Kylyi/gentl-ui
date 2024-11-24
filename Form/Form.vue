@@ -2,6 +2,7 @@
 import { config } from '~/components/config/components-config'
 
 // Functions
+import { getComponentProps } from '~/components/__helpers/get-config-props'
 import { useFormErrors } from '~/components/Form/functions/useFormErrors'
 
 // Injections
@@ -21,14 +22,7 @@ defineOptions({
 })
 
 const props = withDefaults(defineProps<IFormProps>(), {
-  errorsOnTop: true,
-  labelForcedVisibility: true,
-  hasControls: undefined,
-  submitConfirmation: undefined,
-  focusFirstInput: false,
-  preventSubmitOnEnter: config.form.props?.preventSubmitOnEnter,
-  noShortcuts: undefined,
-  ui: () => (config.form?.props?.ui ?? {}),
+  ...getComponentProps('form'),
 })
 
 const emits = defineEmits<{
@@ -115,7 +109,7 @@ const hasKeyboardShortcuts = computed(() => {
     return appState.value.general?.keyboardShortcuts
   }
 
-  return !!config.form.props?.noShortcuts
+  return false
 })
 
 const FormConfirmation = computed(() => {

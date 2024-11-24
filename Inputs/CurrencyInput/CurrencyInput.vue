@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { MaskedNumber } from 'imask'
-import { config } from '~/components/config/components-config'
 
 // Types
 import type { ICurrencyInputProps } from '~/components/Inputs/CurrencyInput/types/currency-input-props.type'
@@ -9,28 +8,13 @@ import type { ICurrencyInputProps } from '~/components/Inputs/CurrencyInput/type
 import { CURRENCY_DEFAULT } from '~/utils/i18n'
 
 // Functions
+import { getComponentProps } from '~/components/__helpers/get-config-props'
 import { useInputUtils } from '~/components/Inputs/functions/useInputUtils'
 import { useNumber } from '~/components/Inputs/NumberInput/functions/useNumber'
 import { useInputValidationUtils } from '~/components/Inputs/functions/useInputValidationUtils'
 
 const props = withDefaults(defineProps<ICurrencyInputProps>(), {
-  currencyPosition: 'prepend',
-  debounce: 0,
-  errorTakesSpace: true,
-  errorVisible: true,
-  fractionDigits: 2,
-  inline: undefined,
-  labelInside: undefined,
-  // @ts-expect-error Wrong IMask type
-  mask: () => ({ mask: String }),
-  noCurrency: config.currencyInput?.props.noCurrency,
-  placeholder: config.currencyInput?.props?.placeholder,
-  required: undefined,
-  size: 'md',
-  stackLabel: undefined,
-  step: config.currencyInput?.props?.step,
-  min: Number.NEGATIVE_INFINITY,
-  max: Number.POSITIVE_INFINITY,
+  ...getComponentProps('currencyInput'),
 })
 
 defineEmits<{

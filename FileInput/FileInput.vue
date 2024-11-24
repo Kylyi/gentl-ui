@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { config } from '~/components/config/components-config'
-
 // Types
 import type { IFileInputProps } from '~/components/FileInput/types/file-input-props.type'
 
@@ -9,11 +7,10 @@ import { FileModel } from '~/components/FileInput/models/file.model'
 
 // Functions
 import { useFieldUtils } from '~/components/Field/functions/useFieldUtils'
+import { getComponentProps } from '~/components/__helpers/get-config-props'
 
 const props = withDefaults(defineProps<IFileInputProps>(), {
-  maxChipsRows: 3,
-  downloadUrl: config.fileInput.props.downloadUrl,
-  multi: config.fileInput.props.multi,
+  ...getComponentProps('fileInput'),
 })
 
 const emits = defineEmits<{

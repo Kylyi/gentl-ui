@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { klona } from 'klona/full'
 
-import { config } from '~/components/config/components-config'
-
 // Types
 import type { ITableProps } from '~/components/Table/types/table-props.type'
 import type { ITableSelection } from '~/components/Table/types/table-selection.type'
@@ -15,6 +13,7 @@ import { tableSlotsKey } from '~/components/Table/provide/table.provide'
 import type { TableColumn } from '~/components/Table/models/table-column.model'
 
 // Functions
+import { getComponentProps } from '~/components/__helpers/get-config-props'
 import { useTableData } from '~/components/Table/functions/useTableData'
 import { useTableLayout } from '~/components/Table/functions/useTableLayout'
 import { useTableSelection } from '~/components/Table/functions/useTableSelection'
@@ -24,24 +23,7 @@ import { useTableTopUtils } from '~/components/Table/functions/useTableTopUtils'
 import { useTableEditing } from '~/components/Table/functions/useTableEditing'
 
 const props = withDefaults(defineProps<ITableProps>(), {
-  breakpoint: 'md',
-  columns: () => [],
-  groupExpandWidth: 36,
-  minimumColumnWidth: 80,
-  mobileRowHeight: 32,
-  rowHeight: 40,
-  separator: 'cell',
-  totalRows: 0,
-  useUrl: true,
-  infiniteScroll: config.table.props.infiniteScroll,
-  noLock: config.table.props.noLock,
-  splitRow: 1,
-  noSearch: config.table.props.noSearch,
-  tableTopFunctionality: () => ({
-    ...config.table.props.tableTopFunctionality,
-  }),
-  rowsPerPageOptions: () =>
-    config.table.props.rowsPerPageOptions || [10, 25, 50, 100],
+  ...getComponentProps('table'),
 })
 
 defineEmits<{

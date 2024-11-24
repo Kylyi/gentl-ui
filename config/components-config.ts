@@ -166,7 +166,8 @@ export const componentsConfig = {
   fileInput: {
     props: {
       downloadUrl: undefined,
-    } as PropsDefaults<Partial<IFileInputProps>>,
+      maxChipsRows: 3,
+    } satisfies PropsDefaults<Partial<IFileInputProps>>,
   },
 
   // Floating UI
@@ -182,10 +183,15 @@ export const componentsConfig = {
   // Form
   form: {
     props: {
+      errorsOnTop: true,
+      labelForcedVisibility: true,
+      hasControls: undefined,
+      submitConfirmation: undefined,
+      focusFirstInput: false,
+      noShortcuts: undefined,
       preventSubmitOnEnter: true,
-      focusFirstInput: true,
-      dense: true,
-    } as PropsDefaults<Partial<IFormProps>>,
+      ui: () => ({}),
+    } satisfies PropsDefaults<Partial<IFormProps>>,
 
     confirmation: {
       /**
@@ -234,7 +240,18 @@ export const componentsConfig = {
   currencyInput: {
     props: {
       step: 'auto',
-    } as PropsDefaults<Partial<ICurrencyInputProps>>,
+      currencyPosition: 'prepend',
+      debounce: 0,
+      errorTakesSpace: true,
+      errorVisible: true,
+      fractionDigits: 2,
+      mask: () => ({ mask: String }) as any,
+      required: undefined,
+      size: 'md',
+      stackLabel: undefined,
+      min: Number.NEGATIVE_INFINITY,
+      max: Number.POSITIVE_INFINITY,
+    } satisfies PropsDefaults<Partial<ICurrencyInputProps>>,
   },
 
   // Input - Date input
@@ -306,7 +323,7 @@ export const componentsConfig = {
       fuseExtendedSearchToken: "'",
       noHighlight: true,
       useToBoldLatin: false,
-    } as PropsDefaults<Partial<IListProps>>,
+    } satisfies PropsDefaults<Partial<IListProps>>,
   },
 
   // Loader
@@ -434,8 +451,20 @@ export const componentsConfig = {
   // Table
   table: {
     props: {
+      breakpoint: 'md',
+      columns: () => [],
+      groupExpandWidth: 36,
+      minimumColumnWidth: 80,
+      mobileRowHeight: 32,
+      rowHeight: 40,
+      separator: 'cell',
+      totalRows: 0,
+      useUrl: true,
       infiniteScroll: false,
+      noLock: true,
       noSearch: true,
+      splitRow: 1,
+      rowsPerPageOptions: () => [10, 25, 50, 100],
     } satisfies PropsDefaults<Partial<ITableProps>>,
 
     /**
@@ -570,7 +599,7 @@ export const componentsConfig = {
   tabs: {
     props: {
       noAnimation: true,
-    } as PropsDefaults<Partial<ITabsProps>>,
+    } satisfies PropsDefaults<Partial<ITabsProps>>,
   },
 
   // Tab
