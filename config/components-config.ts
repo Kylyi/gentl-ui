@@ -149,7 +149,11 @@ export const componentsConfig = {
 
   // Dialog
   dialog: {
-    props: {} satisfies PropsDefaults<Partial<IDialogProps>>,
+    props: {
+      maxHeight: 99999,
+      position: 'center',
+      transitionDuration: 300,
+    } satisfies PropsDefaults<Partial<IDialogProps>>,
   },
 
   // Drawer
@@ -691,7 +695,6 @@ export const componentsConfig = {
 const customDefu = createDefu((obj, key, value) => {
   // For arrays, use the value, don't extend
   if (typeof obj[key] === 'function') {
-    console.log(key)
     obj[key] = value ?? obj[key]
 
     return true

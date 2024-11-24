@@ -92,10 +92,17 @@ function fitColumns(ev?: MouseEvent) {
 // Subscription
 const subscriptionEl = ref<any>()
 
-const hasSubscriptionBtn = computed(() => {
-  return !props.tableTopFunctionality?.noSubscription
-    && 'subscriptionComponent' in config
-    && config.subscriptionComponent
+const subscriptionComponent = computed(() => {
+  const hasSubscriptionBtn = 'subscriptionComponent' in config
+    && !!config.subscriptionComponent
+
+  if (props.tableTopFunctionality?.noSubscription || !hasSubscriptionBtn) {
+    return
+  }
+
+  return typeof config.subscriptionComponent === 'function'
+    ? config.subscriptionComponent()
+    : config.subscriptionComponent
 })
 
 // Export
@@ -105,7 +112,10 @@ const ExportBtn = computed(() => {
   const hasCustomExport = 'exportComponent' in config.table && !!config.table.exportComponent
 
   if (!props.exportProps?.useDefault && hasCustomExport) {
-    return config.table.exportComponent
+    return typeof config.table.exportComponent === 'function'
+    // @ts-expect-error We literally check on the line above that it is a function, no clue why TS complains
+      ? config.table.exportComponent()
+      : config.table.exportComponent
   }
 
   return TableExportBtn
@@ -391,7 +401,7 @@ onKeyStroke(['d', 'D'], (ev: KeyboardEvent) => {
           </Btn>
 
           <!-- Subscriptions -->
-          <template v-if="hasSubscriptionBtn">
+          <template v-if="!!subscriptionComponent">
             <Separator
               v-if="!subscriptionEl?.isHidden?.()"
               vertical
@@ -400,8 +410,8 @@ onKeyStroke(['d', 'D'], (ev: KeyboardEvent) => {
             />
 
             <Component
-              :is="config.subscriptionComponent"
-              v-if="('subscriptionComponent' in config) && config.subscriptionComponent"
+              :is="subscriptionComponent"
+              v-if="('subscriptionComponent' in config) && subscriptionComponent"
               ref="subscriptionEl"
               self-start
               m="t-1"

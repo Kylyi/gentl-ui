@@ -113,7 +113,14 @@ const hasKeyboardShortcuts = computed(() => {
 })
 
 const FormConfirmation = computed(() => {
-  return config.form?.confirmation?.component ?? MenuConfirmation
+  if (config.form?.confirmation.component) {
+    return typeof config.form.confirmation.component === 'function'
+    // @ts-expect-error idk
+      ? config.form.confirmation.component()
+      : config.form.confirmation.component
+  }
+
+  return MenuConfirmation
 })
 
 const formClass = computed(() => ({

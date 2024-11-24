@@ -13,6 +13,7 @@ import { useQueryBuilderColumnFilters } from '~/components/QueryBuilder/function
 
 // Store
 import { useQueryBuilderStore } from '~/components/QueryBuilder/query-builder.store'
+import { queryBuilderIdKey } from '~/components/QueryBuilder/provide/query-builder.provide'
 
 const props = withDefaults(defineProps<IQueryBuilderProps & {
   /**
@@ -23,6 +24,10 @@ const props = withDefaults(defineProps<IQueryBuilderProps & {
 }>(), {
   maxLevel: Number.POSITIVE_INFINITY,
 })
+
+const uuid = injectLocal(queryBuilderIdKey, useId())
+
+provideLocal(queryBuilderIdKey, uuid)
 
 // Store
 const {
