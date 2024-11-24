@@ -373,7 +373,12 @@ export const componentsConfig = {
   // Page wrapper
   pageWrapper: {
     topBar: undefined as unknown as DefineComponent<any>,
-    props: {} satisfies PropsDefaults<Partial<IPageWrapperProps>>,
+    props: {
+      pad: true,
+      includeTopBar: true,
+      moveContent: false,
+      ui: () => ({}),
+    } satisfies PropsDefaults<Partial<IPageWrapperProps>>,
   },
 
   // Page title
@@ -648,7 +653,10 @@ export const componentsConfig = {
 
   // Year month selector
   yearMonthSelector: {
-    props: {} satisfies PropsDefaults<Partial<IYearMonthSelectorProps>>,
+    props: {
+      layout: undefined,
+      stackLabel: undefined,
+    } satisfies PropsDefaults<Partial<IYearMonthSelectorProps>>,
   },
 
   // Year selector
@@ -690,6 +698,9 @@ export const componentsConfig = {
       >
     >
   },
+
+  // Subscriptions component
+  subscriptionComponent: undefined as unknown,
 } as const
 
 const customDefu = createDefu((obj, key, value) => {

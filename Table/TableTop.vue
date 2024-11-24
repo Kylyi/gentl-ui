@@ -93,16 +93,16 @@ function fitColumns(ev?: MouseEvent) {
 const subscriptionEl = ref<any>()
 
 const subscriptionComponent = computed(() => {
-  const hasSubscriptionBtn = 'subscriptionComponent' in config
-    && !!config.subscriptionComponent
+  const subscriptionComp = 'subscriptionComponent' in config
+    && config.subscriptionComponent
 
-  if (props.tableTopFunctionality?.noSubscription || !hasSubscriptionBtn) {
+  if (props.tableTopFunctionality?.noSubscription || !subscriptionComp) {
     return
   }
 
-  return typeof config.subscriptionComponent === 'function'
-    ? config.subscriptionComponent()
-    : config.subscriptionComponent
+  return typeof subscriptionComp === 'function'
+    ? subscriptionComp()
+    : subscriptionComp
 })
 
 // Export

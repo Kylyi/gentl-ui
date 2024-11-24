@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { config } from '~/components/config/components-config'
-
 // Types
 import type { IFileInputProps } from '~/components/FileInput/types/file-input-props.type'
 
@@ -8,6 +6,7 @@ import type { IFileInputProps } from '~/components/FileInput/types/file-input-pr
 import { FileModel } from '~/components/FileInput/models/file.model'
 
 // Functions
+import { getComponentProps } from '~/components/__helpers/get-config-props'
 import { useFieldUtils } from '~/components/Field/functions/useFieldUtils'
 import { useNumber } from '~/components/Inputs/NumberInput/functions/useNumber'
 
@@ -16,8 +15,7 @@ import ScrollArea from '~/components/ScrollArea/ScrollArea.vue'
 import Field from '~/components/Field/Field.vue'
 
 const props = withDefaults(defineProps<IFileInputProps>(), {
-  maxChipsRows: 3,
-  downloadUrl: config.fileInput.props.downloadUrl,
+  ...getComponentProps('fileInput'),
 })
 
 const emits = defineEmits<{

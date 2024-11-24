@@ -1,11 +1,11 @@
 <script setup lang="ts">
 // TODO: MIN & MAX
-import { config } from '~/components/config/components-config'
 
 // Types
 import type { IYearMonthSelectorProps } from '~/components/YearMonthSelector/types/year-month-selector-props.type'
 
 // Functions
+import { getComponentProps } from '~/components/__helpers/get-config-props'
 import { useFieldUtils } from '~/components/Field/functions/useFieldUtils'
 
 // Components
@@ -13,8 +13,7 @@ import Field from '~/components/Field/Field.vue'
 import MenuProxy from '~/components/MenuProxy/MenuProxy.vue'
 
 const props = withDefaults(defineProps<IYearMonthSelectorProps>(), {
-  layout: config.inputWrapper.props.layout,
-  stackLabel: config.inputWrapper.props.stackLabel,
+  ...getComponentProps('yearMonthSelector'),
 })
 
 defineEmits<{

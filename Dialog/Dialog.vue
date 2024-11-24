@@ -1,19 +1,15 @@
 <script setup lang="ts">
-import { config } from '~/components/config/components-config'
-
 // Types
 import type { IDialogProps } from '~/components/Dialog/types/dialog-props.type'
 
 // Functions
+import { getComponentProps } from '~/components/__helpers/get-config-props'
 import { useDialogLayout } from '~/components/Dialog/functions/useDialogLayout'
 
 defineOptions({ inheritAttrs: false })
 
 const props = withDefaults(defineProps<IDialogProps>(), {
-  maxHeight: 99999,
-  position: 'center',
-  transitionDuration: 300,
-  noTransition: config.dialog.props?.noTransition ?? undefined,
+  ...getComponentProps('dialog'),
 })
 
 const emits = defineEmits<{

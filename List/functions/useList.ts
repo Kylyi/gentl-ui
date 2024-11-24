@@ -96,7 +96,7 @@ export function useList(
     },
   }
 
-  const useToBoldLatin = props.useToBoldLatin ?? config.list.props.useToBoldLatin
+  const useToBoldLatin = props.useToBoldLatin
 
   // List
   const isLoading = ref(false)

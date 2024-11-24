@@ -1,15 +1,14 @@
 <script setup lang="ts">
 import { config } from '~/components/config/components-config'
 
+// Functions
+import { getComponentProps } from '~/components/__helpers/get-config-props'
+
 // Types
 import type { IPageWrapperProps } from '~/components/Page/types/page-wrapper-props.type'
 
 withDefaults(defineProps<IPageWrapperProps>(), {
-  pad: true,
-  includeTopBar: true,
-  moveContent: config.pageWrapper.props.moveContent ?? false,
-  breadcrumbs: config.pageWrapper.props.breadcrumbs,
-  ui: () => config.pageWrapper.props.ui ?? {},
+  ...getComponentProps('pageWrapper'),
 })
 
 // Utils
@@ -174,12 +173,9 @@ onMounted(() => {
   margin-left: calc(var(--drawerLeftMiniWidth));
 }
 
-.page-drawer.is-open.page-drawer--left:not(.is-absolute):not(.is-mini)
-  ~ .page-wrapper {
+.page-drawer.is-open.page-drawer--left:not(.is-absolute):not(.is-mini) ~ .page-wrapper {
   &.is-mobile.move-content {
-    transform: translateX(
-      calc(var(--drawerLeftWidth) - var(--drawerLeftMiniWidth))
-    );
+    transform: translateX(calc(var(--drawerLeftWidth) - var(--drawerLeftMiniWidth)));
   }
 
   &:not(.is-mobile),
@@ -192,8 +188,7 @@ onMounted(() => {
   padding-right: var(--drawerRightMiniWidth);
 }
 
-.page-drawer.is-open.page-drawer--right:not(.is-absolute):not(.is-mini)
-  ~ .page-wrapper {
+.page-drawer.is-open.page-drawer--right:not(.is-absolute):not(.is-mini) ~ .page-wrapper {
   padding-right: var(--drawerRightWidth);
 }
 </style>
