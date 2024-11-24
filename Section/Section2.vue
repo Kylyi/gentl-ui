@@ -13,7 +13,7 @@ defineOptions({
 })
 
 const props = withDefaults(defineProps<ISectionProps>(), {
-  ...getComponentProps('section2'),
+  ...getComponentProps('section2').props,
 })
 
 // Layout

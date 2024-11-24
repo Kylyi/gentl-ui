@@ -16,7 +16,7 @@ import { vRipple } from '~/libs/App/directives/ripple.directive'
 import { useBtnUtils } from '~/components/Button/functions/useBtnUtils'
 
 const props = withDefaults(defineProps<IBtnProps>(), {
-  ...getComponentProps('button'),
+  ...getComponentProps('button').props,
 })
 
 // Utils

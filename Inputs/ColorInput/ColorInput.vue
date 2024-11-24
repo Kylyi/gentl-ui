@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { config } from '~/components/config/components-config'
-
 // Types
 import type { IColorProps } from '~/components/Inputs/ColorInput/types/color-props.type'
 
 // Functions
+import { getComponentProps } from '~/components/__helpers/get-config-props'
 import { useFieldUtils } from '~/components/Field/functions/useFieldUtils'
 
 // Components
@@ -12,11 +11,7 @@ import MenuProxy from '~/components/MenuProxy/MenuProxy.vue'
 import Field from '~/components/Field/Field.vue'
 
 const props = withDefaults(defineProps<IColorProps>(), {
-  icon: 'i-material-symbols:format-color-text-rounded',
-  noIcon: true,
-  required: undefined,
-  stackLabel: undefined,
-  disallowedColors: () => config.colorInput?.props?.disallowedColors ?? [],
+  ...getComponentProps('colorInput').props,
 })
 const emits = defineEmits<{
   (e: 'update:modelValue', value: any): void

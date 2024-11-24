@@ -13,7 +13,7 @@ import InputWrapperInline from '~/components/Inputs/InputWrapper/InputWrapperInl
 import InputWrapperInside from '~/components/Inputs/InputWrapper/InputWrapperInside.vue'
 
 const props = withDefaults(defineProps<IInputWrapperProps>(), {
-  ...getComponentProps('inputWrapper'),
+  ...getComponentProps('inputWrapper').props,
 })
 
 defineEmits<{
