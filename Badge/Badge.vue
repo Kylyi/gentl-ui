@@ -2,7 +2,12 @@
 // Types
 import type { IBadgeProps } from '~/components/Badge/types/badge-props.type'
 
-defineProps<IBadgeProps>()
+// Functions
+import { getComponentProps } from '~/components/__helpers/get-config-props'
+
+withDefaults(defineProps<IBadgeProps>(), {
+  ...getComponentProps('badge'),
+})
 </script>
 
 <template>

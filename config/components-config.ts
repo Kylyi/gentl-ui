@@ -69,12 +69,12 @@ import type { ComparatorEnum } from '~/libs/App/enums/comparator.enum'
 const defaultConfig = {
   // Badge
   badge: {
-    props: {} as IBadgeProps,
+    props: {} satisfies Partial<IBadgeProps>,
   },
 
   // Banner
   banner: {
-    props: {} as IBannerProps,
+    props: {} satisfies IBannerProps,
   },
 
   // Breadcrumbs
@@ -87,62 +87,69 @@ const defaultConfig = {
 
   // Button
   button: {
-    props: {} as IBtnProps,
+    props: {
+      align: 'center',
+      rounded: true,
+      disableStyle: 'filled',
+      ripple: true,
+      size: 'md',
+      type: 'button',
+    } satisfies IBtnProps,
   },
 
   // ButtonGroup
   buttonGroup: {
-    props: {} as IButtonGroupProps,
+    props: {} satisfies Partial<IButtonGroupProps>,
   },
 
   // MiniCard
   miniCard: {
-    props: {} as IMiniCardProps,
+    props: {} satisfies Partial<IMiniCardProps>,
   },
 
   // Checkbox
   checkbox: {
-    props: {} as ICheckboxProps,
+    props: {} satisfies ICheckboxProps,
   },
 
   // Chip
   chip: {
-    props: {} as IChipProps,
+    props: {} satisfies IChipProps,
   },
 
   // Collapse
   collapse: {
-    props: {} as ICollapseProps,
+    props: {} satisfies ICollapseProps,
   },
 
   // Confirmation
   confirmation: {
-    props: {} as IConfirmationProps,
+    props: {} satisfies IConfirmationProps,
   },
 
   // Crud
   crud: {
-    props: {} as ICrudBtnProps,
+    props: {} satisfies ICrudBtnProps,
   },
 
   // Datepicker
   datepicker: {
-    props: {} as IDatePickerProps,
+    props: {} satisfies IDatePickerProps,
   },
 
   // Dialog
   dialog: {
-    props: {} as IDialogProps,
+    props: {} satisfies IDialogProps,
   },
 
   // Drawer
   drawer: {
-    props: {} as IDrawerProps,
+    props: {} satisfies Partial<IDrawerProps>,
   },
 
   // Field
   field: {
-    props: {} as IFieldProps,
+    props: {} satisfies IFieldProps,
   },
 
   // File input
@@ -154,12 +161,12 @@ const defaultConfig = {
 
   // Floating UI
   FloatingUI: {
-    props: {} as IFloatingUIProps,
+    props: {} satisfies IFloatingUIProps,
   },
 
   // Heading
   heading: {
-    props: {} as IHeadingProps,
+    props: {} satisfies IHeadingProps,
   },
 
   // Form
@@ -204,7 +211,7 @@ const defaultConfig = {
 
   // Input - Color input
   colorInput: {
-    props: {} as IColorProps,
+    props: {} satisfies IColorProps,
   },
 
   // Input - Currency input
@@ -216,12 +223,12 @@ const defaultConfig = {
 
   // Input - Date input
   dateInput: {
-    props: {} as IDateInputProps,
+    props: {} satisfies IDateInputProps,
   },
 
   // Input - Duration input
   durationInput: {
-    props: {} as IDurationInputProps,
+    props: {} satisfies IDurationInputProps,
   },
 
   // Input - Dynamic input
@@ -230,41 +237,45 @@ const defaultConfig = {
   // Input wrapper
   inputWrapper: {
     props: {
+      cursor: 'cursor-text',
+      errorVisible: true,
       layout: 'regular',
+      required: undefined,
+      size: 'md',
       stackLabel: true,
-    } as IInputWrapperProps,
+    } satisfies IInputWrapperProps,
 
     borderRadius: '0.5rem',
   },
 
   // Input - Number input
   numberInput: {
-    props: {} as INumberInputProps,
+    props: {} satisfies INumberInputProps,
   },
 
   // Input - Text area
   textArea: {
-    props: {} as ITextAreaInputProps,
+    props: {} satisfies ITextAreaInputProps,
   },
 
   // Input - Text input
   textInput: {
-    props: {} as ITextInputProps,
+    props: {} satisfies ITextInputProps,
   },
 
   // Input - Time input
   timeInput: {
-    props: {} as ITimeInputProps,
+    props: {} satisfies ITimeInputProps,
   },
 
   // Input label
   inputLabel: {
-    props: {} as IInputLabelProps,
+    props: {} satisfies IInputLabelProps,
   },
 
   // Item
   item: {
-    props: {} as IItemProps,
+    props: {} satisfies IItemProps,
   },
 
   // List
@@ -280,26 +291,26 @@ const defaultConfig = {
 
   // Main bar
   mainBar: {
-    props: {} as IMainBarProps,
+    props: { } satisfies Partial<IMainBarProps>,
   },
 
   // Menu
   menu: {
-    props: {} as IMenuProps,
+    props: {} satisfies IMenuProps,
   },
 
   // Menu confirmation
   menuConfirmation: {
-    props: {} as IMenuConfirmationProps,
+    props: {} satisfies IMenuConfirmationProps,
   },
 
   // Menu proxy
   menuProxy: {
-    props: {} as IDialogProps & IMenuProps,
+    props: {} satisfies IDialogProps & IMenuProps,
   },
 
   monthSelector: {
-    props: {} as IMonthSelectorProps,
+    props: {} satisfies IMonthSelectorProps,
   },
 
   // Navigation
@@ -307,23 +318,23 @@ const defaultConfig = {
 
   // Notification row
   notificationRow: {
-    props: {} as INotificationRowProps,
+    props: {} satisfies Partial<INotificationRowProps>,
   },
 
   // Page drawer
   pageDrawer: {
-    props: {} as IPageDrawerProps,
+    props: {} satisfies IPageDrawerProps,
   },
 
   // Page wrapper
   pageWrapper: {
     topBar: undefined as unknown as DefineComponent<any>,
-    props: {} as IPageWrapperProps,
+    props: {} satisfies IPageWrapperProps,
   },
 
   // Page title
   pageTitle: {
-    props: {} as IPageTitleProps,
+    props: {} satisfies IPageTitleProps,
   },
 
   // Progress bar
@@ -331,32 +342,32 @@ const defaultConfig = {
 
   // Query builder
   queryBuilder: {
-    props: {} as IQueryBuilderProps,
+    props: {} satisfies Partial<IQueryBuilderProps>,
   },
 
   // Radio
   radio: {
-    props: {} as IRadioProps,
+    props: {} satisfies Partial<IRadioProps>,
   },
 
   // Scroll area
   scrollArea: {
-    props: {} as IScrollAreaProps,
+    props: {} satisfies IScrollAreaProps,
   },
 
   // Scroller
   scroller: {
-    props: {} as IScrollerProps,
+    props: {} satisfies IScrollerProps,
   },
 
   // Section
   section: {
-    props: {} as ISectionProps,
+    props: {} satisfies ISectionProps,
   },
 
   // Section
   section2: {
-    props: {} as ISectionProps,
+    props: {} satisfies ISectionProps,
   },
 
   // Selector
@@ -374,12 +385,12 @@ const defaultConfig = {
 
   // Separator
   separator: {
-    props: {} as ISeparatorProps,
+    props: {} satisfies ISeparatorProps,
   },
 
   // Skeleton
   skeleton: {
-    props: {} as ISkeletonProps,
+    props: {} satisfies ISkeletonProps,
   },
 
   // Table
@@ -526,52 +537,52 @@ const defaultConfig = {
 
   // Tab
   tab: {
-    props: {} as ITabProps,
+    props: {} satisfies Partial<ITabProps>,
   },
 
   // Text splitter
   textSplitter: {
-    props: {} as ITextSplitterProps,
+    props: {} satisfies Partial<ITextSplitterProps>,
   },
 
   // Toggle
   toggle: {
-    props: {} as IToggleProps,
+    props: {} satisfies IToggleProps,
   },
 
   // Tooltip
   tooltip: {
-    props: {} as ITooltipProps,
+    props: {} satisfies ITooltipProps,
   },
 
   // Tree
   tree: {
-    props: {} as ITreeProps,
+    props: {} satisfies Partial<ITreeProps>,
   },
 
   // Value formatter
   valueFormatter: {
-    props: {} as IValueFormatter,
+    props: {} satisfies Partial<IValueFormatter>,
   },
 
   // Virtual scroller
   virtualScroller: {
-    props: {} as IVirtualScrollerProps,
+    props: {} satisfies IVirtualScrollerProps,
   },
 
   // Wisywig
   wysiwyg: {
-    props: {} as IWysiwygProps,
+    props: {} satisfies IWysiwygProps,
   },
 
   // Year month selector
   yearMonthSelector: {
-    props: {} as IYearMonthSelectorProps,
+    props: {} satisfies IYearMonthSelectorProps,
   },
 
   // Year selector
   yearSelector: {
-    props: {} as IYearSelectorProps,
+    props: {} satisfies Partial<IYearSelectorProps>,
   },
 
   // Logging

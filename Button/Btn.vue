@@ -2,23 +2,21 @@
 // Types
 import type { IBtnProps } from '~/components/Button/types/btn-props.type'
 
-// Components
-import BtnOrNuxtLinkResolver from '~/components/Button/BtnOrNuxtLinkResolver.vue'
+// Functions
+import { getComponentProps } from '~/components/__helpers/get-config-props'
 
 // Constants
 import { BUTTON_PRESET } from '~/components/Button/constants/button-preset.constant'
+
+// Components
+import BtnOrNuxtLinkResolver from '~/components/Button/BtnOrNuxtLinkResolver.vue'
 
 // Directives
 import { vRipple } from '~/libs/App/directives/ripple.directive'
 import { useBtnUtils } from '~/components/Button/functions/useBtnUtils'
 
 const props = withDefaults(defineProps<IBtnProps>(), {
-  align: 'center',
-  rounded: true,
-  disableStyle: 'filled',
-  ripple: true,
-  size: 'md',
-  type: 'button',
+  ...getComponentProps('button'),
 })
 
 // Utils

@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { config } from '~/components/config/components-config'
-
 // Types
 import type { IInputWrapperProps } from '~/components/Inputs/types/input-wrapper-props.type'
 
 // Functions
+import { getComponentProps } from '~/components/__helpers/get-config-props'
 import { useInputWrapperUtils } from '~/components/Inputs/functions/useInputWrapperUtils'
 import { useInputValidationUtils } from '~/components/Inputs/functions/useInputValidationUtils'
 
@@ -14,12 +13,7 @@ import InputWrapperInline from '~/components/Inputs/InputWrapper/InputWrapperInl
 import InputWrapperInside from '~/components/Inputs/InputWrapper/InputWrapperInside.vue'
 
 const props = withDefaults(defineProps<IInputWrapperProps>(), {
-  cursor: 'cursor-text',
-  errorVisible: true,
-  size: 'md',
-  layout: config.inputWrapper.props.layout,
-  stackLabel: config.inputWrapper.props.stackLabel,
-  required: undefined,
+  ...getComponentProps('inputWrapper'),
 })
 
 defineEmits<{

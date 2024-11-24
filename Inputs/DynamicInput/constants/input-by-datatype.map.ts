@@ -1,4 +1,5 @@
 // @unocss-include
+import { klona } from 'klona'
 import { config } from '~/components/config/components-config'
 
 // Components
@@ -157,8 +158,14 @@ export function getInputByDataType<T extends ExtendedDataType>(
 
   // We merge the props if some are passed
   if (props) {
-    merge(input.props, props)
+    input.props = klona(merge(input.props, props))
   }
 
-  return INPUT_BY_DATATYPE[dataType]
+  return {
+    component: typeof input.component === 'function'
+    // @ts-expect-error idk
+      ? markRaw(input.component())
+      : markRaw(input.component),
+    props: input.props,
+  }
 }

@@ -4,7 +4,12 @@
 // Types
 import type { IBannerProps } from '~/components/Banner/types/banner-props.type'
 
-const props = defineProps<IBannerProps>()
+// Functions
+import { getComponentProps } from '~/components/__helpers/get-config-props'
+
+const props = withDefaults(defineProps<IBannerProps>(), {
+  ...getComponentProps('banner'),
+})
 
 defineEmits<{
   (e: 'update:modelValue', value: boolean): void

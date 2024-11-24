@@ -3,7 +3,7 @@
 import type { ISectionProps } from '~/components/Section/types/section-props.type'
 
 // Functions
-import { getConfigProps } from '~/components/__helpers/get-config-props'
+import { getComponentProps } from '~/components/__helpers/get-config-props'
 
 // Components
 import Heading from '~/components/Typography/Heading.vue'
@@ -13,7 +13,7 @@ defineOptions({
 })
 
 const props = withDefaults(defineProps<ISectionProps>(), {
-  ...getConfigProps('section2'),
+  ...getComponentProps('section2'),
 })
 
 // Layout
