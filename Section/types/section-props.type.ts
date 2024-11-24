@@ -3,7 +3,7 @@ import type { CSSProperties } from 'vue'
 // Types
 import type { IHeadingProps } from '~/components/Typography/types/heading-props.type'
 
-export type ISectionProps = IHeadingProps & {
+export type ISectionProps = {
   /**
    * When true, the section will have a border.
    */
@@ -56,4 +56,4 @@ export type ISectionProps = IHeadingProps & {
      */
     sectionStyle?: CSSProperties
   }
-}
+} & IHeadingProps
