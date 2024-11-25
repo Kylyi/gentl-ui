@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import type { LocaleObject } from '@nuxtjs/i18n'
+import { config } from '~/components/config/components-config'
 
 // Utils
-const rC = useRuntimeConfig()
 const { localesByCode } = useLocale()
 const { locale, locales } = useI18n()
 const switchLocalePath = useSwitchLocalePath()
 
 const localeCookie = useCookie('lang', {
-  domain: rC.public.COOKIE_DOMAIN ?? undefined,
+  domain: config.domain,
 })
 
 const _locales = computed(() => locales.value as LocaleObject[])
