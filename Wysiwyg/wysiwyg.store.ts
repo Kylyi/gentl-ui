@@ -75,7 +75,7 @@ export function useWysiwygStore(wysiwygId?: string) {
               emailButton: false,
               fileUpload: false,
               image: false,
-              link: false,
+              link: true,
             }
         }
       }
