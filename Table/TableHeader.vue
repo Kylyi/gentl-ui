@@ -21,6 +21,7 @@ import {
 
 // Components
 import HorizontalScroller from '~/components/Scroller/HorizontalScroller.vue'
+import { useAppStore } from '~/libs/App/app.store'
 
 type IProps = {
   minimumColumnWidth?: number
@@ -45,6 +46,9 @@ const selection = injectStrict(tableSelectionKey)
 const tableRows = injectStrict(tableRowsKey)
 const columns = injectStrict(tableColumnsKey)
 const handleSelectRow = injectStrict(tableSelectRowKey)
+
+// Store
+const { appState } = storeToRefs(useAppStore())
 
 const {
   headerEl,
@@ -97,7 +101,10 @@ const visibleColumns = computed(() => {
 })
 
 const scrollerContentClass = computed(() => {
-  const classes: ClassType = ['relative']
+  const classes: ClassType = [
+    'relative',
+    `auto-fit--${appState.value.table?.fit}`,
+  ]
 
   if (props.smallScreen) {
     classes.push('m-l-2')
