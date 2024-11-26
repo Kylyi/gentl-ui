@@ -63,6 +63,7 @@ const {
 
 // Layout
 const scrollX = ref(0)
+const isRendered = ref(false)
 
 const selectedCount = computed(() => {
   return Object.values(selection.value || {}).filter(Boolean).length
@@ -111,6 +112,10 @@ const scrollerContentClass = computed(() => {
     classes.push('gap-1')
   }
 
+  if (isRendered.value) {
+    classes.push('is-ready')
+  }
+
   return classes
 })
 
@@ -124,6 +129,7 @@ if (!props.noAutofit) {
   watchOnce(tableRows, async () => {
     await nextTick()
     handleFitColumns()
+    isRendered.value = true
   })
 }
 
