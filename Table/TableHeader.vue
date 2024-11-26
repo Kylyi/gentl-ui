@@ -129,7 +129,10 @@ if (!props.noAutofit) {
   watchOnce(tableRows, async () => {
     await nextTick()
     handleFitColumns()
-    isRendered.value = true
+
+    setTimeout(() => {
+      isRendered.value = true
+    })
   })
 }
 
