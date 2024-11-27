@@ -77,6 +77,8 @@ export type PropsDefaults<T> = {
 }
 
 export const componentsConfig = {
+  domain: undefined,
+
   // Badge
   badge: {
     props: {} satisfies PropsDefaults<Partial<IBadgeProps>>,
