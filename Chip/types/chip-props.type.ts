@@ -20,7 +20,7 @@ export type IChipProps = {
   /**
    * The chip's label
    */
-  label?: string | number
+  label?: string | number | (() => string | number)
 
   /**
    * The chip's label class

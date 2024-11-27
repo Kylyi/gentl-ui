@@ -10,6 +10,15 @@ defineEmits<{
   (e: 'remove'): void
 }>()
 
+// Layout
+const label = computed(() => {
+  if (typeof props.label === 'function') {
+    return props.label()
+  }
+
+  return props.label
+})
+
 // Utils
 function handleClick() {
   if (props.to) {
