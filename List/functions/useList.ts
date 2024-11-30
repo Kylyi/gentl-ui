@@ -330,6 +330,8 @@ export function useList(
       } else if (!selectedByKey.value[itemKey]) {
         self.emit('added', item)
         self.emit('update:selected', getEmitValue(item))
+      } else if (props.clearable) {
+        self.emit('update:selected', props.emptyValue)
       }
 
       const isToBeCreated = '_isCreate' in item && item._isCreate
