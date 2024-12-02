@@ -78,17 +78,16 @@ function handleHide() {
 // Counter
 const counterEl = ref<HTMLSpanElement>()
 
-const { apply } = useMotion(counterEl, {
-  initial: { scale: 1 },
-  enter: { scale: 1 },
-  bounce: {
-    scale: 1.25,
-    transition: {
-      type: 'keyframes',
-      duration: 100,
-    },
-  },
-})
+// Animations
+function removeAnimation() {
+  counterEl.value?.classList.remove('bounce')
+  counterEl.value?.removeEventListener('animationend', removeAnimation)
+}
+
+function bounce() {
+  counterEl.value?.addEventListener('animationend', removeAnimation)
+  counterEl.value?.classList.add('bounce')
+}
 
 // Reset timeout on notification counter change
 const notificationCounter = toRef(props.notification, 'counter')
@@ -96,8 +95,7 @@ const notificationCounter = toRef(props.notification, 'counter')
 watch(notificationCounter, async () => {
   counter.value = 0
 
-  await apply('bounce')
-  await apply('enter')
+  bounce()
 })
 </script>
 
@@ -272,5 +270,20 @@ progress::-webkit-progress-bar {
 }
 progress::-moz-progress-bar {
   @apply bg-ca;
+}
+
+// Bounce
+.bounce {
+  animation: myBounce 100ms ease-in-out 0s 2 alternate forwards;
+}
+
+@keyframes myBounce {
+  0% {
+    transform: scale(1);
+  }
+
+  100% {
+    transform: scale(1.15);
+  }
 }
 </style>
