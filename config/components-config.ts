@@ -597,9 +597,19 @@ export const componentsConfig = {
     },
 
     /**
+     * They keys that should trigger the metadata refetch
+     */
+    hashKeys: {},
+
+    /**
      * The key to use for resolving the payload
      */
     payloadKey: 'data',
+
+    /**
+     * The key to use for resolving the `layouts` from metadata
+     */
+    layoutsKey: 'layouts',
 
     /**
      * They key to use for resolving the default layout name
