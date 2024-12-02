@@ -80,13 +80,14 @@ const nonSaveableSettingsByName = computed(() => {
 })
 
 const isSaveable = computed(() => {
-  return (
-    (layout.value.filters
-      || layout.value.queryBuilder
-      || layout.value.sort
-      || layout.value.columns)
-      && layout.value.name
-  )
+  const hasColumnFilters = layout.value.filters
+  const hasQueryBuilderFilters = layout.value.queryBuilder
+  const hasSort = layout.value.sort
+  const hasColumns = layout.value.columns
+
+  const hasAnything = hasColumnFilters || hasQueryBuilderFilters || hasSort || hasColumns
+
+  return hasAnything && layout.value.name
 })
 
 const hasSaveLayoutOptions = computed(() => {
@@ -177,9 +178,17 @@ async function handleSaveLayout() {
       const mode = currentLayoutId.value ? 'update' : 'create'
       const toSave: Array<'columns' | 'filters' | 'sorting'> = []
 
-      layout.value.columns && toSave.push('columns')
-      layout.value.filters && toSave.push('filters')
-      layout.value.sort && toSave.push('sorting')
+      if (layout.value.columns) {
+        toSave.push('columns')
+      }
+
+      if (layout.value.filters) {
+        toSave.push('filters')
+      }
+
+      if (layout.value.sort) {
+        toSave.push('sorting')
+      }
 
       return saveLayout(
         {
