@@ -61,7 +61,6 @@ import type { ITreeProps } from '~/components/Tree/types/tree-props.type'
 import type { IHeadingProps } from '~/components/Typography/types/heading-props.type'
 import type { IValueFormatter } from '~/components/ValueFormatter/types/value-formatter-props.type'
 import type { IVirtualScrollerProps } from '~/components/VirtualScroller/types/virtual-scroller-props.type'
-import type { IWysiwygProps } from '~/components/Wysiwyg/types/wysiwyg-props.type'
 import type { IYearMonthSelectorProps } from '~/components/YearMonthSelector/types/year-month-selector-props.type'
 import type { IYearSelectorProps } from '~/components/YearSelector/types/year-selector-props.type'
 
@@ -682,11 +681,6 @@ export const componentsConfig = {
   // Virtual scroller
   virtualScroller: {
     props: {} satisfies PropsDefaults<Partial<IVirtualScrollerProps>>,
-  },
-
-  // Wisywig
-  wysiwyg: {
-    props: {} satisfies PropsDefaults<Partial<IWysiwygProps>>,
   },
 
   // Year month selector
