@@ -476,6 +476,7 @@ export const componentsConfig = {
       noSearch: true,
       splitRow: 1,
       rowsPerPageOptions: () => [10, 25, 50, 100],
+      limitRows: 1000,
     } satisfies PropsDefaults<Partial<ITableProps>>,
 
     /**
@@ -594,6 +595,16 @@ export const componentsConfig = {
        */
       showColumnFilters: true,
     },
+
+    /**
+     * The key to use for resolving the payload
+     */
+    payloadKey: 'data',
+
+    /**
+     * They key to use for resolving the default layout name
+     */
+    defaultLayoutKey: 'layout',
 
     /**
      * If true, the metadata in `localStorage` will be checked first before eventually fetching from the API
