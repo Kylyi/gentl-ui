@@ -44,6 +44,7 @@ defineExpose({
 const uuid = injectLocal(wysiwygIdKey, useId()) as string
 const model = defineModel<any>()
 const visuals = defineModel<IWysiwygProps['visuals']>('visuals', { default: () => ({}) })
+const sink = toRef(props, 'sink')
 
 const bodyId = computed(() => {
   return visuals.value?.body?.['--id']
@@ -58,7 +59,13 @@ provideLocal(wysiwygModelKey, model)
 
 // Store
 const wysiwygStore = useWysiwygStore(undefined)
-const { isFocused, isEditable: isEditableStore, files, mentionSetup } = storeToRefs(wysiwygStore)
+const {
+  isFocused,
+  isEditable: isEditableStore,
+  files,
+  mentionSetup,
+  propsSink,
+} = storeToRefs(wysiwygStore)
 
 wysiwygStore.init(props)
 
@@ -75,6 +82,7 @@ watch(
 const mentionSetupOriginal = defineModel<IWysiwygMentionSetup[]>('mentionSetup')
 
 syncRef(mentionSetupOriginal, mentionSetup, { direction: 'ltr' })
+syncRef(sink, propsSink, { direction: 'ltr' })
 
 // Utils
 const {
@@ -103,10 +111,6 @@ function blurEditor() {
 // Layout
 const isEditDialogOpen = defineModel<boolean>('editDialog')
 const wrapperProps = getInputWrapperProps(props)
-
-// const bodyClass = computed(() => {
-//   return
-// })
 
 // Sync editor value with model when not focused
 watch(model, model => {

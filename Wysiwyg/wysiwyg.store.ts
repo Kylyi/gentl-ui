@@ -100,12 +100,12 @@ export function useWysiwygStore(wysiwygId?: string) {
 
     function init(props: IWysiwygProps) {
       propsFeatures.value = props.features
-      propsSink.value = props.sink
     }
 
     return {
       editor,
       features,
+      propsSink,
       sink,
       files,
       filesByPath,
