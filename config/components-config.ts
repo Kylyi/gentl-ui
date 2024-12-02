@@ -602,6 +602,11 @@ export const componentsConfig = {
     hashKeys: {},
 
     /**
+     * The key to use for resolving the `rowsCount` from metadata
+     */
+    countKey: 'count',
+
+    /**
      * The key to use for resolving the `columns` from metadata
      */
     columnsKey: 'columns',
