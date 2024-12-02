@@ -612,12 +612,17 @@ export const componentsConfig = {
     payloadKey: 'data',
 
     /**
+     * The key to use for resolving the `version` from metadata
+     */
+    versionKey: 'version',
+
+    /**
      * The key to use for resolving the `layouts` from metadata
      */
     layoutsKey: 'layouts',
 
     /**
-     * They key to use for resolving the default layout name
+     * They key to use for resolving the default layout name from metadata
      */
     defaultLayoutKey: 'layout',
 
