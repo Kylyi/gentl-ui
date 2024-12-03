@@ -34,28 +34,29 @@ const hasAccountBtn = computed(() => !props.noAccountBtn)
 const lastScrollDirection = ref<'up' | 'down'>('down')
 const diff = ref(0)
 
-const { arrivedState, y } = useScroll(() => (import.meta.client ? window : null), {
-  throttle: 10,
-})
+const { arrivedState, y } = useScroll(
+  () => import.meta.client ? window : null,
+  { throttle: 10 },
+)
 
 const isScrolled = computed(() => !arrivedState.top)
 
 watch(y, (oldY, y) => {
-  let newScrolLDirection: 'up' | 'down'
+  let newScrollDirection: 'up' | 'down'
 
   if (oldY > y) {
-    newScrolLDirection = 'down'
+    newScrollDirection = 'down'
   } else {
-    newScrolLDirection = 'up'
+    newScrollDirection = 'up'
   }
 
   // Reset diff if direction changes
-  if (lastScrollDirection.value !== newScrolLDirection) {
+  if (lastScrollDirection.value !== newScrollDirection) {
     diff.value = 0
   }
 
   diff.value += Math.abs(oldY - y)
-  lastScrollDirection.value = newScrolLDirection
+  lastScrollDirection.value = newScrollDirection
 })
 
 const isNavigationHidden = computed(() => {
@@ -63,8 +64,7 @@ const isNavigationHidden = computed(() => {
     return false
   }
 
-  const hasScrollerMoreThanNavigationHeight
-    = y.value >= navigationEl.value.offsetHeight
+  const hasScrollerMoreThanNavigationHeight = y.value >= navigationEl.value.offsetHeight
   const hasScrolledDown = lastScrollDirection.value === 'down'
   const hasScrolledUpEnough = !(
     diff.value > SCROLL_TRIGGER_PX && lastScrollDirection.value === 'up'
