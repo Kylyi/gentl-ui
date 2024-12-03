@@ -61,6 +61,9 @@ function handleClose() {
         <slot name="actions" />
         <Btn
           :label="$t('general.close')"
+          no-uppercase
+          icon="i-solar:close-square-broken"
+          color="negative"
           @click="handleClose"
         />
       </div>
@@ -78,6 +81,6 @@ function handleClose() {
 }
 
 .actions {
-  @apply flex items-center p-x-3 p-y-1 shrink-0 justify-end flex-gap-x-3 bg-ca;
+  @apply flex items-center p-x-3 p-y-1 shrink-0 justify-end flex-gap-x-3;
 }
 </style>
