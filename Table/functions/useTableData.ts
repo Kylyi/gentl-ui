@@ -421,7 +421,7 @@ export function useTableData(
 
           return
         } else {
-          metaDataRefetch?.(true, { metaFields: ['subscriptions'], updateStateOnly: true })
+          metaDataRefetch?.(true, { metaFields: ['subscriptions', 'columns'], updateStateOnly: true })
             .then(() => {
               customData.value = Object.assign(
                 customData.value,
