@@ -63,7 +63,7 @@ defineExpose({
       class="confirmation__labeled"
       color="positive"
       bg="white dark:bg-darker"
-      :class="`confirmation__tooltip--${position}`"
+      :class="`confirmation__labeled--${position}`"
     >
       {{ label }}
     </span>
@@ -75,7 +75,7 @@ defineExpose({
   @apply absolute bg-white dark:bg-darker inset-0 p-2;
 }
 
-.confirmation--labeled {
+.confirmation__labeled {
   @apply bg-white dark:bg-darker absolute pointer-events-none
     rounded-custom p-x-2 text-sm tracking-wide z-$zMax h-full
     flex flex-center font-normal font-rem-14;

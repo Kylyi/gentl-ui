@@ -2,11 +2,10 @@
 // Types
 import type { IBtnProps } from '~/components/Button/types/btn-props.type'
 
-const props = defineProps<
-  IBtnProps & {
-    modelValue?: any
-    position?: 'left' | 'right' | 'top' | 'bottom'
-  }
+const props = defineProps<IBtnProps & {
+  modelValue?: any
+  position?: 'left' | 'right' | 'top' | 'bottom'
+}
 >()
 
 // COPY
@@ -66,7 +65,7 @@ function handleCopy() {
 
     <BtnConfirmation
       :model-value="copied"
-      :position="position"
+      :position
       :label="$t('general.copied')"
     />
   </Btn>
