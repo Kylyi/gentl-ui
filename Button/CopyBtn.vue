@@ -5,6 +5,7 @@ import type { IBtnProps } from '~/components/Button/types/btn-props.type'
 const props = defineProps<IBtnProps & {
   modelValue?: any
   position?: 'left' | 'right' | 'top' | 'bottom'
+  transform?: (model: any) => string
 }
 >()
 
@@ -28,6 +29,12 @@ const copyBtnSize = computed(() => {
 })
 
 function handleCopy() {
+  if (props.transform) {
+    copy(props.transform(props.modelValue))
+
+    return
+  }
+
   copy(String(props.modelValue))
 }
 </script>
