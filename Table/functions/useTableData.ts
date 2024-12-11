@@ -125,7 +125,7 @@ export function useTableData(
   // Provides & Injects
   const externalData = inject(tableExternalDataKey, ref({} as IItem))
   const customData = injectLocal(tableCustomDataKey, ref({} as IItem))
-  const versionId = inject(tableVersionKey, ref(-1))
+  const versionId = inject(tableVersionKey, ref('-'))
 
   provide(tableRefreshKey, (force?: boolean) => refreshData(force))
   provide(tableRecreateQueryBuilderKey, () => initializeQueryBuilder())

@@ -147,7 +147,7 @@ export const tableLayoutKey: InjectionKey<Ref<ITableLayout | undefined>> = Symbo
 
 export const tableViewCodeKey: InjectionKey<Ref<string>> = Symbol('tableViewCode')
 
-export const tableVersionKey: InjectionKey<Ref<number | null | undefined>> = Symbol('tableVersion')
+export const tableVersionKey: InjectionKey<Ref<number | string | null | undefined>> = Symbol('tableVersion')
 
 /**
  * The table will inject this key and provide the value in slots and/or functions
