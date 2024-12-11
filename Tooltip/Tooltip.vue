@@ -84,14 +84,13 @@ watch(middlewareData, middlewareData => {
 onMounted(() => {
   nextTick(() => {
     referenceEl.value = getTargetElement(props.referenceTarget)
-    referenceEl.value && referenceEl.value.classList.add('has-tooltip')
+    referenceEl.value?.classList.add('has-tooltip')
 
     referenceEl.value?.addEventListener('mouseenter', () => {
-      referenceEl.value && referenceEl.value.classList.add('tooltip-hovered')
+      referenceEl.value?.classList.add('tooltip-hovered')
 
       setTimeout(() => {
-        const isStillInside
-          = referenceEl.value?.classList.contains('tooltip-hovered')
+        const isStillInside = referenceEl.value?.classList.contains('tooltip-hovered')
 
         if (isStillInside) {
           model.value = true
@@ -100,11 +99,10 @@ onMounted(() => {
     })
 
     referenceEl.value?.addEventListener('mouseleave', () => {
-      referenceEl.value && referenceEl.value.classList.remove('tooltip-hovered')
+      referenceEl.value?.classList.remove('tooltip-hovered')
 
       setTimeout(() => {
-        const isStillInside
-          = referenceEl.value?.classList.contains('tooltip-hovered')
+        const isStillInside = referenceEl.value?.classList.contains('tooltip-hovered')
 
         if (!isStillInside) {
           model.value = false

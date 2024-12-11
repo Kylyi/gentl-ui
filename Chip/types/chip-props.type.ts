@@ -15,7 +15,7 @@ export type IChipProps = {
   /**
    * The chip's icon
    */
-  icon?: string
+  icon?: ClassType
 
   /**
    * The chip's label
