@@ -19,12 +19,14 @@ export function useSelectorUtils(options: ISelectorUtilsOptions) {
 
   // Layout
   const el = ref<any>()
+  const search = useVModel(props, 'search')
   const inputId = props.id ?? useId()
   const model = useVModel(props, 'modelValue')
   const menuEl = computed(() => toValue(menuElRef))
 
   // Input methods
   const clear = () => {
+    search.value = ''
     instance?.emit('update:modelValue', props.emptyValue)
   }
 
@@ -88,6 +90,7 @@ export function useSelectorUtils(options: ISelectorUtilsOptions) {
     el,
     inputId,
     model,
+    search,
     wrapperProps,
     preventNextFocus,
 

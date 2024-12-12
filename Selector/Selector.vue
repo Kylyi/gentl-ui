@@ -237,7 +237,6 @@ const listEl = ref<InstanceType<typeof List>>()
 const options = toRef(props, 'options')
 const optionsInternal = ref<any[]>([])
 const listProps = getListProps(props)
-const search = defineModel<ISelectorProps['search']>('search')
 
 const optionsExtended = computed(() => {
   const optionsAdjusted = [...options.value, ...optionsInternal.value].map(
@@ -336,6 +335,7 @@ const {
   isPickerActive,
   pickerAnimationState,
   model,
+  search,
   wrapperProps,
   handleClickWrapper,
   handleFocusOrClick,
