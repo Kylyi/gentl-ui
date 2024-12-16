@@ -30,7 +30,6 @@ const searchableColumnLabels = computed(() => {
   <SearchInput
     v-model="search"
     grow
-    size="sm"
     :debounce="500"
   >
     <template #append>
