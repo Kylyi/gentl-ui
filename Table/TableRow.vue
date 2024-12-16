@@ -45,7 +45,7 @@ const isEditable = computed(() => {
     :class="[
       { 'is-odd': index % 2 && !rowClass },
       { 'is-deleted': row.deleted },
-      rowClass?.(row),
+      rowClass,
     ]"
     :data-split-row-idx="0"
     :to="to?.(row)"
