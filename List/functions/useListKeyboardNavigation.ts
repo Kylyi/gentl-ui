@@ -100,7 +100,10 @@ export function useListKeyboardNavigation(options: {
     const { force = false, repeated } = options ?? {}
     const isCtrl = ev.ctrlKey || ev.metaKey
 
-    if (!isFocused.value && !force) {
+    const isUnfocused = !isFocused.value && !force
+    const hasItems = itemsRef.value.length
+
+    if (isUnfocused || !hasItems) {
       return
     }
 
