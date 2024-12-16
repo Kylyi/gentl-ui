@@ -23,7 +23,15 @@ const dataColumns = computed(() => {
   return props.columns?.filter(col => !col.hidden) ?? []
 })
 
-const isEditable = computedEager(() => {
+const rowClass = computed(() => {
+  if (typeof props.rowClass === 'function') {
+    return props.rowClass(row.value)
+  }
+
+  return props.rowClass
+})
+
+const isEditable = computed(() => {
   return props.editable === true || props.editable === 'table'
 })
 </script>
