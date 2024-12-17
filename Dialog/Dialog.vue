@@ -34,6 +34,7 @@ defineExpose({
 const model = defineModel({ default: false })
 const isChangeForced = ref(false)
 const debouncedModel = ref(model.value)
+const countOfFloatingUIElements = ref(0)
 
 const modelHandler = computed({
   get: () => model.value,
@@ -80,10 +81,7 @@ const {
   dialogWrapperEl,
   floatingEl,
   triggerEl,
-} = useDialogLayout(
-  modelHandler,
-  props,
-)
+} = useDialogLayout(modelHandler, props)
 
 function hide(ignorePersistent = true) {
   if (props.persistent && !ignorePersistent) {
@@ -109,8 +107,9 @@ function commitHide() {
 // We sync the model with the debouncedModel immediately when the value is `true`
 // to show the content immediately to trigger the transition
 whenever(model, isVisible => {
-  debouncedModel.value = isVisible
+  countOfFloatingUIElements.value = document.querySelectorAll('.floating-element').length
 
+  debouncedModel.value = isVisible
   triggerEl.value?.classList.add('is-dialog-active')
 })
 
@@ -172,7 +171,7 @@ const isOverlayVisible = computed(() => {
     <div
       v-if="isOverlayVisible"
       class="backdrop"
-      :style="ui?.backdropStyle"
+      :style="{ ...ui?.backdropStyle, '--n': countOfFloatingUIElements + 1 }"
       :class="[ui?.backdropClass, { 'is-active': model }]"
     />
 
@@ -190,8 +189,8 @@ const isOverlayVisible = computed(() => {
         v-if="model"
         ref="dialogWrapperEl"
         class="dialog__wrapper floating-element"
-        :position="position"
-        :style="{ '--dialogMaxHeight': dialogMaxHeight }"
+        :position
+        :style="{ '--dialogMaxHeight': dialogMaxHeight, '--n': countOfFloatingUIElements + 1 }"
         .hide="hide"
       >
         <!-- Dialog -->
@@ -266,6 +265,8 @@ const isOverlayVisible = computed(() => {
 
   &__wrapper {
     @apply flex fixed inset-0 z-$zDialog pointer-events-none;
+
+    z-index: calc(var(--zDialog) + var(--n));
   }
 
   &__header {
@@ -328,8 +329,10 @@ const isOverlayVisible = computed(() => {
 
 // Backdrop
 .backdrop {
-  @apply fixed inset-0 transition-background-color z-$zBackdrop
+  @apply fixed inset-0 transition-background-color
     duration-$transitionDuration ease bg-transparent;
+
+  z-index: calc(var(--zDialog) + var(--n));
 
   &.is-active {
     @apply bg-darker/70;

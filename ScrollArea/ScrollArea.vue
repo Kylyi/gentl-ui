@@ -15,6 +15,8 @@ onMounted(() => {
     if (scrollArea.value) {
       ps.value = new PerfectScrollbar(scrollArea.value, {
         wheelSpeed: 0.75,
+        scrollXMarginOffset: 1,
+        scrollYMarginOffset: 1,
         ...(props.options || {}),
       })
     }

@@ -53,6 +53,7 @@ const { color } = useTheme()
 const model = defineModel({ default: false })
 const isChangeForced = ref(false)
 const debouncedModel = ref(model.value)
+const countOfFloatingUIElements = ref(0)
 
 const modelHandler = computed({
   get: () => model.value,
@@ -139,6 +140,7 @@ function commitHide() {
 // We sync the model with the debouncedModel immediately when the value is `true`
 // to show the content immediately to trigger the transition
 whenever(model, isVisible => {
+  countOfFloatingUIElements.value = document.querySelectorAll('.floating-element').length
   debouncedModel.value = isVisible
 
   const referenceEl = floatingReferenceEl.value as HTMLElement
@@ -280,6 +282,7 @@ const isOverlayVisible = computed(() => {
       v-if="isOverlayVisible"
       class="backdrop"
       :class="{ 'is-open': model }"
+      :style="{ '--n': countOfFloatingUIElements + 1 }"
     />
 
     <Transition
@@ -299,6 +302,7 @@ const isOverlayVisible = computed(() => {
         :style="{
           ...floatingStyles,
           '--transitionDuration': `${transitionDuration}ms`,
+          '--n': countOfFloatingUIElements + 1,
         }"
         :class="{
           'is-cover': cover,
@@ -371,10 +375,11 @@ const isOverlayVisible = computed(() => {
 
 <style lang="scss" scoped>
 .menu {
-  @apply flex flex-col max-w-95vw max-h-95% rounded-custom z-$zMenu
+  @apply flex flex-col max-w-95vw max-h-95% rounded-custom
     rounded-custom border-1 border-ca bg-white dark:bg-darker;
 
   @apply shadow-consistent-xs shadow-darker/20;
+  z-index: calc(var(--zMenu) + var(--n));
 
   &__header {
     @apply flex items-center gap-2 p-l-3 p-r-1 p-y-2 rounded-t-custom;
@@ -477,8 +482,10 @@ s .menu[placement='right-end'] {
 
 // Backdrop
 .backdrop {
-  @apply fixed inset-0 z-$zBackdrop transition-background-color
+  @apply fixed inset-0 transition-background-color
     duration-$transitionDuration ease bg-transparent;
+
+  z-index: calc(var(--zMenu) + var(--n));
 }
 
 .backdrop.is-open {
