@@ -7,12 +7,13 @@ import type { ITableSelection } from '~/components/Table/types/table-selection.t
 import type { IQueryBuilderRow } from '~/components/QueryBuilder/types/query-builder-row-props.type'
 
 // Injections
-import { tableSlotsKey } from '~/components/Table/provide/table.provide'
+import { tableIdKey, tableSlotsKey } from '~/components/Table/provide/table.provide'
 
 // Models
 import type { TableColumn } from '~/components/Table/models/table-column.model'
 
 // Functions
+import { useTableUtils } from '~/components/Table/functions/useTableUtils'
 import { getComponentProps } from '~/components/__helpers/get-config-props'
 import { useTableData } from '~/components/Table/functions/useTableData'
 import { useTableLayout } from '~/components/Table/functions/useTableLayout'
@@ -96,7 +97,11 @@ defineExpose({
 })
 
 // Utils
+const { getStorageKey } = useTableUtils(props)
 const { getTableTopProps } = useTableTopUtils()
+
+// Init store
+provideLocal(tableIdKey, getStorageKey())
 
 // Layout
 const tableTopProps = getTableTopProps(props)

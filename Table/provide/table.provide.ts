@@ -23,6 +23,7 @@ export const getTableStorageKey: InjectionKey<() => string> = Symbol('getTableSt
 
 export const tableStorageKey: InjectionKey<Ref<string>> = Symbol('tableStorageKey')
 
+export const tableIdKey: InjectionKey<string> = Symbol('tableId')
 /**
  * Whether the fetch query should include the `includeDeleted` prop to also get deleted rows
  */

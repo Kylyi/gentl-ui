@@ -40,6 +40,7 @@ import {
 // Store
 import { useTableStore } from '~/components/Table/table.store'
 import { useAppStore } from '~/libs/App/app.store'
+import { useTablePiniaStore } from '~/components/Table/table-pinia.store'
 
 export function useTableData(
   props: ITableProps,
@@ -51,13 +52,14 @@ export function useTableData(
   recreateColumns?: (shouldRecreate?: boolean) => void,
   resizeColumns?: (force?: boolean) => void,
 ) {
+  // Store
+  const { runOnDataFetchQueue } = useTablePiniaStore()
+
   // Utils
   const route = useRoute()
   const instance = getCurrentInstance()
   const { getStorageKey, parseUrlParams, getRowKey } = useTableUtils(props)
-  const { isLoading, handleRequest } = useRequest({
-    loadingInitialState: !props.rows,
-  })
+  const { isLoading, handleRequest } = useRequest({ loadingInitialState: !props.rows })
 
   function extractHashes(data: any) {
     const hashKeys = props.getData?.hashKeys ?? config.table.hashKeys
@@ -467,6 +469,9 @@ export function useTableData(
 
       // We set the `dataHasBeenFetched` to true
       dataHasBeenFetched.value = true
+
+      // We run the onDataFetchQueue
+      runOnDataFetchQueue()
     } catch (error) {
       resetTableState(storageKey.value)
     }

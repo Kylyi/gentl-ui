@@ -25,6 +25,7 @@ import { useTableColumnResizing } from '~/components/Table/functions/useTableCol
 
 // Store
 import { useTableStore } from '~/components/Table/table.store'
+import { useTablePiniaStore } from '~/components/Table/table-pinia.store'
 
 // Components
 import Selector from '~/components/Selector/Selector.vue'
@@ -47,6 +48,7 @@ const { handleFitColumns } = useTableColumnResizing({ columns })
 
 // Store
 const { getTableState } = useTableStore()
+const { onDataFetchQueue } = storeToRefs(useTablePiniaStore())
 
 // Layout
 const layoutSelectorEl = ref<InstanceType<typeof Selector>>()
@@ -195,27 +197,26 @@ function handleLayoutSelect(
     return a._internalSort - b._internalSort
   })
 
+  onDataFetchQueue.value.push(
+    () => requestAnimationFrame(() => handleFitColumns()),
+  )
+
   layout.value = {
     ..._layout,
     preventLayoutReset: true,
   }
 
-  // Refresh
-  setTimeout(() => {
-    handleFitColumns()
-
-    // When only filter columns are part of the schema, we manually trigger the
-    // table refresh as they are not watched
-    const isOnlyColFilters
+  // When only filter columns are part of the schema, we manually trigger the
+  // table refresh as they are not watched
+  const isOnlyColFilters
       = schemaFilters.length
       && !schemaColumns.length
       && !schemaSort.length
       && !schemaQueryBuilder.length
 
-    if (isOnlyColFilters) {
-      tableRefresh(true)
-    }
-  }, 0)
+  if (isOnlyColFilters) {
+    tableRefresh(true)
+  }
 
   layoutSelectorEl.value?.blur()
 }
