@@ -171,7 +171,7 @@ const isOverlayVisible = computed(() => {
     <div
       v-if="isOverlayVisible"
       class="backdrop"
-      :style="{ ...ui?.backdropStyle, '--n': countOfFloatingUIElements + 1 }"
+      :style="{ ...ui?.backdropStyle, '--n': countOfFloatingUIElements }"
       :class="[ui?.backdropClass, { 'is-active': model }]"
     />
 
@@ -190,7 +190,7 @@ const isOverlayVisible = computed(() => {
         ref="dialogWrapperEl"
         class="dialog__wrapper floating-element"
         :position
-        :style="{ '--dialogMaxHeight': dialogMaxHeight, '--n': countOfFloatingUIElements + 1 }"
+        :style="{ '--dialogMaxHeight': dialogMaxHeight, '--n': countOfFloatingUIElements }"
         .hide="hide"
       >
         <!-- Dialog -->

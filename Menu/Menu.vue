@@ -157,7 +157,7 @@ whenever(model, isVisible => {
   isReferenceElTransparent.value = referenceElStyle.backgroundColor === 'rgba(0, 0, 0, 0)'
 
   if ((!props.noOverlay || !props.noUplift) && !props.cover) {
-    referenceEl.style.zIndex = `calc(var(--zMenu) + ${countOfFloatingUIElements.value + 2})`
+    referenceEl.style.zIndex = `calc(var(--zMenu) + ${countOfFloatingUIElements.value + 1})`
   }
 
   if (isReferenceElTransparent.value && !props.noUplift && !props.cover) {
@@ -282,7 +282,7 @@ const isOverlayVisible = computed(() => {
       v-if="isOverlayVisible"
       class="backdrop"
       :class="{ 'is-open': model }"
-      :style="{ '--n': countOfFloatingUIElements + 1 }"
+      :style="{ '--n': countOfFloatingUIElements }"
     />
 
     <Transition
@@ -302,7 +302,7 @@ const isOverlayVisible = computed(() => {
         :style="{
           ...floatingStyles,
           '--transitionDuration': `${transitionDuration}ms`,
-          '--n': countOfFloatingUIElements + 1,
+          '--n': countOfFloatingUIElements,
         }"
         :class="{
           'is-cover': cover,
