@@ -389,7 +389,7 @@ function syncScrollArea() {
 }
 
 function handleKeyDown(e: KeyboardEvent) {
-  if (e.key === 'ArrowDown') {
+  if (e.key === 'ArrowDown' && !props.readonly && !props.disabled) {
     e.preventDefault()
 
     menuProxyEl.value?.show()
