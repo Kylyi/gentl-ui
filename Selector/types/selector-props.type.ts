@@ -34,6 +34,8 @@ export type ISelectorProps = IInputProps & {
    */
   controlClass?: ClassType
 
+  hasContent?: boolean | ((item: any) => boolean)
+
   /**
    * When true, the `append` slot will not be shown
    */

@@ -23,6 +23,7 @@ import ScrollArea from '~/components/ScrollArea/ScrollArea.vue'
 
 const props = withDefaults(defineProps<ISelectorProps>(), {
   ...getComponentProps('selector'),
+  hasContent: undefined,
 
   maxChipsRows: props => {
     switch (props.layout) {
@@ -91,6 +92,14 @@ const { path } = useInputValidationUtils(props)
 const { getListProps } = useListUtils()
 
 const hasContent = computed(() => {
+  if (props.hasContent) {
+    if (typeof props.hasContent === 'function') {
+      return props.hasContent(model.value)
+    }
+
+    return props.hasContent
+  }
+
   return Array.isArray(model.value)
     ? model.value.length > 0
     : !isNil(getKey(model.value)) && model.value !== ''
