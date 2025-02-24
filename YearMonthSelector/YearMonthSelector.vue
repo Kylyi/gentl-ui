@@ -147,7 +147,8 @@ onMounted(() => {
       <div
         i-formkit:month
         class="picker-icon"
-        @mousedown="handlePickerIconClick"
+        :class="{ 'cursor-pointer': !readonly }"
+        @mousedown="!readonly && handlePickerIconClick($event)"
         @click.stop.prevent
       />
     </template>
@@ -156,6 +157,6 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .picker-icon {
-  @apply cursor-pointer color-ca m-x-2 h-5.5 w-5.5;
+  @apply color-ca m-x-2 h-5.5 w-5.5;
 }
 </style>
