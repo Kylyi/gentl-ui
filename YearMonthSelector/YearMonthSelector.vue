@@ -43,6 +43,10 @@ const isPickerActive = ref(false)
 const pickerState = ref('hide')
 
 function handlePickerIconClick(ev: MouseEvent) {
+  if (props.readonly || props.disabled) {
+    return
+  }
+
   if (isPickerActive.value) {
     ev.preventDefault()
     ev.stopPropagation()
@@ -148,7 +152,7 @@ onMounted(() => {
         i-formkit:month
         class="picker-icon"
         :class="{ 'cursor-pointer': !readonly }"
-        @mousedown="!readonly && handlePickerIconClick($event)"
+        @mousedown="handlePickerIconClick"
         @click.stop.prevent
       />
     </template>
