@@ -43,6 +43,10 @@ const isPickerActive = ref(false)
 const pickerState = ref('hide')
 
 function handlePickerIconClick(ev: MouseEvent) {
+  if (props.readonly || props.disabled) {
+    return
+  }
+
   if (isPickerActive.value) {
     ev.preventDefault()
     ev.stopPropagation()
@@ -147,6 +151,7 @@ onMounted(() => {
       <div
         i-formkit:month
         class="picker-icon"
+        :class="{ 'cursor-pointer': !readonly }"
         @mousedown="handlePickerIconClick"
         @click.stop.prevent
       />
@@ -156,6 +161,6 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .picker-icon {
-  @apply cursor-pointer color-ca m-x-2 h-5.5 w-5.5;
+  @apply color-ca m-x-2 h-5.5 w-5.5;
 }
 </style>
