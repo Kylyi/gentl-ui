@@ -104,6 +104,10 @@ onChange(handleAdd)
     :class="{ 'dragged-over': isOverDropZone }"
     @click="handleOpen"
   >
+    <template #prepend>
+      <slot name="prepend" />
+    </template>
+
     <template #append>
       <Btn
         icon="i-material-symbols:attachment"
